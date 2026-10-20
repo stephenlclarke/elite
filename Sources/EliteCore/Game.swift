@@ -1650,6 +1650,10 @@ public struct Game: Sendable {
       notify("SAMPLE LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
     }
+    guard candidate.loseWayfarerRepairLoopOnEscape() else {
+      notify("REPAIR UNIT LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
+      return
+    }
     let leftPeople = !(candidate.commander.nativePeople?.held.isEmpty ?? true)
     do {
       try candidate.abandonNativePeopleOnEscape()
@@ -2314,6 +2318,7 @@ public actor GameRuntime {
     }
     // Acts only on the measured fatal state; retries its durable proposal after writer refusal.
     commitWayfarerColdChainFatalLoss()
+    commitWayfarerRepairLoopFatalLoss()
     game.observeNativeCrimboAttainedMotion(
       delta: delta, flightWasActive: wasLive && !wasDocked && localActive && flightActive,
       startTime: startPhysicalTime, startPlayer: startPlayer,

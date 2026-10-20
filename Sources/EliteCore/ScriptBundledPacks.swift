@@ -23,6 +23,10 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-cold-chain")
   }
 
+  static var bundledRepairLoopDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-repair-loop")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -51,6 +55,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled cold-chain pack: " + error.localizedDescription)
+    }
+    do {
+      let repairLoop = try read(bundledRepairLoopDirectory)
+      if !library.packs.contains(where: { $0.digest == repairLoop.digest }) {
+        library.packs.append(repairLoop)
+      }
+    } catch {
+      library.errors.append("Bundled repair-loop pack: " + error.localizedDescription)
     }
     return library
   }

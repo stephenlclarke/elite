@@ -1,5 +1,22 @@
 import Foundation
 
+/// Closed current diagnosis of the original W02 transport unit; never a generic damage model.
+public enum NativeRepairLoopCondition: Equatable, Codable, Sendable {
+  case failed(sourceUnit: UUID)
+  case operational(sourceUnit: UUID, operation: UUID)
+  var sourceUnit: UUID {
+    switch self {
+    case .failed(let unit), .operational(let unit, _): return unit
+    }
+  }
+  var diagnostic: String {
+    switch self {
+    case .failed: return "FAILED: open relay"
+    case .operational: return "OPERATIONAL: relay continuity restored"
+    }
+  }
+}
+
 public struct OwnedEquipmentItem: Equatable, Codable, Sendable {
   public let id: UUID
   public let node: EquipmentNodeID
@@ -10,12 +27,14 @@ public struct OwnedEquipmentItem: Equatable, Codable, Sendable {
   public let boundHull: UUID?
   public let preferredSlot: ComponentFittingSlot?
   public let retainedLegacyState: LegacyEquipmentState?
+  public let nativeRepairLoopCondition: NativeRepairLoopCondition?
 
   public init(
     id: UUID, node: EquipmentNodeID, provenance: EquipmentAcquisitionProvenance,
     component: ComponentInstance? = nil, location: ComponentFittingLocation? = nil,
     boundHull: UUID? = nil, preferredSlot: ComponentFittingSlot? = nil,
-    retainedLegacyState: LegacyEquipmentState? = nil
+    retainedLegacyState: LegacyEquipmentState? = nil,
+    nativeRepairLoopCondition: NativeRepairLoopCondition? = nil
   ) {
     self.id = id
     self.node = node
@@ -25,12 +44,14 @@ public struct OwnedEquipmentItem: Equatable, Codable, Sendable {
     self.boundHull = boundHull
     self.preferredSlot = preferredSlot
     self.retainedLegacyState = retainedLegacyState
+    self.nativeRepairLoopCondition = nativeRepairLoopCondition
   }
 
   func moved(to location: ComponentFittingLocation?) -> Self {
     .init(
       id: id, node: node, provenance: provenance, component: component, location: location,
-      boundHull: boundHull, preferredSlot: preferredSlot, retainedLegacyState: retainedLegacyState)
+      boundHull: boundHull, preferredSlot: preferredSlot, retainedLegacyState: retainedLegacyState,
+      nativeRepairLoopCondition: nativeRepairLoopCondition)
   }
 }
 
@@ -174,6 +195,9 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
   ) throws {
     try mutate(expectedRevision: expectedRevision, context: context) { items in
       let index = try Self.index(of: item, in: items)
+      guard item.nativeRepairLoopCondition == nil else {
+        throw OwnedEquipmentError.incompatibleComponent
+      }
       guard item.location != location else { throw OwnedEquipmentError.noChange }
       if let occupant = items.firstIndex(where: { $0.location == location }) {
         guard let occupied else { throw OwnedEquipmentError.occupiedSlot }
@@ -214,7 +238,7 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
   ) throws {
     try mutate(expectedRevision: expectedRevision, context: context) { items in
       let index = try Self.index(of: item, in: items)
-      guard item.retainedLegacyState?.pristine ?? true else {
+      guard item.nativeRepairLoopCondition == nil, item.retainedLegacyState?.pristine ?? true else {
         throw OwnedEquipmentError.incompatibleComponent
       }
       guard let before = item.component,
@@ -226,7 +250,26 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
       items[index] = .init(
         id: item.id, node: item.node, provenance: item.provenance,
         component: application.component, location: item.location, boundHull: item.boundHull,
-        preferredSlot: item.preferredSlot, retainedLegacyState: item.retainedLegacyState)
+        preferredSlot: item.preferredSlot, retainedLegacyState: item.retainedLegacyState,
+        nativeRepairLoopCondition: item.nativeRepairLoopCondition)
+    }
+  }
+
+  /// Only a closed native repair operation replaces this item's current diagnosis.
+  mutating func repairOriginal(
+    expected item: OwnedEquipmentItem, operation: UUID, sourceUnit: UUID,
+    context: OwnedEquipmentContext
+  ) throws {
+    guard item.nativeRepairLoopCondition == .failed(sourceUnit: sourceUnit),
+      item.location == nil
+    else { throw OwnedEquipmentError.incompatibleComponent }
+    try mutate(expectedRevision: revision, context: context) { items in
+      let index = try Self.index(of: item, in: items)
+      items[index] = .init(
+        id: item.id, node: item.node, provenance: item.provenance, component: item.component,
+        location: item.location, boundHull: item.boundHull, preferredSlot: item.preferredSlot,
+        retainedLegacyState: item.retainedLegacyState,
+        nativeRepairLoopCondition: .operational(sourceUnit: sourceUnit, operation: operation))
     }
   }
 
@@ -249,6 +292,12 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
       guard item.preferredSlot?.valid ?? true, item.retainedLegacyState?.valid ?? true,
         item.location == nil || (item.retainedLegacyState?.pristine ?? true)
       else { throw OwnedEquipmentError.invalidStructure }
+      if item.nativeRepairLoopCondition != nil {
+        guard item.location == nil, item.boundHull == nil, item.retainedLegacyState == nil,
+          item.node == EquipmentRuntimeCatalog.node(for: "Fuel Scoops"),
+          case .missionIssue(_, "repair-unit", 0, _) = item.provenance
+        else { throw OwnedEquipmentError.invalidStructure }
+      }
       if let original = item.retainedLegacyState?.originalEquipmentName {
         guard EquipmentRuntimeCatalog.node(for: original) == item.node else {
           throw OwnedEquipmentError.invalidStructure

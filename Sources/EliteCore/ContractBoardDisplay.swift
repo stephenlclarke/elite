@@ -29,7 +29,9 @@ extension Display {
   static func contractDetailRows(_ game: Game, width: Double) -> [String] {
     guard let row = game.contractBoard.selected else { return ["No contract selected."] }
     var rows: [String]
-    if row.coldChain != nil {
+    if row.repairLoop != nil {
+      rows = game.wayfarerRepairLoopDetail
+    } else if row.coldChain != nil {
       rows = game.wayfarerColdChainDetail
     } else if row.provider != nil {
       rows = game.providerContractDetail
@@ -114,7 +116,8 @@ extension Display {
           : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
     if game.contractBoard.detail,
-      let reason = game.contractBoard.coldChainQuote?.issues.first
+      let reason = game.contractBoard.repairLoopQuote?.issues.first
+        ?? game.contractBoard.coldChainQuote?.issues.first
         ?? game.contractBoard.providerQuote?.issues.first
         ?? game.contractBoard.rrsQuote?.issues.first
         ?? game.contractBoard.financeQuote?.issues.first
@@ -141,10 +144,12 @@ extension Display {
         let rrs = game.contractBoard.rrsQuote
         let finance = game.contractBoard.financeQuote
         let people = game.contractBoard.peopleQuote
+        let repairLoop = game.contractBoard.repairLoopQuote
         let coldChain = game.contractBoard.coldChainQuote
         let provider = game.contractBoard.providerQuote
         let available =
           action == .back
+          || (repairLoop != nil && action == .accept && repairLoop?.allowed == true)
           || (coldChain != nil && action == .accept && coldChain?.allowed == true)
           || (provider != nil
             && (action == .decline || (action == .accept && provider?.allowed == true)))
@@ -159,7 +164,7 @@ extension Display {
             && (action != .accept || game.contractBoard.quote?.allowed == true))
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
-            + (action == .accept && (provider != nil || coldChain != nil)
+            + (action == .accept && (provider != nil || coldChain != nil || repairLoop != nil)
               ? "Confirm"
               : action == .accept && people != nil
                 ? (people?.row.action ?? "Closed")
@@ -202,7 +207,8 @@ extension Display {
             $0.duration == 0 ? "no limit" : String(format: "%.0fs", $0.duration))
         }
         let summary: String =
-          row.reason ?? (row.provider == nil ? nil : "Review native provider contract")
+          row.reason ?? (row.repairLoop == nil ? nil : "Repair loop / 2t / 610 CR on owner return")
+          ?? (row.provider == nil ? nil : "Review native provider contract")
           ?? (row.people == nil ? nil : "Review person transfer")
           ?? (row.finance == nil ? nil : "Review loan terms")
           ?? rrsSummary ?? courier?.summary ?? pledgeSummary ?? offerSummary
