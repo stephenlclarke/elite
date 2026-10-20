@@ -51,11 +51,7 @@ extension Game {
       if let board = commander.contracts.boards[row.board] {
         fields += [
           String(board.revision),
-          String(
-            contractRevision(
-              .init(
-                id: board.id, title: board.title, generator: "generate", clock: board.clock,
-                refreshSeconds: board.period, exclusiveGroup: nil))),
+          (try? contractRevision(board)).map(String.init) ?? "unavailable-generation",
         ]
       }
       if let offer = row.offer {

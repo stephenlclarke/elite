@@ -178,7 +178,7 @@ extension Game {
       if let reason = failures[pack.digest] ?? scriptUnavailable(pack) {
         rows.append(.init(board: key, offer: nil, title: definition.title, reason: reason))
       } else if let board = commander.contracts.boards[key],
-        board.revision == contractRevision(definition)
+        board.revision == (try? contractRevision(definition, pack: pack))
       {
         for offer in board.offers where offer.status == .available {
           let quote = contractAcceptanceQuote(board: key, offer: offer.id)

@@ -265,7 +265,10 @@ extension Commander {
     }
     return scriptState.instances.allSatisfy { _, instance in
       guard let job = instance.contract else { return true }
-      return job.valid && procurementStateValid(instance) && freightStateValid(instance)
+      return
+        (!OriginalServiceReservationPolicy.isContractDefinition(instance.definition)
+        || job.boardRevision <= OriginalContractOfferPolicy.maximumRevision)
+        && job.valid && procurementStateValid(instance) && freightStateValid(instance)
         && job.digest == instance.digest && job.version == instance.version
         && instance.id == Game.contractJobIdentity(job.offer.id)
         && instance.definition.hasPrefix(job.provider + "/")

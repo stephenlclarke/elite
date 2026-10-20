@@ -49,7 +49,7 @@ extension Game {
       throw MissionPackError("Station Aid pledges do not support this synthetic host site.")
     }
     let key = pack.digest + "/" + definition.id + "/" + contractStation.key
-    let revision = contractRevision(definition)
+    let revision = try contractRevision(definition, pack: pack)
     if commander.contracts.boards[key]?.revision == revision { return key }
     guard commander.contracts.boards[key] != nil || commander.contracts.boards.count < 128 else {
       throw MissionPackError("The saved contract board limit has been reached.")
@@ -264,15 +264,25 @@ extension Game {
       board.station == contractStation, let index = board.offers.firstIndex(where: { $0.id == id }),
       let pack = scriptPacks.first(where: { $0.digest == board.digest }),
       let definition = pack.manifest.board,
-      contractRevision(definition) == board.revision, scriptUnavailable(pack) == nil
+      scriptUnavailable(pack) == nil
     else {
       throw MissionPackError(
         "The contract board changed or is unavailable. Return to its current offers.")
     }
     let offer = board.offers[index]
+    if !OriginalServiceReservationPolicy.isContractDefinition(pack.manifest.stateID),
+      contractRevision(definition) != board.revision
+    {
+      throw MissionPackError("The contract board changed. Review its current offers.")
+    }
     if case .accepted(let existing) = offer.status { return .alreadyAccepted(existing) }
+    guard try contractRevision(definition, pack: pack) == board.revision else {
+      throw MissionPackError("The contract board changed. Review its current offers.")
+    }
     guard offer.status == .available else { throw MissionPackError("This offer was declined.") }
     if OriginalServiceReservationPolicy.isContractDefinition(pack.manifest.stateID) {
+      // Leave room for both this reservation and its eventual native settlement.
+      _ = try OriginalContractOfferPolicy.advanced(board.revision, by: 2)
       try OriginalServiceReservationPolicy.requireAvailableSlot(commander.scriptState)
     }
     guard
@@ -417,7 +427,7 @@ extension Game {
       board.station == contractStation,
       let index = board.offers.firstIndex(where: { $0.id == id }),
       board.offers[index].status == .available,
-      Int64(floor(commander.scriptState.clock(board.clock) / board.period)) == board.revision
+      try contractRevision(board) == board.revision
     else { throw MissionPackError("This offer is no longer available to decline.") }
     commander.contracts.boards[key]?.offers[index].status = .declined
   }
@@ -426,6 +436,9 @@ extension Game {
   ) throws {
     guard var job = state.contract else { return }
     guard !job.settled else { throw MissionPackError("This contract is already settled.") }
+    if OriginalServiceReservationPolicy.isContractDefinition(state.definition) {
+      _ = try OriginalContractOfferPolicy.advanced(job.boardRevision, by: 2)
+    }
     let reward =
       outcome == .complete ? job.offer.reward : (outcome == .failed ? job.offer.failureReward : 0)
     let refund =
