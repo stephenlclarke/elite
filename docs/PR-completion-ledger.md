@@ -430,3 +430,7 @@ Current status/register now actual855 zero completed mission methods after conte
 ## Current856 build PASS and857 owner run
 
 Update current M01 register/status to frozen0f2c8edb, matching856 build PASS/857 runtime ACTIVE under standing authority; seven/nine plus unchanged847 storage1/1 remain separate evidence. NativeAdmission phased global/basic/binding read checks and immutable plan borrows stay in approved eight-file scope/unchanged authority. Current outcome pending; no new G1 audit/allocation/runtime or integration claim. MBA10 real current repair-loop source proposal remains in revision. Normal scoped Markdown lint/diff checks only; historical hashes retained.
+
+## Record857 later save-history boundary and pending scope decision
+
+Current status/register now actual857 zero completed mission methods after native source/context/scene/commit return; failure moved to genuine publisher/Commander.valid native wormhole actor-history filter validation. Record immutable proof/crash and source/artifact/preference/process closure without claiming successful saved publication. The maintained file is outside the eight-file scope, so MC1 stopped new runs/expansion and proposes a bounded whole-history read/index correction to Root; standing authority otherwise unchanged.847 storage evidence retained only if unaffected. No new G1 diagnosis/audit/runtime/GUI poll or integration; scoped documentation checks and prior-hash preservation only.
