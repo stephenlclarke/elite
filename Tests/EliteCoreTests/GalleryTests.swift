@@ -14,14 +14,14 @@ import Testing
   let milestones = [
     ["Receive naval assignment", "Remove the Constrictor", "Dock for debriefing and reward"],
     [
-      "Receive orders to report to Ceerdi", "Dock at Ceerdi and collect plans",
-      "Dock at Birera for delivery and reward",
+      "Receive orders to report to Nerith", "Dock at Nerith and collect plans",
+      "Dock at Veyara for delivery and reward",
     ],
     [
       "Receive Blackjack's contact", "Destroy Bolts; earn 20 kg gold",
       "Report at a G2 main station", "Collect the marked firearm",
-      "Confirm Ceinerxe dockside handoff", "Destroy the unique witness",
-      "Confirm Esdi report and final reward",
+      "Confirm Darvan dockside handoff", "Destroy the unique witness",
+      "Confirm Dradar report and final reward",
     ],
     [
       "Actually disable an admitted ordinary crewed craft",

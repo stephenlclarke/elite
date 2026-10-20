@@ -30,7 +30,7 @@ import Testing
   let inventory = try #require(original.equipmentInventory)
   try #require(inventory.items.allSatisfy { $0.boundHull == nil })
   let quote = try #require(game.shipTradeQuote)
-  #expect(quote.allowed && quote.purchase == 4_150_000 && quote.allowance == 1_125_000)
+  #expect(quote.allowed && quote.purchase == 4_150_000 && quote.allowance == 2_055_000)
   #expect(game.showroomComparison.contains { $0.label == "Cargo" && $0.rating == .better })
   game.key("showroom-trade")
   game.key("right")

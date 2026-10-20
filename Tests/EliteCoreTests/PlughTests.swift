@@ -275,7 +275,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
 }
 
 @Test func plughShopRespectsCashStorageMissileMountAndTierLimitsWithoutRefillsOrCashReset() throws {
-  var game = try plughGame()
+  var game = try plughSupportedShopGame()
   game.commander.credits = 10_000_000
   game.commander.xyzzyActive = true
   game.commander.xyzzyCashGranted = true

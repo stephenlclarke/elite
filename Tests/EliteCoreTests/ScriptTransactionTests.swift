@@ -37,6 +37,16 @@ private struct DurableFixture {
     if destination { game.commander.system = 129 }
     return game
   }
+  /// Currency transaction fixtures retain their own 100.0 CR before acceptance.
+  func cashGame(accepted: Bool = true, destination: Bool = true) throws -> Game {
+    var game = Game(executive: false)
+    game.commander.credits = 1000
+    game.screen = .status
+    game.scriptPacks = [pack]
+    if accepted { _ = try game.acceptScriptMission(pack) }
+    if destination { game.commander.system = 129 }
+    return game
+  }
   func breakWriter() throws {
     try FileManager.default.moveItem(at: container, to: root.appendingPathComponent("backup"))
     try Data("blocked directory".utf8).write(to: container)
@@ -51,7 +61,7 @@ private struct DurableFixture {
   let fixture = try DurableFixture()
   defer { fixture.clean() }
   let runtime = GameRuntime(
-    game: try fixture.game(accepted: false, destination: false), saveURL: fixture.url)
+    game: try fixture.cashGame(accepted: false, destination: false), saveURL: fixture.url)
   await runtime.key("contacts-open")
   #expect(!FileManager.default.fileExists(atPath: fixture.url.path))
   await runtime.key("return")
@@ -64,7 +74,7 @@ private struct DurableFixture {
   #expect(!accepted.commander.miningLedger.retainsLegacyFields)
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
   #expect(saved == accepted.commander)
-  let delivery = GameRuntime(game: try fixture.game(), saveURL: fixture.url)
+  let delivery = GameRuntime(game: try fixture.cashGame(), saveURL: fixture.url)
   await delivery.key("contacts-open")
   let offered = try Data(contentsOf: fixture.url)
   await delivery.key("return")
@@ -75,7 +85,7 @@ private struct DurableFixture {
     ScriptSavePointer.self, from: Data(contentsOf: fixture.url))
   #expect(completedPointer.schemaVersion == 26 && completed.commander.usesEconomyMiningSaveVersion)
   #expect(!completed.commander.miningLedger.retainsLegacyFields)
-  let reloaded = GameRuntime(game: try fixture.game(accepted: false))
+  let reloaded = GameRuntime(game: try fixture.cashGame(accepted: false))
   try await reloaded.load(from: fixture.url)
   let reloadedCommander = await reloaded.snapshot().commander
   let unchanged = reloadedCommander == completed.commander
@@ -351,13 +361,13 @@ private func timerFixture() throws -> DurableFixture {
 @Test func durableTimerCallbackCancelsAnotherDueCallbackBeforeItCanFireOrReplay() async throws {
   let fixture = try timerFixture()
   defer { fixture.clean() }
-  let runtime = GameRuntime(game: try fixture.game(), saveURL: fixture.url)
+  let runtime = GameRuntime(game: try fixture.cashGame(), saveURL: fixture.url)
   _ = await runtime.advance(delta: 0.05)
   let before = await runtime.snapshot()
   #expect(before.commander.credits == 1025)
   let id = try #require(before.commander.scriptState.instances.keys.first)
   #expect(before.commander.scriptState.instances[id]?.timers.isEmpty == true)
-  let restored = GameRuntime(game: try fixture.game(accepted: false))
+  let restored = GameRuntime(game: try fixture.cashGame(accepted: false))
   try await restored.load(from: fixture.url)
   _ = await restored.advance(delta: 0.1)
   #expect(await restored.snapshot().commander.credits == 1025)
@@ -365,7 +375,7 @@ private func timerFixture() throws -> DurableFixture {
 @Test func failedTimerSaveRetainsNativePulseAndFreezesLaterCallbackUntilRecovery() async throws {
   let fixture = try timerFixture()
   defer { fixture.clean() }
-  let runtime = GameRuntime(game: try fixture.game(), saveURL: fixture.url)
+  let runtime = GameRuntime(game: try fixture.cashGame(), saveURL: fixture.url)
   try await runtime.save(to: fixture.url)
   try fixture.breakWriter()
   let denied = await runtime.advance(delta: 0.05)
@@ -399,7 +409,7 @@ private func timerFixture() throws -> DurableFixture {
   )
   let fixture = try DurableFixture(example: "scripted-patrol", source: source)
   defer { fixture.clean() }
-  var game = try fixture.game(destination: false)
+  var game = try fixture.cashGame(destination: false)
   try fitPhysicalDeathTargeting(&game)
   game.launch()
   game.emitScriptEvent("station.undocked")

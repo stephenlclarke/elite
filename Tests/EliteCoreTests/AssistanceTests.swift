@@ -12,9 +12,24 @@ private func assistedGame() -> Game {
   game.ecmControl = ECMControl()
   return game
 }
-@Test func autoCyclesVisibleFrontThenOffscreenWithStableMovingTargets() {
-  var game = assistedGame()
+@Test func autoCyclesVisibleFrontThenOffscreenWithStableMovingTargets() throws {
+  // A controlled pre-admission unit cohort, not an ordinary populated launch.
+  var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.credits = 1000
+  game.commander.installTargetingComputer(.docking)
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  try #require(game.commander.valid && game.commander.targetingTier == .docking)
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.docked = false
   game.screen = .rear
+  game.speed = 0
+  try #require(game.commander.nativeStations == nil)
+  game.ensurePhysicalActors()
   game.bodies = [
     .init(id: 8, hull: .cobra, position: .init(0, 0, 2000)),
     .init(id: 4, hull: .cobra, position: .init(0, 0, 1000)),
