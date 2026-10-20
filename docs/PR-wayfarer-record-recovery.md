@@ -16,7 +16,7 @@ Schema 53/54 independently admits W05-only Normal/Alien claims and lowers strict
 
 ## Validation
 
-All compilation, native pack CLI/digest, owner execution and coverage are pending with G1. The source uses an explicit unqualified all-zero digest sentinel until the actual installed native CLI provides the new pack identity. This is not a computed or guessed production identity; G1 must return the native digest for a source pin correction and matching build before owner execution. Existing actual native geometry pins are retained.
+G1 warm build 1118 passed on the initial source candidate. Installed native pack CLI 1119 passed and reported digest 460df445d7249498185e0ef150366b91eafddfdfc651968182cf487f9e208578; the shared production pin now uses that actual loader identity. Pack bytes and existing actual native geometry pins are unchanged. The pin correction requires a matching G1 build before owner execution; owner results and coverage remain pending.
 
 The focused selection is all three new W05 suites and the new bundled W05 identity/geometry method, plus six affected bundled discovery/board methods, the G09 whole journey/contact-frame/strict rehash representatives, the G10 genuine predecessor cold-composition method and the G08 actual Tab-guided collection representative. Exact method/case selectors accompany the frozen handoff; authored tests do not establish PASS.
 
@@ -28,4 +28,4 @@ Base is qualified integrated G09 commit 99500a9fdc4d7364dc1348d748acd6312bacc583
 
 ## Links and remaining risks
 
-Authority is W05-CREW-RECORD-RECOVERY-COMPLETE-JOURNEY-DRAFT-20261020.md and W05-ROOT-APPROVAL-20261020.json in docs/gameplay-design/approved. No external PR exists. The initial source freeze awaits native identity, compilation and owner qualification; no integration-ready, playable UI or release claim is made.
+Authority is W05-CREW-RECORD-RECOVERY-COMPLETE-JOURNEY-DRAFT-20261020.md and W05-ROOT-APPROVAL-20261020.json in docs/gameplay-design/approved. No external PR exists. The pinned source freeze awaits matching compilation and owner qualification; no integration-ready, playable UI or release claim is made.

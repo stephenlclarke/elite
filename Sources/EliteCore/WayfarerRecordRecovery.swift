@@ -160,8 +160,7 @@ struct WayfarerRecordRecoveryState: Codable, Sendable, Equatable {
 
 enum WayfarerRecordRecovery {
   static let stateID = "l337.wayfarer-service/record-recovery"
-  // Qualification sentinel; replace only with actual installed native CLI digest.
-  static let digest = String(repeating: "0", count: 64)
+  static let digest = "460df445d7249498185e0ef150366b91eafddfdfc651968182cf487f9e208578"
   static let batch = "cedamar-flight-record-01"
   static let boardID = "record-recovery"
   static let encounterID = "w05-wreck"
