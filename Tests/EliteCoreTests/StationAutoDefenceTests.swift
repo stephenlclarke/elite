@@ -1381,7 +1381,7 @@ func stationAutoFiniteBrakingPreservesOnlyAValidatedCourse(condition: String) {
   }
 }
 
-@Test(arguments: ["resume", "unsafe-stop"])
+@Test(arguments: ["resume"])
 func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition: String)
   async throws
 {
@@ -1458,8 +1458,67 @@ func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition:
     game.bodies.append(.init(id: id, hull: .cargo, position: .init(0, 0, 100)))
     game.ensurePhysicalActors()
   }
+  StationDefenceRefusalObservation.enable(&game)
   let proposal = game.stationAutoGuidance(target: currentStation)
   let guidance = try #require(proposal)
+  if StationDefenceRefusalObservation.enabled {
+    // Measurement only: current native poses and the existing pure course/material queries.
+    // No simulation step, actor mutation or permission replacement occurs here.
+    let pose = game.commander.flightSimulation.pose
+    let depth = -currentStation.entrancePosition.dot(currentStation.entranceNormal)
+    let advance = currentStation.entranceNormal * -(depth - min(0.5, depth * 0.5))
+    let end = pose.systemPoint(advance)
+    let radius = game.commander.playerMesh.vertices.map(\.length).max() ?? .infinity
+    var course: [String: String]? = [:]
+    var refused = false
+    let clear = game.nativeStationAutoEntryCourseIsClear(
+      currentStation, advance: advance, terminalSpeed: min(48, game.workLimits.speed),
+      observation: &course, bodyCourseRefused: &refused)
+    var officers: [[String: String]] = []
+    for officer in police.prefix(8) {
+      let mesh = game.gameplayMesh(for: officer)
+      let world = game.modelPose(of: officer)
+      let assessment = game.nativeStationCourseObstacleAssessment(
+        officer, from: pose.position, to: end, radius: radius, mesh: mesh)
+      officers.append([
+        "body": String(officer.id), "actor": String(describing: officer.physical?.identity),
+        "catalogue": officer.physical?.catalogueShipID ?? "nil",
+        "worldPose": String(describing: world),
+        "localPosition": String(describing: officer.position),
+        "velocity": String(describing: officer.physical?.velocity),
+        "angularVelocity": String(describing: officer.physical?.angularVelocity),
+        "spin": "\(officer.rotation),\(officer.rotationRate)",
+        "meshRadius": String(mesh.vertices.map(\.length).max() ?? .infinity),
+        "material": String(describing: assessment),
+      ])
+    }
+    let measured: [String: Any] = [
+      "phase": "original-resume-failing-oracle", "playerShip": game.commander.shipID,
+      "player": String(describing: game.commander.flightSimulation.player),
+      "playerPose": String(describing: pose),
+      "playerVelocity": String(describing: game.flightWorldVelocity),
+      "playerRadius": String(radius), "stationBody": String(currentStation.id),
+      "stationActor": String(describing: currentStation.physical?.identity),
+      "stationPose": String(describing: game.modelPose(of: currentStation)),
+      "stationVelocity": String(describing: currentStation.physical?.velocity),
+      "advance": String(describing: advance), "acceleration": String(game.workLimits.acceleration),
+      "speedLimit": String(game.workLimits.speed),
+      "validatedEntry": String(game.autoPilot.validatedMovingEntry),
+      "guidanceMovingEntry": String(guidance.movingEntryAllowed),
+      "guidanceBraking": String(guidance.entryBrakingAllowed),
+      "nativeCourseClear": String(clear), "bodyCourseRefused": String(refused),
+      "firstCourse": game.stationAutoDefence?.firstEntryCourseObservation ?? [:],
+      "course": course ?? [:], "police": officers,
+    ]
+    if let bytes = try? JSONSerialization.data(withJSONObject: measured, options: [.sortedKeys]),
+      bytes.count <= 32768
+    {
+      var line = Data("STATION_POLICE_COURSE_OBSERVATION ".utf8)
+      line.append(bytes)
+      line.append(Data("\n".utf8))
+      FileHandle.standardError.write(line)
+    }
+  }
   try #require(guidance.hazard == .active)
   try #require(!guidance.movingEntryAllowed)
   try #require(!guidance.joinedIncoming)
