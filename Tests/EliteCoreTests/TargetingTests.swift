@@ -275,3 +275,47 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
     #expect(game.nativeMainStationDockEvidenceIsCurrent)
   }
 }
+
+@Test(arguments: [Screen.front, .rear, .left, .right])
+func renderedVertexViewsPreserveIndependentNearPlaneAndViewportClipWitness(screen: Screen) {
+  var game = Game(executive: false)
+  game.screen = screen
+  game.commander.shipDisplayStyle = .whiteWireframe
+  var orientation = Basis3()
+  switch screen {
+  case .rear:
+    orientation.x = .init(-1, 0, 0)
+    orientation.z = .init(0, 0, -1)
+  case .left:
+    orientation.x = .init(0, 0, 1)
+    orientation.z = .init(-1, 0, 0)
+  case .right:
+    orientation.x = .init(0, 0, -1)
+    orientation.z = .init(1, 0, 0)
+  default: break
+  }
+  var body = SpaceBody(
+    id: 904, hull: .cobra, position: orientation.apply(.init(3, -2, 0)))
+  body.orientation = orientation
+  let mesh = Mesh(
+    vertices: [.init(-23, 2, 0), .init(-5, 6, 4), .init(7, -2, 4)],
+    faces: [[0, 1, 2]], preserveWinding: true)
+  var frame = Frame()
+  frame.rasterizeGraphics = false
+  frame.canvas = .init(x: 0, y: 0, width: 100, height: 100)
+  frame.flightClip = frame.canvas
+  let projection = FlightProjection(center: .init(50, 50), focal: 10)
+  Display.draw(body, game: game, into: &frame, projection: projection, mesh: mesh)
+  // Every view yields A=(-20,0,0), B=(-2,4,4), C=(10,-4,4).
+  // Near-plane intersections project to (-105,40) and (-75,60); the viewport clips x to 0.
+  let expected: [WireLine] = [
+    .init(x0: 0, y0: 40, x1: 45, y1: 40, ink: .white),
+    .init(x0: 45, y0: 40, x1: 75, y1: 60, ink: .white),
+    .init(x0: 75, y0: 60, x1: 0, y1: 60, ink: .white),
+  ]
+  #expect(frame.shipLines == expected)
+  let afterScreen = game.screen
+  let afterStyle = game.withReadOnlyCommander { $0.shipDisplayStyle }
+  let afterTime = game.time
+  #expect(afterScreen == screen && afterStyle == .whiteWireframe && afterTime == 0)
+}

@@ -320,12 +320,15 @@ public enum Display {
     }
     let center = game.viewPosition(body.position)
     let mesh = mesh ?? game.scriptNPCMesh(body) ?? game.gameplayMesh(for: body)
+    let miningFields = game.miningFields
     let oreInk = body.physical?.rock.flatMap { identity in
-      game.miningFields.lazy.flatMap(\.rocks).first { $0.identity == identity }
+      miningFields.lazy.flatMap(\.rocks).first { $0.identity == identity }
     }.flatMap { MiningRockAppearance.ink(for: $0) }
-    let vertices = mesh.vertices.map { vertex -> Vector3 in
+    var vertices: [Vector3] = []
+    vertices.reserveCapacity(mesh.vertices.count)
+    for vertex in mesh.vertices {
       let rotated = game.viewPosition(body.modelVector(vertex))
-      return rotated + center
+      vertices.append(rotated + center)
     }
     guard vertices.allSatisfy({ $0.x.isFinite && $0.y.isFinite && $0.z.isFinite }),
       vertices.contains(where: { $0.z >= 1 })
@@ -420,7 +423,11 @@ public enum Display {
           MainStationGeometry.docking.center + $0
         }
       }
-      let hatch = aperture.map { game.viewPosition(body.modelVector($0)) + center }
+      var hatch: [Vector3] = []
+      hatch.reserveCapacity(aperture.count)
+      for vertex in aperture {
+        hatch.append(game.viewPosition(body.modelVector(vertex)) + center)
+      }
       let normal = game.viewPosition(body.entranceNormal)
       guard normal.dot(hatch[0]) < 0 else { return }
       if game.commander.shipDisplayStyle == .shadedPanels {
