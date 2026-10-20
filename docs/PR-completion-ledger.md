@@ -278,3 +278,7 @@ Record Root's completion scope for the whole same-file actor-admission ownership
 ## MBA03 actual focused failures retained
 
 Record Root-reported closed90.37s9ac run: terms PASS, five native initial-docking failures before acceptance and two existing fixture failures. Preserve six methods/seven cases; only seven affected methods rerun after concrete fixture-cause correction/freeze and changed-hunk review. Genuine docking defects remain M01 blockers, with no state/evidence/stat/geometry/budget workaround or freight/clue playable claim.
+
+## Pause unchanged docking failures; queue source-only MBA07
+
+Pause the five unchanged MBA03 native methods until actual M01 docking repair; no fixture/control mistake was found. Qualify only two approved existing-test corrections, retain other passes, then freeze03 pending qualification. Queue G3 MBA07 existing person/consent/native receiver/protected-publication reconciliation after03 freeze, returning the smallest exact boundary for Root approval before implementation. No duplicate failing runs, fake-passing fixture, runtime probe or new framework.
