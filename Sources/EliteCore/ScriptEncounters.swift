@@ -560,6 +560,9 @@ extension Game {
     encounter: borrowing ScriptOwnedEncounter, definition: borrowing ScriptEncounterDefinition
   ) throws -> MissionActorAdmissionSource {
     let currentInputs = currentMissionActorAdmissionSourceValues()
+    try Self.validateMissionActorAdmissionLegacy(
+      state: state, encounter: encounter, instances: currentInputs.instances,
+      legacy: encounter.legacyProvenance)
     return try Self.constructMissionActorAdmissionSource(
       original: self, mode: mode, authority: authority, pack: pack, state: state,
       encounter: encounter, definition: definition, instances: currentInputs.instances,
@@ -576,8 +579,6 @@ extension Game {
     instances: borrowing [UUID: ScriptInstance], geometry: borrowing [String: ShipDesign]
   ) throws -> MissionActorAdmissionSource {
     let legacy = encounter.legacyProvenance
-    try Self.validateMissionActorAdmissionLegacy(
-      state: state, encounter: encounter, instances: instances, legacy: legacy)
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
       let actor = try Self.validatedMissionActorAdmissionActor(
@@ -608,10 +609,10 @@ extension Game {
   /// Finish full legacy comparison before any per-actor construction frame starts.
   @inline(never)
   private static func validateMissionActorAdmissionLegacy(
-    state: ScriptInstance, encounter: ScriptOwnedEncounter, instances: [UUID: ScriptInstance],
-    legacy: LegacyMissionEncounterProvenance?
+    state: borrowing ScriptInstance, encounter: borrowing ScriptOwnedEncounter,
+    instances: borrowing [UUID: ScriptInstance], legacy: borrowing LegacyMissionEncounterProvenance?
   ) throws {
-    if let legacy {
+    if let legacy = copy legacy {
       guard legacy.matches(owner: state, encounter: encounter),
         instances[state.id]?.ownedEncounters[encounter.id] == encounter
       else {
