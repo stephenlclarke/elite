@@ -586,3 +586,7 @@ Record1ea6Root-approved unchanged Commander.valid suffixphase,905buildPASS/new04
 ## Amend G13 to exact15paths for existing native cadence
 
 Root approves demonstratedOriginalContractOfferPolicy15thpath/twoexactclosedG13dispatchhunks afterinstalledpack-digestvalidation, reuseexistinghourlyrevision/nativepledgereceiptfloorhour; retainotherstablefloors/no newclock-schema-receiptweakening. G3truthfulhourlyrepeat/focusednext-hour-replayunits, no MC1overlap. Currentassignmentreceipt/row/top15paths and original14pathhistory preserved; ownerin-development/G2reviewAFTERPASS/G1integrator. ScopedMarkdownlint/whitespace/historyhashes only, no G1job/sourceaudit.
+
+## Record907 production-frame evidence and G13 text scope17
+
+Record actual907samebinarysinglecorefault/wholeclosure and SP-FP retainedspan metadata: productionwriteCommander87120B, not sourceallocationproof/test-stackwaiver. MC1inspects implicatedlifetime for ONEproposal/no leafcampaign/newdiagnostic/G1job. Rootextends G13to17paths by exactG13-only pledgeSummary and donationsuccess text removing inheritedstandingclaim for realreserve/500CR/no reward, otherpledgesunchanged. Native+testdraft/noexecution/PASS; prior15receipt preserved/current17registerbound. Scoped Markdownlint/whitespace/historicalhashes only.
