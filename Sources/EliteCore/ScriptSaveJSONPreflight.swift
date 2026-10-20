@@ -48,18 +48,20 @@ enum ScriptSaveJSONPreflight {
 }
 
 extension ScriptSaveJSONPreflight {
-  /// W02 claims use their own closed envelope before lower feature gates run.
+  /// W02 and W03 validate their closed claims against the actual envelope before lower gates run.
   static func validateRepairLoopFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
   ) throws {
     try WayfarerRepairLoopSave.validateFields(data, part: part, schema: schema)
+    try WayfarerColdChainSave.validateFields(data, part: part, schema: schema)
     guard part == .commander,
       let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
       let embedded = root["savedScriptState"] as? [String: Any]
     else { return }
     // Current headers cannot hide a second mission ledger that decode later replaces.
-    try WayfarerRepairLoopSave.validateFields(
-      JSONSerialization.data(withJSONObject: embedded), part: .contracts, schema: nil)
+    let embeddedBytes = try JSONSerialization.data(withJSONObject: embedded)
+    try WayfarerRepairLoopSave.validateFields(embeddedBytes, part: .contracts, schema: nil)
+    try WayfarerColdChainSave.validateFields(embeddedBytes, part: .contracts, schema: nil)
   }
 
   /// Freight custody belongs only in its native chunks. Version 28 remains reserved;

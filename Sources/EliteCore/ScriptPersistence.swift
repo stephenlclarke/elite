@@ -555,7 +555,8 @@ enum ScriptSaveStore {
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: WayfarerRepairLoopSave.hasClaims(commander)
+      schemaVersion: (WayfarerRepairLoopSave.hasClaims(commander)
+        || WayfarerColdChainSave.seedTransferHasClaims(commander))
         ? (alienPublication != nil
           ? WayfarerRepairLoopSave.alienVersion : WayfarerRepairLoopSave.version)
         : WayfarerColdChainSave.hasClaims(commander)
@@ -604,9 +605,9 @@ enum ScriptSaveStore {
     try ScriptSaveJSONPreflight.validateRepairLoopFields(pointerBytes, part: .contracts)
     try ScriptClueVersionedSave.validateFields(pointerBytes, part: .contracts, schema: nil)
     try ScriptNavigationTradeSave.validateFields(pointerBytes, part: .contracts, schema: nil)
-    try WayfarerColdChainSave.validateFields(pointerBytes, part: .contracts, schema: nil)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
-    let repairLoop = WayfarerRepairLoopSave.contains(pointer.schemaVersion)
+    // The closed current service envelope admits W02, W03 or both after feature validation.
+    let serviceEnvelope = WayfarerRepairLoopSave.contains(pointer.schemaVersion)
     let coldChain = WayfarerColdChainSave.contains(pointer.schemaVersion)
     let clues = ScriptClueVersionedSave.contains(pointer.schemaVersion)
     let navigation = ScriptNavigationTradeSave.contains(pointer.schemaVersion)
@@ -627,7 +628,7 @@ enum ScriptSaveStore {
     if alien { names.insert(AlienStorageVersionedSave.rootName) }
     guard pointer.format == "elite-script-save",
       (2...27).contains(pointer.schemaVersion) || freight || clues || navigation || coldChain
-        || repairLoop,
+        || serviceEnvelope,
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -666,7 +667,6 @@ enum ScriptSaveStore {
       if name == "world.json" {
         try ScriptClueVersionedSave.validateFields(data, part: .contracts, schema: nil)
         try ScriptNavigationTradeSave.validateFields(data, part: .contracts, schema: nil)
-        try WayfarerColdChainSave.validateFields(data, part: .contracts, schema: nil)
       }
       let nativePart: ScriptFreightVersionedSave.Part? =
         name == "commander.json"
@@ -676,14 +676,8 @@ enum ScriptSaveStore {
       if let nativePart {
         try ScriptSaveJSONPreflight.validateRepairLoopFields(
           data, part: nativePart, schema: pointer.schemaVersion)
-        // The W02 gate owns its claims; existing W01/lower gates retain their own shapes.
-        let coldChainSchema =
-          repairLoop
-          ? (alien ? WayfarerColdChainSave.alienVersion : WayfarerColdChainSave.version)
-          : pointer.schemaVersion
-        try WayfarerColdChainSave.validateFields(
-          data, part: nativePart, schema: coldChainSchema)
-        if coldChain || repairLoop {
+        // Both service profiles were checked against the actual envelope before lower gates run.
+        if coldChain || serviceEnvelope {
           featureSchema = try WayfarerColdChainSave.mappedSchema(
             data, part: nativePart, alien: alien)
         }
@@ -693,7 +687,7 @@ enum ScriptSaveStore {
       if name == "commander.json" {
         // This helper's >=27 branch describes Alien storage, not every newer envelope.
         let alienHeaderSchema =
-          freight || clues || navigation || coldChain || repairLoop
+          freight || clues || navigation || coldChain || serviceEnvelope
           ? (alien ? 27 : 26) : pointer.schemaVersion
         try AlienStorageVersionedSave.validateHeader(data, schema: alienHeaderSchema)
         try ScriptSaveJSONPreflight.validateFreightFields(
@@ -800,13 +794,15 @@ enum ScriptSaveStore {
       throw SaveError.invalidCommander
     }
     guard
-      repairLoop || coldChain || clues || navigation
+      serviceEnvelope || coldChain || clues || navigation
         || freight == commander.usesFreightNativeSaveVersion,
-      repairLoop || coldChain || navigation
+      serviceEnvelope || coldChain || navigation
         || clues == (commander.scriptState.savedClueJournal != nil),
-      repairLoop || coldChain || navigation == ScriptNavigationTradeSave.hasClaims(commander),
-      repairLoop || coldChain == WayfarerColdChainSave.hasClaims(commander),
-      repairLoop == WayfarerRepairLoopSave.hasClaims(commander),
+      serviceEnvelope || coldChain || navigation == ScriptNavigationTradeSave.hasClaims(commander),
+      serviceEnvelope || coldChain == WayfarerColdChainSave.hasClaims(commander),
+      serviceEnvelope
+        == (WayfarerRepairLoopSave.hasClaims(commander)
+          || WayfarerColdChainSave.seedTransferHasClaims(commander)),
       commander.usesFreightNativeSaveVersion || !commander.usesProviderContractSaveVersion,
       ScriptClueVersionedSave.validateClaims(commander, trust: clueTrust),
       ScriptNavigationTradeSave.validateClaims(commander, binding: navigationBinding),
@@ -815,7 +811,7 @@ enum ScriptSaveStore {
     else {
       throw SaveError.invalidCommander
     }
-    if freight || clues || navigation || coldChain || repairLoop,
+    if freight || clues || navigation || coldChain || serviceEnvelope,
       !ScriptFreightVersionedSave.validateClaims(commander)
     {
       throw SaveError.invalidCommander
