@@ -198,7 +198,7 @@ struct GameCommanderStorageTests {
       JSONSerialization.jsonObject(with: encoder.encode(original.commander)) as? [String: Any])
     #expect(before["savedFlightSimulation"] == nil)
     #expect(before["savedScriptState"] == nil)
-    #expect(original.withReadOnlyCommander { $0.scriptState.nextEvent } == 0)
+    #expect(original.withReadOnlyScriptState { $0.nextEvent } == 0)
     #expect(original.withReadOnlyCommander { $0.scriptState.instances.isEmpty })
     var ownedDefaultScript = original.withReadOnlyCommander { $0.scriptState }
     ownedDefaultScript.nextEvent = 99
@@ -257,5 +257,16 @@ struct GameCommanderStorageTests {
     #expect(original.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 25)
     #expect(retained.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 0)
     #expect(ownedFlight.pose.position.x == -40 && ownedDefault.physicalTime == 99)
+    #expect(original.withReadOnlyScriptState { $0.nextEvent } == 7)
+    let bytes = try encoder.encode(original.commander)
+    let fields = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+    let savedScript = try #require(fields["savedScriptState"] as? NSDictionary)
+    let ownedActualScript = original.withReadOnlyScriptState { $0 }
+    let plainScript = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(ownedActualScript)) as? NSDictionary)
+    #expect(savedScript == plainScript)
+    let decoded = try JSONDecoder().decode(Commander.self, from: bytes)
+    #expect(decoded.scriptState.nextEvent == 7)
+    #expect(decoded.flightSimulation.pose.position.x == 25)
   }
 }

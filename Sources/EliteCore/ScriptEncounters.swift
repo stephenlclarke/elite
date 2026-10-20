@@ -352,8 +352,8 @@ extension Game {
     id: UUID, definition: String, version: String, digest: String, revision: UInt64,
     outcome: ScriptOutcome
   )? {
-    withReadOnlyCommander { commander in
-      guard let owner = commander.scriptState.instances[id] else { return nil }
+    withReadOnlyScriptState { state in
+      guard let owner = state.instances[id] else { return nil }
       return (
         owner.id, owner.definition, owner.version, owner.digest, owner.revision, owner.outcome
       )
@@ -455,13 +455,13 @@ extension Game {
     throws
     -> MissionActorAdmissionSource
   {
-    guard let leg = withReadOnlyCommander({ $0.scriptState.wormholeTransit?.legs[legID] }),
+    guard let leg = withReadOnlyScriptState({ $0.wormholeTransit?.legs[legID] }),
       leg.valid,
       [.inTransit, .arrivalPending].contains(leg.phase), let departure = leg.departure,
-      let due = leg.dueAt, withReadOnlyCommander({ $0.scriptState.calendarSeconds }) >= due,
+      let due = leg.dueAt, withReadOnlyScriptState({ $0.calendarSeconds }) >= due,
       context.route == leg.route, context.matches(self, at: missionActorAdmissionSystemIdentity),
       missionActorAdmissionSystemIdentity == context.route.destination.location, !docked,
-      let owner = withReadOnlyCommander({ $0.scriptState.instances[leg.instance] }),
+      let owner = withReadOnlyScriptState({ $0.instances[leg.instance] }),
       let pack = scriptPack(for: owner),
       let encounter = owner.ownedEncounters[leg.encounter],
       var actor = encounter.actors[leg.alias], actor.identity == leg.actor,
@@ -489,7 +489,7 @@ extension Game {
     }
     let template = try Self.missionActorAdmissionTemplate(
       actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
-      installedModels: pack.models, geometry: withReadOnlyCommander { $0.scriptState.geometry },
+      installedModels: pack.models, geometry: withReadOnlyScriptState { $0.geometry },
       legacy: nil)
     return .init(
       mode: .retained, authority: .transit(legID), instance: owner, pack: pack,
@@ -1122,7 +1122,7 @@ extension Game {
     try Self.validateScriptEncounterAdmissionAuthority(
       self, id: id, pack: pack, state: state, definition: definition,
       worldJobID: worldJobID, worldJobPulse: worldJobPulse)
-    let previousGeometry = withReadOnlyCommander { $0.scriptState.geometry }
+    let previousGeometry = withReadOnlyScriptState { $0.geometry }
     return .init(definition: consume definition, previousGeometry: previousGeometry)
   }
 
@@ -1362,7 +1362,7 @@ extension Game {
       case .pending, .unchanged: continue
       case .ready(let plan):
         let instanceID = source.instanceID
-        guard let current = withReadOnlyCommander({ $0.scriptState.instances[instanceID] }) else {
+        guard let current = withReadOnlyScriptState({ $0.instances[instanceID] }) else {
           throw MissionPackError("Retained actor owner disappeared before native preparation.")
         }
         let staged = try plan.retentionPatch.preparingInstance(current)

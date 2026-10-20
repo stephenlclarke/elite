@@ -31,6 +31,36 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
   public var isFlight: Bool { [.front, .rear, .left, .right].contains(self) }
 }
 
+/// A Commander-owned value: one COW payload, encoded exactly as the original script-state value.
+private struct CommanderScriptStateStorage: Sendable, Equatable, Codable {
+  private var values: [ScriptEngineState]
+
+  init(_ value: consuming ScriptEngineState) {
+    values = [consume value]
+  }
+
+  var value: ScriptEngineState {
+    _read { yield values[0] }
+    _modify { yield &values[0] }
+  }
+
+  func withReadOnlyValue<Result>(
+    _ read: (borrowing ScriptEngineState) throws -> Result
+  ) rethrows -> Result {
+    try values.withUnsafeBufferPointer { storage in
+      try read(storage.baseAddress!.pointee)
+    }
+  }
+
+  init(from decoder: Decoder) throws {
+    values = [try ScriptEngineState(from: decoder)]
+  }
+
+  func encode(to encoder: Encoder) throws {
+    try withReadOnlyValue { try $0.encode(to: encoder) }
+  }
+}
+
 public struct Commander: Sendable, Equatable, Codable {
   private var savedContracts: ScriptContractState?
   public var contracts: ScriptContractState {
@@ -43,26 +73,43 @@ public struct Commander: Sendable, Equatable, Codable {
     get { savedAccommodation ?? ShipAccommodation() }
     set { savedAccommodation = newValue }
   }
-  private var savedScriptState: ScriptEngineState?
+  private var savedScriptState: CommanderScriptStateStorage?
   public var scriptState: ScriptEngineState {
     _read {
-      if case .some = savedScriptState {
-        yield savedScriptState!
+      if let stored = savedScriptState {
+        yield stored.value
       } else {
         let empty = ScriptEngineState()
         yield empty
       }
     }
-    set { savedScriptState = newValue == ScriptEngineState() ? nil : newValue }
+    set { savedScriptState = newValue == ScriptEngineState() ? nil : .init(newValue) }
     _modify {
-      if case .none = savedScriptState { savedScriptState = ScriptEngineState() }
+      if case .none = savedScriptState { savedScriptState = .init(ScriptEngineState()) }
       defer {
-        if savedScriptState?.nextEvent == 0, savedScriptState == ScriptEngineState() {
+        if savedScriptState?.withReadOnlyValue({ $0.nextEvent }) == 0,
+          savedScriptState?.withReadOnlyValue({ $0 == ScriptEngineState() }) == true
+        {
           savedScriptState = nil
         }
       }
-      yield &savedScriptState!
+      yield &savedScriptState!.value
     }
+  }
+
+  func withReadOnlyScriptState<Result>(
+    _ read: (borrowing ScriptEngineState) throws -> Result
+  ) rethrows -> Result {
+    if let stored = savedScriptState { return try stored.withReadOnlyValue(read) }
+    return try Self.withDefaultScriptState(read)
+  }
+
+  @inline(never)
+  private static func withDefaultScriptState<Result>(
+    _ read: (borrowing ScriptEngineState) throws -> Result
+  ) rethrows -> Result {
+    let empty = ScriptEngineState()
+    return try read(empty)
   }
   var savedEquipmentInventory: OwnedEquipmentInventory?
   var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
@@ -476,28 +523,32 @@ public struct Game: Sendable {
       try read(storage.baseAddress!.pointee)
     }
   }
+  func withReadOnlyScriptState<Result>(
+    _ read: (borrowing ScriptEngineState) throws -> Result
+  ) rethrows -> Result {
+    try withReadOnlyCommander { try $0.withReadOnlyScriptState(read) }
+  }
+
   var missionActorAdmissionSystemIdentity: SystemIdentity {
     withReadOnlyCommander { .init(galaxy: $0.galaxy, system: $0.system) }
   }
 
   /// Snapshot installed instances through the same synchronous Commander borrow as native policy.
   var retainedMissionActorInstances: [UUID: ScriptInstance] {
-    withReadOnlyCommander { $0.scriptState.instances }
+    withReadOnlyScriptState { $0.instances }
   }
 
   func retainedMissionActorAdmissionSourceValues() -> (
     instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
   ) {
     withReadOnlyCommander { commander in
-      (
-        commander.scriptState.instances, commander.scriptState.geometry,
-        commander.galaxy, commander.system
-      )
+      let state = commander.withReadOnlyScriptState { ($0.instances, $0.geometry) }
+      return (state.0, state.1, commander.galaxy, commander.system)
     }
   }
 
   func retainedMissionActorAdmissionWorldJob(_ id: UUID) -> ScriptWorldJob? {
-    withReadOnlyCommander { $0.scriptState.worldJobs[id] }
+    withReadOnlyScriptState { $0.worldJobs[id] }
   }
 
   var contractStation: ContractStationIdentity {
@@ -507,23 +558,28 @@ public struct Game: Sendable {
   }
 
   var retainedMissionProjectiles: [UUID: ScriptProjectileRecord] {
-    withReadOnlyCommander { $0.scriptState.projectiles }
+    withReadOnlyScriptState { $0.projectiles }
   }
 
   func retainedMissionProjectileRestorationCandidates() throws -> [UUID] {
     try withReadOnlyCommander { commander in
-      try Self.retainedMissionProjectileRestorationCandidates(from: commander)
+      let galaxy = commander.galaxy
+      let system = commander.system
+      return try commander.withReadOnlyScriptState { state in
+        try Self.retainedMissionProjectileRestorationCandidates(
+          from: state, galaxy: galaxy, system: system)
+      }
     }
   }
 
   private static func retainedMissionProjectileRestorationCandidates(
-    from commander: borrowing Commander
+    from state: borrowing ScriptEngineState, galaxy: Int, system: Int
   ) throws -> [UUID] {
     var eligible: [UUID] = []
-    for (id, record) in commander.scriptState.projectiles {
-      guard record.galaxy == commander.galaxy, record.system == commander.system else { continue }
+    for (id, record) in state.projectiles {
+      guard record.galaxy == galaxy, record.system == system else { continue }
       guard id == record.body.scriptShot?.identity, record.valid,
-        commander.scriptState.projectileArchiveValid(record)
+        state.projectileArchiveValid(record)
       else { throw NativeMissionProjectileAdmissionError.invalidRecord }
       eligible.append(id)
     }

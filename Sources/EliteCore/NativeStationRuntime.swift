@@ -55,7 +55,7 @@ struct NativeMainStationDockEvidence: Sendable {
 extension Commander {
   var nativeStationStateValid: Bool {
     guard let world = nativeStations else { return true }
-    let resources = scriptState.stationResources
+    let resources = withReadOnlyScriptState { $0.stationResources }
     let currentSystem = SystemIdentity(galaxy: galaxy, system: system)
     guard world.valid, equipmentOwnerID == world.ledger.world else { return false }
     let physicalTime = flightSimulation.physicalTime
@@ -63,7 +63,9 @@ extension Commander {
     if world.stationInertia.contains(where: { $0.station.system == currentSystem }) {
       guard flightSimulation.anchors?.station.position == Vector3(0, 0, 0) else { return false }
     }
-    guard let calendar = scriptState.calendarLedger, calendar.valid else { return false }
+    guard let calendar = withReadOnlyScriptState({ $0.calendarLedger }), calendar.valid else {
+      return false
+    }
     guard
       world.mainStations.allSatisfy({ identity in
         guard let resource = resources[identity.key] else { return false }
