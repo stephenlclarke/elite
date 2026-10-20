@@ -13,9 +13,44 @@ private final class MissionActorAdmissionOwnerSnapshot: Sendable {
     _read { yield storedPack }
   }
 
-  init(owner: consuming ScriptInstance, pack: consuming ScriptPack) {
+  init(
+    original: borrowing Game, source: MissionActorAdmissionSource,
+    instances: [UUID: ScriptInstance]
+  ) throws {
+    guard let owner = instances[source.instanceID],
+      owner.id == source.instanceID, owner.revision == source.instanceRevision,
+      owner.digest == source.packDigest, owner.definition == source.definition,
+      owner.version == source.version,
+      let pack = Self.installedPack(for: owner, in: original.scriptPacks),
+      pack.digest == source.packDigest,
+      owner.ownedEncounters[source.encounterID] == source.installedBaseEncounter,
+      source.retention.id == source.encounterID,
+      source.transitContext != nil
+        || source.actors.indices.allSatisfy({
+          source.retention.actors[source.actors[$0].alias]?.location(in: source.retention)
+            == source.system
+        })
+    else { throw MissionPackError("Actor admission source no longer matches its installed owner.") }
     storedOwner = consume owner
     storedPack = consume pack
+  }
+
+  /// Match the first installed pack without capturing the full owner or iterating full pack values.
+  @inline(never)
+  private static func installedPack(
+    for owner: borrowing ScriptInstance, in packs: [ScriptPack]
+  ) -> ScriptPack? {
+    let definition = owner.definition
+    let version = owner.version
+    let digest = owner.digest
+    for index in packs.indices {
+      if packs[index].manifest.stateID == definition, packs[index].manifest.version == version,
+        packs[index].digest == digest
+      {
+        return packs[index]
+      }
+    }
+    return nil
   }
 }
 
@@ -378,20 +413,7 @@ extension Game {
   private func validatedMissionActorAdmissionOwner(
     _ source: MissionActorAdmissionSource, instances: [UUID: ScriptInstance]
   ) throws -> MissionActorAdmissionOwnerSnapshot {
-    guard let owner = instances[source.instanceID],
-      owner.id == source.instanceID, owner.revision == source.instanceRevision,
-      owner.digest == source.packDigest, owner.definition == source.definition,
-      owner.version == source.version, let pack = scriptPack(for: owner),
-      pack.digest == source.packDigest,
-      owner.ownedEncounters[source.encounterID] == source.installedBaseEncounter,
-      source.retention.id == source.encounterID,
-      source.transitContext != nil
-        || source.actors.indices.allSatisfy({
-          source.retention.actors[source.actors[$0].alias]?.location(in: source.retention)
-            == source.system
-        })
-    else { throw MissionPackError("Actor admission source no longer matches its installed owner.") }
-    return MissionActorAdmissionOwnerSnapshot(owner: consume owner, pack: consume pack)
+    try MissionActorAdmissionOwnerSnapshot(original: self, source: source, instances: instances)
   }
 
   /// Reads only actual installed retained ownership; there is no caller-supplied state/body path.
