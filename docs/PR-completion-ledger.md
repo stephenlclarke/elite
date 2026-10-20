@@ -302,3 +302,7 @@ Record closed813bada36 zero PASS/seven UNKNOWN later validator stack failure and
 ## Correct only Avenor unavailable-listing classification
 
 Record source/evidence conclusion and exact receipt: unchanged native calendar arithmetic, frozen-six/no-reroll generation, strict deadline-headroom refusal and truthful disabled UI establish intended unavailable legacy content. Reclassify the specific prior restore-fixture availability assumption as resolved as designed, preserving actual refusal/raw route costs and unrelated M01/navigation gaps. No product fix/new test/runtime/Slack/playable claim; MBA03 remains docking-dependent and MBA07 source-reconciled/pending actual producer/consent/berth/save decisions.
+
+## Assign existing aggregate-three reservation prerequisite
+
+Assign Root's existing M05/M09 shared-cap prerequisite to G3 implementation, unblocking MBA06. G1 confirms exact eight product/test/note paths and non-overlap, authorisation relayed through Root. Derive active Original/native Wayfarer occupancy from authoritative current state, retain stricter provider limits/idempotence/terminal release/fourth-before-publication refusal/rollback and current-save cross-validation. No new schema/ledger/framework/Game/Director/encounter/flight/version change; pure/actor owner units PASS then independent review before integration. Isolated current-canonical branch preserves frozen03; no native docking repeats or new untracked work.
