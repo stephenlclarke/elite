@@ -153,7 +153,9 @@ struct NativeIdentifiedSalvageSaveTests {
       #expect(try NativeIdentifiedSalvage.captureAuthority(equivalent) == capture.authority)
     }
     #expect(
-      try readIdentifiedRehash(normalized, pointer: pointer, file: file, save: f.save) == pristine)
+      try readIdentifiedRehash(
+        normalized, pointer: pointer, file: file, save: f.save,
+        geometry: pristine.scriptState.geometry) == pristine)
     try original.write(to: file)
     let modes: [String]
     switch boundary {
@@ -243,7 +245,7 @@ struct NativeIdentifiedSalvageSaveTests {
       #expect(throws: (any Error).self) {
         try readIdentifiedRehash(
           bytes, pointer: pointer, file: file, save: f.save,
-          schema: mode == "older" ? 49 : 51)
+          geometry: pristine.scriptState.geometry, schema: mode == "older" ? 49 : 51)
       }
       try original.write(to: file)
     }
@@ -261,11 +263,21 @@ extension GameRuntime {
 }
 
 private func readIdentifiedRehash(
-  _ bytes: Data, pointer: ScriptSavePointer, file: URL, save: URL, schema: Int? = nil
+  _ bytes: Data, pointer: ScriptSavePointer, file: URL, save: URL,
+  geometry: [String: ShipDesign], schema: Int? = nil
 ) throws -> Commander {
-  try bytes.write(to: file)
+  // Mutate the intended records without normalizing separately hash-addressed model bytes.
+  var object = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+  object.removeValue(forKey: "geometry")
+  var preserved = try JSONSerialization.data(withJSONObject: object)
+  try #require(preserved.last == 125 && !object.isEmpty)
+  preserved.removeLast()
+  preserved.append(contentsOf: Data(",\"geometry\":".utf8))
+  preserved.append(try JSONEncoder().encode(geometry))
+  preserved.append(125)
+  try preserved.write(to: file)
   var hashes = pointer.hashes
-  hashes["missions.json"] = ScriptPackLibrary.hash(bytes)
+  hashes["missions.json"] = ScriptPackLibrary.hash(preserved)
   let changed = ScriptSavePointer(
     format: pointer.format, schemaVersion: schema ?? pointer.schemaVersion,
     generation: pointer.generation, hashes: hashes, scope: pointer.scope,
