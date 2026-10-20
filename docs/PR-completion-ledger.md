@@ -538,3 +538,7 @@ Root actual889Info/source/binary/signature/468maintainedresources/472signedfiles
 ## Compose W03 full17 for owner qualification
 
 Record clean native6freeze9a2 + UI9c159 + central2 exact composition821ea1d2/authoritative packet. Actual20existingmethods21cases pinned, Root-confirmed W02-onlyNormal/Alien coverage avoids extra tests. G3 received matchingcachedMBA build/nativeCLI/onefocusedselection handoff before bookkeeping; native/sourcepack digest remainsUNRUN. Mark maintainedW03 row in development, no code integrated/PASS/prebuildreview/playableclaim. Two changed Markdown files lint/whitespace; all historical hashes preserved.
+
+## Record893 partial failure and targeted existing-case policy
+
+Record d249readonlyBlackjackscalar phase, actual893 zero completedmethods/twenty-twoUNKNOWN/twenty-eightincompletecases/oneactualAsteroidissue plusSIG10/noIPS and wholeclosure. Allfive888passes requalify, only unrelated3/3retain. Root permits existingCrossing alone/defaultflags-stack-concurrency-fixtures and actualAsteroid as needed, remainingaffectedcases still qualify in boundedbatches/CI. No fullPASS/testscope/semantic waiver/blindfullrepeat/G1job/GUIrepoll. Scoped Markdown lint/whitespace/historyhashpreservation only.
