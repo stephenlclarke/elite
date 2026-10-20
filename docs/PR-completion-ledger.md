@@ -582,3 +582,7 @@ DespiteactualhumanUnlockedandready/safe903904handover, ONE890desktopcall reporte
 ## Record905 changed binary and906 unknown core
 
 Record1ea6Root-approved unchanged Commander.valid suffixphase,905buildPASS/new041f3b57binary,906singlecoreUNKNOWN/signal10/0issues/noIPS/all10ownedclosed/registryreleased. RootONE907samechangedbinaryactualcase diagnostic only/no rebuild-probe-fallback; no qualificationscope/PASSwaiver. Baseline3/3retain/currentpending25/39-target28/42, G13in-development/890toolaccessfailuredespitehumanunlock/no repoll unchanged. Scoped Markdownlint/whitespace/historyhashes only; G1no competingjob/source/audit.
+
+## Amend G13 to exact15paths for existing native cadence
+
+Root approves demonstratedOriginalContractOfferPolicy15thpath/twoexactclosedG13dispatchhunks afterinstalledpack-digestvalidation, reuseexistinghourlyrevision/nativepledgereceiptfloorhour; retainotherstablefloors/no newclock-schema-receiptweakening. G3truthfulhourlyrepeat/focusednext-hour-replayunits, no MC1overlap. Currentassignmentreceipt/row/top15paths and original14pathhistory preserved; ownerin-development/G2reviewAFTERPASS/G1integrator. ScopedMarkdownlint/whitespace/historyhashes only, no G1job/sourceaudit.
