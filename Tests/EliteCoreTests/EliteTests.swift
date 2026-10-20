@@ -165,6 +165,21 @@ import Testing
 
 @Test func equipmentPurchases() throws {
   var game = Game(executive: false)
+  // This purchase sequence has a 70-unit tank, four pylons and an explicit 100 CR budget.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.commander.credits = 1000
+  let unavailableItem = try #require(Equipment.all.first { $0.name == "Extra Energy Unit" })
+  game.commander.system = try #require(
+    game.systems.first {
+      !$0.isPlugh && $0.technology >= Equipment.base[2].requiredTechnologyLevel
+        && $0.technology < unavailableItem.requiredTechnologyLevel
+    }?.id)
+  game.selectedSystem = game.commander.system
+  try #require(!game.equipmentAvailable(unavailableItem))
   game.screen = .equipment
   game.commander.fuel = 60
   game.purchase()
