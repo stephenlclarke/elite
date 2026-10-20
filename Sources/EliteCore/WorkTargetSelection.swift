@@ -23,6 +23,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
   public let nativePod: NativePodSelectionFacts?
   public let nativeCrewCapture: Bool
   public let originalRescue: NativeOriginalRescueSelectionFacts?
+  public let recordRecovery: WayfarerRecordRecoverySelectionFacts?
   public let identifiedSalvage: NativeIdentifiedSalvageSelectionFacts?
 
   public init(
@@ -30,6 +31,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
     frontVisible: Bool, distance: Double, singleScoopCompatible: Bool,
     nativePod: NativePodSelectionFacts? = nil, nativeCrewCapture: Bool = false,
     originalRescue: NativeOriginalRescueSelectionFacts? = nil,
+    recordRecovery: WayfarerRecordRecoverySelectionFacts? = nil,
     identifiedSalvage: NativeIdentifiedSalvageSelectionFacts? = nil
   ) {
     self.identity = identity
@@ -41,6 +43,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
     self.nativePod = nativePod
     self.nativeCrewCapture = nativeCrewCapture
     self.originalRescue = originalRescue
+    self.recordRecovery = recordRecovery
     self.identifiedSalvage = identifiedSalvage
   }
 }
@@ -109,6 +112,13 @@ public enum WorkTargetSelection {
       return .refused(.invalidDistance)
     }
     guard let core = capabilities.core else { return .refused(.missingCore) }
+    if let original = candidate.recordRecovery {
+      guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
+      guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
+      guard candidate.singleScoopCompatible else { return .refused(.notScoopCompatible) }
+      guard original.fits else { return .refused(.protectedTarget) }
+      return .eligible(.autoScoop(.salvage))
+    }
     if let original = candidate.identifiedSalvage {
       guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
       guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }

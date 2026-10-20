@@ -456,6 +456,7 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
+    guard WayfarerRecordRecoverySave.validateClaims(self) else { return false }
     guard NativeIdentifiedSalvageSave.validateClaims(self) else { return false }
     return nativeStationStateValid
       && empCustodyStateValid && electricalStateValid && alienStorageStateValid
@@ -685,11 +686,15 @@ public struct Game: Sendable {
     didSet {
       nativeOrbitalOutlookRuntime = .init()
       nativeOriginalSurveyRuntime = nil
+      nativeRecordRecoveryPending = nil
+      nativeRecordRecoveryIdentificationPending = nil
       nativeIdentifiedSalvagePending = nil
     }
   }
   var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
   var nativeOriginalSurveyRuntime: NativeOriginalSurveyRuntime?
+  var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending?
+  var nativeRecordRecoveryIdentificationPending: WayfarerRecordRecoveryIdentificationPending?
   var nativeIdentifiedSalvagePending: NativeIdentifiedSalvagePending?
   var nativeCrimboMotionSample: NativeCrimboMotionSample?
   var nativeCrimboAttainedMotion: NativeCrimboAttainedMotion?
@@ -1848,6 +1853,7 @@ public struct Game: Sendable {
       return
     }
     var candidate = self
+    let recorderPod = candidate.recordRecoveryEscapePod()
     let originalPod = candidate.identifiedSalvageEscapePod()
     do {
       guard try candidate.consumeNativeEquipment("Escape Pod") else { return }
@@ -1869,6 +1875,10 @@ public struct Game: Sendable {
     }
     guard candidate.loseWayfarerRepairLoopOnEscape() else {
       notify("REPAIR UNIT LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
+      return
+    }
+    do { try candidate.loseRecordRecoveryOnEscape(pod: recorderPod) } catch {
+      notify("SENN RECORDER LOSS NOT SAVED - ESCAPE NOT COMMITTED")
       return
     }
     do { try candidate.loseIdentifiedSalvageOnEscape(pod: originalPod) } catch {
@@ -2469,14 +2479,21 @@ public actor GameRuntime {
     guard let context = prepareAdvance(delta: delta) else { return snapshot() }
     let outlookStart = game.orbitalOutlookSample()
     let surveyStart = game.originalSurveySample()
+    let recordStart = game.recordRecoveryIdentificationSample()
+    let committedRecordIdentification = game.recordRecoveryState?.identification?.operation
     let salvageStart = game.commander.flightSimulation.physicalTime
     let salvagePlayer = game.commander.flightSimulation.player
     game.tick(
       delta: delta, controls: controls,
       nativeSalvagePublish: scriptPublisher(requireNativeSalvage: true))
     commitNativeSalvageCollections()
+    commitRecordRecoveryLoss()
     commitIdentifiedSalvageLoss()
     commitIdentifiedSalvageCapture(startTime: salvageStart, startPlayer: salvagePlayer)
+    commitRecordRecoveryCapture(
+      startTime: salvageStart, startPlayer: salvagePlayer,
+      committedIdentification: committedRecordIdentification)
+    commitRecordRecoveryIdentification(start: recordStart)
     let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()
     if game.docked { game.stationAutoDefence = nil }
@@ -2548,6 +2565,7 @@ public actor GameRuntime {
     // Acts only on the measured fatal state; retries its durable proposal after writer refusal.
     commitWayfarerColdChainFatalLoss()
     commitWayfarerRepairLoopFatalLoss()
+    commitRecordRecoveryLoss()
     commitIdentifiedSalvageLoss()
     game.observeNativeCrimboAttainedMotion(
       delta: delta, flightWasActive: wasLive && !wasDocked && localActive && flightActive,
@@ -2621,7 +2639,10 @@ public actor GameRuntime {
     var stage = ScriptRefusalStage.nativePeople
     do {
       try candidate.recordNativePeopleLossIfNeeded()
+      _ = try candidate.recordRecoveryLossIfNeeded()
       _ = try candidate.recordIdentifiedSalvageLossIfNeeded()
+      try candidate.retryRecordRecoveryIdentification()
+      try candidate.retryRecordRecoveryCapture()
       try candidate.retryIdentifiedSalvageCapture()
       stage = .nativeDock
       try validateNativeDockEvidenceForSave(&candidate)
@@ -2632,6 +2653,7 @@ public actor GameRuntime {
       candidate.commander.mirrorFittedEquipment()
       stage = .nativeDestruction
       candidate.resolveDestroyed()
+      _ = try candidate.recordRecoveryLossIfNeeded()
       _ = try candidate.recordIdentifiedSalvageLossIfNeeded()
       return try finishNativeSaveState(
         &candidate, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)

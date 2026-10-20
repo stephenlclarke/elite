@@ -74,6 +74,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedWayfarerRepairLoop: WayfarerRepairLoopCustody?
   var savedNavigationTrade: ScriptNavigationTradeState?
   var savedOriginalSurvey: NativeOriginalSurveyState?
+  var savedRecordRecovery: WayfarerRecordRecoveryState?
   var savedIdentifiedSalvage: NativeIdentifiedSalvageState?
   var courier: ScriptCourierCustody?
   var pledgeReceiptID: UUID?
@@ -197,6 +198,10 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     _read { yield storage[0].savedOriginalSurvey }
     _modify { yield &storage[0].savedOriginalSurvey }
   }
+  var savedRecordRecovery: WayfarerRecordRecoveryState? {
+    _read { yield storage[0].savedRecordRecovery }
+    _modify { yield &storage[0].savedRecordRecovery }
+  }
   var savedIdentifiedSalvage: NativeIdentifiedSalvageState? {
     _read { yield storage[0].savedIdentifiedSalvage }
     _modify { yield &storage[0].savedIdentifiedSalvage }
@@ -307,6 +312,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
 }
 
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  var savedRecordRecoverySource: WayfarerRecordRecoverySource?
   var savedIdentifiedSalvageSource: NativeIdentifiedSalvageSource?
   var savedOriginalConsentedFreightSupply: OriginalConsentedFreightSupplyStock?
   var savedWayfarerColdChainStock: WayfarerColdChainStockLedger?
@@ -477,6 +483,19 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       guard cargo.valid(state: instance, engine: self) else { return false }
     } else {
       guard instance.contract?.offer.freightPlan == nil else { return false }
+    }
+    if instance.definition == WayfarerRecordRecovery.stateID {
+      guard let salvage = instance.savedRecordRecovery, salvage.definition.valid,
+        salvage.permission.mission == instance.id,
+        let source = savedRecordRecoverySource, source.allocatedMission == instance.id,
+        source.id == salvage.source, source.originals.count == 1,
+        salvage.captures.count <= 1, salvage.losses.count <= 1,
+        instance.payloads
+          == WayfarerRecordRecovery.payloads(
+            salvage, outcome: instance.outcome, source: source)
+      else { return false }
+    } else if instance.savedRecordRecovery != nil {
+      return false
     }
     if instance.definition == NativeIdentifiedSalvage.stateID {
       guard let salvage = instance.savedIdentifiedSalvage, salvage.definition.valid,

@@ -59,6 +59,27 @@ extension Game {
         .cyan)
     }
     append("Equipment - fitted and held", .yellow)
+    if let state = recordRecoveryState,
+      let source = commander.scriptState.savedRecordRecoverySource,
+      let mission = commander.scriptState.instances[state.permission.mission]
+    {
+      append("SENN archive-owned recorder; \(state.held.count)/1 originals held", .cyan)
+      for original in source.originals {
+        let tonnes = mission.payloads[original.serial.lowercased()] ?? 0
+        let disposition: String
+        switch original.custody {
+        case .cradle:
+          disposition =
+            state.identification == nil
+            ? "unidentified at cradle; slot reserved" : "identified at cradle; slot reserved"
+        case .held: disposition = "held protected property"
+        case .returned: disposition = "returned to archive"
+        case .lost: disposition = "genuinely lost"
+        }
+        append("\(original.serial): \(original.name) / \(disposition) / \(tonnes)t", .cyan)
+      }
+      append("Return to the actual Cedamar archive; no sale, fitting or ordinary discard.", .cyan)
+    }
     if let state = identifiedSalvageState,
       let source = commander.scriptState.savedIdentifiedSalvageSource,
       let mission = commander.scriptState.instances[state.permission.mission]

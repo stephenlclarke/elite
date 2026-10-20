@@ -61,6 +61,7 @@ extension Game {
       nativeCrewCapture: nativeCrewCaptureAvailable(body, context: context)
         && freeNativePeopleTonnes > 0,
       originalRescue: originalRescueFacts(body, context: context),
+      recordRecovery: recordRecoveryFacts(body, context: context),
       identifiedSalvage: identifiedSalvageFacts(body, context: context))
   }
 
@@ -89,6 +90,7 @@ extension Game {
   func recoverableMetadata(for body: SpaceBody, context: EncounterContext) -> SalvageTargetMetadata?
   {
     guard let physical = body.physical else { return nil }
+    if let original = recordRecoveryMetadata(body, context: context) { return original }
     if let original = identifiedSalvageMetadata(body, context: context) { return original }
     if let original = originalRescueMetadata(body, context: context) { return original }
     var result: SalvageTargetMetadata?
@@ -149,7 +151,7 @@ extension Game {
   /// Original ordinary canisters keep their existing capture contract. The exception is
   /// limited to actual current-bound native ore/debris; salvage retains its 16-unit aperture.
   func automaticScoopShapeCompatible(_ body: SpaceBody, context: EncounterContext) -> Bool {
-    guard let actual = identifiedSalvageCompatibleMesh(body, context: context) else { return false }
+    guard let actual = recordRecoveryCompatibleMesh(body, context: context) else { return false }
     let native = Mesh.hull(.cargo)
     if body.hull == .cargo, let physical = body.physical,
       physical.identity.system == context.system, physical.identity.visit == context.visit,
@@ -188,7 +190,7 @@ extension Game {
     if let payload = body.physical?.payload, case .salvage = payload {
       return currentSalvageLot(for: body)?.halfExtents
     }
-    guard let mesh = identifiedSalvageCompatibleMesh(body, context: context) else { return nil }
+    guard let mesh = recordRecoveryCompatibleMesh(body, context: context) else { return nil }
     guard !mesh.vertices.isEmpty else { return nil }
     return .init(
       mesh.vertices.map { abs($0.x) }.max()!, mesh.vertices.map { abs($0.y) }.max()!,

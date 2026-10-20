@@ -124,6 +124,10 @@ struct ScriptClueTrustCatalog: Sendable {
       version: "1.0.0", digest: NativeOriginalRescueJourney.digest,
       terminalEvents: ["mission.receipted"]),
     .init(
+      sourceID: WayfarerRecordRecovery.stateID, definition: WayfarerRecordRecovery.stateID,
+      version: "1.0.0", digest: WayfarerRecordRecovery.digest,
+      terminalEvents: ["mission.receipted"]),
+    .init(
       sourceID: NativeIdentifiedSalvage.stateID, definition: NativeIdentifiedSalvage.stateID,
       version: "1.0.0", digest: NativeIdentifiedSalvage.digest,
       terminalEvents: ["mission.receipted"]),

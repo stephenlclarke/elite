@@ -19,7 +19,8 @@ extension Game {
   {
     guard body.energy.isFinite, body.energy > 0 else { return .ordinary }
     if let context = supplied ?? gameplayContext(),
-      identifiedSalvageFacts(body, context: context) != nil
+      recordRecoveryFacts(body, context: context) != nil
+        || identifiedSalvageFacts(body, context: context) != nil
     {
       return .recoverable
     }
