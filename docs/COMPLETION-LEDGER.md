@@ -1,5 +1,7 @@
 # L337 completion ledger
 
+MC1 / M01 fatal935 mesh query: Root assigned the directly matched readonly getter repair on isolated `9bf2b1a671951867fd7b668cdd8082eff50ec48c`, branch `fix/npc-mesh-overrides-borrow`. Executable scope is only `GameplayWeapons.swift` mesh-override iteration/predicate, preserving all eligibility/order/mesh/collision/weapon behavior. Source prepared; build/tests UNRUN and review pending. Next handoff is the frozen patch and unchanged EMP plus two collision-boundary methods through Root to G1's single composed936 build. RRS fixture and G2 StationApproach remain separately owned; no new actor/state/schema or playable completion claim.
+
 Updated 20 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; G1 alone integrates canonical source and publishes. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
 ## Player-facing milestone roadmap
