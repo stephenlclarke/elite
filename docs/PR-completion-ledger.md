@@ -286,3 +286,7 @@ Pause the five unchanged MBA03 native methods until actual M01 docking repair; n
 ## Reviewed next children and current finite queue
 
 Record actual811 strict parity failure/whole closure and immediate reviewedbf33143d MC1812/813 allocation, retaining unchanged seven-method/nine-case plan and existing guards. Root-clean rendererede7 clip refusal queues its four affected original cases after MC1, no new runtime/benchmark or integration claim. Record G1 CLEAN MBA032bc two-test delta, unchanged native tests/five paused docking failures, and only two corrected methods pending owner qualification. Preserve open route/docking gaps and source-only MBA07 queue; scoped Markdown/whitespace checks only.
+
+## G2 owns queued ordinary initial docking repair
+
+Assign the M01 docking blocker/five MBA03 dependencies to G2 NEXT after renderer completion/integration or explicit parking, one active deliverable at a time. Existing failure/source first, exact product path proposal/reservation before code, no new broad probe or physics/control workaround; preserve unattended defensive+fast docking. Keep hostile docking distinct unless same cause demonstrated.
