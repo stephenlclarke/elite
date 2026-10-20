@@ -4,7 +4,7 @@ Updated 20 October 2026. This is the current delivery guide, not a content-compl
 
 ## Player-facing milestone roadmap
 
-**Current assignment register:** **M01 FIRST:**093b core918PASS1/1+asteroid919PASS1/1; writer920completed4PASS/1FAILED(twoassertions)/0UNKNOWN. Rootexacttest-only expectedDisk wanted-careerbindingprojection correction approved; matchingtestbuild→ONLYfailedlaunch, retain4unaffectedwriterpasses. Baseline3+storage3+core1+asteroid1+writer4=12/12of31/45, no overallqualification. Standingreadonlyautonomyv12 ACTUALLYpersisted; no productioncareermutation/newscope. **MBA:** T04G3eight+G1loaderoneassigned; f9fb62ba loaderpacket+SHA deliveredRoot/G3/base2f/no execution. W03/G13sourceintegrated/889artifactexcludesboth/890toolaccessfailure-no repoll.
+**Current assignment register:** **M01 FIRST:**225e9579test-onlyprojection/922launchPASS1/1;923admission-historyPASS6methods9cases;924motioncompleted8methods11casesPASS+1method1caseFAILED(oneissue)/0UNKNOWN/no crash. Proof-based retained27methods33casesof31/45; pendingmotionfailure1/1+equipment3/11. MC1inspects exactsave-reloadboundary, no fixture/assertionrelaxationapprovedyet/no broad-core repeat. OwnerfullPASS→ONEcoherentreview→G1integration pending. **MBA:** T04G3eight+G1loaderf9fbone/base2f/packetdelivered, no qualifiedintegration. W03/G13sourceintegrated/889artifactexcludesboth/890toolaccessfailure-no repoll.
 
 **Next executable milestone: M01.** Dependable flight/mission/save completion remains in development; no unqualified MC1 chain is integrated. Already qualified renderer/docking/cap/G03/stable-offer/W01/W02 source does not close full milestones/artwork/playable release. M01 remains first; boundedW03/G13 source is integrated and Root assigned T04default-existingnavigation/trade delivery as soleparallelMBA item. Owner focused PASS then ONE independent bugs/performance/style review of the coherent diff precedes G1 integration. Reuse unaffected evidence; broad integration/system/performance gates remain batched, final mainCI/coverage/sanitizer/leak/PR/mainSonar/release required.
 
@@ -16,7 +16,7 @@ All milestone statuses below are functional statuses. Prepared source/data, deli
 
 ### M01 - Dependable everyday flight, trade, missions and saving
 
-**Status:** in development;core918+asteroid919PASS1/1each, writer9204PASS/1FAILEDtwoassertions/0UNKNOWN. Retained12/12of31/45 only; failedcase test-only exactdiskbindingprojection retry and othergroupspending. MC1soleexecutor/Rootnewsemantic-representationdecisions/G1ONEfullcoherentreview-integration afterownerPASS. No productioncareermutation/overallPASS/appclaim. T04loaderf9fb ready/G3MBA; GUI890accessfailure unchanged.
+**Status:** in development;retained27methods33casesof31/45 after922launch/923admission/924eightmotionpasses. One924save-reloadassertion failure remains, equipment3methods11casespending; no crash/unknown incompleted924batch. MC1exactboundaryinspection/no fixture-assertionwaiver/newbroadtest; no overallPASS/review/integrationyet. G1solecoherentreview-integration afterownerPASS, M01FIRST/T04parallel/889artifactnotcurrent.
 
 **Player journey:** Continue the saved commander, launch, fly/jump, accept a reachable job, dock, receive the outcome and reopen the same saved game.
 
@@ -2287,3 +2287,11 @@ No Game/Director/equipment-marketmutation/ScriptMissionState/save-preflight-sche
 
 - Standingauthorityv12 is NOWpersisted using actual amendment.revision metadata; firstwrite failed beforefilemutation, earlierpersistedreportwaspremature/corrected. CurrentSHA256 `795bbc9c01a1f38b55c7fecfb2736ccd21ed70a058ee39a7f7a3846d671ed1d0`; exactv11archive `/tmp/elite-M01-standing-main-executor-authority-v11.json` SHA256 `cf5897835c4db159fe4229e57e267cccf1c854beb1c105f2feabe268b6af4663`. Rootnotified; onlyprior-approvedreadonlyautonomy/currentbinarycrash-noIPS boundedcapture clarification, no semantic-representation-owner-schema scope expansion.
 - Asteroid919PASS1/1, `/tmp/elite-station-qualification-919/agent-game-test-verification-919.json` SHA256 `3a684749f1874738cb153ba752cb3f336b835beb310ddc7ab61ccca413a506e2`. Writer920normalcompletion4PASS/1FAILED(twoassertions)/0UNKNOWN, `/tmp/elite-station-qualification-920/agent-game-test-verification-920.json` SHA256 `edad1f446e5967ab05a16ddc9979a5c20b72e54177c7122ef71ae06939110b88`; same093b/artifact/fullclosure. Rootauthorises ONLYexistingtest expectedDisk projection: existingclearNativeSaveBindings/resetWantedCareerBindings nils currentsystem.binding whileabsentstaysabsent, preserveWHOLECommander equality andtypedpersistentcareerfacts. Matchingtestbuild→ONLYfailedlaunch first, retain4unaffectedwriterpasses; no productioncareermutation/newscope. Retained12/12of31/45 remains partial; remaininggroupspending.
+
+## Current affected qualification
+
+225e9579a547d3d6ded4ea0236bc81bf7c1a3b3f:922correctedlaunchPASS1/1;923admission-historyPASS6/9;924motionnormalcompletion8methods11casesPASS/1method1caseFAILED(oneassertion)/0UNKNOWN, no crash. OnlyoriginalInspectionPartialBudgetAndActualMovingPoseSurviveNativeSaveAndNoWriteReload fails. Retained27methods33casesof31/45; remainingfailed1/1+equipment3/11. MC1inspects exactsave-reloadboundary; no fixture/assertionrelaxationapprovedyet, no broad/core rerun. Allcompletedproofs haveactualwholeclosure/protectedinputs preserved.
+
+- `/tmp/elite-station-qualification-922/agent-game-test-verification-922.json` SHA256 `9546e526a5cb851f1ff0cbbc3675f80bf0a3989556a909bb29a9c52ee0250f60`.
+- `/tmp/elite-station-qualification-923/agent-game-test-verification-923.json` SHA256 `ed9db57799a65e3088245f51030771860311bc2499f7bd014800d1363e802c82`.
+- `/tmp/elite-station-qualification-924/agent-game-test-verification-924.json` SHA256 `4e960119c078c99ab192dfdbb3c5d20a34167263a1cf18103b482dc01557c567`.

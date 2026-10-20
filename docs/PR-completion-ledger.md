@@ -630,3 +630,7 @@ T04centralonefilef9fb62ba freeze sentRoot/G3; no execution. Core918ordinaryPASS1
 ## Current qualification and authority correction
 
 919asteroidPASS;920normalwriter4PASS/1FAILEDtwoassertions/0UNKNOWN, Rootexacttest-onlydiskwantedbindingprojection correction preserveswholeCommander/typedcareerfacts; matchingtestbuild/onlyfailedcase thenothergroups, retained12/31-45notoverallPASS. Standingauthorityfirstwritefailedbeforemutation; actualamendment.revision12nowpersisted/v11archived, earlierclaim/hashcorrected/Rootnotified. T04loaderpacketalreadydelivered/no waiting. Briefregister+receiptlinks/scopedMarkdown-whitespace only.
+
+## Current qualification delta
+
+922launch1/1+923admission6/9PASS;924motion8/11PASS plus oneassertionfailed1/1,0UNKNOWN/no crash. Retained27methods33casesof31/45; remainingmotion1/1+equipment3/11. Ownerexactsave-reloadinspection/no fixture-assertionwaiver/no core-broadrepeat; fullreview/integration waits ownerPASS. Briefcurrentregister/receiptlinks/scopedMarkdown-whitespace only.
