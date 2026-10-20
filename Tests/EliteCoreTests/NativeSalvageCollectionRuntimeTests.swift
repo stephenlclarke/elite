@@ -63,6 +63,37 @@ private func nativeSalvageScoopFixture(
   return (game, actual)
 }
 
+/// Project the retained pre-load scene's fresh RRS bindings without reading the loaded result.
+@inline(never)
+private func nativeSalvageColdCommanderExpectation(_ original: Game) throws -> Commander {
+  var expected = original.commander
+  let indices = original.bodies.indices.filter {
+    original.bodies[$0].nativeStationIdentity != nil
+  }
+  guard !indices.isEmpty else { return expected }
+  var world = try #require(expected.nativeStations)
+  try #require(
+    world.sceneIsConsistent(
+      bodies: original.bodies, docked: original.docked, mainStation: original.dockedAtMainStation,
+      system: original.systemIdentity, flight: expected.flightSimulation))
+  try #require(original.nextBodyID > 0 && original.nextBodyID < 1_000_000_000 - indices.count)
+  var flight = expected.flightSimulation
+  let allocatedSpawn = flight.allocateSpawn()
+  _ = try #require(allocatedSpawn)
+  for (member, index) in indices.enumerated() {
+    let station = try #require(original.bodies[index].nativeStationIdentity)
+    try #require(original.bodies[index].physical != nil)
+    let allocatedActor = flight.allocateActor()
+    let actor = try #require(allocatedActor)
+    try world.ledger.rebind(
+      station, to: .init(actor: actor, bodyID: original.nextBodyID + member))
+  }
+  try #require(world.valid && flight.valid)
+  expected.nativeStations = world
+  expected.flightSimulation = flight
+  return expected
+}
+
 struct NativeSalvageCollectionRuntimeTests {
   @Test func actualScoopPublishesOriginalModuleAndRemovesOnlyItsBoundBodyAfterSave() async throws {
     let (game, lot) = try nativeSalvageScoopFixture()
@@ -94,10 +125,12 @@ struct NativeSalvageCollectionRuntimeTests {
     // those original logical actors on load. Keep all source/resources in the oracle.
     var expectedDisk = after.commander
     expectedDisk.npcPersistence.resetPhysicalBindings(system: after.systemIdentity)
+    expectedDisk.resetWantedCareerBindings(system: after.systemIdentity)
     let published = try NativeSaveTestFixture.readVersionedCommander(from: file)
     #expect(published == expectedDisk)
+    let expectedLoaded = try nativeSalvageColdCommanderExpectation(after)
     try await runtime.load(from: file, persistMigrations: false)
-    #expect(await runtime.snapshot().commander == after.commander)
+    #expect(await runtime.snapshot().commander == expectedLoaded)
     #expect(try Data(contentsOf: file) == bytes)
     let repeated = await runtime.advance(delta: 0.1)
     #expect(repeated.commander.alienStorageState?.current.snapshot.sources == native.sources)
@@ -142,6 +175,7 @@ struct NativeSalvageCollectionRuntimeTests {
     #expect(!retry.bodies.contains { $0.physical?.payload == .salvage(lot.identity) })
     var expectedDisk = retry.commander
     expectedDisk.npcPersistence.resetPhysicalBindings(system: retry.systemIdentity)
+    expectedDisk.resetWantedCareerBindings(system: retry.systemIdentity)
     let saved = try NativeSaveTestFixture.readVersionedCommander(from: file)
     #expect(saved == expectedDisk)
   }
