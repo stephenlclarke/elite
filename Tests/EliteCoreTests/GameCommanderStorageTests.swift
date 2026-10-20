@@ -147,7 +147,16 @@ struct GameCommanderStorageTests {
     // Derive the documented normalization from an independent value copy.
     var expectedDisk = liveCommander
     expectedDisk.npcPersistence.resetPhysicalBindings(system: committed.systemIdentity)
+    expectedDisk.resetWantedCareerBindings(system: committed.systemIdentity)
     #expect(saved == expectedDisk)
+    let liveCareers = liveCommander.wantedCareers.careers
+    try #require(liveCareers.values.contains { $0.binding != nil })
+    #expect(saved.wantedCareers.careers.count == liveCareers.count)
+    for (identity, career) in liveCareers {
+      var expectedCareer = career
+      if identity.system == committed.systemIdentity { expectedCareer.binding = nil }
+      #expect(saved.wantedCareers.careers[identity] == expectedCareer)
+    }
     for logical in liveNPCs {
       try #require(liveCommander.npcPersistence.binding(for: logical) != nil)
       #expect(saved.npcPersistence.binding(for: logical) == nil)
@@ -180,7 +189,9 @@ struct GameCommanderStorageTests {
     // The complete Commander comparison above still proves semantic conservation.
     #expect(changedFields.contains("savedNPCPersistence"))
     #expect(
-      Set(semanticChangedFields).isSubset(of: ["savedNPCPersistence", "savedEquipmentInventory"]))
+      Set(semanticChangedFields).isSubset(of: [
+        "savedNPCPersistence", "savedEquipmentInventory", "savedWantedCareers",
+      ]))
     if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
       let evidence = URL(fileURLWithPath: path, isDirectory: true)
       try FileManager.default.createDirectory(at: evidence, withIntermediateDirectories: true)
