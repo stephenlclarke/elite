@@ -13,3 +13,9 @@ All4,104 frames decoded and were nonblank:171GIFs,24frames each,256x256,100ms de
 ## Delivery and limits
 
 Update existing draft [PR21](https://github.com/stephenlclarke/elite/pull/21) by normal fast-forward push, request its required new-head review and allow hosted checks once. Prior quality39419186509 and review service failure remain retained. No local fullCI replay, protection change, feature-branch Sonar, merge, notarization, release or Homebrew update. M01 remains incomplete; G05 stays isolated. Companion: [ISSUE-ship-media-freshness.md](ISSUE-ship-media-freshness.md).
+
+## Post-compatibility renderer refresh1006
+
+The bounded Swift expression source correction necessarily invalidated the conservative shared inputs again. After aggregate local9methods11cases qualification and canonical source integration1d591ed2ee700e355ddd120adf25f2ec6ba76ae3, one maintained make ships1006 regenerated all171ships using byte-identical coherent Sources/resources/Package/renderer/generator/Makefile inputs in the existing warm qualification checkout. Execution65.100seconds/outer66.001seconds stayed within600/640 limits. All73 observed actual owned starts were independently absent; no timeout/cleanup, all maintained inputs/preferences/README exact, lease released.
+
+Only171 manifest input values changed. Every GIF/output digest and catalogue/provenance table is byte-identical. All4,104frames decoded nonblank at256x256/24frames/100ms; make ships-check passes. Qualification `/tmp/elite-ship-media-refresh-1006/qualification.json` SHA256 `f51c37c9299c55b34b4913641750ace0fee480590a1d270e92ad505ec40bd44a`; renderer log SHA256 `45704858701c808c05bb07ee19015f53e31a63fff563fe4299c5c776845509f4`. No README generation, hand-edited fingerprint, weakened check or local fullCI replay. This final corrected head still requires actual hostedSwift6.1.2 acceptance and clean required review; prior hosted/service failures remain retained. M01 and release remain open.
