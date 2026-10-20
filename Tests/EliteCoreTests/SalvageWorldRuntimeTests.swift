@@ -174,8 +174,9 @@ struct SalvageWorldRuntimeTests {
       game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
     #expect(rebound.id == nativeBefore.id && rebound.binding == returned.physical?.identity)
     let runtime = GameRuntime(game: game)
-    let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-    defer { try? FileManager.default.removeItem(at: url) }
+    let folder = try NativePagedSalvageFixture.folder()
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let url = folder.appendingPathComponent("commander.json")
     try await runtime.save(to: url)
     try await runtime.load(from: url, persistMigrations: false)
     let restored = await runtime.snapshot()
