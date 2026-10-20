@@ -15,3 +15,7 @@ The proposed focused selection is four methods and four cases: durable writer re
 ## Compatibility and remaining work
 
 No generic fixture, fresh-start default, production behavior, save schema, pinned witness value or deadline rule changes. Other observed CI failures remain separate work. G1 owns shared qualification, ledger updates and integration. Broad CI, sanitizer, leak and playable-release acceptance remain outstanding. No remote PR exists. Companion: [ISSUE-ci955-script-fixture-context.md](ISSUE-ci955-script-fixture-context.md).
+
+## Qualification update - 20 October 2026
+
+The pending statements above describe the author freeze. Matching956 build passed and actual957 completed all four methods/four cases with zero issues or unknown outcomes; source/artifact/preferences guards passed and owned processes closed. One independent six-path review is CLEAN. Exact six paths were integrated at `3276bd857aac31f12c701c2761cc2b591da72fa9`. Evidence: `/tmp/elite-script-fixtures-957/event-stream-qualification.json` and `/tmp/elite-ci955-fixture-qualified-canonical-integration/integration-receipt.json`. Existing951six-case PASS is retained by the explicit dependency proof; no full CI qualification is implied.
