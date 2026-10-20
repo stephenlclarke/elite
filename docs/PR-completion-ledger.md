@@ -598,3 +598,7 @@ Rootapproves ONLYScriptTransactions identicalnativeprep then noninlineentireorig
 ## Record908/909 and one controlled writer-frame comparison
 
 Record26a65c89exactwriterphase/908buildPASS newd539955dbinary,909singlecoreUNKNOWN/signal10/0issues/noIPS/all10ownedclosed. RootONE910samebinaryactualcase diagnostic compares actualframes to907writer87120B; no sourcechange/rebuild/probe/fallback/recoveredleafguard whilecomparisonpending. Baseline3/3/currentpending25/39-target28/42 unchanged/notqualified. G13continuesin-development/no featurefreeze/integrationclaim. ScopedMarkdownlint/whitespace/historyhashes only, G1no competingjob.
+
+## Record910 measured phase limits and semantic refusal-only approval
+
+Actual910closed6starts: preparecaller87120→37840B(-49280), publicationhelper49504/twoframes87344B/no netpublicationreductionclaim; currentfaultsemanticJSONencoder. RootexactScriptPersistence refusaldiagnostic+throw into noninlineNeverhelper, SAMEencoder/order/shortcircuit/both33554432byteguards/no schema-codec-storagechange. MC1matchingbuild/singlecore next/notqualified; existingwriter/sizecases aftercorePASS. G13MBAcompileprogressunchanged17paths/noPASSclaim, futureW03savemappinghunks preserved. ScopedMarkdownlint/whitespace/historyhashes only/G1nojob.
