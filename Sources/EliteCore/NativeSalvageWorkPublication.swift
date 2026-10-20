@@ -81,6 +81,13 @@ extension Game {
 
   @discardableResult
   mutating func flushNativeSalvageWork() -> Bool {
+    if case .none = nativeSalvageWork { return true }
+    return flushPresentNativeSalvageWork()
+  }
+
+  // Keep the original absent-work return outside reconciliation/publication value storage.
+  @inline(never)
+  private mutating func flushPresentNativeSalvageWork() -> Bool {
     guard let hot = nativeSalvageWork else { return true }
     guard nativeSalvageHotWorkIsCurrent(hot),
       let previous = commander.alienStorageState?.current.snapshot

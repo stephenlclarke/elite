@@ -80,6 +80,13 @@ extension Game {
   /// Tombstone and actor removal are one runtime publication. A failed terminal mark
   /// retains the dead source and prevents dock, jump or Save from resurrecting it.
   mutating func registerDestroyedWrecks() -> Set<Int> {
+    guard bodies.indices.contains(where: { bodies[$0].energy <= 0 }) else { return [] }
+    return registerPotentiallyDestroyedWrecks()
+  }
+
+  // The original loop cannot settle anything unless its first energy predicate matches a body.
+  @inline(never)
+  private mutating func registerPotentiallyDestroyedWrecks() -> Set<Int> {
     var deferred = Set<Int>()
     for body in bodies where body.energy <= 0 {
       guard let physical = body.physical, physical.npc == nil,

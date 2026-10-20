@@ -48,61 +48,254 @@ public struct ScriptDialogue: Codable, Sendable, Equatable {
   public var system: Int
   public var revision: UInt64
 }
-public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
-  public let id: UUID
-  public let definition: String
-  public let version: String
-  public let digest: String
-  public init(id: UUID, definition: String, version: String, digest: String) {
+private struct ScriptInstanceValue: Codable, Sendable, Equatable {
+  let id: UUID
+  let definition: String
+  let version: String
+  let digest: String
+  init(id: UUID, definition: String, version: String, digest: String) {
     self.id = id
     self.definition = definition
     self.version = version
     self.digest = digest
   }
-  public var data: ScriptValue = .object([:])
-  public var savedCollections: [String: ScriptCollection]?
-  public var savedCampaignChildren: [String: ScriptChildBinding]?
-  public var campaignParent: ScriptChildBinding?
-  public var savedCampaignReceiptScopes: [String: String]?
-  public var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]?
-  public var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
-  public var choiceReceipts: [String: ScriptChoiceReceipt] {
-    get { savedChoiceReceipts ?? [:] }
-    set { savedChoiceReceipts = newValue.isEmpty ? nil : newValue }
-  }
-  public var completionReceipt: ScriptCompletionReceipt?
+  var data: ScriptValue = .object([:])
+  var savedCollections: [String: ScriptCollection]?
+  var savedCampaignChildren: [String: ScriptChildBinding]?
+  var campaignParent: ScriptChildBinding?
+  var savedCampaignReceiptScopes: [String: String]?
+  var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]?
+  var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
+
+  var completionReceipt: ScriptCompletionReceipt?
   var savedProviderContract: ScriptProviderContractState?
   var savedOwnedCargo: ScriptOwnedCargoState?
   var savedWayfarerColdChain: WayfarerColdChainCustody?
   var savedWayfarerRepairLoop: WayfarerRepairLoopCustody?
   var savedNavigationTrade: ScriptNavigationTradeState?
-  public var courier: ScriptCourierCustody?
-  public var pledgeReceiptID: UUID?
-  public var receiptJoins: [String: [UUID]]?
-  public var outcome: ScriptOutcome = .active
-  public var suspension: String?
-  public var revision: UInt64 = 0
-  public var acknowledgedEvents: Set<UInt64> = []
-  public var acknowledgedThrough: UInt64?
-  public var receipts: Set<String> = []
-  public var milestones: Set<Int> = []
-  public var payloads: [String: Int] = [:]
-  public var timers: [String: ScriptTimer] = [:]
-  public var dialogue: ScriptDialogue?
-  public var journal: [String] = []
-  public var contract: ScriptContractJob?
-  private var savedGearIssues: [String: ScriptGearIssue]?
+  var courier: ScriptCourierCustody?
+  var pledgeReceiptID: UUID?
+  var receiptJoins: [String: [UUID]]?
+  var outcome: ScriptOutcome = .active
+  var suspension: String?
+  var revision: UInt64 = 0
+  var acknowledgedEvents: Set<UInt64> = []
+  var acknowledgedThrough: UInt64?
+  var receipts: Set<String> = []
+  var milestones: Set<Int> = []
+  var payloads: [String: Int] = [:]
+  var timers: [String: ScriptTimer] = [:]
+  var dialogue: ScriptDialogue?
+  var journal: [String] = []
+  var contract: ScriptContractJob?
+  var savedGearIssues: [String: ScriptGearIssue]?
+
+  var savedOwnedEncounters: [String: ScriptOwnedEncounter]?
+
+  var randomState: UInt64 = 0x45_4c49_5445
+}
+
+/// One copy-on-write value; Codable forwards the original instance object without an envelope.
+public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
+  private var storage: [ScriptInstanceValue]
+
+  public init(id: UUID, definition: String, version: String, digest: String) {
+    storage = [.init(id: id, definition: definition, version: version, digest: digest)]
+  }
+
+  public init(from decoder: any Decoder) throws {
+    storage = [try ScriptInstanceValue(from: decoder)]
+  }
+
+  public func encode(to encoder: any Encoder) throws {
+    try storage[0].encode(to: encoder)
+  }
+
+  public var id: UUID {
+    _read { yield storage[0].id }
+  }
+
+  public var definition: String {
+    _read { yield storage[0].definition }
+  }
+
+  public var version: String {
+    _read { yield storage[0].version }
+  }
+
+  public var digest: String {
+    _read { yield storage[0].digest }
+  }
+
+  public var data: ScriptValue {
+    _read { yield storage[0].data }
+    _modify { yield &storage[0].data }
+  }
+
+  public var savedCollections: [String: ScriptCollection]? {
+    _read { yield storage[0].savedCollections }
+    _modify { yield &storage[0].savedCollections }
+  }
+
+  public var savedCampaignChildren: [String: ScriptChildBinding]? {
+    _read { yield storage[0].savedCampaignChildren }
+    _modify { yield &storage[0].savedCampaignChildren }
+  }
+
+  public var campaignParent: ScriptChildBinding? {
+    _read { yield storage[0].campaignParent }
+    _modify { yield &storage[0].campaignParent }
+  }
+
+  public var savedCampaignReceiptScopes: [String: String]? {
+    _read { yield storage[0].savedCampaignReceiptScopes }
+    _modify { yield &storage[0].savedCampaignReceiptScopes }
+  }
+
+  public var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]? {
+    _read { yield storage[0].savedConversationReceipts }
+    _modify { yield &storage[0].savedConversationReceipts }
+  }
+
+  public var savedChoiceReceipts: [String: ScriptChoiceReceipt]? {
+    _read { yield storage[0].savedChoiceReceipts }
+    _modify { yield &storage[0].savedChoiceReceipts }
+  }
+
+  public var completionReceipt: ScriptCompletionReceipt? {
+    _read { yield storage[0].completionReceipt }
+    _modify { yield &storage[0].completionReceipt }
+  }
+
+  var savedProviderContract: ScriptProviderContractState? {
+    _read { yield storage[0].savedProviderContract }
+    _modify { yield &storage[0].savedProviderContract }
+  }
+
+  var savedOwnedCargo: ScriptOwnedCargoState? {
+    _read { yield storage[0].savedOwnedCargo }
+    _modify { yield &storage[0].savedOwnedCargo }
+  }
+
+  var savedWayfarerColdChain: WayfarerColdChainCustody? {
+    _read { yield storage[0].savedWayfarerColdChain }
+    _modify { yield &storage[0].savedWayfarerColdChain }
+  }
+
+  var savedWayfarerRepairLoop: WayfarerRepairLoopCustody? {
+    _read { yield storage[0].savedWayfarerRepairLoop }
+    _modify { yield &storage[0].savedWayfarerRepairLoop }
+  }
+
+  var savedNavigationTrade: ScriptNavigationTradeState? {
+    _read { yield storage[0].savedNavigationTrade }
+    _modify { yield &storage[0].savedNavigationTrade }
+  }
+
+  public var courier: ScriptCourierCustody? {
+    _read { yield storage[0].courier }
+    _modify { yield &storage[0].courier }
+  }
+
+  public var pledgeReceiptID: UUID? {
+    _read { yield storage[0].pledgeReceiptID }
+    _modify { yield &storage[0].pledgeReceiptID }
+  }
+
+  public var receiptJoins: [String: [UUID]]? {
+    _read { yield storage[0].receiptJoins }
+    _modify { yield &storage[0].receiptJoins }
+  }
+
+  public var outcome: ScriptOutcome {
+    _read { yield storage[0].outcome }
+    _modify { yield &storage[0].outcome }
+  }
+
+  public var suspension: String? {
+    _read { yield storage[0].suspension }
+    _modify { yield &storage[0].suspension }
+  }
+
+  public var revision: UInt64 {
+    _read { yield storage[0].revision }
+    _modify { yield &storage[0].revision }
+  }
+
+  public var acknowledgedEvents: Set<UInt64> {
+    _read { yield storage[0].acknowledgedEvents }
+    _modify { yield &storage[0].acknowledgedEvents }
+  }
+
+  public var acknowledgedThrough: UInt64? {
+    _read { yield storage[0].acknowledgedThrough }
+    _modify { yield &storage[0].acknowledgedThrough }
+  }
+
+  public var receipts: Set<String> {
+    _read { yield storage[0].receipts }
+    _modify { yield &storage[0].receipts }
+  }
+
+  public var milestones: Set<Int> {
+    _read { yield storage[0].milestones }
+    _modify { yield &storage[0].milestones }
+  }
+
+  public var payloads: [String: Int] {
+    _read { yield storage[0].payloads }
+    _modify { yield &storage[0].payloads }
+  }
+
+  public var timers: [String: ScriptTimer] {
+    _read { yield storage[0].timers }
+    _modify { yield &storage[0].timers }
+  }
+
+  public var dialogue: ScriptDialogue? {
+    _read { yield storage[0].dialogue }
+    _modify { yield &storage[0].dialogue }
+  }
+
+  public var journal: [String] {
+    _read { yield storage[0].journal }
+    _modify { yield &storage[0].journal }
+  }
+
+  public var contract: ScriptContractJob? {
+    _read { yield storage[0].contract }
+    _modify { yield &storage[0].contract }
+  }
+
+  private var savedGearIssues: [String: ScriptGearIssue]? {
+    _read { yield storage[0].savedGearIssues }
+    _modify { yield &storage[0].savedGearIssues }
+  }
+
+  private var savedOwnedEncounters: [String: ScriptOwnedEncounter]? {
+    _read { yield storage[0].savedOwnedEncounters }
+    _modify { yield &storage[0].savedOwnedEncounters }
+  }
+
+  public var randomState: UInt64 {
+    _read { yield storage[0].randomState }
+    _modify { yield &storage[0].randomState }
+  }
+
+  public var choiceReceipts: [String: ScriptChoiceReceipt] {
+    get { savedChoiceReceipts ?? [:] }
+    set { savedChoiceReceipts = newValue.isEmpty ? nil : newValue }
+  }
   public var gearIssues: [String: ScriptGearIssue] {
     get { savedGearIssues ?? [:] }
     set { savedGearIssues = newValue }
   }
-  private var savedOwnedEncounters: [String: ScriptOwnedEncounter]?
   public var ownedEncounters: [String: ScriptOwnedEncounter] {
     get { savedOwnedEncounters ?? [:] }
     set { savedOwnedEncounters = newValue }
   }
-  public var randomState: UInt64 = 0x45_4c49_5445
 }
+
 public struct ScriptEngineState: Codable, Sendable, Equatable {
   var savedWayfarerColdChainStock: WayfarerColdChainStockLedger?
   var savedWayfarerRepairLoopStock: WayfarerRepairLoopStockLedger?
@@ -226,76 +419,153 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       && [flightSeconds, localSeconds, calendarSeconds, transitSeconds].allSatisfy {
         $0.isFinite && (0...1e12).contains($0)
       }
-      && instances.allSatisfy { key, instance in
-        key == instance.id && instance.definition.split(separator: "/").count == 2
-          && PackValidation.version(instance.version)
-          && instance.digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
-          && (instance.dialogue.map { dialogue in
-            PackValidation.localID(dialogue.id) && dialogue.token.utf8.count <= 256
-              && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
-              && (0...256).contains(dialogue.system)
-          } ?? true)
-          && (instance.courier.map { $0.valid(state: instance, engine: self) }
-            ?? (instance.contract?.offer.courier == nil))
-          && (instance.savedProviderContract.map { $0.valid(instance: instance) } ?? true)
-          && (instance.savedOwnedCargo.map { $0.valid(state: instance, engine: self) }
-            ?? (instance.contract?.offer.freightPlan == nil))
-          && (instance.savedNavigationTrade.map { $0.valid(instance: instance, engine: self) }
-            ?? true)
-          && instance.collectionsValid(engine: self)
-          && instance.conversationReceipts.count <= 1024
-          && instance.conversationReceipts.allSatisfy {
-            $0.key == $0.value.sequence && $0.value.group == nil
-              && $0.value.valid(for: instance, engine: self)
-          }
-          && instance.choiceReceipts.count <= 64
-          && instance.choiceReceipts.allSatisfy {
-            $0.key == $0.value.group && $0.value.valid(for: instance, engine: self)
-          }
-          && (instance.completionReceipt.map { $0.valid(for: instance, engine: self) } ?? true)
-          && (instance.receiptJoins.map { joins in
-            joins.count <= 32
-              && joins.allSatisfy { key, children in
-                PackValidation.localID(key) && (1...128).contains(children.count)
-                  && Set(children).count == children.count
-                  && children.allSatisfy { child in
-                    child != instance.id
-                      && instances[child]?.completionReceipt.map { receipt in
-                        instance.completionReceipt.map { receipt.sequence < $0.sequence } ?? true
-                      } == true
-                  }
-              }
-          } ?? true)
-          && instance.revision < UInt64(Int64.max) && instance.acknowledgedEvents.count <= 4096
-          && instance.acknowledgedEvents.allSatisfy { $0 > 0 && $0 <= nextEvent }
-          && (instance.acknowledgedThrough.map { $0 <= nextEvent } ?? true)
-          && instance.receipts.count <= 4096 && instance.receipts.allSatisfy(PackValidation.localID)
-          && instance.ownedEncounters.count <= 64
-          && instance.ownedEncounters.allSatisfy {
-            $0.key == $0.value.id && $0.value.valid
-              && ($0.value.legacyProvenance?.matches(owner: instance, encounter: $0.value) ?? true)
-              && $0.value.actors.values.allSatisfy { $0.body.missionInstanceID == instance.id }
-              && $0.value.actors.values.allSatisfy { actor in
-                actor.body.scriptNPC?.fit.models.values.allSatisfy { geometry[$0] != nil } ?? true
-              }
-          }
-          && instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128
-          && instance.gearIssues.count <= 64
-          && instance.gearIssues.allSatisfy {
-            $0.key == $0.value.resource && $0.value.valid(for: instance)
-          }
-          && Set(instance.gearIssues.values.flatMap(\.items)).count
-            == instance.gearIssues.values.reduce(0) { $0 + $1.items.count }
-          && instance.payloads.count <= 128
-          && instance.payloads.keys.allSatisfy(PackValidation.localID)
-          && instance.payloads.values.allSatisfy { (0...1_000_000).contains($0) }
-          && instance.milestones.count <= 64
-          && instance.milestones.allSatisfy { (0..<64).contains($0) }
-          && instance.timers.count <= 128
-          && instance.timers.allSatisfy { $0.key == $0.value.id && $0.value.valid }
-          && instance.journal.count <= 512 && instance.journal.allSatisfy { $0.utf8.count <= 12000 }
-          && instance.data.object != nil
-          && (try? ScriptWire.encode([instance.data], limit: 262144)) != nil
+      && instancesValid()
+  }
+
+  // Keep dictionary element tuples out of the nested encounter/NPC validation call chain.
+  @inline(never)
+  private func instancesValid() -> Bool {
+    for index in instances.indices {
+      guard instanceValid(instances.values[index], key: instances.keys[index]) else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func instanceValid(_ instance: borrowing ScriptInstance, key: UUID) -> Bool {
+    guard instancePrefixValid(instance, key: key), ownedEncountersValid(for: instance) else {
+      return false
+    }
+    return instanceSuffixValid(instance)
+  }
+
+  // Optional contract/receipt storage must return before nested encounter/NPC validation starts.
+  @inline(never)
+  private func instancePrefixValid(_ instance: borrowing ScriptInstance, key: UUID) -> Bool {
+    guard key == instance.id, instance.definition.split(separator: "/").count == 2,
+      PackValidation.version(instance.version),
+      instance.digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
+    else { return false }
+    if let dialogue = instance.dialogue {
+      guard PackValidation.localID(dialogue.id), dialogue.token.utf8.count <= 256,
+        dialogue.revision <= instance.revision, (0..<8).contains(dialogue.galaxy),
+        (0...256).contains(dialogue.system)
+      else { return false }
+    }
+    if let courier = instance.courier {
+      guard courier.valid(state: instance, engine: self) else { return false }
+    } else {
+      guard instance.contract?.offer.courier == nil else { return false }
+    }
+    if let contract = instance.savedProviderContract {
+      guard contract.valid(instance: instance) else { return false }
+    }
+    if let cargo = instance.savedOwnedCargo {
+      guard cargo.valid(state: instance, engine: self) else { return false }
+    } else {
+      guard instance.contract?.offer.freightPlan == nil else { return false }
+    }
+    if let trade = instance.savedNavigationTrade {
+      guard trade.valid(instance: instance, engine: self) else { return false }
+    }
+    guard instance.collectionsValid(engine: self), instance.conversationReceipts.count <= 1024
+    else {
+      return false
+    }
+    for receipt in instance.conversationReceipts {
+      guard receipt.key == receipt.value.sequence, receipt.value.group == nil,
+        receipt.value.valid(for: instance, engine: self)
+      else { return false }
+    }
+    guard instance.choiceReceipts.count <= 64 else { return false }
+    for receipt in instance.choiceReceipts {
+      guard receipt.key == receipt.value.group, receipt.value.valid(for: instance, engine: self)
+      else {
+        return false
       }
+    }
+    if let receipt = instance.completionReceipt {
+      guard receipt.valid(for: instance, engine: self) else { return false }
+    }
+    if let joins = instance.receiptJoins {
+      let ownerID = instance.id
+      let completionSequence = instance.completionReceipt?.sequence
+      guard joins.count <= 32,
+        joins.allSatisfy({ key, children in
+          PackValidation.localID(key) && (1...128).contains(children.count)
+            && Set(children).count == children.count
+            && children.allSatisfy { child in
+              child != ownerID
+                && instances[child]?.completionReceipt.map { receipt in
+                  completionSequence.map { receipt.sequence < $0 } ?? true
+                } == true
+            }
+        })
+      else { return false }
+    }
+    guard instance.revision < UInt64(Int64.max), instance.acknowledgedEvents.count <= 4096,
+      instance.acknowledgedEvents.allSatisfy({ $0 > 0 && $0 <= nextEvent }),
+      instance.acknowledgedThrough.map({ $0 <= nextEvent }) ?? true,
+      instance.receipts.count <= 4096, instance.receipts.allSatisfy(PackValidation.localID),
+      instance.ownedEncounters.count <= 64
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func instanceSuffixValid(_ instance: borrowing ScriptInstance) -> Bool {
+    guard instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128,
+      instance.gearIssues.count <= 64
+    else { return false }
+    for issue in instance.gearIssues {
+      guard issue.key == issue.value.resource, issue.value.valid(for: instance) else {
+        return false
+      }
+    }
+    guard
+      Set(instance.gearIssues.values.flatMap(\.items)).count
+        == instance.gearIssues.values.reduce(0, { $0 + $1.items.count }),
+      instance.payloads.count <= 128, instance.payloads.keys.allSatisfy(PackValidation.localID),
+      instance.payloads.values.allSatisfy({ (0...1_000_000).contains($0) }),
+      instance.milestones.count <= 64, instance.milestones.allSatisfy({ (0..<64).contains($0) }),
+      instance.timers.count <= 128,
+      instance.timers.allSatisfy({ $0.key == $0.value.id && $0.value.valid }),
+      instance.journal.count <= 512, instance.journal.allSatisfy({ $0.utf8.count <= 12000 }),
+      instance.data.object != nil, (try? ScriptWire.encode([instance.data], limit: 262144)) != nil
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func ownedEncountersValid(for instance: borrowing ScriptInstance) -> Bool {
+    let encounters = instance.ownedEncounters
+    for index in encounters.indices {
+      guard
+        ownedEncounterValid(encounters.values[index], key: encounters.keys[index], owner: instance)
+      else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func ownedEncounterValid(
+    _ encounter: borrowing ScriptOwnedEncounter, key: String, owner: borrowing ScriptInstance
+  ) -> Bool {
+    guard key == encounter.id, encounter.valid else { return false }
+    if let provenance = encounter.legacyProvenance {
+      guard provenance.matches(owner: owner, encounter: encounter) else { return false }
+    }
+    for index in encounter.actors.indices {
+      guard encounter.actors.values[index].body.missionInstanceID == owner.id else { return false }
+    }
+    for index in encounter.actors.indices {
+      guard actorModelsValid(encounter.actors.values[index]) else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func actorModelsValid(_ actor: borrowing ScriptOwnedActor) -> Bool {
+    actor.body.scriptNPC?.fit.models.values.allSatisfy { geometry[$0] != nil } ?? true
   }
 }

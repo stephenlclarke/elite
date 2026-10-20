@@ -93,7 +93,10 @@ struct SalvageWorldRuntimeTests {
     var (game, site) = try salvageWorldGame()
     let index = try #require(
       game.bodies.firstIndex { $0.physical?.salvage?.wreck == site.identity })
-    let before = game.commander.salvageLedger
+    let legacyBefore = game.commander.salvageLedger
+    let nativeBefore = try #require(
+      game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(nativeBefore.source == .generated(site))
     game.bodies[index].position = game.bodies[index].position + .init(11, -7, 3)
     game.bodies[index].physical?.velocity = .init(1, 2, 3)
     game.bodies[index].physical?.angularVelocity = .init(0.01, 0.02, 0.03)
@@ -104,8 +107,13 @@ struct SalvageWorldRuntimeTests {
       angularVelocity: .init(0.01, 0.02, 0.03), energy: body.energy)
     let accepted = game.persistSalvagePoses()
     #expect(accepted)
-    #expect(game.commander.salvageLedger != before)
-    #expect(game.commander.salvageLedger.wreckMotion(for: site.identity) == expected)
+    let updated = try #require(
+      game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(updated.id == nativeBefore.id && updated.identity == nativeBefore.identity)
+    #expect(updated.binding == nativeBefore.binding && updated.owner == nativeBefore.owner)
+    #expect(updated.motion == expected)
+    #expect(game.commander.salvageLedger == legacyBefore)
+    #expect(game.commander.salvageLedger.wreckMotion(for: site.identity) == nil)
     let published = game.commander
     let repeated = game.persistSalvagePoses()
     #expect(repeated && game.commander == published)
@@ -163,25 +171,44 @@ struct SalvageWorldRuntimeTests {
     #expect((relaunched.modelPose(of: reloaded).position - savedMotion.pose.position).length < 1e-8)
   }
 
-  @Test func destroyingAnActualAbandonedSiteMarksTerminalWithoutLivingShipCrimeOrKillCredit() throws
+  @Test func destroyingAnActualAbandonedSiteMarksTerminalWithoutLivingShipCrimeOrKillCredit()
+    async throws
   {
     var (game, site) = try salvageWorldGame()
     let body = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+    let nativeBefore = try #require(
+      game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(nativeBefore.source == .generated(site))
+    let legacyBefore = game.commander.salvageLedger
     let cash = game.commander.credits
     let kills = game.commander.kills
     let legal = game.commander.legal
     try actualWreckHit(&game, id: body.id, damage: 100000)
     game.resolveDestroyed()
-    #expect(game.commander.salvageLedger.isWreckDestroyed(site.identity))
+    let terminal = try #require(
+      game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(terminal.id == nativeBefore.id && terminal.identity == site.identity)
+    #expect(terminal.destroyedAt != nil && terminal.motion.energy.map { $0 <= 0 } == true)
+    #expect(terminal.binding == nil && game.commander.salvageLedger == legacyBefore)
     #expect(!game.bodies.contains { $0.id == body.id })
     #expect(
       game.commander.credits == cash && game.commander.kills == kills
         && game.commander.legal == legal)
+    let snapshot = try #require(game.commander.alienStorageState?.current.snapshot)
     game.activateNearbySalvageSites()
     #expect(!game.bodies.contains { $0.physical?.salvage?.wreck == site.identity })
-    let decoded = try JSONDecoder().decode(
-      Commander.self, from: JSONEncoder().encode(game.commander))
-    #expect(decoded.salvageLedger.isWreckDestroyed(site.identity))
+    #expect(game.commander.alienStorageState?.current.snapshot == snapshot)
+    let folder = try NativePagedSalvageFixture.folder()
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let file = folder.appendingPathComponent("commander.json")
+    let runtime = GameRuntime(game: game)
+    try await runtime.save(to: file)
+    let decoded = try NativeSaveTestFixture.readVersionedCommander(from: file)
+    let restored = try #require(
+      decoded.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(restored.id == terminal.id && restored.destroyedAt == terminal.destroyedAt)
+    #expect(restored.motion == terminal.motion && restored.binding == nil)
+    #expect(decoded.salvageLedger == legacyBefore)
   }
 
   @Test func failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()

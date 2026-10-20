@@ -177,7 +177,7 @@ public enum ComponentProgressionError: Error, Equatable, Sendable {
 public enum ComponentProgression {
   /// Validates a loaded physical instance without consuming an item or changing its grade/stats.
   public static func validateLoaded(
-    _ component: ComponentInstance, definition: ComponentFamilyDefinition
+    _ component: borrowing ComponentInstance, definition: borrowing ComponentFamilyDefinition
   ) throws {
     let grades = try validate(definition)
     _ = try validate(component, definition: definition, grades: grades)

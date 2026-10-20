@@ -15,7 +15,7 @@ extension Commander {
 
 extension Game {
   var systemIdentity: SystemIdentity {
-    Self.gameplaySystemIdentity(commander)
+    withReadOnlyCommander { Self.gameplaySystemIdentity($0) }
   }
 
   var gameplaySeed: UInt64 {
@@ -188,7 +188,7 @@ extension Game {
   }
 
   func gameplayContext() -> EncounterContext? {
-    let flight = Self.currentGameplayFlight(commander)
+    let flight = withReadOnlyCommander { Self.currentGameplayFlight($0) }
     guard let playerID = flight.player, let canonical = flight.anchors else { return nil }
     let anchors = Self.gameplayAnchors(bodies, flight: flight, canonical: canonical)
     let actors = Self.gameplayActors(bodies, pose: flight.pose)
@@ -325,7 +325,8 @@ extension Game {
     let miningPresence = Self.gameplayMiningPresence(game)
     let depleted = Self.depletedGameplayRocks(game)
     return .init(
-      system: Self.gameplaySystemIdentity(game.commander), seed: Self.gameplayContextSeed(game),
+      system: game.withReadOnlyCommander { Self.gameplaySystemIdentity($0) },
+      seed: Self.gameplayContextSeed(game),
       government: Self.gameplayCurrentSystem(game).government,
       visit: flight.visit, revision: game.gameplayRevision, physicalTime: flight.physicalTime,
       anchors: anchors, player: player, actors: actors, protection: scene.protection,
@@ -334,19 +335,28 @@ extension Game {
   }
 
   @inline(never)
-  private static func gameplayProtectionAndBudget(_ bodies: [SpaceBody])
+  private static func gameplayProtectionAndBudget(_ bodies: borrowing [SpaceBody])
     -> (protection: MissionProtection, budget: AdmissionBudget)
   {
     var protection = MissionProtection()
-    protection.protectedActors = Set(
-      bodies.filter { !$0.gameplayProtectionReasons.isEmpty }
-        .compactMap { $0.physical?.identity })
-    protection.blocksNavalEncounter = bodies.contains {
-      $0.physical?.blocksNavalEncounter == true
+    for index in bodies.indices {
+      if !bodies[index].gameplayProtectionReasons.isEmpty,
+        let identity = bodies[index].physical?.identity
+      {
+        protection.protectedActors.insert(identity)
+      }
+    }
+    for index in bodies.indices {
+      if bodies[index].physical?.blocksNavalEncounter == true {
+        protection.blocksNavalEncounter = true
+        break
+      }
     }
     var budget = AdmissionBudget(total: bodies.count)
-    for body in bodies where body.id != 0 {
-      if let population = body.physical?.population { budget.active[population, default: 0] += 1 }
+    for index in bodies.indices where bodies[index].id != 0 {
+      if let population = bodies[index].physical?.population {
+        budget.active[population, default: 0] += 1
+      }
     }
     return (protection, budget)
   }
@@ -359,15 +369,18 @@ extension Game {
       identity: playerID, hull: .cobra, position: flight.pose.position,
       orientation: flight.pose.orientation,
       velocity: Self.currentFlightWorldVelocity(game),
-      energy: game.energy, maximumEnergy: Self.gameplayPlayerMaximumEnergy(game.commander),
-      maximumSpeedUnitsPerSecond: Self.gameplayPlayerMaximumSpeed(game.commander),
+      energy: game.energy,
+      maximumEnergy: game.withReadOnlyCommander { Self.gameplayPlayerMaximumEnergy($0) },
+      maximumSpeedUnitsPerSecond: game.withReadOnlyCommander {
+        Self.gameplayPlayerMaximumSpeed($0)
+      },
       legal: .init(
-        value: Self.gameplayPlayerLegal(game.commander),
+        value: game.withReadOnlyCommander { Self.gameplayPlayerLegal($0) },
         bountyTenths: WantedCareerLedger.playerReward(
-          legal: Self.gameplayPlayerLegal(game.commander))), npc: nil, rock: nil,
+          legal: game.withReadOnlyCommander { Self.gameplayPlayerLegal($0) })), npc: nil, rock: nil,
       payload: nil,
-      ordinaryCargo: Self.gameplayPlayerCargo(game.commander),
-      catalogueShipID: Self.gameplayPlayerShipID(game.commander)
+      ordinaryCargo: game.withReadOnlyCommander { Self.gameplayPlayerCargo($0) },
+      catalogueShipID: game.withReadOnlyCommander { Self.gameplayPlayerShipID($0) }
     )
   }
 
@@ -413,7 +426,7 @@ extension Game {
 
   @inline(never)
   private static func gameplayCurrentSystem(_ game: borrowing Game) -> StarSystem {
-    game.systems[Self.gameplaySystemIndex(game.commander)]
+    game.systems[game.withReadOnlyCommander { Self.gameplaySystemIndex($0) }]
   }
 
   @inline(never)
@@ -430,10 +443,11 @@ extension Game {
 
   @inline(never)
   private static func gameplayMiningPresence(_ game: borrowing Game) -> MiningScenePresence {
-    let ledger = Self.gameplayMiningLedger(game.commander)
+    let ledger = game.withReadOnlyCommander { Self.gameplayMiningLedger($0) }
     return .init(
       ringPresent: ledger.ringPresence(
-        system: Self.gameplayCurrentSystem(game), galaxy: Self.gameplayGalaxy(game.commander)),
+        system: Self.gameplayCurrentSystem(game),
+        galaxy: game.withReadOnlyCommander { Self.gameplayGalaxy($0) }),
       includingLegacy: ledger.retainsLegacyFields)
   }
 
@@ -448,9 +462,11 @@ extension Game {
   private static func depletedGameplayRocks(_ game: borrowing Game) -> Set<RockIdentity> {
     var depleted = Set<RockIdentity>()
     for field in game.miningFields {
-      for rock in field.rocks
-      where Self.gameplayRockIsDepleted(rock.identity, commander: game.commander) {
-        depleted.insert(rock.identity)
+      for rock in field.rocks {
+        let identity = rock.identity
+        if game.withReadOnlyCommander({ Self.gameplayRockIsDepleted(identity, commander: $0) }) {
+          depleted.insert(identity)
+        }
       }
     }
     return depleted

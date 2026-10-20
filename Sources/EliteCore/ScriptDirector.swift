@@ -285,6 +285,22 @@ extension Game {
     freightAdmission: ScriptFreightIssueAdmission? = nil,
     navigationBinding: ScriptNavigationTradeBinding? = nil
   ) throws -> ScriptAcceptanceInstanceScratch {
+    try validateScriptMissionAcceptance(
+      pack, instanceID: instanceID, contract: contract, campaignParent: campaignParent,
+      providerState: providerState, navigationBinding: navigationBinding)
+    return try constructScriptMissionAcceptance(
+      pack, instanceID: instanceID, randomSeed: randomSeed, contract: contract,
+      campaignParent: campaignParent, providerState: providerState,
+      freightAdmission: freightAdmission)
+  }
+
+  // Early acceptance values retire before full instance/native-contract construction begins.
+  @inline(never)
+  private mutating func validateScriptMissionAcceptance(
+    _ pack: ScriptPack, instanceID: UUID,
+    contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
+    providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
     guard scriptUnavailable(pack, navigationBinding: navigationBinding) == nil,
       commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
@@ -316,6 +332,14 @@ extension Game {
       throw MissionPackError("Courier requires its native board confirmation.")
     }
     if let reason = scriptAcceptanceIssue(pack) { throw MissionPackError(reason) }
+  }
+
+  @inline(never)
+  private mutating func constructScriptMissionAcceptance(
+    _ pack: ScriptPack, instanceID: UUID, randomSeed: UInt64,
+    contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
+    providerState: ScriptProviderContractState?, freightAdmission: ScriptFreightIssueAdmission?
+  ) throws -> ScriptAcceptanceInstanceScratch {
     var instance = ScriptInstance(
       id: instanceID, definition: pack.manifest.stateID,
       version: pack.manifest.version, digest: pack.digest)
@@ -497,17 +521,30 @@ extension Game {
       let selected = selectScriptEvent(batch, index: index, navigationBinding: navigationBinding)
     else { return }
     do {
-      let attempt = try Self.makeScriptEventAttempt(original: self, selected: selected)
-      try Self.runScriptEventAttempt(
-        original: self, attempt: attempt, navigationBinding: navigationBinding)
-      try Self.finishScriptEventAttempt(
-        original: self, attempt: attempt, publish: publish, clueTrust: clueTrust)
+      let attempt = try Self.executeScriptEventAttempt(
+        original: self, selected: selected, navigationBinding: navigationBinding,
+        publish: publish, clueTrust: clueTrust)
       commitScriptEventAttempt(attempt)
     } catch let refusal as ScriptNavigationTradeRefusal {
       refuseScriptEvent(selected, refusal: refusal)
     } catch {
       failScriptEvent(selected, error: error, publish: publish)
     }
+  }
+
+  /// Borrow one original value across the pipeline instead of staging three mutating-receiver reads.
+  @inline(never)
+  private static func executeScriptEventAttempt(
+    original: borrowing Game, selected: ScriptEventSelectionScratch,
+    navigationBinding: ScriptNavigationTradeBinding?, publish: ScriptPublisher?,
+    clueTrust: ScriptClueTrustCatalog
+  ) throws -> ScriptEventAttemptScratch {
+    let attempt = try makeScriptEventAttempt(original: original, selected: selected)
+    try runScriptEventAttempt(
+      original: original, attempt: attempt, navigationBinding: navigationBinding)
+    try finishScriptEventAttempt(
+      original: original, attempt: attempt, publish: publish, clueTrust: clueTrust)
+    return attempt
   }
 
   @inline(never)

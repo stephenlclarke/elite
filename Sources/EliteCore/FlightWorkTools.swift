@@ -65,7 +65,12 @@ extension Game {
 
   /// Match the rendered mesh's model transform, including its visible rotation.
   func modelPose(of body: SpaceBody) -> ShipPose {
-    let player = commander.flightSimulation.pose
+    withReadOnlyCommander { commander in
+      Self.modelPose(of: body, player: commander.flightSimulation.pose)
+    }
+  }
+
+  private static func modelPose(of body: borrowing SpaceBody, player: ShipPose) -> ShipPose {
     var basis = Basis3()
     basis.x = player.orientation.apply(body.modelVector(.init(1, 0, 0)))
     basis.y = player.orientation.apply(body.modelVector(.init(0, 1, 0)))
@@ -206,6 +211,22 @@ extension Game {
   /// Salvage observation temporaries are entered only after EMP persistence has returned.
   @inline(never)
   private mutating func persistSalvagePosesAfterEMP(cold: Bool) -> Bool {
+    let hasObservations = bodies.indices.contains { index in
+      if case .salvage? = bodies[index].physical?.payload { return true }
+      guard let metadata = bodies[index].physical?.salvage, metadata.wreck != nil else {
+        return false
+      }
+      return [.wreck, .section].contains(metadata.category)
+    }
+    if hasObservations {
+      guard persistPresentSalvagePoseObservations() else { return false }
+    }
+    return !cold
+      || (flushNativeSalvageWork() && flushNativeSalvageWrecks() && flushNativeSalvageMotion())
+  }
+
+  @inline(never)
+  private mutating func persistPresentSalvagePoseObservations() -> Bool {
     var ledger = commander.salvageLedger
     for body in bodies {
       guard let physical = body.physical else { continue }
@@ -245,7 +266,6 @@ extension Game {
       }
     }
     if ledger != commander.salvageLedger { commander.salvageLedger = ledger }
-    return !cold
-      || (flushNativeSalvageWork() && flushNativeSalvageWrecks() && flushNativeSalvageMotion())
+    return true
   }
 }

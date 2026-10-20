@@ -147,7 +147,16 @@ struct GameCommanderStorageTests {
     // Derive the documented normalization from an independent value copy.
     var expectedDisk = liveCommander
     expectedDisk.npcPersistence.resetPhysicalBindings(system: committed.systemIdentity)
+    expectedDisk.resetWantedCareerBindings(system: committed.systemIdentity)
     #expect(saved == expectedDisk)
+    let liveCareers = liveCommander.wantedCareers.careers
+    try #require(liveCareers.values.contains { $0.binding != nil })
+    #expect(saved.wantedCareers.careers.count == liveCareers.count)
+    for (identity, career) in liveCareers {
+      var expectedCareer = career
+      if identity.system == committed.systemIdentity { expectedCareer.binding = nil }
+      #expect(saved.wantedCareers.careers[identity] == expectedCareer)
+    }
     for logical in liveNPCs {
       try #require(liveCommander.npcPersistence.binding(for: logical) != nil)
       #expect(saved.npcPersistence.binding(for: logical) == nil)
@@ -180,7 +189,9 @@ struct GameCommanderStorageTests {
     // The complete Commander comparison above still proves semantic conservation.
     #expect(changedFields.contains("savedNPCPersistence"))
     #expect(
-      Set(semanticChangedFields).isSubset(of: ["savedNPCPersistence", "savedEquipmentInventory"]))
+      Set(semanticChangedFields).isSubset(of: [
+        "savedNPCPersistence", "savedEquipmentInventory", "savedWantedCareers",
+      ]))
     if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
       let evidence = URL(fileURLWithPath: path, isDirectory: true)
       try FileManager.default.createDirectory(at: evidence, withIntermediateDirectories: true)
@@ -189,5 +200,84 @@ struct GameCommanderStorageTests {
     }
     let committedReceipt = await runtime.takeNewCommanderSaveReceipt()
     #expect(committedReceipt?.url == save)
+  }
+
+  @Test func borrowedCommanderReadsPreserveDefaultFlightAndOwnedSnapshots() throws {
+    var original = Game(executive: false)
+    let encoder = JSONEncoder()
+    let before = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(original.commander)) as? [String: Any])
+    #expect(before["savedFlightSimulation"] == nil)
+    #expect(before["savedScriptState"] == nil)
+    #expect(original.withReadOnlyScriptState { $0.nextEvent } == 0)
+    #expect(original.withReadOnlyCommander { $0.scriptState.instances.isEmpty })
+    var ownedDefaultScript = original.withReadOnlyCommander { $0.scriptState }
+    ownedDefaultScript.nextEvent = 99
+    #expect(original.withReadOnlyCommander { $0.scriptState.nextEvent } == 0)
+    original.commander.scriptState.nextEvent = 0
+
+    let defaults = original.withReadOnlyCommander { commander in
+      (
+        visit: commander.flightSimulation.visit,
+        time: commander.flightSimulation.physicalTime,
+        system: commander.flightSimulation.system,
+        hasAnchors: commander.flightSimulation.anchors != nil,
+        position: commander.flightSimulation.pose.position
+      )
+    }
+    #expect(defaults.visit == 0 && defaults.time == 0)
+    #expect(defaults.system == nil && !defaults.hasAnchors)
+    #expect(defaults.position == Vector3(0, 0, 0))
+    var ownedDefault = original.withReadOnlyCommander { $0.flightSimulation }
+    ownedDefault.physicalTime = 99
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.physicalTime } == 0)
+    let after = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(original.commander)) as? [String: Any])
+    #expect(after["savedFlightSimulation"] == nil)
+    #expect(after["savedScriptState"] == nil)
+
+    let system = SystemIdentity(galaxy: 0, system: 7)
+    original.commander.flightSimulation.enter(system, arriving: false)
+    original.commander.scriptState.nextEvent = 4
+    let retained = original
+    var ownedScript = original.withReadOnlyCommander { $0.scriptState }
+    original.commander.scriptState.nextEvent = 7
+    #expect(retained.withReadOnlyCommander { $0.scriptState.nextEvent } == 4)
+    #expect(ownedScript.nextEvent == 4)
+    ownedScript.nextEvent = 88
+    var ownedFlight = original.withReadOnlyCommander { $0.flightSimulation }
+    original.commander.flightSimulation.advancePhysicalTime(3)
+    original.commander.flightSimulation.pose.position.x += 25
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.physicalTime } == 3)
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 25)
+    #expect(retained.withReadOnlyCommander { $0.flightSimulation.physicalTime } == 0)
+    #expect(retained.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 0)
+    #expect(ownedFlight.physicalTime == 0 && ownedFlight.pose.position.x == 0)
+
+    ownedFlight.pose.position.x = -40
+    var caller = retained
+    caller.commander.scriptState.nextEvent = 9
+    #expect(caller.withReadOnlyCommander { $0.scriptState.nextEvent } == 9)
+    #expect(original.withReadOnlyCommander { $0.scriptState.nextEvent } == 7)
+    #expect(retained.withReadOnlyCommander { $0.scriptState.nextEvent } == 4)
+    #expect(ownedScript.nextEvent == 88 && ownedDefaultScript.nextEvent == 99)
+    caller.commander.flightSimulation.enter(.init(galaxy: 0, system: 8), arriving: true)
+    #expect(caller.withReadOnlyCommander { $0.flightSimulation.visit } == 2)
+    #expect(retained.withReadOnlyCommander { $0.flightSimulation.visit } == 1)
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.system } == system)
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 25)
+    #expect(retained.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 0)
+    #expect(ownedFlight.pose.position.x == -40 && ownedDefault.physicalTime == 99)
+    #expect(original.withReadOnlyScriptState { $0.nextEvent } == 7)
+    let bytes = try encoder.encode(original.commander)
+    let fields = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+    let savedScript = try #require(fields["savedScriptState"] as? NSDictionary)
+    let ownedActualScript = original.withReadOnlyScriptState { $0 }
+    let plainScript = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(ownedActualScript)) as? NSDictionary)
+    #expect(savedScript == plainScript)
+    let decoded = try JSONDecoder().decode(Commander.self, from: bytes)
+    #expect(decoded.scriptState.nextEvent == 7)
+    #expect(decoded.flightSimulation.pose.position.x == 25)
   }
 }

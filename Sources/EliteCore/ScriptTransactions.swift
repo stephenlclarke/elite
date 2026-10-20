@@ -159,6 +159,15 @@ extension GameRuntime {
     }
     candidate.persistScriptActors()
     let prepared = try Self.prepareNativeSaveState(candidate)
+    try writePreparedCommander(
+      &candidate, prepared: prepared, to: url, navigationBinding: navigationBinding)
+  }
+
+  @inline(never)
+  private static func writePreparedCommander(
+    _ candidate: inout Game, prepared: NativeSavePreparation, to url: URL,
+    navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
     var alienPublication: AlienStoragePublication?
     if prepared.game.requiresScriptDurability {
       alienPublication = try ScriptSaveStore.write(
@@ -173,6 +182,16 @@ extension GameRuntime {
       try CommanderSavePublication.write(
         data, to: url, exclusive: candidate.pendingNewSaveDestination == url)
     }
+    finishCommanderPublication(
+      &candidate, prepared: prepared, alienPublication: alienPublication, to: url)
+  }
+
+  // Reserve the deliberate final Game copy only after all encoding/publication work returns.
+  @inline(never)
+  private static func finishCommanderPublication(
+    _ candidate: inout Game, prepared: NativeSavePreparation,
+    alienPublication: AlienStoragePublication?, to url: URL
+  ) {
     candidate = prepared.game
     candidate.commander.publishAlienStorage(alienPublication)
     candidate.recordNewCommanderSavePublication(to: url)

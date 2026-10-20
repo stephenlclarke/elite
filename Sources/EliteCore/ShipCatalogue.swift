@@ -154,6 +154,7 @@ public enum ShipCatalogue {
   static func nativeMesh(_ hull: Hull) -> Mesh? { nativeMeshes[hull] }
   private static let byID = Dictionary(uniqueKeysWithValues: all.map { ($0.id, $0) })
   public static func ship(_ id: String) -> CatalogueShip? { byID[id] }
+  static func containsShip(_ id: String) -> Bool { byID.index(forKey: id) != nil }
   public static var modelCount: Int { all.count }
   private static let resources: Bundle =
     Bundle.main.resourceURL.flatMap {

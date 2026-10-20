@@ -435,14 +435,25 @@ enum ScriptSaveStore {
     diagnosticBoundary: ScriptRefusalBoundary
   ) throws {
     let semantic = JSONEncoder()
-    guard try semantic.encode(commander.scriptState).count <= 33_554_432,
-      try semantic.encode(commander.contracts).count <= 33_554_432
-    else {
-      diagnostics?.record(
-        diagnosticBoundary,
-        .init(stage: .storeSize, error: SaveError.invalidCommander, commander: commander))
-      throw SaveError.invalidCommander
+    let scriptSizeValid = try commander.withReadOnlyScriptState {
+      try semantic.encode($0).count <= 33_554_432
     }
+    guard scriptSizeValid, try semantic.encode(commander.contracts).count <= 33_554_432
+    else {
+      try refuseSemanticPublicationSize(
+        commander: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    }
+  }
+
+  @inline(never)
+  private static func refuseSemanticPublicationSize(
+    commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) throws -> Never {
+    diagnostics?.record(
+      diagnosticBoundary,
+      .init(stage: .storeSize, error: SaveError.invalidCommander, commander: commander))
+    throw SaveError.invalidCommander
   }
 
   /// Own the one deliberate header copy without retaining its preparation frame in encoding.

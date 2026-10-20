@@ -19,13 +19,28 @@ enum NativeMissionActorAdmissionPreparation: Sendable {
 final class NativeMissionActorAdmissionPlan: Sendable {
   let retentionPatch: MissionActorRetentionPatch
   let sceneBodyIDs: [UUID: Int]
-  fileprivate let source: MissionActorAdmissionSource
-  fileprivate let context: EncounterContext
-  fileprivate let anchor: SpaceBody
-  fileprivate let previousFlight: FlightSimulationState
+  private let storedSource: MissionActorAdmissionSource
+  fileprivate var source: MissionActorAdmissionSource {
+    _read { yield storedSource }
+  }
+  private let storedContext: EncounterContext
+  fileprivate var context: EncounterContext {
+    _read { yield storedContext }
+  }
+  private let storedAnchor: SpaceBody
+  fileprivate var anchor: SpaceBody {
+    _read { yield storedAnchor }
+  }
+  private let storedPreviousFlight: FlightSimulationState
+  fileprivate var previousFlight: FlightSimulationState {
+    _read { yield storedPreviousFlight }
+  }
   fileprivate let previousBodies: [SpaceBody]
   fileprivate let previousBodyID: Int
-  fileprivate let flight: FlightSimulationState
+  private let storedFlight: FlightSimulationState
+  fileprivate var flight: FlightSimulationState {
+    _read { yield storedFlight }
+  }
   fileprivate let admittedBodies: [SpaceBody]
 
   fileprivate init(
@@ -36,13 +51,13 @@ final class NativeMissionActorAdmissionPlan: Sendable {
   ) {
     self.retentionPatch = retentionPatch
     self.sceneBodyIDs = sceneBodyIDs
-    self.source = source
-    self.context = context
-    self.anchor = anchor
-    self.previousFlight = previousFlight
+    storedSource = source
+    storedContext = context
+    storedAnchor = anchor
+    storedPreviousFlight = previousFlight
     self.previousBodies = previousBodies
     self.previousBodyID = previousBodyID
-    self.flight = flight
+    storedFlight = flight
     self.admittedBodies = admittedBodies
   }
 }
@@ -56,9 +71,11 @@ struct NativeMissionActorAdmissionReceipt: Sendable {
   fileprivate init(_ plan: NativeMissionActorAdmissionPlan) {
     sceneBodyIDs = plan.sceneBodyIDs
     nativeActors = Dictionary(
-      uniqueKeysWithValues: plan.admittedBodies.compactMap { body in
-        guard let actor = body.missionActorID, let physical = body.physical else { return nil }
-        return (actor, physical.identity)
+      uniqueKeysWithValues: plan.admittedBodies.indices.compactMap { index in
+        guard let actor = plan.admittedBodies[index].missionActorID,
+          let identity = plan.admittedBodies[index].physical?.identity
+        else { return nil }
+        return (actor, identity)
       })
     retentionPatch = plan.retentionPatch
   }
@@ -74,11 +91,37 @@ private enum MissionActorAdmissionSelection {
   case selected(MissionActorAdmissionCohort)
 }
 
+/// Immutable attempt-local values; no Game, Commander, authority or published allocator owner.
+private final class MissionActorAdmissionStagedValues: Sendable {
+  let previousFlight: FlightSimulationState
+  let flight: FlightSimulationState
+  let requests: [SpawnRequest]
+  let sceneBodyIDs: [UUID: Int]
+  let admittedBodies: [SpaceBody]
+
+  init(
+    previousFlight: consuming FlightSimulationState, flight: consuming FlightSimulationState,
+    requests: consuming [SpawnRequest], sceneBodyIDs: consuming [UUID: Int],
+    admittedBodies: consuming [SpaceBody]
+  ) {
+    self.previousFlight = consume previousFlight
+    self.flight = consume flight
+    self.requests = consume requests
+    self.sceneBodyIDs = consume sceneBodyIDs
+    self.admittedBodies = consume admittedBodies
+  }
+}
+
+private enum MissionActorAdmissionStaging {
+  case pending(NativeMissionActorAdmissionPending)
+  case staged(MissionActorAdmissionStagedValues)
+}
+
 extension Game {
   /// Read at the existing visit guard, then release the computed Commander receiver.
   @inline(never)
   private func currentMissionActorAdmissionVisit() -> UInt64 {
-    commander.flightSimulation.visit
+    withReadOnlyCommander { $0.flightSimulation.visit }
   }
 
   /// Invalid source/scene facts are refused before eligibility, temporary capacity or no-op.
@@ -89,21 +132,28 @@ extension Game {
     try validateMissionActorAdmissionSource(source)
     let currentContext = gameplayContext()
     try validateMissionActorAdmissionScene(context: currentContext)
-    for template in source.actors {
-      try validateMissionActorAdmissionTemplate(template, source: source)
+    for index in source.actors.indices {
+      try validateMissionActorAdmissionTemplate(source.actors[index], source: source)
     }
-    guard !docked, source.system == systemIdentity, let context = currentContext,
+    guard !docked, source.system == missionActorAdmissionSystemIdentity,
+      let context = currentContext,
       let anchor = scriptAnchor
     else { return .pending(.unavailableArrival) }
     guard anchor.position.finite, anchor.position.length.isFinite, anchor.orientation.validRotation,
-      context.system == systemIdentity, context.visit == currentMissionActorAdmissionVisit()
+      context.system == missionActorAdmissionSystemIdentity,
+      context.visit == currentMissionActorAdmissionVisit()
     else { throw NativeMissionActorAdmissionError.invalidScene }
     switch try selectMissionActorAdmissionCohort(source, context: context, anchor: anchor) {
     case .outsideLocalBubble: return .pending(.outsideLocalBubble)
     case .unchanged: return .unchanged
     case .selected(let cohort):
-      return try stageMissionActorAdmission(
-        source, context: context, anchor: anchor, cohort: cohort)
+      switch try stageMissionActorAdmission(context: context, cohort: cohort) {
+      case .pending(let reason): return .pending(reason)
+      case .staged(let staged):
+        return try Self.finishMissionActorAdmission(
+          original: self, source: source, context: context, anchor: anchor,
+          templates: cohort.templates, staged: staged)
+      }
     }
   }
 
@@ -152,17 +202,17 @@ extension Game {
 
   /// Stage only the selected cohort. The immutable heap-owned plan keeps its large snapshots
   /// out of every preparation result value; no Game value is captured or copied into the plan.
+  @inline(never)
   private func stageMissionActorAdmission(
-    _ source: MissionActorAdmissionSource, context: EncounterContext, anchor: SpaceBody,
-    cohort: MissionActorAdmissionCohort
-  ) throws -> NativeMissionActorAdmissionPreparation {
+    context: EncounterContext, cohort: MissionActorAdmissionCohort
+  ) throws -> MissionActorAdmissionStaging {
     let selected = cohort.templates
     var prepared = cohort.bodies
     let units =
       bodies.reduce(0) { $0 + $1.scriptNativeUnits }
       + selected.reduce(0) { $0 + $1.nativeUnits }
     guard units <= 1024 else { return .pending(.nativeUnits) }
-    let flight = commander.flightSimulation
+    let flight = withReadOnlyCommander { $0.flightSimulation }
     guard prepared.count <= 999_999_999 - nextBodyID,
       UInt64(prepared.count) < UInt64.max - flight.nextActor,
       flight.nextSpawn < UInt64.max - 1
@@ -220,18 +270,32 @@ extension Game {
       requests.append(request)
     }
     guard staged.valid else { throw NativeMissionActorAdmissionError.invalidScene }
-    if let refusal = gameplayMissionActorAdmissionRefusal(
-      requests, templates: selected, context: context)
+    return .staged(
+      .init(
+        previousFlight: consume flight, flight: consume staged, requests: consume requests,
+        sceneBodyIDs: consume addresses, admittedBodies: consume prepared))
+  }
+
+  /// Allocator/physical construction has actually returned before policy and retention work starts.
+  @inline(never)
+  private static func finishMissionActorAdmission(
+    original: borrowing Game, source: borrowing MissionActorAdmissionSource,
+    context: EncounterContext, anchor: borrowing SpaceBody,
+    templates: [MissionActorAdmissionTemplate], staged: MissionActorAdmissionStagedValues
+  ) throws -> NativeMissionActorAdmissionPreparation {
+    if let refusal = original.gameplayMissionActorAdmissionRefusal(
+      staged.requests, templates: templates, context: context)
     {
       if refusal == .staleContext { throw NativeMissionActorAdmissionError.invalidScene }
       return .pending(.native(refusal))
     }
-    let patch = try source.prepareRetentionPatch(sceneBodyIDs: addresses)
+    let patch = try source.prepareRetentionPatch(sceneBodyIDs: staged.sceneBodyIDs)
     return .ready(
       .init(
-        retentionPatch: patch, sceneBodyIDs: addresses, source: source, context: context,
-        anchor: anchor, previousFlight: flight, previousBodies: bodies, previousBodyID: nextBodyID,
-        flight: staged, admittedBodies: prepared))
+        retentionPatch: patch, sceneBodyIDs: staged.sceneBodyIDs, source: copy source,
+        context: context, anchor: copy anchor, previousFlight: staged.previousFlight,
+        previousBodies: original.bodies, previousBodyID: original.nextBodyID,
+        flight: staged.flight, admittedBodies: staged.admittedBodies))
   }
 
   /// All adapter retention staging must finish before this call. The commit itself appends
@@ -240,19 +304,60 @@ extension Game {
     -> NativeMissionActorAdmissionReceipt
   {
     try validateMissionActorAdmissionSource(plan.source)
-    return try commitValidatedMissionActorAdmission(plan)
+    return try commitSourceValidatedMissionActorAdmission(plan)
   }
 
-  /// Keep scene validation and commit storage out of the full source-validation call chain.
-  private mutating func commitValidatedMissionActorAdmission(
+  /// Reserve the current-context result only after full source validation has returned.
+  @inline(never)
+  private mutating func commitSourceValidatedMissionActorAdmission(
     _ plan: NativeMissionActorAdmissionPlan
   ) throws -> NativeMissionActorAdmissionReceipt {
-    let context = gameplayContext()
-    try validateMissionActorAdmissionScene(context: context)
-    guard !docked, context == plan.context, scriptAnchor == plan.anchor,
-      commander.flightSimulation == plan.previousFlight, nextBodyID == plan.previousBodyID,
-      bodies == plan.previousBodies
+    let context = Self.currentMissionActorAdmissionCommitContext(original: self)
+    try Self.validateMissionActorAdmissionCommitScene(original: self, context: context)
+    try Self.validateMissionActorAdmissionCommitFacts(original: self, plan: plan, context: context)
+    return applyValidatedMissionActorAdmission(plan)
+  }
+
+  /// Context construction returns before scene and final-plan comparison frames start.
+  @inline(never)
+  private static func currentMissionActorAdmissionCommitContext(
+    original: borrowing Game
+  ) -> EncounterContext? {
+    original.gameplayContext()
+  }
+
+  @inline(never)
+  private static func validateMissionActorAdmissionCommitScene(
+    original: borrowing Game, context: EncounterContext?
+  ) throws {
+    try original.validateMissionActorAdmissionScene(context: context)
+  }
+
+  /// Keep full scene/body/flight comparisons out of both context construction and native writes.
+  @inline(never)
+  private static func validateMissionActorAdmissionCommitFacts(
+    original: borrowing Game, plan: NativeMissionActorAdmissionPlan, context: EncounterContext?
+  ) throws {
+    guard !original.docked, let context, context == plan.context,
+      Self.missionActorAdmissionAnchorMatches(original: original, plan: plan),
+      original.withReadOnlyCommander({ $0.flightSimulation == plan.previousFlight }),
+      original.nextBodyID == plan.previousBodyID,
+      original.bodies == plan.previousBodies
     else { throw NativeMissionActorAdmissionError.stalePlan }
+  }
+
+  @inline(never)
+  private static func missionActorAdmissionAnchorMatches(
+    original: borrowing Game, plan: NativeMissionActorAdmissionPlan
+  ) -> Bool {
+    guard let anchor = original.scriptAnchor else { return false }
+    return anchor == plan.anchor
+  }
+
+  @inline(never)
+  private mutating func applyValidatedMissionActorAdmission(
+    _ plan: NativeMissionActorAdmissionPlan
+  ) -> NativeMissionActorAdmissionReceipt {
     let receipt = NativeMissionActorAdmissionReceipt(plan)
     commander.flightSimulation = plan.flight
     bodies.append(contentsOf: plan.admittedBodies)
@@ -261,18 +366,36 @@ extension Game {
   }
 
   private func validateMissionActorAdmissionScene(context: EncounterContext?) throws {
-    let flight = commander.flightSimulation
-    let actualSystem = systemIdentity
-    let bodyCursor = nextBodyID
-    let identities = bodies.compactMap { $0.physical?.identity }
-    let spawns = bodies.compactMap { $0.physical?.spawnIdentity }
-    let missions = bodies.compactMap(\.missionActorID)
-    guard flight.valid, (1..<1_000_000_000).contains(nextBodyID),
-      Set(bodies.map(\.id)).count == bodies.count,
-      bodies.allSatisfy({
-        (0..<bodyCursor).contains($0.id) && $0.position.finite
-          && $0.position.length.isFinite && $0.orientation.validRotation && $0.energy.isFinite
-      }),
+    try Self.validateMissionActorAdmissionSceneAddresses(original: self)
+    for index in bodies.indices {
+      if try Self.validateMissionActorAdmissionSceneCondition(body: bodies[index]) {
+        try Self.validateMissionActorAdmissionSceneBinding(
+          original: self, body: bodies[index], context: context)
+      }
+    }
+  }
+
+  /// Global address/pose/counter temporaries return before any per-body condition or binding frame.
+  @inline(never)
+  private static func validateMissionActorAdmissionSceneAddresses(
+    original: borrowing Game
+  ) throws {
+    let flight = original.withReadOnlyCommander { $0.flightSimulation }
+    let actualSystem = original.missionActorAdmissionSystemIdentity
+    let bodyCursor = original.nextBodyID
+    var identities: [ActorIdentity] = []
+    var spawns: [SpawnIdentity] = []
+    var missions: [UUID] = []
+    var bodyIDs: [Int] = []
+    for index in original.bodies.indices {
+      if let identity = original.bodies[index].physical?.identity { identities.append(identity) }
+      if let spawn = original.bodies[index].physical?.spawnIdentity { spawns.append(spawn) }
+      if let mission = original.bodies[index].missionActorID { missions.append(mission) }
+      bodyIDs.append(original.bodies[index].id)
+    }
+    guard flight.valid, (1..<1_000_000_000).contains(original.nextBodyID),
+      Set(bodyIDs).count == original.bodies.count,
+      Self.missionActorAdmissionScenePosesAreValid(bodies: original.bodies, bodyCursor: bodyCursor),
       Set(identities).count == identities.count, Set(spawns).count == spawns.count,
       Set(missions).count == missions.count,
       identities.allSatisfy({
@@ -284,27 +407,52 @@ extension Game {
           $0, system: actualSystem, visit: flight.visit, nextFlightSpawn: flight.nextSpawn)
       })
     else { throw NativeMissionActorAdmissionError.invalidScene }
-    for body in bodies {
-      guard body.energy <= 0 || body.physical != nil else {
-        throw NativeMissionActorAdmissionError.invalidScene
-      }
-      guard body.physical?.velocity.finite ?? true,
-        body.physical?.velocity.length.isFinite ?? true,
-        body.physical?.npc?.resources?.valid ?? true
-      else { throw NativeMissionActorAdmissionError.invalidCondition }
-      if body.energy > 0,
-        body.missionActorID != nil || body.missionInstanceID != nil || body.scriptNPC != nil
-      {
-        guard let context, let descriptor = currentMissionActorDescriptor(bodyID: body.id),
-          body.physical?.population == .mission, body.physical?.npc?.role == .mission
-        else { throw NativeMissionActorAdmissionError.invalidScene }
-        do {
-          _ = try MissionNativeBridge.bindActor(
-            descriptor: descriptor, body: body, context: context)
-        } catch {
-          throw NativeMissionActorAdmissionError.invalidScene
-        }
-      }
+  }
+
+  @inline(never)
+  private static func missionActorAdmissionScenePosesAreValid(
+    bodies: borrowing [SpaceBody], bodyCursor: Int
+  ) -> Bool {
+    for index in bodies.indices {
+      guard (0..<bodyCursor).contains(bodies[index].id), bodies[index].position.finite,
+        bodies[index].position.length.isFinite, bodies[index].orientation.validRotation,
+        bodies[index].energy.isFinite
+      else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private static func validateMissionActorAdmissionSceneCondition(
+    body: borrowing SpaceBody
+  ) throws -> Bool {
+    if !(body.energy <= 0) {
+      if case .none = body.physical { throw NativeMissionActorAdmissionError.invalidScene }
+    }
+    guard body.physical?.velocity.finite ?? true,
+      body.physical?.velocity.length.isFinite ?? true,
+      body.physical?.npc?.resources?.valid ?? true
+    else { throw NativeMissionActorAdmissionError.invalidCondition }
+    guard body.energy > 0 else { return false }
+    if body.missionActorID != nil { return true }
+    if body.missionInstanceID != nil { return true }
+    if case .some = body.scriptNPC { return true }
+    return false
+  }
+
+  /// Only a live mission-marked body enters descriptor/context and owned bridge argument storage.
+  @inline(never)
+  private static func validateMissionActorAdmissionSceneBinding(
+    original: borrowing Game, body: borrowing SpaceBody, context: EncounterContext?
+  ) throws {
+    guard let context, let descriptor = original.currentMissionActorDescriptor(bodyID: body.id),
+      body.physical?.population == .mission, body.physical?.npc?.role == .mission
+    else { throw NativeMissionActorAdmissionError.invalidScene }
+    do {
+      _ = try MissionNativeBridge.bindActor(
+        descriptor: descriptor, body: copy body, context: context)
+    } catch {
+      throw NativeMissionActorAdmissionError.invalidScene
     }
   }
 
@@ -339,15 +487,17 @@ extension Game {
   }
 
   private func validateMissionActorAdmissionTemplate(
-    _ template: MissionActorAdmissionTemplate, source: MissionActorAdmissionSource
+    _ template: borrowing MissionActorAdmissionTemplate,
+    source: borrowing MissionActorAdmissionSource
   ) throws {
+    let maximumHullEnergy = template.maximumHullEnergy
     let body = template.canonicalBody
     guard body.id == -1, body.physical == nil, body.missionActorID == template.actorID,
       body.missionInstanceID == source.instanceID,
       template.radius.isFinite, template.radius > 0, template.nativeUnits > 0,
       template.nativeUnits == body.scriptNativeUnits,
-      body.energy.isFinite, body.energy >= 0, body.energy <= template.maximumHullEnergy,
-      template.maximumHullEnergy.isFinite, template.maximumHullEnergy > 0,
+      body.energy.isFinite, body.energy >= 0, body.energy <= maximumHullEnergy,
+      maximumHullEnergy.isFinite, maximumHullEnergy > 0,
       template.parts.allSatisfy({
         $0.energy.isFinite && $0.energy >= 0
           && $0.maximumEnergy.isFinite && $0.maximumEnergy > 0 && $0.energy <= $0.maximumEnergy
@@ -367,7 +517,7 @@ extension Game {
       }
       guard condition.role == .mission, (0...255).contains(condition.legal.value),
         condition.legal.bountyTenths >= 0, condition.resources?.valid ?? true,
-        condition.resources.map({ $0.energyCapacity == template.maximumHullEnergy }) ?? true
+        condition.resources.map({ $0.energyCapacity == maximumHullEnergy }) ?? true
       else { throw NativeMissionActorAdmissionError.invalidCondition }
     }
   }

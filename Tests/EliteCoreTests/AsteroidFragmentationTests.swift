@@ -229,7 +229,10 @@ extension AsteroidFragmentationTests {
     let beforeRefusal = game.commander.miningLedger
     moveFractureObserver(&game, to: motion.position)
     game.activateNearbyMiningFields()
-    #expect(game.bodies.isEmpty && game.commander.miningLedger == beforeRefusal)
+    // Native admission also restores absent RRS bodies before testing this rock's clearance.
+    #expect(!game.bodies.contains { $0.physical?.rock == rock.identity })
+    #expect(game.bodies.allSatisfy { $0.nativeStationIdentity != nil })
+    #expect(game.commander.miningLedger == beforeRefusal)
     moveFractureObserver(&game, to: observer)
     game.activateNearbyMiningFields()
     let restored = try #require(game.bodies.first { $0.physical?.rock == rock.identity })

@@ -200,6 +200,20 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
 
   @inline(never)
   private func receiptsAndPhaseValid() -> Bool {
+    if case .some = opening {
+      guard openingReceiptValid() else { return false }
+    }
+    if case .some = departure {
+      guard departureReceiptValid() else { return false }
+    }
+    if case .some = arrival {
+      guard arrivalReceiptValid() else { return false }
+    }
+    return phaseValid()
+  }
+
+  @inline(never)
+  private func openingReceiptValid() -> Bool {
     if let opening {
       guard opening.valid, opening.leg == id, opening.route == route,
         let spooledAt, opening.openedAt >= spooledAt,
@@ -209,6 +223,11 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
           >= (driveTerms?.activationSeconds ?? .infinity)
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func departureReceiptValid() -> Bool {
     if let departure {
       guard let opening, let route, departure.hole == opening.id,
         departure.nativeActor == opening.sourceActor,
@@ -232,6 +251,11 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
         let dueAt, dueAt <= 1e12
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func arrivalReceiptValid() -> Bool {
     if let arrival {
       guard let dueAt, let route, arrival.calendarSeconds.isFinite,
         (dueAt...1e12).contains(arrival.calendarSeconds),
@@ -239,6 +263,11 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
         arrival.nativeActor.visit > 0, arrival.nativeActor.entity > 0
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func phaseValid() -> Bool {
     switch phase {
     case .requested: return opening == nil && departure == nil && arrival == nil
     case .spooling:
@@ -250,6 +279,34 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
     case .arrived: return arrival != nil
     case .cancelled: return departure == nil && arrival == nil
     }
+  }
+}
+
+/// Invocation-local history fields only; full leg/body validation remains with the typed ledger.
+private struct NativeWormholeActorHistoryFacts: Sendable {
+  let instance: UUID
+  let actor: UUID
+  let hasDeparture: Bool
+  let arrivalDate: Double?
+  let destination: SystemIdentity?
+
+  @inline(never)
+  static func project(_ legs: borrowing [NativeWormholeLeg]) -> [Self] {
+    var facts: [Self] = []
+    for index in legs.indices {
+      let hasDeparture: Bool
+      if case .some = legs[index].departure {
+        hasDeparture = true
+      } else {
+        hasDeparture = false
+      }
+      facts.append(
+        .init(
+          instance: legs[index].instance, actor: legs[index].actor,
+          hasDeparture: hasDeparture, arrivalDate: legs[index].arrival?.calendarSeconds,
+          destination: legs[index].route?.destination.location))
+    }
+    return facts
   }
 }
 
@@ -324,7 +381,8 @@ extension ScriptEngineState {
     if !legs.isEmpty {
       guard nativeWormholeLegOwnersValid(legs) else { return false }
     }
-    return nativeWormholeOwnedActorHistoriesValid(legs)
+    let history = NativeWormholeActorHistoryFacts.project(legs)
+    return nativeWormholeOwnedActorHistoriesValid(history)
   }
 
   @inline(never)
@@ -352,7 +410,9 @@ extension ScriptEngineState {
 
   // Even with no ledger, every owned actor must prove any transit presence or relocation.
   @inline(never)
-  private func nativeWormholeOwnedActorHistoriesValid(_ legs: [NativeWormholeLeg]) -> Bool {
+  private func nativeWormholeOwnedActorHistoriesValid(
+    _ legs: [NativeWormholeActorHistoryFacts]
+  ) -> Bool {
     for instance in instances.values {
       for encounter in instance.ownedEncounters.values {
         for actor in encounter.actors.values {
@@ -371,22 +431,21 @@ extension ScriptEngineState {
   @inline(never)
   private static func nativeWormholeActorHistoryValid(
     instance: UUID, actor: UUID, presence: ScriptActorPresence,
-    location: SystemIdentity?, legs: [NativeWormholeLeg]
+    location: SystemIdentity?, legs: [NativeWormholeActorHistoryFacts]
   ) -> Bool {
     let history = legs.filter { $0.instance == instance && $0.actor == actor }
     if [.inTransit, .arrivalPending].contains(presence) {
-      guard history.contains(where: { $0.departure != nil && $0.arrival == nil }) else {
+      guard history.contains(where: { $0.hasDeparture && $0.arrivalDate == nil }) else {
         return false
       }
     }
-    let arrivals = history.filter { $0.arrival != nil }
-    let dates = arrivals.compactMap { $0.arrival?.calendarSeconds }
+    let arrivals = history.filter { $0.arrivalDate != nil }
+    let dates = arrivals.compactMap(\.arrivalDate)
     guard Set(dates).count == dates.count else { return false }
     let latest = arrivals.max {
-      ($0.arrival?.calendarSeconds ?? -.infinity)
-        < ($1.arrival?.calendarSeconds ?? -.infinity)
+      ($0.arrivalDate ?? -.infinity) < ($1.arrivalDate ?? -.infinity)
     }
-    guard location == latest?.route?.destination.location else { return false }
+    guard location == latest?.destination else { return false }
     return true
   }
 }

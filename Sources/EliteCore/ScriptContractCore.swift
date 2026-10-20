@@ -20,9 +20,6 @@ private struct PreparedContractAcceptance: Sendable {
 }
 
 extension Game {
-  var contractStation: ContractStationIdentity {
-    .init(galaxy: commander.galaxy, system: commander.system, stationClass: "main-orbital")
-  }
   func contractRevision(_ board: ScriptBoardDefinition) -> Int64 {
     Int64(floor(commander.scriptState.clock(board.clock) / board.period))
   }

@@ -140,6 +140,7 @@ extension Game {
 
   /// Uses sealed measured hull/component geometry and the ordinary native reserve policy.
   /// Requests must correspond in order to the selected sealed cohort; no identities are allocated.
+  @inline(never)
   func gameplayMissionActorAdmissionRefusal(
     _ requests: [SpawnRequest], templates: [MissionActorAdmissionTemplate],
     context: EncounterContext
@@ -147,67 +148,42 @@ extension Game {
     guard requests.count == templates.count,
       Set(requests.map(\.identity)).count == requests.count
     else { return .staleContext }
+    let (registeredStationBodies, playerRadius) = withReadOnlyCommander { commander in
+      let registeredStationBodies = Set(
+        commander.nativeStations?.ledger.records.compactMap { record in
+          record.identity.system == context.system ? record.binding?.bodyID : nil
+        } ?? [])
+      let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
+      return (registeredStationBodies, playerRadius)
+    }
+    return Self.gameplayMissionActorAdmissionRefusal(
+      original: self, requests, templates: templates, context: context,
+      registeredStationBodies: registeredStationBodies, playerRadius: playerRadius)
+  }
+
+  /// Read actual Commander facts before reserving the per-request geometry-validation frame.
+  @inline(never)
+  private static func gameplayMissionActorAdmissionRefusal(
+    original: borrowing Game, _ requests: [SpawnRequest],
+    templates: [MissionActorAdmissionTemplate], context: EncounterContext,
+    registeredStationBodies: Set<Int>, playerRadius: Double
+  ) -> AdmissionRefusal? {
     var budget = context.budget
-    let registeredStationBodies = Set(
-      commander.nativeStations?.ledger.records.compactMap { record in
-        record.identity.system == context.system ? record.binding?.bodyID : nil
-      } ?? [])
-    let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
-    for (request, template) in zip(requests, templates) {
-      let resourceCapacityMatches: Bool
-      if let resources = request.npc?.resources {
-        resourceCapacityMatches = resources.energyCapacity == template.maximumHullEnergy
-      } else {
-        resourceCapacityMatches =
-          template.canonicalBody.scriptNPC != nil
-          && template.maximumHullEnergy > 100000
-      }
-      guard request.priority == .mission, request.identity.producer == .mission,
-        request.population == .mission,
-        request.hull == template.canonicalBody.hull,
-        request.energy == template.canonicalBody.energy,
-        resourceCapacityMatches,
-        !bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
-      else { return .staleContext }
-      if let refusal = admissionCapacityRefusal(request, context: context, budget: budget) {
+    for index in requests.indices {
+      if let refusal = Self.gameplayMissionActorRequestRefusal(
+        original: original, request: requests[index], template: templates[index],
+        context: context, budget: budget, playerRadius: playerRadius)
+      {
         return refusal
       }
-      let radius = template.radius
-      guard
-        spawnParametersSafe(
-          request, context: context, measuredRadius: radius,
-          measuredMaximumEnergy: template.maximumHullEnergy),
-        (request.position - context.player.position).length > radius + playerRadius + 64
-      else { return .unsafePosition }
-      for actor in context.actors where actor.energy > 0 {
-        guard let body = bodies.first(where: { $0.physical?.identity == actor.identity }) else {
-          return .staleContext
-        }
-        if body.nativeStationIdentity != nil || registeredStationBodies.contains(body.id) {
-          guard
-            missionActorClearsNativeStation(
-              center: request.position, radius: radius, body: body)
-          else { return .unsafePosition }
-          continue
-        }
-        let otherRadius: Double
-        if let bounds = actor.salvage?.bounds {
-          otherRadius = bounds.radius + bounds.center.length
-        } else if body.scriptNPC != nil {
-          otherRadius = scriptNPCRadius(body)
-        } else if let rock = miningFields.flatMap(\.rocks).first(where: {
-          $0.identity == actor.rock
-        }) {
-          otherRadius = rock.radius
-        } else {
-          otherRadius = gameplayMesh(for: body).vertices.map(\.length).max() ?? 80
-        }
-        guard otherRadius.isFinite, otherRadius > 0,
-          (request.position - actor.position).length >= radius + otherRadius + 64
-        else { return .unsafePosition }
+      if let refusal = Self.gameplayMissionActorSceneClearanceRefusal(
+        original: original, center: requests[index].position, radius: templates[index].radius,
+        context: context, registeredStationBodies: registeredStationBodies)
+      {
+        return refusal
       }
       budget.total += 1
-      budget.active[request.population, default: 0] += 1
+      budget.active[requests[index].population, default: 0] += 1
     }
     for index in requests.indices {
       for other in requests.indices where other > index {
@@ -221,19 +197,147 @@ extension Game {
     return nil
   }
 
+  /// Keep one request's condition and capacity temporaries out of cohort iteration.
+  @inline(never)
+  private static func gameplayMissionActorRequestRefusal(
+    original: borrowing Game, request: SpawnRequest,
+    template: borrowing MissionActorAdmissionTemplate, context: EncounterContext,
+    budget: AdmissionBudget, playerRadius: Double
+  ) -> AdmissionRefusal? {
+    let maximumHullEnergy = template.maximumHullEnergy
+    let resourceCapacityMatches: Bool
+    if let resources = request.npc?.resources {
+      resourceCapacityMatches = resources.energyCapacity == maximumHullEnergy
+    } else {
+      resourceCapacityMatches =
+        template.canonicalBody.scriptNPC != nil
+        && maximumHullEnergy > 100000
+    }
+    guard request.priority == .mission, request.identity.producer == .mission,
+      request.population == .mission,
+      request.hull == template.canonicalBody.hull,
+      request.energy == template.canonicalBody.energy,
+      resourceCapacityMatches
+    else { return .staleContext }
+    for index in original.bodies.indices {
+      if original.bodies[index].physical?.spawnIdentity == request.identity {
+        return .staleContext
+      }
+    }
+    if let refusal = original.admissionCapacityRefusal(request, context: context, budget: budget) {
+      return refusal
+    }
+    let radius = template.radius
+    guard
+      original.spawnParametersSafe(
+        request, context: context, measuredRadius: radius,
+        measuredMaximumEnergy: maximumHullEnergy),
+      (request.position - context.player.position).length > radius + playerRadius + 64
+    else { return .unsafePosition }
+    return nil
+  }
+
+  /// Scene-body and measured-radius storage is needed only after request preflight returns.
+  @inline(never)
+  private static func gameplayMissionActorSceneClearanceRefusal(
+    original: borrowing Game, center: Vector3, radius: Double, context: EncounterContext,
+    registeredStationBodies: Set<Int>
+  ) -> AdmissionRefusal? {
+    for actorIndex in context.actors.indices where context.actors[actorIndex].energy > 0 {
+      var matchingBodyIndex: Int?
+      for bodyIndex in original.bodies.indices {
+        if original.bodies[bodyIndex].physical?.identity == context.actors[actorIndex].identity {
+          matchingBodyIndex = bodyIndex
+          break
+        }
+      }
+      guard let bodyIndex = matchingBodyIndex else { return .staleContext }
+      if let refusal = Self.gameplayMissionActorSceneBodyRefusal(
+        original: original, center: center, radius: radius,
+        actor: context.actors[actorIndex], body: original.bodies[bodyIndex],
+        registeredStationBodies: registeredStationBodies)
+      {
+        return refusal
+      }
+    }
+    return nil
+  }
+
+  /// Borrow the selected scene records; only a downstream body API receives an owned copy.
+  @inline(never)
+  private static func gameplayMissionActorSceneBodyRefusal(
+    original: borrowing Game, center: Vector3, radius: Double,
+    actor: borrowing ActorSnapshot, body: borrowing SpaceBody,
+    registeredStationBodies: Set<Int>
+  ) -> AdmissionRefusal? {
+    let bodyID = body.id
+    if body.nativeStationIdentity != nil || registeredStationBodies.contains(bodyID) {
+      return original.missionActorClearsNativeStation(
+        center: center, radius: radius, body: body) ? nil : .unsafePosition
+    }
+    let rockIdentity = actor.rock
+    let otherRadius: Double
+    if let bounds = actor.salvage?.bounds {
+      otherRadius = bounds.radius + bounds.center.length
+    } else if body.scriptNPC != nil {
+      otherRadius = original.scriptNPCRadius(copy body)
+    } else if let rock = original.miningFields.flatMap(\.rocks).first(where: {
+      $0.identity == rockIdentity
+    }) {
+      otherRadius = rock.radius
+    } else {
+      otherRadius = original.gameplayMesh(for: copy body).vertices.map(\.length).max() ?? 80
+    }
+    guard otherRadius.isFinite, otherRadius > 0,
+      (center - actor.position).length >= radius + otherRadius + 64
+    else { return .unsafePosition }
+    return nil
+  }
+
   /// Static admission only: transform every source-box corner with the actual accepted
   /// model basis. The resulting world box encloses the full station even for tolerated scale.
-  func missionActorClearsNativeStation(center: Vector3, radius: Double, body: SpaceBody) -> Bool {
+  @inline(never)
+  func missionActorClearsNativeStation(
+    center: Vector3, radius: Double, body: borrowing SpaceBody
+  ) -> Bool {
     guard center.finite, center.length.isFinite, radius.isFinite, radius > 0,
-      let identity = body.nativeStationIdentity, nativeStationBodyIsCurrent(body),
-      let world = commander.nativeStations, let saved = world.pose(for: identity),
+      let identity = body.nativeStationIdentity, nativeStationBodyIsCurrent(copy body)
+    else { return false }
+    guard
+      let bounds = Self.validatedMissionActorStationBounds(
+        original: self, identity: identity, body: copy body)
+    else { return false }
+    let pose = modelPose(of: copy body)
+    return Self.missionActorClearsStationBounds(
+      center: center, radius: radius, minimum: bounds.minimum, maximum: bounds.maximum, pose: pose)
+  }
+
+  /// Current station authority finishes before model-pose and bounds construction starts.
+  @inline(never)
+  private static func validatedMissionActorStationBounds(
+    original: borrowing Game, identity: NativeStationIdentity, body: SpaceBody
+  ) -> (minimum: Vector3, maximum: Vector3)? {
+    original.withReadOnlyCommander { commander in
+      Self.validatedMissionActorStationBounds(commander: commander, identity: identity, body: body)
+    }
+  }
+
+  private static func validatedMissionActorStationBounds(
+    commander: borrowing Commander, identity: NativeStationIdentity, body: borrowing SpaceBody
+  ) -> (minimum: Vector3, maximum: Vector3)? {
+    guard let world = commander.nativeStations, let saved = world.pose(for: identity),
       let source = NativeStationSource.binding(for: identity), body.energy == saved.energy,
       world.bodyRigidPoseIsConsistent(body, flight: commander.flightSimulation)
-    else { return false }
+    else { return nil }
     let bounds = source.geometry.bounds
-    let minimum = bounds.minimum
-    let maximum = bounds.maximum
-    let pose = modelPose(of: body)
+    return (bounds.minimum, bounds.maximum)
+  }
+
+  /// Pure geometry receives only the measured bounds and the actual model pose.
+  @inline(never)
+  private static func missionActorClearsStationBounds(
+    center: Vector3, radius: Double, minimum: Vector3, maximum: Vector3, pose: ShipPose
+  ) -> Bool {
     guard minimum.finite, maximum.finite,
       minimum.x < maximum.x, minimum.y < maximum.y, minimum.z < maximum.z,
       pose.position.finite, pose.orientation.validRotation
@@ -271,7 +375,7 @@ extension Game {
     else {
       return .staleContext
     }
-    if let emp = commander.savedEMPState, request.identity.producer != .emp,
+    if let emp = withReadOnlyCommander({ $0.savedEMPState }), request.identity.producer != .emp,
       emp.records.values.contains(where: { record in
         guard let original = record.originalSpawn else { return false }
         return original.system == request.identity.system

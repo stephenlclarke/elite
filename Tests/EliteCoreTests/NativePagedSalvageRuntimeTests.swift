@@ -107,8 +107,16 @@ struct NativePagedSalvageRuntimeTests {
     #expect(pointer.schemaVersion == 27)
     var expectedDisk = ready.commander
     expectedDisk.npcPersistence.resetPhysicalBindings(system: ready.systemIdentity)
+    expectedDisk.resetWantedCareerBindings(system: ready.systemIdentity)
     let observedDiskCommander = try NativeSaveTestFixture.readVersionedCommander(from: file)
     #expect(observedDiskCommander == expectedDisk)
+    let liveCareers = ready.commander.wantedCareers.careers
+    #expect(observedDiskCommander.wantedCareers.careers.count == liveCareers.count)
+    for (identity, career) in liveCareers {
+      var expectedCareer = career
+      if identity.system == ready.systemIdentity { expectedCareer.binding = nil }
+      #expect(observedDiskCommander.wantedCareers.careers[identity] == expectedCareer)
+    }
     try await runtime.load(from: file, persistMigrations: false)
     let restored = await runtime.snapshot()
     #expect(restored.commander == ready.commander && restored.bodies == ready.bodies)
