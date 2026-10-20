@@ -123,6 +123,7 @@ private struct ContractFixture {
   let fixture = try ContractFixture()
   defer { fixture.clean() }
   var game = fixture.game()
+  game.commander.credits = 1000
   game.commander.scriptState.localSeconds = 3599.95
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)

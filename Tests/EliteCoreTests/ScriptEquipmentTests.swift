@@ -144,7 +144,16 @@ struct GearScriptFixture {
       confirm:
         "{op='gear.store',id='store',gear='kit',index=0},{op='gear.return',id='return',gear='kit'}")
     defer { fixture.clean() }
-    var game = try fixture.game()
+    var game = Game(executive: false)
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
+    game.screen = .status
+    game.scriptPacks = [fixture.pack]
+    try #require(game.commander.valid && game.commander.fuel == 70)
+    _ = try game.acceptScriptMission(fixture.pack)
     game.emitScriptEvent("contact.requested")
     #expect(game.commander.valid && game.commander.fuel == 70)
     if laser {

@@ -113,7 +113,10 @@ import Testing
 {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  let pinned = CourierNativeFixture.rows[1]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, variant: .package, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let id = try fixture.accept(&game, variant: .package)
   try GameRuntime.writeCommander(&game, to: fixture.save)
   let pointerBytes = try Data(contentsOf: fixture.save)
@@ -140,8 +143,10 @@ import Testing
 @Test func courierFailedAcceptanceAndHandoffPublicationRetainOriginalGeneration() async throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
-  let (key, offer) = try fixture.usable(&game)
+  let pinned = CourierNativeFixture.rows[0]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   try await runtime.save(to: fixture.save)
   let before = await runtime.snapshot()
@@ -233,7 +238,10 @@ extension CourierFixture {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
   let consumer = try fixture.failedReceiptConsumer()
-  var game = fixture.game()
+  let pinned = CourierNativeFixture.rows[0]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, variant: .data, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let courier = try fixture.accept(&game)
   game.scriptPacks.append(consumer)
   let dependent = try game.acceptScriptMission(consumer)
