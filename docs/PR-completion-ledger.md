@@ -748,3 +748,7 @@ The four proposed MissionPackTests methods were already corrected, qualified in 
 ## G04 refusal disposition
 
 The fresh saved inventory contains zero Passenger Berth items, the actual offer contains zero berths and cash remains720CR. PassengerCabin.price is10000 tenths (1000CR per cabin; two needed), a labelled project base price. No shop quote or additional UI run was performed. The native refusal is therefore recorded as an expected equipment prerequisite, not a broken feature. Owner paid-fit/native complete-journey unit evidence remains qualified; manual boarding and travel in preview991 remain unverified. The original992 receipt stays immutable; supplemental disposition `/tmp/elite-G04-targeted-ui-992/equipment-prerequisite-disposition.json` records the exact source/save evidence.
+
+## Frozen native station capacity fixture
+
+G2 owner2a0c3057 changes only the existing one-method count premise and paired notes. Independent authenticated current source expectations pin382 sources, including374 waystations and8 headquarters, per-galaxy counts and the complete sorted-key digest. All2056 cold round-trip, identity, history and resource assertions remain unchanged. G1 matching warm build993 and only one existing method / one case994 are assigned; source review is concurrent. No runtime success or integration is claimed before actual qualification and closure.
