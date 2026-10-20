@@ -526,3 +526,7 @@ Record ordinary888 five methods/casesPASS, seventeen/twenty-threeUNKNOWN, zerois
 ## Freeze W03 central preparation; schedule artifact-only checkpoint
 
 Record isolated two-file7e985a49 preparation on agreed native contract, actual37/38 raw gates/disjunctive admission/individual validity and native-owner corruption matrix. Only formatter/whitespace checks, no compiler/PASS/independentreview/integration. Root schedules artifact-only build/sign/pack validation AFTER current MC1capture actualclosure relay; GUIblocked/no repoll, existingnative-profile600/640, no ready/playable claim. Root-only orchestration/mainCPU promptly returned. Scoped Markdown lint/whitespace only.
+
+## Record closed891 and actual889 artifact-only handoff
+
+Record actual diagnostic891 Blackjack readonly projection fault/wholeclosure, Root mainCPU handover, ONEcurrentqualifiedW02optimized128.862s build and artifact-only1.4.889 exactsource/signature/468maintainedresources/472signedfiles/threeactualbinarypackCLI PASS. Preserve failed incorrect-public-signing-identity setup and separate samebinary correction without rebuilding; explicitly distinguish PID/start closure from unavailable correction-session poll. Registryreleased/Rootreceived authoritative receipt and relaysCPUbackMC1. No GUIrepoll/startup/playerjourney/ready-delivered/fullquality/release claim. Record W03UI9 freeze/UNRUN plus existing central2, native6freeze pending before full17composition/onequalification. Normal scoped Markdown/whitespace and allhistoricalhashes preserved.
