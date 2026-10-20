@@ -144,6 +144,14 @@ struct NativeIdentifiedSalvageSaveTests {
     defer { try? original.write(to: file) }
     let object = try #require(JSONSerialization.jsonObject(with: original) as? [String: Any])
     let normalized = try JSONSerialization.data(withJSONObject: object)
+    for capture in try await f.state(runtime).captures {
+      let encoded = try JSONEncoder().encode(capture)
+      let json = try JSONSerialization.jsonObject(with: encoded)
+      let equivalent = try JSONDecoder().decode(
+        NativeIdentifiedSalvageCapture.self,
+        from: JSONSerialization.data(withJSONObject: json))
+      #expect(try NativeIdentifiedSalvage.captureAuthority(equivalent) == capture.authority)
+    }
     #expect(
       try readIdentifiedRehash(normalized, pointer: pointer, file: file, save: f.save) == pristine)
     try original.write(to: file)

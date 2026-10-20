@@ -14,24 +14,34 @@ final class NativeIdentifiedSalvagePending: Sendable {
 }
 
 extension NativeIdentifiedSalvage {
+  // JSON object normalization may write integral doubles and signed zero differently.
+  // Seal semantic JSON values so an equivalent strict cold save retains its witness.
+  private static func witnessHash<T: Encodable>(_ value: T) throws -> String {
+    let object = try JSONSerialization.jsonObject(
+      with: JSONEncoder().encode(value), options: [.fragmentsAllowed])
+    let bytes = try JSONSerialization.data(
+      withJSONObject: object, options: [.sortedKeys, .fragmentsAllowed])
+    return ScriptPackLibrary.hash(bytes)
+  }
+
+  private static func authorityBits(_ value: Double) -> UInt64 {
+    value == 0 ? 0 : value.bitPattern
+  }
+
   static func lossAuthority(_ loss: borrowing NativeIdentifiedSalvageLoss) throws -> UUID {
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = [.sortedKeys]
-    let pod = ScriptPackLibrary.hash(try encoder.encode(loss.escapePod))
-    let marker = ScriptPackLibrary.hash(try encoder.encode(loss.marker))
-    let context = ScriptPackLibrary.hash(try encoder.encode(loss.context))
+    let pod = try witnessHash(loss.escapePod)
+    let marker = try witnessHash(loss.marker)
+    let context = try witnessHash(loss.context)
     return ScriptIdentity.uuid(
-      "identified-salvage-loss-authority-v1:\(loss.original):\(loss.operation):\(loss.kind.rawValue):\(loss.actor.system.galaxy):\(loss.actor.system.system):\(loss.actor.visit):\(loss.actor.entity):\(loss.carrier):\(loss.collector.system.galaxy):\(loss.collector.system.system):\(loss.collector.visit):\(loss.collector.entity):\(loss.energy.bitPattern):\(pod):\(marker):\(context):\(loss.physicalTime.bitPattern):\(loss.epoch)"
+      "identified-salvage-loss-authority-v1:\(loss.original):\(loss.operation):\(loss.kind.rawValue):\(loss.actor.system.galaxy):\(loss.actor.system.system):\(loss.actor.visit):\(loss.actor.entity):\(loss.carrier):\(loss.collector.system.galaxy):\(loss.collector.system.system):\(loss.collector.visit):\(loss.collector.entity):\(authorityBits(loss.energy)):\(pod):\(marker):\(context):\(authorityBits(loss.physicalTime)):\(loss.epoch)"
     )
   }
 
   static func captureAuthority(_ capture: borrowing NativeIdentifiedSalvageCapture) throws -> UUID {
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = [.sortedKeys]
-    let equipment = ScriptPackLibrary.hash(try encoder.encode(capture.equipment))
-    let marker = ScriptPackLibrary.hash(try encoder.encode(capture.marker))
+    let equipment = try witnessHash(capture.equipment)
+    let marker = try witnessHash(capture.marker)
     return ScriptIdentity.uuid(
-      "identified-salvage-capture-v1:\(capture.operation):\(capture.original):\(capture.actor.system.galaxy):\(capture.actor.system.system):\(capture.actor.visit):\(capture.actor.entity):\(capture.collector.system.galaxy):\(capture.collector.system.system):\(capture.collector.visit):\(capture.collector.entity):\(capture.carrier):\(capture.inventoryRevision):\(equipment):\(marker):\(capture.capturePoint.x.bitPattern):\(capture.capturePoint.y.bitPattern):\(capture.capturePoint.z.bitPattern):\(capture.relativeSpeed.bitPattern):\(capture.startTime.bitPattern):\(capture.physicalTime.bitPattern):\(capture.epoch)"
+      "identified-salvage-capture-v1:\(capture.operation):\(capture.original):\(capture.actor.system.galaxy):\(capture.actor.system.system):\(capture.actor.visit):\(capture.actor.entity):\(capture.collector.system.galaxy):\(capture.collector.system.system):\(capture.collector.visit):\(capture.collector.entity):\(capture.carrier):\(capture.inventoryRevision):\(equipment):\(marker):\(authorityBits(capture.capturePoint.x)):\(authorityBits(capture.capturePoint.y)):\(authorityBits(capture.capturePoint.z)):\(authorityBits(capture.relativeSpeed)):\(authorityBits(capture.startTime)):\(authorityBits(capture.physicalTime)):\(capture.epoch)"
     )
   }
 }

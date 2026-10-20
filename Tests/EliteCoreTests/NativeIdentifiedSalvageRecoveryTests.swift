@@ -40,12 +40,15 @@ struct NativeIdentifiedSalvageRecoveryTests {
     } else {
       Issue.record("A captured original must reject a now-unproved endpoint mesh.")
     }
+    let frameActors = game.bodies.compactMap(\.missionActorID)
     let beforeTime = game.commander.flightSimulation.physicalTime
     game.tick(delta: 0.05)
     #expect(!game.paused)
     #expect(game.commander.flightSimulation.physicalTime > beforeTime)
-    #expect(game.bodies.count == 3)
-    #expect(game.bodies.allSatisfy { game.identifiedSalvageCollision($0) != nil })
+    let originals = game.bodies.filter { $0.missionInstanceID == state.permission.mission }
+    #expect(originals.count == 3)
+    #expect(Set(originals.compactMap(\.missionActorID)) == Set(frameActors))
+    #expect(originals.allSatisfy { game.identifiedSalvageCollision($0) != nil })
   }
 
   @Test func actualOtherMissionSameModelKeepsExistingCollisionPolicy() async throws {
@@ -115,16 +118,28 @@ struct NativeIdentifiedSalvageRecoveryTests {
       let logical = NativeIdentifiedSalvage.actorIdentity(
         mission: state.permission.mission, digest: f.pack.digest, alias: "pell-01")
       if let index = game.bodies.firstIndex(where: { $0.missionActorID == logical }) {
-        if reason == "binding" { game.bodies[index].missionInstanceID = UUID() }
         if reason == "payload" {
           game.bodies[index].physical?.payload = .mission(
             instance: state.permission.mission, payload: "pell-01")
         }
       }
     }
-    _ = await runtime.advance(delta: 0.05)
-    #expect(try await f.state(runtime).captures.isEmpty)
-    #expect(await runtime.snapshot().commander.scriptState.savedClueJournal == nil)
+    let collector: GameRuntime
+    if reason == "binding" {
+      var malformed = await runtime.snapshot()
+      let logical = NativeIdentifiedSalvage.actorIdentity(
+        mission: state.permission.mission, digest: f.pack.digest, alias: "pell-01")
+      let index = try #require(malformed.bodies.firstIndex { $0.missionActorID == logical })
+      // Controlled malformed live binding; a durable command correctly refuses to publish it.
+      malformed.bodies[index].physical?.spawnIdentity = nil
+      #expect(malformed.identifiedSalvageCollision(malformed.bodies[index]) == nil)
+      collector = GameRuntime(game: malformed, saveURL: f.save)
+    } else {
+      collector = runtime
+    }
+    _ = await collector.advance(delta: 0.05)
+    #expect(try await f.state(collector).captures.isEmpty, "reason: \(reason)")
+    #expect(await collector.snapshot().commander.scriptState.savedClueJournal == nil)
   }
 
   @Test func actualPickupWriterRefusalKeepsAttainedFrameAndOneOriginalUntilSaveRetry() async throws
@@ -257,8 +272,13 @@ struct NativeIdentifiedSalvageRecoveryTests {
     #expect(
       lost.commander.scriptState.instances[accepted.permission.mission]?.ownedEncounters[
         NativeIdentifiedSalvage.encounterID]?.actors["pell-02"]?.presence != .destroyed)
+    let prepared = try GameRuntime.prepareNativeSaveState(lost)
+    #expect(prepared.game.identifiedSalvageState == lost.identifiedSalvageState)
+    #expect(
+      prepared.commander.scriptState.savedIdentifiedSalvageSource
+        == lost.commander.scriptState.savedIdentifiedSalvageSource)
     try await runtime.save(to: f.save)
     let (cold, world) = try ScriptSaveStore.read(Data(contentsOf: f.save), from: f.save)
-    #expect(cold == lost.commander && world.consistent(with: cold))
+    #expect(cold == prepared.commander && world.consistent(with: cold))
   }
 }
