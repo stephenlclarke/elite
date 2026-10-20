@@ -328,3 +328,7 @@ Record matching820 PASS then821 zero terminals/seven UNKNOWN stack failure/whole
 ## Queue MBA03 native qualification behind docking and active cap closure
 
 Resume only five paused native methods after actually qualified/reviewed/canonical docking integration AND current MBA cap-batch process closure, using the exact layered docking source. Retain prior eight methods/nine cases/frozen03 proofs; no active executor interruption or unaffected repeats. Current final docking Save case remains pending, so no premature activation/readiness claim.
+
+## Integrate independently reviewed bounded docking source
+
+Integrate exact049 four files as8ca7ed8a after Root CLEAN and verified retained2geometry/refusal+final1actualflight/normalSave/coldread PASS, preserving aggregate provenance/no rerun.819 app remains earlier renderer-only source; hostile docking/fiveMBA03 flows/final gates stay separate. Cap batch closure plus canonical docking now meets queued03 dependencies, Root dispatch only five pending methods. Record material825 zero-PASS stack failure/whole closure and begin assigned ONE G1 shared-cap review after owner aggregate qualification, no duplicate code audit.
