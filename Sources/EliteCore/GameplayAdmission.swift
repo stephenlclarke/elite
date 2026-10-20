@@ -240,34 +240,54 @@ extension Game {
     original: borrowing Game, center: Vector3, radius: Double, context: EncounterContext,
     registeredStationBodies: Set<Int>
   ) -> AdmissionRefusal? {
-    for actor in context.actors where actor.energy > 0 {
-      guard let body = original.bodies.first(where: { $0.physical?.identity == actor.identity })
-      else {
-        return .staleContext
+    for actorIndex in context.actors.indices where context.actors[actorIndex].energy > 0 {
+      var matchingBodyIndex: Int?
+      for bodyIndex in original.bodies.indices {
+        if original.bodies[bodyIndex].physical?.identity == context.actors[actorIndex].identity {
+          matchingBodyIndex = bodyIndex
+          break
+        }
       }
-      if body.nativeStationIdentity != nil || registeredStationBodies.contains(body.id) {
-        guard
-          original.missionActorClearsNativeStation(
-            center: center, radius: radius, body: body)
-        else { return .unsafePosition }
-        continue
+      guard let bodyIndex = matchingBodyIndex else { return .staleContext }
+      if let refusal = Self.gameplayMissionActorSceneBodyRefusal(
+        original: original, center: center, radius: radius,
+        actor: context.actors[actorIndex], body: original.bodies[bodyIndex],
+        registeredStationBodies: registeredStationBodies)
+      {
+        return refusal
       }
-      let otherRadius: Double
-      if let bounds = actor.salvage?.bounds {
-        otherRadius = bounds.radius + bounds.center.length
-      } else if body.scriptNPC != nil {
-        otherRadius = original.scriptNPCRadius(body)
-      } else if let rock = original.miningFields.flatMap(\.rocks).first(where: {
-        $0.identity == actor.rock
-      }) {
-        otherRadius = rock.radius
-      } else {
-        otherRadius = original.gameplayMesh(for: body).vertices.map(\.length).max() ?? 80
-      }
-      guard otherRadius.isFinite, otherRadius > 0,
-        (center - actor.position).length >= radius + otherRadius + 64
-      else { return .unsafePosition }
     }
+    return nil
+  }
+
+  /// Borrow the selected scene records; only a downstream body API receives an owned copy.
+  @inline(never)
+  private static func gameplayMissionActorSceneBodyRefusal(
+    original: borrowing Game, center: Vector3, radius: Double,
+    actor: borrowing ActorSnapshot, body: borrowing SpaceBody,
+    registeredStationBodies: Set<Int>
+  ) -> AdmissionRefusal? {
+    let bodyID = body.id
+    if body.nativeStationIdentity != nil || registeredStationBodies.contains(bodyID) {
+      return original.missionActorClearsNativeStation(
+        center: center, radius: radius, body: copy body) ? nil : .unsafePosition
+    }
+    let rockIdentity = actor.rock
+    let otherRadius: Double
+    if let bounds = actor.salvage?.bounds {
+      otherRadius = bounds.radius + bounds.center.length
+    } else if body.scriptNPC != nil {
+      otherRadius = original.scriptNPCRadius(copy body)
+    } else if let rock = original.miningFields.flatMap(\.rocks).first(where: {
+      $0.identity == rockIdentity
+    }) {
+      otherRadius = rock.radius
+    } else {
+      otherRadius = original.gameplayMesh(for: copy body).vertices.map(\.length).max() ?? 80
+    }
+    guard otherRadius.isFinite, otherRadius > 0,
+      (center - actor.position).length >= radius + otherRadius + 64
+    else { return .unsafePosition }
     return nil
   }
 

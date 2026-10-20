@@ -266,26 +266,32 @@ struct MissionActorRetentionPatch: Sendable {
 extension MissionActorAdmissionSource {
   /// Only the native preparation supplies new scene addresses; no historical address is reused.
   func prepareRetentionPatch(sceneBodyIDs: [UUID: Int]) throws -> MissionActorRetentionPatch {
-    let eligible = Set(
-      actors.filter { $0.presence != .destroyed && $0.canonicalBody.energy > 0 }.map(\.actorID))
+    var eligible = Set<UUID>()
+    for index in actors.indices {
+      if actors[index].presence != .destroyed, actors[index].canonicalBody.energy > 0 {
+        eligible.insert(actors[index].actorID)
+      }
+    }
     guard Set(sceneBodyIDs.keys).isSubset(of: eligible),
       Set(sceneBodyIDs.values).count == sceneBodyIDs.count,
       sceneBodyIDs.values.allSatisfy({ (1..<1_000_000_000).contains($0) }),
       mode != .prepared || Set(sceneBodyIDs.keys) == eligible
     else { throw MissionPackError("Native actor addresses must cover the exact eligible cohort.") }
     var updated = retention
-    for template in actors {
-      guard let bodyID = sceneBodyIDs[template.actorID] else { continue }
-      guard var actor = updated.actors[template.alias], actor.identity == template.actorID else {
+    for index in actors.indices {
+      let alias = actors[index].alias
+      let actorID = actors[index].actorID
+      guard let bodyID = sceneBodyIDs[actorID] else { continue }
+      guard var actor = updated.actors[alias], actor.identity == actorID else {
         throw MissionPackError("Actor retention mapping changed before native admission.")
       }
       if case .transit = authority {
-        actor.body = template.canonicalBody
+        actor.body = actors[index].canonicalBody
         actor.transitLocation = system
       }
       actor.body.id = bodyID
       actor.presence = .present
-      updated.actors[template.alias] = actor
+      updated.actors[alias] = actor
     }
     if mode == .prepared {
       updated.admitted = true
@@ -380,8 +386,9 @@ extension Game {
       owner.ownedEncounters[source.encounterID] == source.installedBaseEncounter,
       source.retention.id == source.encounterID,
       source.transitContext != nil
-        || source.actors.allSatisfy({
-          source.retention.actors[$0.alias]?.location(in: source.retention) == source.system
+        || source.actors.indices.allSatisfy({
+          source.retention.actors[source.actors[$0].alias]?.location(in: source.retention)
+            == source.system
         })
     else { throw MissionPackError("Actor admission source no longer matches its installed owner.") }
     return MissionActorAdmissionOwnerSnapshot(owner: consume owner, pack: consume pack)
@@ -432,7 +439,7 @@ extension Game {
       let encounter = owner.ownedEncounters[leg.encounter],
       var actor = encounter.actors[leg.alias], actor.identity == leg.actor,
       [.inTransit, .arrivalPending].contains(actor.presence), actor.body == departure.body,
-      !bodies.contains(where: { $0.missionActorID == leg.actor }),
+      !bodies.indices.contains(where: { bodies[$0].missionActorID == leg.actor }),
       let anchor = scriptAnchor
     else {
       throw MissionPackError(

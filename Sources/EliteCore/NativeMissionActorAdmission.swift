@@ -74,6 +74,32 @@ private enum MissionActorAdmissionSelection {
   case selected(MissionActorAdmissionCohort)
 }
 
+/// Immutable attempt-local values; no Game, Commander, authority or published allocator owner.
+private final class MissionActorAdmissionStagedValues: Sendable {
+  let previousFlight: FlightSimulationState
+  let flight: FlightSimulationState
+  let requests: [SpawnRequest]
+  let sceneBodyIDs: [UUID: Int]
+  let admittedBodies: [SpaceBody]
+
+  init(
+    previousFlight: consuming FlightSimulationState, flight: consuming FlightSimulationState,
+    requests: consuming [SpawnRequest], sceneBodyIDs: consuming [UUID: Int],
+    admittedBodies: consuming [SpaceBody]
+  ) {
+    self.previousFlight = consume previousFlight
+    self.flight = consume flight
+    self.requests = consume requests
+    self.sceneBodyIDs = consume sceneBodyIDs
+    self.admittedBodies = consume admittedBodies
+  }
+}
+
+private enum MissionActorAdmissionStaging {
+  case pending(NativeMissionActorAdmissionPending)
+  case staged(MissionActorAdmissionStagedValues)
+}
+
 extension Game {
   /// Read at the existing visit guard, then release the computed Commander receiver.
   @inline(never)
@@ -102,8 +128,13 @@ extension Game {
     case .outsideLocalBubble: return .pending(.outsideLocalBubble)
     case .unchanged: return .unchanged
     case .selected(let cohort):
-      return try stageMissionActorAdmission(
-        source, context: context, anchor: anchor, cohort: cohort)
+      switch try stageMissionActorAdmission(context: context, cohort: cohort) {
+      case .pending(let reason): return .pending(reason)
+      case .staged(let staged):
+        return try Self.finishMissionActorAdmission(
+          original: self, source: source, context: context, anchor: anchor,
+          templates: cohort.templates, staged: staged)
+      }
     }
   }
 
@@ -152,10 +183,10 @@ extension Game {
 
   /// Stage only the selected cohort. The immutable heap-owned plan keeps its large snapshots
   /// out of every preparation result value; no Game value is captured or copied into the plan.
+  @inline(never)
   private func stageMissionActorAdmission(
-    _ source: MissionActorAdmissionSource, context: EncounterContext, anchor: SpaceBody,
-    cohort: MissionActorAdmissionCohort
-  ) throws -> NativeMissionActorAdmissionPreparation {
+    context: EncounterContext, cohort: MissionActorAdmissionCohort
+  ) throws -> MissionActorAdmissionStaging {
     let selected = cohort.templates
     var prepared = cohort.bodies
     let units =
@@ -220,18 +251,32 @@ extension Game {
       requests.append(request)
     }
     guard staged.valid else { throw NativeMissionActorAdmissionError.invalidScene }
-    if let refusal = gameplayMissionActorAdmissionRefusal(
-      requests, templates: selected, context: context)
+    return .staged(
+      .init(
+        previousFlight: consume flight, flight: consume staged, requests: consume requests,
+        sceneBodyIDs: consume addresses, admittedBodies: consume prepared))
+  }
+
+  /// Allocator/physical construction has actually returned before policy and retention work starts.
+  @inline(never)
+  private static func finishMissionActorAdmission(
+    original: borrowing Game, source: borrowing MissionActorAdmissionSource,
+    context: EncounterContext, anchor: borrowing SpaceBody,
+    templates: [MissionActorAdmissionTemplate], staged: MissionActorAdmissionStagedValues
+  ) throws -> NativeMissionActorAdmissionPreparation {
+    if let refusal = original.gameplayMissionActorAdmissionRefusal(
+      staged.requests, templates: templates, context: context)
     {
       if refusal == .staleContext { throw NativeMissionActorAdmissionError.invalidScene }
       return .pending(.native(refusal))
     }
-    let patch = try source.prepareRetentionPatch(sceneBodyIDs: addresses)
+    let patch = try source.prepareRetentionPatch(sceneBodyIDs: staged.sceneBodyIDs)
     return .ready(
       .init(
-        retentionPatch: patch, sceneBodyIDs: addresses, source: source, context: context,
-        anchor: anchor, previousFlight: flight, previousBodies: bodies, previousBodyID: nextBodyID,
-        flight: staged, admittedBodies: prepared))
+        retentionPatch: patch, sceneBodyIDs: staged.sceneBodyIDs, source: copy source,
+        context: context, anchor: copy anchor, previousFlight: staged.previousFlight,
+        previousBodies: original.bodies, previousBodyID: original.nextBodyID,
+        flight: staged.flight, admittedBodies: staged.admittedBodies))
   }
 
   /// All adapter retention staging must finish before this call. The commit itself appends
