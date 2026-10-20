@@ -76,16 +76,21 @@ extension Game {
         }
       }
     }
+    var review: UUID? = nil
+    if contractBoard.detail {
+      review =
+        contractBoard.repairLoopQuote?.reviewToken ?? contractBoard.coldChainQuote?.reviewToken
+        ?? contractBoard.providerQuote?.reviewToken
+      if review == nil {
+        review =
+          contractBoard.peopleQuote?.reviewToken ?? contractBoard.financeQuote?.reviewToken
+          ?? contractBoard.rrsQuote?.reviewToken
+      }
+      if review == nil { review = contractBoard.quote?.reviewToken ?? contractBoard.reviewToken }
+    }
     return .init(
       generation: contractBoard.presentationGeneration, detail: contractBoard.detail,
-      review: contractBoard.detail
-        ? (contractBoard.repairLoopQuote?.reviewToken ?? contractBoard.coldChainQuote?.reviewToken
-          ?? contractBoard.providerQuote?.reviewToken
-          ?? contractBoard.peopleQuote?.reviewToken
-          ?? contractBoard.financeQuote?.reviewToken
-          ?? contractBoard.rrsQuote?.reviewToken
-          ?? contractBoard.quote?.reviewToken
-          ?? contractBoard.reviewToken) : nil,
+      review: review,
       selection: contractProofDigest([selected?.key ?? "unavailable"]),
       targets: contractProofDigest(fields),
       layout: contractProofDigest([

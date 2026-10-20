@@ -115,15 +115,22 @@ extension Display {
           ? "Trial - live commander unchanged"
           : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
-    if game.contractBoard.detail,
-      let reason = game.contractBoard.repairLoopQuote?.issues.first
+    var detailReason: String? {
+      if let reason = game.contractBoard.repairLoopQuote?.issues.first
         ?? game.contractBoard.coldChainQuote?.issues.first
         ?? game.contractBoard.providerQuote?.issues.first
-        ?? game.contractBoard.rrsQuote?.issues.first
+      {
+        return reason
+      }
+      if let reason = game.contractBoard.rrsQuote?.issues.first
         ?? game.contractBoard.financeQuote?.issues.first
         ?? game.contractBoard.peopleQuote?.issues.first
-        ?? game.contractBoard.quote?.issues.first ?? game.contractBoard.selected?.reason
-    {
+      {
+        return reason
+      }
+      return game.contractBoard.quote?.issues.first ?? game.contractBoard.selected?.reason
+    }
+    if game.contractBoard.detail, let reason = detailReason {
       frame.label(short(reason), layout.left, 84, scale: scale, ink: .orange)
     } else if active.count > 1 {
       frame.label(
@@ -209,13 +216,16 @@ extension Display {
             Double($0.deposit) / 10,
             $0.duration == 0 ? "no limit" : String(format: "%.0fs", $0.duration))
         }
-        let summary: String =
+        var preferredSummary: String? =
           row.reason ?? (row.repairLoop == nil ? nil : "Repair loop / 2t / 610 CR on owner return")
-          ?? (row.provider == nil ? nil : "Review native provider contract")
-          ?? (row.people == nil ? nil : "Review person transfer")
-          ?? (row.finance == nil ? nil : "Review loan terms")
-          ?? rrsSummary ?? courier?.summary ?? pledgeSummary ?? offerSummary
-          ?? "Unavailable"
+        if preferredSummary == nil {
+          preferredSummary =
+            (row.provider == nil ? nil : "Review native provider contract")
+            ?? (row.people == nil ? nil : "Review person transfer")
+            ?? (row.finance == nil ? nil : "Review loan terms")
+        }
+        if preferredSummary == nil { preferredSummary = rrsSummary ?? courier?.summary }
+        let summary: String = preferredSummary ?? pledgeSummary ?? offerSummary ?? "Unavailable"
         frame.label(
           short(summary), layout.left, y + 18, scale: scale,
           ink: row.reason == nil ? .white : .orange)

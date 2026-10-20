@@ -281,13 +281,15 @@ extension Game {
   @inline(never)
   private func gallerySelectedControlFacts(_ query: GalleryReadQuery) -> [String] {
     let state = query.selected?.savedInstance.flatMap { commander.scriptState.instances[$0] }
-    var fields = [
-      state.map { String($0.revision) } ?? "", state?.outcome.rawValue ?? "",
-      state?.suspension ?? "", state.map { worldJobGallerySummary(origin: $0.id) } ?? "",
-      courierGallerySummary(state),
-      (gallery.campaignPreviewOwner ?? state?.campaignParent?.parent)?.uuidString ?? "",
-      gallery.campaignPreviewIdentity ?? "",
-    ]
+    var fields: [String] = []
+    fields.append(state.map { String($0.revision) } ?? "")
+    fields.append(state?.outcome.rawValue ?? "")
+    fields.append(state?.suspension ?? "")
+    fields.append(state.map { worldJobGallerySummary(origin: $0.id) } ?? "")
+    fields.append(courierGallerySummary(state))
+    let owner: UUID? = gallery.campaignPreviewOwner ?? state?.campaignParent?.parent
+    fields.append(owner?.uuidString ?? "")
+    fields.append(gallery.campaignPreviewIdentity ?? "")
     fields += providerGalleryPageFacts(state)
     return fields
   }

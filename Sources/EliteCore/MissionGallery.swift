@@ -287,13 +287,16 @@ extension Game {
       : campaignImmediateOwner != nil
         ? "Milestones: \(mission.progress)"
         : "Status: \(mission.status.rawValue) - \(mission.progress)"
-    let sections =
-      [mission.name] + campaignRelationshipLines + [
-        progress, "", "Briefing",
-        briefing, "", "Destination (spoilers)", mission.destination, "", "Reward",
-        mission.reward, "", "Next step", next, "", "Prerequisites (not completion milestones)",
-      ] + mission.prerequisites + ["", "Timeline"]
-      + mission.milestones.map { "\($0.state): \($0.title)" }
+    var sections: [String] = [mission.name]
+    sections += campaignRelationshipLines
+    sections += [
+      progress, "", "Briefing",
+      briefing, "", "Destination (spoilers)", mission.destination, "", "Reward",
+      mission.reward, "", "Next step", next, "", "Prerequisites (not completion milestones)",
+    ]
+    sections += mission.prerequisites
+    sections += ["", "Timeline"]
+    sections += mission.milestones.map { "\($0.state): \($0.title)" }
     return sections.flatMap {
       MissionNotice.wrap($0, width: max(10, Int(min(700, width) / (6 * font))))
     }

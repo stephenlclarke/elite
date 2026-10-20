@@ -109,12 +109,18 @@ public enum ShipTextureAssets {
           directory.appendingPathComponent(asset.id + ".rgba"), maximum: 4_194_304),
         rgba.count == asset.width * asset.height * 4, digest(rgba) == asset.rgbaSHA256
       else { return .init(pixels: [:], bindings: []) }
-      let texels = rgba.withUnsafeBytes { bytes -> [UInt32] in
-        let bytes = bytes.bindMemory(to: UInt8.self)
-        return stride(from: 0, to: bytes.count, by: 4).map {
-          UInt32(bytes[$0]) << 24 | UInt32(bytes[$0 + 1]) << 16
-            | UInt32(bytes[$0 + 2]) << 8 | 255
+      let texels: [UInt32] = rgba.withUnsafeBytes { storage -> [UInt32] in
+        let bytes = storage.bindMemory(to: UInt8.self)
+        var packed: [UInt32] = []
+        packed.reserveCapacity(bytes.count / 4)
+        for offset in stride(from: 0, to: bytes.count, by: 4) {
+          let red: UInt32 = UInt32(bytes[offset]) << 24
+          let green: UInt32 = UInt32(bytes[offset + 1]) << 16
+          let blue: UInt32 = UInt32(bytes[offset + 2]) << 8
+          let alpha: UInt32 = UInt32(255)
+          packed.append(red | green | blue | alpha)
         }
+        return packed
       }
       guard let image = ShipTexturePixels(width: asset.width, height: asset.height, pixels: texels)
       else { return .init(pixels: [:], bindings: []) }

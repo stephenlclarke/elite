@@ -2603,14 +2603,15 @@ public actor GameRuntime {
     else {
       if let diagnostics, !diagnostics.contains(diagnosticBoundary) {
         // Bits 1/2/4/8: no NPC refusals, no unsettled wreck, commander valid, no dead ordinary NPC.
-        let checks: UInt16 =
-          (refusedNPCs.isEmpty ? 1 : 0)
-          | (!candidate.hasUnsettledWreckDeaths ? 2 : 0)
-          | (candidate.commander.valid ? 4 : 0)
-          | (!candidate.bodies.contains(where: {
+        let npcCheck: UInt16 = refusedNPCs.isEmpty ? 1 : 0
+        let wreckCheck: UInt16 = !candidate.hasUnsettledWreckDeaths ? 2 : 0
+        let commanderCheck: UInt16 = candidate.commander.valid ? 4 : 0
+        let ordinaryNPCCheck: UInt16 =
+          !candidate.bodies.contains(where: {
             $0.energy <= 0 && $0.hull.isTargetShip && $0.physical?.npc != nil
               && $0.physical?.npc?.role != .mission
-          }) ? 8 : 0)
+          }) ? 8 : 0
+        let checks: UInt16 = npcCheck | wreckCheck | commanderCheck | ordinaryNPCCheck
         diagnostics.record(
           diagnosticBoundary,
           .init(
