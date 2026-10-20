@@ -200,6 +200,20 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
 
   @inline(never)
   private func receiptsAndPhaseValid() -> Bool {
+    if case .some = opening {
+      guard openingReceiptValid() else { return false }
+    }
+    if case .some = departure {
+      guard departureReceiptValid() else { return false }
+    }
+    if case .some = arrival {
+      guard arrivalReceiptValid() else { return false }
+    }
+    return phaseValid()
+  }
+
+  @inline(never)
+  private func openingReceiptValid() -> Bool {
     if let opening {
       guard opening.valid, opening.leg == id, opening.route == route,
         let spooledAt, opening.openedAt >= spooledAt,
@@ -209,6 +223,11 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
           >= (driveTerms?.activationSeconds ?? .infinity)
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func departureReceiptValid() -> Bool {
     if let departure {
       guard let opening, let route, departure.hole == opening.id,
         departure.nativeActor == opening.sourceActor,
@@ -232,6 +251,11 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
         let dueAt, dueAt <= 1e12
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func arrivalReceiptValid() -> Bool {
     if let arrival {
       guard let dueAt, let route, arrival.calendarSeconds.isFinite,
         (dueAt...1e12).contains(arrival.calendarSeconds),
@@ -239,6 +263,11 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
         arrival.nativeActor.visit > 0, arrival.nativeActor.entity > 0
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func phaseValid() -> Bool {
     switch phase {
     case .requested: return opening == nil && departure == nil && arrival == nil
     case .spooling:
