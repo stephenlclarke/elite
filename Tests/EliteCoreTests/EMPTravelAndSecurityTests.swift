@@ -386,16 +386,10 @@ struct EMPTravelAndSecurityTests {
     try #require(game.commander.legal > legalBefore)
     try #require(
       game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count == emissionsBefore
-        + 1
-    )
+        + 1)
     try #require(body.physical?.npc?.intention == .engage(player))
     let remaining = try #require(body.physical?.npc?.resources?.electrical?.remaining)
     try #require(remaining > 0)
-    let contact = try game.nearestMissionCollision(
-      from: body.position, direction: body.position.unit * -1,
-      range: body.position.length + 1, radius: 0,
-      excludingBodyIDs: [body.id], includePlayer: true)
-    try #require(contact?.hit.target == .player)
     let emission = game.commander.flightSimulation.nextEmission
     let shields = game.frontShield + game.rearShield
     let energy = game.energy

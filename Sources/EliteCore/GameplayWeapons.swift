@@ -134,12 +134,15 @@ extension Game {
       let owner = body.physical?.identity,
       body.position.length > 0
     else { return nil }
+    let aim = Self.nativePlayerSurfaceAim(from: body.position, mesh: commander.playerMesh)
+    let direction = aim - body.position
+    guard direction.finite, direction.length.isFinite, direction.length > 0 else { return nil }
     let launch = commander.flightSimulation.pose.systemPoint(body.position)
     let contact: MissionCollisionContact?
     do {
       contact = try nearestMissionCollision(
-        from: body.position, direction: body.position.unit * -1,
-        range: body.position.length + 1, radius: 0,
+        from: body.position, direction: direction.unit,
+        range: direction.length + 1, radius: 0,
         excludingBodyIDs: [bodyID], includePlayer: true)
     } catch { return nil }
     if let contact, contact.selectedTargetBody?.scriptNPC != nil {
@@ -149,6 +152,34 @@ extension Game {
       } catch { return nil }
     }
     return .init(owner: owner, launch: launch, contact: contact)
+  }
+
+  /// Triangle centres are real surface targets; a camera origin can lie in a hull opening.
+  /// Other topology keeps the old origin aim and must still pass the native physical query.
+  @inline(never)
+  private static func nativePlayerSurfaceAim(from origin: Vector3, mesh: borrowing Mesh) -> Vector3
+  {
+    var nearest = Vector3(0, 0, 0)
+    var nearestRange = Double.infinity
+    for face in mesh.faces where face.count == 3 {
+      guard mesh.vertices.indices.contains(face[0]), mesh.vertices.indices.contains(face[1]),
+        mesh.vertices.indices.contains(face[2])
+      else { continue }
+      let a = mesh.vertices[face[0]]
+      let b = mesh.vertices[face[1]]
+      let c = mesh.vertices[face[2]]
+      guard a.finite, b.finite, c.finite else { continue }
+      let normal = (b - a).cross(c - a)
+      guard normal.length.isFinite, normal.length > 0 else { continue }
+      let point = (a + b + c) * (1 / 3.0)
+      let range = (point - origin).length
+      guard point.finite, range.isFinite, range > 0 else { continue }
+      if range < nearestRange {
+        nearest = point
+        nearestRange = range
+      }
+    }
+    return nearest
   }
 
   @inline(never)
