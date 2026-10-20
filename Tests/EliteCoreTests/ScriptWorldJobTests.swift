@@ -315,6 +315,7 @@ private struct WorldJobFixture {
   parent.scriptPacks = [pack]
   let parentCommander = parent.commander
   let runtime = try await GameRuntime(game: parent).scriptGalleryTrial(packDigest: pack.digest)
+  let startingCredits = await runtime.snapshot().commander.credits
   for _ in 0..<45 { _ = await runtime.advance(delta: 0.1) }
   let waiting = await runtime.snapshot()
   let origin = try #require(waiting.commander.scriptState.instances.values.first)
@@ -331,7 +332,7 @@ private struct WorldJobFixture {
   #expect(Set(deployed.bodies.compactMap(\.missionActorID)) == identities)
   #expect(deployed.commander.scriptState.worldJobs.values.first?.status == .complete)
   #expect(deployed.commander.scriptState.instances[origin.id]?.outcome == .complete)
-  #expect(deployed.commander.credits == 1000 && deployed.commander.kills == 0)
+  #expect(deployed.commander.credits == startingCredits && deployed.commander.kills == 0)
   let service = try #require(deployed.missionCatalogue.first { $0.savedInstance == origin.id })
   #expect(service.briefing.contains("Ongoing services:"))
   #expect(parent.commander == parentCommander)

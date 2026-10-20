@@ -240,6 +240,7 @@ private struct HistoryFixture {
   let provider = try ScriptPackLibrary.read(examples.appendingPathComponent("calendar-contracts"))
   let service = try ScriptPackLibrary.read(examples.appendingPathComponent("station-maintenance"))
   var (game, history) = try fixture.game()
+  let startingCredits = game.commander.credits
   game.scriptPacks += [provider, service]
   let authorization = try game.acceptScriptMission(service)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
@@ -253,11 +254,11 @@ private struct HistoryFixture {
   #expect((during.commander.scriptState.instances[history]?.data["count"]?.integer ?? 0) > 40)
   #expect(during.commander.scriptState.instances[authorization]?.ownedEncounters["support"] != nil)
   #expect(during.commander.scriptState.worldJobs.values.first?.elapsed ?? 0 > 5)
-  #expect(during.commander.credits == 1000 && during.commander.cargoTonnes == 0)
+  #expect(during.commander.credits == startingCredits && during.commander.cargoTonnes == 0)
   let accepted = try await runtime.confirmContract(quote)
   let result = await runtime.snapshot()
   #expect(result.commander.scriptState.instances[accepted]?.contract?.offer == offer)
-  #expect(result.commander.credits == 1000 - offer.deposit)
+  #expect(result.commander.credits == startingCredits - offer.deposit)
   #expect(
     result.commander.scriptState.instances[history]?.data
       == during.commander.scriptState.instances[history]?.data)

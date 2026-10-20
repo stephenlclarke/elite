@@ -31,6 +31,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   let folder = try packFolder()
   defer { try? FileManager.default.removeItem(at: folder) }
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.screen = .status
   let runtime = GameRuntime(game: game)
   try await runtime.installMissionPack(from: courierURL, directory: folder)
@@ -303,6 +304,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
     ], directory: directory)
   let entry = try MissionPackLibrary.read(clockFile)
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.screen = .status
   game.key("b")
@@ -386,6 +388,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   let file = try modifiedPack([("event = \"contact\"", "event = \"dock\"")], directory: folder)
   let entry = try MissionPackLibrary.read(file)
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.screen = .status
   game.dock()
@@ -475,6 +478,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
     return catalogue[index]
   }
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.screen = .status
   game.key("b")

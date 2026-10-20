@@ -85,11 +85,12 @@ func empArchiveNestedTimerSavePublishesAndReplaysOnce(archive: Bool) async throw
   let fixture = try empArchiveTimerFixture()
   defer { fixture.clean() }
   let game = try fixture.game(archive: archive)
+  let startingCredits = game.commander.credits
   #expect((game.commander.savedEMPState != nil) == archive)
   let runtime = GameRuntime(game: game, saveURL: fixture.url)
   _ = await runtime.advance(delta: 0.05)
   let after = await runtime.snapshot()
-  #expect(after.commander.credits == 1025)
+  #expect(after.commander.credits == startingCredits + 25)
   let id = try #require(after.commander.scriptState.instances.keys.first)
   #expect(after.commander.scriptState.instances[id]?.timers.isEmpty == true)
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
@@ -98,7 +99,7 @@ func empArchiveNestedTimerSavePublishesAndReplaysOnce(archive: Bool) async throw
   let restored = GameRuntime(game: try fixture.game(accepted: false))
   try await restored.load(from: fixture.url)
   _ = await restored.advance(delta: 0.1)
-  #expect(await restored.snapshot().commander.credits == 1025)
+  #expect(await restored.snapshot().commander.credits == startingCredits + 25)
 }
 
 // Observe only after this regression's actual first save fails. Preparation is replayed on an
@@ -127,6 +128,7 @@ func empArchiveNestedTimerWriterFailureRetainsArchiveAndRetries(archive: Bool) a
   let fixture = try empArchiveTimerFixture()
   defer { fixture.clean() }
   let runtime = GameRuntime(game: try fixture.game(archive: archive), saveURL: fixture.url)
+  let startingCredits = await runtime.snapshot().commander.credits
   do {
     try await runtime.save(to: fixture.url)
   } catch {
@@ -139,7 +141,7 @@ func empArchiveNestedTimerWriterFailureRetainsArchiveAndRetries(archive: Bool) a
   let denied = await runtime.advance(delta: 0.05)
   let id = try #require(denied.commander.scriptState.instances.keys.first)
   let state = try #require(denied.commander.scriptState.instances[id])
-  #expect(denied.commander.credits == 1000 && state.suspension != nil)
+  #expect(denied.commander.credits == startingCredits && state.suspension != nil)
   #expect(state.timers["a"] == nil && state.timers["b"] != nil)
   #expect((denied.commander.savedEMPState != nil) == archive)
   #expect(
@@ -151,7 +153,7 @@ func empArchiveNestedTimerWriterFailureRetainsArchiveAndRetries(archive: Bool) a
   try await runtime.resumeScriptMission(id)
   _ = await runtime.advance(delta: 0.1)
   let after = await runtime.snapshot()
-  #expect(after.commander.credits == 1025)
+  #expect(after.commander.credits == startingCredits + 25)
   #expect(after.commander.scriptState.instances[id]?.timers.isEmpty == true)
   #expect((after.commander.savedEMPState != nil) == archive)
 }
