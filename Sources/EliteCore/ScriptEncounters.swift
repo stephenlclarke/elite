@@ -614,7 +614,7 @@ extension Game {
   ) throws {
     if let legacy = copy legacy {
       guard legacy.matches(owner: state, encounter: encounter),
-        instances[state.id]?.ownedEncounters[encounter.id] == encounter
+        instances[state.id]?.ownedEncounters[encounter.id] == copy encounter
       else {
         throw MissionPackError("Historical actor provenance differs from its installed owner.")
       }
