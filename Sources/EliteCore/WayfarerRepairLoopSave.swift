@@ -6,8 +6,10 @@ enum WayfarerRepairLoopSave {
   static func contains(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
     if commander.scriptState.savedWayfarerRepairLoopStock != nil { return true }
-    for state in commander.scriptState.instances.values {
-      if state.savedWayfarerRepairLoop != nil { return true }
+    for index in commander.scriptState.instances.indices {
+      if commander.scriptState.instances.values[index].savedWayfarerRepairLoop != nil {
+        return true
+      }
     }
     guard let inventory = commander.equipmentInventory else { return false }
     return inventory.items.contains { $0.nativeRepairLoopCondition != nil }
@@ -49,17 +51,30 @@ enum WayfarerRepairLoopSave {
   static func engineValid(_ engine: borrowing ScriptEngineState) -> Bool {
     guard OriginalServiceReservationPolicy.valid(engine) else { return false }
     guard let ledger = engine.savedWayfarerRepairLoopStock else {
-      return !engine.instances.values.contains {
-        $0.savedWayfarerRepairLoop != nil || $0.definition == WayfarerRepairLoopDefinition.stateID
+      for index in engine.instances.indices {
+        let hasCustody = engine.instances.values[index].savedWayfarerRepairLoop != nil
+        let definition = engine.instances.values[index].definition
+        if hasCustody || definition == WayfarerRepairLoopDefinition.stateID { return false }
       }
+      return true
     }
+    guard sourceCatalogValid(ledger, engine: engine) else { return false }
+    return admittedStatesValid(engine)
+  }
+
+  // Predeclared item checks finish before any retained mission/receipt validation begins.
+  @inline(never)
+  private static func sourceCatalogValid(
+    _ ledger: borrowing WayfarerRepairLoopStockLedger,
+    engine: borrowing ScriptEngineState
+  ) -> Bool {
     guard !ledger.sources.isEmpty, ledger.sources.count <= 128 else { return false }
     var count = 0
     var serials: Set<UUID> = []
     var nativeInstances: Set<UUID> = []
-    for (key, source) in ledger.sources {
-      guard key == source.identity.uuidString, source.owner == ledger.owner,
-        source.definition.valid, source.initializedAt.valid,
+    for key in ledger.sources.keys {
+      guard let source = ledger.sources[key], key == source.identity.uuidString,
+        source.owner == ledger.owner, source.definition.valid, source.initializedAt.valid,
         source.initializedAt.commanderOwner == source.owner,
         source.definition.source.matches(source.initializedAt.station),
         source.identity
@@ -89,32 +104,59 @@ enum WayfarerRepairLoopSave {
               resource: WayfarerRepairLoopDefinition.gearKey, index: 0, packDigest: source.digest)
         else { return false }
         if unit.status == .available {
-          guard unit.instance == nil, unit.returnedItem == nil, engine.instances[instanceID] == nil
+          guard unit.instance == nil, unit.returnedItem == nil,
+            !engine.instances.keys.contains(instanceID)
           else { return false }
         } else {
           guard unit.instance == instanceID, nativeInstances.insert(instanceID).inserted,
-            let state = engine.instances[instanceID],
-            validState(state, unit: unit, source: source, engine: engine)
+            let index = engine.instances.index(forKey: instanceID),
+            engine.instances.values[index].savedWayfarerRepairLoop != nil
           else { return false }
         }
-      }
-    }
-    for state in engine.instances.values {
-      if state.savedWayfarerRepairLoop != nil
-        || state.definition == WayfarerRepairLoopDefinition.stateID
-      {
-        guard nativeInstances.contains(state.id) else { return false }
       }
     }
     return true
   }
 
+  @inline(never)
+  private static func admittedStatesValid(_ engine: borrowing ScriptEngineState) -> Bool {
+    guard let ledger = engine.savedWayfarerRepairLoopStock else { return false }
+    for index in engine.instances.indices {
+      guard let custody = engine.instances.values[index].savedWayfarerRepairLoop else {
+        if engine.instances.values[index].definition == WayfarerRepairLoopDefinition.stateID {
+          return false
+        }
+        continue
+      }
+      guard let source = ledger.sources[custody.source.uuidString],
+        let unitIndex = source.units.index(forKey: custody.unit.uuidString),
+        source.units.values[unitIndex].status != .available,
+        validState(
+          engine.instances.values[index], unit: source.units.values[unitIndex], source: source,
+          engine: engine)
+      else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
   private static func validState(
-    _ state: borrowing ScriptInstance, unit: WayfarerRepairLoopStockUnit,
-    source: WayfarerRepairLoopStockSource, engine: borrowing ScriptEngineState
+    _ state: borrowing ScriptInstance,
+    unit: borrowing WayfarerRepairLoopStockUnit, source: borrowing WayfarerRepairLoopStockSource,
+    engine: borrowing ScriptEngineState
   ) -> Bool {
-    guard let custody = state.savedWayfarerRepairLoop,
-      state.id == unit.instance,
+    guard issueStateValid(state, unit: unit, source: source, engine: engine) else { return false }
+    guard serviceStateValid(state, unit: unit, source: source, engine: engine) else { return false }
+    return terminalStateValid(state, unit: unit, source: source, engine: engine)
+  }
+
+  @inline(never)
+  private static func issueStateValid(
+    _ state: borrowing ScriptInstance,
+    unit: borrowing WayfarerRepairLoopStockUnit, source: borrowing WayfarerRepairLoopStockSource,
+    engine: borrowing ScriptEngineState
+  ) -> Bool {
+    guard let custody = state.savedWayfarerRepairLoop, state.id == unit.instance,
       state.definition == WayfarerRepairLoopDefinition.stateID, state.digest == source.digest,
       state.version == source.version, state.contract == nil, state.courier == nil,
       state.savedWayfarerColdChain == nil, state.savedOwnedCargo == nil,
@@ -141,35 +183,69 @@ enum WayfarerRepairLoopSave {
       custody.issue.context.revision == 0,
       state.revision == 1 + (custody.service == nil ? 0 : 1) + (state.outcome == .active ? 0 : 1)
     else { return false }
-    if let service = custody.service {
-      guard
-        service.operation
-          == operationIdentity(
-            state.id, returning: false,
-            revision: service.contact.context.revision, inventory: service.inventoryRevision,
-            dock: service.contact.dock.sequence, epoch: service.epoch, digest: state.digest),
-        service.contact.context.revision == 1,
-        service.instance == state.id, service.sourceUnit == unit.id,
-        service.recipe == "relay-continuity-restoration-v1", service.issue == custody.issue,
-        service.ownerResource == source.definition.source.resourceKey,
-        service.contact.valid, service.contact.dock.commanderOwner == source.owner,
-        source.definition.workshop.matches(service.contact.dock.station),
-        service.contact.dock.sequence > custody.issue.dock.sequence,
-        service.contact.sequence > custody.issue.sequence,
-        service.contact.sequence <= engine.nextEvent,
-        state.hasAcknowledged(service.contact.sequence),
-        service.before == unit.original,
-        service.after == operational(unit.original, unit: unit.id, operation: service.operation)
-      else { return false }
-    }
+    return true
+  }
+
+  @inline(never)
+  private static func serviceStateValid(
+    _ state: borrowing ScriptInstance,
+    unit: borrowing WayfarerRepairLoopStockUnit, source: borrowing WayfarerRepairLoopStockSource,
+    engine: borrowing ScriptEngineState
+  ) -> Bool {
+    guard let custody = state.savedWayfarerRepairLoop else { return false }
+    guard let service = custody.service else { return true }
+    guard
+      service.operation
+        == operationIdentity(
+          state.id, returning: false,
+          revision: service.contact.context.revision, inventory: service.inventoryRevision,
+          dock: service.contact.dock.sequence, epoch: service.epoch, digest: state.digest),
+      service.contact.context.revision == 1, service.instance == state.id,
+      service.sourceUnit == unit.id, service.recipe == "relay-continuity-restoration-v1",
+      service.issue == custody.issue, service.ownerResource == source.definition.source.resourceKey,
+      service.contact.valid, service.contact.dock.commanderOwner == source.owner,
+      source.definition.workshop.matches(service.contact.dock.station),
+      service.contact.dock.sequence > custody.issue.dock.sequence,
+      service.contact.sequence > custody.issue.sequence,
+      service.contact.sequence <= engine.nextEvent,
+      state.hasAcknowledged(service.contact.sequence), service.before == unit.original
+    else { return false }
+    return repairedItemValid(
+      service.after, original: unit.original, unit: unit.id, operation: service.operation)
+  }
+
+  @inline(never)
+  private static func repairedItemValid(
+    _ after: borrowing OwnedEquipmentItem,
+    original: borrowing OwnedEquipmentItem, unit: UUID, operation: UUID
+  ) -> Bool {
+    guard after.id == original.id, after.node == original.node,
+      after.provenance == original.provenance, after.component == original.component,
+      after.location == original.location, after.boundHull == original.boundHull,
+      after.preferredSlot == original.preferredSlot,
+      after.retainedLegacyState == original.retainedLegacyState,
+      after.nativeRepairLoopCondition == .operational(sourceUnit: unit, operation: operation)
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func terminalStateValid(
+    _ state: borrowing ScriptInstance,
+    unit: borrowing WayfarerRepairLoopStockUnit, source: borrowing WayfarerRepairLoopStockSource,
+    engine: borrowing ScriptEngineState
+  ) -> Bool {
+    guard let custody = state.savedWayfarerRepairLoop,
+      let gear = state.gearIssues[WayfarerRepairLoopDefinition.gearKey]
+    else { return false }
     switch unit.status {
     case .available: return false
     case .held:
       guard state.outcome == .active, state.completionReceipt == nil,
-        state.payloads == [WayfarerRepairLoopDefinition.payloadKey: 2],
-        state.milestones.isEmpty
+        state.payloads == [WayfarerRepairLoopDefinition.payloadKey: 2], state.milestones.isEmpty
       else { return false }
-      return custody.returned == nil && custody.loss == nil && unit.returnedItem == nil
+      guard unit.returnedItem == nil else { return false }
+      return custody.returned == nil && custody.loss == nil
         && gear.status == .issued && gear.consumed.isEmpty
     case .returned:
       guard state.outcome == .complete, let receipt = custody.returned,
@@ -179,35 +255,42 @@ enum WayfarerRepairLoopSave {
             state.id, returning: true,
             revision: receipt.contact.context.revision, inventory: receipt.inventoryRevision,
             dock: receipt.contact.dock.sequence, epoch: receipt.epoch, digest: state.digest),
-        receipt.contact.context.revision == 2,
-        receipt.contact.valid, source.definition.receiver.matches(receipt.contact.dock.station),
+        receipt.contact.context.revision == 2, receipt.contact.valid,
+        source.definition.receiver.matches(receipt.contact.dock.station),
         receipt.contact.dock.commanderOwner == source.owner,
         receipt.contact.dock.sequence > service.contact.dock.sequence,
         receipt.contact.sequence > service.contact.sequence,
         receipt.contact.sequence <= engine.nextEvent,
-        state.hasAcknowledged(receipt.contact.sequence),
-        receipt.service == service.operation, receipt.originalItems == gear.items,
-        receipt.issueSource == gear.source, receipt.amount == source.definition.rewardNative,
-        gear.status == .returned, gear.consumed.isEmpty,
-        unit.returnedItem == service.after, state.payloads.isEmpty, state.milestones == [0],
-        let completion = state.completionReceipt, completion.valid(for: state, engine: engine),
-        completion.sequence == receipt.contact.sequence,
-        completion.cause == receipt.contact.context,
-        completion.causeKind == "dialogue.confirmed"
+        state.hasAcknowledged(receipt.contact.sequence), receipt.service == service.operation,
+        receipt.originalItems == gear.items, receipt.issueSource == gear.source,
+        receipt.amount == source.definition.rewardNative, gear.status == .returned,
+        gear.consumed.isEmpty, unit.returnedItem == service.after, state.payloads.isEmpty,
+        state.milestones == [0]
       else { return false }
-      return true
+      return completionValid(
+        state, engine: engine, sequence: receipt.contact.sequence,
+        context: receipt.contact.context, kind: "dialogue.confirmed")
     case .lost:
       guard state.outcome == .failed, let loss = custody.loss, loss.valid,
         loss.sequence > (custody.service?.contact.sequence ?? custody.issue.sequence),
-        loss.sequence <= engine.nextEvent, custody.returned == nil,
-        unit.returnedItem == nil, state.payloads.isEmpty, state.milestones.isEmpty,
-        gear.status == .issued, gear.consumed == [unit.serial],
-        let completion = state.completionReceipt, completion.valid(for: state, engine: engine),
-        completion.sequence == loss.sequence, completion.cause == loss.context,
-        completion.causeKind == loss.cause.completionKind
+        loss.sequence <= engine.nextEvent, custody.returned == nil, unit.returnedItem == nil,
+        state.payloads.isEmpty, state.milestones.isEmpty, gear.status == .issued,
+        gear.consumed == [unit.serial]
       else { return false }
-      return true
+      return completionValid(
+        state, engine: engine, sequence: loss.sequence, context: loss.context,
+        kind: loss.cause.completionKind)
     }
+  }
+  @inline(never)
+  private static func completionValid(
+    _ state: borrowing ScriptInstance,
+    engine: borrowing ScriptEngineState, sequence: UInt64, context: ScriptEventContext, kind: String
+  ) -> Bool {
+    guard let completion = state.completionReceipt, completion.valid(for: state, engine: engine),
+      completion.sequence == sequence, completion.cause == context, completion.causeKind == kind
+    else { return false }
+    return true
   }
   private static func operationIdentity(
     _ id: UUID, returning: Bool, revision: UInt64,
@@ -217,72 +300,98 @@ enum WayfarerRepairLoopSave {
       "wayfarer-repair-operation-v1:\(id):\(returning):\(revision):\(inventory):\(dock):\(epoch):\(digest)"
     )
   }
-  private static func operational(_ item: OwnedEquipmentItem, unit: UUID, operation: UUID)
-    -> OwnedEquipmentItem
-  {
-    .init(
-      id: item.id, node: item.node, provenance: item.provenance, component: item.component,
-      location: item.location, boundHull: item.boundHull, preferredSlot: item.preferredSlot,
-      retainedLegacyState: item.retainedLegacyState,
-      nativeRepairLoopCondition: .operational(sourceUnit: unit, operation: operation))
-  }
+
   static func validateClaims(_ commander: borrowing Commander) -> Bool {
     guard engineValid(commander.scriptState) else { return false }
     guard let ledger = commander.scriptState.savedWayfarerRepairLoopStock else {
-      return commander.equipmentInventory?.items.contains { $0.nativeRepairLoopCondition != nil }
-        != true
+      guard let inventory = commander.equipmentInventory else { return true }
+      return !inventory.items.contains { $0.nativeRepairLoopCondition != nil }
     }
     guard ledger.owner == commander.equipmentOwnerID, let world = commander.nativeStations,
-      world.ledger.world == ledger.owner, let inventory = commander.equipmentInventory,
-      let occupied = commander.checkedCargoTonnes, occupied <= commander.standardCargoCapacity
+      world.ledger.world == ledger.owner, let occupied = commander.checkedCargoTonnes,
+      occupied <= commander.standardCargoCapacity, commander.equipmentInventory != nil
     else { return false }
-    var expected: [UUID: OwnedEquipmentItem] = [:]
-    for source in ledger.sources.values {
-      guard dockValid(source.initializedAt, commander: commander) else { return false }
-      for unit in source.units.values {
-        if unit.status == .available {
-          guard !inventory.items.contains(where: { $0.id == unit.serial }) else { return false }
-          continue
-        }
-        guard let id = unit.instance, let state = commander.scriptState.instances[id],
-          let custody = state.savedWayfarerRepairLoop,
-          dockValid(custody.issue.dock, commander: commander),
-          commander.freightHistoricalContextValid(custody.issue.context, requiresDock: true)
-        else { return false }
-        if let service = custody.service {
-          guard dockValid(service.contact.dock, commander: commander),
-            commander.freightHistoricalContextValid(service.contact.context, requiresDock: true)
-          else { return false }
-        }
-        if let receipt = custody.returned {
-          guard dockValid(receipt.contact.dock, commander: commander),
-            commander.freightHistoricalContextValid(receipt.contact.context, requiresDock: true)
-          else { return false }
-        }
-        if let loss = custody.loss {
-          guard loss.visit <= commander.flightSimulation.visit,
-            commander.freightHistoricalContextValid(loss.context, requiresDock: false)
-          else { return false }
-        }
-        if let completion = state.completionReceipt {
-          guard
-            commander.freightHistoricalContextValid(
-              completion.committed, requiresDock: state.outcome == .complete)
-          else { return false }
-        }
-        if unit.status == .held {
-          expected[unit.serial] = custody.service?.after ?? unit.original
-        } else if inventory.items.contains(where: { $0.id == unit.serial }) {
-          return false
-        }
+    guard historicalClaimsValid(commander) else { return false }
+    return inventoryClaimsValid(commander)
+  }
+
+  @inline(never)
+  private static func historicalClaimsValid(_ commander: borrowing Commander) -> Bool {
+    guard let ledger = commander.scriptState.savedWayfarerRepairLoopStock else { return false }
+    for key in ledger.sources.keys {
+      guard dockValid(ledger.sources[key]!.initializedAt, commander: commander) else {
+        return false
       }
     }
-    for (id, item) in expected {
-      guard inventory.items.first(where: { $0.id == id }) == item else { return false }
+    for index in commander.scriptState.instances.indices {
+      guard let custody = commander.scriptState.instances.values[index].savedWayfarerRepairLoop
+      else {
+        continue
+      }
+      guard dockValid(custody.issue.dock, commander: commander),
+        commander.freightHistoricalContextValid(custody.issue.context, requiresDock: true)
+      else { return false }
+      if let service = custody.service {
+        guard dockValid(service.contact.dock, commander: commander),
+          commander.freightHistoricalContextValid(service.contact.context, requiresDock: true)
+        else { return false }
+      }
+      if let receipt = custody.returned {
+        guard dockValid(receipt.contact.dock, commander: commander),
+          commander.freightHistoricalContextValid(receipt.contact.context, requiresDock: true)
+        else { return false }
+      }
+      if let loss = custody.loss {
+        guard loss.visit <= commander.flightSimulation.visit,
+          commander.freightHistoricalContextValid(loss.context, requiresDock: false)
+        else { return false }
+      }
+      if let completion = commander.scriptState.instances.values[index].completionReceipt {
+        let complete = commander.scriptState.instances.values[index].outcome == .complete
+        guard commander.freightHistoricalContextValid(completion.committed, requiresDock: complete)
+        else { return false }
+      }
     }
-    return inventory.items.allSatisfy { item in
-      item.nativeRepairLoopCondition == nil || expected[item.id] == item
+    return true
+  }
+
+  @inline(never)
+  private static func inventoryClaimsValid(_ commander: borrowing Commander) -> Bool {
+    guard let ledger = commander.scriptState.savedWayfarerRepairLoopStock,
+      let inventory = commander.equipmentInventory
+    else { return false }
+    var held: Set<UUID> = []
+    for key in ledger.sources.keys {
+      let source = ledger.sources[key]!
+      for key in source.units.keys {
+        let unit = source.units[key]!
+        let index = itemIndex(inventory, id: unit.serial)
+        if unit.status != .held {
+          guard index == nil else { return false }
+          continue
+        }
+        guard let index, let id = unit.instance,
+          let stateIndex = commander.scriptState.instances.index(forKey: id),
+          let custody = commander.scriptState.instances.values[stateIndex].savedWayfarerRepairLoop
+        else { return false }
+        if let service = custody.service {
+          guard inventory.items[index] == service.after else { return false }
+        } else {
+          guard inventory.items[index] == unit.original else { return false }
+        }
+        held.insert(unit.serial)
+      }
     }
+    for index in inventory.items.indices {
+      if inventory.items[index].nativeRepairLoopCondition != nil {
+        guard held.contains(inventory.items[index].id) else { return false }
+      }
+    }
+    return true
+  }
+  private static func itemIndex(_ inventory: borrowing OwnedEquipmentInventory, id: UUID) -> Int? {
+    for index in inventory.items.indices where inventory.items[index].id == id { return index }
+    return nil
   }
   private static func dockValid(
     _ dock: NativeMainStationDockReceipt, commander: borrowing Commander
@@ -293,8 +402,8 @@ enum WayfarerRepairLoopSave {
     let calendar = commander.scriptState.calendarSeconds
     return dock.valid && dock.commanderOwner == owner
       && world.mainStations.contains(dock.station) && world.ledger.world == dock.station.world
-      && dock.sequence < world.nextMainDockSequence
-      && dock.actor.visit <= visit && dock.calendarSeconds <= calendar
+      && dock.sequence < world.nextMainDockSequence && dock.actor.visit <= visit
+      && dock.calendarSeconds <= calendar
   }
 
   /// Only the closed native payloads are decoded here. Round-trip shape equality rejects

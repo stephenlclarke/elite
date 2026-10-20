@@ -65,7 +65,7 @@ struct WayfarerRepairLoopAdmissionReceipt: Codable, Sendable, Equatable {
   let source: EquipmentIssueSource
   let originalItems: [UUID]
 }
-struct WayfarerRepairLoopServiceReceipt: Codable, Sendable, Equatable {
+final class WayfarerRepairLoopServiceReceipt: Codable, Sendable, Equatable {
   let operation: UUID
   let recipe: String
   let inventoryRevision: UInt64
@@ -77,8 +77,32 @@ struct WayfarerRepairLoopServiceReceipt: Codable, Sendable, Equatable {
   let epoch: UUID
   let before: OwnedEquipmentItem
   let after: OwnedEquipmentItem
+  init(
+    operation: UUID, recipe: String, inventoryRevision: UInt64, instance: UUID, sourceUnit: UUID,
+    ownerResource: String, issue: WayfarerColdChainContact, contact: WayfarerColdChainContact,
+    epoch: UUID, before: OwnedEquipmentItem, after: OwnedEquipmentItem
+  ) {
+    self.operation = operation
+    self.recipe = recipe
+    self.inventoryRevision = inventoryRevision
+    self.instance = instance
+    self.sourceUnit = sourceUnit
+    self.ownerResource = ownerResource
+    self.issue = issue
+    self.contact = contact
+    self.epoch = epoch
+    self.before = before
+    self.after = after
+  }
+  static func == (a: WayfarerRepairLoopServiceReceipt, b: WayfarerRepairLoopServiceReceipt) -> Bool
+  {
+    a.operation == b.operation && a.recipe == b.recipe && a.inventoryRevision == b.inventoryRevision
+      && a.instance == b.instance && a.sourceUnit == b.sourceUnit
+      && a.ownerResource == b.ownerResource && a.issue == b.issue && a.contact == b.contact
+      && a.epoch == b.epoch && a.before == b.before && a.after == b.after
+  }
 }
-struct WayfarerRepairLoopReturnReceipt: Codable, Sendable, Equatable {
+final class WayfarerRepairLoopReturnReceipt: Codable, Sendable, Equatable {
   let operation: UUID
   let inventoryRevision: UInt64
   let contact: WayfarerColdChainContact
@@ -87,6 +111,25 @@ struct WayfarerRepairLoopReturnReceipt: Codable, Sendable, Equatable {
   let originalItems: [UUID]
   let issueSource: EquipmentIssueSource
   let amount: Int
+  init(
+    operation: UUID, inventoryRevision: UInt64, contact: WayfarerColdChainContact, epoch: UUID,
+    service: UUID, originalItems: [UUID], issueSource: EquipmentIssueSource, amount: Int
+  ) {
+    self.operation = operation
+    self.inventoryRevision = inventoryRevision
+    self.contact = contact
+    self.epoch = epoch
+    self.service = service
+    self.originalItems = originalItems
+    self.issueSource = issueSource
+    self.amount = amount
+  }
+  static func == (a: WayfarerRepairLoopReturnReceipt, b: WayfarerRepairLoopReturnReceipt) -> Bool {
+    a.operation == b.operation && a.inventoryRevision == b.inventoryRevision
+      && a.contact == b.contact && a.epoch == b.epoch && a.service == b.service
+      && a.originalItems == b.originalItems && a.issueSource == b.issueSource
+      && a.amount == b.amount
+  }
 }
 
 /// An immutable native leaf keeps ScriptInstance and pre-publication snapshots compact.
@@ -198,12 +241,19 @@ extension Game {
     .init(sequence: sequence, dock: dock, context: scriptEventContext(state))
   }
   mutating func initializeWayfarerRepairLoopStock(packDigest: String) throws -> String {
+    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+    let result = try performInitializeRepairLoopStock(packDigest: packDigest)
+    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+    return result
+  }
+
+  @inline(never)
+  private mutating func performInitializeRepairLoopStock(packDigest: String) throws -> String {
     let pack = try repairLoopPack(packDigest)
     guard let terms = pack.manifest.repairLoop, let owner = commander.equipmentOwnerID else {
       throw SaveError.invalidCommander
     }
     let dock = try repairLoopDock(terms.source)
-    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
     let id = WayfarerRepairLoopStockSource.identity(owner: owner, terms: terms)
     var ledger =
       commander.scriptState.savedWayfarerRepairLoopStock ?? .init(owner: owner, sources: [:])
@@ -240,7 +290,6 @@ extension Game {
       identity: id, owner: owner, definition: terms,
       version: pack.manifest.version, digest: pack.digest, initializedAt: dock, units: units)
     commander.scriptState.savedWayfarerRepairLoopStock = ledger
-    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
     return id.uuidString
   }
 
@@ -286,6 +335,15 @@ extension Game {
 
   mutating func pickUpWayfarerRepairLoop(sourceID: String, quotedOfferID: UUID) throws -> UUID {
     guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+    let result = try performPickUpRepairLoop(sourceID: sourceID, quotedOfferID: quotedOfferID)
+    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+    return result
+  }
+
+  @inline(never)
+  private mutating func performPickUpRepairLoop(sourceID: String, quotedOfferID: UUID) throws
+    -> UUID
+  {
     let quote = try wayfarerRepairLoopQuote(sourceID: sourceID)
     guard quote.id == quotedOfferID,
       var ledger = commander.scriptState.savedWayfarerRepairLoopStock,
@@ -345,8 +403,7 @@ extension Game {
     commander.savedEquipmentInventory = applied.inventory
     commander.scriptState.savedWayfarerRepairLoopStock = ledger
     commander.scriptState.instances[id] = state
-    guard commander.checkedCargoTonnes.map({ $0 <= commander.standardCargoCapacity }) == true,
-      WayfarerRepairLoopSave.validateClaims(commander)
+    guard commander.checkedCargoTonnes.map({ $0 <= commander.standardCargoCapacity }) == true
     else { throw SaveError.invalidCommander }
     return id
   }
@@ -401,6 +458,12 @@ extension Game {
 
   mutating func serviceWayfarerRepairLoop(_ id: UUID, quotedOperationID: UUID) throws {
     guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+    try performServiceRepairLoop(id, quotedOperationID: quotedOperationID)
+    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+  }
+
+  @inline(never)
+  private mutating func performServiceRepairLoop(_ id: UUID, quotedOperationID: UUID) throws {
     let quote = try wayfarerRepairLoopStageQuote(id, returning: false)
     guard quote.id == quotedOperationID, var state = commander.scriptState.instances[id],
       let custody = state.savedWayfarerRepairLoop, var inventory = commander.equipmentInventory,
@@ -424,14 +487,20 @@ extension Game {
     state.acknowledge(sequence)
     commander.savedEquipmentInventory = inventory
     commander.scriptState.instances[id] = state
-    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
   }
 
   mutating func returnWayfarerRepairLoop(
-    _ id: UUID, quotedOperationID: UUID,
-    clueTrust: ScriptClueTrustCatalog = .production
+    _ id: UUID, quotedOperationID: UUID, clueTrust: ScriptClueTrustCatalog = .production
   ) throws {
     guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+    try performReturnRepairLoop(id, quotedOperationID: quotedOperationID, clueTrust: clueTrust)
+    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+  }
+
+  @inline(never)
+  private mutating func performReturnRepairLoop(
+    _ id: UUID, quotedOperationID: UUID, clueTrust: ScriptClueTrustCatalog
+  ) throws {
     let quote = try wayfarerRepairLoopStageQuote(id, returning: true)
     guard quote.id == quotedOperationID, var state = commander.scriptState.instances[id],
       let custody = state.savedWayfarerRepairLoop, let service = custody.service,
@@ -473,7 +542,6 @@ extension Game {
     commander.scriptState.instances[id] = state
     try awardScriptClue(previous: previous, next: state, trust: clueTrust)
     if let completion = state.completionReceipt { try enqueueScriptCompletion(completion) }
-    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
   }
   private func repairLoopCompletion(
     _ state: ScriptInstance, context: ScriptEventContext,
@@ -491,10 +559,16 @@ extension Game {
   }
 
   mutating func recordWayfarerRepairLoopPhysicalLoss(_ cause: WayfarerColdChainLossCause) throws {
+    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
     guard !docked, energy.isFinite,
-      cause == .shipDestroyed ? screen == .gameOver && energy <= 0 : screen.isFlight && energy > 0,
-      WayfarerRepairLoopSave.validateClaims(commander)
+      cause == .shipDestroyed ? screen == .gameOver && energy <= 0 : screen.isFlight && energy > 0
     else { throw SaveError.invalidCommander }
+    try performRepairLoopPhysicalLoss(cause)
+    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
+  }
+
+  @inline(never)
+  private mutating func performRepairLoopPhysicalLoss(_ cause: WayfarerColdChainLossCause) throws {
     let ids = commander.scriptState.instances.values.filter {
       $0.savedWayfarerRepairLoop != nil && $0.outcome == .active
     }.map(\.id).sorted { $0.uuidString < $1.uuidString }
@@ -539,7 +613,6 @@ extension Game {
       commander.scriptState.pendingEvents.removeAll { $0.instance == id }
       if let completion = state.completionReceipt { try enqueueScriptCompletion(completion) }
     }
-    guard WayfarerRepairLoopSave.validateClaims(commander) else { throw SaveError.invalidCommander }
   }
   mutating func loseWayfarerRepairLoopOnEscape() -> Bool {
     guard
