@@ -324,3 +324,7 @@ Attach exact Root delivery receipt after independent actual artifact/signature/r
 ## Material821 closure and two-file mission repair scope
 
 Record matching820 PASS then821 zero terminals/seven UNKNOWN stack failure/whole closure. Immediately grant G2822/823 only three focused docking cases, owner units before final Root review. Reserve Root-approved exact GameplayAdmission thin-wrapper proposal alongside ScriptEncounters, no overlap/other actor file/cache/owner/guard semantics change. MC1 authors during docking execution and waits actual finite closure for its next grant; preserve failures/unaffected passes, no routine diagnostic bookkeeping.
+
+## Queue MBA03 native qualification behind docking and active cap closure
+
+Resume only five paused native methods after actually qualified/reviewed/canonical docking integration AND current MBA cap-batch process closure, using the exact layered docking source. Retain prior eight methods/nine cases/frozen03 proofs; no active executor interruption or unaffected repeats. Current final docking Save case remains pending, so no premature activation/readiness claim.
