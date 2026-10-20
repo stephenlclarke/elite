@@ -61,6 +61,11 @@ extension ScriptPackLibrary {
       "l337-consented-freight")
   }
 
+  static var bundledOrbitalOutlookDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-orbital-outlook")
+  }
+
   static var bundledCabinJourneyDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-cabin-journey")
   }
@@ -160,8 +165,20 @@ extension ScriptPackLibrary {
     }
     do {
       let journey = try read(bundledCabinJourneyDirectory)
-      if !library.packs.contains(where: { $0.digest == journey.digest }) { library.packs.append(journey) }
-    } catch { library.errors.append("Bundled native cabin journey pack: " + error.localizedDescription) }
+      if !library.packs.contains(where: { $0.digest == journey.digest }) {
+        library.packs.append(journey)
+      }
+    } catch {
+      library.errors.append("Bundled native cabin journey pack: " + error.localizedDescription)
+    }
+    do {
+      let outlook = try read(bundledOrbitalOutlookDirectory)
+      if !library.packs.contains(where: { $0.digest == outlook.digest }) {
+        library.packs.append(outlook)
+      }
+    } catch {
+      library.errors.append("Bundled orbital outlook journey pack: " + error.localizedDescription)
+    }
     return library
   }
 }

@@ -120,7 +120,9 @@ struct NativePeopleAdmission: Equatable, Codable, Sendable {
   let revision: UInt64
   func valid(commander: Commander) -> Bool {
     if case .station = person {
-      return NativeStationPassengerJourney.validAdmission(self, commander: commander)
+      return person.station?.batch == NativeOrbitalOutlookJourney.batch
+        ? NativeOrbitalOutlookJourney.validAdmission(self, commander: commander)
+        : NativeStationPassengerJourney.validAdmission(self, commander: commander)
     }
     guard let identity = person.emp else { return false }
     guard owner == commander.equipmentOwnerID,
@@ -204,6 +206,7 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
   let owner: UUID
   var revision: UInt64 = 0
   var stationJourney: NativeStationPassengerJourneyState?
+  var outlookJourney: NativeOrbitalOutlookJourneyState?
   var admissions: [NativePeopleAdmission] = []
   var transfers: [NativePeopleTransferReceipt] = []
   init(owner: UUID) { self.owner = owner }
@@ -216,14 +219,18 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
   var heldCaptives: [NativePeopleAdmission] { held.filter { $0.origin == .capturedCrew } }
   var heldPods: [NativePeopleAdmission] { held.filter { $0.origin == .rescuedPod } }
   func valid(commander: Commander) -> Bool {
-    guard owner == commander.equipmentOwnerID, !admissions.isEmpty || stationJourney != nil,
+    guard owner == commander.equipmentOwnerID,
+      !admissions.isEmpty || stationJourney != nil || outlookJourney != nil,
       NativeStationPassengerJourney.validSource(
         stationJourney, custody: self, commander: commander),
+      NativeOrbitalOutlookJourney.validSource(outlookJourney, custody: self, commander: commander),
       admissions.count <= Self.maximumPeople, transfers.count <= Self.maximumPeople,
       Set(admissions.map(\.person)).count == admissions.count,
       admissions.allSatisfy({ $0.valid(commander: commander) && $0.revision <= revision }),
       Set(transfers.map(\.operation)).count == transfers.count,
-      (revision > 0 || (admissions.isEmpty && transfers.isEmpty && stationJourney != nil))
+      (revision > 0
+        || (admissions.isEmpty && transfers.isEmpty
+          && (stationJourney != nil || outlookJourney != nil)))
         && revision <= UInt64(Self.maximumPeople * 2)
     else { return false }
     var terminal: Set<NativePersonReference> = []
@@ -278,7 +285,7 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
       && commander.cargo[CommodityIdentity.slaves.rawValue] >= heldCaptives.count
   }
   private enum CodingKeys: String, CodingKey {
-    case owner, revision, admissions, transfers, stationJourney
+    case owner, revision, admissions, transfers, stationJourney, outlookJourney
   }
   init(from decoder: any Decoder) throws {
     let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -286,6 +293,8 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
     revision = try values.decode(UInt64.self, forKey: .revision)
     stationJourney = try values.decodeIfPresent(
       NativeStationPassengerJourneyState.self, forKey: .stationJourney)
+    outlookJourney = try values.decodeIfPresent(
+      NativeOrbitalOutlookJourneyState.self, forKey: .outlookJourney)
     admissions = try Self.bounded(values, key: .admissions, type: NativePeopleAdmission.self)
     transfers = try Self.bounded(values, key: .transfers, type: NativePeopleTransferReceipt.self)
   }
@@ -308,6 +317,11 @@ extension Commander {
   var nativeCaptiveCount: Int { nativePeople?.heldCaptives.count ?? 0 }
   var rescuedPodTonnes: Int { nativePeople?.heldPods.count ?? 0 }
   var nativePeopleStateValid: Bool {
+    if NativeOrbitalOutlookJourney.nativeInstancePresent(self)
+      && nativePeople?.outlookJourney == nil
+    {
+      return false
+    }
     if NativeStationPassengerJourney.nativeInstancePresent(self)
       && nativePeople?.stationJourney == nil
     {

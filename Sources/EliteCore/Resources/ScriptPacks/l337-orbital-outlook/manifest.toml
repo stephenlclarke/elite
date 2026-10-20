@@ -1,0 +1,70 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.contract"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "contracts-basic-v2", "local-flight-clocks-v2", "native-orbital-outlook-v1", "profiled-encounters-v2"]
+priority = 568
+source = "Original G05 complete native two-person orbital outlook. Root-approved project defaults: Avenor7-Renas185-Avenor7 L2 H0, three ordered actual 12-second views, 650+110L+80H = 870 CR after real return care; no cargo, deposit or deadline."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "orbital-outlook"
+title = "Three-view orbital outlook"
+briefing = "SOREL: Lysa Renn and Tovan Hale request the whole Avenor-Renas-Avenor itinerary, including three ordered native viewing markers. Obtain each native reply, then board both into two real free life-supported berths. At Renas, use the existing fitted targeting computer in front view: hold the NEXT marker within 2 degrees at 250-1500 surface flight units with clear nearest-hit sight for 12 continuous native seconds. Pause freezes observation; interruption or load resets only the unfinished view. Completed views persist. Return the same living people to actual Avenor reception for 870 CR and the first family clue. No cargo, deposit or deadline. The third scan alone pays nothing."
+destination = "Three ordered Renas orbital views, then actual Avenor return care"
+reward = "870 CR after full native return reception: L2 H0, untimed, zero deposit."
+milestones = ["Board both consenting original people", "Observe outlook-one", "Observe outlook-two", "Observe outlook-three", "Return both people to actual Avenor care"]
+
+[orbitalOutlook]
+batch = "avenor-orbital-outlook-01"
+sourceGalaxy = 0
+sourceSystem = 7
+destinationGalaxy = 0
+destinationSystem = 7
+itinerary = ["outlook-one", "outlook-two", "outlook-three"]
+
+[[orbitalOutlook.people]]
+id = "lysa-renn"
+name = "Lysa Renn"
+[[orbitalOutlook.people]]
+id = "tovan-hale"
+name = "Tovan Hale"
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "system.entered"
+function = "deploy"
+[[handlers]]
+event = "station.undocked"
+function = "deploy"
+
+[[npcs]]
+id = "outlook-marker"
+name = "Orbital outlook viewing marker"
+source = "Original G05 native stationary noncombat viewing marker"
+basis = "Existing SH040 geometry, explicit zero speed and armament; no new hull or renderer."
+model = "catalogue:SH040"
+scale = 1.0
+energy = 100.0
+recharge = 0.0
+speed = 0.0
+acceleration = 0.0
+pitch = 0.0
+yaw = 0.0
+roll = 0.0
+missiles = 0
+fuel = 0.0
+ecm = false
+bounty = 0
+
+[[encounters]]
+id = "orbital-views"
+galaxy = 0
+system = 185
+profile = "profiled-local-freeze-v1"
+actors = [{id="outlook-one",npc="outlook-marker",x=-5000.0,y=0.0,z=20000.0,hostile=false},{id="outlook-two",npc="outlook-marker",x=0.0,y=4000.0,z=24000.0,hostile=false},{id="outlook-three",npc="outlook-marker",x=5000.0,y=0.0,z=28000.0,hostile=false}]

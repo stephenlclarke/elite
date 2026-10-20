@@ -4,7 +4,9 @@ enum NativePeopleVersionedSave {
   static func validateStationPassengerFields(
     _ bytes: Data, part: ScriptFreightVersionedSave.Part, schema: Int?
   ) throws {
-    try NativeStationPassengerJourneySave.validateFields(bytes, part: part, schema: schema)
+    try NativeOrbitalOutlookJourneySave.validateFields(bytes, part: part, schema: schema)
+    try NativeStationPassengerJourneySave.validateFields(
+      bytes, part: part, schema: NativeOrbitalOutlookJourneySave.lowerSchema(schema))
   }
 
   static func rejectFields(_ bytes: Data) throws {

@@ -8,7 +8,9 @@ public struct NativeStationPersonIdentity: Hashable, Codable, Sendable {
   var key: String { "station-person-v1:\(owner):main-orbital:0:7:\(batch):\(person)" }
   var id: UUID { ScriptIdentity.uuid(key) }
   var valid: Bool {
-    batch == NativeStationPassengerJourney.batch && ["mira-talen", "oren-vey"].contains(person)
+    (batch == NativeStationPassengerJourney.batch && ["mira-talen", "oren-vey"].contains(person))
+      || (batch == NativeOrbitalOutlookJourney.batch
+        && ["lysa-renn", "tovan-hale"].contains(person))
   }
 }
 
