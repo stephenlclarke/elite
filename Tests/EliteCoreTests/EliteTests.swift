@@ -215,8 +215,14 @@ import Testing
   #expect(!game.commander.equipment.contains("E.C.M. System"))
 }
 
-@Test func chartSelectionAndHyperspace() {
+@Test func chartSelectionAndHyperspace() throws {
   var game = Game(executive: false)
+  // This controlled unit fixture exercises the stock Cobra, independently of the fresh starter.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.key(" ")
   game.key("4")
   game.key("right")
@@ -226,7 +232,8 @@ import Testing
   game.selectedSystem = 0
   game.selectNeighbour(direction: -1)
   #expect(game.selectedSystem == 255)
-  game.selectSystem(x: 20, y: 173)
+  // Authenticated original-world coordinates, rather than the predecessor chart location.
+  game.selectSystem(x: 52.4955, y: 51.0662)
   #expect(game.selectedSystem == 7)
   game.key("d")
   #expect(game.message.contains("DISTANCE"))
@@ -235,7 +242,10 @@ import Testing
   game.beginHyperspace()
   #expect(game.jumpCountdown == nil)
   game.launch()
-  game.selectedSystem = 129
+  // Avenor to Renas is 3.364975176728651 LY: the native rounded debit is 34 units.
+  // Beliven (129) is 23.533908197534895 LY away and cannot exercise a stock seven-LY drive.
+  try #require(abs(game.systems[7].distance(to: game.systems[185]) - 3.364975176728651) < 1e-12)
+  game.selectedSystem = 185
   game.beginHyperspace()
   #expect(game.message == "MASS LOCKED")
   game.bodies = []
@@ -252,7 +262,7 @@ import Testing
   #expect(game.jumpCountdown == 10)
   game.jumpCountdown = 0.01
   game.tick(delta: 0.02)
-  #expect(game.commander.system == 129 && game.commander.fuel == 14 && game.jumpCountdown == nil)
+  #expect(game.commander.system == 185 && game.commander.fuel == 36 && game.jumpCountdown == nil)
   #expect(game.market == MarketItem.at(game.currentSystem))
 }
 
