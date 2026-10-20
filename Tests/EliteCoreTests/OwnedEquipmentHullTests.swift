@@ -8,7 +8,7 @@ import Testing
   defer { try? FileManager.default.removeItem(at: folder) }
   let directory = folder.appendingPathComponent("save")
   let file = directory.appendingPathComponent("commander.json")
-  var game = try missionGearGame(missiles: 4)
+  var game = try ownedHullTradeGame()
   let stored = try missionPrepareSmallHullExchange(&game)
   game.screen = .showroom
   game.showroom.selection = "SH001"
@@ -63,7 +63,7 @@ import Testing
   defer { try? FileManager.default.removeItem(at: folder) }
   let directory = folder.appendingPathComponent("save")
   let file = directory.appendingPathComponent("commander.json")
-  var game = try missionGearGame(missiles: 4)
+  var game = try ownedHullTradeGame()
   let stored = try missionPrepareSmallHullExchange(&game)
   game.screen = .showroom
   game.showroom.selection = "SH001"
@@ -117,6 +117,8 @@ import Testing
   let directory = folder.appendingPathComponent("save")
   let file = directory.appendingPathComponent("commander.json")
   var legacyCommander = Commander()
+  legacyCommander.shipID = "SH023"
+  legacyCommander.fuel = legacyCommander.fuelCapacity
   legacyCommander.missiles = 4
   var game = Game(executive: false)
   let loaded = game.load(legacyCommander)
@@ -202,7 +204,7 @@ private func ownedHullSaveFiles(at directory: URL) throws -> [String: Data] {
 @Test func hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()
   throws
 {
-  var game = try missionGearGame(missiles: 4)
+  var game = try ownedHullTradeGame()
   for mount in LaserMount.allCases {
     try game.commander.grantEquipment(
       LaserKind.military.equipmentName, at: .laser(mount), provenance: .grant("hull-fixture"))
@@ -243,7 +245,7 @@ private func ownedHullSaveFiles(at directory: URL) throws -> [String: Data] {
 }
 
 @Test func firingAfterAnExplicitStoredTransferConsumesOneActualRoundWithoutRecreatingIt() throws {
-  var game = try missionGearGame(missiles: 4)
+  var game = try ownedHullTradeGame()
   let stored = try missionPrepareSmallHullExchange(&game)
   try game.commander.transferEquipment(to: "SH001", hullID: UUID())
   let before = try #require(game.commander.equipmentInventory)
@@ -297,4 +299,23 @@ private func ownedHullSaveFiles(at directory: URL) throws -> [String: Data] {
   #expect(preserved.retainedLegacyState?.conditionBasisPoints == 4000)
   #expect(preserved.retainedLegacyState?.modifications == ["source-upgrade": 7])
   #expect(preserved.location == nil && migrated.valid)
+}
+
+private func ownedHullTradeGame() throws -> Game {
+  var commander = Commander()
+  commander.shipID = "SH023"
+  commander.fuel = commander.fuelCapacity
+  commander.missiles = 4
+  try commander.prepareEquipment(legacy: false)
+  var game = Game(executive: false)
+  // Construct current typed ownership after selecting the intended source hull.
+  game.commander = commander
+  game.commander.mirrorFittedEquipment()
+  try game.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try #require(game.commander.valid)
+  game.screen = .inventory
+  return game
 }
