@@ -14,8 +14,9 @@ public struct ContractBoardRow: Sendable {
   var finance: ScriptFinanceRow? = nil
   var people: NativePeopleStationRow? = nil
   var provider: ProviderContractRow? = nil
+  var coldChain: WayfarerColdChainBoardRow? = nil
   public var key: String {
-    provider?.key ?? people?.key ?? finance?.key ?? rrs?.key
+    coldChain?.key ?? provider?.key ?? people?.key ?? finance?.key ?? rrs?.key
       ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
   }
 }
@@ -35,6 +36,7 @@ private enum ContractBoardReview: Sendable {
   case finance(ScriptFinanceQuote)
   case people(NativePeopleStationQuote)
   case provider(ProviderContractQuote)
+  case coldChain(WayfarerColdChainBoardReview)
 }
 
 public struct ContractBoardUI: Sendable {
@@ -111,6 +113,19 @@ public struct ContractBoardUI: Sendable {
       }
     }
   }
+  var coldChainQuote: WayfarerColdChainBoardReview? {
+    get {
+      guard case .coldChain(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .coldChain(newValue)
+      } else if case .coldChain(_)? = review {
+        review = nil
+      }
+    }
+  }
   var previous: Screen = .status
   var restoredSelection: String?
   public init() {}
@@ -147,6 +162,7 @@ extension Game {
         failures[pack.digest] = String(error.localizedDescription.prefix(512))
       }
     }
+    candidate.prepareWayfarerColdChainBoard(failures: &failures)
     candidate.refreshContractRows(failures: failures)
     candidate.screen = .contracts
     candidate.contractBoard.detail = false
@@ -155,6 +171,7 @@ extension Game {
     candidate.contractBoard.financeQuote = nil
     candidate.contractBoard.peopleQuote = nil
     candidate.contractBoard.providerQuote = nil
+    candidate.contractBoard.coldChainQuote = nil
     candidate.gallery.providerIntent = nil
     candidate.contractBoard.presentationGeneration = UUID()
     publishContractBoard(&candidate)
@@ -167,7 +184,9 @@ extension Game {
     failures: [String: String] = [:], restoring save: ContractScreenSave? = nil
   ) {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
-    var rows = rrsCourierRows + financeRows + nativePeopleRows + providerContractRows
+    var rows =
+      rrsCourierRows + financeRows + nativePeopleRows + providerContractRows
+      + wayfarerColdChainRows(failures: failures)
     for pack in scriptPacks.sorted(by: {
       ($0.manifest.id, $0.manifest.version, $0.digest) < (
         $1.manifest.id, $1.manifest.version, $1.digest
@@ -200,6 +219,7 @@ extension Game {
       refreshSelectedContractQuote()
       if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil
         || contractBoard.peopleQuote != nil || contractBoard.providerQuote != nil
+        || contractBoard.coldChainQuote != nil
       {
         contractBoard.action = .back
       }
@@ -207,6 +227,11 @@ extension Game {
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if let row = contractBoard.selected?.coldChain {
+      contractBoard.coldChainQuote = wayfarerColdChainReview(row)
+      return
+    }
+    contractBoard.coldChainQuote = nil
     if let row = contractBoard.selected?.provider {
       contractBoard.providerQuote = .init(
         row: row, issues: contractBoard.selected?.reason.map { [$0] } ?? [])
@@ -241,6 +266,7 @@ extension Game {
         contractBoard.financeQuote = nil
         contractBoard.peopleQuote = nil
         contractBoard.providerQuote = nil
+        contractBoard.coldChainQuote = nil
         gallery.providerIntent = nil
       } else {
         screen = contractBoard.previous
@@ -280,10 +306,23 @@ extension Game {
       contractBoard.financeQuote = nil
       contractBoard.peopleQuote = nil
       contractBoard.providerQuote = nil
+      contractBoard.coldChainQuote = nil
       gallery.providerIntent = nil
       return
     }
     do {
+      if let row = contractBoard.selected?.coldChain {
+        guard contractBoard.action == .accept, let quote = contractBoard.coldChainQuote,
+          quote.row == row
+        else {
+          throw MissionPackError("Review the native service and choose Confirm or Back.")
+        }
+        try confirmWayfarerColdChainBoard(quote)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.coldChainQuote = nil
+        return
+      }
       if contractBoard.selected?.provider != nil {
         if contractBoard.action == .decline {
           gallery.providerIntent = nil

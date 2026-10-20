@@ -29,7 +29,9 @@ extension Display {
   static func contractDetailRows(_ game: Game, width: Double) -> [String] {
     guard let row = game.contractBoard.selected else { return ["No contract selected."] }
     var rows: [String]
-    if row.provider != nil {
+    if row.coldChain != nil {
+      rows = game.wayfarerColdChainDetail
+    } else if row.provider != nil {
       rows = game.providerContractDetail
     } else if row.people != nil {
       rows = game.nativePeopleDetail
@@ -112,7 +114,8 @@ extension Display {
           : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
     if game.contractBoard.detail,
-      let reason = game.contractBoard.providerQuote?.issues.first
+      let reason = game.contractBoard.coldChainQuote?.issues.first
+        ?? game.contractBoard.providerQuote?.issues.first
         ?? game.contractBoard.rrsQuote?.issues.first
         ?? game.contractBoard.financeQuote?.issues.first
         ?? game.contractBoard.peopleQuote?.issues.first
@@ -138,9 +141,11 @@ extension Display {
         let rrs = game.contractBoard.rrsQuote
         let finance = game.contractBoard.financeQuote
         let people = game.contractBoard.peopleQuote
+        let coldChain = game.contractBoard.coldChainQuote
         let provider = game.contractBoard.providerQuote
         let available =
           action == .back
+          || (coldChain != nil && action == .accept && coldChain?.allowed == true)
           || (provider != nil
             && (action == .decline || (action == .accept && provider?.allowed == true)))
           || (people != nil && action == .accept && people?.allowed == true)
@@ -154,7 +159,7 @@ extension Display {
             && (action != .accept || game.contractBoard.quote?.allowed == true))
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
-            + (action == .accept && provider != nil
+            + (action == .accept && (provider != nil || coldChain != nil)
               ? "Confirm"
               : action == .accept && people != nil
                 ? (people?.row.action ?? "Closed")

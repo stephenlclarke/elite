@@ -19,6 +19,10 @@ extension ScriptPackLibrary {
       "l337-bonded-freight")
   }
 
+  static var bundledColdChainDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-cold-chain")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -39,6 +43,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled bonded freight pack: " + error.localizedDescription)
+    }
+    do {
+      let coldChain = try read(bundledColdChainDirectory)
+      if !library.packs.contains(where: { $0.digest == coldChain.digest }) {
+        library.packs.append(coldChain)
+      }
+    } catch {
+      library.errors.append("Bundled cold-chain pack: " + error.localizedDescription)
     }
     return library
   }
