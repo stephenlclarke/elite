@@ -450,3 +450,7 @@ Record qualifieddcce base confirmed to both G2/G3, global37Normal/38Alien reserv
 ## Preserve native condition during existing portable transfer
 
 Update current W02 ownership/register/row to27 total paths, G2native12/G3UI12/G1central3. Sole added hunk is EquipmentHullTransfer existing item reconstruction forwarding nativeRepairLoopCondition, old migration and other behavior unchanged; focused native held-transfer assertions cover identity/condition/loan/payload. Base/save pair stay fixed, earlier26 receipt preserved. Combined freeze/composition/owner qualification then Root ONEfull27 review gates remain. Documentation-only lint/diff; no new feature/runtime/audit.
+
+## Record859 history return and causal NPC validation continuation
+
+Current M01 register/status now actual859 nine methods/twelve cases unfinished after native history validation returned and the captured NPC/model/fit/actor/Encounter/Engine save-validation read chain stack-crashed. Preserve exact proof/crash and actual closure;847 storage1/1 remains separate if unaffected. Owner assesses whole directly implicated read-only chain under existing bounded category, exact new hunks/tests/reasons in next frozen plan; representation/semantic/mutating changes stay Root-only. No duplicate audit/diagnosis/runtime or GUI poll. W02 parallel source authoring unchanged. Scoped Markdown lint/diff and prior-hash preservation only.
