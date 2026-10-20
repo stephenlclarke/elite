@@ -2592,3 +2592,249 @@ func stationAutoCoverSourceCannotBorrowAnotherAttackersActiveHazard(condition: S
   #expect(guidance.aim == game.bodies[index].position)
   #expect(game.stationAutoDefence?.combatActor == actor)
 }
+
+@Test func paidNativeSH025SurvivesRepeatedHostilePressureAndDocksWithinOriginalBudget() async throws
+{
+  let storage = try NativeStationTestStorage()
+  defer { storage.clean() }
+  let parcelURL = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+    .deletingLastPathComponent().deletingLastPathComponent()
+    .appendingPathComponent("docs/mission-packs/courier.toml")
+  // All scene authoring finishes before selection. Existing traffic and its world poses stay intact.
+  func preparedPressureScene() throws -> (Game, Set<ActorIdentity>, String) {
+    var game = try ScriptProcurementFixture.freshG03FlightGame()
+    try game.prepareG03FlightEquipment()
+    try ScriptProcurementFixture.requirePaidG03Preparation(game)
+    try #require(game.commander.shipID == "SH025" && game.commander.credits == 14000)
+    let parcel = try MissionPackLibrary.read(parcelURL)
+    game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [parcel])
+    game.key("b")
+    try #require(game.offeredPack?.digest == parcel.digest)
+    game.key("return")
+    try #require(game.commander.missionProgress[parcel.pack.stateID]?.payloads["parcel"] == 1)
+    game.launch()
+    try #require(!game.docked && game.commander.valid)
+    let previousPose = game.commander.flightSimulation.pose
+    let traffic = game.bodies
+    let anchor = try #require(game.commander.flightSimulation.anchors?.station)
+    NativePagedSalvageFixture.moveObserver(
+      &game, to: .init(position: anchor.position + .init(0, 0, -5000)))
+    for old in traffic {
+      let retained = try #require(game.bodies.first { $0.id == old.id })
+      try #require(retained.physical == old.physical && retained.hostile == old.hostile)
+      try #require(
+        (game.commander.flightSimulation.pose.systemPoint(retained.position)
+          - previousPose.systemPoint(old.position)).length < 1e-8)
+    }
+    let player = try #require(game.commander.flightSimulation.player)
+    var sources: Set<ActorIdentity> = []
+    for x in [1000.0, -1000.0] {
+      let sequence = try #require(game.commander.flightSimulation.allocateSpawn())
+      let id = try stationAutoAddNativeAttacker(
+        &game, position: .init(x, 0, 0), sequence: sequence, facingPlayer: true)
+      let index = try #require(game.bodies.firstIndex { $0.id == id })
+      let performance = try #require(ShipCatalogue.nativeShip(.cobra)?.game)
+      let stock = try #require(NPCResources.stock(performance))
+      // A declared pulse-only native loadout: full authored hull/shields, empty missile racks.
+      game.bodies[index].energy = performance.energy
+      game.bodies[index].missiles = 0
+      game.bodies[index].physical?.npc?.resources = stock
+      game.bodies[index].physical?.npc?.intention = .engage(player)
+      let actor = try #require(game.bodies[index].physical?.identity)
+      sources.insert(actor)
+      let context = try #require(game.gameplayContext())
+      let current = try #require(context.actors.first { $0.identity == actor })
+      try #require(current.npc?.resources?.profile == .nativeHull)
+      try #require(current.energy == current.maximumEnergy && current.energy == performance.energy)
+      try #require(
+        current.identity.system == player.system && current.identity.visit == player.visit)
+      try #require(!context.protection.protectedActors.contains(actor))
+      let contact = try #require(
+        try game.nearestMissionCollision(
+          from: game.bodies[index].position, direction: game.bodies[index].orientation.z.unit,
+          range: 1500, radius: 0, excludingBodyIDs: [id], includePlayer: true))
+      try #require(contact.hit.target == .player)
+    }
+    try #require(sources.count == 2 && game.commander.valid)
+    try #require(
+      !game.commander.unlimitedMissiles && !game.commander.unlimitedCash
+        && !game.commander.unlimitedCargo && !game.commander.unlimitedFuel)
+    try #require(game.energy == game.commander.performance.energy)
+    try #require(game.frontShield == game.commander.shieldCapacity)
+    try #require(game.rearShield == game.commander.rearShieldCapacity)
+    return (game, sources, parcel.pack.stateID)
+  }
+
+  let (scene, attackers, parcelID) = try preparedPressureScene()
+  let baseline = CommanderSnapshot(scene.commander)
+  let owner = try #require(baseline.value.equipmentOwnerID)
+  let hull = try #require(baseline.value.hullInstanceID)
+  let initialInventory = try #require(baseline.value.equipmentInventory)
+  let initialRounds = Set(
+    initialInventory.items.filter {
+      $0.node == EquipmentRuntimeCatalog.standardMissile
+    }.map(\.id))
+  try #require(initialRounds.count == baseline.value.missiles && !initialRounds.isEmpty)
+  let originalParcel = try #require(baseline.value.missionProgress[parcelID])
+  let stationActor = try #require(scene.commander.flightSimulation.anchors?.station.identity)
+  let playerActor = try #require(scene.commander.flightSimulation.player)
+  let runtime = GameRuntime(game: scene, saveURL: storage.url)
+  try await runtime.save(to: storage.url)
+  await runtime.enableStationDefenceDiagnostics()
+  // Select the actual original main, without advancing or moving any actor during selection.
+  for _ in 0..<32 {
+    if await runtime.snapshot().autoPilot.targetActor == stationActor { break }
+    await runtime.key("tab")
+  }
+  let selected = await runtime.snapshot()
+  try #require(selected.stationAutoDockingActive && selected.autoPilot.targetActor == stationActor)
+  let start = selected.commander.flightSimulation.physicalTime
+  let weaponLock = selected.weaponsTargetID
+  let tool = selected.selectedFlightTool
+
+  var lastIncident: UInt64 = 0
+  var pressure: [ActorIdentity: [UInt64: Double]] = [:]
+  var firedRounds: Set<UUID> = []
+  var playerDeaths: Set<ActorIdentity> = []
+  var lawfulBounty = 0
+  var sawCurrentUnlawfulAttack = false
+  var defendedUpdates = 0
+  var translatedWhileDefending = false
+  var previousPosition = selected.commander.flightSimulation.pose.position
+  var steps = 0
+  var arrived = false
+  // Execution contains only ordinary native advances; no steering, re-aiming or resource mutation.
+  while steps < 3000 {
+    let frame = await runtime.advance(delta: 0.1)
+    steps += 1
+    try #require(
+      !frame.paused && frame.energy > 0 && frame.screen != .gameOver,
+      "step=\(steps) phase=\(frame.autoPilot.stationDefencePhase) energy=\(frame.energy) hits=\(pressure.values.reduce(0) { $0 + $1.count })"
+    )
+    #expect(frame.commander.equipmentOwnerID == owner && frame.commander.hullInstanceID == hull)
+    #expect(
+      frame.commander.system == baseline.value.system
+        && frame.commander.galaxy == baseline.value.galaxy)
+    #expect(frame.selectedSystem == baseline.value.system)
+    #expect(frame.commander.missionProgress[parcelID] == originalParcel)
+    #expect(
+      frame.commander.cargo == baseline.value.cargo && frame.commander.fuel == baseline.value.fuel)
+    #expect(frame.commander.legal == 0 && !frame.commander.unlimitedMissiles)
+    #expect(frame.weaponsTargetID == weaponLock && frame.selectedFlightTool == tool)
+    if !frame.docked {
+      #expect(frame.stationAutoDockingActive && frame.autoPilot.targetActor == stationActor)
+    }
+    if frame.autoPilot.stationDefencePhase == .defending {
+      defendedUpdates += 1
+      if (frame.commander.flightSimulation.pose.position - previousPosition).length > 1e-8 {
+        translatedWhileDefending = true
+      }
+    }
+    previousPosition = frame.commander.flightSimulation.pose.position
+    let trace = try #require(frame.gameplayCombatTrace)
+    for incident in trace.incidents where incident.id > lastIncident {
+      lastIncident = incident.id
+      if attackers.contains(incident.origin.owner), incident.victim == playerActor,
+        incident.kind == .laser, incident.outcome == .hit,
+        incident.laser == .pulse, incident.mount == .front
+      {
+        try #require(incident.origin.emittedAt >= start)
+        #expect(incident.origin.owner.system == playerActor.system)
+        #expect(incident.origin.owner.visit == playerActor.visit)
+        pressure[incident.origin.owner, default: [:]][incident.origin.emissionID] =
+          incident.physicalTime
+      }
+      if incident.origin.owner == playerActor, incident.kind == .missile,
+        incident.outcome == .targetedLaunch
+      {
+        guard case .physical(let item)? = incident.origin.playerAmmunition else {
+          Issue.record("Paid finite docking defence must name its consumed physical missile")
+          continue
+        }
+        let uniqueRound = firedRounds.insert(item).inserted
+        #expect(initialRounds.contains(item) && uniqueRound)
+      }
+      if incident.origin.owner == playerActor, incident.outcome == .destruction,
+        let victim = incident.victim, incident.victimIsStation == false,
+        playerDeaths.insert(victim).inserted
+      {
+        lawfulBounty += max(0, incident.victimLegalBeforeAttack?.bountyTenths ?? 0)
+      }
+    }
+    if let context = frame.gameplayContext() {
+      for actor in attackers where context.actors.contains(where: { $0.identity == actor }) {
+        if frame.commander.crimeLedger.hasCurrentUnlawfulAttack(
+          from: actor, against: playerActor, context: context)
+        {
+          sawCurrentUnlawfulAttack = true
+        }
+      }
+    }
+    let inventory = try #require(frame.commander.equipmentInventory)
+    let remainingRounds = Set(
+      inventory.items.filter {
+        $0.node == EquipmentRuntimeCatalog.standardMissile
+      }.map(\.id))
+    #expect(remainingRounds == initialRounds.subtracting(firedRounds))
+    #expect(frame.commander.missiles == initialRounds.count - firedRounds.count)
+    #expect(frame.commander.equipmentPurchaseHistory == baseline.value.equipmentPurchaseHistory)
+    #expect(frame.commander.credits == baseline.value.credits + lawfulBounty)
+    if frame.docked {
+      arrived = true
+      break
+    }
+  }
+  let contactCount = pressure.values.reduce(0) { $0 + $1.count }
+  let repeated = pressure.values.contains { emissions in
+    let times = emissions.values.sorted()
+    return times.count >= 2 && times.last! - times.first! >= LaserKind.pulse.firingInterval - 1e-8
+  }
+  try #require(
+    contactCount >= 3 && repeated && sawCurrentUnlawfulAttack,
+    "Native pressure prerequisite: contacts=\(contactCount), sources=\(pressure.count), repeated=\(repeated)"
+  )
+  #expect(defendedUpdates >= 2 && translatedWhileDefending)
+  try #require(arrived && steps <= 3000)
+  let docked = await runtime.snapshot()
+  let elapsed = docked.commander.flightSimulation.physicalTime - start
+  #expect(elapsed > 0 && elapsed < 300)
+  #expect(docked.dockedAtMainStation && docked.nativeMainStationDockEvidenceIsCurrent)
+  let receipt = try #require(docked.commander.nativeStations?.currentMainDock)
+  #expect(receipt.actor == stationActor && receipt.commanderOwner == owner)
+  #expect(receipt.station.system == stationActor.system)
+  #expect(docked.commander.valid && docked.energy > 0)
+  let retainedInventory = try #require(docked.commander.equipmentInventory)
+  let foundation = initialInventory.items.filter {
+    $0.node != EquipmentRuntimeCatalog.standardMissile
+  }
+  #expect(
+    Set(retainedInventory.items.map(\.id))
+      == Set(initialInventory.items.map(\.id)).subtracting(firedRounds))
+  for original in foundation {
+    let item = try #require(retainedInventory.items.first { $0.id == original.id })
+    #expect(item.node == original.node && item.provenance == original.provenance)
+    #expect(item.location == original.location)
+  }
+  // Saving records the attained berth; no arrival or mission outcome is manufactured by the test.
+  try await runtime.save(to: storage.url)
+  let bytes = try Data(contentsOf: storage.url)
+  let (disk, savedScene) = try ScriptSaveStore.read(bytes, from: storage.url)
+  #expect(savedScene.consistent(with: disk))
+  #expect(disk.equipmentOwnerID == owner && disk.hullInstanceID == hull)
+  #expect(disk.nativeStations?.currentMainDock == receipt)
+  #expect(disk.missionProgress[parcelID] == originalParcel)
+  #expect(
+    disk.missiles == docked.commander.missiles
+      && disk.equipmentInventory == docked.commander.equipmentInventory)
+  let cold = GameRuntime()
+  try await cold.installMissionPack(
+    from: parcelURL, directory: storage.root.appendingPathComponent("installed-packs"))
+  try await cold.load(from: storage.url, persistMigrations: false)
+  let restored = await cold.snapshot()
+  #expect(restored.commander.nativeStations?.currentMainDock == receipt)
+  #expect(restored.nativeMainStationDockEvidenceIsCurrent && restored.commander.valid)
+  #expect(restored.nativeStationRuntimeEpoch != docked.nativeStationRuntimeEpoch)
+  #expect(restored.commander.missionProgress[parcelID] == originalParcel)
+  #expect(
+    restored.commander.equipmentOwnerID == owner && restored.commander.missiles == disk.missiles)
+}
