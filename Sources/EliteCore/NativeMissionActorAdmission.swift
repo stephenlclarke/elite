@@ -289,6 +289,14 @@ extension Game {
     -> NativeMissionActorAdmissionReceipt
   {
     try validateMissionActorAdmissionSource(plan.source)
+    return try commitSourceValidatedMissionActorAdmission(plan)
+  }
+
+  /// Reserve the current-context result only after full source validation has returned.
+  @inline(never)
+  private mutating func commitSourceValidatedMissionActorAdmission(
+    _ plan: NativeMissionActorAdmissionPlan
+  ) throws -> NativeMissionActorAdmissionReceipt {
     let context = Self.currentMissionActorAdmissionCommitContext(original: self)
     try Self.validateMissionActorAdmissionCommitScene(original: self, context: context)
     try Self.validateMissionActorAdmissionCommitFacts(original: self, plan: plan, context: context)
