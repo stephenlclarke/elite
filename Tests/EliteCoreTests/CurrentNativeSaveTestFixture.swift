@@ -114,6 +114,9 @@ enum CurrentNativeSaveTestFixture {
         visit: original.commander.flightSimulation.visit,
         physicalTime: original.commander.flightSimulation.physicalTime,
         nextActor: original.commander.flightSimulation.nextActor, protection: context.protection)
+      var careers = expected.wantedCareers
+      careers.reconcile(expected.npcPersistence, system: original.systemIdentity)
+      if careers != expected.wantedCareers { expected.wantedCareers = careers }
     }
     var loadedWorld = world
     if !loadedWorld.screen.isFlight { loadedWorld.screen = .status }
@@ -181,6 +184,7 @@ enum CurrentNativeSaveTestFixture {
     if expectedDisk.npcPersistence.count > 0 {
       expectedDisk.npcPersistence.resetPhysicalBindings(system: original.systemIdentity)
     }
+    expectedDisk.resetWantedCareerBindings(system: original.systemIdentity)
     let (expectedLoaded, expectedLoadedWorld) = try loadExpectation(
       original: original, disk: expectedDisk, world: savedWorld)
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -205,6 +209,9 @@ enum CurrentNativeSaveTestFixture {
       try #require(ScriptPackLibrary.hash(chunk) == pointer.hashes[name])
     }
     let (stored, world) = try ScriptSaveStore.read(bytes, from: file)
+    // Set encodings can reorder JSON arrays; installed modules must still match as typed values.
+    try #require(stored.equipment == expectedDisk.equipment)
+    try #require(stored.equipmentInventory == expectedDisk.equipmentInventory)
     let diskMatches = stored == expectedDisk
     if !diskMatches {
       let detail = try diskMismatchFacts(stored, expected: expectedDisk)
