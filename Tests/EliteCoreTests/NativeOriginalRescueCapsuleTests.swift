@@ -204,7 +204,14 @@ struct NativeOriginalRescueCapsuleTests {
             mission: state.mission, alias: "neri-capsule")
       })
     let context = try #require(game.gameplayContext())
-    #expect(game.originalRescueFacts(actual, context: context)?.isPerson == true)
+    let facts = game.originalRescueFacts(actual, context: context)
+    let metadata = game.originalRescueMetadata(actual, context: context)
+    let expectedMetadata = SalvageTargetMetadata(
+      category: .occupiedPod, ownership: .missionProtected,
+      claimant: nil, wreck: nil, section: nil, lot: nil,
+      bounds: .init(center: .init(0, 0, 0), radius: 5.892836433645515), workSurfaces: [])
+    #expect(facts?.isPerson == true)
+    #expect(metadata == expectedMetadata)
     #expect(game.nativePodFacts(actual, context: context) == nil)
     for mode in ["dead", "foreign", "empty", "body-id", "npc", "emp"] {
       var changed = actual
@@ -216,11 +223,39 @@ struct NativeOriginalRescueCapsuleTests {
       if mode == "emp" {
         changed.physical?.empCrewPod = .init(source: context.player.identity, ordinal: 0)
       }
-      #expect(game.originalRescueFacts(changed, context: context) == nil)
+      let changedFacts = game.originalRescueFacts(changed, context: context)
+      let changedMetadata = game.originalRescueMetadata(changed, context: context)
+      #expect(changedFacts == nil)
+      #expect(changedMetadata == nil)
     }
     #expect(
       game.commander.savedEMPState == nil && game.commander.nativePeople?.admissions.isEmpty == true
     )
+  }
+
+  @Test func rescueMetadataLeavesOrdinaryNativeFlightShipSelectableWithoutRescueState() throws {
+    var game = try ScriptProcurementFixture.freshG03FlightGame()
+    try game.prepareG03FlightEquipment()
+    try ScriptProcurementFixture.requirePaidG03Preparation(game)
+    game.ensureMissionCalendar()
+    game.launch()
+    try #require(!game.docked)
+    let id = game.nextBodyID
+    game.nextBodyID += 1
+    game.bodies.append(.init(id: id, hull: .cobra, position: .init(0, 0, 1000), hostile: true))
+    game.ensurePhysicalActors()
+    let body = try #require(game.bodies.first { $0.id == id })
+    let actor = try #require(body.physical?.identity)
+    let context = try #require(game.gameplayContext())
+    let hasRescue = game.withReadOnlyCommander { $0.nativePeople?.originalRescue != nil }
+    let facts = game.originalRescueFacts(body, context: context)
+    let metadata = game.originalRescueMetadata(body, context: context)
+    let candidate = game.workTargetCandidate(for: body, context: context, frontVisible: true)
+    #expect(!hasRescue)
+    #expect(facts == nil && metadata == nil)
+    #expect(candidate?.identity == actor)
+    #expect(candidate?.kind == .ship && candidate?.originalRescue == nil)
+    #expect(candidate?.isLive == true && candidate?.frontVisible == true)
   }
 
   @Test func rescueActualCapsuleDestructionSurvivesWriterFailureAndCannotCreateAReplacementPerson()

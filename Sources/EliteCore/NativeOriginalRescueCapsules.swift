@@ -66,6 +66,18 @@ extension Game {
   func originalRescueFacts(_ body: borrowing SpaceBody, context: EncounterContext)
     -> NativeOriginalRescueSelectionFacts?
   {
+    let currentBodies = bodies
+    return withReadOnlyCommander { commander in
+      Self.originalRescueFacts(
+        body, context: context, commander: commander, bodies: currentBodies)
+    }
+  }
+
+  @inline(never)
+  private static func originalRescueFacts(
+    _ body: borrowing SpaceBody, context: borrowing EncounterContext,
+    commander: borrowing Commander, bodies: borrowing [SpaceBody]
+  ) -> NativeOriginalRescueSelectionFacts? {
     guard let state = commander.nativePeople?.originalRescue, state.terminalOperation == nil,
       state.owner == commander.equipmentOwnerID, state.definition.valid,
       state.version == "1.0.0", state.digest == NativeOriginalRescueJourney.digest,
@@ -118,6 +130,7 @@ extension Game {
     return scriptNPCMesh(body)
   }
 
+  @inline(never)
   func originalRescueMetadata(_ body: borrowing SpaceBody, context: EncounterContext)
     -> SalvageTargetMetadata?
   {
