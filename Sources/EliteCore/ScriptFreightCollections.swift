@@ -193,6 +193,8 @@ extension Game {
     _ attempt: ScriptFreightConfirmationAttempt, id: UUID
   ) throws {
     attempt.candidate.commander.scriptState.instances[id] = attempt.state
+    try attempt.candidate.awardScriptClue(
+      previous: attempt.selected.old, next: attempt.state, trust: .production)
     attempt.candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
     if let receipt = attempt.state.completionReceipt {
       try attempt.candidate.enqueueScriptCompletion(receipt)

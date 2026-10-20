@@ -112,7 +112,12 @@ struct ScriptClueExecutionPin: Sendable, Equatable {
 struct ScriptClueTrustCatalog: Sendable {
   private let pins: [ScriptClueExecutionPin]
   static let production = ScriptClueTrustCatalog(approvedPins: [
-    ScriptNavigationTradeContent.cluePin
+    ScriptNavigationTradeContent.cluePin,
+    .init(
+      sourceID: "l337.contract/bonded-freight", definition: "l337.contract/bonded-freight",
+      version: "1.0.0",
+      digest: "08dfba917d8f630b0fb39a4458ec1fa06245eb1347352a172a7576c0967682ca",
+      terminalEvents: ["dialogue.confirmed"]),
   ])
 
   private init(approvedPins: [ScriptClueExecutionPin]) { pins = approvedPins }

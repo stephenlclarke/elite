@@ -7,6 +7,9 @@ import Testing
 private let bundledCourierDigest =
   "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369"
 
+private let bundledBondedDigest =
+  "08dfba917d8f630b0fb39a4458ec1fa06245eb1347352a172a7576c0967682ca"
+
 private struct BundledScriptFixture {
   let root: URL
   var library: URL { root.appendingPathComponent("installed") }
@@ -34,6 +37,33 @@ private struct BundledScriptFixture {
       try (lua + "\n-- " + comment + "\n").write(to: module, atomically: true, encoding: .utf8)
     }
     return try ScriptPackLibrary.read(folder)
+  }
+
+  // This restore test needs an admissible package-1; it does not assert route availability at Avenor.
+  func restorableCourierSourceGame() throws -> Game {
+    let providers = ScriptPackLibrary.defaultLibrary(directory: library)
+    try #require(providers.errors.isEmpty)
+    let courier = try #require(providers.packs.first { $0.digest == bundledCourierDigest })
+    for source in Universe.systemsIncludingPlugh(number: 0) where source.original != nil {
+      var initial = game()
+      initial.commander.system = source.id
+      initial.selectedSystem = source.id
+      initial.market = MarketItem.at(initial.currentSystem)
+      try initial.commander.prepareEquipment(legacy: false)
+      initial.commander.mirrorFittedEquipment()
+      // Probe only an isolated initial-scene copy. The runtime generates its own board/quote.
+      var probe = initial
+      probe.scriptPacks = providers.packs
+      probe.scriptDurabilityAvailable = true
+      let key = try probe.ensureContractBoard(courier)
+      let offer = try #require(
+        probe.commander.contracts.boards[key]?.offers.first { $0.key == "package-1" })
+      if probe.contractAcceptanceQuote(board: key, offer: offer.id).allowed {
+        return initial
+      }
+    }
+    throw MissionPackError(
+      "No ordinary initial source has an admissible unchanged package-1 quote.")
   }
 
   func game() -> Game {
@@ -73,7 +103,9 @@ struct BundledScriptPackTests {
     #expect(initiallyLoadedPacks.isEmpty)
     let errors = await runtime.loadDefaultScriptPacks(directory: fixture.library)
     let discovered = await runtime.snapshot()
-    #expect(errors.isEmpty && discovered.scriptPacks.map(\.digest) == [bundledCourierDigest])
+    #expect(
+      errors.isEmpty
+        && discovered.scriptPacks.map(\.digest) == [bundledCourierDigest, bundledBondedDigest])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
     #expect(discovered.commander.contracts.boards.isEmpty && !discovered.requiresScriptDurability)
@@ -95,7 +127,9 @@ struct BundledScriptPackTests {
     let beforeManifest = try Data(contentsOf: manifest)
     let beforeModule = try Data(contentsOf: module)
     let library = ScriptPackLibrary.defaultLibrary(directory: fixture.library)
-    #expect(library.errors.isEmpty && library.packs.map(\.digest) == [bundledCourierDigest])
+    #expect(
+      library.errors.isEmpty
+        && library.packs.map(\.digest) == [bundledCourierDigest, bundledBondedDigest])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
     #expect(try FileManager.default.contentsOfDirectory(atPath: fixture.library.path).count == 1)
@@ -110,7 +144,8 @@ struct BundledScriptPackTests {
     let installed = try ScriptPackLibrary.install(pack, directory: fixture.library)
     let library = ScriptPackLibrary.defaultLibrary(directory: fixture.library)
     #expect(library.errors.isEmpty)
-    #expect(library.packs.map(\.digest) == [pack.digest, bundledCourierDigest])
+    #expect(
+      library.packs.map(\.digest) == [pack.digest, bundledCourierDigest, bundledBondedDigest])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
     let explicit = GameRuntime(game: fixture.game())
@@ -130,7 +165,7 @@ struct BundledScriptPackTests {
     let after = await runtime.snapshot()
     #expect(errors.count == 1 && errors[0].contains("broken"))
     #expect(after.message.contains("broken") && after.commander == before.commander)
-    #expect(after.scriptPacks.map(\.digest) == [bundledCourierDigest])
+    #expect(after.scriptPacks.map(\.digest) == [bundledCourierDigest, bundledBondedDigest])
   }
 
   @Test func defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial() async throws {
@@ -144,11 +179,19 @@ struct BundledScriptPackTests {
     #expect(discovered.commander.contracts.boards.isEmpty)
     await runtime.key("contracts-open")
     let contracts = await runtime.snapshot()
-    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 6)
+    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 7)
     #expect(
       contracts.commander.scriptState.instances.isEmpty && contracts.commander.cargoTonnes == 0)
-    let board = try #require(contracts.commander.contracts.boards.values.first)
+    let board = try #require(
+      contracts.commander.contracts.boards.values.first { $0.digest == bundledCourierDigest })
     #expect(board.digest == bundledCourierDigest)
+    let bondedRows = contracts.contractBoard.rows.filter {
+      $0.board.hasPrefix(bundledBondedDigest + "/")
+    }
+    #expect(bondedRows.count == 1 && bondedRows[0].offer == nil && bondedRows[0].reason != nil)
+    #expect(
+      contracts.contractBoard.rows.filter { $0.board.hasPrefix(bundledCourierDigest + "/") }.count
+        == 6)
     #expect(
       board.offers.map(\.key)
         == ["data-1", "package-1", "data-2", "package-2", "data-3", "package-3"])
@@ -161,7 +204,15 @@ struct BundledScriptPackTests {
     defer { try? FileManager.default.removeItem(at: namespace) }
     let trial = await runtime.snapshot()
     #expect(trial.isMissionTrial && trial.screen == .contracts)
-    #expect(trial.contractBoard.rows.count == 6 && trial.contractBoard.action == .back)
+    #expect(trial.contractBoard.rows.count == 7 && trial.contractBoard.action == .back)
+    let trialBondedRows = trial.contractBoard.rows.filter {
+      $0.board.hasPrefix(bundledBondedDigest + "/")
+    }
+    #expect(
+      trialBondedRows.count == 1 && trialBondedRows[0].offer == nil
+        && trialBondedRows[0].reason != nil)
+    #expect(
+      trial.contractBoard.rows.filter { $0.board.hasPrefix(bundledCourierDigest + "/") }.count == 6)
     #expect(trial.commander.scriptState.instances.isEmpty)
     #expect(
       FileManager.default.fileExists(
@@ -178,7 +229,8 @@ struct BundledScriptPackTests {
   {
     let fixture = try BundledScriptFixture()
     defer { fixture.clean() }
-    let runtime = GameRuntime(game: fixture.game(), saveURL: fixture.save)
+    let initial = try fixture.restorableCourierSourceGame()
+    let runtime = GameRuntime(game: initial, saveURL: fixture.save)
     _ = await runtime.loadDefaultScriptPacks(directory: fixture.library)
     let key = try await runtime.generateContractBoard(packDigest: bundledCourierDigest)
     let generated = await runtime.snapshot()
@@ -186,6 +238,16 @@ struct BundledScriptPackTests {
     let offer = try #require(board.offers.first { $0.key == "package-1" })
     let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
     try #require(quote.allowed, Comment(rawValue: quote.issues.joined(separator: "; ")))
+    let terms = try #require(quote.courier?.terms)
+    print(
+      "RESTORE_COURIER_SOURCE galaxy=\(initial.commander.galaxy) system=\(initial.commander.system) name=\(initial.currentSystem.name) offer=\(offer.key) allowed=\(quote.allowed) path=\(terms.path) lowerBound=\(terms.calendarLowerBoundSeconds) duration=\(terms.duration) ship=\(initial.commander.shipID) fuel=\(initial.commander.fuel) credits=\(initial.commander.credits)"
+    )
+    #expect(
+      generated.commander.shipID == initial.commander.shipID
+        && generated.commander.fuel == initial.commander.fuel)
+    #expect(
+      generated.commander.cargo == initial.commander.cargo
+        && generated.commander.credits == initial.commander.credits)
     let id = try await runtime.confirmContract(quote)
     let accepted = await runtime.snapshot()
     let state = try #require(accepted.commander.scriptState.instances[id])
@@ -199,7 +261,10 @@ struct BundledScriptPackTests {
     try await restored.load(from: fixture.save)
     let loaded = await restored.snapshot()
     let retained = try #require(loaded.commander.scriptState.instances[id])
-    #expect(loaded.scriptPacks.map(\.digest) == [changed.digest, bundledCourierDigest])
+    #expect(
+      loaded.scriptPacks.map(\.digest) == [
+        changed.digest, bundledCourierDigest, bundledBondedDigest,
+      ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)
     #expect(retained.courier == custody && retained.contract == state.contract)

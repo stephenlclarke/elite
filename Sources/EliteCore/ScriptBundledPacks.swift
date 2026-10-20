@@ -14,6 +14,11 @@ extension ScriptPackLibrary {
     return resources.resourceURL!.appendingPathComponent("ScriptPacks/generated-couriers")
   }
 
+  static var bundledBondedFreightDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-bonded-freight")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -26,6 +31,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled courier pack: " + error.localizedDescription)
+    }
+    do {
+      let bonded = try read(bundledBondedFreightDirectory)
+      if !library.packs.contains(where: { $0.digest == bonded.digest }) {
+        library.packs.append(bonded)
+      }
+    } catch {
+      library.errors.append("Bundled bonded freight pack: " + error.localizedDescription)
     }
     return library
   }

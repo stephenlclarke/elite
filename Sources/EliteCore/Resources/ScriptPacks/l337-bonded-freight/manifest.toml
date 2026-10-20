@@ -1,0 +1,64 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.contract"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "contracts-basic-v2", "local-flight-clocks-v2", "partial-collections-v2", "mission-calendar-v2", "freight-contracts-basic-v2", "dialogue-choices-v2"]
+priority = 565
+source = "Original l337 Bonded freight passage: three machinery tonnes, 75 CR refundable bond, and 480 + 95L + 80H CR. Root's production declaration of 20 October 2026 sets the three immutable premium tiers to H=0,1,2. These are declared pricing inputs, not computed route-safety guarantees. No unquoted deadline or legacy project reward schedule applies."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "bonded-freight"
+title = "Bonded freight passage"
+briefing = "TOREN offers three original machinery tonnes under a 75 CR custody bond. Review your actual hold, the full quoted route and its declared premium tier. Deliver the complete original consignment to the named destination workshop; ordinary machinery is not a substitute. Partial receipts persist, but only final native reception returns the bond and pays the quoted reward. There is no deadline."
+destination = "Named workshop at the frozen destination main orbital"
+reward = "480 CR + 95 CR per full quoted route leg + 80 CR per declared premium tier; the separate 75 CR bond is returned on successful custody."
+milestones = ["Receive the entire original three-tonne machinery consignment"]
+requiredCollections = ["freight-goods"]
+
+[board]
+id = "bonded-freight"
+title = "TOREN / Bonded freight passage"
+generator = "generate"
+clock = "missionCalendar"
+refreshSeconds = 3600
+exclusiveGroup = "g03-freight"
+
+[freight]
+profile = "l337.contract/bonded-freight"
+generatorRevision = 1
+variant = "supplied"
+deliveryContact = "freight-delivery"
+abandonContact = "freight-abandon"
+bondedHazardTiers = [0, 1, 2]
+
+[freight.collectionTemplate]
+id = "freight-goods"
+title = "Original bonded machinery consignment"
+
+[[dialogs]]
+id = "freight-delivery"
+text = "TOREN workshop reception: confirm one original tonne or all remaining original machinery. Partial receipts remain recorded. Final reception pays the frozen reward and returns the full 75 CR bond once; your first verified successful passage preserves this family's distinct clue. Back transfers nothing."
+collection = "freight-goods"
+
+[[dialogs.choices]]
+id = "freight-one"
+label = "Receive one original tonne"
+
+[[dialogs.choices]]
+id = "freight-all"
+label = "Receive all remaining original tonnes"
+
+[[dialogs]]
+id = "freight-abandon"
+text = "TOREN: Confirm abandonment only to return the remaining original machinery here. The 75 CR bond is forfeited; there is no reward or new clue. Earlier physical receipts and losses remain recorded. Back changes nothing."
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
