@@ -68,6 +68,11 @@ struct GearScriptFixture {
       "docs/mission-packs/scripted-equipment")
   let pack = try ScriptPackLibrary.read(directory)
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.screen = .status
   game.commander.installTargetingComputer(.docking)
   // Controlled initialization on the demonstrator's approved current-world route.
@@ -272,6 +277,8 @@ struct GearScriptFixture {
   let id = try #require(game.commander.scriptState.instances.keys.first)
   let issue = try #require(game.commander.scriptState.instances[id]?.gearIssues["kit"])
   game.commander.credits = 10_000_000
+  game.commander.fuel = try #require(ShipCatalogue.ship("SH013")?.game?.fuel)
+  try #require(game.commander.valid)
   game.key("6")
   game.showroom.selection = "SH013"
   game.key("showroom-trade")

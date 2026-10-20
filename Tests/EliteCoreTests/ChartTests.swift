@@ -75,7 +75,7 @@ import Testing
   }.joined()
   for key in mixedCase { game.key(String(key)) }
   #expect(
-    game.screen == .chart && game.commander.name == "JAMESON"
+    game.screen == .chart && game.commander.name == "Rowan Calder"
       && game.searchResults.first?.original?.key == expected.key)
   game.key("return")
   #expect(
@@ -84,7 +84,8 @@ import Testing
   game.key("/")
   game.key("search-clear")
   for key in "xyzzy" { game.key(String(key)) }
-  #expect(game.screen == .chart && game.commander.name == "JAMESON" && game.searchResults.isEmpty)
+  #expect(
+    game.screen == .chart && game.commander.name == "Rowan Calder" && game.searchResults.isEmpty)
   let empty = Display.map(game, width: 512, height: 518)
   #expect(empty.labels.contains { $0.text == "No matching planets" })
   game.key("search-clear")

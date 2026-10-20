@@ -33,6 +33,14 @@ private struct ContractFixture {
     game.scriptPacks = [pack]
     return game
   }
+  /// Freeze the cash boundary independently of the approved fresh commander.
+  func cashGame() -> Game {
+    var game = Game(executive: false)
+    game.commander.credits = 1000
+    game.screen = .status
+    game.scriptPacks = [pack]
+    return game
+  }
   func clean() { try? FileManager.default.removeItem(at: root) }
 }
 
@@ -66,7 +74,7 @@ private struct ContractFixture {
 {
   let fixture = try ContractFixture()
   defer { fixture.clean() }
-  let runtime = GameRuntime(game: fixture.game(), saveURL: fixture.save)
+  let runtime = GameRuntime(game: fixture.cashGame(), saveURL: fixture.save)
   await runtime.key("contracts-open")
   let opened = await runtime.snapshot()
   #expect(opened.screen == .contracts && opened.contractBoard.rows.count == 2)
@@ -80,7 +88,7 @@ private struct ContractFixture {
   await runtime.key("return")
   #expect(await runtime.snapshot().commander == opened.commander)
   #expect(try Data(contentsOf: fixture.save) == pointer)
-  let restored = GameRuntime(game: fixture.game())
+  let restored = GameRuntime(game: fixture.cashGame())
   try await restored.load(from: fixture.save)
   #expect(await restored.snapshot().commander.contracts == terms)
   #expect(await restored.snapshot().screen == .contracts)
@@ -94,7 +102,7 @@ private struct ContractFixture {
 {
   let fixture = try ContractFixture()
   defer { fixture.clean() }
-  let runtime = GameRuntime(game: fixture.game(), saveURL: fixture.save)
+  let runtime = GameRuntime(game: fixture.cashGame(), saveURL: fixture.save)
   let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
   let board = try #require(await runtime.snapshot().commander.contracts.boards[key])
   let offer = try #require(board.offers.first)
@@ -114,7 +122,7 @@ private struct ContractFixture {
   #expect(await runtime.snapshot().commander == accepted)
   let other = board.offers[1]
   #expect(!(await runtime.contractAcceptanceQuote(board: key, offer: other.id)).allowed)
-  let restored = GameRuntime(game: fixture.game())
+  let restored = GameRuntime(game: fixture.cashGame())
   try await restored.load(from: fixture.save)
   #expect(await restored.snapshot().commander == accepted)
 }
@@ -540,8 +548,9 @@ private struct ContractFixture {
 @Test func realContractFitRejectsAZeroHoldDespiteTheLegacyUnlimitedCargoSwitch() throws {
   let fixture = try ContractFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  var game = fixture.cashGame()
   game.commander.shipID = "SH168"
+  game.commander.fuel = game.commander.fuelCapacity
   game.commander.missiles = 1
   try #require(game.commander.nativePerformance.cargo == 0)
   game.commander.unlimitedCargo = true
@@ -664,7 +673,7 @@ private struct ContractFixture {
     )
   ])
   defer { fixture.clean() }
-  var game = fixture.game()
+  var game = fixture.cashGame()
   game.scriptDurabilityAvailable = true
   let key = try game.ensureContractBoard(fixture.pack)
   let offer = try #require(game.commander.contracts.boards[key]?.offers.first)

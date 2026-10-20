@@ -458,6 +458,7 @@ func corruptedMaterialReceiptsAndQuotesRefuseLoadEvenWithAnUpdatedChunkHash(fiel
   defer { fixture.clean() }
   var game = fixture.game()
   game.commander.credits = 10_000_000
+  game.commander.fuel = try #require(ShipCatalogue.ship("SH013")?.game?.fuel)
   game.commander.cargo[2] = 2
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   let id = try await fixture.offer(runtime)

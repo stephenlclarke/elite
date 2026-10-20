@@ -855,6 +855,18 @@ private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attack
   var game = try await stationAutoEntryBoundary()
   let id = try stationAutoAddNativeAttacker(
     &game, position: .init(0, 0, 180), sequence: 908, facingPlayer: true)
+  // The current player's central opening is empty space. Aim this mounted gun at
+  // a fixed interior point on face 284 within the native acquisition cone.
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  let surface = Vector3(24.725561071147027, 2.2522966348048876, 53.805050256208126)
+  let forward = (surface - game.bodies[index].position).unit
+  var orientation = Basis3()
+  orientation.z = forward
+  orientation.x = Vector3(0, 1, 0).cross(forward).unit
+  orientation.y = forward.cross(orientation.x).unit
+  try #require(orientation.validRotation)
+  try #require(orientation.z.dot((game.bodies[index].position * -1).unit) > 0.98)
+  game.bodies[index].orientation = orientation
   let shield = game.frontShield
   let attackContext = try #require(game.gameplayContext())
   let playerActor = try #require(game.commander.flightSimulation.player)

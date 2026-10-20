@@ -518,6 +518,70 @@ private func modifiedPatrol(
   #expect(game.scriptWorldSave.consistent(with: game.commander))
 }
 
+// Compare the two timelines at the same genuine cold boundary. This separately
+// proves that the late reference load did not advance or replace combat state.
+@inline(never)
+private func requireUnchangedColdCombatReference(_ hot: borrowing Game, _ cold: borrowing Game)
+  throws
+{
+  let combatBodiesPreserved =
+    cold.bodies.filter { $0.nativeStationIdentity == nil }
+    == hot.bodies.filter { $0.nativeStationIdentity == nil }
+  #expect(combatBodiesPreserved)
+  let bodyCountPreserved = cold.bodies.count == hot.bodies.count
+  #expect(bodyCountPreserved)
+  let gameTimePreserved = cold.time == hot.time
+  #expect(gameTimePreserved)
+  let randomStatePreserved =
+    cold.scriptSimulationSave.randomState == hot.scriptSimulationSave.randomState
+  #expect(randomStatePreserved)
+  let loopCounterPreserved =
+    cold.scriptSimulationSave.missionLoopCounter == hot.scriptSimulationSave.missionLoopCounter
+  #expect(loopCounterPreserved)
+  let stations = hot.bodies.filter { $0.nativeStationIdentity != nil }
+  let oneStation = stations.count == 1
+  try #require(oneStation)
+  let originalStation = stations.first
+  let station = try #require(originalStation)
+  let stationIdentity = station.nativeStationIdentity
+  let identity = try #require(stationIdentity)
+  let selectedRebound = cold.bodies.first { $0.nativeStationIdentity == identity }
+  let rebound = try #require(selectedRebound)
+  var flight = hot.withReadOnlyCommander { $0.flightSimulation }
+  let allocatedSpawn = flight.allocateSpawn()
+  let sequence = try #require(allocatedSpawn)
+  let allocatedActor = flight.allocateActor()
+  let actor = try #require(allocatedActor)
+  let actualFlight = cold.withReadOnlyCommander { $0.flightSimulation }
+  let flightMatches = actualFlight == flight
+  #expect(flightMatches)
+  let originalCursor = hot.nextBodyID
+  let cursorMatches = cold.nextBodyID == originalCursor + 1
+  #expect(cursorMatches)
+  let bodyIDMatches = rebound.id == originalCursor
+  #expect(bodyIDMatches)
+  let actorMatches = rebound.physical?.identity == actor
+  #expect(actorMatches)
+  let expectedSpawn = SpawnIdentity(
+    system: hot.systemIdentity, visit: flight.visit, sequence: sequence,
+    member: 0, producer: .mission)
+  let spawnMatches = rebound.physical?.spawnIdentity == expectedSpawn
+  #expect(spawnMatches)
+  let binding = cold.withReadOnlyCommander {
+    $0.nativeStations?.ledger.records.first { $0.identity == identity }?.binding
+  }
+  let bindingMatches = binding == .init(actor: actor, bodyID: originalCursor)
+  #expect(bindingMatches)
+  let positionPreserved = rebound.position == station.position
+  #expect(positionPreserved)
+  let orientationPreserved = rebound.orientation == station.orientation
+  #expect(orientationPreserved)
+  let rotationPreserved = rebound.rotation == station.rotation
+  #expect(rotationPreserved)
+  let energyPreserved = rebound.energy == station.energy
+  #expect(energyPreserved)
+}
+
 @Test func resumedNativeCombatRNGAndTacticsMatchTheUninterruptedWorld() async throws {
   let (pack, folder) = try modifiedPatrol(manifest: {
     $0.replacingOccurrences(of: "hull=\"sidewinder\"", with: "hull=\"constrictor\"")
@@ -547,7 +611,13 @@ private func modifiedPatrol(
     _ = await uninterrupted.advance(delta: 0.1)
     _ = await resumed.advance(delta: 0.1)
   }
-  let a = await uninterrupted.snapshot()
+  let hot = await uninterrupted.snapshot()
+  let endSave = root.appendingPathComponent("uninterrupted-end.json")
+  try await uninterrupted.save(to: endSave)
+  let reference = GameRuntime(game: game)
+  try await reference.load(from: endSave, persistMigrations: false)
+  let a = await reference.snapshot()
+  try requireUnchangedColdCombatReference(hot, a)
   let b = await resumed.snapshot()
   #expect(a.bodies == b.bodies)
   #expect(a.commander == b.commander)
