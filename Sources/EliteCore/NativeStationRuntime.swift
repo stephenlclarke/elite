@@ -81,6 +81,15 @@ extension GameRuntime {
 }
 
 extension Game {
+  /// Game-over input creates a new commander; bound publication remains the actor's transaction.
+  mutating func restartBornBerthedCommander() throws {
+    guard screen == .gameOver, !isMissionTrial else {
+      throw NativeStationRuntimeError.invalidState
+    }
+    let startupScreen: Screen = commander.executive ? .demo : .title
+    self = try Self.bornBerthedCommander(screen: startupScreen)
+  }
+
   /// This producer owns construction of the entire fresh value. No existing dock flags confer trust.
   fileprivate static func bornBerthedCommander(screen: Screen) throws -> Game {
     var candidate = Game(executive: screen == .demo)
