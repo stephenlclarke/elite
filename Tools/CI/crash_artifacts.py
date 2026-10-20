@@ -359,7 +359,8 @@ def collect_reports(roots, baseline, history, evidence, budget, window=3.5, inte
                 detail = dict(saved)
                 if not saved['matchedActualProcess'] and attributed_report(saved['identity'], history):
                     try:
-                        original = confined(Path(evidence) / saved['retained'], evidence)
+                        previous_reference = saved['retained']
+                        original = confined(Path(evidence) / previous_reference, evidence)
                         destination = Path(evidence) / 'matched-crashes'
                         destination.mkdir(exist_ok=True)
                         target = destination / original.name
@@ -369,14 +370,23 @@ def collect_reports(roots, baseline, history, evidence, budget, window=3.5, inte
                             target = confined(target, evidence)
                             if sha(target) != digest:
                                 raise ValueError('Matched report target differs from original.')
-                            original.unlink()
+                            if original != target:
+                                original.unlink()
                         else:
                             original.replace(target)
-                        detail.update(matchedActualProcess=True, attribution='proved-pid-start-path',
-                                      reason='later exact observed PID/start/path attribution',
-                                      promotedFrom=saved['retained'],
-                                      retained=str(target.relative_to(evidence)))
-                        retained[(name, digest)] = detail
+                        # Both fixed roots can refer to the same verified retained file.
+                        # Move every reference, but prove each record's identity independently.
+                        current_reference = str(target.relative_to(evidence))
+                        for reference in [*retained.values(), *records.values()]:
+                            if reference.get('retained') != previous_reference:
+                                continue
+                            reference['retained'] = current_reference
+                            if attributed_report(reference.get('identity', {}), history):
+                                reference.update(
+                                    matchedActualProcess=True, attribution='proved-pid-start-path',
+                                    reason='later exact observed PID/start/path attribution',
+                                    promotedFrom=previous_reference)
+                        detail = dict(saved)
                     except (OSError, ValueError) as error:
                         detail['error'] = str(error)
                 records[name] = detail

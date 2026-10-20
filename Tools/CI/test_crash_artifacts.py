@@ -413,6 +413,62 @@ class CrashArtifactTests(unittest.TestCase):
         self.assertEqual((self.evidence / version['retained']).read_bytes(), raw)
         self.assertEqual(budget.used, len(raw))
 
+    def test_two_roots_share_one_original_and_all_references_follow_genuine_promotion(self):
+        images = self.retain()
+        system_reports = self.base / 'SystemDiagnosticReports'
+        system_reports.mkdir()
+        roots = [self.reports, system_reports]
+        baseline = artifacts.report_snapshot(roots)
+        name = '.swiftpm-testing-helper-2026-10-20-210144.ips'
+        first = self.reports / name
+        second = system_reports / name
+        raw = json.dumps(self.payload(pid=23)).encode()
+        first.write_bytes(raw)
+        second.write_bytes(raw)
+        budget = artifacts.ArtifactBudget(len(raw) * 2)
+        snapshot = artifacts.report_snapshot
+        calls = 0
+
+        def observe(current_roots):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                self.history[23] = [dict(self.row)]
+            elif calls == 3:
+                first.write_bytes(raw + b' ' * (budget.limit + 1))
+                second.unlink()
+            return snapshot(current_roots)
+
+        with patch.object(artifacts, 'report_snapshot', side_effect=observe), \
+                patch.object(artifacts.time, 'monotonic', side_effect=[0, 0, 0, 0.5, 0.5, 1, 1, 1]), \
+                patch.object(artifacts.time, 'sleep'):
+            rows, _ = artifacts.collect_reports(
+                roots, baseline, self.history, self.evidence, budget,
+                window=1, observed_images=images)
+        self.assertEqual(calls, 3)
+        self.assertEqual(len(rows), 2)
+        changed = next(row for row in rows if row['directory'] == str(self.reports))
+        disappeared = next(row for row in rows if row['directory'] == str(system_reports))
+        self.assertEqual(changed['reason'], 'artifact-size-cap')
+        self.assertFalse(changed['matchedActualProcess'])
+        self.assertNotIn('retained', changed)
+        self.assertEqual(len(changed['retainedVersions']), 1)
+        self.assertTrue(disappeared['matchedActualProcess'])
+        self.assertEqual(disappeared['attribution'], 'proved-pid-start-path')
+        references = [row for row in rows if 'retained' in row]
+        references += [version for row in rows for version in row.get('retainedVersions', [])]
+        self.assertEqual(len(references), 2)
+        self.assertEqual(len({row['retained'] for row in references}), 1)
+        for row in references:
+            self.assertTrue(row['matchedActualProcess'])
+            self.assertTrue(row['retained'].startswith('matched-crashes/'))
+            self.assertEqual(row['sha256'], hashlib.sha256(raw).hexdigest())
+            self.assertEqual((self.evidence / row['retained']).read_bytes(), raw)
+            self.assertNotIn('error', row)
+        self.assertTrue(all('error' not in row for row in rows))
+        self.assertFalse(any((self.evidence / 'unattributed-helper-diagnostics').iterdir()))
+        self.assertEqual(budget.used, len(raw))
+
 
 if __name__ == '__main__':
     unittest.main()
