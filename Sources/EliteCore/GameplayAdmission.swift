@@ -270,7 +270,7 @@ extension Game {
     let bodyID = body.id
     if body.nativeStationIdentity != nil || registeredStationBodies.contains(bodyID) {
       return original.missionActorClearsNativeStation(
-        center: center, radius: radius, body: copy body) ? nil : .unsafePosition
+        center: center, radius: radius, body: body) ? nil : .unsafePosition
     }
     let rockIdentity = actor.rock
     let otherRadius: Double
@@ -293,17 +293,40 @@ extension Game {
 
   /// Static admission only: transform every source-box corner with the actual accepted
   /// model basis. The resulting world box encloses the full station even for tolerated scale.
-  func missionActorClearsNativeStation(center: Vector3, radius: Double, body: SpaceBody) -> Bool {
+  @inline(never)
+  func missionActorClearsNativeStation(
+    center: Vector3, radius: Double, body: borrowing SpaceBody
+  ) -> Bool {
     guard center.finite, center.length.isFinite, radius.isFinite, radius > 0,
-      let identity = body.nativeStationIdentity, nativeStationBodyIsCurrent(body),
-      let world = commander.nativeStations, let saved = world.pose(for: identity),
-      let source = NativeStationSource.binding(for: identity), body.energy == saved.energy,
-      world.bodyRigidPoseIsConsistent(body, flight: commander.flightSimulation)
+      let identity = body.nativeStationIdentity, nativeStationBodyIsCurrent(copy body)
     else { return false }
+    guard
+      let bounds = Self.validatedMissionActorStationBounds(
+        original: self, identity: identity, body: body)
+    else { return false }
+    let pose = modelPose(of: copy body)
+    return Self.missionActorClearsStationBounds(
+      center: center, radius: radius, minimum: bounds.minimum, maximum: bounds.maximum, pose: pose)
+  }
+
+  /// Current station authority finishes before model-pose and bounds construction starts.
+  @inline(never)
+  private static func validatedMissionActorStationBounds(
+    original: borrowing Game, identity: NativeStationIdentity, body: borrowing SpaceBody
+  ) -> (minimum: Vector3, maximum: Vector3)? {
+    guard let world = original.commander.nativeStations, let saved = world.pose(for: identity),
+      let source = NativeStationSource.binding(for: identity), body.energy == saved.energy,
+      world.bodyRigidPoseIsConsistent(copy body, flight: original.commander.flightSimulation)
+    else { return nil }
     let bounds = source.geometry.bounds
-    let minimum = bounds.minimum
-    let maximum = bounds.maximum
-    let pose = modelPose(of: body)
+    return (bounds.minimum, bounds.maximum)
+  }
+
+  /// Pure geometry receives only the measured bounds and the actual model pose.
+  @inline(never)
+  private static func missionActorClearsStationBounds(
+    center: Vector3, radius: Double, minimum: Vector3, maximum: Vector3, pose: ShipPose
+  ) -> Bool {
     guard minimum.finite, maximum.finite,
       minimum.x < maximum.x, minimum.y < maximum.y, minimum.z < maximum.z,
       pose.position.finite, pose.orientation.validRotation

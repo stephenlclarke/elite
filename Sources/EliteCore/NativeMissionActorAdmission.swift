@@ -115,8 +115,8 @@ extension Game {
     try validateMissionActorAdmissionSource(source)
     let currentContext = gameplayContext()
     try validateMissionActorAdmissionScene(context: currentContext)
-    for template in source.actors {
-      try validateMissionActorAdmissionTemplate(template, source: source)
+    for index in source.actors.indices {
+      try validateMissionActorAdmissionTemplate(source.actors[index], source: source)
     }
     guard !docked, source.system == systemIdentity, let context = currentContext,
       let anchor = scriptAnchor
@@ -384,15 +384,17 @@ extension Game {
   }
 
   private func validateMissionActorAdmissionTemplate(
-    _ template: MissionActorAdmissionTemplate, source: MissionActorAdmissionSource
+    _ template: borrowing MissionActorAdmissionTemplate,
+    source: borrowing MissionActorAdmissionSource
   ) throws {
+    let maximumHullEnergy = template.maximumHullEnergy
     let body = template.canonicalBody
     guard body.id == -1, body.physical == nil, body.missionActorID == template.actorID,
       body.missionInstanceID == source.instanceID,
       template.radius.isFinite, template.radius > 0, template.nativeUnits > 0,
       template.nativeUnits == body.scriptNativeUnits,
-      body.energy.isFinite, body.energy >= 0, body.energy <= template.maximumHullEnergy,
-      template.maximumHullEnergy.isFinite, template.maximumHullEnergy > 0,
+      body.energy.isFinite, body.energy >= 0, body.energy <= maximumHullEnergy,
+      maximumHullEnergy.isFinite, maximumHullEnergy > 0,
       template.parts.allSatisfy({
         $0.energy.isFinite && $0.energy >= 0
           && $0.maximumEnergy.isFinite && $0.maximumEnergy > 0 && $0.energy <= $0.maximumEnergy
@@ -412,7 +414,7 @@ extension Game {
       }
       guard condition.role == .mission, (0...255).contains(condition.legal.value),
         condition.legal.bountyTenths >= 0, condition.resources?.valid ?? true,
-        condition.resources.map({ $0.energyCapacity == template.maximumHullEnergy }) ?? true
+        condition.resources.map({ $0.energyCapacity == maximumHullEnergy }) ?? true
       else { throw NativeMissionActorAdmissionError.invalidCondition }
     }
   }
