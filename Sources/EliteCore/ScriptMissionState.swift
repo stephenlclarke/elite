@@ -221,76 +221,114 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       && [flightSeconds, localSeconds, calendarSeconds, transitSeconds].allSatisfy {
         $0.isFinite && (0...1e12).contains($0)
       }
-      && instances.allSatisfy { key, instance in
-        key == instance.id && instance.definition.split(separator: "/").count == 2
-          && PackValidation.version(instance.version)
-          && instance.digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
-          && (instance.dialogue.map { dialogue in
-            PackValidation.localID(dialogue.id) && dialogue.token.utf8.count <= 256
-              && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
-              && (0...256).contains(dialogue.system)
-          } ?? true)
-          && (instance.courier.map { $0.valid(state: instance, engine: self) }
-            ?? (instance.contract?.offer.courier == nil))
-          && (instance.savedProviderContract.map { $0.valid(instance: instance) } ?? true)
-          && (instance.savedOwnedCargo.map { $0.valid(state: instance, engine: self) }
-            ?? (instance.contract?.offer.freightPlan == nil))
-          && (instance.savedNavigationTrade.map { $0.valid(instance: instance, engine: self) }
-            ?? true)
-          && instance.collectionsValid(engine: self)
-          && instance.conversationReceipts.count <= 1024
-          && instance.conversationReceipts.allSatisfy {
-            $0.key == $0.value.sequence && $0.value.group == nil
-              && $0.value.valid(for: instance, engine: self)
-          }
-          && instance.choiceReceipts.count <= 64
-          && instance.choiceReceipts.allSatisfy {
-            $0.key == $0.value.group && $0.value.valid(for: instance, engine: self)
-          }
-          && (instance.completionReceipt.map { $0.valid(for: instance, engine: self) } ?? true)
-          && (instance.receiptJoins.map { joins in
-            joins.count <= 32
-              && joins.allSatisfy { key, children in
-                PackValidation.localID(key) && (1...128).contains(children.count)
-                  && Set(children).count == children.count
-                  && children.allSatisfy { child in
-                    child != instance.id
-                      && instances[child]?.completionReceipt.map { receipt in
-                        instance.completionReceipt.map { receipt.sequence < $0.sequence } ?? true
-                      } == true
-                  }
-              }
-          } ?? true)
-          && instance.revision < UInt64(Int64.max) && instance.acknowledgedEvents.count <= 4096
-          && instance.acknowledgedEvents.allSatisfy { $0 > 0 && $0 <= nextEvent }
-          && (instance.acknowledgedThrough.map { $0 <= nextEvent } ?? true)
-          && instance.receipts.count <= 4096 && instance.receipts.allSatisfy(PackValidation.localID)
-          && instance.ownedEncounters.count <= 64
-          && instance.ownedEncounters.allSatisfy {
-            $0.key == $0.value.id && $0.value.valid
-              && ($0.value.legacyProvenance?.matches(owner: instance, encounter: $0.value) ?? true)
-              && $0.value.actors.values.allSatisfy { $0.body.missionInstanceID == instance.id }
-              && $0.value.actors.values.allSatisfy { actor in
-                actor.body.scriptNPC?.fit.models.values.allSatisfy { geometry[$0] != nil } ?? true
-              }
-          }
-          && instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128
-          && instance.gearIssues.count <= 64
-          && instance.gearIssues.allSatisfy {
-            $0.key == $0.value.resource && $0.value.valid(for: instance)
-          }
-          && Set(instance.gearIssues.values.flatMap(\.items)).count
-            == instance.gearIssues.values.reduce(0) { $0 + $1.items.count }
-          && instance.payloads.count <= 128
-          && instance.payloads.keys.allSatisfy(PackValidation.localID)
-          && instance.payloads.values.allSatisfy { (0...1_000_000).contains($0) }
-          && instance.milestones.count <= 64
-          && instance.milestones.allSatisfy { (0..<64).contains($0) }
-          && instance.timers.count <= 128
-          && instance.timers.allSatisfy { $0.key == $0.value.id && $0.value.valid }
-          && instance.journal.count <= 512 && instance.journal.allSatisfy { $0.utf8.count <= 12000 }
-          && instance.data.object != nil
-          && (try? ScriptWire.encode([instance.data], limit: 262144)) != nil
+      && instancesValid()
+  }
+
+  // Keep dictionary element tuples out of the nested encounter/NPC validation call chain.
+  @inline(never)
+  private func instancesValid() -> Bool {
+    for index in instances.indices {
+      guard instanceValid(instances.values[index], key: instances.keys[index]) else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func instanceValid(_ instance: borrowing ScriptInstance, key: UUID) -> Bool {
+    return key == instance.id && instance.definition.split(separator: "/").count == 2
+      && PackValidation.version(instance.version)
+      && instance.digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
+      && (instance.dialogue.map { dialogue in
+        PackValidation.localID(dialogue.id) && dialogue.token.utf8.count <= 256
+          && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
+          && (0...256).contains(dialogue.system)
+      } ?? true)
+      && (instance.courier.map { $0.valid(state: instance, engine: self) }
+        ?? (instance.contract?.offer.courier == nil))
+      && (instance.savedProviderContract.map { $0.valid(instance: instance) } ?? true)
+      && (instance.savedOwnedCargo.map { $0.valid(state: instance, engine: self) }
+        ?? (instance.contract?.offer.freightPlan == nil))
+      && (instance.savedNavigationTrade.map { $0.valid(instance: instance, engine: self) }
+        ?? true)
+      && instance.collectionsValid(engine: self)
+      && instance.conversationReceipts.count <= 1024
+      && instance.conversationReceipts.allSatisfy {
+        $0.key == $0.value.sequence && $0.value.group == nil
+          && $0.value.valid(for: instance, engine: self)
       }
+      && instance.choiceReceipts.count <= 64
+      && instance.choiceReceipts.allSatisfy {
+        $0.key == $0.value.group && $0.value.valid(for: instance, engine: self)
+      }
+      && (instance.completionReceipt.map { $0.valid(for: instance, engine: self) } ?? true)
+      && (instance.receiptJoins.map { joins in
+        joins.count <= 32
+          && joins.allSatisfy { key, children in
+            PackValidation.localID(key) && (1...128).contains(children.count)
+              && Set(children).count == children.count
+              && children.allSatisfy { child in
+                child != instance.id
+                  && instances[child]?.completionReceipt.map { receipt in
+                    instance.completionReceipt.map { receipt.sequence < $0.sequence } ?? true
+                  } == true
+              }
+          }
+      } ?? true)
+      && instance.revision < UInt64(Int64.max) && instance.acknowledgedEvents.count <= 4096
+      && instance.acknowledgedEvents.allSatisfy { $0 > 0 && $0 <= nextEvent }
+      && (instance.acknowledgedThrough.map { $0 <= nextEvent } ?? true)
+      && instance.receipts.count <= 4096 && instance.receipts.allSatisfy(PackValidation.localID)
+      && instance.ownedEncounters.count <= 64
+      && ownedEncountersValid(for: instance)
+      && instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128
+      && instance.gearIssues.count <= 64
+      && instance.gearIssues.allSatisfy {
+        $0.key == $0.value.resource && $0.value.valid(for: instance)
+      }
+      && Set(instance.gearIssues.values.flatMap(\.items)).count
+        == instance.gearIssues.values.reduce(0) { $0 + $1.items.count }
+      && instance.payloads.count <= 128
+      && instance.payloads.keys.allSatisfy(PackValidation.localID)
+      && instance.payloads.values.allSatisfy { (0...1_000_000).contains($0) }
+      && instance.milestones.count <= 64
+      && instance.milestones.allSatisfy { (0..<64).contains($0) }
+      && instance.timers.count <= 128
+      && instance.timers.allSatisfy { $0.key == $0.value.id && $0.value.valid }
+      && instance.journal.count <= 512 && instance.journal.allSatisfy { $0.utf8.count <= 12000 }
+      && instance.data.object != nil
+      && (try? ScriptWire.encode([instance.data], limit: 262144)) != nil
+  }
+
+  @inline(never)
+  private func ownedEncountersValid(for instance: borrowing ScriptInstance) -> Bool {
+    let encounters = instance.ownedEncounters
+    for index in encounters.indices {
+      guard
+        ownedEncounterValid(encounters.values[index], key: encounters.keys[index], owner: instance)
+      else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func ownedEncounterValid(
+    _ encounter: borrowing ScriptOwnedEncounter, key: String, owner: borrowing ScriptInstance
+  ) -> Bool {
+    guard key == encounter.id, encounter.valid else { return false }
+    if let provenance = encounter.legacyProvenance {
+      guard provenance.matches(owner: owner, encounter: encounter) else { return false }
+    }
+    for index in encounter.actors.indices {
+      guard encounter.actors.values[index].body.missionInstanceID == owner.id else { return false }
+    }
+    for index in encounter.actors.indices {
+      guard actorModelsValid(encounter.actors.values[index]) else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func actorModelsValid(_ actor: borrowing ScriptOwnedActor) -> Bool {
+    actor.body.scriptNPC?.fit.models.values.allSatisfy { geometry[$0] != nil } ?? true
   }
 }

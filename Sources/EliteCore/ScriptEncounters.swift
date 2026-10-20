@@ -148,10 +148,23 @@ public struct ScriptOwnedEncounter: Codable, Sendable, Equatable {
     PackValidation.localID(id) && (0..<8).contains(galaxy) && (0...256).contains(system)
       && (1...128).contains(actors.count)
       && Set(actors.values.map(\.identity)).count == actors.count
-      && actors.allSatisfy { $0.key == $0.value.alias && $0.value.valid }
+      && actorsValid()
       && (admitted
         ? actors.values.allSatisfy { $0.presence != .prepared && $0.body.id >= 0 }
         : actors.values.allSatisfy { $0.presence == .prepared && $0.transitLocation == nil })
+  }
+  @inline(never)
+  private func actorsValid() -> Bool {
+    for index in actors.indices {
+      guard Self.actorValid(actors.values[index], key: actors.keys[index]) else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private static func actorValid(_ actor: borrowing ScriptOwnedActor, key: String) -> Bool {
+    guard key == actor.alias else { return false }
+    return actor.valid
   }
 }
 

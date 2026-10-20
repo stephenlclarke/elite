@@ -123,7 +123,7 @@ public struct ScriptNPCModel: Codable, Sendable {
         (48...57).contains(first), (48...57).contains(second), (48...57).contains(third),
         bytes.next() == nil
       else { return false }
-      return ShipCatalogue.ship(id) != nil
+      return ShipCatalogue.containsShip(id)
     }
     return model.hasPrefix("asset:") && PackValidation.localID(String(model.dropFirst(6)))
   }
