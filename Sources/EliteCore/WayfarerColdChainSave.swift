@@ -40,6 +40,7 @@ enum WayfarerColdChainSave {
   }
 
   static func engineValid(_ engine: borrowing ScriptEngineState) -> Bool {
+    guard OriginalServiceReservationPolicy.valid(engine) else { return false }
     guard engine.savedWayfarerColdChainStock != nil else {
       return noOrphanInstances(engine)
     }

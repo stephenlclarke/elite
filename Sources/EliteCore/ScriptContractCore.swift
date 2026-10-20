@@ -272,6 +272,9 @@ extension Game {
     let offer = board.offers[index]
     if case .accepted(let existing) = offer.status { return .alreadyAccepted(existing) }
     guard offer.status == .available else { throw MissionPackError("This offer was declined.") }
+    if OriginalServiceReservationPolicy.isContractDefinition(pack.manifest.stateID) {
+      try OriginalServiceReservationPolicy.requireAvailableSlot(commander.scriptState)
+    }
     guard
       !commander.scriptState.instances.values.contains(where: {
         $0.outcome == .active && $0.contract?.group == board.group

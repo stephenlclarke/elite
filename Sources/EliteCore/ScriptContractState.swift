@@ -235,7 +235,9 @@ extension Commander {
     return copy
   }
   var contractsValid: Bool {
-    guard contracts.valid, contracts.rrs?.valid(for: self) ?? true else { return false }
+    guard OriginalServiceReservationPolicy.valid(scriptState),
+      contracts.valid, contracts.rrs?.valid(for: self) ?? true
+    else { return false }
     for board in contracts.boards.values {
       if board.freightGeneration != nil {
         guard ScriptFreightGeneration.valid(board),

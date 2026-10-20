@@ -252,6 +252,7 @@ extension Game {
   }
 
   func wayfarerColdChainQuote(sourceID: String) throws -> WayfarerColdChainOffer {
+    try OriginalServiceReservationPolicy.requireAvailableSlot(commander.scriptState)
     guard let ledger = commander.scriptState.savedWayfarerColdChainStock,
       ledger.owner == commander.equipmentOwnerID, let source = ledger.sources[sourceID],
       source.valid,
