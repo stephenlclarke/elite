@@ -20,7 +20,7 @@ struct InitialMainStationDockingTests {
   }
 
   // Preserve the existing complete paid-chain oracle, using this actual initial shop.
-  private func requirePaidPreparation(_ game: borrowing Game) throws {
+  private func requirePaidPreparation(_ game: Game) throws {
     let inventory = try #require(game.commander.equipmentInventory)
     let history = try #require(game.commander.equipmentPurchaseHistory)
     let rows: [(String, Int, ComponentFittingSlot, EquipmentFamilyID, String?)] = [
