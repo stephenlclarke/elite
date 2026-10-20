@@ -1,6 +1,12 @@
 import Foundation
 
 enum NativePeopleVersionedSave {
+  static func validateStationPassengerFields(
+    _ bytes: Data, part: ScriptFreightVersionedSave.Part, schema: Int?
+  ) throws {
+    try NativeStationPassengerJourneySave.validateFields(bytes, part: part, schema: schema)
+  }
+
   static func rejectFields(_ bytes: Data) throws {
     guard let root = try JSONSerialization.jsonObject(with: bytes) as? [String: Any],
       !root.keys.contains("savedNativePeopleCustody")

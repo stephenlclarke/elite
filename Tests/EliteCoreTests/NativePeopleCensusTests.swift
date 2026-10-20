@@ -153,8 +153,10 @@ struct NativePeopleCensusTests {
     try NativePeopleTestFixture.aimCutter(&game)
     let runtime = GameRuntime(game: game, saveURL: storage.url)
     let captured = await NativePeopleTestFixture.capture(runtime)
+    let held = try #require(captured.commander.nativePeople?.heldCaptives)
+    let ordinals = try held.map { try #require($0.person.emp).ordinal }.sorted()
     #expect(
-      captured.commander.nativePeople?.heldCaptives.map { $0.person.emp.ordinal }.sorted() == [
+      ordinals == [
         0, 1,
       ])
     for _ in 0..<10 { _ = await runtime.advance(delta: 0.1) }

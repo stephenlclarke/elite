@@ -46,6 +46,12 @@ public struct ShipAccommodation: Codable, Sendable, Equatable {
       if let person = berth.use.personID {
         guard cabinPeople.insert(person).inserted else { return false }
       }
+      if case .nativePerson(let person) = berth.use {
+        guard let identity = person.station, identity.valid, fitted.contains(berth.id),
+          berth.lifeSupportWorking,
+          berth.humanoidCompatible, people[identity.id] == nil
+        else { return false }
+      }
       if case .occupied(let person) = berth.use {
         guard fitted.contains(berth.id), berth.lifeSupportWorking, berth.humanoidCompatible,
           people[person]?.location == .cabin(berth.id)
@@ -117,7 +123,7 @@ extension Commander {
     }
   }
   var accommodationValid: Bool {
-    guard accommodation.valid,
+    guard accommodation.valid, NativeStationPassengerJourney.berthsValid(self),
       accommodation.people.values.allSatisfy({ scriptState.instances[$0.mission] != nil })
     else { return false }
     // Legacy commanders without fitted cabins retain their established hardware behavior.

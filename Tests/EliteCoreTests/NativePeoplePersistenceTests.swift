@@ -209,7 +209,8 @@ struct NativePeoplePersistenceTests {
     let captured = await NativePeopleTestFixture.capture(runtime)
     #expect(captured.commander.nativeCaptiveCount == 1)
     #expect(captured.commander.nativePeople?.heldCaptives.first?.actor == rejoined)
-    #expect(captured.commander.nativePeople?.heldCaptives.first?.person.emp.source == source)
+    let heldPerson = try #require(captured.commander.nativePeople?.heldCaptives.first?.person.emp)
+    #expect(heldPerson.source == source)
     #expect(captured.commander.valid)
   }
 

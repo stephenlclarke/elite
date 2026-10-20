@@ -28,6 +28,8 @@ private let bundledNavigationTradeDigest =
 private let bundledSealedDispatchDigest =
   "93289d5daf873d0cf878b37fa55178e4ab91cf6fa1947f379a54c3bc04267ae7"
 
+private let bundledCabinJourneyDigest =
+  "2e2f46e0bed56f79c489cf21c438289c07469511336beaf1ef953f38253dc800"
 private let bundledConsentedFreightDigest =
   "37ca73ed1b3f3656c42baedaf8dbaa3ee8aa3798ccf23e376c3c25ceac9bd572"
 private let bundledCorridorDefenceDigest =
@@ -134,7 +136,7 @@ struct BundledScriptPackTests {
           bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
           bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
           bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
-          bundledCorridorDefenceDigest, bundledConsentedFreightDigest,
+          bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         ])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
@@ -163,7 +165,7 @@ struct BundledScriptPackTests {
           bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
           bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
           bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
-          bundledCorridorDefenceDigest, bundledConsentedFreightDigest,
+          bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         ])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
@@ -184,7 +186,7 @@ struct BundledScriptPackTests {
         pack.digest, bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
         bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
         bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
-        bundledCorridorDefenceDigest, bundledConsentedFreightDigest,
+        bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
       ])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
@@ -210,7 +212,7 @@ struct BundledScriptPackTests {
         bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest, bundledRepairLoopDigest,
         bundledSeedTransferDigest, bundledMutualContributionDigest, bundledNavigationTradeDigest,
         bundledSealedDispatchDigest, bundledVerifiedWarrantDigest, bundledCorridorDefenceDigest,
-        bundledConsentedFreightDigest,
+        bundledConsentedFreightDigest, bundledCabinJourneyDigest,
       ])
   }
 
@@ -228,7 +230,7 @@ struct BundledScriptPackTests {
     #expect(discovered.commander.contracts.boards.isEmpty)
     await runtime.key("contracts-open")
     let contracts = await runtime.snapshot()
-    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 17)
+    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 18)
     let repairRows = contracts.contractBoard.rows.filter {
       $0.repairLoop?.digest == bundledRepairLoopDigest
     }
@@ -275,7 +277,9 @@ struct BundledScriptPackTests {
     defer { try? FileManager.default.removeItem(at: namespace) }
     let trial = await runtime.snapshot()
     #expect(trial.isMissionTrial && trial.screen == .contracts)
-    #expect(trial.contractBoard.rows.count == 17 && trial.contractBoard.action == .back)
+    #expect(trial.contractBoard.rows.filter { $0.people == .journey(.request) }.count == 1)
+    #expect(contracts.contractBoard.rows.filter { $0.people == .journey(.request) }.count == 1)
+    #expect(trial.contractBoard.rows.count == 18 && trial.contractBoard.action == .back)
     #expect(
       trial.contractBoard.rows.filter { $0.coldChain?.digest == bundledColdChainDigest }.count == 1)
     #expect(
@@ -351,7 +355,7 @@ struct BundledScriptPackTests {
         changed.digest, bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
         bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
         bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
-        bundledCorridorDefenceDigest, bundledConsentedFreightDigest,
+        bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
       ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)

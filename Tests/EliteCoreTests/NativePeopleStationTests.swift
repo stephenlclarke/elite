@@ -10,7 +10,8 @@ struct NativePeopleStationTests {
     let runtime = try await NativePeopleTestFixture.capturedRuntime(storage: storage)
     let before = await runtime.snapshot()
     let person = try #require(before.commander.nativePeople?.heldCaptives.first?.person)
-    let source = person.emp.source
+    let identity = try #require(person.emp)
+    let source = identity.source
     let captures = before.commander.savedEMPState?.records[source]?.crewCaptures
     let page = try await NativePeopleTestFixture.review(runtime, row: .sale(person))
     #expect(await runtime.snapshot().contractBoard.action == .back)

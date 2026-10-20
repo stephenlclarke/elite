@@ -85,7 +85,7 @@ extension Commander {
     var extraCrew = 0
     for berth in berths {
       switch berth.use {
-      case .occupied: occupied += 1
+      case .occupied, .nativePerson: occupied += 1
       case .reserved: reserved += 1
       case .extraCrew: extraCrew += 1
       case .empty: break

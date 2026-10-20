@@ -135,10 +135,12 @@ extension Game {
         guard let receipt = people.transfers.first(where: { $0.operation == operation.operation }),
           receipt.owner == state.owner,
           let person = receipt.members.first(where: { person in
-            person.emp.source == operation.source
-              && people.admissions.contains {
-                $0.person == person && $0.valid(commander: commander)
-              }
+            guard case .emp(let identity) = person, identity.source == operation.source else {
+              return false
+            }
+            return people.admissions.contains {
+              $0.person == person && $0.valid(commander: commander)
+            }
           })
         else { continue }
         if receipt.kind == .sale {

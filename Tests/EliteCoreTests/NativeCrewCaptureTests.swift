@@ -21,8 +21,10 @@ struct NativeCrewCaptureTests {
       record.pods.count == original.pods.count && record.crewAboard == original.crewAboard - 2)
     #expect(record.crewCaptures.first?.ordinals == Array(original.aboardOrdinals.prefix(2)))
     #expect(record.crewCaptures.first?.count == 2)
+    let held = try #require(captured.commander.nativePeople?.heldCaptives)
+    let ordinals = try held.map { try #require($0.person.emp).ordinal }.sorted()
     #expect(
-      captured.commander.nativePeople?.heldCaptives.map { $0.person.emp.ordinal }.sorted()
+      ordinals
         == Array(original.aboardOrdinals.prefix(2)))
     #expect(captured.commander.valid && captured.commander.sellableCargo(3) == 0)
     #expect(!captured.commander.ordinaryCommodityAmounts.contains { $0.commodity == .slaves })

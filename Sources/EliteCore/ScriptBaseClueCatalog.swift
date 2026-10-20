@@ -114,6 +114,8 @@ struct ScriptClueExecutionPin: Sendable, Equatable {
 struct ScriptClueTrustCatalog: Sendable {
   private let pins: [ScriptClueExecutionPin]
   static let production = ScriptClueTrustCatalog(approvedPins: [
+    .init(sourceID: NativeStationPassengerJourney.stateID, definition: NativeStationPassengerJourney.stateID,
+      version: "1.0.0", digest: NativeStationPassengerJourney.digest, terminalEvents: ["mission.receipted"]),
     .init(
       sourceID: OriginalConsentedFreightSupply.stateID,
       definition: OriginalConsentedFreightSupply.stateID,

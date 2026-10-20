@@ -76,11 +76,13 @@ public struct ShipAccommodationProfile: Sendable, Equatable {
 public enum PassengerPlaceUse: Sendable, Equatable, Codable {
   case empty
   case occupied(person: UUID)
+  case nativePerson(NativePersonReference)
   case reserved(mission: UUID, person: UUID?)
   case extraCrew(person: UUID)
   var personID: UUID? {
     switch self {
     case .empty: nil
+    case .nativePerson(let person): person.station?.id
     case .occupied(let id), .extraCrew(let id): id
     case .reserved(_, let id): id
     }

@@ -61,6 +61,10 @@ extension ScriptPackLibrary {
       "l337-consented-freight")
   }
 
+  static var bundledCabinJourneyDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-cabin-journey")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -154,6 +158,10 @@ extension ScriptPackLibrary {
     } catch {
       library.errors.append("Bundled consented freight pack: " + error.localizedDescription)
     }
+    do {
+      let journey = try read(bundledCabinJourneyDirectory)
+      if !library.packs.contains(where: { $0.digest == journey.digest }) { library.packs.append(journey) }
+    } catch { library.errors.append("Bundled native cabin journey pack: " + error.localizedDescription) }
     return library
   }
 }

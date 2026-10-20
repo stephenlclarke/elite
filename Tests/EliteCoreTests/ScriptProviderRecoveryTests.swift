@@ -88,7 +88,7 @@ struct ScriptProviderRecoveryTests {
     var game = await runtime.snapshot()
     let receipt = try #require(game.commander.nativePeople?.transfers.last)
     let dock = try #require(receipt.dock)
-    let source = try #require(receipt.members.first?.emp.source)
+    let source = try #require(receipt.members.first?.emp?.source)
     let provider = NativeProviderIdentity(
       definition: "test-convoy", system: dock.station.system,
       incarnation: ProviderContractFixture.id(60))
