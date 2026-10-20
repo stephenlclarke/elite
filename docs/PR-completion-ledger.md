@@ -618,3 +618,7 @@ Rootauthorised immediateG13integration after G2ONEfull17CLEAN/ownerSINGLE18/36PA
 ## Record916 later-boundary evidence and exact receipt phase grant
 
 Actual916same324/913tracewholeclosed confirms initialfixture/saveRETURNED, laterstepNPCtransitpublicationfault in receiptvalidation120896Bobservedspan; testspan-41680B only/no testPASS/overallCOWqualification. RootexactNativeWormholeTransitState presence-gatedopening→departure→arrival noninlineguards thenunchangedphase switch, allguards-order-fuel-nativebodyreceipt checks preserved/no absentdeparturebodytempsduring spooling. MC1freeze-build-singlecore/no newdiagnostic-schema-refactor; baseline3+newstorage3 separate/31-45incomplete. ScopedMarkdownlint/whitespace/historyhashes only/G1nojob.
+
+## Assign soleMBA T04 default-existing tutorial delivery
+
+RootverifiedG13all17canonicalhashes2f522768 thenassignedT04/M05/F36 exact9paths G3eight/G1soleloaderone onqualifiedG13base; G2reviewafterownerPASS/G1integrator. Existingdocpackthreefiles/nativeproductionpin8c23 unchanged/no mechanics-MC1-save-cluepin edits, G1onlyloaderdirectory/append-catch-digestdedup freeze→RootrelayG3. Recordauthoringassignment/pathregister/handoff beforecodepreparation; no tests/build/PASS/integration/appclaim. ScopedMarkdownlint/whitespace/historyhashes only.
