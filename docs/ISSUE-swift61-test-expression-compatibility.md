@@ -19,3 +19,7 @@ The arrival method saturated the obsolete legacy ledger revision to induce death
 ## Actual 1010 and native archive path prerequisite
 
 Actual 1010 passed both native-arrival cases. The remaining motion method caught NSPOSIXErrorDomain Code 20 (Not a directory) at function scope; the concrete pathname and throwing call were not emitted. Source tracing shows its direct temporaryDirectory URL reaches native archive openat checks that reject aliases in every ancestor with O_DIRECTORY and O_NOFOLLOW. The existing NativePagedSalvageFixture.folder helper resolves the temporary root with realpath and is already used for native archive saves in this same test file. Reusing that established physical-path fixture is a source-supported correction, not a traced syscall diagnosis. Preserve 1010 failure and its uncertainty.
+
+## Actual 1012 and retained scene custody
+
+The physical-path correction allowed the real archive and cold-record checks to complete without issues. Actual 1012 then found no final wreck body. The old test copied only the loaded commander into a fresh Game, called launch and deleted the new bodies. Native save/load restores world.bodies and its native wreck binding together; activateNearbySalvageSites requires an unbound retained record before it can admit another actor. Commander-only replacement plus scene deletion discards that custody. No production defect is established by this stale setup.
