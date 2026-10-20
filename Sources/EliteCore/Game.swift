@@ -61,6 +61,36 @@ private struct CommanderScriptStateStorage: Sendable, Equatable, Codable {
   }
 }
 
+/// Native custody retains value semantics without growing every inline Commander copy.
+private struct CommanderNativePeopleCustodyStorage: Sendable, Equatable, Codable {
+  private var values: [NativePeopleCustodyState?]
+
+  init(_ value: consuming NativePeopleCustodyState?) {
+    values = [consume value]
+  }
+
+  var value: NativePeopleCustodyState? {
+    _read { yield values[0] }
+    _modify { yield &values[0] }
+  }
+
+  func withReadOnlyValue<Result>(
+    _ read: (borrowing NativePeopleCustodyState?) throws -> Result
+  ) rethrows -> Result {
+    try values.withUnsafeBufferPointer { storage in
+      try read(storage.baseAddress!.pointee)
+    }
+  }
+
+  init(from decoder: Decoder) throws {
+    values = [try NativePeopleCustodyState(from: decoder)]
+  }
+
+  func encode(to encoder: Encoder) throws {
+    try withReadOnlyValue { try $0.encode(to: encoder) }
+  }
+}
+
 public struct Commander: Sendable, Equatable, Codable {
   private var savedContracts: ScriptContractState?
   public var contracts: ScriptContractState {
@@ -117,7 +147,39 @@ public struct Commander: Sendable, Equatable, Codable {
   var savedPlayerElectrical: ElectricalReserve?
   var savedEMPCharge: EMPChargeState?
   var savedCrimboState: NativeCrimboRegistry?
-  var savedNativePeopleCustody: NativePeopleCustodyState?
+  private var savedNativePeopleCustodyStorage: CommanderNativePeopleCustodyStorage?
+  var savedNativePeopleCustody: NativePeopleCustodyState? {
+    _read {
+      if let stored = savedNativePeopleCustodyStorage {
+        yield stored.value
+      } else {
+        let absent: NativePeopleCustodyState? = nil
+        yield absent
+      }
+    }
+    set {
+      if let newValue {
+        savedNativePeopleCustodyStorage = .init(newValue)
+      } else {
+        savedNativePeopleCustodyStorage = nil
+      }
+    }
+    _modify {
+      if case .none = savedNativePeopleCustodyStorage {
+        savedNativePeopleCustodyStorage = .init(nil)
+      }
+      defer {
+        // A nil inout result must retain the original absent-key encoding and equality.
+        if savedNativePeopleCustodyStorage?.withReadOnlyValue({
+          if case .none = $0 { return true }
+          return false
+        }) == true {
+          savedNativePeopleCustodyStorage = nil
+        }
+      }
+      yield &savedNativePeopleCustodyStorage!.value
+    }
+  }
   var savedSalvageLedger: SalvageLedger?
   var savedAlienStorageReference: AlienStorageReference?
   var alienStorageState: AlienCommanderStorage? = nil
@@ -316,7 +378,7 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedEMPState
     case savedPlayerElectrical
     case savedEMPCharge
-    case savedNativePeopleCustody
+    case savedNativePeopleCustodyStorage = "savedNativePeopleCustody"
     case savedCrimboState
     case savedSalvageLedger
     case savedAlienStorageReference

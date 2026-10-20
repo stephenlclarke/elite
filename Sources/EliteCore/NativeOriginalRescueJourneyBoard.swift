@@ -263,11 +263,25 @@ extension Game {
 
   @inline(never)
   private mutating func requestOriginalRescueConsent() throws {
-    guard var custody = commander.nativePeople, var state = custody.originalRescue else {
-      throw SaveError.invalidCommander
+    var state = try withReadOnlyCommander { commander in
+      guard let state = commander.nativePeople?.originalRescue else {
+        throw SaveError.invalidCommander
+      }
+      return state
     }
     try NativeOriginalRescueJourney.requestConsent(state: &state, game: self)
-    custody.originalRescue = state
+    try publishOriginalRescueConsent(state)
+  }
+
+  /// Retire the consent walk before copying the custody value for its unpublished update.
+  @inline(never)
+  private mutating func publishOriginalRescueConsent(
+    _ state: borrowing NativeOriginalRescueJourneyState
+  ) throws {
+    guard var custody = withReadOnlyCommander({ $0.nativePeople }) else {
+      throw SaveError.invalidCommander
+    }
+    custody.originalRescue = copy state
     commander.savedNativePeopleCustody = custody
   }
 

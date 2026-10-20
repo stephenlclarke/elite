@@ -988,3 +988,25 @@ Record1059 matching compile PASS,1060 first-reader SIGBUS10/UNKNOWN and unrun re
 ## Final docking source integration
 
 Record1062 matching build and1063 all four methods/five cases PASS with exact argument witnesses, zero issues/unknowns and complete1967-artifact/source/preferences/ten-start closure. Integrate eight frozen reviewed paths from07eb2087/62cdc9bc without replaying the prior16-case batch. Local retained totals now27methods30cases cover all26reported510 methods plus one helper consumer; formal fullCI, final review and G14 remain open. Test/notes-only source leaves the existing signed1052 runtime unchanged.
+
+## Coherent publication and G14 causal qualification
+
+Record exact2c90 normal fast-forward publication to existing PR21, review request6298578274, CI39477962995 running and Dependency Review39477963020 passed. Record independently CLEAN complete G14b02consent-chain correction and isolated1064matching build/first-reader-gated qualification; no G14integration or new app is claimed. No duplicate localfullCI or prior-passing cohort replay.
+
+G14compile1064 failed before runtime with three ownership diagnostics; preserve exact raw/closure hashes and29-start closure. G3 owns one complete compiler delta and same-reviewer re-review before any rebuild. Public2c90 CI is independent; no reader/remainder or G14integration is claimed.
+
+Final2c90 required review terminated as service error6298611376, with no completed review or code findings; factual reply6298635839 posted. Preserve unsatisfied review requirement and still-running quality39477962995, without retrying unchanged head or bypassing protections.
+
+FinalG14matching1065 build and1066first reader1/1 PASS; remaining1067selection crashes SIGBUS10 with20UNKNOWN method outcomes. Preserve exact source/binary/UUID/raw/event/closure evidence,12-start first-reader and8-start crash closure. Root authorizes one unchanged-binary same-selection1068capture, excluding passing first reader; G3 owns actual causal correction. G14 remains unintegrated.
+
+Actual1068diagnostic identifies the new G14request/reply/wrapper chain in the real three/four-cabin test. Preserve exact fault/frame/UUID/raw/closure measurements; no PASS or generalized storage hypothesis. Root reserves G3 only the two G14request files, complete borrowed-consent lifetime delta then review; G1 holds native execution and retains1066reader PASS.
+
+1070 cabin regression passes;1071 remaining selection crashes. Actual1072 locates passenger boarding's script snapshot/query chain; retain measured spans/raw/closure and six-start closure, with no G14integration or inferred PASS. Root routes the complete actual chain;1070/1066 remain retained.
+
+Final hosted2c90 quality run failed with runtime signal10 after successful Swift6.1.2 compilation. Retain complete artifact, all13 verified originals, matching image/dSYM/UUID and empty attributable crash originals. No named-method result or fault site is inferred; coverage export, sanitizer and leak gates were not reached. Factual PRcomment6299182873 records failure; no unchanged-head retry. Storage correction remains separate.
+
+New shared-storage layout completes the targeted scope without crash:1074passes4/7;1075passes18/23 and fails2/6 with six actionable issues, zero unknowns. Aggregate22methods/30cases PASS. G3 classifies fatal-loss dispatch and sixth-cabin fitting; retain passing evidence and exact closed-process/artifact proof. G14 remains unintegrated pending those corrections.
+
+## Complete G14 and storage source integrated
+
+Integrate27 exact reviewed paths after final1077 passes4methods/8cases and reviewed retention of20methods/28cases from1074/1075; aggregate24/36 PASS, zero unknowns. Preserve all original failures and full/delta reviews, exact source/artifact/preferences/eleven-start closure. Reconcile current register and M01 to qualified integrated source, pending signed preview and unchanged failed public2c90 gates. G10 is queued for Root preflight; no unrelated cohort, newCI/release or manual-journey claim.

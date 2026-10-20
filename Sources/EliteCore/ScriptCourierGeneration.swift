@@ -11,7 +11,7 @@ public struct ScriptCourierReach: Codable, Sendable, Equatable {
   public let firstReach: Double
   public let jumpFuelMultiplier: Double?
   public let fullTankReach: Double?
-  init(_ commander: Commander) {
+  init(_ commander: borrowing Commander) {
     revision = "elite-canonical-native-reach-v2"
     hull = commander.shipID
     navigation = commander.navigationTier
