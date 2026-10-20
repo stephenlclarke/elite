@@ -300,10 +300,12 @@ extension Game {
       let record = world.ledger.records.first(where: { $0.identity == identity })
     else { return false }
     let currentSystem = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
-    return identity.system == currentSystem && record.tombstone == nil && body.energy > 0
-      && physical.identity.system == currentSystem
-      && physical.identity.visit == commander.flightSimulation.visit
-      && record.binding == .init(actor: physical.identity, bodyID: body.id)
+    guard identity.system == currentSystem, record.tombstone == nil, body.energy > 0,
+      physical.identity.system == currentSystem,
+      physical.identity.visit == commander.flightSimulation.visit,
+      record.binding == .init(actor: physical.identity, bodyID: body.id)
+    else { return false }
+    return true
   }
 
   mutating func invalidateNativeStationAuthority() {
