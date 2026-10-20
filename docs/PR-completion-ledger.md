@@ -390,3 +390,7 @@ Update only current ledger status/register to Root-approved MC1bb7d private COW 
 ## Batch847 partial qualification and MBA06 owner PASS
 
 Replace stale active-build labels with actual847 storage1/1 PASS/seven methods-nine cases unfinished and next owner-value proposal pending, preserving approved representation scope and all proof hashes. Record MBA06 final881 owner14methods15cases aggregate qualification, retained8+corrected7 rather than one15 run, actual native pack digest and final note-only delta. G2 now owns ONE independent review with no retests; source/cache frozen and integration waits CLEAN. Keep native/storage/expiry/artwork/milestone/release limits explicit. No extra audit, runtime or app/Slack claim; scoped Markdown lint/diff only.
+
+## Integrate independently CLEAN cold-chain source and hand off next existing proposal
+
+Record exact twelve-path622 source integration after G2 ONE CLEAN881 review and retained aggregate owner14methods15cases. Ten non-document/ISSUE bytes remain exact; only approved PR review-status metadata changes with inverse hash check. Protected MC1 canonical/isolated inputs unchanged, no duplicate audit/tests/build/runtime. Update current register and maintained W01/MBA06 rows to bounded source integrated, retaining full artwork/playable app/final-quality/release limits. Root assigns G3 next existing MBA07 SOURCE proposal only, implementation unstarted; record separately approved same-invocation M01 owner-snapshot refresh scope pending freeze. All prior hashes retained; scoped documentation lint/diff checks only.
