@@ -385,7 +385,14 @@ public struct Commander: Sendable, Equatable, Codable {
     ][thresholds.filter { kills >= $0 }.count]
   }
   public var valid: Bool {
-    ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
+    guard ShipCatalogue.ship(shipID)?.game != nil else { return false }
+    guard equipmentStateValid else { return false }
+    return validAfterEquipment()
+  }
+
+  @inline(never)
+  private func validAfterEquipment() -> Bool {
+    nativeStationStateValid
       && empCustodyStateValid && electricalStateValid && alienStorageStateValid
       && nativeSalvageOriginalSourcesValid && freightCargoValid && navigationTradeStateValid
       && originalMarkets.valid
