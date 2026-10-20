@@ -406,16 +406,37 @@ extension Game {
       || commander.missiles > 0 || commander.unlimitedMissiles
     let aim = canFaceForResponse ? combat?.position : nil
     var transitGoal: Vector3?
-    if hazard == .active, let combat, let source = combat.physical?.identity,
-      commander.crimeLedger.hasCurrentUnlawfulAttack(
-        from: source, against: context.player.identity, context: context)
-    {
-      // Seek the far side of the real station, rather than brake to rest at its
-      // exposed staging point. This is a route request, never proof of cover.
-      let away = station.position - combat.position
-      let radius = clearanceRadius + AutoTargetControl.stationStagingTolerance
-      let goal = station.position + away.unit * radius
-      if away.length.isFinite, away.length > 0, radius.isFinite, goal.finite { transitGoal = goal }
+    if hazard == .active {
+      // Evasion does not grant offensive authority. Prefer the existing combat
+      // route, then a deterministic current physical threat, including protected
+      // attackers. Reuse the per-source hazard proof so another active attacker
+      // cannot lend its authority to an inactive, covered or stale source.
+      let coverCandidates =
+        (combat.map { [$0] } ?? [])
+        + nearby.filter {
+          $0.id != combat?.id && $0.position.finite && $0.position.length.isFinite
+            && $0.energy.isFinite && $0.energy > 0
+        }.sorted {
+          $0.position.length == $1.position.length
+            ? $0.id < $1.id : $0.position.length < $1.position.length
+        }
+      let cover = coverCandidates.first { body in
+        guard body.energy.isFinite, body.energy > 0 else { return false }
+        var observation: [String: String]?
+        return stationAutoHazards(
+          .init(context: context, threats: [body], incoming: []), observation: &observation
+        ).hazard == .active
+      }
+      if let cover {
+        // Seek the far side of the real station, rather than brake to rest at its
+        // exposed staging point. This is a route request, never proof of cover.
+        let away = station.position - cover.position
+        let radius = clearanceRadius + AutoTargetControl.stationStagingTolerance
+        let goal = station.position + away.unit * radius
+        if away.length.isFinite, away.length > 0, radius.isFinite, goal.finite {
+          transitGoal = goal
+        }
+      }
     }
     let protectFrontShield =
       transitGoal != nil && frontShield.isFinite && rearShield.isFinite

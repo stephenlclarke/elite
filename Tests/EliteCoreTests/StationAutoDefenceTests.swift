@@ -2437,3 +2437,158 @@ func stationAutoCurrentShieldBanksChooseCoverOnlyForTheWeakerFront(frontWeaker: 
   #expect(game.frontShield == front && game.rearShield == rear)
   #expect(game.commander.unlimitedMissiles == false && !game.commander.unlimitedCash)
 }
+
+// The calibrated original hull need not intersect the observer's centre line.
+// Place this controlled source on a ray through an actual front-side triangle;
+// the native collision query and emitter must still establish the real hit.
+private func stationAutoSetAuthoredHullPressureLane(
+  _ game: inout Game, attacker id: Int, side: Double, distance: Double
+) throws {
+  let mesh = game.commander.playerMesh
+  var chosen: Vector3?
+  for face in mesh.faces where face.count == 3 {
+    let center =
+      (mesh.vertices[face[0]] + mesh.vertices[face[1]] + mesh.vertices[face[2]]) * (1.0 / 3.0)
+    guard center.finite, center.z > 0, center.length > 0 else { continue }
+    if let previous = chosen, center.x * side <= previous.x * side { continue }
+    chosen = center
+  }
+  let center = try #require(chosen)
+  let position = center.unit * distance
+  let forward = position.unit * -1
+  let up = abs(forward.y) > 0.95 ? Vector3(1, 0, 0) : Vector3(0, 1, 0)
+  var orientation = Basis3()
+  orientation.z = forward
+  orientation.x = up.cross(forward).unit
+  orientation.y = forward.cross(orientation.x).unit
+  try #require(orientation.validRotation)
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  game.bodies[index].position = position
+  game.bodies[index].orientation = orientation
+}
+
+@Test func stationAutoProtectedNativeAttackerRequestsCoverWithoutOffensiveAuthority() throws {
+  var game = try stationAutoGame()
+  let index = try #require(game.bodies.firstIndex { $0.hostile })
+  let id = game.bodies[index].id
+  try stationAutoSetAuthoredHullPressureLane(&game, attacker: id, side: 1, distance: 1000)
+  let actor = try #require(game.bodies[index].physical?.identity)
+  let shield = game.frontShield + game.rearShield
+  try stationAutoRequireNativePressureLane(game, attacker: id)
+  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  try #require(game.frontShield + game.rearShield < shield)
+  game.bodies[index].navalTarget = true
+  let context = try #require(game.gameplayContext())
+  try #require(context.protection.protectedActors.contains(actor))
+  try #require(
+    game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+      from: actor, against: context.player.identity, context: context))
+  let station = try #require(game.autoTargetBody)
+  let requested = game.stationAutoGuidance(target: station)
+  let guidance = try #require(requested)
+  let goal = try #require(guidance.transitGoal)
+  let expected =
+    station.position + (station.position - game.bodies[index].position).unit
+    * (guidance.clearanceRadius + AutoTargetControl.stationStagingTolerance)
+  #expect((goal - expected).length < 1e-8)
+  #expect(guidance.hazard == .active && guidance.aim == nil)
+  #expect(game.stationAutoDefence?.combatActor == nil && !guidance.handoverAllowed)
+  var control = game.autoPilot
+  let velocity = control.velocity
+  _ = control.steer(target: station, delta: 0.1, limits: game.workLimits, defence: guidance)
+  #expect(control.stationDefencePhase == .defending && !control.ready)
+  #expect((control.velocity - velocity).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+  #expect(control.velocity.length <= game.workLimits.speed + 1e-8)
+  let before = game
+  game.fireStationAutoLaser()
+  #expect(game.stationAutoMissileTarget() == nil)
+  #expect(game.commander == before.commander && game.bodies == before.bodies)
+  #expect(game.laserHeat == before.laserHeat && game.fireCooldown == before.fireCooldown)
+}
+
+@Test(arguments: ["unjoined", "stale", "inactive", "malformed", "zero-energy"])
+func stationAutoCoverSourceCannotBorrowAnotherAttackersActiveHazard(condition: String) throws {
+  var game = try stationAutoGame()
+  let index = try #require(game.bodies.firstIndex { $0.hostile })
+  let id = game.bodies[index].id
+  try stationAutoSetAuthoredHullPressureLane(&game, attacker: id, side: 1, distance: 1000)
+  let shield = game.frontShield + game.rearShield
+  try stationAutoRequireNativePressureLane(game, attacker: id)
+  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  try #require(game.frontShield + game.rearShield < shield)
+  game.bodies[index].navalTarget = true
+  if condition == "stale" { game.commander.flightSimulation.physicalTime += 11 }
+  let active = try stationAutoAddNativeAttacker(
+    &game, position: .init(-400, 100, 1200), sequence: 920, facingPlayer: true)
+  let activeIndex = try #require(game.bodies.firstIndex { $0.id == active })
+  try stationAutoSetAuthoredHullPressureLane(&game, attacker: active, side: -1, distance: 1250)
+  let activeShield = game.frontShield + game.rearShield
+  try stationAutoRequireNativePressureLane(game, attacker: active)
+  game.emitLegacyNPCBeam(bodyID: active, damage: LaserKind.pulse.damage)
+  try #require(game.frontShield + game.rearShield < activeShield)
+  game.bodies[activeIndex].navalTarget = true
+  switch condition {
+  case "unjoined": game.bodies[index].physical = nil
+  case "stale":
+    // Controlled boundary: the real beam window expires and no continuing engage exists.
+    game.bodies[index].physical?.npc?.intention = .navigate(
+      position: .init(0, 0, 10000), speedUnitsPerSecond: 100)
+  case "inactive":
+    game.bodies[index].navalTarget = false
+    game.bodies[index].hostile = false
+    game.bodies[index].physical?.npc?.intention = .navigate(
+      position: .init(0, 0, 10000), speedUnitsPerSecond: 100)
+  case "malformed": game.bodies[index].position.x = .nan
+  case "zero-energy": game.bodies[index].energy = 0
+  default: break
+  }
+  let context = try #require(game.gameplayContext())
+  let actor = try #require(game.bodies[activeIndex].physical?.identity)
+  try #require(
+    game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+      from: actor, against: context.player.identity, context: context))
+  let station = try #require(game.autoTargetBody)
+  let requested = game.stationAutoGuidance(target: station)
+  let guidance = try #require(requested)
+  if condition == "malformed" {
+    // Invalid live geometry also prevents proving another source's cover ray.
+    #expect(guidance.hazard == .unknown && guidance.transitGoal == nil)
+    return
+  }
+  let goal = try #require(guidance.transitGoal)
+  let expected =
+    station.position + (station.position - game.bodies[activeIndex].position).unit
+    * (guidance.clearanceRadius + AutoTargetControl.stationStagingTolerance)
+  #expect(guidance.hazard == .active && (goal - expected).length < 1e-8)
+}
+
+@Test func stationAutoEligibleCombatKeepsItsExistingCoverRouteWithNearerProtectedPressure() throws {
+  var game = try stationAutoGame()
+  let index = try #require(game.bodies.firstIndex { $0.hostile })
+  let id = game.bodies[index].id
+  try stationAutoSetAuthoredHullPressureLane(&game, attacker: id, side: 1, distance: 1000)
+  let actor = try #require(game.bodies[index].physical?.identity)
+  let shield = game.frontShield + game.rearShield
+  try stationAutoRequireNativePressureLane(game, attacker: id)
+  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  try #require(game.frontShield + game.rearShield < shield)
+  let station = try #require(game.autoTargetBody)
+  let firstRequest = game.stationAutoGuidance(target: station)
+  let first = try #require(firstRequest)
+  let originalGoal = try #require(first.transitGoal)
+  try #require(game.stationAutoDefence?.combatActor == actor)
+  let other = try stationAutoAddNativeAttacker(
+    &game, position: .init(-400, 0, 600), sequence: 921, facingPlayer: true)
+  let otherIndex = try #require(game.bodies.firstIndex { $0.id == other })
+  try stationAutoSetAuthoredHullPressureLane(&game, attacker: other, side: -1, distance: 800)
+  let nextShield = game.frontShield + game.rearShield
+  try stationAutoRequireNativePressureLane(game, attacker: other)
+  game.emitLegacyNPCBeam(bodyID: other, damage: LaserKind.pulse.damage)
+  try #require(game.frontShield + game.rearShield < nextShield)
+  game.bodies[otherIndex].navalTarget = true
+  let requested = game.stationAutoGuidance(target: station)
+  let guidance = try #require(requested)
+  #expect(guidance.hazard == .active && guidance.transitGoal == originalGoal)
+  #expect(guidance.aim == game.bodies[index].position)
+  #expect(game.stationAutoDefence?.combatActor == actor)
+}
