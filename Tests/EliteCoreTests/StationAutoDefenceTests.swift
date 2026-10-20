@@ -1080,7 +1080,8 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   unsafePose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
   NativeStationTestFixture.reframe(&game, to: unsafePose)
   game.autoPilot.setApproachVelocity(.init(0, 0, 0))
-  let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -1000), sequence: 909)
+  // The fixed lateral lane reaches SH025's side surface clear of the retained nearby Viper.
+  let id = try stationAutoAddNativeAttacker(&game, position: .init(1000, 0, -300), sequence: 909)
   let index = try #require(game.bodies.firstIndex { $0.id == id })
   // This sustained-pressure scene starts with the actual native hull's full stock
   // resources, rather than the helper's legacy 100-energy adoption profile.
@@ -1106,11 +1107,7 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   let attackContext = try #require(game.gameplayContext())
   let source = try #require(attackContext.actors.first { $0.identity == actor })
   try #require(source.energy == source.maximumEnergy && source.maximumEnergy == performance.energy)
-  let ray = try game.nearestMissionCollision(
-    from: game.bodies[index].position, direction: orientation.z.unit, range: 1500,
-    radius: 0, excludingBodyIDs: [id], includePlayer: true)
-  let contact = try #require(ray)
-  try #require(contact.hit.target == .player)
+  try stationAutoRequireNativePressureLane(game, attacker: id)
   game.gameplayCombatTrace = .init()
   game.emitGameplayNPCBeam(bodyID: id, target: player, context: attackContext)
   try #require(game.frontShield + game.rearShield < shields)
