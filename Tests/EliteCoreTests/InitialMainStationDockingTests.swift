@@ -142,6 +142,8 @@ struct InitialMainStationDockingTests {
     #expect(arrived.commander.credits == cash && arrived.commander.cargo == cargo)
     #expect(arrived.commander.fuel == fuel && arrived.commander.equipmentInventory == items)
     #expect(arrived.commander.equipmentPurchaseHistory == purchases)
+    // Publish the attained dock through the ordinary Save action.
+    try await runtime.save(to: storage.url)
     let saved = try Data(contentsOf: storage.url)
     let (disk, scene) = try ScriptSaveStore.read(saved, from: storage.url)
     #expect(saved != before && scene.consistent(with: disk))
