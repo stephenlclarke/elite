@@ -5,6 +5,13 @@ import Testing
 
 @Test func xyzzyFitsClarkeAndCyclesDisplayWhilePreservingProgress() async throws {
   var game = Game(executive: false)
+  // This controlled unit fixture exercises the stock Cobra, independently of the fresh starter.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.commander.name = "JAMESON"
   #expect(game.commander.name == "JAMESON" && game.commander.shipDisplayStyle == .shadedPanels)
   game.key("return")
   game.launch()
@@ -58,13 +65,12 @@ import Testing
   if expectedStored.npcPersistence.count > 0 {
     expectedStored.npcPersistence.resetPhysicalBindings(system: saved.systemIdentity)
   }
+  expectedStored.resetWantedCareerBindings(system: saved.systemIdentity)
   #expect(stored == expectedStored)
+  // Derive fresh native station allocation before loading; never copy the loaded answer.
+  let expected = try displayColdCommanderExpectation(saved)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  var expected = game.commander
-  var restoredGame = await restored.snapshot()
-  let savedWorld = try #require(expected.nativeStations)
-  expected.nativeStations = try displayWorldAfterLoad(savedWorld, restored: &restoredGame)
   let restoredCommander = await restored.snapshot().commander
   #expect(restoredCommander == expected)
   game.key("escape")
@@ -87,23 +93,37 @@ import Testing
   #expect(game.commander.equipmentPurchaseHistory == beforeReentry.equipmentPurchaseHistory)
 }
 
-private func displayWorldAfterLoad(
-  _ saved: NativeStationWorld, restored: inout Game
-) throws -> NativeStationWorld {
-  var expected = saved
-  for record in saved.ledger.records
-  where record.identity.system == restored.systemIdentity && record.tombstone == nil {
-    let original = try #require(record.binding)
-    let body = try #require(
-      restored.bodies.first { $0.nativeStationIdentity == record.identity })
-    let actor = try #require(body.physical?.identity)
-    #expect(
-      actor.system == restored.systemIdentity
-        && actor.visit == restored.commander.flightSimulation.visit)
-    #expect(actor.visit == original.actor.visit && actor != original.actor)
-    try expected.ledger.rebind(record.identity, to: .init(actor: actor, bodyID: body.id))
+/// Project the retained pre-load scene's fresh RRS bindings without reading the loaded result.
+@inline(never)
+private func displayColdCommanderExpectation(_ original: Game) throws -> Commander {
+  var expected = original.commander
+  let indices = original.bodies.indices.filter {
+    original.bodies[$0].nativeStationIdentity != nil
   }
-  #expect(expected.valid)
+  var world = try #require(expected.nativeStations)
+  try #require(!indices.isEmpty)
+  try #require(
+    world.sceneIsConsistent(
+      bodies: original.bodies, docked: original.docked, mainStation: original.dockedAtMainStation,
+      system: original.systemIdentity, flight: expected.flightSimulation))
+  try #require(original.nextBodyID > 0 && original.nextBodyID < 1_000_000_000 - indices.count)
+  var flight = expected.flightSimulation
+  let allocatedSpawn = flight.allocateSpawn()
+  _ = try #require(allocatedSpawn)
+  for (member, index) in indices.enumerated() {
+    let station = try #require(original.bodies[index].nativeStationIdentity)
+    try #require(original.bodies[index].physical != nil)
+    let allocatedActor = flight.allocateActor()
+    let actor = try #require(allocatedActor)
+    let previous = try #require(world.ledger.records.first { $0.identity == station }?.binding)
+    #expect(actor.system == original.systemIdentity && actor.visit == flight.visit)
+    #expect(actor.visit == previous.actor.visit && actor != previous.actor)
+    try world.ledger.rebind(
+      station, to: .init(actor: actor, bodyID: original.nextBodyID + member))
+  }
+  try #require(world.valid && flight.valid)
+  expected.nativeStations = world
+  expected.flightSimulation = flight
   return expected
 }
 

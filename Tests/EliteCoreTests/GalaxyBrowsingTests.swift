@@ -59,11 +59,12 @@ import Testing
   game.screen = .chart
   game.viewportWidth = 768
   game.viewportHeight = 768
+  let originalName = game.commander.name
   for galaxy in 0..<8 {
     game.viewGalaxy(galaxy)
     game.key("/")
     for key in "xyzzy" { game.key(String(key)) }
-    #expect(game.commander.name == "JAMESON" && game.screen == .chart)
+    #expect(game.commander.name == originalName && game.screen == .chart)
     game.key("search-clear")
     game.key("down")
     let expected = game.searchResults[1]
