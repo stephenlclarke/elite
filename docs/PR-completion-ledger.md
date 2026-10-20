@@ -274,3 +274,7 @@ Record Root's Gallery per-provider row correction and pre-board ordinary source 
 Record zero PASS/seven UNKNOWN stack failure with exact809 proof and resource closure; no crash-chain integration. Allocate G2810/811 matching737 build/ONLY corrected parity case promptly, retaining three unaffected passes. MC1 authors only exact legacy-validation-before-heavy/borrowing lifetime repair in parallel; execution waits for a reviewed freeze and next finite grant. No extra audit/probe/test expansion or speed/cure claim; scoped Markdown/whitespace checks only.
 
 Record Root's completion scope for the whole same-file actor-admission ownership/lifetime repair, removing function-by-function scope ACKs. Keep exact authority/behavior/default execution guards and independent frozen changed-hunk review; G1 coordinates finite slots directly. No new diagnostic/fixture/framework or cross-file/design scope.
+
+## MBA03 actual focused failures retained
+
+Record Root-reported closed90.37s9ac run: terms PASS, five native initial-docking failures before acceptance and two existing fixture failures. Preserve six methods/seven cases; only seven affected methods rerun after concrete fixture-cause correction/freeze and changed-hunk review. Genuine docking defects remain M01 blockers, with no state/evidence/stat/geometry/budget workaround or freight/clue playable claim.
