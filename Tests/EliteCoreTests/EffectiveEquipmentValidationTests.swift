@@ -9,6 +9,7 @@ private func commanderWithRatio(
 ) throws -> Commander {
   var commander = Commander()
   commander.shipID = shipID
+  commander.fuel = commander.fuelCapacity
   try commander.prepareEquipment(legacy: false)
   let inventory = try #require(commander.equipmentInventory)
   let original = try #require(commander.fittedEquipment(at: slot))

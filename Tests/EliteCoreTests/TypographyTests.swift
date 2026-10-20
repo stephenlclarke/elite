@@ -36,6 +36,9 @@ import Testing
 
 @Test func equipmentMountHeadingsWeaponsAndClickTargetsStayPairedAfterReflow() throws {
   var game = Game(executive: false)
+  // This layout unit requires the Cobra's declared mining work-tool destination.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
   game.screen = .equipment
   game.commander.installLaser(.military, on: .front)
   game.commander.installLaser(.naval, on: .right)

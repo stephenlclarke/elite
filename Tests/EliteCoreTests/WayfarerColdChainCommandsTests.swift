@@ -382,6 +382,11 @@ private func custodySequence(_ state: ScriptInstance) -> UInt64 {
   let runtime = try await fixture.runtime()
   let source = try await runtime.initializeWayfarerColdChainStock(packDigest: fixture.pack.digest)
   var full = await runtime.snapshot()
+  let originalStock = try #require(
+    full.commander.scriptState.savedWayfarerColdChainStock?.sources[source])
+  try #require(originalStock.units.count == 4)
+  try #require(
+    originalStock.units.values.allSatisfy { $0.status == .available && $0.instance == nil })
   full.commander.cargo[0] = full.commander.standardCargoCapacity
   let fullBefore = full.commander
   let fullQuote = try full.wayfarerColdChainQuote(sourceID: source)
@@ -389,14 +394,29 @@ private func custodySequence(_ state: ScriptInstance) -> UInt64 {
     try full.pickUpWayfarerColdChain(sourceID: source, quotedOfferID: fullQuote.id)
   }
   #expect(full.commander == fullBefore)
+  var previousQuote: UUID?
   for _ in 0..<3 {
     let quote = try await runtime.wayfarerColdChainQuote(sourceID: source)
+    previousQuote = quote.id
     _ = try await runtime.pickUpWayfarerColdChain(sourceID: source, quotedOfferID: quote.id)
   }
   let three = await runtime.snapshot()
-  let fourth = try await runtime.wayfarerColdChainQuote(sourceID: source)
+  let heldStock = try #require(
+    three.commander.scriptState.savedWayfarerColdChainStock?.sources[source])
+  #expect(Set(heldStock.units.keys) == Set(originalStock.units.keys))
+  #expect(heldStock.units.values.filter { $0.status == .held }.count == 3)
+  #expect(
+    heldStock.units.values.filter { $0.status == .available && $0.instance == nil }.count == 1)
+  // Quotation itself enforces the shared three-service cap, even with original stock remaining.
+  await #expect(throws: MissionPackError.self) {
+    _ = try await runtime.wayfarerColdChainQuote(sourceID: source)
+  }
+  let quoteRefused = await runtime.snapshot()
+  #expect(quoteRefused.commander == three.commander)
+  // A previously issued real quote cannot bypass the same cap at pickup.
+  let previous = try #require(previousQuote)
   await #expect(throws: (any Error).self) {
-    try await runtime.pickUpWayfarerColdChain(sourceID: source, quotedOfferID: fourth.id)
+    try await runtime.pickUpWayfarerColdChain(sourceID: source, quotedOfferID: previous)
   }
   let refused = await runtime.snapshot()
   #expect(refused.commander == three.commander)
