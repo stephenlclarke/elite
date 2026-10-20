@@ -1553,6 +1553,12 @@ func stationAutoMainPortRetainsRealWallsAndRefusesNonfittingHulls(condition: Str
 
 @Test func stationAutoMainPortFitsActualNormalizedCobraAcrossMatchedSpinStep() throws {
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try #require(game.commander.valid)
   game.screen = .status
   game.launch()
   let initial = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })

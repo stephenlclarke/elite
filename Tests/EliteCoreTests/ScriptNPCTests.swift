@@ -631,7 +631,20 @@ private func verifyProfileSceneSaveRejections(_ game: inout Game, id: UUID) thro
     ("scale = 1.0", "scale = 1.6"),
   ])
   defer { fixture.clean() }
-  let (game, id) = try fixture.game()
+  let pack = try ScriptPackLibrary.read(fixture.directory)
+  var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.screen = .status
+  try game.commander.prepareEquipment(legacy: false)
+  game.scriptPacks = [pack]
+  let id = try game.acceptScriptMission(pack)
+  game.launch()
+  game.emitScriptEvent("station.undocked")
+  game.drainScriptEvents()
   let body = game.bodies[try npcIndex(game, id)]
   let before = game.commander
   let playerMesh = game.commander.playerMesh

@@ -6,9 +6,14 @@ import Testing
 @Test func rejectedDirectAcceptanceStillSettlesAnAlreadyExpiredCourierExactlyOnce() throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  let pinned = CourierNativeFixture.rows[1]
+  var game = try pinned.game(using: fixture)
   game.commander.cargo[0] = 3
-  let id = try fixture.accept(&game, variant: .package)
+  let (key, offer) = try fixture.usable(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
+  let terms = try #require(offer.courier)
+  try #require(terms.variant == .package && terms.calendarLowerBoundSeconds < terms.duration)
+  let id = try game.confirmContract(game.contractAcceptanceQuote(board: key, offer: offer.id))
   let accepted = try #require(game.commander.scriptState.instances[id])
   let job = try #require(accepted.contract)
   let custody = try #require(accepted.courier)
