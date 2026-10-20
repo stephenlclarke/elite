@@ -1,5 +1,7 @@
 # L337 completion ledger
 
+MC1 / M01 CI934 RRS fixture: Root assigned the current-source two-kind fixture correction on isolated base `bac6e79a9b386d30bae55959536013a7e8fca2be`, branch `fix/rrs-current-source-fixture`. Executable scope is `NativeStationIntegrationTests.swift` shared launch source/identity checks and its dependent main-arrival UUID expectation; G2 owns StationApproach separately. G04-S149 preserves headquarters and waystation coverage. Source prepared, focused tests UNRUN and review pending; not integration-ready or playable completion. Next handoff: frozen patch/source/finite unit selection through Root, execution only after G1's fatal-capture hold closes.
+
 Updated 20 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; G1 alone integrates canonical source and publishes. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
 ## Player-facing milestone roadmap
