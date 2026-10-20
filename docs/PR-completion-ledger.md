@@ -264,3 +264,7 @@ Record Root CLEAN d19f6b87 beyond40bce655, unchanged seven-method/nine-case sour
 ## Consuming-initializer compiler child on existing focused plan
 
 Record Root CLEAN0a3c9d4d and exact execution binding after owner HEAD/seven test-source hash verification. Four final initializer copies preserve ownership/result semantics; existing808attempt03/809 and seven-method/nine-case scope continue with prior failed evidence intact. Build/runtime outcomes pending; scoped Markdown/whitespace checks only.
+
+## Two bounded MBA03 fixture corrections and separate route gap
+
+Record Root's Gallery per-provider row correction and pre-board ordinary source selection for exact package-1 restore coverage, preserving every acceptance/route/deadline/content/version/custody/save-byte oracle. Owner closes the whole original run before changed-source build and reruns affected methods only; frozen changed-hunk review remains required. Retain actual Avenor7 excessive-route-cost refusal as separate OPEN M05/M06 player gap; fixture selection does not fix it. Scoped Markdown/whitespace checks only.
