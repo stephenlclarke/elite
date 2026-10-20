@@ -776,3 +776,7 @@ G2's source/evidence preflight found current defence/cover/return logic and reta
 ## Current development startup documentation
 
 README and directly contradictory controls startup/XYZZY statements are corrected from current source, separating published1.4.0 from L337 development. First-flight prerequisites explain manual docking, the paid targeting-core chain and two working Passenger Berths at base1,000CR each. Paired [issue](ISSUE-current-development-startup-docs.md) and [handoff](PR-current-development-startup-docs.md) record the documentation-only scope. Scoped Markdown, whitespace, local-link and README media/external-URL conservation checks pass; no gameplay qualification, build, UI or release claim. Earlier evidence and hashes are retained.
+
+## Sustained hostile docking acceptance 998
+
+Record996 compiler-prerequisite failure, its one-line semantics-preserving correction and997 matching compile PASS, then actual998 one method/case with one nonfatal weapons-lock assertion failure and zero unknowns. Required native pressure, genuine alive docking and save/cold reload guards reported no issue; exact failing step/values are unknown and no controller cause is asserted. All1,945 artifacts/source/preferences exact, nine actual starts absent, lease released. No integration/retry or M01 promotion; source-only diagnosis awaits Root. Raw proof/closure hashes are attached in the ledger; prior evidence is preserved. Two Markdown files only, lint/whitespace checks, no new runtime job.
