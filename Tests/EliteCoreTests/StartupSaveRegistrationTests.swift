@@ -265,27 +265,33 @@ struct StartupSaveRegistrationTests {
     let runtime = GameRuntime(game: game)
     _ = try await runtime.registerNewCommanderDestination(at: url)
     if published { try await runtime.save(to: url) }
-    await runtime.key("return")
-    let restarted = await runtime.snapshot()
-    #expect(restarted.screen == .status && restarted.scriptDurabilityAvailable)
-    if published {
-      #expect(restarted.pendingNewSaveDestination == nil)
-      let receipt = await runtime.takeNewCommanderSaveReceipt()
-      #expect(receipt?.url == url && receipt?.isTrial == false)
-      #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
-    } else {
-      #expect(restarted.pendingNewSaveDestination == url)
-      #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
+    let before = await runtime.snapshot()
+    if !published {
+      // Authentic restart now publishes immediately. A competing first file must refuse first.
       try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-      let collision = Data("arrived after restart".utf8)
+      let collision = Data("arrived before restart".utf8)
       try collision.write(to: url)
-      await runtime.key("0")
+      await runtime.key("return")
       let refused = await runtime.snapshot()
-      #expect(refused.commander == restarted.commander && refused.docked)
+      #expect(refused.screen == .gameOver && refused.commander == before.commander)
+      #expect(refused.commander.equipmentOwnerID == before.commander.equipmentOwnerID)
       #expect(refused.pendingNewSaveDestination == url)
       #expect(try Data(contentsOf: url) == collision)
       #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
+      try FileManager.default.removeItem(at: url)
     }
+    await runtime.key("return")
+    let restarted = await runtime.snapshot()
+    #expect(restarted.screen == .status && restarted.scriptDurabilityAvailable)
+    #expect(restarted.commander.valid && restarted.nativeMainStationDockEvidenceIsCurrent)
+    #expect(restarted.commander.equipmentOwnerID != before.commander.equipmentOwnerID)
+    #expect(restarted.pendingNewSaveDestination == nil)
+    let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: url), from: url)
+    #expect(saved.equipmentOwnerID == restarted.commander.equipmentOwnerID)
+    #expect(saved.nativeStations == restarted.commander.nativeStations)
+    let receipt = await runtime.takeNewCommanderSaveReceipt()
+    #expect(receipt?.url == url && receipt?.isTrial == false)
+    #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
   }
 
   @MainActor @Test(arguments: [false, true])
