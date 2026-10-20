@@ -537,8 +537,10 @@ private func requireUnchangedColdCombatReference(_ hot: borrowing Game, _ cold: 
   let identity = try #require(station.nativeStationIdentity)
   let rebound = try #require(cold.bodies.first { $0.nativeStationIdentity == identity })
   var flight = hot.withReadOnlyCommander { $0.flightSimulation }
-  let sequence = try #require(flight.allocateSpawn())
-  let actor = try #require(flight.allocateActor())
+  let allocatedSpawn = flight.allocateSpawn()
+  let sequence = try #require(allocatedSpawn)
+  let allocatedActor = flight.allocateActor()
+  let actor = try #require(allocatedActor)
   #expect(cold.withReadOnlyCommander { $0.flightSimulation } == flight)
   #expect(cold.nextBodyID == hot.nextBodyID + 1 && rebound.id == hot.nextBodyID)
   #expect(rebound.physical?.identity == actor)
