@@ -25,6 +25,22 @@ private struct StationStateFixture {
         capabilities: capabilities), revision: 1, binding: nil, tombstone: nil)
   }
 
+  func budgetRecords(count: Int) throws -> [NativeStationRecord] {
+    let limit = try stationRecordBudget()
+    try #require((0...limit + 1).contains(count))
+    // Two structural source-class slots per ordinary system keep limit+1 records valid and unique.
+    let records = (0..<count).map { index in
+      record(
+        key: "station-\(index)",
+        system: .init(galaxy: (index / 2) / 256, system: (index / 2) % 256),
+        definition: index.isMultiple(of: 2) ? "rescue_station" : "rrs_headquarters")
+    }
+    let allRecordsValid: Bool = records.allSatisfy { $0.valid }
+    try #require(allRecordsValid)
+    try #require(Set(records.map(\.identity.slot)).count == count)
+    return records
+  }
+
   func binding(visit: UInt64 = 1, entity: UInt64 = 9, body: Int = 9) -> NativeStationBinding {
     .init(actor: .init(system: system, visit: visit, entity: entity), bodyID: body)
   }
@@ -37,6 +53,14 @@ private struct StationStateFixture {
     try ledger.recordDock(at: record.identity, binding: binding, commanderOwner: owner)
     return ledger
   }
+}
+
+private func stationRecordBudget() throws -> Int {
+  let limit = NativeStationLedger.recordLimit
+  try #require(limit > 0 && limit <= NativeStationLedger.maximumSourceRecords)
+  // The real source ceiling leaves room for one excess record in the two-class structural domain.
+  try #require(NativeStationLedger.maximumSourceRecords == 8 * (256 + 1))
+  return limit
 }
 
 @Test func nativeStationLoadPreservesCustodyAndOnlyLiveContextUsesEpoch() throws {
@@ -134,9 +158,8 @@ private struct StationStateFixture {
     world: fixture.world, system: fixture.system, definition: "rescue_station",
     version: "1.5.5", key: "replacement")
   #expect(!changedVersion.valid && changedVersion.slot == record.identity.slot)
-  let records = (0..<373).map {
-    fixture.record(key: "station-\($0)", system: .init(galaxy: $0 / 256, system: $0 % 256))
-  }
+  let limit = try stationRecordBudget()
+  let records = try fixture.budgetRecords(count: limit + 1)
   #expect(throws: NativeStationStateError.self) {
     _ = try NativeStationLedger(world: fixture.world, records: records)
   }
@@ -195,10 +218,12 @@ private struct StationStateFixture {
 @Test func nativeStationStructuralMetadataAndRevisionLimitsAreChecked() throws {
   let fixture = StationStateFixture()
   let record = fixture.record()
-  let maximum = (0..<372).map {
-    fixture.record(key: "station-\($0)", system: .init(galaxy: $0 / 256, system: $0 % 256))
-  }
-  #expect(try NativeStationLedger(world: fixture.world, records: maximum).valid)
+  let maximum = try fixture.budgetRecords(count: stationRecordBudget())
+  let admitted = try NativeStationLedger(world: fixture.world, records: maximum)
+  #expect(admitted.valid)
+  #expect(
+    try JSONDecoder().decode(NativeStationLedger.self, from: JSONEncoder().encode(admitted))
+      == admitted)
   var invalid = record
   invalid.revision = 0
   #expect(!invalid.valid)
@@ -261,8 +286,19 @@ private struct StationStateFixture {
   let ledger = try NativeStationLedger(world: fixture.world, records: [])
   var object = try #require(
     JSONSerialization.jsonObject(with: JSONEncoder().encode(ledger)) as? [String: Any])
-  // Invalid elements would produce a type mismatch if decoded before budget admission.
-  object["records"] = Array(repeating: "not a station record", count: 373)
+  let limit = try stationRecordBudget()
+  // At the admitted count these malformed elements reach element decoding.
+  object["records"] = Array(repeating: "not a station record", count: limit)
+  let control = try JSONSerialization.data(withJSONObject: object)
+  do {
+    _ = try JSONDecoder().decode(NativeStationLedger.self, from: control)
+    Issue.record("Malformed admitted-size records must reach element decoding")
+  } catch DecodingError.typeMismatch(_, let context) {
+    #expect(context.codingPath.first?.stringValue == "records")
+    #expect(context.codingPath.last?.intValue == 0)
+  }
+  // One record over budget must refuse before decoding those same malformed elements.
+  object["records"] = Array(repeating: "not a station record", count: limit + 1)
   let bytes = try JSONSerialization.data(withJSONObject: object)
   do {
     _ = try JSONDecoder().decode(NativeStationLedger.self, from: bytes)
