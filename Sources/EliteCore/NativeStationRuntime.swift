@@ -52,6 +52,94 @@ struct NativeMainStationDockEvidence: Sendable {
   }
 }
 
+extension GameRuntime {
+  /// Explicit new-commander creation, never an admission path for a caller-supplied Game or save.
+  public func startNewCommander() throws {
+    guard galleryNamespace == nil, galleryParent == nil, scriptSaveURL == nil,
+      !game.isMissionTrial, game.pendingNewSaveDestination == nil
+    else { throw NativeStationRuntimeError.invalidState }
+    if let world = game.commander.nativeStations {
+      // Retrying destination registration preserves the already trusted commander in full.
+      guard game.commander.valid, game.nativeMainStationDockEvidenceIsCurrent,
+        let receipt = world.currentMainDock,
+        case .living(let destination) = game.nativeOriginalMainStationDestination,
+        receipt.station == destination.identity, receipt.actor == destination.observation.actor,
+        world.sceneIsConsistent(
+          bodies: game.bodies, docked: game.docked, mainStation: game.dockedAtMainStation,
+          system: game.systemIdentity, flight: game.commander.flightSimulation)
+      else { throw NativeStationRuntimeError.invalidState }
+      return
+    }
+    let startupScreen: Screen = game.screen == .demo ? .demo : .title
+    var candidate = try Game.bornBerthedCommander(screen: startupScreen)
+    candidate.scriptPacks = game.scriptPacks
+    candidate.missionPacks = game.missionPacks
+    guard candidate.commander.valid else { throw NativeStationRuntimeError.invalidState }
+    game = candidate
+    controls = Controls()
+  }
+}
+
+extension Game {
+  /// This producer owns construction of the entire fresh value. No existing dock flags confer trust.
+  fileprivate static func bornBerthedCommander(screen: Screen) throws -> Game {
+    var candidate = Game(executive: screen == .demo)
+    candidate.screen = screen
+    try candidate.commander.prepareEquipment(legacy: false)
+    candidate.commander.mirrorFittedEquipment()
+    try candidate.activateNativeStationWorld()
+    guard candidate.commander.galaxy == NewCommanderDefaults.galaxy,
+      candidate.commander.system == NewCommanderDefaults.system,
+      candidate.commander.shipID == NewCommanderDefaults.shipID,
+      candidate.commander.flightSimulation.visit == 0,
+      candidate.commander.flightSimulation.physicalTime == 0,
+      candidate.commander.scriptState.calendarSeconds == 0,
+      candidate.bodies.isEmpty
+    else { throw NativeStationRuntimeError.invalidState }
+
+    // Establish the real source anchor and its reserved original-main actor, without a flight visit
+    // producer, movement, launch, doorway crossing, station events or gameplay clock advancement.
+    candidate.commander.flightSimulation.enter(candidate.systemIdentity, arriving: false)
+    guard let anchor = candidate.commander.flightSimulation.anchors?.station else {
+      throw NativeStationRuntimeError.invalidState
+    }
+    var station = SpaceBody(
+      id: 0, hull: .station,
+      position: candidate.commander.flightSimulation.pose.shipPoint(anchor.position))
+    station.physical = candidate.nativePhysicalActorState(for: station, identity: anchor.identity)
+    candidate.bodies = [station]
+    try candidate.registerOriginalNativeMainStation()
+    guard var world = candidate.commander.nativeStations,
+      let owner = candidate.commander.equipmentOwnerID,
+      world.ledger.world == owner, world.mainStations.count == 1,
+      let identity = world.mainStations.first, identity.system == candidate.systemIdentity,
+      let observation = world.mainObservations.first, observation.station == identity,
+      observation.actor == anchor.identity, observation.calendarSeconds == 0,
+      let resource = candidate.commander.scriptState.stationResources[identity.key],
+      resource.valid, resource.identity == identity.resource, !resource.destroyed,
+      resource.energy == station.energy, resource.energy > 0,
+      world.currentMainDock == nil, world.nextMainDockSequence == 1
+    else { throw NativeStationRuntimeError.invalidState }
+    let receipt = NativeMainStationDockReceipt(
+      station: identity, actor: anchor.identity, commanderOwner: owner, sequence: 1,
+      calendarSeconds: 0)
+    world.currentMainDock = receipt
+    world.nextMainDockSequence = 2
+    candidate.commander.nativeStations = world
+    candidate.bodies = []
+    candidate.nativeMainStationDockEvidence = .init(
+      receipt: receipt, runtimeEpoch: candidate.nativeStationRuntimeEpoch)
+    guard receipt.valid, world.valid, candidate.commander.valid,
+      candidate.nativeMainStationDockEvidenceIsCurrent,
+      world.sceneIsConsistent(
+        bodies: candidate.bodies, docked: candidate.docked,
+        mainStation: candidate.dockedAtMainStation, system: candidate.systemIdentity,
+        flight: candidate.commander.flightSimulation)
+    else { throw NativeStationRuntimeError.invalidState }
+    return candidate
+  }
+}
+
 extension Commander {
   var nativeStationStateValid: Bool {
     guard let world = nativeStations else { return true }
