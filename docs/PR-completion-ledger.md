@@ -744,3 +744,7 @@ One necessary app-product build 990 passed on integrated5bc1030d, with no unit r
 ## Historical fixture assignment reconciled
 
 The four proposed MissionPackTests methods were already corrected, qualified in actual974 and integrated at3a17276f. Current file hash and exact retained method terminals match; no new patch, run or code credit is claimed. Reconciliation `/tmp/elite-g2-mission-journey-reconciliation/DUPLICATE-RECONCILIATION.json` SHA256 `8628c49cb47be1fee90939e4ee9dbeb09525d14696a2f13331b4095740e09d14`. G2's next verified unresolved assignment is only the stale372 source-count premise in the existing all2056 native-main-station round-trip method and paired notes, retaining the actual2056 owner/history/round-trip checks. The old955 file snapshot is historical and is not itself a current queue.
+
+## G04 refusal disposition
+
+The fresh saved inventory contains zero Passenger Berth items, the actual offer contains zero berths and cash remains720CR. PassengerCabin.price is10000 tenths (1000CR per cabin; two needed), a labelled project base price. No shop quote or additional UI run was performed. The native refusal is therefore recorded as an expected equipment prerequisite, not a broken feature. Owner paid-fit/native complete-journey unit evidence remains qualified; manual boarding and travel in preview991 remain unverified. The original992 receipt stays immutable; supplemental disposition `/tmp/elite-G04-targeted-ui-992/equipment-prerequisite-disposition.json` records the exact source/save evidence.
