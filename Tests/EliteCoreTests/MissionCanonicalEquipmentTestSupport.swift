@@ -10,8 +10,11 @@ func missionGearFolder() throws -> URL {
   return folder
 }
 
+// Physical inventory unit fixtures use a stock Cobra independently of fresh-start defaults.
 func missionGearGame(missiles: Int? = nil) throws -> Game {
   var commander = Commander()
+  commander.shipID = "SH023"
+  commander.fuel = commander.fuelCapacity
   if let missiles { commander.missiles = missiles }
   try commander.prepareEquipment(legacy: false)
   var game = Game(executive: false)
