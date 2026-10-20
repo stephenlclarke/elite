@@ -159,23 +159,34 @@ enum NativeOriginalRescueJourney {
     }
     return false
   }
+  @inline(never)
   static func requestConsent(state: inout NativeOriginalRescueJourneyState, game: borrowing Game)
     throws
   {
+    try game.withReadOnlyCommander { commander in
+      try requestConsent(state: &state, commander: commander, game: game)
+    }
+  }
+
+  @inline(never)
+  private static func requestConsent(
+    state: inout NativeOriginalRescueJourneyState, commander: borrowing Commander,
+    game: borrowing Game
+  ) throws {
     guard state.boarding == nil, state.terminalOperation == nil, state.offers.count < 64,
-      state.replies.count <= 252, let custody = game.commander.nativePeople,
-      let dock = game.commander.nativeStations?.currentMainDock,
+      state.replies.count <= 252, let custody = commander.nativePeople,
+      let dock = commander.nativeStations?.currentMainDock,
       sourceMatches(dock), game.nativeMainStationDockEvidenceIsCurrent,
-      let collector = game.commander.flightSimulation.player,
-      let carrier = game.commander.hullInstanceID, carrier == state.carrier,
-      let inventory = game.commander.equipmentInventory,
+      let collector = commander.flightSimulation.player,
+      let carrier = commander.hullInstanceID, carrier == state.carrier,
+      let inventory = commander.equipmentInventory,
       state.references.allSatisfy({ person in
         state.care(for: person, custody: custody)?.dock.map(sourceMatches) == true
       })
     else { throw SaveError.invalidCommander }
-    let fitted = game.commander.accommodation.fittedBerths
+    let fitted = commander.accommodation.fittedBerths
     let berths = state.reservedBerths.compactMap { id in fitted.first { $0.id == id } }
-    let reach = ScriptCourierReach(game.commander)
+    let reach = ScriptCourierReach(commander)
     let path =
       ScriptCourierGeneration.routes(origin: source, reach: reach).first {
         $0 == [85, 241]
@@ -183,7 +194,8 @@ enum NativeOriginalRescueJourney {
     if let previous = state.offers.last {
       for reference in state.references {
         guard let identity = reference.rescue else { throw SaveError.invalidCommander }
-        let reply = try replyToTransportOffer(identity, offer: previous, state: state, game: game)
+        let reply = try replyToTransportOffer(
+          identity, offer: previous, state: state, commander: commander, game: game)
         if reply.kind == .withdraw { state.replies.append(reply) }
       }
     }
@@ -193,28 +205,42 @@ enum NativeOriginalRescueJourney {
       revision: UInt64(state.offers.count + 1), dock: dock, collector: collector,
       carrier: carrier, inventoryRevision: inventory.revision,
       destination: .init(galaxy: 0, system: 241), reach: reach, path: path, berths: berths,
-      physicalTime: game.commander.flightSimulation.physicalTime,
+      physicalTime: commander.flightSimulation.physicalTime,
       epoch: game.nativeStationRuntimeEpoch)
     state.offers.append(offer)
     for ordinal in 0..<2 {
       let identity = NativeOriginalRescueIdentity(
         owner: state.owner, batch: batch, ordinal: ordinal)
-      let reply = try replyToTransportOffer(identity, offer: offer, state: state, game: game)
+      let reply = try replyToTransportOffer(
+        identity, offer: offer, state: state, commander: commander, game: game)
       state.replies.append(reply)
     }
   }
+  @inline(never)
   static func replyToTransportOffer(
     _ identity: NativeOriginalRescueIdentity, offer: NativeStationPassageOffer,
     state: NativeOriginalRescueJourneyState, game: borrowing Game
   ) throws -> NativeOriginalRescueReply {
-    guard identity.valid, identity.owner == state.owner, let custody = game.commander.nativePeople,
+    try game.withReadOnlyCommander { commander in
+      try replyToTransportOffer(
+        identity, offer: offer, state: state, commander: commander, game: game)
+    }
+  }
+
+  @inline(never)
+  private static func replyToTransportOffer(
+    _ identity: NativeOriginalRescueIdentity, offer: NativeStationPassageOffer,
+    state: NativeOriginalRescueJourneyState, commander: borrowing Commander,
+    game: borrowing Game
+  ) throws -> NativeOriginalRescueReply {
+    guard identity.valid, identity.owner == state.owner, let custody = commander.nativePeople,
       let care = state.care(for: .rescue(identity), custody: custody), let dock = care.dock,
-      sourceMatches(dock), let current = game.commander.nativeStations?.currentMainDock,
+      sourceMatches(dock), let current = commander.nativeStations?.currentMainDock,
       sourceMatches(current), game.nativeMainStationDockEvidenceIsCurrent,
-      let carrier = game.commander.hullInstanceID, let inventory = game.commander.equipmentInventory
+      let carrier = commander.hullInstanceID, let inventory = commander.equipmentInventory
     else { throw SaveError.invalidCommander }
     let ordinal = identity.ordinal
-    let berth = game.commander.accommodation.fittedBerths.first {
+    let berth = commander.accommodation.fittedBerths.first {
       $0.id == state.reservedBerths[ordinal]
     }
     let request = NativeStationTravelRequest(
@@ -235,7 +261,7 @@ enum NativeOriginalRescueJourney {
       offer: offer.id, kind: !fresh ? .withdraw : (eligible ? .accept : .refuse),
       careOperation: care.operation, dock: current, carrier: carrier, berth: berth,
       inventoryRevision: inventory.revision, epoch: game.nativeStationRuntimeEpoch,
-      physicalTime: game.commander.flightSimulation.physicalTime)
+      physicalTime: commander.flightSimulation.physicalTime)
   }
 }
 
