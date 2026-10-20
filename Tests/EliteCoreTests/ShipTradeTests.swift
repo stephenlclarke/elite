@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 @Test func shipExchangeTransfersFitCargoMissionsAndCashAndCanTradeAgain() throws {
-  var game = Game(executive: false)
+  var game = hullTradeGame()
   game.screen = .status
   game.commander.credits = 10_000_000
   game.commander.cargo[0] = 2
@@ -74,7 +74,7 @@ import Testing
 }
 
 @Test func exchangesBlockFundsCargoPaidFitFuelAndRouteConflictsWithoutAnyLoss() throws {
-  var game = Game(executive: false)
+  var game = hullTradeGame()
   game.screen = .status
   game.key("6")
   game.showroom.selection = "SH013"
@@ -110,9 +110,7 @@ import Testing
 }
 
 @Test func purchasedHullControlsRealFlightPoolsMountsAndSaveMigration() throws {
-  var game = Game(executive: false)
-  game.commander.shipID = "SH001"
-  game.commander.missiles = 1
+  var game = hullTradeGame(shipID: "SH001", missiles: 1)
   game.launch()
   game.bodies = []
   game.speed = 0
@@ -149,7 +147,7 @@ import Testing
   #expect(loaded.count == 171 && loaded.allSatisfy { $0.design.valid })
   #expect(loaded.filter { $0.game != nil }.count == 162)
   #expect(loaded.allSatisfy { $0.previewMesh != nil })
-  var game = Game(executive: false)
+  var game = hullTradeGame()
   game.screen = .status
   game.key("6")
   game.showroom.selection = "SH013"
@@ -304,4 +302,16 @@ import Testing
   #expect(try ShipCatalogue.load(from: folder).first?.id == "SH023")
   try FileManager.default.moveItem(at: file, to: folder.appendingPathComponent("SH001.toml"))
   #expect(throws: ShipFileError.self) { try ShipCatalogue.load(from: folder) }
+}
+
+// Declare stock hulls for these model-specific trade and flight scenarios.
+private func hullTradeGame(shipID: String = "SH023", missiles: Int? = nil) -> Game {
+  var game = Game(executive: false)
+  game.commander.shipID = shipID
+  game.commander.fuel = game.commander.fuelCapacity
+  if let missiles { game.commander.missiles = missiles }
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  return game
 }

@@ -93,8 +93,10 @@ private func stationServiceApproach(_ kind: NativeStationGeometry.Kind) throws -
   game.commander.credits = 1_000_000
   game.commander.fuel = 10
   game.commander.cargo[0] = 1
-  game.market[0].price = 12
+  // G04-S149 Food retains its authenticated quotes; only live stock is mutable.
+  try #require(game.market[0].price == 215 && game.market[0].bidPrice == 197)
   game.market[0].quantity = 10
+  try #require(game.commander.originalMarkets.valid)
   try #require(game.commander.valid && game.commander.fuel < game.commander.fuelCapacity)
   try #require(game.commander.cargoTonnes < game.commander.tradeCargoCapacity)
   return game
@@ -362,14 +364,20 @@ private func verifyOriginalStationServices(_ game: inout Game, plugh: Bool) thro
   let berth = try game.confirmPassengerBerth(cabinQuote)
   #expect(game.commander.accommodation.fitted.contains(berth))
   game.selection = 0
-  game.market[0].price = 12
+  // G01-S007 Food is 226/208; PLUGH discounts each authenticated quote once.
+  let ask = plugh ? 170 : 226
+  let bid = plugh ? 156 : 208
+  try #require(game.market[0].price == ask && game.market[0].bidPrice == bid)
   game.market[0].quantity = 10
+  try #require(game.commander.originalMarkets.valid && game.commander.valid)
   let beforeBuy = game.commander.credits
   let cargo = game.commander.cargo[0]
   game.trade(buy: true)
-  #expect(game.commander.cargo[0] == cargo + 1 && game.commander.credits == beforeBuy - 12)
+  #expect(game.commander.cargo[0] == cargo + 1 && game.commander.credits == beforeBuy - ask)
+  #expect(game.market[0].quantity == 9)
   game.trade(buy: false)
-  #expect(game.commander.cargo[0] == cargo && game.commander.credits == beforeBuy)
+  #expect(game.commander.cargo[0] == cargo && game.commander.credits == beforeBuy - ask + bid)
+  #expect(game.market[0].quantity == 10)
   #expect(game.commander.valid)
 }
 
