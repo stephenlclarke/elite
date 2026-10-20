@@ -610,3 +610,7 @@ Actual0fbbc45a911buildPASS/new96d1binary/912singlecoreUNKNOWNsignal10/0issues/no
 ## Prepare owner-qualified G13 isolated source for independent review
 
 G13tested876review663 ownerSINGLE18methods36cases/matchingbuild/actualCLIproductionpinPASS/wholeclosed/no failures-retries-timeouts. G1binds exact17reservedpaths/12proofhashes/onePRnotedelta, isolateda854fdb6 all17exact/other16testedunchanged, no duplicatebuild-tests-review/mainCPU. Rootindependentlyverified17source12proofs/18methodends0issues/actualrun47.926s, G2ONEfull17reviewactive. LedgerownerPASS/reviewpending/notcanonical/notusableapp; M01COWstillFIRST/unqualified. ScopedMarkdown/whitespace/hashpreservation only.
+
+## Integrate G13 qualified source and separate storage PASS from core failure
+
+Rootauthorised immediateG13integration after G2ONEfull17CLEAN/ownerSINGLE18/36PASS/Root12proof17sourceverification. Final3755qualification+CLEANnoteonly/all15nondoc-other16testedexact, canonical17basechecks then2f522768integration/authoritativereceipt, no duplicatebuild-tests-reviewACK/mainCPU/MC1import. Sourceonly/889appexcludesW03-G13/noSlack/release. M01new324COW913buildPASS/914singlecoreUNKNOWN; RootallowedONLYnewstorage9153/3PASS0issues/sameartifact/wholeclosed, separatebaseline3+new3/target31/45incomplete. Conditional916actualcorecapture permitted/no sourceedit/storage-onlyreview-integration; fullcoherentreview afterownerPASS. UXnextMBAhandoffonly/notassigned. ScopedMarkdown/whitespace/historyhashes only.
