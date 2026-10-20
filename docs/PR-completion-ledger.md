@@ -398,3 +398,7 @@ Record exact twelve-path622 source integration after G2 ONE CLEAN881 review and 
 ## Current frozen commit-refresh owner allocation
 
 Update current M01 status/register to exact640eaed5 active848/849 matching build/7methods9cases plus byte-unchanged847 storage1/1 retained. Preserve earlier source/plan/proof hashes as historical provenance. Only ScriptEncounters/notes changed under approved same-invocation snapshot reuse, default guards and owner PASS before ONE final review; outcomes pending. No extra source audit/runtime or GUI poll. Scoped Markdown lint/diff checks only.
+
+## Current850/851 assignment and actual849 closure
+
+Record849 zero-terminal failure after successful source revalidation, fault now gameplay context/maximum energy in validated commit, with exact immutable proof/crash/process/input/artifact/preference closure and released registry. Allocate frozenf61f850/851 existing NativeMissionActorAdmission/notes coherent read-only-check versus receipt/writer frame separation, same seven/nine plus unchanged847 storage1/1. Keep current register concise and preserve the prior verbose register verbatim in history with all hashes. Owner PASS precedes ONE final qualified review; no failed integration, extra source audit/test/runtime or GUI poll. Normal Markdown lint/diff checks only.
