@@ -221,7 +221,7 @@ finally:
             # These are actual already-owned helper paths, not a guessed local replacement.
             images = retain_test_images(process_history, root, evidence, head, budget)
             crashes, audit = collect_reports(
-                crash_roots, baseline, process_history, evidence, budget)
+                crash_roots, baseline, process_history, evidence, budget, observed_images=images)
         except Exception as error:
             # Artifact capture never replaces the original failing make status.
             audit = {'status': 'capture-error', 'type': type(error).__name__,

@@ -1,0 +1,9 @@
+# Failed hosted quality loses an unproved helper diagnostic original
+
+Required quality39495003994 on8a41b3522a35cac06ba9210074f486247f08e3a3 compiled Swift6.1.2 and exited with unexpected signal10, with zero assertion reports or conclusive method terminals. Its one fresh .swiftpm-testing-helper .ips row has28906bytes, matchedActualProcess=false and null PID/path/launch. The collector read/hash-checked those bytes, then deliberately retained metadata only because exact process attribution failed. The original body is absent, so its actual format, producer and fault site remain unknown.
+
+Existing owned-process history and retained image/dSYM establish the CI cohort and actual native image UUID; they do not identify this particular report. Basename, report time and last-started test are not process or fault authority. A blind parser or engine fix is unsupported. The minimal approved correction preserves a narrowly scoped original for offline inspection on the next normal required CI, while keeping it explicitly unattributed.
+
+M01 assignment: G2 owns exactly the collector, capture-quality finalizer, existing fixture test file and this pair in a separate exact8a isolate. Root owns review/central ledger; G1 owns integration/publication and the next normal required CI. Assignment precedes edits at /tmp/elite-g2-unattributed-helper-diagnostic/ASSIGNMENT.json. No native build/test, app/GUI/probe, extra CI, engine, workflow, Makefile, MBA or canonical ledger change is included. See [implementation and validation](PR-unattributed-helper-diagnostic.md).
+
+The full five-path review found one P2: identical helper name/digest reports from both fixed roots share one retained file, but later attribution originally moved the file through only one source record. The correction must update all references without granting attribution from a shared filename or digest.
