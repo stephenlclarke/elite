@@ -11,3 +11,7 @@ Use authenticated original-world quotes and change only admitted stock and cargo
 ## Acceptance
 
 Qualify the existing four methods and five cases on actual native inputs. Both opposing-order arguments remain. No earlier pass is retained for the changed private fixture. Companion: [PR-profit-authentic-market-witnesses.md](PR-profit-authentic-market-witnesses.md).
+
+## Compile correction after candidate 967
+
+The owner build stopped after 8.191 seconds because Swift Testing's macro type checker could not resolve the two inline tie-arithmetic requirements. No profit test ran. Extract each unchanged arithmetic expression into an explicitly typed `Int` local before requiring equality to `1_526_400`. Every literal, independent oracle and production-result assertion remains intact. The original compile failure is retained under `/tmp/elite-profit-compile-967`; the corrected child still requires matching compilation and the four-method/five-case owner run. No author build, test or native probe ran.

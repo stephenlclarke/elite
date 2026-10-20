@@ -107,8 +107,10 @@ struct ProfitScanBoundsTests {
     game.commander.cargo[13] = 947
     game.commander.cargo[14] = 472
     // 947*456 + 472*2319 == 947*928 + 472*1372 == 1,526,400.
-    try #require(947 * 456 + 472 * 2319 == 1_526_400)
-    try #require(947 * 928 + 472 * 1372 == 1_526_400)
+    let tiedProfit84: Int = 947 * 456 + 472 * 2319
+    let tiedProfit116: Int = 947 * 928 + 472 * 1372
+    try #require(tiedProfit84 == 1_526_400)
+    try #require(tiedProfit116 == 1_526_400)
     try #require(game.commander.valid)
     #expect(game.estimatedTradeProfit(to: game.systems[84]) == 1_526_400)
     #expect(game.estimatedTradeProfit(to: game.systems[116]) == 1_526_400)
