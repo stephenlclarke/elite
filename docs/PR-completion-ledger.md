@@ -642,3 +642,9 @@ M01test-onlyced8salvageprojection925build→926singlefailedcase,27/33retained/eq
 ## Combined source checkpoint
 
 Record M01 and T04 qualified source integration, distinguish aggregate owner results from the single composition run, and update G01 ownership to G3 native paths/G2 central paths. Required combined `make ci` runs next on the committed candidate; no current app, merged main, SonarQube or release completion is asserted. Prior evidence hashes remain intact.
+
+## Required combined CI outcome
+
+After two reviewed reference/test corrections, CI934 on `485fab55293ca984e38b3c88659e3712a601b12b` passes flight/distribution/ship-reference/showroom/mission validation and stops at coverage-check: Swift Testing helper signal10, no complete suite summary. The399.246s run closes without timeout/cleanup/residual owned processes; source, preferences and working tree stay unchanged. Coverage export/threshold, thread/address sanitizers and leaks are not reached.
+
+Immutable raw log SHA256 `363e101d3edd7777368742318f9da4c3df96f21d4eba260029ee02782fede9b4`; derived failure-index SHA256 `aa9d32828c29ea822fb80fe8ad5da9839e8456728ea81536d5151a0210d30fd0`, both under `/tmp/elite-combined-ci-934`. The index records7221 issue events at412 locations across93 files; partial375pass/110fail terminal observations are not aggregate qualification. Existing user/system crash-report directories contain no new report for the owned helper. Root chooses one focused repair before further execution; no broad rerun, new diagnostic or release claim follows from this documentation update.
