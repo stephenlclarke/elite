@@ -148,11 +148,14 @@ extension Game {
     guard requests.count == templates.count,
       Set(requests.map(\.identity)).count == requests.count
     else { return .staleContext }
-    let registeredStationBodies = Set(
-      commander.nativeStations?.ledger.records.compactMap { record in
-        record.identity.system == context.system ? record.binding?.bodyID : nil
-      } ?? [])
-    let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
+    let (registeredStationBodies, playerRadius) = withReadOnlyCommander { commander in
+      let registeredStationBodies = Set(
+        commander.nativeStations?.ledger.records.compactMap { record in
+          record.identity.system == context.system ? record.binding?.bodyID : nil
+        } ?? [])
+      let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
+      return (registeredStationBodies, playerRadius)
+    }
     return Self.gameplayMissionActorAdmissionRefusal(
       original: self, requests, templates: templates, context: context,
       registeredStationBodies: registeredStationBodies, playerRadius: playerRadius)
@@ -302,7 +305,7 @@ extension Game {
     else { return false }
     guard
       let bounds = Self.validatedMissionActorStationBounds(
-        original: self, identity: identity, body: body)
+        original: self, identity: identity, body: copy body)
     else { return false }
     let pose = modelPose(of: copy body)
     return Self.missionActorClearsStationBounds(
@@ -312,11 +315,19 @@ extension Game {
   /// Current station authority finishes before model-pose and bounds construction starts.
   @inline(never)
   private static func validatedMissionActorStationBounds(
-    original: borrowing Game, identity: NativeStationIdentity, body: borrowing SpaceBody
+    original: borrowing Game, identity: NativeStationIdentity, body: SpaceBody
   ) -> (minimum: Vector3, maximum: Vector3)? {
-    guard let world = original.commander.nativeStations, let saved = world.pose(for: identity),
+    original.withReadOnlyCommander { commander in
+      Self.validatedMissionActorStationBounds(commander: commander, identity: identity, body: body)
+    }
+  }
+
+  private static func validatedMissionActorStationBounds(
+    commander: borrowing Commander, identity: NativeStationIdentity, body: borrowing SpaceBody
+  ) -> (minimum: Vector3, maximum: Vector3)? {
+    guard let world = commander.nativeStations, let saved = world.pose(for: identity),
       let source = NativeStationSource.binding(for: identity), body.energy == saved.energy,
-      world.bodyRigidPoseIsConsistent(copy body, flight: original.commander.flightSimulation)
+      world.bodyRigidPoseIsConsistent(body, flight: commander.flightSimulation)
     else { return nil }
     let bounds = source.geometry.bounds
     return (bounds.minimum, bounds.maximum)
@@ -364,7 +375,7 @@ extension Game {
     else {
       return .staleContext
     }
-    if let emp = commander.savedEMPState, request.identity.producer != .emp,
+    if let emp = withReadOnlyCommander({ $0.savedEMPState }), request.identity.producer != .emp,
       emp.records.values.contains(where: { record in
         guard let original = record.originalSpawn else { return false }
         return original.system == request.identity.system

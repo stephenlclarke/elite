@@ -190,4 +190,53 @@ struct GameCommanderStorageTests {
     let committedReceipt = await runtime.takeNewCommanderSaveReceipt()
     #expect(committedReceipt?.url == save)
   }
+
+  @Test func borrowedCommanderReadsPreserveDefaultFlightAndOwnedSnapshots() throws {
+    var original = Game(executive: false)
+    let encoder = JSONEncoder()
+    let before = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(original.commander)) as? [String: Any])
+    #expect(before["savedFlightSimulation"] == nil)
+
+    let defaults = original.withReadOnlyCommander { commander in
+      (
+        visit: commander.flightSimulation.visit,
+        time: commander.flightSimulation.physicalTime,
+        system: commander.flightSimulation.system,
+        hasAnchors: commander.flightSimulation.anchors != nil,
+        position: commander.flightSimulation.pose.position
+      )
+    }
+    #expect(defaults.visit == 0 && defaults.time == 0)
+    #expect(defaults.system == nil && !defaults.hasAnchors)
+    #expect(defaults.position == Vector3(0, 0, 0))
+    var ownedDefault = original.withReadOnlyCommander { $0.flightSimulation }
+    ownedDefault.physicalTime = 99
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.physicalTime } == 0)
+    let after = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(original.commander)) as? [String: Any])
+    #expect(after["savedFlightSimulation"] == nil)
+
+    let system = SystemIdentity(galaxy: 0, system: 7)
+    original.commander.flightSimulation.enter(system, arriving: false)
+    let retained = original
+    var ownedFlight = original.withReadOnlyCommander { $0.flightSimulation }
+    original.commander.flightSimulation.advancePhysicalTime(3)
+    original.commander.flightSimulation.pose.position.x += 25
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.physicalTime } == 3)
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 25)
+    #expect(retained.withReadOnlyCommander { $0.flightSimulation.physicalTime } == 0)
+    #expect(retained.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 0)
+    #expect(ownedFlight.physicalTime == 0 && ownedFlight.pose.position.x == 0)
+
+    ownedFlight.pose.position.x = -40
+    var caller = retained
+    caller.commander.flightSimulation.enter(.init(galaxy: 0, system: 8), arriving: true)
+    #expect(caller.withReadOnlyCommander { $0.flightSimulation.visit } == 2)
+    #expect(retained.withReadOnlyCommander { $0.flightSimulation.visit } == 1)
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.system } == system)
+    #expect(original.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 25)
+    #expect(retained.withReadOnlyCommander { $0.flightSimulation.pose.position.x } == 0)
+    #expect(ownedFlight.pose.position.x == -40 && ownedDefault.physicalTime == 99)
+  }
 }

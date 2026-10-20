@@ -57,12 +57,13 @@ extension Commander {
     guard let world = nativeStations else { return true }
     let resources = scriptState.stationResources
     let currentSystem = SystemIdentity(galaxy: galaxy, system: system)
-    guard world.valid, equipmentOwnerID == world.ledger.world,
-      world.stationInertia.allSatisfy({ $0.physicalTime <= flightSimulation.physicalTime }),
-      !world.stationInertia.contains(where: { $0.station.system == currentSystem })
-        || flightSimulation.anchors?.station.position == Vector3(0, 0, 0),
-      let calendar = scriptState.calendarLedger, calendar.valid
-    else { return false }
+    guard world.valid, equipmentOwnerID == world.ledger.world else { return false }
+    let physicalTime = flightSimulation.physicalTime
+    guard world.stationInertia.allSatisfy({ $0.physicalTime <= physicalTime }) else { return false }
+    if world.stationInertia.contains(where: { $0.station.system == currentSystem }) {
+      guard flightSimulation.anchors?.station.position == Vector3(0, 0, 0) else { return false }
+    }
+    guard let calendar = scriptState.calendarLedger, calendar.valid else { return false }
     guard
       world.mainStations.allSatisfy({ identity in
         guard let resource = resources[identity.key] else { return false }
@@ -286,12 +287,21 @@ extension Game {
   }
 
   func nativeStationBodyIsCurrent(_ body: SpaceBody) -> Bool {
+    withReadOnlyCommander { commander in
+      Self.nativeStationBodyIsCurrent(body, commander: commander)
+    }
+  }
+
+  private static func nativeStationBodyIsCurrent(
+    _ body: borrowing SpaceBody, commander: borrowing Commander
+  ) -> Bool {
     guard let identity = body.nativeStationIdentity, let physical = body.physical,
       let world = commander.nativeStations, commander.nativeStationStateValid,
       let record = world.ledger.records.first(where: { $0.identity == identity })
     else { return false }
-    return identity.system == systemIdentity && record.tombstone == nil && body.energy > 0
-      && physical.identity.system == systemIdentity
+    let currentSystem = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
+    return identity.system == currentSystem && record.tombstone == nil && body.energy > 0
+      && physical.identity.system == currentSystem
       && physical.identity.visit == commander.flightSimulation.visit
       && record.binding == .init(actor: physical.identity, bodyID: body.id)
   }
@@ -1285,7 +1295,9 @@ extension NativeStationWorld {
   /// End-of-movement admission joins the actual rendered actor to its saved rigid station pose.
   /// Planning earlier in a tick still uses the preceding body frame, so this is not a global
   /// eligibility predicate for weapon queries made before movement.
-  func bodyRigidPoseIsConsistent(_ body: SpaceBody, flight: FlightSimulationState) -> Bool {
+  func bodyRigidPoseIsConsistent(
+    _ body: borrowing SpaceBody, flight: borrowing FlightSimulationState
+  ) -> Bool {
     guard let identity = body.nativeStationIdentity, let saved = pose(for: identity),
       let source = NativeStationSource.binding(for: identity), body.hull == .station,
       let physical = body.physical, physical.population == .mission, physical.npc == nil,
@@ -1298,9 +1310,13 @@ extension NativeStationWorld {
       (flight.pose.systemPoint(body.position) - currentPosition).length < 1e-5,
       let orientation = currentOrientation(for: saved.station, at: flight.physicalTime)
     else { return false }
-    return [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy {
-      (flight.pose.orientation.apply(body.modelVector($0)) - orientation.apply($0)).length < 1e-5
+    for axis in [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)] {
+      guard
+        (flight.pose.orientation.apply(body.modelVector(axis)) - orientation.apply(axis)).length
+          < 1e-5
+      else { return false }
     }
+    return true
   }
 
   func sceneIsConsistent(

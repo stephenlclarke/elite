@@ -78,7 +78,14 @@ public struct Commander: Sendable, Equatable, Codable {
   var nativeStations: NativeStationWorld?
   private var savedFlightSimulation: FlightSimulationState?
   public var flightSimulation: FlightSimulationState {
-    get { savedFlightSimulation ?? FlightSimulationState() }
+    _read {
+      if case .some = savedFlightSimulation {
+        yield savedFlightSimulation!
+      } else {
+        let empty = FlightSimulationState()
+        yield empty
+      }
+    }
     set { savedFlightSimulation = newValue }
   }
   private var savedCrimeLedger: CrimeLedger?
@@ -460,6 +467,14 @@ public struct Game: Sendable {
   public var commander: Commander {
     _read { yield commanderStorage[0] }
     _modify { yield &commanderStorage[0] }
+  }
+  /// Synchronous read-only access; the storage borrow and pointer never escape this call.
+  func withReadOnlyCommander<Result>(
+    _ read: (borrowing Commander) throws -> Result
+  ) rethrows -> Result {
+    try commanderStorage.withUnsafeBufferPointer { storage in
+      try read(storage.baseAddress!.pointee)
+    }
   }
   /// Snapshot installed instances without materializing the complete Commander value.
   var retainedMissionActorInstances: [UUID: ScriptInstance] {
