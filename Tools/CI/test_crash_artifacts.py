@@ -144,6 +144,59 @@ class CrashArtifactTests(unittest.TestCase):
         self.assertEqual((self.evidence / row['retainedImage']).read_bytes(), self.image.read_bytes())
         self.assertEqual(budget.used, self.image.stat().st_size)
 
+    def test_all_images_precede_earlier_symbols_under_the_shared_cap(self):
+        later = self.workspace / '.build/asan/Later.xctest/Contents/MacOS/Later'
+        later.parent.mkdir(parents=True)
+        later.write_bytes(b'later failing cohort image')
+        self.history[31] = [dict(self.row, command=shlex.join(
+            ['/toolchain/swiftpm-testing-helper', '--test-bundle-path', str(later)]))]
+        budget = artifacts.ArtifactBudget(self.image.stat().st_size + later.stat().st_size)
+        rows = self.retain(budget)
+        self.assertEqual([row['status'] for row in rows], ['retained-image', 'retained-image'])
+        self.assertEqual(rows[0]['symbols']['status'], 'refused-size-cap')
+        self.assertEqual((self.evidence / rows[1]['retainedImage']).read_bytes(), later.read_bytes())
+        self.assertEqual(budget.used, budget.limit)
+
+    def test_growth_between_report_stat_and_hash_cannot_exceed_the_cap(self):
+        baseline = artifacts.report_snapshot([self.reports])
+        report = self.reports / 'growing.ips'
+        raw = json.dumps(self.payload()).encode()
+        report.write_bytes(raw)
+        original_sha = artifacts.sha
+        grown = False
+        def grow_after_snapshot_stat(path):
+            nonlocal grown
+            if Path(path) == report and not grown:
+                report.write_bytes(raw + b' ' * 1024)
+                grown = True
+            return original_sha(path)
+        budget = artifacts.ArtifactBudget(len(raw) + 10)
+        with patch.object(artifacts, 'sha', side_effect=grow_after_snapshot_stat):
+            rows, _ = self.collect(baseline, budget)
+        self.assertEqual(rows[0]['reason'], 'artifact-size-cap')
+        self.assertGreater(rows[0]['bytes'], budget.limit)
+        self.assertEqual(budget.used, 0)
+        self.assertFalse((self.evidence / 'matched-crashes').exists())
+
+    def test_growth_during_report_read_is_rechecked_before_retention(self):
+        baseline = artifacts.report_snapshot([self.reports])
+        report = self.reports / 'read-growth.ips'
+        raw = json.dumps(self.payload()).encode()
+        report.write_bytes(raw)
+        original_open = Path.open
+        def grow_during_read(path, *args, **kwargs):
+            if path == report and args == ('rb',):
+                with original_open(report, 'wb') as stream:
+                    stream.write(raw + b' ' * 1024)
+            return original_open(path, *args, **kwargs)
+        budget = artifacts.ArtifactBudget(len(raw) + 10)
+        with patch.object(Path, 'open', grow_during_read):
+            rows, _ = self.collect(baseline, budget)
+        self.assertEqual(rows[0]['reason'], 'artifact-size-cap')
+        self.assertGreater(rows[0]['bytes'], budget.limit)
+        self.assertEqual(budget.used, 0)
+        self.assertFalse((self.evidence / 'matched-crashes').exists())
+
     def test_oversized_image_is_refused_without_partial_output(self):
         row = self.retain(artifacts.ArtifactBudget(1))[0]
         self.assertEqual(row['status'], 'refused-image-size-cap')

@@ -124,14 +124,56 @@ class ArtifactBudget:
         return 0 <= size <= self.limit - self.used
 
 
+def retain_symbols(observed, record, destination, metadata, build, evidence, budget, uuid_reader):
+    """Symbol retention runs only after every observed test image has its opportunity."""
+    if 'dsym' not in observed:
+        record['symbols'] = {'status': 'no-observed-dsym-producer'}
+        return
+    symbol_target = destination / Path(observed['dsym']).name
+    try:
+        symbols = confined(observed['dsym'], build)
+        files = []
+        for path in sorted(symbols.rglob('*')):
+            resolved = confined(path, build)
+            if resolved.is_file():
+                files.append((path.relative_to(symbols), resolved))
+        size = sum(path.stat().st_size for _, path in files)
+        record['symbols'] = {'bytes': size}
+        if not budget.permits(size):
+            record['symbols'].update(status='refused-size-cap', limit=budget.limit)
+            return
+        symbol_metadata = uuid_reader(symbols)
+        record['symbols']['UUID'] = symbol_metadata
+        if not metadata.get('uuids') or metadata['uuids'] != symbol_metadata.get('uuids'):
+            record['symbols']['status'] = 'missing-or-mismatched-uuid'
+            return
+        copied = {}
+        for relative, original in files:
+            target = symbol_target / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            digest = sha(original)
+            shutil.copy2(original, target)
+            if sha(target) != digest or sha(original) != digest:
+                raise ValueError('Symbols changed during retention.')
+            copied[str(relative)] = digest
+        budget.used += size
+        record['symbols'].update(status='retained-matching-dsym', files=copied,
+                                 retained=str(symbol_target.relative_to(evidence)))
+    except (OSError, ValueError) as error:
+        if symbol_target.exists():
+            shutil.rmtree(symbol_target)
+        record['symbols'] = {'status': 'symbol-retention-error', 'reason': str(error)}
+
+
 def retain_test_images(history, workspace, evidence, source, budget, uuid_reader=image_uuids):
-    """Copy observed workspace images first, then only verified matching symbol bundles."""
+    """Copy all observed images before spending any of their shared cap on symbols."""
     workspace = Path(workspace).resolve(strict=True)
     try:
         build = confined(workspace / '.build', workspace)
     except (OSError, ValueError) as error:
         return [{'status': 'refused-build-root', 'reason': str(error), 'source': source}]
     retained = []
+    pending_symbols = []
     for index, observed in enumerate(observed_test_images(history, workspace)):
         record = dict(observed, source=source)
         retained.append(record)
@@ -157,49 +199,13 @@ def retain_test_images(history, workspace, evidence, source, budget, uuid_reader
             budget.used += size
             record.update(status='retained-image', imageSHA256=digest,
                           retainedImage=str(target.relative_to(evidence)))
-            if 'dsym' not in observed:
-                record['symbols'] = {'status': 'no-observed-dsym-producer'}
-                continue
-            try:
-                symbols = confined(observed['dsym'], build)
-                files = []
-                for path in sorted(symbols.rglob('*')):
-                    resolved = confined(path, build)
-                    if resolved.is_file():
-                        files.append((path.relative_to(symbols), resolved))
-                size = sum(path.stat().st_size for _, path in files)
-                record['symbols'] = {'bytes': size}
-                if not budget.permits(size):
-                    record['symbols'].update(status='refused-size-cap', limit=budget.limit)
-                    continue
-                symbol_metadata = uuid_reader(symbols)
-                record['symbols']['UUID'] = symbol_metadata
-                if not metadata.get('uuids') or metadata['uuids'] != symbol_metadata.get('uuids'):
-                    record['symbols']['status'] = 'missing-or-mismatched-uuid'
-                    continue
-                copied = {}
-                symbol_target = destination / symbols.name
-                for relative, original in files:
-                    target = symbol_target / relative
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    digest = sha(original)
-                    shutil.copy2(original, target)
-                    if sha(target) != digest or sha(original) != digest:
-                        raise ValueError('Symbols changed during retention.')
-                    copied[str(relative)] = digest
-                budget.used += size
-                record['symbols'].update(status='retained-matching-dsym', files=copied,
-                                         retained=str(symbol_target.relative_to(evidence)))
-            except (OSError, ValueError) as error:
-                symbol_target = destination / Path(observed['dsym']).name
-                if symbol_target.exists():
-                    shutil.rmtree(symbol_target)
-                record['symbols'] = {'status': 'symbol-retention-error', 'reason': str(error)}
+            pending_symbols.append((observed, record, destination, metadata))
         except (OSError, ValueError) as error:
-            # Remove only this collector's incomplete output, never the source image.
             if destination is not None and destination.exists():
                 shutil.rmtree(destination)
             record.update(status='retention-error', reason=str(error))
+    for observed, record, destination, metadata in pending_symbols:
+        retain_symbols(observed, record, destination, metadata, build, evidence, budget, uuid_reader)
     return retained
 
 
@@ -329,10 +335,17 @@ def collect_reports(roots, baseline, history, evidence, budget, window=3.5, inte
                 continue
             try:
                 original = confined(name, item['directory'])
-                if not budget.permits(item['bytes']):
+                detail['snapshotBytes'] = item['bytes']
+                detail['bytes'] = original.stat().st_size
+                if not budget.permits(detail['bytes']):
                     detail['reason'] = 'artifact-size-cap'
                     continue
-                raw = original.read_bytes()
+                with original.open('rb') as stream:
+                    raw = stream.read(budget.limit - budget.used + 1)
+                detail['bytes'] = len(raw)
+                if not budget.permits(len(raw)):
+                    detail['reason'] = 'artifact-size-cap'
+                    continue
                 digest = hashlib.sha256(raw).hexdigest()
                 if digest != item['sha256']:
                     detail['reason'] = 'report-changing; retry within collection window'
