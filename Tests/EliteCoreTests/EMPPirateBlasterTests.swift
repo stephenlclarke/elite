@@ -13,6 +13,7 @@ func empFixture(catalogue: String = "SH023", hostile: Bool = false, police: Bool
   game.energy = game.commander.performance.energy
   game.frontShield = game.commander.shieldCapacity
   game.rearShield = game.commander.rearShieldCapacity
+  game.commander.fuel = game.commander.fuelCapacity
   try game.commander.prepareEquipment(legacy: false)
   for (name, slot) in [
     (Equipment.empPirateBlaster, ComponentFittingSlot.utility(.empPirateBlaster)),
