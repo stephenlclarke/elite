@@ -268,3 +268,7 @@ Record Root CLEAN0a3c9d4d and exact execution binding after owner HEAD/seven tes
 ## Two bounded MBA03 fixture corrections and separate route gap
 
 Record Root's Gallery per-provider row correction and pre-board ordinary source selection for exact package-1 restore coverage, preserving every acceptance/route/deadline/content/version/custody/save-byte oracle. Owner closes the whole original run before changed-source build and reruns affected methods only; frozen changed-hunk review remains required. Retain actual Avenor7 excessive-route-cost refusal as separate OPEN M05/M06 player gap; fixture selection does not fix it. Scoped Markdown/whitespace checks only.
+
+## Actual809 closure and immediate renderer allocation
+
+Record zero PASS/seven UNKNOWN stack failure with exact809 proof and resource closure; no crash-chain integration. Allocate G2810/811 matching737 build/ONLY corrected parity case promptly, retaining three unaffected passes. MC1 authors only exact legacy-validation-before-heavy/borrowing lifetime repair in parallel; execution waits for a reviewed freeze and next finite grant. No extra audit/probe/test expansion or speed/cure claim; scoped Markdown/whitespace checks only.
