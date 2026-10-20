@@ -600,9 +600,23 @@ extension Game {
       }
       templates.append(template)
     }
+    return Self.finishMissionActorAdmissionSource(
+      mode: mode, authority: authority, pack: pack, state: state, encounter: encounter,
+      definition: definition, templates: consume templates, instances: instances)
+  }
+
+  /// Construct the owned result only after per-actor validation and template frames have returned.
+  @inline(never)
+  private static func finishMissionActorAdmissionSource(
+    mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
+    pack: borrowing ScriptPack, state: borrowing ScriptInstance,
+    encounter: borrowing ScriptOwnedEncounter, definition: borrowing ScriptEncounterDefinition,
+    templates: consuming [MissionActorAdmissionTemplate],
+    instances: borrowing [UUID: ScriptInstance]
+  ) -> MissionActorAdmissionSource {
     return .init(
       mode: mode, authority: authority, instance: copy state, pack: copy pack,
-      encounter: copy encounter, definition: copy definition, actors: templates,
+      encounter: copy encounter, definition: copy definition, actors: consume templates,
       installedBaseEncounter: instances[state.id]?.ownedEncounters[encounter.id])
   }
 
