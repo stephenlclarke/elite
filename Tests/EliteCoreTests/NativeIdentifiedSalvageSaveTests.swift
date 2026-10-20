@@ -162,6 +162,28 @@ struct NativeIdentifiedSalvageSaveTests {
       }
       #expect(try NativeIdentifiedSalvage.captureAuthority(equivalent) == capture.authority)
     }
+    let normalizedBytes = try identifiedRehashedBytes(
+      normalized, geometry: pristine.scriptState.geometry)
+    try expectedSuccess("normalized G09 raw fields") {
+      try NativeIdentifiedSalvageSave.validateFields(
+        normalizedBytes, part: .missions, schema: pointer.schemaVersion)
+    }
+    try expectedSuccess("normalized predecessor raw fields") {
+      try ScriptSaveJSONPreflight.validateRepairLoopFields(
+        normalizedBytes, part: .missions, schema: pointer.schemaVersion)
+    }
+    let decoder = ScriptValueStorage.decoder(typed: pointer.valueCodec == ScriptValueStorage.codec)
+    decoder.userInfo[LegacyMissionEncounterProvenance.storageKey] = true
+    var normalizedCommander = pristine
+    normalizedCommander.scriptState = try expectedSuccess("normalized typed missions decode") {
+      try decoder.decode(ScriptEngineState.self, from: normalizedBytes)
+    }
+    try #require(normalizedCommander.scriptState.valid, "Normalized mission semantics: \(boundary)")
+    try #require(
+      NativeIdentifiedSalvageSave.validateClaims(normalizedCommander, requireRecordedLoss: true),
+      "Normalized G09 custody joins: \(boundary)")
+    try #require(normalizedCommander.valid, "Normalized Commander semantics: \(boundary)")
+    try #require(world.consistent(with: normalizedCommander), "Normalized world join: \(boundary)")
     let normalizedCold = try expectedSuccess("normalized records cold read") {
       try readIdentifiedRehash(
         normalized, pointer: pointer, file: file, save: f.save,
@@ -280,6 +302,18 @@ private func readIdentifiedRehash(
   _ bytes: Data, pointer: ScriptSavePointer, file: URL, save: URL,
   geometry: [String: ShipDesign], schema: Int? = nil
 ) throws -> Commander {
+  let preserved = try identifiedRehashedBytes(bytes, geometry: geometry)
+  try preserved.write(to: file)
+  var hashes = pointer.hashes
+  hashes["missions.json"] = ScriptPackLibrary.hash(preserved)
+  let changed = ScriptSavePointer(
+    format: pointer.format, schemaVersion: schema ?? pointer.schemaVersion,
+    generation: pointer.generation, hashes: hashes, scope: pointer.scope,
+    valueCodec: pointer.valueCodec)
+  return try ScriptSaveStore.read(JSONEncoder().encode(changed), from: save).0
+}
+
+private func identifiedRehashedBytes(_ bytes: Data, geometry: [String: ShipDesign]) throws -> Data {
   // Mutate the intended records without normalizing separately hash-addressed model bytes.
   var object = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
   object.removeValue(forKey: "geometry")
@@ -289,12 +323,5 @@ private func readIdentifiedRehash(
   preserved.append(contentsOf: Data(",\"geometry\":".utf8))
   preserved.append(try JSONEncoder().encode(geometry))
   preserved.append(125)
-  try preserved.write(to: file)
-  var hashes = pointer.hashes
-  hashes["missions.json"] = ScriptPackLibrary.hash(preserved)
-  let changed = ScriptSavePointer(
-    format: pointer.format, schemaVersion: schema ?? pointer.schemaVersion,
-    generation: pointer.generation, hashes: hashes, scope: pointer.scope,
-    valueCodec: pointer.valueCodec)
-  return try ScriptSaveStore.read(JSONEncoder().encode(changed), from: save).0
+  return preserved
 }
