@@ -1106,11 +1106,7 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   let attackContext = try #require(game.gameplayContext())
   let source = try #require(attackContext.actors.first { $0.identity == actor })
   try #require(source.energy == source.maximumEnergy && source.maximumEnergy == performance.energy)
-  let ray = try game.nearestMissionCollision(
-    from: game.bodies[index].position, direction: orientation.z.unit, range: 1500,
-    radius: 0, excludingBodyIDs: [id], includePlayer: true)
-  let contact = try #require(ray)
-  try #require(contact.hit.target == .player)
+  try stationAutoRequireNativePressureLane(game, attacker: id)
   game.gameplayCombatTrace = .init()
   game.emitGameplayNPCBeam(bodyID: id, target: player, context: attackContext)
   try #require(game.frontShield + game.rearShield < shields)
