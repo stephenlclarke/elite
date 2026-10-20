@@ -341,9 +341,16 @@ extension Game {
         guard
           let body = bodies.first(where: { $0.id == id && $0.physical?.identity == actor.identity }
           ),
-          body.energy > 0,
-          actor.mesh.vertices == gameplayMesh(for: body).vertices,
-          actor.mesh.faces == gameplayMesh(for: body).faces
+          body.energy > 0
+        else { return refuseDebrisStep(frame, reason: "ACTOR CHANGED") }
+        let currentMesh: Mesh
+        if let original = identifiedSalvageCollision(body) {
+          currentMesh = original.mesh
+        } else {
+          currentMesh = gameplayMesh(for: body)
+        }
+        guard actor.mesh.vertices == currentMesh.vertices,
+          actor.mesh.faces == currentMesh.faces
         else { return refuseDebrisStep(frame, reason: "ACTOR CHANGED") }
         end = modelPose(of: body)
         velocity = body.physical?.velocity ?? .init(0, 0, 0)

@@ -34,6 +34,18 @@ struct NativeIdentifiedSalvageRecoveryTests {
     unproved.commander.scriptState.savedIdentifiedSalvageSource = nil
     #expect(unproved.bodies.allSatisfy { unproved.identifiedSalvageCollision($0) == nil })
     #expect(unproved.beginAsteroidContactStep(delta: 0.05) == nil)
+    let rejected = unproved.completeAsteroidContactStep(frame, delta: 0.05)
+    if case .refused(let reason) = rejected {
+      #expect(reason == "ACTOR CHANGED")
+    } else {
+      Issue.record("A captured original must reject a now-unproved endpoint mesh.")
+    }
+    let beforeTime = game.commander.flightSimulation.physicalTime
+    game.tick(delta: 0.05)
+    #expect(!game.paused)
+    #expect(game.commander.flightSimulation.physicalTime > beforeTime)
+    #expect(game.bodies.count == 3)
+    #expect(game.bodies.allSatisfy { game.identifiedSalvageCollision($0) != nil })
   }
 
   @Test func actualOtherMissionSameModelKeepsExistingCollisionPolicy() async throws {
