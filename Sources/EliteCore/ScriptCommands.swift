@@ -16,7 +16,7 @@ extension Game {
       }
     }
     if pack.manifest.coldChain != nil || state.savedWayfarerColdChain != nil
-      || state.definition == WayfarerColdChainDefinition.stateID
+      || WayfarerColdChainDefinition.isNativeDefinition(state.definition)
     {
       guard ["journal.append", "cold-chain.expire"].contains(op) else {
         throw MissionPackError("Use the native protected cold-chain transaction.")

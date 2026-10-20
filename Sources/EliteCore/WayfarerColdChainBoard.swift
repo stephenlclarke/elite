@@ -92,7 +92,8 @@ extension Game {
       rows.append(
         .init(
           board: row.key, offer: nil,
-          title: "Cold-chain sample: "
+          title: (custody.definition.isSeedTransfer
+            ? "Seed-bank consignment: " : "Cold-chain sample: ")
             + (custody.objective == nil ? "verify arrival" : "receive and pay"),
           reason: wayfarerColdChainReview(row).issues.first, coldChain: row))
     }
@@ -122,14 +123,17 @@ extension Game {
         }
         let current = try wayfarerColdChainQuote(sourceID: source)
         guard current.stockUnit == unit else {
-          throw MissionPackError("Original available stock changed. Review the current sample.")
+          throw MissionPackError(
+            "Original available stock changed. Review the current consignment.")
         }
         offer = current
         guard let occupied = commander.checkedCargoTonnes,
-          occupied < commander.standardCargoCapacity,
+          terms.tonnes <= commander.standardCargoCapacity,
+          occupied <= commander.standardCargoCapacity - terms.tonnes,
           commander.scriptState.instances.count < 128
         else {
-          throw MissionPackError("One actual free cargo tonne and mission space are required.")
+          throw MissionPackError(
+            "\(terms.tonnes) actual free cargo tonnes and mission space are required.")
         }
       case .objective(let id), .receive(let id):
         guard let state = commander.scriptState.instances[id], state.digest == row.digest,
@@ -175,7 +179,10 @@ extension Game {
                   number: terms.source.galaxy)[terms.source.system].name + " main orbital station.")
           }
         }
-        throw MissionPackError("No original medical sample remains available at this source.")
+        throw MissionPackError(
+          terms.isSeedTransfer
+            ? "No original seed consignment remains available at this source."
+            : "No original medical sample remains available at this source.")
       }
     } catch { issues.append(String(error.localizedDescription.prefix(512))) }
     return .init(
@@ -201,29 +208,54 @@ extension Game {
     switch review.row.action {
     case .pickup(let source, _):
       guard let offer = review.offer else { throw SaveError.invalidCommander }
-      _ = try pickUpWayfarerColdChain(sourceID: source, quotedOfferID: offer.id)
-      notify("ORIGINAL SEALED SAMPLE ABOARD - FLIGHT INTEGRITY CLOCK STARTED")
+      let id = try pickUpWayfarerColdChain(sourceID: source, quotedOfferID: offer.id)
+      let seed =
+        commander.scriptState.instances[id]?.savedWayfarerColdChain?.definition.isSeedTransfer
+        == true
+      notify(
+        seed
+          ? "SOURCE CUSTODIAN RELEASED ORIGINAL SEED LOT - FLIGHT INTEGRITY CLOCK STARTED"
+          : "ORIGINAL SEALED SAMPLE ABOARD - FLIGHT INTEGRITY CLOCK STARTED")
     case .objective(let id):
       try confirmWayfarerColdChainObjective(id)
-      notify("ORIGINAL SAMPLE ARRIVAL VERIFIED - CONFIRM RECEIVING HANDOFF")
+      let seed =
+        commander.scriptState.instances[id]?.savedWayfarerColdChain?.definition.isSeedTransfer
+        == true
+      notify(
+        seed
+          ? "ORIGINAL SEED LOT ARRIVAL VERIFIED - CONFIRM RECEIVING CUSTODIAN"
+          : "ORIGINAL SAMPLE ARRIVAL VERIFIED - CONFIRM RECEIVING HANDOFF")
     case .receive(let id):
+      guard let custody = commander.scriptState.instances[id]?.savedWayfarerColdChain else {
+        throw SaveError.invalidCommander
+      }
+      let family = custody.definition.instanceDefinition
       let first =
         commander.scriptState.savedClueJournal?.awards[
-          WayfarerColdChainDefinition.stateID] == nil
+          family] == nil
       try receiveWayfarerColdChain(id)
       if first,
         commander.scriptState.savedClueJournal?.awards[
-          WayfarerColdChainDefinition.stateID] != nil
+          family] != nil
       {
         notify(
           "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family."
         )
       } else {
-        notify("ORIGINAL SAMPLE RECEIVED - QUOTED PAYMENT RECORDED")
+        notify(
+          custody.definition.isSeedTransfer
+            ? "RECEIVING CUSTODIAN ACCEPTED ORIGINAL SEED LOT - QUOTED PAYMENT RECORDED"
+            : "ORIGINAL SAMPLE RECEIVED - QUOTED PAYMENT RECORDED")
       }
     case .retryExpiry(let id):
+      let seed =
+        commander.scriptState.instances[id]?.savedWayfarerColdChain?.definition.isSeedTransfer
+        == true
       try retryWayfarerColdChainExpiry(id)
-      notify("ORIGINAL SAMPLE SPOILAGE RECORDED - NO PAYMENT OR REPLACEMENT STOCK")
+      notify(
+        seed
+          ? "ORIGINAL SEED LOT SPOILAGE RECORDED - NO PAYMENT OR REPLACEMENT STOCK"
+          : "ORIGINAL SAMPLE SPOILAGE RECORDED - NO PAYMENT OR REPLACEMENT STOCK")
     case .unavailable: throw MissionPackError("This service is unavailable.")
     }
   }
@@ -233,8 +265,8 @@ extension Game {
   // Confirm still enters the unchanged native command and its full claim validation.
   private func wayfarerColdChainDisplayRemaining(_ id: UUID) throws -> Double {
     guard let state = commander.scriptState.instances[id],
-      state.definition == WayfarerColdChainDefinition.stateID,
       let custody = state.savedWayfarerColdChain,
+      state.definition == custody.definition.instanceDefinition,
       custody.owner == commander.equipmentOwnerID
     else { throw SaveError.invalidCommander }
     if state.outcome != .active { return custody.integrity.remaining }
@@ -254,13 +286,15 @@ extension Game {
     let systems = Universe.systemsIncludingPlugh(number: terms.source.galaxy)
     var lines = [
       terms.hazardTier == 0
-        ? "Cold-chain clinic service - ordinary variant; no accreditation required."
+        ? (terms.isSeedTransfer
+          ? "Seed-bank transfer - ordinary variant; no accreditation required."
+          : "Cold-chain clinic service - ordinary variant; no accreditation required.")
         : "Cold-chain clinic service - verified accreditation required for this variant.",
       "Source: " + systems[terms.source.system].name + " main orbital station.",
       "Objective: " + systems[terms.objective.system].name + " main orbital station.",
       "Receiver: " + systems[terms.receiver.system].name + " main orbital station.",
       "Route: " + terms.route.map { systems[$0].name }.joined(separator: " -> "),
-      "Protected sample: 1t; passenger berths: 0. Original source stock only.",
+      "Protected \(terms.isSeedTransfer ? "seed consignment" : "sample"): \(terms.tonnes)t; passenger berths: 0. Original source stock only.",
       String(
         format: "Payment at reception: %.1f CR; declared hazard tier %d.",
         Double(terms.rewardNative) / 10, terms.hazardTier),
@@ -269,17 +303,38 @@ extension Game {
         terms.flightAllowance, terms.flightAllowance / 60),
       "Pause stops flight time. Save/load preserves the original deadline.",
       "Confirm pickup, verify actual objective arrival, then Confirm the named receiver.",
-      "Back/Esc changes nothing. Failed/lost samples pay nothing and never replenish stock.",
+      terms.isSeedTransfer
+        ? "Back/Esc changes nothing. Failed/lost seed lots pay nothing and never replenish stock."
+        : "Back/Esc changes nothing. Failed/lost samples pay nothing and never replenish stock.",
     ]
+    if terms.isSeedTransfer {
+      if let source = terms.sourceCustodian, let receiver = terms.receiverCustodian {
+        lines += [
+          "Source seed-bank custodian: " + source.name + " (" + source.id + ").",
+          "Receiving seed-bank custodian: " + receiver.name + " (" + receiver.id + ").",
+          "Confirm source release, verify arrival, then Confirm this distinct receiving custodian's acceptance.",
+          "Custody is an actual institutional handoff; no passenger berth or living-person claim.",
+          "The 2700-second allowance is explicitly authored, not a measured journey bound.",
+        ]
+      }
+    }
+    if terms.isSeedTransfer, let id = row.action.instance,
+      commander.scriptState.instances[id]?.savedWayfarerColdChain?.seedTransfer != nil
+    {
+      lines.append("Native source-custodian release recorded for this original seed lot.")
+    }
     if let id = row.action.instance, let remaining = try? wayfarerColdChainDisplayRemaining(id) {
       lines.append(
-        String(format: "Original sample integrity remaining: %.1f flight seconds.", remaining))
+        String(
+          format: terms.isSeedTransfer
+            ? "Original seed-lot integrity remaining: %.1f flight seconds."
+            : "Original sample integrity remaining: %.1f flight seconds.", remaining))
     }
     if case .pickup(let source, _) = row.action,
       let stock = commander.scriptState.savedWayfarerColdChainStock?.sources[source]
     {
       lines.append(
-        "Available original samples: \(stock.units.values.filter { $0.status == .available }.count). No replenishment."
+        "Available original \(terms.isSeedTransfer ? "seed lots" : "samples"): \(stock.units.values.filter { $0.status == .available }.count). No replenishment."
       )
     }
     if case .retryExpiry = row.action {

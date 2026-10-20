@@ -14,11 +14,20 @@ struct WayfarerColdChainSite: Codable, Sendable, Equatable {
   }
 }
 
+enum WayfarerColdChainProfile: String, Codable, Sendable { case seedTransfer = "seed-transfer" }
+struct WayfarerSeedCustodianDefinition: Codable, Sendable, Equatable {
+  let id: String
+  let name: String
+  var valid: Bool { PackValidation.localID(id) && (1...160).contains(name.count) }
+}
+
 /// All finite stock and quotation terms come from installed immutable content.
 struct WayfarerColdChainDefinition: Codable, Sendable, Equatable {
   static let stateID = "l337.wayfarer-service/cold-chain"
   static let payloadKey = "wayfarer-sealed-medical-sample"
   static let timerID = "wayfarer-sample-integrity"
+  static let seedStateID = "l337.wayfarer-service/seed-transfer"
+  static func isNativeDefinition(_ id: String) -> Bool { id == stateID || id == seedStateID }
   let source: WayfarerColdChainSite
   let objective: WayfarerColdChainSite
   let receiver: WayfarerColdChainSite
@@ -30,18 +39,38 @@ struct WayfarerColdChainDefinition: Codable, Sendable, Equatable {
   let hazardTier: Int
   let flightAllowance: Double
   let rewardNative: Int
+  var profile: WayfarerColdChainProfile? = nil
+  var sourceCustodian: WayfarerSeedCustodianDefinition? = nil
+  var receiverCustodian: WayfarerSeedCustodianDefinition? = nil
+  var isSeedTransfer: Bool { profile == .seedTransfer }
+  var instanceDefinition: String { isSeedTransfer ? Self.seedStateID : Self.stateID }
+  var payloadID: String { isSeedTransfer ? "wayfarer-sealed-seed-lot" : Self.payloadKey }
+  var integrityTimerID: String { isSeedTransfer ? "wayfarer-seed-integrity" : Self.timerID }
+  func instanceIdentity(unit: UUID) -> UUID {
+    ScriptIdentity.uuid(
+      (isSeedTransfer ? "wayfarer-seed-service-v1:" : "wayfarer-service-v1:") + unit.uuidString)
+  }
   var valid: Bool {
     guard source.valid, objective.valid, receiver.valid,
       source.galaxy == objective.galaxy, source.galaxy == receiver.galaxy,
       PackValidation.localID(batch), (1...128).contains(stockUnits),
-      tonnes == 1, maximumActive == 3, (2...256).contains(route.count),
+      tonnes == (isSeedTransfer ? 3 : 1), maximumActive == 3, (2...256).contains(route.count),
       route.first == source.system, route.last == receiver.system,
       route.contains(objective.system), route.allSatisfy({ (0..<256).contains($0) }),
       flightAllowance.isFinite, flightAllowance > 0, flightAllowance <= 1e9,
       hazardTier >= 0
     else { return false }
-    let (hazard, overflow) = hazardTier.multipliedReportingOverflow(by: 900)
-    let base = 3200 + 850 * (route.count - 1)
+    if isSeedTransfer {
+      guard source.galaxy == 0, source.system == 241, objective == receiver,
+        receiver.system == 85, route == [241, 85], stockUnits == 6, hazardTier == 0,
+        let sourceCustodian, let receiverCustodian, sourceCustodian.valid, receiverCustodian.valid,
+        sourceCustodian.id != receiverCustodian.id, sourceCustodian.name != receiverCustodian.name
+      else { return false }
+    } else if sourceCustodian != nil || receiverCustodian != nil {
+      return false
+    }
+    let (hazard, overflow) = hazardTier.multipliedReportingOverflow(by: isSeedTransfer ? 1100 : 900)
+    let base = isSeedTransfer ? 5100 + 950 * (route.count - 1) : 3200 + 850 * (route.count - 1)
     return !overflow && hazard <= 4_294_967_295 - base && rewardNative == base + hazard
   }
 }
@@ -65,7 +94,8 @@ struct WayfarerColdChainStockSource: Codable, Sendable, Equatable {
 
   static func identity(owner: UUID, terms: WayfarerColdChainDefinition) -> UUID {
     ScriptIdentity.uuid(
-      "wayfarer-stock-v1:" + owner.uuidString + ":" + terms.source.resourceKey + ":" + terms.batch)
+      (terms.isSeedTransfer ? "wayfarer-seed-stock-v1:" : "wayfarer-stock-v1:") + owner.uuidString
+        + ":" + terms.source.resourceKey + ":" + terms.batch)
   }
   static func unitIdentity(source: UUID, index: Int) -> UUID {
     ScriptIdentity.uuid("wayfarer-stock-unit-v1:" + source.uuidString + ":" + String(index))
@@ -83,7 +113,7 @@ struct WayfarerColdChainStockSource: Codable, Sendable, Equatable {
         (unit.status == .available) == (unit.instance == nil)
       else { return false }
       if let instance = unit.instance {
-        guard instance == ScriptIdentity.uuid("wayfarer-service-v1:" + id.uuidString) else {
+        guard instance == definition.instanceIdentity(unit: id) else {
           return false
         }
       }
@@ -123,6 +153,39 @@ struct WayfarerColdChainPhysicalLoss: Codable, Sendable, Equatable {
       && visit > 0 && visit < UInt64(Int64.max)
   }
 }
+enum WayfarerSeedCustodianRole: String, Codable, Sendable { case release, acceptance }
+struct WayfarerSeedCustodianContact: Codable, Sendable, Equatable {
+  let custodian: WayfarerSeedCustodianDefinition
+  let role: WayfarerSeedCustodianRole
+  let unit: UUID
+  let instance: UUID
+  let epoch: UUID
+  let operation: UUID
+  let digest: String
+  let contact: WayfarerColdChainContact
+  static func identity(
+    custodian: WayfarerSeedCustodianDefinition, role: WayfarerSeedCustodianRole,
+    unit: UUID, instance: UUID, epoch: UUID, digest: String, contact: WayfarerColdChainContact
+  ) -> UUID {
+    ScriptIdentity.uuid(
+      "wayfarer-seed-custodian-v1:\(custodian.id):\(role.rawValue):\(unit):\(instance):\(epoch):\(digest):\(contact.sequence):\(contact.dock.sequence)"
+    )
+  }
+}
+/// Existing native release and receiving operations mint these contacts, never Lua flags.
+final class WayfarerSeedTransferCustodianReceipts: Codable, Sendable, Equatable {
+  let release: WayfarerSeedCustodianContact
+  let acceptance: WayfarerSeedCustodianContact?
+  init(release: WayfarerSeedCustodianContact, acceptance: WayfarerSeedCustodianContact? = nil) {
+    self.release = release
+    self.acceptance = acceptance
+  }
+  static func == (
+    a: WayfarerSeedTransferCustodianReceipts, b: WayfarerSeedTransferCustodianReceipts
+  ) -> Bool {
+    a.release == b.release && a.acceptance == b.acceptance
+  }
+}
 /// New native leaf only: immutable sharing keeps ordinary ScriptInstance values compact.
 /// A transition replaces the leaf; it cannot mutate the pre-publication Game snapshot.
 final class WayfarerColdChainCustody: Codable, Sendable, Equatable {
@@ -135,11 +198,13 @@ final class WayfarerColdChainCustody: Codable, Sendable, Equatable {
   let integrity: WayfarerColdChain
   let objective: WayfarerColdChainContact?
   let loss: WayfarerColdChainPhysicalLoss?
+  let seedTransfer: WayfarerSeedTransferCustodianReceipts?
 
   init(
     owner: UUID, source: UUID, unit: UUID, definition: WayfarerColdChainDefinition,
     issue: WayfarerColdChainContact, timer: ScriptTimer, integrity: WayfarerColdChain,
-    objective: WayfarerColdChainContact? = nil, loss: WayfarerColdChainPhysicalLoss? = nil
+    objective: WayfarerColdChainContact? = nil, loss: WayfarerColdChainPhysicalLoss? = nil,
+    seedTransfer: WayfarerSeedTransferCustodianReceipts? = nil
   ) {
     self.owner = owner
     self.source = source
@@ -150,22 +215,26 @@ final class WayfarerColdChainCustody: Codable, Sendable, Equatable {
     self.integrity = integrity
     self.objective = objective
     self.loss = loss
+    self.seedTransfer = seedTransfer
   }
 
   func replacing(
     integrity: WayfarerColdChain, objective: WayfarerColdChainContact? = nil,
-    loss: WayfarerColdChainPhysicalLoss? = nil
+    loss: WayfarerColdChainPhysicalLoss? = nil,
+    seedTransfer: WayfarerSeedTransferCustodianReceipts? = nil
   ) -> WayfarerColdChainCustody {
     .init(
       owner: owner, source: source, unit: unit, definition: definition, issue: issue, timer: timer,
-      integrity: integrity, objective: objective ?? self.objective, loss: loss ?? self.loss)
+      integrity: integrity, objective: objective ?? self.objective, loss: loss ?? self.loss,
+      seedTransfer: seedTransfer ?? self.seedTransfer)
   }
 
   static func == (lhs: WayfarerColdChainCustody, rhs: WayfarerColdChainCustody) -> Bool {
     lhs === rhs
       || (lhs.owner == rhs.owner && lhs.source == rhs.source && lhs.unit == rhs.unit
         && lhs.definition == rhs.definition && lhs.issue == rhs.issue && lhs.timer == rhs.timer
-        && lhs.integrity == rhs.integrity && lhs.objective == rhs.objective && lhs.loss == rhs.loss)
+        && lhs.integrity == rhs.integrity && lhs.objective == rhs.objective && lhs.loss == rhs.loss
+        && lhs.seedTransfer == rhs.seedTransfer)
   }
 }
 
@@ -187,8 +256,8 @@ public struct WayfarerColdChainOffer: Sendable {
 extension Game {
   private func wayfarerPack(_ digest: String) throws -> ScriptPack {
     guard let pack = scriptPacks.first(where: { $0.digest == digest }),
-      pack.manifest.stateID == WayfarerColdChainDefinition.stateID,
-      pack.manifest.coldChain?.valid == true, scriptUnavailable(pack) == nil
+      let terms = pack.manifest.coldChain, terms.valid,
+      pack.manifest.stateID == terms.instanceDefinition, scriptUnavailable(pack) == nil
     else { throw MissionPackError("Install the exact native cold-chain declaration.") }
     return pack
   }
@@ -274,7 +343,7 @@ extension Game {
       "wayfarer-offer-v1:" + unit.id.uuidString + ":" + String(dock.sequence)
         + ":" + ecmControl.epoch.uuidString + ":" + source.digest)
     return .init(
-      id: quote, sourceID: sourceID, stockUnit: unit.id, tonnes: 1,
+      id: quote, sourceID: sourceID, stockUnit: unit.id, tonnes: terms.tonnes,
       rewardNative: terms.rewardNative, flightAllowance: terms.flightAllowance,
       galaxy: terms.source.galaxy, sourceSystem: terms.source.system,
       objectiveSystem: terms.objective.system, receiverSystem: terms.receiver.system,
@@ -287,6 +356,33 @@ extension Game {
     state: ScriptInstance, dock: NativeMainStationDockReceipt, sequence: UInt64
   ) -> WayfarerColdChainContact {
     .init(sequence: sequence, dock: dock, context: scriptEventContext(state))
+  }
+
+  private func seedCustodianContact(
+    terms: WayfarerColdChainDefinition, state: ScriptInstance,
+    unit: UUID, role: WayfarerSeedCustodianRole, contact: WayfarerColdChainContact
+  ) throws -> WayfarerSeedCustodianContact {
+    guard terms.isSeedTransfer,
+      let custodian = role == .release ? terms.sourceCustodian : terms.receiverCustodian,
+      contact.valid,
+      (role == .release ? terms.source : terms.receiver).matches(contact.dock.station),
+      state.definition == terms.instanceDefinition
+    else { throw SaveError.invalidCommander }
+    return .init(
+      custodian: custodian, role: role, unit: unit, instance: state.id, epoch: ecmControl.epoch,
+      operation: WayfarerSeedCustodianContact.identity(
+        custodian: custodian, role: role, unit: unit,
+        instance: state.id, epoch: ecmControl.epoch, digest: state.digest, contact: contact),
+      digest: state.digest, contact: contact)
+  }
+  private func seedReleaseReceipts(
+    terms: WayfarerColdChainDefinition, state: ScriptInstance,
+    unit: UUID, contact: WayfarerColdChainContact
+  ) throws -> WayfarerSeedTransferCustodianReceipts? {
+    guard terms.isSeedTransfer else { return nil }
+    return try .init(
+      release: seedCustodianContact(
+        terms: terms, state: state, unit: unit, role: .release, contact: contact))
   }
 
   private mutating func nextWayfarerSequence() throws -> UInt64 {
@@ -304,7 +400,7 @@ extension Game {
       var source = ledger.sources[sourceID], var unit = source.units[quote.stockUnit.uuidString],
       unit.status == .available, unit.instance == nil,
       let occupied = commander.checkedCargoTonnes,
-      occupied < commander.standardCargoCapacity,
+      occupied <= commander.standardCargoCapacity - source.definition.tonnes,
       commander.scriptState.instances.count < 128,
       commander.scriptState.instances.values.filter({
         $0.definition.hasPrefix("l337.wayfarer-service/") && $0.outcome == .active
@@ -314,14 +410,14 @@ extension Game {
     let dock = try wayfarerDock(terms.source)
     let now = commander.scriptState.clock(.flight)
     guard now <= 1e12 - terms.flightAllowance else { throw SaveError.invalidCommander }
-    let id = ScriptIdentity.uuid("wayfarer-service-v1:" + unit.id.uuidString)
+    let id = terms.instanceIdentity(unit: unit.id)
     guard commander.scriptState.instances[id] == nil else { throw SaveError.invalidCommander }
     let sequence = try nextWayfarerSequence()
     var state = ScriptInstance(
-      id: id, definition: WayfarerColdChainDefinition.stateID,
+      id: id, definition: terms.instanceDefinition,
       version: source.version, digest: source.digest)
     let timer = ScriptTimer(
-      id: WayfarerColdChainDefinition.timerID, domain: .flight,
+      id: terms.integrityTimerID, domain: .flight,
       due: now + terms.flightAllowance, interval: 0, policy: .once)
     let binding = WayfarerColdChainBinding(
       owner: source.owner, instance: id, consignment: unit.id,
@@ -333,11 +429,16 @@ extension Game {
       allowance: terms.flightAllowance, issueSequence: sequence)
     state.savedWayfarerColdChain = .init(
       owner: source.owner, source: source.identity, unit: unit.id, definition: terms,
-      issue: contact, timer: timer, integrity: integrity)
-    state.payloads[WayfarerColdChainDefinition.payloadKey] = 1
+      issue: contact, timer: timer, integrity: integrity,
+      seedTransfer: try seedReleaseReceipts(
+        terms: terms, state: state, unit: unit.id, contact: contact))
+    state.payloads[terms.payloadID] = terms.tonnes
     state.timers[timer.id] = timer
     state.acknowledge(sequence)
-    state.journal.append("Original sealed medical sample aboard: one protected tonne.")
+    state.journal.append(
+      terms.isSeedTransfer
+        ? "Original sealed seed lot released by \(terms.sourceCustodian!.name): three protected tonnes."
+        : "Original sealed medical sample aboard: one protected tonne.")
     unit.status = .held
     unit.instance = id
     source.units[unit.id.uuidString] = unit
@@ -351,8 +452,10 @@ extension Game {
   fileprivate func requireWayfarerColdChainInstance(_ id: UUID, active: Bool = false) throws {
     guard commander.scriptState.savedWayfarerColdChainStock != nil,
       let state = commander.scriptState.instances[id],
-      state.definition == WayfarerColdChainDefinition.stateID,
-      state.savedWayfarerColdChain != nil, !active || state.outcome == .active
+      WayfarerColdChainDefinition.isNativeDefinition(state.definition),
+      let custody = state.savedWayfarerColdChain,
+      state.definition == custody.definition.instanceDefinition,
+      !active || state.outcome == .active
     else { throw MissionPackError("Original native cold-chain instance required.") }
   }
 
@@ -380,12 +483,12 @@ extension Game {
   private func wayfarerHeldState(_ id: UUID) throws -> ScriptInstance {
     guard WayfarerColdChainSave.validateClaims(commander),
       let state = commander.scriptState.instances[id],
-      state.definition == WayfarerColdChainDefinition.stateID, state.outcome == .active,
+      WayfarerColdChainDefinition.isNativeDefinition(state.definition), state.outcome == .active,
       state.suspension == nil, state.revision < UInt64(Int64.max) - 1,
       let custody = state.savedWayfarerColdChain,
       custody.owner == commander.equipmentOwnerID, custody.integrity.terminal == nil,
       custody.loss == nil,
-      state.timers[WayfarerColdChainDefinition.timerID] == custody.timer,
+      state.timers[custody.definition.integrityTimerID] == custody.timer,
       commander.scriptState.clock(.flight) < custody.timer.due
     else { throw MissionPackError("Original held, viable native sample custody is required.") }
     let pack = try wayfarerPack(state.digest)
@@ -475,10 +578,20 @@ extension Game {
     let integrity = try custody.integrity.receiving(
       .init(binding: custody.integrity.binding, timer: custody.timer, context: contact.context),
       receipt: receipt)
-    custody = custody.replacing(integrity: integrity)
+    let seedReceipts: WayfarerSeedTransferCustodianReceipts?
+    if custody.definition.isSeedTransfer {
+      guard let prior = custody.seedTransfer else { throw SaveError.invalidCommander }
+      let acceptance = try seedCustodianContact(
+        terms: custody.definition, state: state,
+        unit: custody.unit, role: .acceptance, contact: contact)
+      seedReceipts = .init(release: prior.release, acceptance: acceptance)
+    } else {
+      seedReceipts = nil
+    }
+    custody = custody.replacing(integrity: integrity, seedTransfer: seedReceipts)
     state.savedWayfarerColdChain = custody
-    state.payloads.removeValue(forKey: WayfarerColdChainDefinition.payloadKey)
-    state.timers.removeValue(forKey: WayfarerColdChainDefinition.timerID)
+    state.payloads.removeValue(forKey: custody.definition.payloadID)
+    state.timers.removeValue(forKey: custody.definition.integrityTimerID)
     state.outcome = .complete
     state.milestones.insert(0)
     state.dialogue = nil
@@ -502,7 +615,8 @@ extension Game {
   func applyWayfarerColdChainExpiry(
     event: ScriptEvent, state: inout ScriptInstance, candidate: inout Commander
   ) throws {
-    guard state.definition == WayfarerColdChainDefinition.stateID, state.outcome == .active,
+    guard WayfarerColdChainDefinition.isNativeDefinition(state.definition),
+      state.outcome == .active,
       var custody = state.savedWayfarerColdChain, custody.loss == nil,
       custody.owner == candidate.equipmentOwnerID,
       event.instance == state.id, event.sequence > custody.issue.sequence,
@@ -521,7 +635,7 @@ extension Game {
       binding: custody.integrity.binding, event: event)
     custody = custody.replacing(integrity: integrity)
     state.savedWayfarerColdChain = custody
-    state.payloads.removeValue(forKey: WayfarerColdChainDefinition.payloadKey)
+    state.payloads.removeValue(forKey: custody.definition.payloadID)
     state.outcome = .failed
     state.dialogue = nil
     // The existing director records the native event revision, acknowledgement and completion.
@@ -585,7 +699,7 @@ extension Game {
         visit: commander.flightSimulation.visit)
       custody = custody.replacing(integrity: integrity, loss: loss)
       state.savedWayfarerColdChain = custody
-      state.payloads.removeValue(forKey: WayfarerColdChainDefinition.payloadKey)
+      state.payloads.removeValue(forKey: custody.definition.payloadID)
       state.timers.removeValue(forKey: custody.timer.id)
       state.outcome = .failed
       state.dialogue = nil

@@ -114,6 +114,11 @@ struct ScriptClueTrustCatalog: Sendable {
   static let production = ScriptClueTrustCatalog(approvedPins: [
     ScriptNavigationTradeContent.cluePin,
     .init(
+      sourceID: "l337.wayfarer-service/seed-transfer",
+      definition: "l337.wayfarer-service/seed-transfer",
+      version: "1.0.0", digest: "feadc6cc8bed2b59a608dc0667afd11a5d7c1e790e2466e3b8c44974f9f03d54",
+      terminalEvents: ["dialogue.confirmed"]),
+    .init(
       sourceID: "l337.wayfarer-service/repair-loop",
       definition: "l337.wayfarer-service/repair-loop",
       version: "1.0.0", digest: "c0b674ac2eca0221890412446f423c5f7ada4520b38669dbfbef5289049c199f",

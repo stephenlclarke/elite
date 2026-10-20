@@ -27,6 +27,10 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-repair-loop")
   }
 
+  static var bundledSeedTransferDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-seed-transfer")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -63,6 +67,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled repair-loop pack: " + error.localizedDescription)
+    }
+    do {
+      let seedTransfer = try read(bundledSeedTransferDirectory)
+      if !library.packs.contains(where: { $0.digest == seedTransfer.digest }) {
+        library.packs.append(seedTransfer)
+      }
+    } catch {
+      library.errors.append("Bundled seed-transfer pack: " + error.localizedDescription)
     }
     return library
   }
