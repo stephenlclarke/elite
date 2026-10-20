@@ -515,6 +515,11 @@ public struct Game: Sendable {
     _read { yield commanderStorage[0] }
     _modify { yield &commanderStorage[0] }
   }
+  var commanderGalaxy: Int {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      storage.baseAddress!.pointee.galaxy
+    }
+  }
   /// Synchronous read-only access; the storage borrow and pointer never escape this call.
   func withReadOnlyCommander<Result>(
     _ read: (borrowing Commander) throws -> Result
