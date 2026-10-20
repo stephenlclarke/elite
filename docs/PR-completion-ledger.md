@@ -634,3 +634,7 @@ T04centralonefilef9fb62ba freeze sentRoot/G3; no execution. Core918ordinaryPASS1
 ## Current qualification delta
 
 922launch1/1+923admission6/9PASS;924motion8/11PASS plus oneassertionfailed1/1,0UNKNOWN/no crash. Retained27methods33casesof31/45; remainingmotion1/1+equipment3/11. Ownerexactsave-reloadinspection/no fixture-assertionwaiver/no core-broadrepeat; fullreview/integration waits ownerPASS. Briefcurrentregister/receiptlinks/scopedMarkdown-whitespace only.
+
+## Current bounded M01/T04 retries
+
+M01test-onlyced8salvageprojection925build→926singlefailedcase,27/33retained/equipment3/11pending. T04initialbuild+nativeCLI PASS/9methods10casesretained;2newtests failedbeforeacceptance fromartificial3LYcap, exact4b53selector-onlyactualnativejump-fuel-catalogue correction/no endpointinjection; matchingbuild+ONLY2retry/no SINGLE12PASSclaim. Briefregister/receipts/scopedMarkdown-whitespace only.

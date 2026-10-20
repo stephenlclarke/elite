@@ -4,7 +4,7 @@ Updated 20 October 2026. This is the current delivery guide, not a content-compl
 
 ## Player-facing milestone roadmap
 
-**Current assignment register:** **M01 FIRST:**225e9579test-onlyprojection/922launchPASS1/1;923admission-historyPASS6methods9cases;924motioncompleted8methods11casesPASS+1method1caseFAILED(oneissue)/0UNKNOWN/no crash. Proof-based retained27methods33casesof31/45; pendingmotionfailure1/1+equipment3/11. MC1inspects exactsave-reloadboundary, no fixture/assertionrelaxationapprovedyet/no broad-core repeat. OwnerfullPASS→ONEcoherentreview→G1integration pending. **MBA:** T04G3eight+G1loaderf9fbone/base2f/packetdelivered, no qualifiedintegration. W03/G13sourceintegrated/889artifactexcludesboth/890toolaccessfailure-no repoll.
+**Current assignment register:** **M01 FIRST:**ced8d538test-onlysalvageprojection matching925build→ONLYfailed926case pending; retained27methods33casesof31/45/equipment3/11pending. No broad/core rerun. **MBA T04:** initialed162build+actualCLI PASS/9methods10casesPASS;2newdeliverycases failedBEFOREacceptance duefixture-only3LYselector. Owner4b53test-onlyselectorfix usesactualnativejump/fuel/catalogue/noendpointinjection; matchingbuild→ONLY2failedcases pending, retain9/10/no SINGLE12PASSclaim. G1loaderf9fbunchanged/no mechanics-content-schema change. W03/G13sourceintegrated/889artifactexcludesboth/890toolaccessfailure-no repoll.
 
 **Next executable milestone: M01.** Dependable flight/mission/save completion remains in development; no unqualified MC1 chain is integrated. Already qualified renderer/docking/cap/G03/stable-offer/W01/W02 source does not close full milestones/artwork/playable release. M01 remains first; boundedW03/G13 source is integrated and Root assigned T04default-existingnavigation/trade delivery as soleparallelMBA item. Owner focused PASS then ONE independent bugs/performance/style review of the coherent diff precedes G1 integration. Reuse unaffected evidence; broad integration/system/performance gates remain batched, final mainCI/coverage/sanitizer/leak/PR/mainSonar/release required.
 
@@ -16,7 +16,7 @@ All milestone statuses below are functional statuses. Prepared source/data, deli
 
 ### M01 - Dependable everyday flight, trade, missions and saving
 
-**Status:** in development;retained27methods33casesof31/45 after922launch/923admission/924eightmotionpasses. One924save-reloadassertion failure remains, equipment3methods11casespending; no crash/unknown incompleted924batch. MC1exactboundaryinspection/no fixture-assertionwaiver/newbroadtest; no overallPASS/review/integrationyet. G1solecoherentreview-integration afterownerPASS, M01FIRST/T04parallel/889artifactnotcurrent.
+**Status:** in development;retained27methods33casesof31/45, ced8test-onlysalvageprojection925build/926singlecasepending andequipment3/11pending. MC1exactboundarycorrection/no productionfixture-orassertionwaiver/no core-broadrepeat. OwnerfullPASS→ONEcoherentreview→G1integration stillrequired. M01FIRST/T04parallel;889artifactnotcurrent/GUI890accessfailureunchanged.
 
 **Player journey:** Continue the saved commander, launch, fly/jump, accept a reachable job, dock, receive the outcome and reopen the same saved game.
 
@@ -2295,3 +2295,12 @@ No Game/Director/equipment-marketmutation/ScriptMissionState/save-preflight-sche
 - `/tmp/elite-station-qualification-922/agent-game-test-verification-922.json` SHA256 `9546e526a5cb851f1ff0cbbc3675f80bf0a3989556a909bb29a9c52ee0250f60`.
 - `/tmp/elite-station-qualification-923/agent-game-test-verification-923.json` SHA256 `ed9db57799a65e3088245f51030771860311bc2499f7bd014800d1363e802c82`.
 - `/tmp/elite-station-qualification-924/agent-game-test-verification-924.json` SHA256 `4e960119c078c99ab192dfdbb3c5d20a34167263a1cf18103b482dc01557c567`.
+
+## Current bounded retries
+
+- M01Rootreports test-onlyced8d538salvagediskprojection correction; matching925build→ONLYfailed926case, receipts pending atupdate. Retain27/33; equipment3/11pending, no broad/core rerun or productionchange.
+- T04initialed162d72e2feb02a6b5f22d4119186324c583088 build/actualCLI PASS, retained9methods10cases;2newdeliverytests failbeforeacceptance fromfixture-only<=3LYselector. Exacttest-only4b53ef2946fbe18be2155e5c3d8b0249f0c79ab5removes artificialcap whilekeeping actualnativejump/fuel/stock-cash-tonne-legality; nearestactualRenas3.364975LY is validunderrealSH025rules. No endpointinjection/provider-content-mechanics-schema change. Matchingbuild→ONLY2failedcases, preserve9/10—not a SINGLE12casePASSclaim. `/tmp/elite-g3-navigation-delivery-iiqno9qz/SELECTOR-FIX.json` SHA256 `66dd3b849b1815469a3b307e242608dd15bc40e4c3dea3d091d7b905a3aa9ef9`.
+
+- T04 `/tmp/elite-g3-navigation-delivery-iiqno9qz/validation/build.json` SHA256 `634d142301e5003b7d2fe490fceead2ab1f77108db631565545a209b0c9602c7`.
+- T04 `/tmp/elite-g3-navigation-delivery-iiqno9qz/validation/pack-validation.json` SHA256 `a48f2847358c81c1011f5e31b8cd1694e4d0194e918a1fbc0e6f53c8ad12ed75`.
+- T04 `/tmp/elite-g3-navigation-delivery-iiqno9qz/validation/test.json` SHA256 `74f1659f44bf495c8b17366c1d389208bfea59899d0a52414a46cb97429cf7ef`.
