@@ -32,6 +32,7 @@ final class GameView: NSView {
     guard displayedScriptPageSize == bounds.size else { return nil }
     return displayedScriptPage
   }
+  let shipPanelRenderer = ShipPanelRenderer()
   var frameProfile: PlanetFrameProfiler?
   var profileSubmittedFrame: UInt64?
   let audio = AudioPresenter()
@@ -94,13 +95,16 @@ final class GameView: NSView {
     let presentationStart = frameProfile == nil ? nil : ContinuousClock.now
     let frame = Display.presentation(snapshot, width: bounds.width, height: bounds.height)
     let drawStart = frameProfile == nil ? nil : ContinuousClock.now
-    drawFrame(frame, context: context, rect: bounds)
+    let startup = snapshot.screen == .title || snapshot.screen == .demo
+    let panels = drawFrame(
+      frame, context: context, rect: bounds, panelRenderer: startup ? shipPanelRenderer : nil)
     if let presentationStart, let drawStart {
       let now = ContinuousClock.now
       frameProfile?.drew(
         in: self, id: profileSubmittedFrame, frame: frame,
         presentation: PlanetFrameProfiler.elapsed(presentationStart, drawStart),
-        drawing: PlanetFrameProfiler.elapsed(drawStart, now), at: now)
+        drawing: PlanetFrameProfiler.elapsed(drawStart, now), at: now,
+        panelBackend: startup ? panels.backendDescription : nil)
     }
     paintedInventoryInteraction = frame.inventoryInteraction
     paintedInventoryState = frame.inventoryInteraction.map { _ in
