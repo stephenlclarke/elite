@@ -458,3 +458,9 @@ Current M01 register/status now actual859 nine methods/twelve cases unfinished a
 ## W02 UI untested freeze received
 
 Record UI12 exact60f freeze/base/path/patch mechanical bindings and formatting PASS, authored UI/bundled cases UNRUN and production digest source-derived only/native CLI pending. Native12 author remains active; central3 composition waits both freezes, then concrete API reconciliation/combined freeze before one cached MBA qualification. No source review/build/runtime/integration or PASS claim. Normal scoped documentation lint/diff and prior-hash preservation only.
+
+## Batch partial862 qualification and untested central repair-loop preparation
+
+Record exact conditional M01 existing validator/model/catalogue/actor read hunks and controlled ScriptMissionState hunk ownership with W02. Actual862 fourmethods/sixcases PASS plus seven/eight UNKNOWN at NPC-state validation; only catalogue lexical1/1 and847storage1/1 remain unaffected for next source, actor-dependent passes requalify. Preserve all actual proof/crash/closure and preflight failure provenance. Record UIr2 bindings and G1 isolated central3 commit/contract/patch, exact Game inverse, source-format checks only; no build/runtime/full27freeze/canonical integration. Native12 packet pending, future combined candidate preserves qualified M01 validators and W02 new fields/join without whole-file overwrite. Scoped Markdown/diff checks and historical hashes retained.
+
+Current owner f8eb46ee proceeds863/864 on tenmethods/thirteencases plus two retained unaffected1/1 cases, aggregate12/15 target only. Existing instance prefix/encounter/suffix phase returns and actual optional NPC borrowing stay in MC1 validation hunks with no W02 join; no G1 allocation/runtime/review. Current status is updated without relabelling prior partial passes as complete.
