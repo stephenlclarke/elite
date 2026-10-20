@@ -6,20 +6,132 @@ import Testing
 private func approachGame(
   position: Vector3, pitch: Double = 0, roll: Double = 0, yaw: Double = 0,
   spin: Double = 0.3, speed: Double = 0
-) -> Game {
+) throws -> Game {
   var game = Game(executive: false)
   game.commander.installTargetingComputer(.docking)
   game.launch()
+  try #require(!game.docked && game.screen == .front && game.commander.valid)
   #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .docking)
   game.commander.autoTarget = true
   game.speed = speed
-  var station = SpaceBody(id: 0, hull: .station, position: position)
-  station.orientation.rotate(pitch: pitch, roll: roll, yaw: yaw)
-  station.rotation = 1.4
-  station.rotationRate = spin
-  game.bodies = [station]
-  game.key("tab")
+  let anchor = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  var orientation = Basis3()
+  orientation.rotate(pitch: pitch, roll: roll, yaw: yaw)
+  // Move the observer, preserving the launched station's native anchor and physical identity.
+  let camera = anchor.orientation.composed(with: orientation.transposed)
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(position: anchor.position - camera.apply(position), orientation: camera))
+  game.bodies.removeAll { $0.id != 0 }
+  let index = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
+  game.bodies[index].rotation = 1.4
+  game.bodies[index].rotationRate = spin
+  try #require(game.bodies[index].physical?.identity == anchor.identity)
+  #expect((game.bodies[index].position - position).length < 1e-8)
+  for axis in [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)] {
+    #expect((game.bodies[index].orientation.apply(axis) - orientation.apply(axis)).length < 1e-8)
+  }
+  try engageMainApproachStation(&game, identity: anchor.identity)
   return game
+}
+
+private func engageMainApproachStation(_ game: inout Game, identity: ActorIdentity) throws {
+  game.ensurePhysicalActors()
+  // A retained partial cycle may already have visited main; finish it and allow one fresh cycle.
+  for _ in 0..<(game.bodies.count * 2) {
+    game.key("tab")
+    if game.autoPilot.targetActor == identity { break }
+  }
+  try #require(game.autoPilot.targetID == 0 && game.autoPilot.targetActor == identity)
+}
+
+// Pure attained-step geometry/control setup; it mints no docking or arrival receipt.
+private func narrowMainStationStep(lateral: Double = 0, hullRoll: Double = 0, delta: Double = 0.02)
+  throws
+  -> (Game, ShipPose)
+{
+  var game = Game(executive: false)
+  game.commander.shipID = "SH171"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.installTargetingComputer(.docking)
+  game.launch()
+  try #require(!game.docked && game.commander.valid)
+  let anchor = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  try engageMainApproachStation(&game, identity: anchor.identity)
+  var before = ShipPose(
+    position: anchor.position + anchor.orientation.apply(.init(lateral, 0, -96)),
+    orientation: anchor.orientation)
+  before.orientation.rotate(pitch: 0, roll: hullRoll, yaw: 0)
+  NativeStationTestFixture.reframe(&game, to: before)
+  game.speed = 0
+  game.pitch = 0
+  game.yaw = 0
+  game.roll = -0.3
+  game.autoPilot.setApproachVelocity(.init(0, 0, 48))
+  var after = before
+  after.advanceView(pitch: 0, roll: -0.3 * delta, yaw: 0, translation: .init(0, 0, 48 * delta))
+  NativeStationTestFixture.reframe(&game, to: after)
+  game.commander.flightSimulation.advancePhysicalTime(delta)
+  let index = try #require(game.bodies.firstIndex { $0.id == 0 })
+  try #require(game.bodies[index].rotationRate == 0.3)
+  game.bodies[index].rotation = 0.3 * delta
+  return (game, before)
+}
+
+@Test func attainedNarrowSH171StepRefinesTheUnchangedApertureAndWholeHullProof() throws {
+  let (game, before) = try narrowMainStationStep()
+  let station = try #require(game.bodies.first { $0.id == 0 })
+  let player = game.commander.playerMesh
+  let port = MainStationGeometry.docking
+  let radius = try #require(player.vertices.map(\.length).max())
+  let stationRadius = try #require(MainStationGeometry.mesh.vertices.map(\.length).max())
+  let coarse = (radius + stationRadius) * (abs(game.roll) + abs(station.rotationRate)) * 0.02
+  let height = try #require(player.vertices.map(\.y).max())
+  #expect(height > 31.7 && height < 32 && port.aperture.map(\.y).max() == 32)
+  #expect(port.fits(player) && !port.fits(player, margin: coarse))
+  #expect(
+    game.nativeMainStationHullCourseIsClear(
+      station, from: before, to: game.commander.flightSimulation.pose, delta: 0.02))
+  #expect(!game.docked && game.commander.nativeStations?.currentMainDock == nil)
+  #expect(!game.nativeMainStationDockEvidenceIsCurrent)
+}
+
+@Test func narrowRefinementRefusesOversizeOrientationWallContactAndStaleAttainedMotion() throws {
+  for (lateral, hullRoll) in [(50.0, 0.0), (0.0, Double.pi / 2)] {
+    let (game, before) = try narrowMainStationStep(lateral: lateral, hullRoll: hullRoll)
+    let station = try #require(game.bodies.first { $0.id == 0 })
+    #expect(
+      !game.nativeMainStationHullCourseIsClear(
+        station, from: before, to: game.commander.flightSimulation.pose, delta: 0.02))
+    #expect(
+      !game.nativeMainStationHullCourseIsClear(
+        station, from: before, to: game.commander.flightSimulation.pose,
+        delta: 0.02, requireAperture: false))
+  }
+  var (game, before) = try narrowMainStationStep()
+  let station = try #require(game.bodies.first { $0.id == 0 })
+  let end = game.commander.flightSimulation.pose
+  game.autoPilot.setApproachVelocity(.init(0, 0, 24))
+  #expect(!game.nativeMainStationHullCourseIsClear(station, from: before, to: end, delta: 0.02))
+  game.autoPilot.setApproachVelocity(.init(0, 0, 48))
+  game.dockingComputer = false
+  #expect(!game.nativeMainStationHullCourseIsClear(station, from: before, to: end, delta: 0.02))
+  game.dockingComputer = true
+  var proposed = end
+  proposed.position.z += 0.001
+  #expect(
+    !game.nativeMainStationHullCourseIsClear(station, from: before, to: proposed, delta: 0.02))
+  game.bodies.append(station)
+  #expect(!game.nativeMainStationHullCourseIsClear(station, from: before, to: end, delta: 0.02))
+  #expect(!game.docked && game.commander.nativeStations?.currentMainDock == nil)
+  // This narrow hull needs more than 64 conservative intervals for a full 0.1-second step.
+  let (capped, cappedStart) = try narrowMainStationStep(delta: 0.1)
+  let cappedStation = try #require(capped.bodies.first { $0.id == 0 })
+  #expect(
+    !capped.nativeMainStationHullCourseIsClear(
+      cappedStation, from: cappedStart, to: capped.commander.flightSimulation.pose, delta: 0.1))
 }
 
 @Test func rearAvoidanceWaypointDoesNotOrbitWithTheStationDoorwayPhase() {
@@ -37,8 +149,8 @@ private func approachGame(
   }
 }
 
-@Test func stationTransitFacesItsSafeWaypointThenStopsBeforeFacingTheDoor() {
-  var game = approachGame(position: .init(0, 0, 2400), yaw: .pi)
+@Test func stationTransitFacesItsSafeWaypointThenStopsBeforeFacingTheDoor() throws {
+  var game = try approachGame(position: .init(0, 0, 2400), yaw: .pi)
   var forwardTransitFrames = 0
   var stoppedAlignmentFrames = 0
   for _ in 0..<9000 where !game.autoPilot.finalApproach && !game.docked {
@@ -61,7 +173,7 @@ private func approachGame(
   #expect(game.autoPilot.facingError < 0.02)
 }
 
-@Test func stationApproachCompletesForwardAndCollisionFreeForBehindTiltedAndFastStarts() {
+@Test func stationApproachCompletesForwardAndCollisionFreeForBehindTiltedAndFastStarts() throws {
   let starts: [(Vector3, Double, Double, Double, Double, Double)] = [
     (.init(0, 0, 2400), 0, 0, 0, 0.3, 0),
     (.init(0, 0, -2400), 0, 0, 0, -0.3, 0),
@@ -71,7 +183,7 @@ private func approachGame(
     (.init(0, 0, 1090), 0, 0, 0, 0.3, 0),
   ]
   for (position, pitch, roll, yaw, spin, speed) in starts {
-    var game = approachGame(
+    var game = try approachGame(
       position: position, pitch: pitch, roll: roll, yaw: yaw, spin: spin, speed: speed)
     var collided = false
     var finalFrames = 0
@@ -113,8 +225,10 @@ private func approachGame(
   }
 }
 
-@Test func stationTurnBrakesExistingCruiseWithoutInstantVelocityChangesAndManualInputCancels() {
-  var game = approachGame(position: .init(0, 0, -2400), speed: 32)
+@Test func stationTurnBrakesExistingCruiseWithoutInstantVelocityChangesAndManualInputCancels()
+  throws
+{
+  var game = try approachGame(position: .init(0, 0, -2400), speed: 32)
   let initialSpeed = game.autoPilot.velocity.length
   game.tick(delta: 0.02)
   #expect(game.autoPilot.velocity.length > initialSpeed - 4.81)
@@ -141,9 +255,16 @@ private func approachGame(
   #expect(
     (game.commander.flightSimulation.pose.position - releasedPosition
       - beforeTakeoverVelocity * 0.02).length < 1e-8)
-  game.bodies = [.init(id: 0, hull: .station, position: .init(500, 0, 2400))]
+  let anchor = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  let momentum = game.flightWorldVelocity
+  let pose = ShipPose(
+    position: anchor.position - anchor.orientation.apply(.init(500, 0, 2400)),
+    orientation: anchor.orientation)
+  NativeStationTestFixture.reframe(&game, to: pose)
+  game.autoPilot.setApproachVelocity(pose.shipVector(momentum))
   game.speed = 0
-  game.key("tab")
+  try engageMainApproachStation(&game, identity: anchor.identity)
   for _ in 0..<100 { game.tick(delta: 0.02) }
   #expect(game.autoPilot.status == "APPROACHING" && !game.autoPilot.finalApproach)
 }
@@ -152,8 +273,11 @@ private func approachGame(
   for shipID in ["SH023", "SH171"] {
     var game = Game(executive: false)
     game.commander.shipID = shipID
+    game.commander.fuel = game.commander.fuelCapacity
     game.commander.installTargetingComputer(.docking)
+    try #require(game.commander.valid)
     game.launch()
+    try #require(!game.docked && game.screen == .front)
     game.bodies.removeAll { $0.hull != .station }
     #expect(game.speed == 8)
     #expect(try #require(game.bodies.first).position == Vector3(0, 0, -500))

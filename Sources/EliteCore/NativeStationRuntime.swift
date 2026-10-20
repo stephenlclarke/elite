@@ -623,7 +623,7 @@ extension Game {
       return true
     }
     // Refinement proves the same attained native step, never an arbitrary predicted corridor.
-    guard delta > 0.02, flight.physicalTime >= delta, end == flight.pose,
+    guard delta > 0, flight.physicalTime >= delta, end == flight.pose,
       stationAutoDockingActive, dockingComputer, speed == 0,
       !playerEMPDisabled, !isEMPDisabled(station),
       workGuidance == nil, workBraking == nil,
@@ -647,8 +647,9 @@ extension Game {
       (end.position - start.position - end.orientation.apply(autoPilot.velocity * delta)).length
         < 1e-8
     else { return false }
-    let count = Int(ceil(delta / 0.02))
-    guard (2...5).contains(count) else { return false }
+    guard let count = nativeMainStationRefinementCount(player, margin: margin, delta: delta) else {
+      return false
+    }
     let interval = delta / Double(count)
     guard interval <= 0.02 else { return false }
     let intervalMargin =
@@ -680,6 +681,30 @@ extension Game {
       priorStation = nextStation
     }
     return true
+  }
+
+  /// Spend at most half the real aperture clearance on each interval's unchanged sweep margin.
+  /// A finite cap keeps narrow or unsupported courses fail-closed without a geometry search.
+  private func nativeMainStationRefinementCount(
+    _ player: Mesh, margin: Double, delta: Double
+  ) -> Int? {
+    let port = MainStationGeometry.docking
+    guard port.fits(player), margin.isFinite, margin >= 0 else { return nil }
+    var clearance = Double.infinity
+    for index in port.aperture.indices {
+      let a = port.aperture[index]
+      let b = port.aperture[(index + 1) % port.aperture.count]
+      let edge = b - a
+      let length = edge.length
+      for vertex in player.vertices {
+        let distance = (edge.x * (vertex.y - a.y) - edge.y * (vertex.x - a.x)) / length
+        clearance = min(clearance, distance)
+      }
+    }
+    guard clearance.isFinite, clearance > 0 else { return nil }
+    let requested = max(2, max(ceil(delta / 0.02), ceil(margin / (clearance * 0.5))))
+    guard requested.isFinite, requested <= 64 else { return nil }
+    return Int(requested)
   }
 
   /// Each interval retains the original full-hull, aperture and triangle-structure proof.
