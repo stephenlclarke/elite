@@ -118,15 +118,62 @@ struct NativeOriginalEvacuationSaveTests {
       #expect(refused.commander.scriptState.instances[boarding.mission]?.outcome == .active)
     } else {
       try await runtime.supplyFatalHullHit()
+      try #require(await runtime.snapshot().energy <= 0)
       _ = await runtime.advance(delta: 0.1)
       let lost = await runtime.snapshot()
+      #expect(lost.screen == .gameOver && lost.energy <= 0)
       #expect(lost.commander.scriptState.instances[boarding.mission]?.outcome == .failed)
       #expect(lost.commander.nativePeople?.transfers.last?.kind == .loss)
-      #expect(lost.commander.nativePeople?.transfers.last?.members == source.references)
+      let transfer = try #require(lost.commander.nativePeople?.transfers.last)
+      #expect(
+        transfer.members == NativeOriginalEvacuation.expectedTransferMembers(source, kind: .loss))
+      #expect(transfer.members.count == 4 && Set(transfer.members) == Set(source.references))
       #expect(lost.commander.credits == before.commander.credits)
       #expect(lost.commander.scriptState.savedClueJournal == nil)
       #expect(lost.commander.accommodation.fittedBerths.allSatisfy { !$0.use.used })
       #expect(lost.commander.valid)
+      for alien in [false, true] {
+        _ = try f.roundTrip(lost, label: "loss", alien: alien)
+      }
+      let pointerBytes = try Data(contentsOf: f.save)
+      let (pristine, world) = try ScriptSaveStore.read(pointerBytes, from: f.save)
+      #expect(
+        pristine.nativePeople == lost.commander.nativePeople && world.consistent(with: pristine))
+      let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
+      let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: f.save)
+      let file = directory.appendingPathComponent("commander.json")
+      let original = try Data(contentsOf: file)
+      defer { try? original.write(to: file) }
+      for mode in ["missing", "duplicate", "foreign"] {
+        var object = try #require(JSONSerialization.jsonObject(with: original) as? [String: Any])
+        var custody = try #require(object["savedNativePeopleCustody"] as? [String: Any])
+        var transfers = try #require(custody["transfers"] as? [[String: Any]])
+        let index = try #require(
+          transfers.firstIndex { $0["operation"] as? String == transfer.operation.uuidString })
+        var members = try #require(transfers[index]["members"] as? [Any])
+        if mode == "missing" { members.removeLast() }
+        if mode == "duplicate" { members[1] = members[0] }
+        if mode == "foreign" {
+          let person = NativePersonReference.evacuation(
+            .init(owner: UUID(), batch: NativeOriginalEvacuation.batch, person: "eren-pell"))
+          members[0] = try JSONSerialization.jsonObject(with: JSONEncoder().encode(person))
+        }
+        transfers[index]["members"] = members
+        custody["transfers"] = transfers
+        object["savedNativePeopleCustody"] = custody
+        let bytes = try JSONSerialization.data(withJSONObject: object)
+        try bytes.write(to: file)
+        var hashes = pointer.hashes
+        hashes["commander.json"] = ScriptPackLibrary.hash(bytes)
+        let changed = ScriptSavePointer(
+          format: pointer.format, schemaVersion: pointer.schemaVersion,
+          generation: pointer.generation, hashes: hashes, scope: pointer.scope,
+          valueCodec: pointer.valueCodec)
+        #expect(throws: SaveError.invalidCommander) {
+          try ScriptSaveStore.read(JSONEncoder().encode(changed), from: f.save)
+        }
+        try original.write(to: file)
+      }
     }
   }
 

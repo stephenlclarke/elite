@@ -405,7 +405,8 @@ extension Game {
     else { return nil }
     let members = transfer.members.filter { $0.evacuation != nil }
     if members.isEmpty { return nil }
-    guard source.terminalOperation == nil, members == source.references,
+    guard source.terminalOperation == nil,
+      members == NativeOriginalEvacuation.expectedTransferMembers(source, kind: transfer.kind),
       let mission = commander.scriptState.instances[boarding.mission], mission.outcome == .active,
       commander.scriptState.nextEvent < UInt64.max - 1, mission.revision < UInt64.max
     else { throw SaveError.invalidCommander }

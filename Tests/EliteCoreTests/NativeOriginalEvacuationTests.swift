@@ -17,6 +17,39 @@ struct NativeEvacuationFixture {
     // Controlled initial funds; all equipment and cabins still require actual paid purchases.
     game.commander.credits = 400000
     try game.prepareG03FlightEquipment()
+    if cabins > 4 {
+      // Six cabins plus the genuine G08 tools require a lean paid fit on this same hull.
+      let owner = game.commander.equipmentOwnerID
+      let hull = game.commander.hullInstanceID
+      let units = game.commander.commonEquipmentUnits
+      var stored: [UUID] = []
+      let optionalFit: [(ComponentFittingSlot, String)] = [
+        (.energy, "Extra Energy Unit"), (.shield, ShieldBooster.pulse.equipmentName),
+      ]
+      for (slot, name) in optionalFit {
+        let item = try #require(game.commander.fittedEquipment(at: slot))
+        try #require(item.node.key == name)
+        let revision = try #require(game.commander.equipmentInventory?.revision)
+        try game.storeEquipment(item, expectedRevision: revision)
+        stored.append(item.id)
+      }
+      for name in ["Fuel Scoops", "Targeting: Salvage Module"] {
+        let item = try #require(Equipment.all.first { $0.name == name })
+        let quote = try game.quoteEquipmentPurchase(item)
+        let bought = try game.applyEquipmentPurchase(quote)
+        try #require(bought)
+      }
+      try #require(
+        game.commander.equipmentOwnerID == owner && game.commander.hullInstanceID == hull)
+      try #require(game.commander.commonEquipmentUnits == units - 2)
+      try #require(
+        stored.allSatisfy { id in
+          game.commander.equipmentInventory?.items.contains { $0.id == id && $0.location == nil }
+            == true
+        })
+      try #require(game.hasNativeRescueTools && game.commander.hasAutomaticDocking)
+      try #require(game.commander.valid)
+    }
     if escapeReady {
       let pod = try #require(Equipment.all.first { $0.name == "Escape Pod" })
       let quote = try game.quoteEquipmentPurchase(pod)

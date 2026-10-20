@@ -96,6 +96,16 @@ enum NativeOriginalEvacuation {
   static let reward = 10650
   static let boardID = "orbital-evacuation"
 
+  /// Care follows declared boarding order; the shared hull-loss provider uses person-key order.
+  static func expectedTransferMembers(
+    _ state: NativeOriginalEvacuationState, kind: NativePeopleTransfer
+  ) -> [NativePersonReference] {
+    switch kind {
+    case .loss, .escape: state.references.sorted { $0.key < $1.key }
+    case .care, .sale: state.references
+    }
+  }
+
   static func historicalDock(_ dock: NativeMainStationDockReceipt, commander: borrowing Commander)
     -> Bool
   {

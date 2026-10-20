@@ -189,7 +189,8 @@ extension NativeOriginalEvacuation {
     }
     if let operation = state.terminalOperation {
       guard let transfer = custody.transfers.first(where: { $0.operation == operation }),
-        transfer.members.filter({ $0.evacuation?.batch == batch }) == state.references,
+        transfer.members.filter({ $0.evacuation?.batch == batch })
+          == expectedTransferMembers(state, kind: transfer.kind),
         state.references.allSatisfy({ custody.transfer(for: $0)?.operation == operation }),
         let receipt = mission.completionReceipt,
         receipt.valid(for: mission, engine: commander.scriptState),
