@@ -214,9 +214,13 @@ extension Game {
       request.population == .mission,
       request.hull == template.canonicalBody.hull,
       request.energy == template.canonicalBody.energy,
-      resourceCapacityMatches,
-      !original.bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
+      resourceCapacityMatches
     else { return .staleContext }
+    for index in original.bodies.indices {
+      if original.bodies[index].physical?.spawnIdentity == request.identity {
+        return .staleContext
+      }
+    }
     if let refusal = original.admissionCapacityRefusal(request, context: context, budget: budget) {
       return refusal
     }
