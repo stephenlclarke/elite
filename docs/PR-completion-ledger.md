@@ -352,3 +352,7 @@ Verify final6e five native passes plus retained8methods9cases as thirteen unique
 ## Integrate independently reviewed protected-threat evasion
 
 Record aggregate3methods7cases/rootCLEAN487 proof and bc515 integration: exact product/test/issue hashes, only approved PR review-status metadata update, preserved two original method passes plus five affected cases and test inverse/source equivalence. No new audit/build/retest, actual hostile-flight/survival/app/release claim. MC1832/833 has next finite priority; coherent G1 positive native gate follows actual closure with only qualified canonical source.
+
+## Reserve derived stable offers and start coherent gate after833
+
+Confirm exact eight stable-offer paths/non-overlap/currentf679 base, Root's checked existing-retention floor/jobR+1/native-terminalR+2 policy at all five sites, legacy/adopted terms/pruningfloor/overflow constraints and explicit no-restock/schema/adapter scope. Record actual833 zero-terminal stack failure/whole closure; G1 authorized coherent main-toolchain one-positive-native-method gate follows, no failed actor import or broad/unaffected/performance reruns. Source freeze/lease/outcomes remain separate.
