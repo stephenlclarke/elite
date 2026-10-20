@@ -1018,3 +1018,73 @@ Maintain G14's171 renderer references with one required1078refresh; all image by
 Record1079 identity/signature/500-resource/actual pack-CLI PASS and1080visible title/source/native-menu reach only. Explicitly leave Avenor offer/details/four-cabin eligibility and full player journey unverified. Normal quit closes the owned new app; preserve primary/player data and unowned1052. Root announces a local candidate only, no Slack feature post. Refresh README/pairedPR21 scope for integrated G14/storage and next final-head CI/review, with G10 still separate source work and G2 only a bounded startup-source read.
 
 Record G2's source-only normal start/focus wiring review, with no source-proven defect and no UI PASS or further campaign. Record UX's G09 design/preflight-only ownership from2304; implementation stays not started while G10 remains the sole active MBA implementation. W05 stays next candidate.
+
+Publish coherent5f64600d once to existing PR21. Dependency Review passes; requiredCI39488530671 runs once. Required review returns service error6300298031 without findings/clean result; factual reply6300353377 preserves the gate. Hold current-state documentation for the next natural code checkpoint, with no unchanged-head retry or extra CI push.
+
+G10 first24-path freeze4360 has four independent review findings assigned to G3 as one coherent correction; functional/CLI/coverage remain UNRUN. Do not compile the known-bad freeze or replay broad legacy cohorts. Preserve integrated G14/limited1079, G09 design-only ownership and the independent sole5f quality watch.
+
+Reconcile primary inventory rows as well as appended history: G14 is qualified source integratedfbce with limited signed1079/title-only1080 and unqualified manual/public delivery; G10 is active G3 review correction with all functional execution UNRUN; G09 is UX design/preflight only with implementation not started. No docs-only publication or CI.
+
+## Current5f failure, G10 compiler refusal and approved queue
+
+Record terminal hosted5f failure with actual synthetic merge895f, nine reports/six methods, unattributed signal10 and no final test summary. Preserve complete artifact/13 original hashes/image UUID/raw disposition and closed watch; coverage/sanitizer/leak gates were not reached. G2 owns only the reviewed next test-fixture correction proposal/implementation, six methods/nine cases, with runtime UNRUN and no inferred signal10 repair.
+
+Record G10 corrected bab16 CLEAN review and exact whole24-path staging520917c0, followed by compiler-only1081 exit1 with two borrowing diagnostics. Preserve6.875s inner/7.669s outer,55-start closure and exact source/preferences. G3 owns the causal compiler correction; all23methods/39cases, actual pack CLI/digest/native pose and coverage remain UNRUN. Reconcile current register and M01 without a docs-only push. G09 and W05 are approved queued designs only; copy exact draft/approval pairs at the next natural source checkpoint, with no implementation activation.
+
+Preserve compiler-only1082 failure after CLEAN3ea delta: two borrowed provenance RHS expressions in the new Scan helper, with all25 starts closed and exact source/preferences. G3 owns coherent causal fix/same-pattern review; functional23/39 and CLI remain UNRUN. Final5f factual quality comment6300795333 records failure without rerun or protection bypass.
+
+## Qualified release-fixture source checkpoint
+
+Integrate exactG2 eight-path final637b after matching shared1083build and separate1084six-method/nine-case PASS, retaining both CLEAN reviews and all original failed evidence. Preserve initial reader-key correction without raw mutation or runtime replay,1988-artifact/source/preferences proof and11-start closure. Keep the unattributed hosted signal10 open. Record G10 actualCLI/digest PASS and separate1085functional run pending on the same binary, without a second compile or early source integration. Copy approved G09/W05 design pairs unchanged and reconcile their primary rows/index as queued, implementation not started. No per-doc push/CI, UI campaign or release claim.
+
+## Qualified G10 source checkpoint
+
+Integrate exact24-path final992b onto qualifiedG2 4bc, retaining full/correction/compiler CLEAN reviews and matching shared553299cf source. Actual1085packCLI/digest and all23methods/39cases PASS, zero issues/unknowns,1988-artifact/source/preferences proof and12-start closure. Record current-binary938/1014lines(92.50%) focused coverage from only two actual owned-process profiles, with no warnings/rerun/mixing; no overall quality acceptance. Reconcile G10 primary row/register and README player steps, preserving signed1079's earlier feature boundary and all failed compiler history. Prepare renderer prerequisite/current signed candidate next from existing binary; no new compile, UI campaign, public push or release here.
+
+Record actual maintained1086renderer prerequisite,171fresh inputs/all4104frames/final ships-check PASS, unchanged image bytes and73-start closure. Preserve its normal17.93s Swift compilation and the system-Python/PIL validator setup failure followed by bundled-interpreter validation; no standalone build or test/renderer replay. Copy only manifest and update G09 source-preflight assignment from exact1000c07f; implementation remains held, W05queued. Prepare signed1087 from resulting source-equivalent product without another compile.
+
+## Current candidate1087 and one coherent publication
+
+Record signed1087/source57dbe6db/runtime553299cf with timestamped signature/hardened runtime,502 exact resources, actualG10CLI/digest and9.751s/four-start closure. No additional packaging compile or visible UI/manual journey. Refresh README and pairedPR21 around the final survey/evacuation/storage/fixture scope and unresolved hosted5f global gates. Publish one coherent new head/review/CI next without duplicate localfullCI, UI campaign or bypass. Update G09 current/primary row to accepted preflight and separately assigned G3 implementation32paths/51–52 from1000c07f, W05queued.
+
+Record one coherent8a publication/review/CI, Dependency Review PASS and new-head review service error6301157836 with empty actual reviews/inline findings and factualreply6301199928. Keep required review unsatisfied and the one quality watch running. Record bounded1088title/source-only verification, same desktop Return limitation, normal ownedPID67108quit and exact protected data/no new saves. Stop all further UI attempts; offer/journey unverified and Slackineligible. Hold paired outcome notes until next natural source checkpoint, no docs-only push/CI.
+
+Record terminal8a hosted failure after527.37s compilation/811.979s make ci: zero assertion reports, zero conclusive method terminals, unexpected signal10 and UNKNOWN fault site. Retain complete98,609,774-byte artifact,13 verified originals, actual image/dSYM UUID, unchanged source/natural owned closure and metadata-only unattributed .ips candidate; no raw crash body/site attribution. Coverage/sanitizer/leak gates were not reached. Factual PRcomment6301483448 and full disposition preserve the failure; no rerun/localprobe/bypass, all focused qualifications retained.
+
+Record Root's G2 source-only existing-collector gap review/proposal assignment, preserving strict process attribution and one minimal collector/fixture correction boundary. No engine fix, new framework, blanket upload, run/probe or waiver; G1 remains sole executor/publication owner. Hold notes until the next natural source checkpoint.
+
+Record Root approval of the five-path existing-collector correction from8a: narrowly preserve new/changed helper originals as explicitly unattributed under actual owned retained-image context, unchanged exact attribution/parser and all cap/confinement/dedup guards. G2 owns seven new plus20existing fixture methods in one27-method owner run, then one full independent review. All outcomes are pending; no engine/workflow/Makefile/native probe/blanket upload/rerun or waiver. G1 retains integration/publication, with next normal requiredCI only after qualified source; no docs-only push.
+
+Record the approved G09 same-path internal read-only captured contact-frame snapshot for actual mesh/mass/debris/asteroid assertions, including1000kg packages,100000kg cradle and unrelated control. No mutation/state/public API/new path;32-path scope unchanged and G3 still authors. The separate G2 collector27-method fixture outcome remains pending, with no native job or new task.
+
+Record frozen clean collector03511f4 and actual owner27-method PASS/initial fixture-clock failure history, exact packet/unit/log hashes and G1 preimage verification without repeat execution. Full independent review remains pending; no current integration, native job or crash-site/fix claim.
+
+Record the full collector review's oneP2 cross-root deduplication/promotion stale-path finding and G2 same-five-path causal correction/regression assignment. Hold035integration/publication; preserve prior27-method evidence, with corrected-source/new-fixture qualification and delta review pending. No native job or CI rerun.
+
+Record Root's same-AsteroidDebrisContact G09 contact-step gate approval: closed validated G09 presence can admit the existing contact frame without inertia/asteroid debris, preserving other guards/flags and32-path scope. Require actual empty-inertia/no-asteroid positive plus unrelated/unproved negatives; G3 authors, native execution and canonical integration remain pending.
+
+## Qualified five-path collector source checkpoint
+
+Integrate exact final4a57 five-path batch after owner28-method PASS and CLEAN causal review of the full-review cross-root promotion finding. Preserve original27 tests, earlier fixture-clock failures and all source/evidence hashes; no G1 test/native replay. Update current ledger/README/pairedPR21 for bounded1088title-only reach, latest8a global failure and explicitly unattributed helper-original retention under unchanged strict attribution/parser/cap/confinement guards. One coherent new-source PRhead/review/CI follows, without engine fix/site claim, extra packaging/UI, workflow changes or bypass.
+
+Record coherent e1b7fd29 publication, one requiredquality39500039720 run and Dependency Review PASS. New-head required review returns serviceerror6301824753 with empty actual reviews/inline findings; factualreply6301844761 preserves its unsatisfied gate. No unchanged-head retry or extra local/native/UI campaign; hold outcome notes for the next natural source checkpoint.
+
+Record Root's single optional human1087startup observation request as pending, with no duplicate question/UI/probe or inference from elapsed time. A bounded input correction requires an actual reported failure and Root assignment; current CI watch continues independently.
+
+Record Root's current-G09-only order adjustment: complete frozen32-path/source-light/selection packet first, then G1 matching compile/focused owner qualification with causal G3 repairs, then one full independent review of the passing freeze. Both PASS and clean review remain integration gates; affected review fixes get relevant tests only. No unfrozen execution, extra campaign/CI or new process docs.
+
+Record the actual human reply that1087has not yet been tried. Normal-use startup stays unverified, with no failure/PASS inference, repeat question, UI/probe or input-fix task. Existing CI/G09 work continues.
+
+Record final e1 quality failure:549.88s compilation/863.509s make ci, zero assertions/terminal methods, signal10 and UNKNOWN fault site. Verify13 originals/image/dSYM UUID/source/natural closure; this time no report candidate exists during bounded discovery, with no cap refusal or raw body for offline diagnosis. Factual PRcomment6302257648 and disposition retain exact facts; no retry/probe or reconstruction of old evidence. Root routes only a G2 source/primary-document-supported direct-owned-process stack-capture proposal under unchanged suite/command/exit/limits, with no edit/run/framework/waiver. Preserve focused game/collector PASS and local1087; primary current qualification/M01 rows now match actual evidence.
+
+Record G2's delivered source-only direct-backtrace proposal as pending Root scope decision: fixed child-only runtime backtrace configuration at the existing launcher/raw log, conditional on unproved signed-helper eligibility. No implementation, debugger/re-signing, limit/gate change, probe or execution; G1 does not duplicate the investigation.
+
+Record Root-approved maximum-five-path direct-backtrace implementation, fixed child-only configuration at existing Popen and pure environment fixtures/paired notes. Only the exact approved SWIFT_BACKTRACE value may be recorded; full environment is excluded. Signed Apple helper eligibility stays unproved, with default argv/suite/exit/limits unchanged and no signing/debugger/framework/waiver or new run. Owner units then one review precede integration/next normalCI; preserve any actual refusal without blind repeated runs.
+
+Record clean f63a6474 direct-backtrace freeze,31 owner filesystem PASS/28 original methods unchanged, exact raw-log provenance and G1 preimage/hash verification without rerun. Full independent review remains pending; no actual helper eligibility/capture or native execution is claimed.
+
+## Qualified direct-backtrace source checkpoint
+
+Integrate exact f63a6474 five-path batch after all31 owner filesystem methods PASS and one full CLEAN review, retaining original28 unchanged and G1 exact preimage/hash/raw-outcome verification without rerun. Update pairedPR21/current ledger around supported fixed child-only runtime request, conditional helper eligibility and lateste1 global failure with no report body/site. Default argv/suite/session/exit/parser/limits remain; no debugger/signing/framework/waiver, new app or UI. Publish one coherent new-source review/CI, with actual warnings/results required before any capture/fix claim.
+
+Record G09 still unfrozen while G3 completes source/light checks, three test files, paired notes and selection. Accepted actual31of32 reserved paths leaves ScriptEncounters.swift unchanged; no premature compile and frozen-owner compile-first order remains.

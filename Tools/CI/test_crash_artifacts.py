@@ -14,6 +14,39 @@ from unittest.mock import patch
 import crash_artifacts as artifacts
 
 
+class RuntimeChildEnvironmentTests(unittest.TestCase):
+    def test_child_keeps_unrelated_values_without_mutating_parent(self):
+        parent = {'PATH': '/toolchain/bin', 'LLVM_PROFILE_FILE': '/profiles/%m.profraw',
+                  'DYLD_INSERT_LIBRARIES': '/runtime/libclang_rt.asan.dylib',
+                  'SECRET_FIXTURE_ONLY': 'must-never-be-logged'}
+        before = dict(parent)
+        child = artifacts.runtime_child_environment(parent)
+        self.assertEqual(parent, before)
+        self.assertIsNot(child, parent)
+        self.assertEqual({key: child[key] for key in parent}, before)
+        self.assertEqual(set(child) - set(parent), {'SWIFT_BACKTRACE'})
+        child['PATH'] = '/changed-child'
+        self.assertEqual(parent, before)
+
+    def test_conflicting_inherited_options_cannot_enable_interaction_or_file_output(self):
+        parent = {'SWIFT_BACKTRACE': 'enable=no,interactive=yes,output-to=/tmp/report',
+                  'UNRELATED': 'preserved'}
+        child = artifacts.runtime_child_environment(parent)
+        self.assertEqual(parent['SWIFT_BACKTRACE'],
+                         'enable=no,interactive=yes,output-to=/tmp/report')
+        self.assertEqual(child['UNRELATED'], 'preserved')
+        self.assertEqual(child['SWIFT_BACKTRACE'],
+                         artifacts.runtime_child_environment({})['SWIFT_BACKTRACE'])
+
+    def test_effective_options_are_noninteractive_crashed_thread_stderr_only(self):
+        setting = artifacts.runtime_child_environment({})['SWIFT_BACKTRACE']
+        options = dict(item.split('=', 1) for item in setting.split(','))
+        self.assertEqual(options, {'enable': 'yes', 'interactive': 'no', 'color': 'no',
+                                   'output-to': 'stderr', 'threads': 'crashed',
+                                   'registers': 'crashed', 'images': 'mentioned'})
+        self.assertEqual(len(setting.split(',')), len(options))
+
+
 class CrashArtifactTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -54,10 +87,10 @@ class CrashArtifactTests(unittest.TestCase):
         value.update(changes)
         return value
 
-    def collect(self, baseline, budget=None):
+    def collect(self, baseline, budget=None, observed_images=()):
         return artifacts.collect_reports(
             [self.reports], baseline, self.history, self.evidence,
-            budget or artifacts.ArtifactBudget(), window=0)
+            budget or artifacts.ArtifactBudget(), window=0, observed_images=observed_images)
 
     def test_owned_image_and_matching_symbols_keep_original_bytes_and_provenance(self):
         row = self.retain()[0]
@@ -177,6 +210,7 @@ class CrashArtifactTests(unittest.TestCase):
         self.assertGreater(rows[0]['bytes'], budget.limit)
         self.assertEqual(budget.used, 0)
         self.assertFalse((self.evidence / 'matched-crashes').exists())
+        self.assertFalse((self.evidence / 'unattributed-helper-diagnostics').exists())
 
     def test_growth_during_report_read_is_rechecked_before_retention(self):
         baseline = artifacts.report_snapshot([self.reports])
@@ -196,6 +230,7 @@ class CrashArtifactTests(unittest.TestCase):
         self.assertGreater(rows[0]['bytes'], budget.limit)
         self.assertEqual(budget.used, 0)
         self.assertFalse((self.evidence / 'matched-crashes').exists())
+        self.assertFalse((self.evidence / 'unattributed-helper-diagnostics').exists())
 
     def test_oversized_image_is_refused_without_partial_output(self):
         row = self.retain(artifacts.ArtifactBudget(1))[0]
@@ -265,6 +300,207 @@ class CrashArtifactTests(unittest.TestCase):
         (self.reports / 'existing.ips').write_text(json.dumps(self.payload()))
         rows, _ = self.collect(artifacts.report_snapshot([self.reports]))
         self.assertEqual(rows, [])
+
+    def test_missing_identity_helper_original_is_unattributed_with_exact_bytes_and_budget(self):
+        images = self.retain()
+        baseline = artifacts.report_snapshot([self.reports])
+        report = self.reports / '.swiftpm-testing-helper-2026-10-20-210144.ips'
+        raw = json.dumps({'diagnostic': 'fixture with no identity'}).encode()
+        report.write_bytes(raw)
+        budget = artifacts.ArtifactBudget(len(raw))
+        rows, _ = self.collect(baseline, budget, images)
+        self.assertFalse(rows[0]['matchedActualProcess'])
+        self.assertEqual(rows[0]['attribution'], 'unproved')
+        self.assertEqual(rows[0]['identity'], dict(pid=None, procPath=None, procLaunch=None))
+        self.assertEqual(rows[0]['observedContext'][0]['pid'], 21)
+        self.assertTrue(rows[0]['retained'].startswith('unattributed-helper-diagnostics/'))
+        self.assertEqual((self.evidence / rows[0]['retained']).read_bytes(), raw)
+        self.assertEqual(rows[0]['sha256'], hashlib.sha256(raw).hexdigest())
+        self.assertEqual(budget.used, len(raw))
+        self.assertFalse((self.evidence / 'matched-crashes').exists())
+
+    def test_malformed_helper_original_remains_unproved_without_parser_repair(self):
+        images = self.retain()
+        baseline = artifacts.report_snapshot([self.reports])
+        report = self.reports / 'swiftpm-testing-helper-2026-10-20-210144.ips'
+        raw = json.dumps(self.payload()).encode() + b'\n{unfinished original'
+        report.write_bytes(raw)
+        rows, _ = self.collect(baseline, observed_images=images)
+        self.assertFalse(rows[0]['matchedActualProcess'])
+        self.assertEqual(rows[0]['identity'], dict(pid=None, procPath=None, procLaunch=None))
+        self.assertEqual((self.evidence / rows[0]['retained']).read_bytes(), raw)
+        self.assertFalse((self.evidence / 'matched-crashes').exists())
+
+    def test_helper_family_without_an_owned_retained_cohort_is_metadata_only(self):
+        image = self.retain()[0]
+        baseline = artifacts.report_snapshot([self.reports])
+        report = self.reports / '.swiftpm-testing-helper-2026-10-20-210144.ips'
+        report.write_bytes(b'{}')
+        for images in [[], [dict(image, status='refused-image-size-cap')],
+                       [dict(image, pid=99)], [dict(image, start='not the observed start')],
+                       [dict(image, retainedImage=None)],
+                       [dict(image, retainedImage='missing-retained-image')],
+                       [dict(image, arguments=['/unobserved/swiftpm-testing-helper'])]]:
+            with self.subTest(images=images):
+                rows, _ = self.collect(baseline, observed_images=images)
+                self.assertFalse(rows[0]['matchedActualProcess'])
+                self.assertNotIn('retained', rows[0])
+        self.assertFalse((self.evidence / 'unattributed-helper-diagnostics').exists())
+
+    def test_unrelated_names_and_unchanged_helper_baseline_do_not_expand_capture(self):
+        images = self.retain()
+        report = self.reports / '.swiftpm-testing-helper-2026-10-20-210144.ips'
+        report.write_bytes(b'{}')
+        baseline = artifacts.report_snapshot([self.reports])
+        (self.reports / 'another-app-2026-10-20-210144.ips').write_bytes(b'{}')
+        (self.reports / '.swiftpm-testing-helper-unproved-name.ips').write_bytes(b'{}')
+        rows, _ = self.collect(baseline, observed_images=images)
+        self.assertEqual(len(rows), 2)
+        self.assertTrue(all(not row['matchedActualProcess'] and 'retained' not in row for row in rows))
+        baseline['candidates'][str(report)].pop('sha256')
+        rows, _ = self.collect(baseline, observed_images=images)
+        self.assertEqual(len(rows), 3)
+        self.assertTrue(all(not row['matchedActualProcess'] and 'retained' not in row for row in rows))
+        self.assertFalse((self.evidence / 'unattributed-helper-diagnostics').exists())
+
+    def test_conflicting_helper_identity_remains_unattributed_including_pid_reuse(self):
+        images = self.retain()
+        baseline = artifacts.report_snapshot([self.reports])
+        values = [self.payload(pid=22), self.payload(procPath='/unrelated/app'),
+                  self.payload(procLaunch=(self.start - timedelta(days=1)).astimezone().isoformat())]
+        originals = {}
+        for index, value in enumerate(values):
+            name = f'.swiftpm-testing-helper-2026-10-20-21014{index}.ips'
+            originals[name] = json.dumps(value).encode()
+            (self.reports / name).write_bytes(originals[name])
+        rows, _ = self.collect(baseline, observed_images=images)
+        self.assertEqual(len(rows), 3)
+        for row in rows:
+            self.assertFalse(row['matchedActualProcess'])
+            self.assertEqual(row['attribution'], 'unproved')
+            self.assertEqual((self.evidence / row['retained']).read_bytes(), originals[row['name']])
+        self.assertFalse((self.evidence / 'matched-crashes').exists())
+
+    def test_poll_deduplication_and_later_exact_attribution_charge_original_once(self):
+        images = self.retain()
+        baseline = artifacts.report_snapshot([self.reports])
+        report = self.reports / '.swiftpm-testing-helper-2026-10-20-210144.ips'
+        raw = json.dumps(self.payload(pid=23)).encode()
+        report.write_bytes(raw)
+        budget = artifacts.ArtifactBudget(len(raw))
+        snapshot = artifacts.report_snapshot
+        calls = 0
+
+        def observe(roots):
+            nonlocal calls
+            calls += 1
+            if calls == 3:
+                self.history[23] = [dict(self.row)]
+            return snapshot(roots)
+
+        with patch.object(artifacts, 'report_snapshot', side_effect=observe), \
+                patch.object(artifacts.time, 'monotonic', side_effect=[0, 0, 0, 0.5, 0.5, 1, 1, 1]), \
+                patch.object(artifacts.time, 'sleep'):
+            rows, _ = artifacts.collect_reports(
+                [self.reports], baseline, self.history, self.evidence, budget,
+                window=1, observed_images=images)
+        self.assertEqual(calls, 3)
+        self.assertTrue(rows[0]['matchedActualProcess'])
+        self.assertEqual(rows[0]['attribution'], 'proved-pid-start-path')
+        self.assertTrue(rows[0]['retained'].startswith('matched-crashes/'))
+        self.assertTrue(rows[0]['promotedFrom'].startswith('unattributed-helper-diagnostics/'))
+        self.assertFalse((self.evidence / rows[0]['promotedFrom']).exists())
+        self.assertEqual((self.evidence / rows[0]['retained']).read_bytes(), raw)
+        self.assertEqual(budget.used, len(raw))
+
+    def test_changed_then_disappearing_report_keeps_prior_original_with_cap_refusal(self):
+        images = self.retain()
+        baseline = artifacts.report_snapshot([self.reports])
+        report = self.reports / '.swiftpm-testing-helper-2026-10-20-210144.ips'
+        raw = b'{"original":"fixture"}'
+        report.write_bytes(raw)
+        budget = artifacts.ArtifactBudget(len(raw))
+        snapshot = artifacts.report_snapshot
+        calls = 0
+
+        def observe(roots):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                report.write_bytes(raw + b' ' * 100)
+            elif calls == 3:
+                report.unlink()
+            return snapshot(roots)
+
+        with patch.object(artifacts, 'report_snapshot', side_effect=observe), \
+                patch.object(artifacts.time, 'monotonic', side_effect=[0, 0, 0, 0.5, 0.5, 1, 1, 1]), \
+                patch.object(artifacts.time, 'sleep'):
+            rows, _ = artifacts.collect_reports(
+                [self.reports], baseline, self.history, self.evidence, budget,
+                window=1, observed_images=images)
+        self.assertEqual(rows[0]['reason'], 'artifact-size-cap')
+        self.assertFalse(rows[0]['matchedActualProcess'])
+        version = rows[0]['retainedVersions'][0]
+        self.assertEqual(version['sha256'], hashlib.sha256(raw).hexdigest())
+        self.assertFalse(version['matchedActualProcess'])
+        self.assertEqual((self.evidence / version['retained']).read_bytes(), raw)
+        self.assertEqual(budget.used, len(raw))
+
+    def test_two_roots_share_one_original_and_all_references_follow_genuine_promotion(self):
+        images = self.retain()
+        system_reports = self.base / 'SystemDiagnosticReports'
+        system_reports.mkdir()
+        roots = [self.reports, system_reports]
+        baseline = artifacts.report_snapshot(roots)
+        name = '.swiftpm-testing-helper-2026-10-20-210144.ips'
+        first = self.reports / name
+        second = system_reports / name
+        raw = json.dumps(self.payload(pid=23)).encode()
+        first.write_bytes(raw)
+        second.write_bytes(raw)
+        budget = artifacts.ArtifactBudget(len(raw) * 2)
+        snapshot = artifacts.report_snapshot
+        calls = 0
+
+        def observe(current_roots):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                self.history[23] = [dict(self.row)]
+            elif calls == 3:
+                first.write_bytes(raw + b' ' * (budget.limit + 1))
+                second.unlink()
+            return snapshot(current_roots)
+
+        with patch.object(artifacts, 'report_snapshot', side_effect=observe), \
+                patch.object(artifacts.time, 'monotonic', side_effect=[0, 0, 0, 0.5, 0.5, 1, 1, 1]), \
+                patch.object(artifacts.time, 'sleep'):
+            rows, _ = artifacts.collect_reports(
+                roots, baseline, self.history, self.evidence, budget,
+                window=1, observed_images=images)
+        self.assertEqual(calls, 3)
+        self.assertEqual(len(rows), 2)
+        changed = next(row for row in rows if row['directory'] == str(self.reports))
+        disappeared = next(row for row in rows if row['directory'] == str(system_reports))
+        self.assertEqual(changed['reason'], 'artifact-size-cap')
+        self.assertFalse(changed['matchedActualProcess'])
+        self.assertNotIn('retained', changed)
+        self.assertEqual(len(changed['retainedVersions']), 1)
+        self.assertTrue(disappeared['matchedActualProcess'])
+        self.assertEqual(disappeared['attribution'], 'proved-pid-start-path')
+        references = [row for row in rows if 'retained' in row]
+        references += [version for row in rows for version in row.get('retainedVersions', [])]
+        self.assertEqual(len(references), 2)
+        self.assertEqual(len({row['retained'] for row in references}), 1)
+        for row in references:
+            self.assertTrue(row['matchedActualProcess'])
+            self.assertTrue(row['retained'].startswith('matched-crashes/'))
+            self.assertEqual(row['sha256'], hashlib.sha256(raw).hexdigest())
+            self.assertEqual((self.evidence / row['retained']).read_bytes(), raw)
+            self.assertNotIn('error', row)
+        self.assertTrue(all('error' not in row for row in rows))
+        self.assertFalse(any((self.evidence / 'unattributed-helper-diagnostics').iterdir()))
+        self.assertEqual(budget.used, len(raw))
 
 
 if __name__ == '__main__':

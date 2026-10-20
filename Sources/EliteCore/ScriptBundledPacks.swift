@@ -70,6 +70,10 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-custody-rescue")
   }
+  static var bundledIdentifiedSalvageDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-identified-salvage")
+  }
   static var bundledOriginalSurveyDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-consented-survey")
@@ -213,6 +217,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled consented survey pack: " + error.localizedDescription)
+    }
+    do {
+      let recovery = try read(bundledIdentifiedSalvageDirectory)
+      if !library.packs.contains(where: { $0.digest == recovery.digest }) {
+        library.packs.append(recovery)
+      }
+    } catch {
+      library.errors.append("Bundled identified salvage pack: " + error.localizedDescription)
     }
     return library
   }

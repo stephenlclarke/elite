@@ -74,6 +74,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedWayfarerRepairLoop: WayfarerRepairLoopCustody?
   var savedNavigationTrade: ScriptNavigationTradeState?
   var savedOriginalSurvey: NativeOriginalSurveyState?
+  var savedIdentifiedSalvage: NativeIdentifiedSalvageState?
   var courier: ScriptCourierCustody?
   var pledgeReceiptID: UUID?
   var receiptJoins: [String: [UUID]]?
@@ -196,6 +197,10 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     _read { yield storage[0].savedOriginalSurvey }
     _modify { yield &storage[0].savedOriginalSurvey }
   }
+  var savedIdentifiedSalvage: NativeIdentifiedSalvageState? {
+    _read { yield storage[0].savedIdentifiedSalvage }
+    _modify { yield &storage[0].savedIdentifiedSalvage }
+  }
 
   public var courier: ScriptCourierCustody? {
     _read { yield storage[0].courier }
@@ -302,6 +307,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
 }
 
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  var savedIdentifiedSalvageSource: NativeIdentifiedSalvageSource?
   var savedOriginalConsentedFreightSupply: OriginalConsentedFreightSupplyStock?
   var savedWayfarerColdChainStock: WayfarerColdChainStockLedger?
   var savedWayfarerRepairLoopStock: WayfarerRepairLoopStockLedger?
@@ -471,6 +477,19 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       guard cargo.valid(state: instance, engine: self) else { return false }
     } else {
       guard instance.contract?.offer.freightPlan == nil else { return false }
+    }
+    if instance.definition == NativeIdentifiedSalvage.stateID {
+      guard let salvage = instance.savedIdentifiedSalvage, salvage.definition.valid,
+        salvage.permission.mission == instance.id,
+        let source = savedIdentifiedSalvageSource, source.allocatedMission == instance.id,
+        source.id == salvage.source, source.originals.count == 2,
+        salvage.captures.count <= 2, salvage.losses.count <= 2,
+        instance.payloads
+          == NativeIdentifiedSalvage.payloads(
+            salvage, outcome: instance.outcome, source: source)
+      else { return false }
+    } else if instance.savedIdentifiedSalvage != nil {
+      return false
     }
     if instance.definition == NativeOriginalSurvey.stateID {
       guard let survey = instance.savedOriginalSurvey, survey.definition.valid,

@@ -1,0 +1,102 @@
+{
+  "status": "Root approved QUEUE DESIGN ONLY; implementation not started or assigned",
+  "approvalDate": "2026-10-20",
+  "rootThread": "01a134a1-be40-77d0-9e11-64a775729232",
+  "ledgerID": "W05",
+  "milestone": "M08",
+  "familyID": "l337.wayfarer-service/record-recovery",
+  "draft": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/W05-CREW-RECORD-RECOVERY-COMPLETE-JOURNEY-DRAFT-20261020.md",
+  "draftSHA256": "f5b4463c9414e7714024176dbbf8a7defbcc252e34394f09397a2bdc82b3a466",
+  "sourcePreflightCheckpoint": "5f64600d23ff55dea9c2f5e09304cf87b6354d53",
+  "approvedOrdinaryDefaults": {
+    "issuerAndCustodian": "Actual Cedamar G0/S85 main-orbital flight-record archive, represented by SENN",
+    "collection": "Archive-owned original recorder at actual Celalen G0/S241 exterior wreck-cradle fixture",
+    "receiver": "Same actual Cedamar G0/S85 archive",
+    "route": [
+      85,
+      241,
+      85
+    ],
+    "routeLegs": 2,
+    "hazard": 0,
+    "rewardCR": 650,
+    "rewardNative": 6500,
+    "batch": "cedamar-flight-record-01",
+    "recorderSerial": "CDR-001",
+    "sourceQuantity": 1,
+    "cargoTonnes": 1,
+    "berths": 0,
+    "depositCR": 0,
+    "deadlineSeconds": 0,
+    "perishable": false,
+    "fit": "Actual targeting core, Salvage targeting module and Fuel Scoops; no cutter or new shortcut",
+    "identification": "One actual positive bounded native pre/post frame, original selected/front2degree/nearest-hit surface250-1500units/current source and fitted authority; maximum native interval0.1; no synthetic caller proof, elapsed time or new12second timer",
+    "pickup": "Separately physically later actual collector operation requires already committed W05 identification; identification leaves recorder in cradle; pickup fulfills reserved1t without double counting",
+    "geometry": "Existing MIT SH058 scale0.2 recorder and SH141 scale1 solid cradle; exact source hashes and exterior Celalen poses in frozen draft",
+    "collision": "Separate actual W05 source/binding/model-valid collision mesh/mass join; exact recorder1000kg and fixture100000kg; no copied G09 authority or generic actor change",
+    "custodyAndLoss": "Real archive title/permission, protected original custody, actual reception, irreversible death/loss, genuine return of failed held property, writer rollback/retry and no recreated stock or living crew as frozen in draft",
+    "completionClue": "exchange-service-record-recovery only, once at genuine successful reception; no induction/G09/G10 substitution"
+  },
+  "activation": {
+    "requiresAll": [
+      "Qualified, independently clean-reviewed G09 is integrated",
+      "Explicit Root dispatch",
+      "Accepted exact post-G09 source and ownership preflight"
+    ],
+    "currentImplementationPermission": false
+  },
+  "ownership": {
+    "prospectivePathCount": 32,
+    "paths": [
+      "Sources/EliteCore/WayfarerRecordRecovery.swift",
+      "Sources/EliteCore/WayfarerRecordRecoveryBoard.swift",
+      "Sources/EliteCore/WayfarerRecordRecoveryAcquisition.swift",
+      "Sources/EliteCore/WayfarerRecordRecoverySave.swift",
+      "Sources/EliteCore/Game.swift",
+      "Sources/EliteCore/ScriptMissionState.swift",
+      "Sources/EliteCore/ContractBoard.swift",
+      "Sources/EliteCore/ContractBoardDisplay.swift",
+      "Sources/EliteCore/ScriptContractPageInput.swift",
+      "Sources/EliteCore/ScriptPack.swift",
+      "Sources/EliteCore/ScriptCommanderQuery.swift",
+      "Sources/EliteCore/ScriptPersistence.swift",
+      "Sources/EliteCore/ScriptSaveJSONPreflight.swift",
+      "Sources/EliteCore/ScriptBundledPacks.swift",
+      "Sources/EliteCore/ScriptBaseClueCatalog.swift",
+      "Sources/EliteCore/CargoScooping.swift",
+      "Sources/EliteCore/WorkTargetRuntime.swift",
+      "Sources/EliteCore/WorkTargetSelection.swift",
+      "Sources/EliteCore/FlightWorkGuidance.swift",
+      "Sources/EliteCore/TargetColourClassification.swift",
+      "Sources/EliteCore/NativeMissionActorAdmission.swift",
+      "Sources/EliteCore/ScriptEncounters.swift",
+      "Sources/EliteCore/InventoryInformation.swift",
+      "Sources/EliteCore/AsteroidDebrisContact.swift",
+      "Tests/EliteCoreTests/BundledScriptPackTests.swift",
+      "Tests/EliteCoreTests/WayfarerRecordRecoveryJourneyTests.swift",
+      "Tests/EliteCoreTests/WayfarerRecordRecoveryAcquisitionTests.swift",
+      "Tests/EliteCoreTests/WayfarerRecordRecoverySaveTests.swift",
+      "Sources/EliteCore/Resources/ScriptPacks/l337-record-recovery/manifest.toml",
+      "Sources/EliteCore/Resources/ScriptPacks/l337-record-recovery/scripts/main.lua",
+      "docs/ISSUE-wayfarer-record-recovery.md",
+      "docs/PR-wayfarer-record-recovery.md"
+    ],
+    "reservation": "Queue boundary only; exact hunks at activation; G1 sole integrator and canonical ledger writer"
+  },
+  "schemas": {
+    "normal": null,
+    "alien": null,
+    "liveNumbersReserved": false,
+    "policy": "Resolve then-current independent W05-only and genuine composed Normal/Alien claims during explicit activation/preflight; no weaker old envelope or fabricated other-family claim"
+  },
+  "execution": {
+    "status": "UNRUN",
+    "implementationStarted": false,
+    "buildStarted": false,
+    "testsRun": false,
+    "runtimeStarted": false,
+    "qualificationClaimed": false
+  },
+  "qualificationBeforeIntegration": "Meaningful owner-focused positive/refusal unit PASS and actual installed pack CLI/digest, then one independent complete bugs/performance/style CLEAN review before G1 integration",
+  "hold": "No implementation, worker messaging, next design/research item or canonical edit; existing G10/M01 work continues"
+}

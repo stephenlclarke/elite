@@ -142,7 +142,7 @@ struct BundledScriptPackTests {
           bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
           bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
-          NativeOriginalSurvey.digest,
+          NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
         ])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
@@ -173,7 +173,7 @@ struct BundledScriptPackTests {
           bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
           bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
-          NativeOriginalSurvey.digest,
+          NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
         ])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
@@ -196,7 +196,7 @@ struct BundledScriptPackTests {
         bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
-        NativeOriginalSurvey.digest,
+        NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
       ])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
@@ -224,6 +224,7 @@ struct BundledScriptPackTests {
         bundledSealedDispatchDigest, bundledVerifiedWarrantDigest, bundledCorridorDefenceDigest,
         bundledConsentedFreightDigest, bundledCabinJourneyDigest, bundledOrbitalOutlookDigest,
         bundledOriginalRescueDigest, NativeOriginalEvacuation.digest, NativeOriginalSurvey.digest,
+        NativeIdentifiedSalvage.digest,
       ])
   }
 
@@ -241,7 +242,7 @@ struct BundledScriptPackTests {
     #expect(discovered.commander.contracts.boards.isEmpty)
     await runtime.key("contracts-open")
     let contracts = await runtime.snapshot()
-    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 21)
+    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 22)
     let repairRows = contracts.contractBoard.rows.filter {
       $0.repairLoop?.digest == bundledRepairLoopDigest
     }
@@ -292,7 +293,7 @@ struct BundledScriptPackTests {
     #expect(trial.contractBoard.rows.filter { $0.people == .outlook(.request) }.count == 1)
     #expect(contracts.contractBoard.rows.filter { $0.people == .outlook(.request) }.count == 1)
     #expect(contracts.contractBoard.rows.filter { $0.people == .journey(.request) }.count == 1)
-    #expect(trial.contractBoard.rows.count == 21 && trial.contractBoard.action == .back)
+    #expect(trial.contractBoard.rows.count == 22 && trial.contractBoard.action == .back)
     #expect(
       trial.contractBoard.rows.filter { $0.coldChain?.digest == bundledColdChainDigest }.count == 1)
     #expect(
@@ -370,7 +371,7 @@ struct BundledScriptPackTests {
         bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
-        NativeOriginalSurvey.digest,
+        NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
       ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)
@@ -393,5 +394,19 @@ struct BundledOriginalSurveyPackTests {
       ScriptBaseClueCatalog.sources.first {
         $0.sourceID == NativeOriginalSurvey.stateID
       }?.clueID == "consented-survey-family-trace")
+  }
+}
+
+struct BundledIdentifiedSalvagePackTests {
+  @Test func originalDepotPackRetainsExactGeometryAndContentIdentity() throws {
+    let pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledIdentifiedSalvageDirectory)
+    #expect(pack.digest == NativeIdentifiedSalvage.digest)
+    #expect(pack.manifest.identifiedSalvage?.valid == true)
+    #expect(pack.missingCapabilities.isEmpty)
+    #expect(pack.manifest.encounters?.first?.actors.count == 3)
+    #expect(
+      ScriptBaseClueCatalog.sources.first {
+        $0.sourceID == NativeIdentifiedSalvage.stateID
+      }?.clueID == "identified-salvage-family-trace")
   }
 }

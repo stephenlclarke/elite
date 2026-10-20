@@ -200,6 +200,12 @@ final class AsteroidContactFrame {
   fileprivate let stepDuration: Double
   fileprivate let stationReady: Bool
   private var consumed = false
+  func identifiedSalvageSnapshot(_ actor: ActorIdentity)
+    -> (mesh: Mesh, massKg: Double, debris: Bool, asteroid: Bool)?
+  {
+    guard let frame = actors.first(where: { $0.identity == actor }) else { return nil }
+    return (frame.mesh, frame.mass, frame.debris, frame.asteroid)
+  }
   fileprivate func take() -> Bool {
     guard !consumed else { return false }
     consumed = true
@@ -247,6 +253,15 @@ final class AsteroidContactFrame {
         physical.identity.visit == visit, physical.ordnance == nil, body.scriptShot == nil
       else { continue }
       let mass = game.asteroidDebrisMassKg(body)
+      let mesh: Mesh
+      let collisionMass: Double
+      if let original = game.identifiedSalvageCollision(body) {
+        mesh = original.mesh
+        collisionMass = original.mass
+      } else {
+        mesh = game.gameplayMesh(for: body)
+        collisionMass = mass ?? AsteroidImpactPolicy.massKg(hull: body.hull)
+      }
       let station = game.stationInertialIdentity(for: body)
       let movingStation: Bool
       if let station {
@@ -258,8 +273,8 @@ final class AsteroidContactFrame {
         .init(
           identity: physical.identity, bodyID: body.id,
           pose: game.modelPose(of: body), velocity: physical.velocity,
-          mesh: game.gameplayMesh(for: body),
-          mass: mass ?? AsteroidImpactPolicy.massKg(hull: body.hull),
+          mesh: mesh,
+          mass: collisionMass,
           debris: mass != nil || movingStation, asteroid: mass != nil, station: station,
           hull: body.hull, localOrientation: body.orientation,
           rotation: body.rotation))
@@ -285,9 +300,14 @@ extension Game {
       guard let id = stationInertialIdentity(for: $0) else { return false }
       return commander.nativeStations?.inertia(for: id) != nil
     }
-    guard moving || !ready || bodies.contains(where: { asteroidDebrisMassKg($0) != nil }) else {
-      return nil
+    var requiresFrame = moving || !ready
+    if !requiresFrame {
+      requiresFrame = bodies.contains(where: { asteroidDebrisMassKg($0) != nil })
     }
+    if !requiresFrame, commander.scriptState.savedIdentifiedSalvageSource != nil {
+      requiresFrame = bodies.contains(where: { identifiedSalvageAlias($0) != nil })
+    }
+    guard requiresFrame else { return nil }
     return AsteroidContactFrame(
       game: self, startTime: start, stepDuration: delta, stationReady: ready)
   }

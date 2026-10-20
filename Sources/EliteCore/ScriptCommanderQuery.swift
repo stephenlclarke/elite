@@ -20,6 +20,15 @@ extension Game {
         "calendar_seconds": .number(receipt.calendarSeconds),
       ])
     }
+    if let state = identifiedSalvageState {
+      fields["identified_salvage"] = .object([
+        "held": .integer(Int64(state.held.count)),
+        "captured": .integer(Int64(state.captures.count)),
+        "lost": .integer(Int64(state.losses.count)),
+        "owner": .string("Avenor recovery depot / PELL"),
+        "closed": .bool(state.reception != nil),
+      ])
+    }
     if let source = originalSurveyState {
       fields["consented_survey"] = .object([
         "mission": source.permission.map { .string($0.mission.uuidString) } ?? .null,
