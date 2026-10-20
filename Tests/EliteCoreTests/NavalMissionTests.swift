@@ -7,6 +7,13 @@ private func navalGame(galaxy: Int = 0, score: Int = 256, stage: NavalMissionSta
   -> Game
 {
   var game = Game(executive: true)
+  // Classic naval arithmetic uses a controlled stock Cobra and a 100 CR starting balance.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.commander.credits = 1000
   game.commander.galaxy = galaxy
   game.systems = Universe.galaxy(number: galaxy)
   game.commander.kills = score
@@ -386,7 +393,8 @@ private func finishMessage(_ game: inout Game) {
   game.dock()
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Extra Energy Unit" })
   let item = Equipment.all[game.selection]
-  game.commander.system = try #require(game.systems.first { $0.technology >= item.technology }?.id)
+  // Keep the real dock/service context; the authenticated current shop already supports this unit.
+  try #require(game.equipmentAvailable(item))
   try game.commander.prepareEquipment()
   let naval = try #require(game.commander.fittedEquipment(at: .energy))
   let cost = game.shopPrice(item)
