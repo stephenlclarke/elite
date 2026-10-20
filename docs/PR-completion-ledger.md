@@ -310,3 +310,5 @@ Assign Root's existing M05/M09 shared-cap prerequisite to G3 implementation, unb
 ## Integrate qualified renderer and queue usable limited preview
 
 Integrate only seven exact qualifiedede7 paths as786089fe after Root CLEAN and actual814/815four GPU cases PASS/full closure; preserve immutable failure history. Allocate MC1816/817 before further work. After its actual closure, run only the previously planned optimized PRODUCT build/matched TITLE30, reuse same product for truthful signed LIMITED preview if startup/signing qualifies, preserving justified unaffected797 evidence. No second build/ReleaseTests/extra scene/fullCI/public release or M01/gain claim. Activate G2 docking source diagnosis immediately after integration; exact product paths still need Root reservation.
+
+Record shared-cap44df first eight-path implementation freeze as in development only: owner six focused methods/build active on MBA, no PASS/review/integration claim. Independent review follows owner focused PASS per streamlined delivery policy;03 remains frozen.
