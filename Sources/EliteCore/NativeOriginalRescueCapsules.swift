@@ -66,6 +66,19 @@ extension Game {
   func originalRescueFacts(_ body: borrowing SpaceBody, context: EncounterContext)
     -> NativeOriginalRescueSelectionFacts?
   {
+    let currentBody = copy body
+    let currentBodies = bodies
+    return withReadOnlyCommander { commander in
+      Self.originalRescueFacts(
+        currentBody, context: context, commander: commander, bodies: currentBodies)
+    }
+  }
+
+  @inline(never)
+  private static func originalRescueFacts(
+    _ body: borrowing SpaceBody, context: borrowing EncounterContext,
+    commander: borrowing Commander, bodies: borrowing [SpaceBody]
+  ) -> NativeOriginalRescueSelectionFacts? {
     guard let state = commander.nativePeople?.originalRescue, state.terminalOperation == nil,
       state.owner == commander.equipmentOwnerID, state.definition.valid,
       state.version == "1.0.0", state.digest == NativeOriginalRescueJourney.digest,
@@ -92,16 +105,25 @@ extension Game {
       body.scriptNPC?.fit.definition.model == "catalogue:SH040",
       body.scriptNPC?.fit.definition.scale == 1,
       body.scriptNPC?.fit.definition.speed == 0,
-      body.scriptNPC?.fit.definition.lasers?.isEmpty ?? true,
-      bodies.filter({ $0.physical?.identity == actor }).count == 1
+      body.scriptNPC?.fit.definition.lasers?.isEmpty ?? true
     else { return nil }
+    var matchingActors = 0
+    for index in bodies.indices {
+      if bodies[index].physical?.identity == actor { matchingActors += 1 }
+    }
+    guard matchingActors == 1 else { return nil }
     let isPerson = alias != "emergency-record"
     let held = commander.nativePeople?.heldPods.contains(where: { $0.person.rescue != nil }) == true
     let ready = isPerson || state.boarding != nil
-    return .init(
-      logicalActor: logical, alias: alias,
-      fits: ready && !held && commander.cargoTonnes <= commander.standardCargoCapacity,
-      isPerson: isPerson)
+    let fits: Bool
+    if ready && !held {
+      let cargoTonnes = commander.cargoTonnes
+      let capacity = commander.standardCargoCapacity
+      fits = cargoTonnes <= capacity
+    } else {
+      fits = false
+    }
+    return .init(logicalActor: logical, alias: alias, fits: fits, isPerson: isPerson)
   }
 
   /// Registered original actors share one actual geometry across capture and work guidance.
@@ -118,6 +140,7 @@ extension Game {
     return scriptNPCMesh(body)
   }
 
+  @inline(never)
   func originalRescueMetadata(_ body: borrowing SpaceBody, context: EncounterContext)
     -> SalvageTargetMetadata?
   {
