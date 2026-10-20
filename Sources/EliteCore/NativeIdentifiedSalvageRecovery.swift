@@ -66,7 +66,7 @@ extension Game {
       actor.system == systemIdentity, actor.entity > 1,
       actor.entity < commander.flightSimulation.nextActor,
       actor.visit == commander.flightSimulation.visit,
-      body.physical?.population == .mission, body.physical?.npc == nil,
+      body.physical?.population == .mission, body.physical?.npc?.role == .mission,
       body.physical?.ordnance == nil, body.physical?.rock == nil, body.physical?.salvage == nil,
       body.physical?.spawnIdentity?.producer == .mission,
       body.physical?.spawnIdentity?.system == actor.system,

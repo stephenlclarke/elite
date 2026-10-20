@@ -402,6 +402,14 @@ struct BundledIdentifiedSalvagePackTests {
     let pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledIdentifiedSalvageDirectory)
     #expect(pack.digest == NativeIdentifiedSalvage.digest)
     #expect(pack.manifest.identifiedSalvage?.valid == true)
+    for (reference, expected) in [
+      ("catalogue:SH058", NativeIdentifiedSalvage.packageGeometry),
+      ("catalogue:SH141", NativeIdentifiedSalvage.cradleGeometry),
+    ] {
+      let model = try #require(pack.models[reference])
+      let canonical = try ScriptPackLibrary.canonicalGeometry(model)
+      #expect(ScriptPackLibrary.hash(canonical) == expected)
+    }
     #expect(pack.missingCapabilities.isEmpty)
     #expect(pack.manifest.encounters?.first?.actors.count == 3)
     #expect(

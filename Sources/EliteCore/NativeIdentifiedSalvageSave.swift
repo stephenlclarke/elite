@@ -292,7 +292,7 @@ enum NativeIdentifiedSalvageSave {
       marker.body.missionActorID == capture.logicalActor,
       marker.body.position == capture.capturePoint,
       marker.body.hull == .cobra, marker.body.physical?.payload == nil,
-      marker.body.physical?.npc == nil, marker.body.physical?.ordnance == nil,
+      marker.body.physical?.npc?.role == .mission, marker.body.physical?.ordnance == nil,
       marker.body.physical?.salvage == nil,
       marker.body.physical?.empCrewPod == nil, marker.body.physical?.empSource == nil,
       marker.body.physical?.identity == capture.actor, marker.body.physical?.population == .mission,
