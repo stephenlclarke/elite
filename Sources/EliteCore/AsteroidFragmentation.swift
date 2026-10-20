@@ -158,6 +158,15 @@ extension Game {
   }
 
   mutating func persistAsteroidBreakupMotion() {
+    guard
+      bodies.indices.contains(where: { bodies[$0].energy > 0 && bodies[$0].physical?.rock != nil })
+    else { return }
+    persistPotentialAsteroidBreakupMotion()
+  }
+
+  // No original motion write is possible without a live body carrying a rock identity.
+  @inline(never)
+  private mutating func persistPotentialAsteroidBreakupMotion() {
     let flight = commander.flightSimulation
     for body in bodies where body.energy > 0 {
       guard let physical = body.physical, let rock = physical.rock,

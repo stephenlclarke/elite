@@ -50,6 +50,12 @@ extension Basis3 {
 }
 extension Game {
   mutating func persistBlackjackTargets() {
+    guard withReadOnlyCommander({ $0.galaxy }) == 1 else { return }
+    persistBlackjackTargetsInGalaxyOne()
+  }
+
+  @inline(never)
+  private mutating func persistBlackjackTargetsInGalaxyOne() {
     guard commander.galaxy == 1, let anchor = bodies.first(where: { $0.hull == .station }) else {
       return
     }

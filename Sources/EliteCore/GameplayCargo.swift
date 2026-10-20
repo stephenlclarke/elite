@@ -72,6 +72,12 @@ extension Game {
   }
 
   mutating func persistCargoPoses() {
+    guard bodies.indices.contains(where: { bodies[$0].physical?.payload != nil }) else { return }
+    persistPresentCargoPoses()
+  }
+
+  @inline(never)
+  private mutating func persistPresentCargoPoses() {
     guard let context = gameplayContext() else { return }
     for actor in context.actors where actor.payload != nil {
       _ = commander.cargoDebrisLedger.updatePhysicalPose(
@@ -83,6 +89,18 @@ extension Game {
   /// Actor isolation makes this the current canonical snapshot, before any binding is culled.
   mutating func persistOrePoses() {
     persistAsteroidBreakupMotion()
+    guard
+      bodies.indices.contains(where: { index in
+        guard bodies[index].energy > 0 else { return false }
+        if case .ore? = bodies[index].physical?.payload { return true }
+        return false
+      })
+    else { return }
+    persistPresentOrePoses()
+  }
+
+  @inline(never)
+  private mutating func persistPresentOrePoses() {
     let pose = commander.flightSimulation.pose
     for body in bodies where body.energy > 0 {
       guard let physical = body.physical, let payload = physical.payload,
