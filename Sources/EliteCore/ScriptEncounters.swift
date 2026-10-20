@@ -600,8 +600,8 @@ extension Game {
       templates.append(template)
     }
     return .init(
-      mode: mode, authority: authority, instance: state, pack: pack,
-      encounter: encounter, definition: definition, actors: templates,
+      mode: mode, authority: authority, instance: copy state, pack: copy pack,
+      encounter: copy encounter, definition: copy definition, actors: templates,
       installedBaseEncounter: instances[state.id]?.ownedEncounters[encounter.id])
   }
 
