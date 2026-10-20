@@ -3,8 +3,15 @@ import Testing
 
 @testable import EliteCore
 
-private func showroomGame() -> Game {
+private func showroomGame(ownedShip: String? = nil) -> Game {
   var game = Game(executive: false)
+  if let ownedShip {
+    game.commander.shipID = ownedShip
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
+  }
   game.screen = .equipment
   game.selection = Equipment.all.count - 1
   game.key("6")
@@ -139,7 +146,7 @@ private func showroomGame() -> Game {
   game.key("down")
   #expect(game.showroom.baseline == "SH001" && game.showroom.selection != "SH001")
   game.key("r")
-  #expect(game.showroom.baseline == "SH023")
+  #expect(game.showroom.baseline == game.commander.shipID && game.showroom.baselineUsesCurrent)
   game.key("v")
   #expect(game.showroom.sourceProfiles)
   game.key(".")
@@ -343,7 +350,7 @@ private func showroomGame() -> Game {
   #expect(
     passengerFact.fields.count == 1
       && passengerFact.fields[0].label == "Documented passenger capacity")
-  var game = showroomGame()
+  var game = showroomGame(ownedShip: "SH023")
   game.commander.equipment.insert(Equipment.navalEnergyUnit)
   #expect(
     game.currentShowroomProfile.fields.contains {
@@ -383,6 +390,7 @@ private func showroomGame() -> Game {
   #expect(ShipCatalogue.all.allSatisfy { !$0.profiles.isEmpty })
   for ship in ShipCatalogue.all.filter({ $0.model?.hasPrefix("xyzzy-showroom-") == true }) {
     var game = showroomGame()
+    let commander = game.commander
     game.showroom.selection = ship.id
     game.showroom.detail = true
     for width in [512.0, 1000, 1512] {
@@ -390,12 +398,12 @@ private func showroomGame() -> Game {
       #expect(!frame.shipPanels.isEmpty)
       #expect(frame.labels.allSatisfy { $0.bounds.x >= 0 && $0.bounds.maxX <= width })
     }
-    #expect(game.commander.name == "JAMESON")
+    #expect(game.commander == commander)
   }
 }
 
 @Test func showroomFiltersAreVisibleClearableAndNeverChangeTheOwnedCobra() throws {
-  var game = showroomGame()
+  var game = showroomGame(ownedShip: "SH023")
   let commander = game.commander
   game.showroom.query = "SH063"
   for width in [512.0, 768, 1512] {
