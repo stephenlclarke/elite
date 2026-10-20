@@ -219,7 +219,22 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
 @Test func freightNativeConfirmationRefusesHoldFilledAfterReview() async throws {
   let fixture = try ScriptFreightFixture()
   defer { fixture.clean() }
-  let runtime = try await fixture.nativeRuntime()
+  var game = try ScriptProcurementFixture.freshG03FlightGame()
+  // This controlled unit fixture exercises the stock Cobra, independently of the fresh starter.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.scriptPacks = [fixture.pack]
+  // Preserve the original 100,000-unit budget and every paid G03 fitting receipt.
+  try #require(game.commander.credits == 100000)
+  try game.prepareG03FlightEquipment()
+  try ScriptProcurementFixture.requirePaidG03Preparation(game)
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  try await runtime.save(to: fixture.save)
+  await runtime.key("0")
+  try await ScriptProcurementFixture.dock(runtime)
   let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
   let board = await runtime.snapshot()
   let offer = try #require(board.commander.contracts.boards[key]?.offers[2])
