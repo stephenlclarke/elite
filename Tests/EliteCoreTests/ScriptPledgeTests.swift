@@ -237,6 +237,10 @@ func pledgeFullNativeThresholdsNeverTransferPartialAmounts(scenario: PledgeScena
   let remainingFood = excessFood - 5  // The authored tier-three donation stays five tonnes.
   var game = fixture.game(food: excessFood)
   game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.commander.unlimitedCargo = true
   try #require(game.commander.standardCargoCapacity == hold)
   #expect(game.commander.cargoTonnes == excessFood && game.commander.valid)
@@ -420,6 +424,10 @@ func pledgeRejectedAcceptedHandlersNeverPublishAnUnpaidAssignment(mode: String) 
   defer { fixture.clean() }
   var game = fixture.game(cash: 10_000_000, food: 220)
   game.commander.shipID = "SH005"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   try #require(game.commander.standardCargoCapacity >= game.commander.cargoTonnes)
   game.commander.unlimitedCargo = true  // Finite actual stock is still consumed.
   for index in 0..<128 {

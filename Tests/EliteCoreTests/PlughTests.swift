@@ -27,6 +27,37 @@ private func plughGame(galaxy: Int = 0) throws -> Game {
   return game
 }
 
+// The all-supported-items fixture selects its actual work-tool hull before any native journey.
+private func plughSupportedShopGame() throws -> Game {
+  let galaxy = 0
+  var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.commander.galaxy = galaxy
+  game.systems = Universe.systemsIncludingPlugh(number: galaxy)
+  game.commander.system = Plugh.rumourStation
+  game.selectedSystem = Plugh.rumourStation
+  game.screen = .status
+  game.key("u")
+  game.key("return")
+  game.launch()
+  try #require(!game.docked && game.commander.valid, "Native launch refused: \(game.message)")
+  game.bodies = []
+  game.selectedSystem = Plugh.systemID
+  game.arrive()
+  try #require(
+    game.commander.system == Plugh.systemID && !game.docked && game.commander.valid,
+    "PLUGH arrival refused: \(game.message)")
+  game.dock()
+  try #require(
+    game.docked && game.atPlugh && game.commander.valid,
+    "PLUGH docking refused: \(game.message)")
+  return game
+}
+
 // Buy real predecessors so the desired PLUGH transaction tests its own single discount.
 private func buyPlughPrerequisites(_ node: EquipmentNodeID, game: inout Game) throws {
   let definition = try #require(EquipmentRuntimeCatalog.graph.nodes.first { $0.id == node })
@@ -187,7 +218,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
 @Test func plughShopSellsEverySupportedItemAtOneDiscountAndKeepsRewardsRestrictedElsewhere() throws
 {
   for (index, item) in Equipment.all.enumerated() {
-    var game = try plughGame()
+    var game = try plughSupportedShopGame()
     game.commander.credits = 10_000_000
     game.commander.fuel = 0
     try game.commander.prepareEquipment(legacy: false)
@@ -229,7 +260,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
       #expect(normal.commander.credits == 10_000_000 && normal.message.hasSuffix("NOT FOR SALE"))
     }
   }
-  var game = try plughGame()
+  var game = try plughSupportedShopGame()
   game.commander.credits = 1_000_000
   let naval = try #require(EquipmentRuntimeCatalog.node(for: Equipment.navalEnergyUnit))
   try buyPlughPrerequisites(naval, game: &game)
