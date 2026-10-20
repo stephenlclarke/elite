@@ -363,6 +363,21 @@ struct EMPTravelAndSecurityTests {
     let emissionsBefore = game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count
     // One original 800-frame helper keeps both charges, real aiming and every native control unchanged.
     let remainingFrames = try disableNativeEMPActor(actor, game: &game)
+    try verifyFullStockCobraAfterPulses(
+      &game, original: original, actor: actor, npc: npc, player: player,
+      catalogueID: catalogueID, crew: crew, hardware: hardware, history: history, weapon: weapon,
+      credits: credits, cargo: cargo, legal: legal, kills: kills, pulse: pulse,
+      startedAt: startedAt, emissionsBefore: emissionsBefore, remainingFrames: remainingFrames)
+  }
+
+  @inline(never)
+  private func verifyFullStockCobraAfterPulses(
+    _ game: inout Game, original: SpaceBody, actor: ActorIdentity, npc: NPCState,
+    player: ActorIdentity, catalogueID: String, crew: Int,
+    hardware: OwnedEquipmentInventory, history: EquipmentPurchaseHistory, weapon: OwnedEquipmentItem,
+    credits: Int, cargo: [Int], legal: Int, kills: Int, pulse: EMPPulseProfile,
+    startedAt: Double, emissionsBefore: Int, remainingFrames: Int
+  ) throws {
     try #require((0...800).contains(remainingFrames))
     let elapsed = game.commander.flightSimulation.physicalTime - startedAt
     try #require(elapsed >= 2 * pulse.warmup && elapsed <= 800 * 0.1 + 1e-8)
