@@ -31,9 +31,9 @@ public struct ScriptNPCDefinition: Codable, Sendable, Equatable {
         $0.isFinite && (0...100_000).contains($0)
       }
       && (0...32).contains(missiles) && (0...1_000_000).contains(bounty)
-      && (lasers?.count ?? 0) <= 16 && (lasers ?? []).allSatisfy(\.valid)
+      && (lasers?.count ?? 0) <= 16 && ScriptNPCWeapon.allValid(lasers ?? [])
       && Set((lasers ?? []).map(\.id)).count == (lasers?.count ?? 0)
-      && (components?.count ?? 0) <= 32 && (components ?? []).allSatisfy(\.valid)
+      && (components?.count ?? 0) <= 32 && ScriptNPCComponent.allValid(components ?? [])
       && Set((components ?? []).map(\.id)).count == (components?.count ?? 0)
       && (drive.map { drive in
         drive.valid && (components ?? []).contains { $0.id == drive.component }
@@ -79,6 +79,13 @@ public struct ScriptNPCWeapon: Codable, Sendable, Equatable {
           && collisionDelay.map { $0.isFinite && (0...10).contains($0) } == true
           && collisionDelay! < lifetime!)
   }
+  @inline(never)
+  static func allValid(_ weapons: borrowing [ScriptNPCWeapon]) -> Bool {
+    for index in weapons.indices {
+      guard weapons[index].valid else { return false }
+    }
+    return true
+  }
 }
 public enum ScriptNPCWeaponKind: String, Codable, Sendable { case laser, plasma }
 
@@ -97,8 +104,15 @@ public struct ScriptNPCComponent: Codable, Sendable, Equatable {
       && position.finite && position.length <= 100_000 && orientation.validRotation
       && orientation.x.cross(orientation.y).dot(orientation.z) > 0.9999
       && energy.isFinite && (0.001...1_000_000).contains(energy)
-      && (weapons?.count ?? 0) <= 8 && (weapons ?? []).allSatisfy(\.valid)
+      && (weapons?.count ?? 0) <= 8 && ScriptNPCWeapon.allValid(weapons ?? [])
       && Set((weapons ?? []).map(\.id)).count == (weapons?.count ?? 0)
+  }
+  @inline(never)
+  static func allValid(_ components: borrowing [ScriptNPCComponent]) -> Bool {
+    for index in components.indices {
+      guard components[index].valid else { return false }
+    }
+    return true
   }
 }
 
@@ -269,11 +283,20 @@ public struct ScriptNPCState: Codable, Sendable, Equatable {
       Set(components.keys) == Set((fit.definition.components ?? []).map(\.id)),
       Set(components.values.map(\.identity)).count == components.count
     else { return false }
-    return (fit.definition.components ?? []).allSatisfy { spec in
-      guard let actual = components[spec.id] else { return false }
-      return actual.energy.isFinite && (0...spec.energy).contains(actual.energy)
-        && Set(actual.guns.keys) == Set((spec.weapons ?? []).map(\.id))
-        && actual.guns.values.allSatisfy(\.valid)
+    let specifications = fit.definition.components ?? []
+    for index in specifications.indices {
+      guard componentValid(specifications[index]) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func componentValid(_ specification: borrowing ScriptNPCComponent) -> Bool {
+    guard let actual = components[specification.id], actual.energy.isFinite,
+      (0...specification.energy).contains(actual.energy),
+      Set(actual.guns.keys) == Set((specification.weapons ?? []).map(\.id)),
+      actual.guns.values.allSatisfy(\.valid)
+    else { return false }
+    return true
   }
 }
