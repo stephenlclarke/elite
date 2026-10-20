@@ -507,7 +507,7 @@ private func calendarContractPack() throws -> ScriptPack {
   accepted.confirmScriptDialogue()
   let finished = try #require(accepted.commander.scriptState.instances[id])
   #expect(finished.outcome == .failed && finished.contract?.settlementOutcome == .failed)
-  #expect(accepted.commander.credits == 1000 - offer.deposit)
+  #expect(accepted.commander.credits == before.credits - offer.deposit)
   #expect(accepted.commander.cargoTonnes == 0)
   #expect(finished.contract?.deadline == job.deadline)
 }
