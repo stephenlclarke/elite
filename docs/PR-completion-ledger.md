@@ -382,3 +382,7 @@ Record842/843 allocation and actual843 zero-terminal stack failure at scriptStat
 ## Batch845 storage-only PASS and pending representation decision
 
 Record Root's exact bounded scriptState presence-check scope exception and844/845 all8methods10cases allocation after changed storage body invalidated839 current evidence. Actual845 revised storage1/1 PASS, remaining7/9 UNKNOWN at the same optional engine-state copy; all source/artifact/preference/process guards and released845 registry recorded with immutable proof/crash hashes. Some/none was insufficient. Current storage evidence is retained only while unaffected; concrete private value-storage/borrowed-payload proposal now awaits Root review/decision, implementation and next CPU run unapproved. No more helper/syntax experiments, extra audit or GUI poll; MBA06 owner work remains independent. Documentation lint/diff only, historical hashes preserved.
+
+## Current active assignment register
+
+Update only current ledger status/register to Root-approved MC1bb7d private COW script storage and active846/847 eight-method/ten-case qualification, with845 storage evidence historical; no pending-proposal or idle-runtime claim. MBA06 revision2 source169deb74 display-only integrity read is owner-active, retaining eight unaffected PASS cases and rerunning seven native flows. Both actual build processes are Root-confirmed live. Preserve historical outcomes unchanged and keep owner qualification/review/integration distinct. No new audit, validation run or runtime action; normal scoped Markdown lint/diff check only.
