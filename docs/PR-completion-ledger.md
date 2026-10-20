@@ -294,3 +294,7 @@ Assign the M01 docking blocker/five MBA03 dependencies to G2 NEXT after renderer
 ## Accept pending MBA03 freeze; activate source-only MBA07
 
 Record exact958f FINAL-PENDING handoff, seven non-doc paths hash-exact reviewed/tested2bc and G1 docs-only CLEAN review. Two corrected existing tests PASS with whole group closure; eight-method/nine-case aggregate includes retained9ac evidence, no single13/14 pass. Five native flows remain docking-dependent/UNKNOWN and packet is not integrated or playable; Avenor route gap remains OPEN. Activate already approved MBA07 source reconciliation/proposal only, implementation still needs Root boundary approval. Scoped Markdown/whitespace checks, no duplicate product audit/runtime.
+
+## Material813 failure and current owned execution/reconciliation queue
+
+Record closed813bada36 zero PASS/seven UNKNOWN later validator stack failure and immediate G2814/815 reviewedede7 four-case allocation; no per-diagnostic ledger/review overhead or crash integration. Preserve MBA07 source-reconciled proposal pending actual consent/berth/non-EMP producer/save decisions; no speculative framework. Assign existing Avenor courier feasibility source/evidence reconciliation, distinguishing intended truthful no-headroom refusal from proven calculation/offer defect before any fix or gap reclassification. No new runtime probe/waiver; frozen03 stays pending.
