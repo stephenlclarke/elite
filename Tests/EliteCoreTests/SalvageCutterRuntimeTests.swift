@@ -5,6 +5,12 @@ import Testing
 
 private func cutterRuntimeGame() throws -> (Game, WreckSectionIdentity) {
   var game = Game(executive: false)
+  // Controlled cutter scenes require a hull with declared work-tool fittings.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.launch()
   game.speed = 0
   game.bodies = []
