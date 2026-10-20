@@ -3,6 +3,16 @@ import Testing
 
 @testable import EliteCore
 
+private func shieldCobraGame() -> Game {
+  var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  return game
+}
+
 @Test func shieldBoosterPricesTechAndMultipliersFollowTheSpecifiedLaserProgression() {
   let multipliers = [1.5, 5, 1.5, 2.3, 6.9]
   for (index, booster) in ShieldBooster.allCases.enumerated() {
@@ -19,7 +29,7 @@ import Testing
 }
 @Test func boostersIncreaseBothShieldCapacitiesWithoutStackingOrChangingRecharge() {
   for booster in ShieldBooster.allCases {
-    var game = Game(executive: false)
+    var game = shieldCobraGame()
     game.commander.installShieldBooster(booster)
     game.dock()
     let capacity = 255 * booster.multiplier
@@ -41,12 +51,23 @@ import Testing
 @Test func buyingBoosterRespectsTechnologyCashAndPreventsWeakerTierCharges() throws {
   var game = Game(executive: false)
   game.commander.credits = 100_000
+  let militaryItem = try #require(
+    Equipment.all.first { $0.name == ShieldBooster.military.equipmentName })
+  game.commander.system = try #require(
+    game.systems.first { !$0.isPlugh && $0.technology < militaryItem.requiredTechnologyLevel }?.id)
+  game.selectedSystem = game.commander.system
+  try #require(!game.equipmentAvailable(militaryItem))
   game.selection = Equipment.all.firstIndex { $0.name == ShieldBooster.military.equipmentName }!
+  let unavailable = game.commander
   game.purchase()
   #expect(game.commander.shieldBooster == nil)
-  game.commander.system = try #require(game.systems.firstIndex { $0.technology >= 10 })
+  #expect(game.commander == unavailable)
+  game.commander.system = try #require(
+    game.systems.first { !$0.isPlugh && $0.technology >= militaryItem.requiredTechnologyLevel }?.id)
+  game.selectedSystem = game.commander.system
   for booster in [ShieldBooster.pulse, .mining, .beam, .military] {
     game.selection = try #require(Equipment.all.firstIndex { $0.name == booster.equipmentName })
+    try #require(game.equipmentAvailable(Equipment.all[game.selection]))
     game.purchase()
     #expect(game.commander.equipmentPurchaseHistory?.paid.last?.node.key == booster.equipmentName)
   }
@@ -168,7 +189,7 @@ import Testing
 }
 
 @Test func legacyMiningStrengthSurvivesPaidWeakerPurchasesStoredWithOriginalIdentity() throws {
-  var game = Game(executive: false)
+  var game = shieldCobraGame()
   let militaryItem = try #require(
     Equipment.all.first { $0.name == ShieldBooster.military.equipmentName })
   game.commander.system = try #require(

@@ -1,0 +1,11 @@
+# test: make shield and equipment purchase prerequisites explicit
+
+A private stock-Cobra fixture serves only the two scenarios with fixed 255/256/recharge-1 and legacy shield-strength expectations. It selects actual SH023 and initializes its legitimate fuel and resource pools before fitting or business actions. All other shield scenarios retain the current Peregrine. Every original hard numeric, multiplier, identity, paid-history and refusal assertion remains.
+
+The shield purchase chain selects an actual non-Plugh shop below the selected military item's required technology for its negative case, requires genuine unavailability and full commander conservation, then selects an actual shop meeting that requirement. Each existing paid step requires availability. Prices `[3000, 6000, 7500, 45000]`, balance 38500, original weaker-fit behavior, order and provenance are unchanged.
+
+Only the equipmentPurchases method in EliteTests changes setup: explicit Cobra with a 70-unit tank, four pylons, stock resource pools and the intended 1000-tenths cash budget, at an authenticated ordinary shop supporting cargo expansion but not Extra Energy. All original fuel cost 20/balance 980, missile cost 300/balance 680, rack-full, unavailable/nonmutation, cargo-bay cost 4000/balance 96000, duplicate and off-station checks are byte-exact. All other EliteTests bytes are unchanged.
+
+Validation: source prerequisite review and patch whitespace checked. Build/test/probe are UNRUN. G1 receives six methods/cases: unchanged shield-price/technology/multiplier control, capacity/damage/recharge, buying chain, legacy strength/identity, unchanged capital reward-only/display/refusal control and equipmentPurchases. Booster and viewport loops are internal iterations, not additional Swift Testing cases. Unchanged controls remain byte-exact; there is no previous PASS retention claim for changed callers or whole-file qualification.
+
+Linked assignment: M01 observed 955 shield/equipment fixture family through Orchestrator. Remaining gates are focused execution, distinct coherent review, final CI and PR review/checks. No production, app default, module balance, name, price or other failure-family change is included. No playable or release completion is asserted.
