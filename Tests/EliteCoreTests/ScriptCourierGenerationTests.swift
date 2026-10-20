@@ -106,6 +106,28 @@ struct CourierNativeFixture: Sendable {
   let lowerBound: Double
   let offer: String
   static let digest = "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369"
+
+  /// The independent witness packet freezes a stock seven-LY fit, not the current fresh starter.
+  func game(using fixture: CourierFixture) throws -> Game {
+    var game = fixture.game(system: origin)
+    try #require(
+      game.docked && game.commander.equipmentInventory == nil
+        && game.commander.nativeStations == nil && game.commander.contracts.boards.isEmpty
+        && game.commander.scriptState.instances.isEmpty)
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
+    let reach = ScriptCourierReach(game.commander)
+    try #require(
+      game.commander.valid && reach.valid && reach.hull == "SH023"
+        && reach.navigation == nil && reach.storage == 0 && reach.fuel == 70
+        && reach.capacity == 70 && reach.jumpCap == 7 && reach.firstReach == 7
+        && reach.laterReach == 7)
+    return game
+  }
+
   func verify(_ board: ScriptContractBoard, _ actual: ScriptContractOffer) throws {
     #expect(Universe.originalWorlds.version == "l337-world-1")
     #expect(board.digest == Self.digest && board.revision == 0 && board.station.system == origin)
