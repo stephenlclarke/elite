@@ -28,7 +28,20 @@ extension Game {
       return "This training requires its exact approved runtime content."
     }
     guard let binding, binding.matches(self) else {
-      return "Navigation and trade practice awaits installed original-world endpoint bindings."
+      let retainedRoute = commander.scriptState.instances.values.contains {
+        $0.outcome == .active && $0.savedNavigationTrade != nil
+      }
+      if !retainedRoute, selectedSystem == commander.system,
+        let original = try? Universe.originalWorld(
+          galaxy: commander.galaxy, system: commander.system),
+        systems.indices.contains(commander.system),
+        systems[commander.system] == Universe.nativeSystem(original)
+      {
+        return
+          "Select a different reachable original-world destination on the chart, then reopen Mission Contacts."
+      }
+      return
+        "Restore the installed original-world route records, then select an ordinary destination and reopen Mission Contacts."
     }
     return nil
   }

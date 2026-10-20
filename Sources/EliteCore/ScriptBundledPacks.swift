@@ -36,6 +36,11 @@ extension ScriptPackLibrary {
       "l337-mutual-contribution")
   }
 
+  static var bundledNavigationTradeDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-navigation-trade")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -88,6 +93,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled mutual contribution pack: " + error.localizedDescription)
+    }
+    do {
+      let navigationTrade = try read(bundledNavigationTradeDirectory)
+      if !library.packs.contains(where: { $0.digest == navigationTrade.digest }) {
+        library.packs.append(navigationTrade)
+      }
+    } catch {
+      library.errors.append("Bundled navigation/trade pack: " + error.localizedDescription)
     }
     return library
   }

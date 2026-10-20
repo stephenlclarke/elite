@@ -22,6 +22,9 @@ private let bundledSeedTransferDigest =
 private let bundledMutualContributionDigest =
   "d4691b29ad9bc6f2fae1fa07345a96b38068857d427eb1977d7ced498ff698bf"
 
+private let bundledNavigationTradeDigest =
+  "8c23ce72936e8bdfa47978f7d7d4240171babe05c2da5ac49727d2616e38d802"
+
 private struct BundledScriptFixture {
   let root: URL
   var library: URL { root.appendingPathComponent("installed") }
@@ -120,6 +123,7 @@ struct BundledScriptPackTests {
         && discovered.scriptPacks.map(\.digest) == [
           bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
           bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
+          bundledNavigationTradeDigest,
         ])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
@@ -147,6 +151,7 @@ struct BundledScriptPackTests {
         && library.packs.map(\.digest) == [
           bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
           bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
+          bundledNavigationTradeDigest,
         ])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
@@ -166,6 +171,7 @@ struct BundledScriptPackTests {
       library.packs.map(\.digest) == [
         pack.digest, bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
         bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
+        bundledNavigationTradeDigest,
       ])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
@@ -189,7 +195,7 @@ struct BundledScriptPackTests {
     #expect(
       after.scriptPacks.map(\.digest) == [
         bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest, bundledRepairLoopDigest,
-        bundledSeedTransferDigest, bundledMutualContributionDigest,
+        bundledSeedTransferDigest, bundledMutualContributionDigest, bundledNavigationTradeDigest,
       ])
   }
 
@@ -200,7 +206,10 @@ struct BundledScriptPackTests {
     let errors = await runtime.loadDefaultScriptPacks(directory: fixture.library)
     #expect(errors.isEmpty)
     let discovered = await runtime.snapshot()
-    #expect(discovered.scriptGallery.first?.status == .available)
+    #expect(
+      discovered.scriptGallery.contains {
+        $0.trialDigest == bundledCourierDigest && $0.status == .available
+      })
     #expect(discovered.commander.contracts.boards.isEmpty)
     await runtime.key("contracts-open")
     let contracts = await runtime.snapshot()
@@ -326,6 +335,7 @@ struct BundledScriptPackTests {
       loaded.scriptPacks.map(\.digest) == [
         changed.digest, bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
         bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
+        bundledNavigationTradeDigest,
       ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)
