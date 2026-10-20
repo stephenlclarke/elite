@@ -574,3 +574,7 @@ Root confirms33304385all17committedpaths exactreceipt/zero mismatches, sourceint
 ## Record active human-unlocked890 and next G13 assignment
 
 Root903/904actualwholeclosure handover grantsG1existing889briefvisible/manualsave/relaunchContinue; humanUnlockedandready, primarysaveprefs frozen, no rebuild/performance/W03claim. Source3476unchangedbinary remainsunqualified. Rootassigns G3soleMBA G13mutualrelief14path500CRnativepledge/Cedamar85/receiptclueonce/zeroreward/noGame-save-overlap, G2review AFTERownerPASS/G1integrator, authoringnotcompletion. ActualGUIpriority preserved; scopedMarkdown/whitespace only.
+
+## Close890 tool-access failure and persist G13 exact assignment
+
+DespiteactualhumanUnlockedandready/safe903904handover, ONE890desktopcall reportedlocked/apps empty; no app/process/save/visibleframes launched. Protectedprimaryprefs-save/889binary472resourcesunchanged, exacterror/blockedwholeclosure/registryreleased, RootreturnedMC1CPU/no repoll/question/alternativeprobe/Slackclaim. Record3476annotationunchangedbinary/903PASS904singlecoreUNKNOWN/10ownedclosed/currentpending25methods39cases-target28/42. G13soleparallelG3assigned exact14paths/333base/500CRnativepledge/noGame-saveoverlap, durablehandoff/G2reviewAFTERownerPASS/G1integrator. No staleunassigned/physical-lockfact/usableappclaim. ScopedMarkdown/whitespace/historyhashpreservation only.
