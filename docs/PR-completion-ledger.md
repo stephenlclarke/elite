@@ -394,3 +394,7 @@ Replace stale active-build labels with actual847 storage1/1 PASS/seven methods-n
 ## Integrate independently CLEAN cold-chain source and hand off next existing proposal
 
 Record exact twelve-path622 source integration after G2 ONE CLEAN881 review and retained aggregate owner14methods15cases. Ten non-document/ISSUE bytes remain exact; only approved PR review-status metadata changes with inverse hash check. Protected MC1 canonical/isolated inputs unchanged, no duplicate audit/tests/build/runtime. Update current register and maintained W01/MBA06 rows to bounded source integrated, retaining full artwork/playable app/final-quality/release limits. Root assigns G3 next existing MBA07 SOURCE proposal only, implementation unstarted; record separately approved same-invocation M01 owner-snapshot refresh scope pending freeze. All prior hashes retained; scoped documentation lint/diff checks only.
+
+## Current frozen commit-refresh owner allocation
+
+Update current M01 status/register to exact640eaed5 active848/849 matching build/7methods9cases plus byte-unchanged847 storage1/1 retained. Preserve earlier source/plan/proof hashes as historical provenance. Only ScriptEncounters/notes changed under approved same-invocation snapshot reuse, default guards and owner PASS before ONE final review; outcomes pending. No extra source audit/runtime or GUI poll. Scoped Markdown lint/diff checks only.
