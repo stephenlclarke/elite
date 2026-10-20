@@ -540,10 +540,12 @@ import Testing
 
 @Test func executiveDefaultsDemoAndPauseOptions() {
   var game = Game()
-  #expect(game.screen == .demo && game.commander.name == "JAMESON")
+  #expect(game.screen == .demo && game.commander.name == "Rowan Calder")
   #expect(
-    game.commander.credits == 1000
+    game.commander.credits == 7200
       && game.commander.capacity == game.commander.nativePerformance.cargo)
+  #expect(game.commander.shipID == "SH025" && game.commander.fuel == 130)
+  #expect(game.commander.galaxy == 0 && game.commander.system == 7)
   #expect(game.commander.equipment == ["Pulse Laser"])
   #expect(game.commander.valid)
   game.key(" ")
@@ -565,7 +567,9 @@ import Testing
   #expect(!game.paused)
   game.screen = .gameOver
   game.key("return")
-  #expect(game.commander.name == "JAMESON")
+  #expect(game.commander.name == "Rowan Calder")
+  #expect(game.commander.credits == 7200 && game.commander.shipID == "SH025")
+  #expect(game.commander.fuel == 130 && game.commander.galaxy == 0 && game.commander.system == 7)
 }
 
 @Test func xyzzyJumpLimitsPersistAndObeyCurrentFuelAndNavigationComputer() async throws {
@@ -692,7 +696,8 @@ private func reboundJumpLimitWorldAfterLoad(
   game.commander.autoTrade = true
   let cash = game.commander.credits
   let arrivalPrices = game.market.map(\.price)
-  let saleRevenue = cargo.indices.reduce(0) { $0 + cargo[$1] * arrivalPrices[$1] }
+  let arrivalBids = game.market.map(\.bidPrice)
+  let saleRevenue = cargo.indices.reduce(0) { $0 + cargo[$1] * arrivalBids[$1] }
   let refuelCost = game.refillCost
   game.dock()
   let nextFreightCost = game.commander.cargo.indices.reduce(0) {
