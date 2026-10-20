@@ -20,7 +20,9 @@ struct ScriptFreightIssueAdmission: Sendable {
   fileprivate let stationEpoch: UUID
   fileprivate let proof: ScriptFreightIssueReceipt
 
-  func issue(into state: inout ScriptInstance, game: Game) throws {
+  func issue(into state: inout ScriptInstance, game: borrowing Game) throws
+    -> OriginalConsentedFreightSupplyDelta?
+  {
     var acceptedOffer = job.offer
     acceptedOffer.status = .accepted(instance)
     guard state.id == instance, state.contract == job, let plan = job.offer.freightPlan,
@@ -36,13 +38,19 @@ struct ScriptFreightIssueAdmission: Sendable {
       let definition = plan.collection, plan.capacityFits(game.commander)
     else { throw MissionPackError("Review and confirm this job at its issuing station.") }
     let consignment = ScriptOwnedCargoState.consignmentID(owner: plan.owner, instance: instance)
-    let units = ScriptOwnedCargoState.unitIDs(consignment: consignment, quantity: plan.quantity)
+    let delta =
+      try plan.isConsented
+      ? OriginalConsentedFreightSupply.allocate(plan: plan, instance: instance, game: game) : nil
+    let units =
+      delta?.units
+      ?? ScriptOwnedCargoState.unitIDs(consignment: consignment, quantity: plan.quantity)
     state.savedOwnedCargo = .init(
       schema: 1, owner: plan.owner, instance: instance, issuer: plan.origin,
       commodity: definition.items[0].commodity, consignment: consignment, issued: units,
       issue: proof, held: units)
     state.payloads[ScriptOwnedCargoState.payloadKey] = units.count
     state.collections[definition.id] = .init(definition: definition)
+    return delta
   }
 }
 
@@ -86,6 +94,7 @@ extension Game {
       throw MissionPackError(
         "Review freight at its actual issuer with room for every supplied tonne.")
     }
+    try OriginalConsentedFreightSupply.requireAvailable(plan, game: self)
     let systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
     for (index, edge) in zip(plan.path, plan.path.dropFirst()).enumerated() {
       let cap = index == 0 ? commander.maximumJumpDistance : commander.fullTankJumpDistance

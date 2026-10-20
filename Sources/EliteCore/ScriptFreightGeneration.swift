@@ -16,13 +16,16 @@ struct ScriptFreightDefinition: Codable, Sendable, Equatable {
   let abandonContact: String
   let collectionTemplate: ScriptFreightCollectionTemplate
   var bondedHazardTiers: [Int]? = nil
+  var supply: OriginalConsentedFreightSupplyDeclaration? = nil
   var valid: Bool {
-    (profile == ScriptFreightPlan.profileID && bondedHazardTiers == nil
-      || profile == ScriptFreightPlan.bondedProfileID
+    ((profile == ScriptFreightPlan.profileID && bondedHazardTiers == nil && supply == nil)
+      || (profile == ScriptFreightPlan.bondedProfileID && supply == nil
         && bondedHazardTiers?.count == 3
         && bondedHazardTiers?.allSatisfy({
           ScriptBondedFreightQuote(routeLegs: 3, hazardTier: $0).reward != nil
         }) == true)
+      || (profile == OriginalConsentedFreightSupply.stateID && supply?.valid == true
+        && bondedHazardTiers == nil))
       && generatorRevision == 1
       && variant == "supplied" && deliveryContact == "freight-delivery"
       && abandonContact == "freight-abandon" && collectionTemplate.valid
@@ -98,27 +101,30 @@ struct ScriptFreightPlan: Codable, Sendable, Equatable {
   let abandonContact: String
   let capabilities: [String]
   var bondedHazardTiers: [Int]? = nil
+  var supply: OriginalConsentedFreightSupplyDeclaration? = nil
   var bondedQuote: ScriptBondedFreightQuote? = nil
   var isBonded: Bool { profile == Self.bondedProfileID }
+  var isConsented: Bool { profile == OriginalConsentedFreightSupply.stateID }
+  var isUntimed: Bool { isBonded || isConsented }
   var deposit: Int { isBonded ? 750 : 0 }
   var successPayment: Int { reward + deposit }
-  var routeFitsDuration: Bool { isBonded || calendarLowerBoundSeconds < duration }
+  var routeFitsDuration: Bool { isUntimed || calendarLowerBoundSeconds < duration }
   func deadlineMatches(_ job: ScriptContractJob) -> Bool {
-    job.deadline == (isBonded ? nil : job.acceptedAt + duration)
+    job.deadline == (isUntimed ? nil : job.acceptedAt + duration)
   }
   func permitsDelivery(at clock: Double, deadline: Double?) -> Bool {
     guard clock.isFinite, (0...1e12).contains(clock) else { return false }
-    if isBonded { return deadline == nil }
+    if isUntimed { return deadline == nil }
     return deadline.map { clock <= $0 } ?? false
   }
   func permitsExpiry(at clock: Double, deadline: Double?) -> Bool {
     clock.isFinite && (0...1e12).contains(clock)
-      && !isBonded && (deadline.map { clock > $0 } ?? false)
+      && !isUntimed && (deadline.map { clock > $0 } ?? false)
   }
 
   enum CodingKeys: String, CodingKey {
     case profile, variant, content, owner, origin, reach, row, draws, path, template, capabilities
-    case bondedHazardTiers, bondedQuote
+    case bondedHazardTiers, bondedQuote, supply
     case generatorRevision = "generator_revision"
     case boardRevision = "board_revision"
     case seedHex = "seed_hex"
@@ -135,21 +141,24 @@ struct ScriptFreightPlan: Codable, Sendable, Equatable {
       profile: profile, generatorRevision: generatorRevision, variant: variant,
       deliveryContact: deliveryContact, abandonContact: abandonContact,
       collectionTemplate: template,
-      bondedHazardTiers: bondedHazardTiers
+      bondedHazardTiers: bondedHazardTiers, supply: supply
     )
   }
   var difficulty: Int { row + 1 }
   var key: String { "freight-" + String(difficulty) }
-  var quantity: Int { isBonded ? 3 : ((0..<3).contains(row) ? [1, 5, 10][row] : 0) }
+  var quantity: Int {
+    isConsented ? 8 : isBonded ? 3 : ((0..<3).contains(row) ? [1, 5, 10][row] : 0)
+  }
   var commodity: CommodityIdentity? {
     Self.commodities.indices.contains(commodityIndex) ? Self.commodities[commodityIndex] : nil
   }
   var reward: Int {
+    if isConsented { return (620 + 110 * (path.count - 1)) * 10 }
     if isBonded { return bondedQuote?.reward ?? 0 }
     guard (0..<3).contains(row), (2...4).contains(path.count) else { return 0 }
     return ([750, 1500, 2500][row] + 300 * (path.count - 1)) * 10
   }
-  var duration: Double { isBonded ? 0 : Self.duration(row: row) }
+  var duration: Double { isUntimed ? 0 : Self.duration(row: row) }
   static func duration(row: Int) -> Double { row == 2 ? 259200 : 172800 }
   static func feasible(calendarCost: Double, row: Int) -> Bool {
     calendarCost.isFinite && calendarCost >= 0 && calendarCost < duration(row: row)
@@ -199,9 +208,14 @@ struct ScriptFreightPlan: Codable, Sendable, Equatable {
   static func isMarked(_ parameters: ScriptValue) -> Bool {
     let profile = parameters["freight"]?["profile"]?.string
     return profile == profileID || profile == bondedProfileID
+      || profile == OriginalConsentedFreightSupply.stateID
   }
   var structurallyValid: Bool {
     declaration.valid && content.valid && (0..<3).contains(row)
+      && (!isConsented
+        || (row == 0 && content.stateID == OriginalConsentedFreightSupply.stateID
+          && origin == OriginalConsentedFreightSupply.issuer && path.last == 185
+          && commodityIndex == 2))
       && (isBonded
         ? content.stateID == Self.bondedProfileID && commodityIndex == 2
           && bondedQuote?.routeLegs == path.count - 1
@@ -229,11 +243,13 @@ struct ScriptFreightPlan: Codable, Sendable, Equatable {
     for draw in draws where ScriptCourierGeneration.next(&state) != draw { return false }
     let routes = Self.candidatePaths(
       ScriptCourierGeneration.routes(origin: origin, reach: reach), galaxy: origin.galaxy,
-      row: row, generatorRevision: generatorRevision, untimed: isBonded)
+      row: row, generatorRevision: generatorRevision, untimed: isUntimed
+    ).filter { !isConsented || $0.last == 185 }
     guard state == finalState, routes.indices.contains(routeIndex),
       routeIndex == Self.index(draws[row * 2], count: routes.count), path == routes[routeIndex],
       commodityIndex
-        == (isBonded ? 2 : Self.index(draws[row * 2 + 1], count: Self.commodities.count)),
+        == (isBonded || isConsented
+          ? 2 : Self.index(draws[row * 2 + 1], count: Self.commodities.count)),
       calendarLowerBoundSeconds == Self.calendarCost(path, galaxy: origin.galaxy)
     else { return false }
     return true
@@ -279,10 +295,16 @@ struct ScriptFreightGeneration: Codable, Sendable, Equatable {
     else { throw MissionPackError("Freight requires a current native owner and provider.") }
     let reach = ScriptCourierReach(commander)
     let paths = ScriptCourierGeneration.routes(origin: origin, reach: reach)
-    let candidates = (0..<3).map { row in
+    let consented = declaration.profile == OriginalConsentedFreightSupply.stateID
+    guard !consented || origin == OriginalConsentedFreightSupply.issuer else {
+      throw MissionPackError("ARLEN supplies utility parts only at Avenor main orbital.")
+    }
+    let count = consented ? 1 : 3
+    let candidates = (0..<count).map { row in
       ScriptFreightPlan.candidatePaths(
         paths, galaxy: origin.galaxy, row: row, generatorRevision: declaration.generatorRevision,
-        untimed: declaration.profile == ScriptFreightPlan.bondedProfileID)
+        untimed: declaration.profile == ScriptFreightPlan.bondedProfileID || consented
+      ).filter { !consented || $0.last == 185 }
     }
     guard candidates.allSatisfy({ !$0.isEmpty }) else {
       throw MissionPackError("No native freight route fits every required tier's deadline.")
@@ -290,7 +312,7 @@ struct ScriptFreightGeneration: Codable, Sendable, Equatable {
     let initial = Game.pledgeProfileSeed(seed)
     var state = initial
     let draws = (0..<6).map { _ in ScriptCourierGeneration.next(&state) }
-    return (0..<3).map { row in
+    return (0..<count).map { row in
       let paths = candidates[row]
       let index = ScriptFreightPlan.index(draws[row * 2], count: paths.count)
       return .init(
@@ -302,7 +324,7 @@ struct ScriptFreightGeneration: Codable, Sendable, Equatable {
         boardRevision: revision, seedHex: String(format: "%016llx", seed), origin: origin,
         reach: reach, row: row, initialState: initial, draws: draws, finalState: state,
         routeIndex: index,
-        commodityIndex: declaration.profile == ScriptFreightPlan.bondedProfileID
+        commodityIndex: consented || declaration.profile == ScriptFreightPlan.bondedProfileID
           ? 2 : ScriptFreightPlan.index(draws[row * 2 + 1], count: 3),
         path: paths[index],
         calendarLowerBoundSeconds: ScriptFreightPlan.calendarCost(
@@ -310,7 +332,7 @@ struct ScriptFreightGeneration: Codable, Sendable, Equatable {
         template: declaration.collectionTemplate, deliveryContact: declaration.deliveryContact,
         abandonContact: declaration.abandonContact,
         capabilities: pack.manifest.capabilities.sorted(),
-        bondedHazardTiers: declaration.bondedHazardTiers,
+        bondedHazardTiers: declaration.bondedHazardTiers, supply: declaration.supply,
         bondedQuote: declaration.profile == ScriptFreightPlan.bondedProfileID
           ? .init(
             routeLegs: paths[index].count - 1, hazardTier: declaration.bondedHazardTiers![row])
@@ -330,6 +352,7 @@ struct ScriptFreightGeneration: Codable, Sendable, Equatable {
           "reward": .integer(Int64(plan.reward)), "duration": .number(plan.duration),
           "parameters": parameters,
         ]
+        if plan.isConsented { fields["route_legs"] = .integer(Int64(plan.path.count - 1)) }
         if let quote = plan.bondedQuote {
           fields["deposit"] = .integer(Int64(plan.deposit))
           fields["route_legs"] = .integer(Int64(quote.routeLegs))
@@ -339,7 +362,8 @@ struct ScriptFreightGeneration: Codable, Sendable, Equatable {
       })
   }
   static func valid(_ board: ScriptContractBoard) -> Bool {
-    guard let generation = board.freightGeneration, generation.plans.count == 3,
+    guard let generation = board.freightGeneration,
+      generation.plans.count == (generation.plans.first?.isConsented == true ? 1 : 3),
       (0...Int.max / 17).contains(generation.holdCapacity),
       board.offers.count
         == generation.plans.filter({ $0.quantity <= generation.holdCapacity }).count,
@@ -433,6 +457,8 @@ extension ScriptPackLibrary {
     let expected = ScriptFreightDefinition.capabilities.union(
       manifest.trial == nil ? [] : ["gallery-basic-v2"])
     guard definition.valid, Set(manifest.capabilities) == expected,
+      definition.profile != OriginalConsentedFreightSupply.stateID
+        || manifest.stateID == OriginalConsentedFreightSupply.stateID,
       definition.profile != ScriptFreightPlan.bondedProfileID
         || manifest.stateID == ScriptFreightPlan.bondedProfileID,
       manifest.trial == nil || manifest.trial?.flight == true,

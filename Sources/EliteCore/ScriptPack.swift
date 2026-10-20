@@ -186,9 +186,14 @@ public enum ScriptPackLibrary {
       // validateFreight permits declared hazards only for the exact bonded profile.
       try keys(
         declaration,
-        "profile generatorRevision variant deliveryContact abandonContact collectionTemplate bondedHazardTiers"
+        "profile generatorRevision variant deliveryContact abandonContact collectionTemplate bondedHazardTiers supply"
       )
       try keys(declaration.table(forKey: "collectionTemplate"), "id title")
+      if declaration.contains(key: "supply") {
+        try keys(
+          declaration.table(forKey: "supply"),
+          "batch stockUnits commodity issuerContact galaxy system receiverSystem")
+      }
     }
     if root.contains(key: "repairLoop") {
       let declaration = try root.table(forKey: "repairLoop")

@@ -56,6 +56,11 @@ extension ScriptPackLibrary {
       "l337-corridor-defence")
   }
 
+  static var bundledConsentedFreightDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-consented-freight")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -140,6 +145,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled corridor defence pack: " + error.localizedDescription)
+    }
+    do {
+      let supplied = try read(bundledConsentedFreightDirectory)
+      if !library.packs.contains(where: { $0.digest == supplied.digest }) {
+        library.packs.append(supplied)
+      }
+    } catch {
+      library.errors.append("Bundled consented freight pack: " + error.localizedDescription)
     }
     return library
   }

@@ -52,8 +52,10 @@ extension ScriptSaveJSONPreflight {
   static func validateRepairLoopFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
   ) throws {
-    try WayfarerRepairLoopSave.validateFields(data, part: part, schema: schema)
-    try WayfarerColdChainSave.validateFields(data, part: part, schema: schema)
+    try OriginalConsentedFreightSupplySave.validateFields(data, part: part, schema: schema)
+    let serviceSchema = OriginalConsentedFreightSupplySave.legacyServiceSchema(schema)
+    try WayfarerRepairLoopSave.validateFields(data, part: part, schema: serviceSchema)
+    try WayfarerColdChainSave.validateFields(data, part: part, schema: serviceSchema)
     guard part == .commander,
       let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
       let embedded = root["savedScriptState"] as? [String: Any]

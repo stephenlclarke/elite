@@ -70,7 +70,9 @@ struct ScriptOwnedCargoState: Codable, Sendable, Equatable {
       state.ownedEncounters.isEmpty, state.gearIssues.isEmpty,
       state.milestones == (terminal?.cause == .delivered ? Set([0]) : Set<Int>()),
       consignment == Self.consignmentID(owner: owner, instance: instance),
-      issued == Self.unitIDs(consignment: consignment, quantity: plan.quantity),
+      plan.isConsented
+        ? OriginalConsentedFreightSupply.allocationMatches(self, state: state, engine: engine)
+        : issued == Self.unitIDs(consignment: consignment, quantity: plan.quantity),
       Set(issued).count == plan.quantity,
       issue.sequence > 0, issue.sequence <= engine.nextEvent,
       state.hasAcknowledged(issue.sequence), issue.clock == job.acceptedAt,

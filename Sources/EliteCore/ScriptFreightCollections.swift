@@ -46,7 +46,9 @@ extension Game {
     guard let job = state.contract, let plan = job.offer.freightPlan,
       let cargo = state.savedOwnedCargo, cargo.pendingLoss == nil, cargo.terminal == nil,
       state.outcome == .active, state.suspension == nil, !job.settled, !paused,
-      nativeMainStationDockEvidenceIsCurrent, candidate.equipmentOwnerID == plan.owner,
+      nativeMainStationDockEvidenceIsCurrent,
+      OriginalConsentedFreightSupply.receiverMatches(plan, game: self),
+      candidate.equipmentOwnerID == plan.owner,
       candidate.galaxy == plan.origin.galaxy, candidate.system == plan.path.last,
       plan.permitsDelivery(
         at: candidate.scriptState.clock(.missionCalendar), deadline: job.deadline)

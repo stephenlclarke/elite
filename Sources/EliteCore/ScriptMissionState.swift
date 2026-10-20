@@ -297,6 +297,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
 }
 
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  var savedOriginalConsentedFreightSupply: OriginalConsentedFreightSupplyStock?
   var savedWayfarerColdChainStock: WayfarerColdChainStockLedger?
   var savedWayfarerRepairLoopStock: WayfarerRepairLoopStockLedger?
   var savedClueJournal: ScriptClueJournal?
@@ -356,7 +357,8 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
-    guard savedClueJournal?.valid(engine: self) ?? true, worldJobsValid, booksValid,
+    guard OriginalConsentedFreightSupply.engineValid(self),
+      savedClueJournal?.valid(engine: self) ?? true, worldJobsValid, booksValid,
       financeLedger?.valid(engine: self) ?? true, nativeWormholeStateValid,
       missionCalendar.map({
         $0.valid && $0.seconds <= calendarSeconds

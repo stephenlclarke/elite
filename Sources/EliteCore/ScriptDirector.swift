@@ -59,7 +59,11 @@ private final class ScriptEventAttemptScratch {
 private final class ScriptAcceptanceInstanceScratch {
   let id: UUID
   let instance: ScriptInstance
-  init(_ instance: consuming ScriptInstance) {
+  let supplyDelta: OriginalConsentedFreightSupplyDelta?
+  init(
+    _ instance: consuming ScriptInstance, supplyDelta: OriginalConsentedFreightSupplyDelta? = nil
+  ) {
+    self.supplyDelta = supplyDelta
     id = instance.id
     self.instance = consume instance
   }
@@ -348,11 +352,12 @@ extension Game {
     if let providerState { instance.payloads[providerState.terms.payload] = 1 }
     instance.randomState = randomSeed
     instance.contract = contract
+    var supplyDelta: OriginalConsentedFreightSupplyDelta?
     if pack.manifest.freight != nil {
       guard let freightAdmission, contract?.offer.freightPlan?.matches(pack) == true else {
         throw MissionPackError("Supplied freight requires native issue admission.")
       }
-      try freightAdmission.issue(into: &instance, game: self)
+      supplyDelta = try freightAdmission.issue(into: &instance, game: self)
     } else if freightAdmission != nil {
       throw SaveError.invalidCommander
     }
@@ -382,7 +387,7 @@ extension Game {
       instance.timers["contract-deadline"] = .init(
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
     }
-    return ScriptAcceptanceInstanceScratch(instance)
+    return ScriptAcceptanceInstanceScratch(instance, supplyDelta: supplyDelta)
   }
   private mutating func installScriptMissionAcceptance(
     _ pack: ScriptPack, instance: ScriptAcceptanceInstanceScratch, drainAccepted: Bool
@@ -403,6 +408,7 @@ extension Game {
     if pack.manifest.capabilities.contains("owned-equipment-v2") {
       try attempt.candidate.commander.prepareEquipment()
     }
+    try attempt.prepared.supplyDelta?.install(into: &attempt.candidate.commander.scriptState)
     attempt.candidate.commander.scriptState.instances[attempt.prepared.id] =
       attempt.prepared.instance
   }

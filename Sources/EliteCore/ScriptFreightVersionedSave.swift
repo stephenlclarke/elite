@@ -64,7 +64,18 @@ enum ScriptFreightVersionedSave {
         "delivery_contact", "abandon_contact", "capabilities",
       ]
       let bonded = object["profile"] as? String == ScriptFreightPlan.bondedProfileID
-      let expected = bonded ? keys.union(["bondedHazardTiers", "bondedQuote"]) : keys
+      let consented = object["profile"] as? String == OriginalConsentedFreightSupply.stateID
+      let expected =
+        consented
+        ? keys.union(["supply"]) : bonded ? keys.union(["bondedHazardTiers", "bondedQuote"]) : keys
+      if consented {
+        guard let supply = object["supply"] as? [String: Any],
+          Set(supply.keys) == [
+            "batch", "stockUnits", "commodity", "issuerContact", "galaxy", "system",
+            "receiverSystem",
+          ]
+        else { throw SaveError.invalidCommander }
+      }
       guard Set(object.keys) == expected, (object["draws"] as? [Any])?.count == 6,
         let path = object["path"] as? [Any], (2...4).contains(path.count),
         let capabilities = object["capabilities"] as? [Any], capabilities.count <= 10
@@ -119,7 +130,10 @@ enum ScriptFreightVersionedSave {
       case "freightPlan": try plan(value)
       case "freightGeneration":
         guard Set(value.keys) == ["plans", "holdCapacity"],
-          let plans = value["plans"] as? [[String: Any]], plans.count == 3
+          let plans = value["plans"] as? [[String: Any]],
+          plans.count
+            == (plans.first?["profile"] as? String == OriginalConsentedFreightSupply.stateID
+              ? 1 : 3)
         else { throw SaveError.invalidCommander }
         for item in plans { try plan(item) }
       default: throw SaveError.invalidCommander
