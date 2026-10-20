@@ -524,37 +524,62 @@ private func modifiedPatrol(
 private func requireUnchangedColdCombatReference(_ hot: borrowing Game, _ cold: borrowing Game)
   throws
 {
-  #expect(
+  let combatBodiesPreserved =
     cold.bodies.filter { $0.nativeStationIdentity == nil }
-      == hot.bodies.filter { $0.nativeStationIdentity == nil })
-  #expect(cold.bodies.count == hot.bodies.count && cold.time == hot.time)
-  #expect(cold.scriptSimulationSave.randomState == hot.scriptSimulationSave.randomState)
-  #expect(
-    cold.scriptSimulationSave.missionLoopCounter == hot.scriptSimulationSave.missionLoopCounter)
+    == hot.bodies.filter { $0.nativeStationIdentity == nil }
+  #expect(combatBodiesPreserved)
+  let bodyCountPreserved = cold.bodies.count == hot.bodies.count
+  #expect(bodyCountPreserved)
+  let gameTimePreserved = cold.time == hot.time
+  #expect(gameTimePreserved)
+  let randomStatePreserved =
+    cold.scriptSimulationSave.randomState == hot.scriptSimulationSave.randomState
+  #expect(randomStatePreserved)
+  let loopCounterPreserved =
+    cold.scriptSimulationSave.missionLoopCounter == hot.scriptSimulationSave.missionLoopCounter
+  #expect(loopCounterPreserved)
   let stations = hot.bodies.filter { $0.nativeStationIdentity != nil }
-  try #require(stations.count == 1)
-  let station = try #require(stations.first)
-  let identity = try #require(station.nativeStationIdentity)
-  let rebound = try #require(cold.bodies.first { $0.nativeStationIdentity == identity })
+  let oneStation = stations.count == 1
+  try #require(oneStation)
+  let originalStation = stations.first
+  let station = try #require(originalStation)
+  let stationIdentity = station.nativeStationIdentity
+  let identity = try #require(stationIdentity)
+  let selectedRebound = cold.bodies.first { $0.nativeStationIdentity == identity }
+  let rebound = try #require(selectedRebound)
   var flight = hot.withReadOnlyCommander { $0.flightSimulation }
   let allocatedSpawn = flight.allocateSpawn()
   let sequence = try #require(allocatedSpawn)
   let allocatedActor = flight.allocateActor()
   let actor = try #require(allocatedActor)
-  #expect(cold.withReadOnlyCommander { $0.flightSimulation } == flight)
-  #expect(cold.nextBodyID == hot.nextBodyID + 1 && rebound.id == hot.nextBodyID)
-  #expect(rebound.physical?.identity == actor)
-  #expect(
-    rebound.physical?.spawnIdentity
-      == .init(
-        system: hot.systemIdentity, visit: flight.visit, sequence: sequence,
-        member: 0, producer: .mission))
+  let actualFlight = cold.withReadOnlyCommander { $0.flightSimulation }
+  let flightMatches = actualFlight == flight
+  #expect(flightMatches)
+  let originalCursor = hot.nextBodyID
+  let cursorMatches = cold.nextBodyID == originalCursor + 1
+  #expect(cursorMatches)
+  let bodyIDMatches = rebound.id == originalCursor
+  #expect(bodyIDMatches)
+  let actorMatches = rebound.physical?.identity == actor
+  #expect(actorMatches)
+  let expectedSpawn = SpawnIdentity(
+    system: hot.systemIdentity, visit: flight.visit, sequence: sequence,
+    member: 0, producer: .mission)
+  let spawnMatches = rebound.physical?.spawnIdentity == expectedSpawn
+  #expect(spawnMatches)
   let binding = cold.withReadOnlyCommander {
     $0.nativeStations?.ledger.records.first { $0.identity == identity }?.binding
   }
-  #expect(binding == .init(actor: actor, bodyID: hot.nextBodyID))
-  #expect(rebound.position == station.position && rebound.orientation == station.orientation)
-  #expect(rebound.rotation == station.rotation && rebound.energy == station.energy)
+  let bindingMatches = binding == .init(actor: actor, bodyID: originalCursor)
+  #expect(bindingMatches)
+  let positionPreserved = rebound.position == station.position
+  #expect(positionPreserved)
+  let orientationPreserved = rebound.orientation == station.orientation
+  #expect(orientationPreserved)
+  let rotationPreserved = rebound.rotation == station.rotation
+  #expect(rotationPreserved)
+  let energyPreserved = rebound.energy == station.energy
+  #expect(energyPreserved)
 }
 
 @Test func resumedNativeCombatRNGAndTacticsMatchTheUninterruptedWorld() async throws {
