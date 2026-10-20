@@ -140,6 +140,7 @@ extension Game {
 
   /// Uses sealed measured hull/component geometry and the ordinary native reserve policy.
   /// Requests must correspond in order to the selected sealed cohort; no identities are allocated.
+  @inline(never)
   func gameplayMissionActorAdmissionRefusal(
     _ requests: [SpawnRequest], templates: [MissionActorAdmissionTemplate],
     context: EncounterContext
@@ -147,12 +148,24 @@ extension Game {
     guard requests.count == templates.count,
       Set(requests.map(\.identity)).count == requests.count
     else { return .staleContext }
-    var budget = context.budget
     let registeredStationBodies = Set(
       commander.nativeStations?.ledger.records.compactMap { record in
         record.identity.system == context.system ? record.binding?.bodyID : nil
       } ?? [])
     let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
+    return Self.gameplayMissionActorAdmissionRefusal(
+      original: self, requests, templates: templates, context: context,
+      registeredStationBodies: registeredStationBodies, playerRadius: playerRadius)
+  }
+
+  /// Read actual Commander facts before reserving the per-request geometry-validation frame.
+  @inline(never)
+  private static func gameplayMissionActorAdmissionRefusal(
+    original: borrowing Game, _ requests: [SpawnRequest],
+    templates: [MissionActorAdmissionTemplate], context: EncounterContext,
+    registeredStationBodies: Set<Int>, playerRadius: Double
+  ) -> AdmissionRefusal? {
+    var budget = context.budget
     for (request, template) in zip(requests, templates) {
       let resourceCapacityMatches: Bool
       if let resources = request.npc?.resources {
@@ -167,25 +180,27 @@ extension Game {
         request.hull == template.canonicalBody.hull,
         request.energy == template.canonicalBody.energy,
         resourceCapacityMatches,
-        !bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
+        !original.bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
       else { return .staleContext }
-      if let refusal = admissionCapacityRefusal(request, context: context, budget: budget) {
+      if let refusal = original.admissionCapacityRefusal(request, context: context, budget: budget)
+      {
         return refusal
       }
       let radius = template.radius
       guard
-        spawnParametersSafe(
+        original.spawnParametersSafe(
           request, context: context, measuredRadius: radius,
           measuredMaximumEnergy: template.maximumHullEnergy),
         (request.position - context.player.position).length > radius + playerRadius + 64
       else { return .unsafePosition }
       for actor in context.actors where actor.energy > 0 {
-        guard let body = bodies.first(where: { $0.physical?.identity == actor.identity }) else {
+        guard let body = original.bodies.first(where: { $0.physical?.identity == actor.identity })
+        else {
           return .staleContext
         }
         if body.nativeStationIdentity != nil || registeredStationBodies.contains(body.id) {
           guard
-            missionActorClearsNativeStation(
+            original.missionActorClearsNativeStation(
               center: request.position, radius: radius, body: body)
           else { return .unsafePosition }
           continue
@@ -194,13 +209,13 @@ extension Game {
         if let bounds = actor.salvage?.bounds {
           otherRadius = bounds.radius + bounds.center.length
         } else if body.scriptNPC != nil {
-          otherRadius = scriptNPCRadius(body)
-        } else if let rock = miningFields.flatMap(\.rocks).first(where: {
+          otherRadius = original.scriptNPCRadius(body)
+        } else if let rock = original.miningFields.flatMap(\.rocks).first(where: {
           $0.identity == actor.rock
         }) {
           otherRadius = rock.radius
         } else {
-          otherRadius = gameplayMesh(for: body).vertices.map(\.length).max() ?? 80
+          otherRadius = original.gameplayMesh(for: body).vertices.map(\.length).max() ?? 80
         }
         guard otherRadius.isFinite, otherRadius > 0,
           (request.position - actor.position).length >= radius + otherRadius + 64
