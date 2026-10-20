@@ -118,14 +118,21 @@ extension Game {
         issues.append("There is no unreconciled original depot permission.")
       }
     }
-    let custody =
-      state.map { state in
-        ([state.permission.operation.uuidString]
-          + state.captures.map { $0.operation.uuidString }
-          + state.losses.map { $0.operation.uuidString }
-          + state.held.map(\.uuidString)
-          + [state.reception?.operation.uuidString ?? "open"]).joined(separator: ":")
-      } ?? "unallocated"
+    let custody: String
+    if let state {
+      var tokens: [String] = [state.permission.operation.uuidString]
+      let captures: [String] = state.captures.map { $0.operation.uuidString }
+      let losses: [String] = state.losses.map { $0.operation.uuidString }
+      let held: [String] = state.held.map(\.uuidString)
+      let reception: String = state.reception?.operation.uuidString ?? "open"
+      tokens.append(contentsOf: captures)
+      tokens.append(contentsOf: losses)
+      tokens.append(contentsOf: held)
+      tokens.append(reception)
+      custody = tokens.joined(separator: ":")
+    } else {
+      custody = "unallocated"
+    }
     return .init(
       action: action, dock: commander.nativeStations?.currentMainDock,
       carrier: commander.hullInstanceID, inventoryRevision: commander.equipmentInventory?.revision,
