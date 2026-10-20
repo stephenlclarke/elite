@@ -6,12 +6,20 @@ import Testing
 @Test func showroomPrimaryTradeWorksWithClickOrKeyboardAndNeverBuysOnOpening() throws {
   for width in [512.0, 768, 1000, 1512] {
     var game = Game(executive: false)
+    // This confirmation flow trades a compatible carried fit from Cobra to Boa.
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
     game.viewportWidth = width
     game.viewportHeight = 518
     game.commander.credits = 10_000_000
     game.screen = .status
     game.key("6")
     game.showroom.selection = "SH013"
+    let quote = try #require(game.shipTradeQuote)
+    try #require(quote.allowed)
     let before = game.commander
     let layout = ShowroomLayout(width: width, height: 518, detail: false)
     let frame = Display.presentation(game, width: width, height: 518)
@@ -29,6 +37,7 @@ import Testing
     game.key("right")
     game.key("return")
     #expect(game.commander.shipID == "SH013" && game.showroomBaseline?.id == "SH013")
+    #expect(game.commander.credits == quote.balance)
     let owned = Display.presentation(game, width: width, height: 518)
     #expect(owned.labels.contains { $0.text == "Currently flying" })
     game.showroomClick(x: layout.trade.x + 10, y: layout.trade.y + 10)

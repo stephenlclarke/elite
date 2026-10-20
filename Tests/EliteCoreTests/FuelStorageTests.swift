@@ -5,13 +5,15 @@ import Testing
 
 @Test func fuelStorageUnitsAreCountedPricedAndNeverSupplyFreeFuel() throws {
   var game = Game(executive: false)
+  let stock = try #require(ShipCatalogue.ship(game.commander.shipID)?.game)
   game.commander.credits = 100_000
   game.commander.fuel = 35
   game.selection = try #require(Equipment.all.firstIndex { $0.name == FuelStorage.equipmentName })
   for count in 1...4 {
     game.purchase()
     #expect(
-      game.commander.fuelStorageUnits == count && game.commander.fuelCapacity == (count + 1) * 70)
+      game.commander.fuelStorageUnits == count
+        && game.commander.fuelCapacity == stock.fuel + count * 70)
     #expect(game.commander.fuel == 35 && game.commander.credits == 100_000 - count * 20_000)
     #expect(!game.commander.equipment.contains(FuelStorage.equipmentName) && game.commander.valid)
   }
@@ -19,7 +21,10 @@ import Testing
   #expect(game.commander.fuelStorageUnits == 4 && game.message == "FUEL STORAGE FULL")
   game.selection = 0
   game.purchase()
-  #expect(game.commander.fuel == 350 && game.commander.credits == 20_000 - 315 * 2)
+  let fullCapacity = stock.fuel + 4 * 70
+  #expect(
+    game.commander.fuel == fullCapacity
+      && game.commander.credits == 20_000 - (fullCapacity - 35) * 2)
   // Capacity belongs to fitted physical tanks; a legacy counter assignment cannot remove one.
   let full = game.commander
   let tank = try #require(game.commander.fittedEquipment(at: .fuelStorage(3)))
@@ -70,37 +75,45 @@ import Testing
   object.removeValue(forKey: "storageUnitCount")
   let legacy = try JSONDecoder().decode(
     Commander.self, from: JSONSerialization.data(withJSONObject: object))
-  #expect(legacy.fuelStorageUnits == 0 && legacy.fuelCapacity == 70 && legacy.valid)
+  let stock = try #require(ShipCatalogue.ship(legacy.shipID)?.game)
+  #expect(legacy.fuelStorageUnits == 0 && legacy.fuelCapacity == stock.fuel && legacy.valid)
   var game = Game(executive: false)
+  try #require(game.commander.shipID == legacy.shipID)
   game.commander.fuelStorageUnits = 4
   game.commander.fuel = 100
-  game.commander.credits = 500
+  let fullCapacity = stock.fuel + 4 * 70
+  game.commander.credits = (fullCapacity - 100) * 2
   game.selectedSystem = game.commander.system
   for i in game.market.indices { game.market[i].quantity = 0 }
   game.autoTrade()
-  #expect(game.commander.fuel == 350 && game.commander.credits == 0)
+  #expect(game.commander.fuel == fullCapacity && game.commander.credits == 0)
   let runtime = GameRuntime(game: game)
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   try await runtime.save(to: url)
   try await runtime.load(from: url)
-  #expect(await runtime.snapshot().commander.fuelCapacity == 350)
+  #expect(await runtime.snapshot().commander.fuelCapacity == fullCapacity)
 }
 
 @Test func eachComputerStorageAndFuelCombinationControlsRingsSearchAndActualJump() throws {
+  let stock = try #require(ShipCatalogue.ship(NewCommanderDefaults.shipID)?.game)
   for tier in NavigationTier.allCases {
     for units in 0...4 {
-      for fuel in [0, 30, 70, (units + 1) * 70] {
+      for fuel in [0, 30, 70, stock.fuel + units * 70] {
         var game = Game(executive: false)
+        try #require(game.commander.shipID == NewCommanderDefaults.shipID)
         game.commander.installNavigationComputer(tier)
         game.commander.fuelStorageUnits = units
         game.commander.fuel = fuel
-        let capacity = Double((units + 1) * 7)
-        #expect(game.jumpReach.maximum == min(capacity, tier.jumpCap))
-        #expect(game.jumpReach.actual == min(Double(fuel) / 10, tier.jumpCap))
+        let capacity = Double(stock.fuel + units * 70) / 10
+        let navigationCap = Double(tier.rawValue * 7)
+        let jumpCap = max(stock.jump, navigationCap)
+        #expect(tier.jumpCap == navigationCap)
+        #expect(game.jumpReach.maximum == min(capacity, jumpCap))
+        #expect(game.jumpReach.actual == min(Double(fuel) / 10, jumpCap))
         #expect(
           game.navigationPlanningRadius
-            == (tier == .military ? nil : capacity + Double(tier.rawValue * 7)))
+            == (tier == .military ? nil : capacity + navigationCap))
         for system in game.knownSystems {
           game.selectedSystem = system.id
           #expect(
@@ -127,7 +140,9 @@ import Testing
   }
   var game = Game(executive: false)
   game.screen = .shortChart
-  #expect(game.jumpReach.maximum == 7 && game.jumpReach.search == nil)
+  #expect(
+    game.jumpReach.maximum == min(stock.jump, Double(stock.fuel) / 10)
+      && game.jumpReach.search == nil)
   for zoom in MapZoom.allCases {
     #expect(game.mapZoom == zoom)
     game.key("z")

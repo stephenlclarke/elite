@@ -5,9 +5,25 @@ import Testing
 
 private func equipmentShopGame() throws -> Game {
   var game = Game(executive: false)
+  try #require(game.commander.equipmentInventory == nil && game.commander.nativeStations == nil)
+  // This paid fitting scenario requires the stock hull's four mounts and two declared work tools.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try #require(
+    game.commander.nativePerformance.workTools?.contains(.miningLaser) == true
+      && game.commander.nativePerformance.workTools?.contains(.salvageCutter) == true
+      && LaserMount.allCases.allSatisfy { game.commander.nativePerformance.supports($0) }
+      && game.commander.fuelCapacity == 70 && game.commander.valid)
   game.screen = .equipment
   game.commander.credits = 1_000_000
-  game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
+  let requiredTechnology = try #require(
+    Equipment.all.filter { !Equipment.isReward($0.name) }.map(\.requiredTechnologyLevel).max())
+  game.commander.system = try #require(
+    game.systems.first { !$0.isPlugh && $0.technology >= requiredTechnology }?.id)
+  try #require(!game.atPlugh && game.currentSystem.technology >= requiredTechnology)
   try game.commander.prepareEquipment(legacy: false)
   return game
 }
@@ -185,7 +201,11 @@ struct EquipmentRuntimeTransactionTests {
     ] {
       let item = try #require(Equipment.all.first { $0.name == name })
       #expect(item.price == price && item.technology == technology)
-      game.commander.system = 7
+      game.commander.system = try #require(
+        game.systems.first { !$0.isPlugh && $0.technology < item.requiredTechnologyLevel }?.id)
+      try #require(
+        game.stationAllowsEquipmentServices && !game.atPlugh
+          && game.currentSystem.technology < item.requiredTechnologyLevel)
       #expect(!game.equipmentAvailable(item))
       game.commander.system = Plugh.systemID
       #expect(game.equipmentAvailable(item) && game.shopPrice(item) == Plugh.discount(price))
