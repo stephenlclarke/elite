@@ -356,6 +356,8 @@ Each release includes a matching `.sha256` checksum, build/signing `.json` manif
 
 For development builds, use the separate [Build and run](#build-and-run) instructions.
 
+The latest locally verified development preview is **1.4.1017**, source `44db923834619831df2b2f205536a46d07151247`, including the integrated orbital-outlook journey. The actual station-board check verifies its briefing and native passage refusals on an unfitted starting ship. It is a signed local Debug preview; full manual travel, global quality gates and a new public/notarized release remain pending. See the [completion ledger](docs/COMPLETION-LEDGER.md).
+
 Version 1.4.0 adds graphical route alternatives on both charts, with explicit preview, Set route and Back controls. Its signed, notarized app identifies binary source checkpoint `36fa5cfef1e781f68dcb1fdbf7dae1e1e1f76224`; the release tag also includes the later archive and documentation commit. See the [packaging verification](docs/MACOS-DISTRIBUTION.md).
 
 ## Add mission packs
