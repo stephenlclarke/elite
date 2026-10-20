@@ -2328,3 +2328,7 @@ No Game/Director/equipment-marketmutation/ScriptMissionState/save-preflight-sche
 - T04 `/tmp/elite-g3-navigation-delivery-iiqno9qz/validation/build.json` SHA256 `634d142301e5003b7d2fe490fceead2ab1f77108db631565545a209b0c9602c7`.
 - T04 `/tmp/elite-g3-navigation-delivery-iiqno9qz/validation/pack-validation.json` SHA256 `a48f2847358c81c1011f5e31b8cd1694e4d0194e918a1fbc0e6f53c8ad12ed75`.
 - T04 `/tmp/elite-g3-navigation-delivery-iiqno9qz/validation/test.json` SHA256 `74f1659f44bf495c8b17366c1d389208bfea59899d0a52414a46cb97429cf7ef`.
+
+## Current development startup documentation — 20 October 2026
+
+Completed documentation only: README and directly contradictory controls text now distinguish published1.4.0 Jameson/Right-On Commander from current L337/Rowan Calder/Avenor/SH025/720CR/full-fuel startup. Current XYZZY preserves the name while refitting Cobra Mk III and granting initial cash once. First-flight guidance records the paid Basic → Advanced → Docking prerequisite before Tab station AUTO, manual docking without that core, and two working Passenger Berths at base1,000CR each. Historical references/legal text, release URLs and renderer media are unchanged. Scoped Markdown/whitespace/local-link and media/URL preservation checks pass; no code, build, test, UI, starter equipment or release change. M01 and existing partial992/995 evidence remain open. Paired notes: [issue](ISSUE-current-development-startup-docs.md), [handoff](PR-current-development-startup-docs.md).

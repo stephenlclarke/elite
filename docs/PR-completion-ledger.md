@@ -772,3 +772,7 @@ Existing signed preview991 continued its owned current Rowan/SH025 commander. No
 ## Sustained hostile docking acceptance assigned
 
 G2's source/evidence preflight found current defence/cover/return logic and retained qualification for the paid freshSH025 actual-traffic journey, with no established controller defect. Root assigned exactly one new sustained real native-hostile-fire acceptance method in StationAutoDefenceTests and paired notes. It must prove actual emissions/contact and a living genuine dock in the same bounded budget, preserving law, finite countermeasures, owner/payload and durable-receipt checks. No existing helper/method or production changes, fake flags/pose/traffic removal, probe or execution is granted before source freeze. G05 Game.advance/scan/passenger/save reservations remain protected.
+
+## Current development startup documentation
+
+README and directly contradictory controls startup/XYZZY statements are corrected from current source, separating published1.4.0 from L337 development. First-flight prerequisites explain manual docking, the paid targeting-core chain and two working Passenger Berths at base1,000CR each. Paired [issue](ISSUE-current-development-startup-docs.md) and [handoff](PR-current-development-startup-docs.md) record the documentation-only scope. Scoped Markdown, whitespace, local-link and README media/external-URL conservation checks pass; no gameplay qualification, build, UI or release claim. Earlier evidence and hashes are retained.
