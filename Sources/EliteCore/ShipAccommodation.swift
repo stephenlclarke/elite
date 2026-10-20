@@ -82,7 +82,7 @@ public enum PassengerPlaceUse: Sendable, Equatable, Codable {
   var personID: UUID? {
     switch self {
     case .empty: nil
-    case .nativePerson(let person): person.station?.id
+    case .nativePerson(let person): person.nativeID
     case .occupied(let id), .extraCrew(let id): id
     case .reserved(_, let id): id
     }

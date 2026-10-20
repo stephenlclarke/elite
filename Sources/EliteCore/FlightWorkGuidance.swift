@@ -155,7 +155,7 @@ extension Game {
         .init(point: $0.position, normal: $0.normal, radius: $0.radius, section: $0.section)
       }
     } else {
-      let mesh = gameplayMesh(for: body)
+      guard let mesh = originalRescueCompatibleMesh(body) else { return nil }
       surfaces = mesh.faces.compactMap { face in
         guard face.count >= 3, face.allSatisfy(mesh.vertices.indices.contains) else { return nil }
         let a = mesh.vertices[face[0]]
@@ -258,7 +258,8 @@ extension Game {
       ).mode == state.mode,
       let physical = body.physical,
       workSurfaceStillAuthorized(state, body: body, context: context),
-      let targetHull = preparedWorkHull(mesh: gameplayMesh(for: body), key: "target:\(body.id)"),
+      let targetMesh = originalRescueCompatibleMesh(body, context: context),
+      let targetHull = preparedWorkHull(mesh: targetMesh, key: "target:\(body.id)"),
       let playerHull = preparedWorkHull(mesh: commander.playerMesh, key: "player"),
       let obstacles = workObstacles(excluding: state.parent, delta: delta)
     else {
@@ -324,6 +325,11 @@ extension Game {
   func workSurfaceStillAuthorized(
     _ state: FlightWorkGuidance, body: SpaceBody, context: EncounterContext
   ) -> Bool {
+    if NativeOriginalRescueJourney.marker(body, commander: commander) {
+      return state.mode == .autoScoop(.salvage) && hasNativeRescueTools
+        && originalRescueFacts(body, context: context)?.fits == true
+        && automaticScoopShapeCompatible(body, context: context)
+    }
     if body.physical?.empCrewPod != nil {
       return state.mode == .autoScoop(.salvage) && hasNativeRescueTools
         && nativePodFacts(body, context: context)?.fits == true

@@ -4,9 +4,12 @@ enum NativePeopleVersionedSave {
   static func validateStationPassengerFields(
     _ bytes: Data, part: ScriptFreightVersionedSave.Part, schema: Int?
   ) throws {
-    try NativeOrbitalOutlookJourneySave.validateFields(bytes, part: part, schema: schema)
+    try NativeOriginalRescueJourneySave.validateFields(bytes, part: part, schema: schema)
+    let lower = NativeOriginalRescueJourneySave.lowerSchema(schema)
+    try NativeOrbitalOutlookJourneySave.validateFields(bytes, part: part, schema: lower)
     try NativeStationPassengerJourneySave.validateFields(
-      bytes, part: part, schema: NativeOrbitalOutlookJourneySave.lowerSchema(schema))
+      bytes, part: part, schema: NativeOrbitalOutlookJourneySave.lowerSchema(lower),
+      allowOriginalRescue: NativeOriginalRescueJourneySave.contains(schema))
   }
 
   static func rejectFields(_ bytes: Data) throws {

@@ -165,7 +165,12 @@ extension Game {
     let present = Set(bodies.compactMap(\.missionActorID))
     var selected: [MissionActorAdmissionTemplate] = []
     var prepared: [SpaceBody] = []
-    for template in source.actors {
+    for index in source.actors.indices {
+      let actorID = source.actors[index].actorID
+      if withReadOnlyCommander({ NativeOriginalRescueJourney.consumed(actorID, commander: $0) }) {
+        continue
+      }
+      let template = source.actors[index]
       guard template.presence != .destroyed, template.canonicalBody.energy > 0 else { continue }
       if present.contains(template.actorID) {
         guard source.mode == .retained,

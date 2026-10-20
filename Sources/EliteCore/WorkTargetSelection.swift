@@ -22,11 +22,13 @@ public struct WorkTargetCandidate: Sendable, Equatable {
   public let singleScoopCompatible: Bool
   public let nativePod: NativePodSelectionFacts?
   public let nativeCrewCapture: Bool
+  public let originalRescue: NativeOriginalRescueSelectionFacts?
 
   public init(
     identity: ActorIdentity, kind: WorkTargetKind, isLive: Bool,
     frontVisible: Bool, distance: Double, singleScoopCompatible: Bool,
-    nativePod: NativePodSelectionFacts? = nil, nativeCrewCapture: Bool = false
+    nativePod: NativePodSelectionFacts? = nil, nativeCrewCapture: Bool = false,
+    originalRescue: NativeOriginalRescueSelectionFacts? = nil
   ) {
     self.identity = identity
     self.kind = kind
@@ -36,6 +38,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
     self.singleScoopCompatible = singleScoopCompatible
     self.nativePod = nativePod
     self.nativeCrewCapture = nativeCrewCapture
+    self.originalRescue = originalRescue
   }
 }
 
@@ -103,6 +106,15 @@ public enum WorkTargetSelection {
       return .refused(.invalidDistance)
     }
     guard let core = capabilities.core else { return .refused(.missingCore) }
+    if let original = candidate.originalRescue {
+      guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
+      guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
+      guard candidate.singleScoopCompatible else { return .refused(.notScoopCompatible) }
+      guard original.fits else {
+        return .refused(original.isPerson ? .fullPeopleHold : .protectedTarget)
+      }
+      return .eligible(.autoScoop(.salvage))
+    }
     switch candidate.kind {
     case .ship:
       return core >= .advanced || candidate.frontVisible

@@ -510,7 +510,9 @@ struct FlightWorkGuidanceRuntimeTests {
     game.persistCargoPoses()
     engageWorkCargo(&game)
     #expect(game.workGuidance?.parent == actor)
-    let largeAxis = try #require(game.collectibleHalfExtents(game.bodies[index]))
+    let context = try #require(game.gameplayContext())
+    let largeAxis = try #require(
+      game.collectibleHalfExtents(game.bodies[index], context: context))
     #expect(max(largeAxis.x, max(largeAxis.y, largeAxis.z)) > 16)
     game.workGuidance?.velocity = game.bodies[index].physical?.velocity ?? .init(0, 0, 0)
     let before = game.commander.cargo[0]

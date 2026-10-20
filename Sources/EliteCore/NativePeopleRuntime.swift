@@ -75,8 +75,9 @@ extension Game {
     else { return false }
     return true
   }
-  private func podInsideRescueAperture(_ body: SpaceBody) -> Bool {
-    let radius = gameplayMesh(for: body).vertices.map(\.length).max() ?? .infinity
+  func podInsideRescueAperture(_ body: SpaceBody) -> Bool {
+    guard let mesh = originalRescueCompatibleMesh(body) else { return false }
+    let radius = mesh.vertices.map(\.length).max() ?? .infinity
     let offset = body.position - Vector3(0, -45, 55)
     guard radius.isFinite, radius > 0, radius <= 16, offset.finite,
       body.position.z > 0, body.position.y < 0, body.position.length < 85,
@@ -265,6 +266,12 @@ extension GameRuntime {
     {
       nativePeopleFailureGate = nil
     }
+    if commitOriginalRescueCapture(startTime: startTime, startPlayer: startPlayer) { return }
+    commitEMPOnlyPeopleCapture(delta: delta)
+  }
+
+  @inline(never)
+  private func commitEMPOnlyPeopleCapture(delta: Double) {
     guard let publish = scriptPublisher(),
       let seal = game.nativePeopleCaptureSeal(fire: controls.fire),
       nativePeopleFailureGate != seal.gate

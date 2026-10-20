@@ -59,7 +59,8 @@ extension Game {
       singleScoopCompatible: compatible,
       nativePod: nativePodFacts(body, context: context),
       nativeCrewCapture: nativeCrewCaptureAvailable(body, context: context)
-        && freeNativePeopleTonnes > 0)
+        && freeNativePeopleTonnes > 0,
+      originalRescue: originalRescueFacts(body, context: context))
   }
 
   func isCapitalHoldVessel(_ body: SpaceBody) -> Bool {
@@ -87,6 +88,7 @@ extension Game {
   func recoverableMetadata(for body: SpaceBody, context: EncounterContext) -> SalvageTargetMetadata?
   {
     guard let physical = body.physical else { return nil }
+    if let original = originalRescueMetadata(body, context: context) { return original }
     var result: SalvageTargetMetadata?
     if let supplied = physical.salvage {
       result = supplied
@@ -175,16 +177,16 @@ extension Game {
       case .salvage, .mission: break
       }
     }
-    guard let half = collectibleHalfExtents(body) else { return false }
+    guard let half = collectibleHalfExtents(body, context: context) else { return false }
     return half.finite && half.x > 0 && half.y > 0 && half.z > 0
       && half.x <= 16 && half.y <= 16 && half.z <= 16
   }
 
-  func collectibleHalfExtents(_ body: SpaceBody) -> Vector3? {
+  func collectibleHalfExtents(_ body: SpaceBody, context: EncounterContext) -> Vector3? {
     if let payload = body.physical?.payload, case .salvage = payload {
       return currentSalvageLot(for: body)?.halfExtents
     }
-    let mesh = gameplayMesh(for: body)
+    guard let mesh = originalRescueCompatibleMesh(body, context: context) else { return nil }
     guard !mesh.vertices.isEmpty else { return nil }
     return .init(
       mesh.vertices.map { abs($0.x) }.max()!, mesh.vertices.map { abs($0.y) }.max()!,

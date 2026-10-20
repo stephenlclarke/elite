@@ -5,6 +5,12 @@ extension NativeStationPassengerJourney {
     let held = commander.nativePeople?.held.filter { $0.person.station != nil } ?? []
     for berth in commander.accommodation.ownedBerths {
       if case .nativePerson(let person) = berth.use {
+        if person.rescue != nil {
+          guard NativeOriginalRescueJourney.berthValid(berth, commander: commander) else {
+            return false
+          }
+          continue
+        }
         guard person.station != nil,
           held.contains(where: { $0.person == person && $0.tool == berth.id }),
           commander.accommodation.fitted.contains(berth.id), berth.lifeSupportWorking,
@@ -304,9 +310,10 @@ enum NativeStationPassengerJourneySave {
 
 extension NativeStationPassengerJourneySave {
   /// Inspect only the native header/mission/contract paths, never authored script data keys.
-  static func validateFields(_ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?)
-    throws
-  {
+  static func validateFields(
+    _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?,
+    allowOriginalRescue: Bool = false
+  ) throws {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
       root["stationJourney"] == nil, root["nativePerson"] == nil
     else { throw SaveError.invalidCommander }
@@ -419,9 +426,13 @@ extension NativeStationPassengerJourneySave {
       if let use = berth["use"] as? [String: Any], use.keys.contains("nativePerson") {
         let decoded = try JSONDecoder().decode(
           PassengerPlaceUse.self, from: JSONSerialization.data(withJSONObject: use))
-        guard case .nativePerson(let person) = decoded, person.station?.valid == true else {
-          throw SaveError.invalidCommander
+        guard case .nativePerson(let person) = decoded else { throw SaveError.invalidCommander }
+        if let rescue = person.rescue {
+          // The coordinator has already validated this rescue in its original G08 schema.
+          guard allowOriginalRescue, rescue.valid else { throw SaveError.invalidCommander }
+          continue
         }
+        guard person.station?.valid == true else { throw SaveError.invalidCommander }
         guard person.station?.batch == NativeStationPassengerJourney.batch else { continue }
         guard allowed, hasLeaf, Set(use.keys) == ["nativePerson"],
           (use as NSDictionary).isEqual(

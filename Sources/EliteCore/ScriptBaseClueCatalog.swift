@@ -115,6 +115,11 @@ struct ScriptClueTrustCatalog: Sendable {
   private let pins: [ScriptClueExecutionPin]
   static let production = ScriptClueTrustCatalog(approvedPins: [
     .init(
+      sourceID: NativeOriginalRescueJourney.stateID,
+      definition: NativeOriginalRescueJourney.stateID,
+      version: "1.0.0", digest: NativeOriginalRescueJourney.digest,
+      terminalEvents: ["mission.receipted"]),
+    .init(
       sourceID: NativeOrbitalOutlookJourney.stateID,
       definition: NativeOrbitalOutlookJourney.stateID,
       version: "1.0.0", digest: NativeOrbitalOutlookJourney.digest,

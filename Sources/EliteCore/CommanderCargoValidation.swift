@@ -47,6 +47,16 @@ extension Commander {
     let occupied = total.addingReportingOverflow(cabins.partialValue)
     guard !occupied.overflow else { return nil }
     total = occupied.partialValue
+    // The exact original pod fulfils this reserved tonne. Care restores the reservation;
+    // the original physical record fulfils it last, without another or disappearing tonne.
+    if let rescue = nativePeople?.originalRescue, rescue.reservedCargoTonnes > 0 {
+      let pod = nativePeople?.heldPods.contains(where: { $0.person.rescue != nil }) == true
+      if !pod {
+        let reserved = total.addingReportingOverflow(1)
+        guard !reserved.overflow else { return nil }
+        total = reserved.partialValue
+      }
+    }
     let rescue = total.addingReportingOverflow(rescuedPodTonnes)
     guard !rescue.overflow else { return nil }
     total = rescue.partialValue
