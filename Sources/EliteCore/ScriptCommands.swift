@@ -33,6 +33,10 @@ extension Game {
       try OriginalVerifiedWarrant.requireAcceptance(
         event, game: self, state: state, candidate: candidate)
     }
+    if state.definition == OriginalCorridorDefence.stateID, event.kind == "mission.accepted" {
+      try OriginalCorridorDefence.requireAcceptance(
+        event, game: self, state: state, candidate: candidate)
+    }
     let fieldsByOp: [String: Set<String>] = [
       "credits": ["op", "id", "amount"], "payload.add": ["op", "id", "key", "amount"],
       "payload.remove": ["op", "id", "key", "amount"], "milestone.ensure": ["op", "index"],
@@ -125,7 +129,19 @@ extension Game {
       }
       state.milestones.insert(Int(index))
     case "journal.append":
-      let message = try text("text")
+      let message: String
+      if state.definition == OriginalCorridorDefence.stateID {
+        guard
+          ["mission.accepted", "actor.destroyed", "contact.requested", "dialogue.confirmed"]
+            .contains(event.kind),
+          event.instance == state.id, OriginalCorridorDefence.validJob(state)
+        else {
+          throw MissionPackError("Corridor progress requires its original native mission event.")
+        }
+        message = OriginalCorridorDefence.progressText(state)
+      } else {
+        message = try text("text")
+      }
       guard (1...12000).contains(message.utf8.count), state.journal.count < 512 else {
         throw MissionPackError("Journal budget exceeded.")
       }
@@ -136,6 +152,9 @@ extension Game {
       }
       if state.definition == OriginalVerifiedWarrant.stateID {
         try OriginalVerifiedWarrant.requireFinish(outcome, event: event, game: self, state: state)
+      }
+      if state.definition == OriginalCorridorDefence.stateID {
+        try OriginalCorridorDefence.requireFinish(outcome, event: event, game: self, state: state)
       }
       try finishScriptMission(outcome, pack: pack, state: &state, candidate: &candidate)
     case "dialogue.offer":

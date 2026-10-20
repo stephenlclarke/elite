@@ -89,6 +89,8 @@ public struct ScriptCompletionReceipt: Codable, Sendable, Equatable {
       && (choices ?? [:]) == state.choiceReceipts
       && (definition != OriginalVerifiedWarrant.stateID
         || OriginalVerifiedWarrant.validCompletion(self, state: state, engine: engine))
+      && (definition != OriginalCorridorDefence.stateID
+        || OriginalCorridorDefence.validCompletion(self, state: state, engine: engine))
   }
 }
 

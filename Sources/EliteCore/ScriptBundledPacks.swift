@@ -51,6 +51,11 @@ extension ScriptPackLibrary {
       "l337-verified-warrant")
   }
 
+  static var bundledCorridorDefenceDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-corridor-defence")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -127,6 +132,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled verified warrant pack: " + error.localizedDescription)
+    }
+    do {
+      let corridor = try read(bundledCorridorDefenceDirectory)
+      if !library.packs.contains(where: { $0.digest == corridor.digest }) {
+        library.packs.append(corridor)
+      }
+    } catch {
+      library.errors.append("Bundled corridor defence pack: " + error.localizedDescription)
     }
     return library
   }
