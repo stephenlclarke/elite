@@ -336,3 +336,7 @@ Integrate exact049 four files as8ca7ed8a after Root CLEAN and verified retained2
 ## Shared-cap integration and current source/executor queue
 
 Record G1 ONE full CLEAN d6e review and308d integration: six exact code/test paths, only two note-status metadata updates, verified six original PASS events/5+1 aggregate and closure, no rerun or duplicate audit. Record stable absolute MBA source/cache convention once, preserving all snapshots/proofs before closed-tree reuse. MBA03 resumes only five pending methods on exact8ca+958 nine-path composition6e, with eight/nine prior cases retained and cap executor closure preserved. Record material827 stack failure and Root-approved third-file immutable native staging scope, coherent candidate before next build. G2 hostile unattended docking is source-proposal only/exact paths need Root approval; no new app/Slack/playable/final-quality claim.
+
+## Reserve current cover-tactics implementation and coherent mission run
+
+Record828/829 coherent three-file MC1 batch with original7/9 selection and existing guards. Reserve Root-approved exact four G2 protected-threat cover paths/three focused methods; fresh native actually active/non-EMP per-source evasion selection, offensive law/authority unchanged, deterministic existing routes preserved. Authoring is noncompeting, runtime needs concrete freeze/next slot and owner PASS before review. No historical carrier trace prerequisite, new baseline/probe or survival promise.
