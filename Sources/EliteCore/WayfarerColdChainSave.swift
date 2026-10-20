@@ -4,6 +4,33 @@ enum WayfarerColdChainSave {
   static let version = 35
   static let alienVersion = 36
   static func contains(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
+  static func containsSeedTransfer(_ schema: Int?) -> Bool { schema == 37 || schema == 38 }
+  static func seedTransferHasClaims(_ commander: borrowing Commander) -> Bool {
+    if let ledger = commander.scriptState.savedWayfarerColdChainStock {
+      for key in ledger.sources.keys {
+        guard let terms = ledger.sources[key]?.definition else { continue }
+        if terms.profile != nil || terms.sourceCustodian != nil || terms.receiverCustodian != nil {
+          return true
+        }
+      }
+    }
+    for index in commander.scriptState.instances.indices {
+      if commander.scriptState.instances.values[index].definition
+        == WayfarerColdChainDefinition.seedStateID
+      {
+        return true
+      }
+      if let custody = commander.scriptState.instances.values[index].savedWayfarerColdChain {
+        if custody.seedTransfer != nil || custody.definition.profile != nil
+          || custody.definition.sourceCustodian != nil
+          || custody.definition.receiverCustodian != nil
+        {
+          return true
+        }
+      }
+    }
+    return false
+  }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
     // Every valid custody instance must join this registry; orphan fields are rejected separately.
     commander.scriptState.savedWayfarerColdChainStock != nil
@@ -11,12 +38,12 @@ enum WayfarerColdChainSave {
 
   static func validateDeclaration(_ manifest: ScriptManifest) throws {
     guard let terms = manifest.coldChain else {
-      guard manifest.stateID != WayfarerColdChainDefinition.stateID else {
+      guard !WayfarerColdChainDefinition.isNativeDefinition(manifest.stateID) else {
         throw MissionPackError("W01 requires its closed native cold-chain declaration.")
       }
       return
     }
-    guard manifest.stateID == WayfarerColdChainDefinition.stateID, terms.valid,
+    guard manifest.stateID == terms.instanceDefinition, terms.valid,
       Set(manifest.capabilities)
         == Set(["script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2"]),
       manifest.board == nil, manifest.courier == nil, manifest.freight == nil,
@@ -50,7 +77,8 @@ enum WayfarerColdChainSave {
   @inline(never)
   private static func noOrphanInstances(_ engine: borrowing ScriptEngineState) -> Bool {
     !engine.instances.values.contains {
-      $0.savedWayfarerColdChain != nil || $0.definition == WayfarerColdChainDefinition.stateID
+      $0.savedWayfarerColdChain != nil
+        || WayfarerColdChainDefinition.isNativeDefinition($0.definition)
     }
   }
 
@@ -80,7 +108,7 @@ enum WayfarerColdChainSave {
     for state in engine.instances.values {
       guard
         state.savedWayfarerColdChain != nil
-          || state.definition != WayfarerColdChainDefinition.stateID
+          || !WayfarerColdChainDefinition.isNativeDefinition(state.definition)
       else { return false }
       if let custody = state.savedWayfarerColdChain {
         guard let source = ledger.sources[custody.source.uuidString],
@@ -98,7 +126,7 @@ enum WayfarerColdChainSave {
     unit: WayfarerColdChainStockUnit, engine: borrowing ScriptEngineState
   ) -> Bool {
     guard let custody = state.savedWayfarerColdChain,
-      state.definition == WayfarerColdChainDefinition.stateID,
+      state.definition == source.definition.instanceDefinition,
       state.version == source.version, state.digest == source.digest,
       state.revision < UInt64(Int64.max),
       custody.source == source.identity, custody.owner == source.owner,
@@ -112,7 +140,7 @@ enum WayfarerColdChainSave {
       custody.definition.source.matches(custody.issue.dock.station),
       custody.issue.dock.sequence >= source.initializedAt.sequence,
       custody.issue.sequence <= engine.nextEvent, state.hasAcknowledged(custody.issue.sequence),
-      custody.timer.valid, custody.timer.id == WayfarerColdChainDefinition.timerID,
+      custody.timer.valid, custody.timer.id == custody.definition.integrityTimerID,
       custody.timer.domain == .flight, custody.timer.policy == .once,
       custody.timer.due == custody.issue.context.flightSeconds + custody.definition.flightAllowance,
       custody.integrity.binding
@@ -122,6 +150,7 @@ enum WayfarerColdChainSave {
             "main-station-v1:" + custody.definition.receiver.resourceKey),
           timerID: custody.timer.id)
     else { return false }
+    guard seedCustodianClaimsValid(state) else { return false }
     if let objective = custody.objective {
       guard objective.valid, custody.definition.objective.matches(objective.dock.station),
         objective.dock.commanderOwner == custody.owner,
@@ -150,7 +179,7 @@ enum WayfarerColdChainSave {
       case nil:
         guard unit.status == .held, state.outcome == .active, case .none = state.completionReceipt,
           state.milestones.isEmpty,
-          state.payloads == [WayfarerColdChainDefinition.payloadKey: 1],
+          state.payloads == [custody.definition.payloadID: custody.definition.tonnes],
           activeTimerValid(state, engine: engine)
         else { return false }
         latest = custody.objective?.context ?? custody.issue.context
@@ -205,10 +234,50 @@ enum WayfarerColdChainSave {
   /// A consumed one-shot remains authoritative only through its exact native queued event.
   /// Filesystem refusal keeps this event and the director's suspension, not a replacement timer.
   @inline(never)
+  @inline(never)
+  private static func seedCustodianClaimsValid(_ state: borrowing ScriptInstance) -> Bool {
+    guard let custody = state.savedWayfarerColdChain else { return false }
+    guard custody.definition.isSeedTransfer else { return custody.seedTransfer == nil }
+    guard let contacts = custody.seedTransfer,
+      seedContactValid(contacts.release, custody: custody, state: state, role: .release),
+      contacts.release.contact == custody.issue
+    else { return false }
+    if state.outcome != .complete { return contacts.acceptance == nil }
+    guard let accepted = contacts.acceptance,
+      seedContactValid(accepted, custody: custody, state: state, role: .acceptance),
+      let completion = state.completionReceipt, completion.sequence == accepted.contact.sequence,
+      completion.cause == accepted.contact.context,
+      case .some(.received(let receipt)) = custody.integrity.terminal,
+      receipt.proof.sequence == accepted.contact.sequence, receipt.proof.epoch == accepted.epoch
+    else { return false }
+    return true
+  }
+  private static func seedContactValid(
+    _ receipt: WayfarerSeedCustodianContact,
+    custody: WayfarerColdChainCustody, state: borrowing ScriptInstance,
+    role: WayfarerSeedCustodianRole
+  ) -> Bool {
+    let expected =
+      role == .release ? custody.definition.sourceCustodian : custody.definition.receiverCustodian
+    let site = role == .release ? custody.definition.source : custody.definition.receiver
+    guard receipt.custodian == expected, receipt.role == role,
+      receipt.unit == custody.unit, receipt.instance == state.id, receipt.digest == state.digest,
+      receipt.contact.valid, site.matches(receipt.contact.dock.station),
+      receipt.contact.dock.commanderOwner == custody.owner,
+      receipt.operation
+        == WayfarerSeedCustodianContact.identity(
+          custodian: receipt.custodian,
+          role: role, unit: receipt.unit, instance: receipt.instance, epoch: receipt.epoch,
+          digest: receipt.digest, contact: receipt.contact)
+    else { return false }
+    return true
+  }
+
   static func pendingExpiry(
     _ state: borrowing ScriptInstance, engine: borrowing ScriptEngineState
   ) -> ScriptEvent? {
-    guard state.definition == WayfarerColdChainDefinition.stateID, state.outcome == .active,
+    guard WayfarerColdChainDefinition.isNativeDefinition(state.definition),
+      state.outcome == .active,
       state.timers.isEmpty, case .none = state.completionReceipt,
       let custody = state.savedWayfarerColdChain, custody.loss == nil,
       case .none = custody.integrity.terminal
@@ -349,8 +418,17 @@ enum WayfarerColdChainSave {
     let stock = "savedWayfarerColdChainStock"
     let custody = "savedWayfarerColdChain"
     func reject(_ object: [String: Any]) throws {
-      guard !object.keys.contains(stock), !object.keys.contains(custody) else {
-        throw SaveError.invalidCommander
+      guard !object.keys.contains(stock), !object.keys.contains(custody),
+        !object.keys.contains("seedTransfer"), !object.keys.contains("sourceCustodian"),
+        !object.keys.contains("receiverCustodian"), object["profile"] as? String != "seed-transfer"
+      else { throw SaveError.invalidCommander }
+      for value in object.values { try rejectValue(value) }
+    }
+    func rejectValue(_ raw: Any) throws {
+      if let object = raw as? [String: Any] {
+        try reject(object)
+      } else if let array = raw as? [Any] {
+        for value in array { try rejectValue(value) }
       }
     }
     func exact(_ object: [String: Any], required: Set<String>, optional: Set<String> = []) throws {
@@ -366,7 +444,20 @@ enum WayfarerColdChainSave {
         required: [
           "source", "objective", "receiver", "batch", "stockUnits", "tonnes", "maximumActive",
           "route", "hazardTier", "flightAllowance", "rewardNative",
-        ])
+        ],
+        optional: containsSeedTransfer(schema)
+          ? ["profile", "sourceCustodian", "receiverCustodian"] : [])
+      if object.keys.contains("profile") || object.keys.contains("sourceCustodian")
+        || object.keys.contains("receiverCustodian")
+      {
+        guard containsSeedTransfer(schema), object["profile"] as? String == "seed-transfer" else {
+          throw SaveError.invalidCommander
+        }
+        for key in ["sourceCustodian", "receiverCustodian"] {
+          guard let person = object[key] as? [String: Any] else { throw SaveError.invalidCommander }
+          try exact(person, required: ["id", "name"])
+        }
+      }
       guard let route = object["route"] as? [Any], (2...256).contains(route.count) else {
         throw SaveError.invalidCommander
       }
@@ -461,8 +552,31 @@ enum WayfarerColdChainSave {
         value,
         required: [
           "owner", "source", "unit", "definition", "issue", "timer", "integrity",
-        ], optional: ["objective", "loss"])
+        ],
+        optional: containsSeedTransfer(schema)
+          ? ["objective", "loss", "seedTransfer"] : ["objective", "loss"])
       try definition(value["definition"])
+      if let raw = value["seedTransfer"] {
+        guard containsSeedTransfer(schema), let contacts = raw as? [String: Any] else {
+          throw SaveError.invalidCommander
+        }
+        try exact(contacts, required: ["release"], optional: ["acceptance"])
+        for key in ["release", "acceptance"] where contacts.keys.contains(key) {
+          guard let receipt = contacts[key] as? [String: Any],
+            let person = receipt["custodian"] as? [String: Any],
+            let contact = receipt["contact"] as? [String: Any]
+          else { throw SaveError.invalidCommander }
+          try exact(
+            receipt,
+            required: [
+              "custodian", "role", "unit", "instance", "epoch", "operation", "digest", "contact",
+            ])
+          try exact(person, required: ["id", "name"])
+          try exact(contact, required: ["sequence", "dock", "context"])
+          try dockFields(contact["dock"])
+          try contextFields(contact["context"])
+        }
+      }
       if let raw = value["loss"] {
         guard let loss = raw as? [String: Any] else { throw SaveError.invalidCommander }
         try exact(loss, required: ["cause", "sequence", "context", "energy", "visit"])
@@ -490,24 +604,22 @@ enum WayfarerColdChainSave {
       }
     }
     func missions(_ object: [String: Any], allow: Bool) throws {
-      guard !object.keys.contains(custody) else { throw SaveError.invalidCommander }
-      if let raw = object[stock] {
+      var remainder = object
+      if let raw = remainder.removeValue(forKey: stock) {
         guard allow else { throw SaveError.invalidCommander }
         try stockFields(raw)
       }
-      let instances = records(object["instances"])
+      let instances = records(remainder.removeValue(forKey: "instances"))
       guard instances.count <= 128 else { throw SaveError.invalidCommander }
       for instance in instances {
-        guard !instance.keys.contains(stock) else { throw SaveError.invalidCommander }
-        if let raw = instance[custody] {
+        var fields = instance
+        if let raw = fields.removeValue(forKey: custody) {
           guard allow, object.keys.contains(stock) else { throw SaveError.invalidCommander }
           try custodyFields(raw)
         }
-        if let contract = instance["contract"] as? [String: Any] {
-          try reject(contract)
-          if let offer = contract["offer"] as? [String: Any] { try reject(offer) }
-        }
+        try reject(fields)
       }
+      try reject(remainder)
     }
     func contracts(_ object: [String: Any]) throws {
       try reject(object)
@@ -517,7 +629,7 @@ enum WayfarerColdChainSave {
       }
     }
     switch part {
-    case .missions: try missions(root, allow: contains(schema))
+    case .missions: try missions(root, allow: contains(schema) || containsSeedTransfer(schema))
     case .commander:
       try reject(root)
       if let state = root["savedScriptState"] as? [String: Any] {

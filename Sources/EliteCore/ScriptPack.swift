@@ -204,10 +204,13 @@ public enum ScriptPackLibrary {
       let declaration = try root.table(forKey: "coldChain")
       try keys(
         declaration,
-        "source objective receiver batch stockUnits tonnes maximumActive route hazardTier flightAllowance rewardNative"
+        "source objective receiver batch stockUnits tonnes maximumActive route hazardTier flightAllowance rewardNative profile sourceCustodian receiverCustodian"
       )
       for name in ["source", "objective", "receiver"] {
         try keys(declaration.table(forKey: name), "galaxy system resourceKey")
+      }
+      for name in ["sourceCustodian", "receiverCustodian"] where declaration.contains(key: name) {
+        try keys(declaration.table(forKey: name), "id name")
       }
     }
     if root.contains(key: "pledge") {
