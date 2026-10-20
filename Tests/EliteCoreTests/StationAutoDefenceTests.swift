@@ -2629,7 +2629,8 @@ func stationAutoCoverSourceCannotBorrowAnotherAttackersActiveHazard(condition: S
     let player = try #require(game.commander.flightSimulation.player)
     var sources: Set<ActorIdentity> = []
     for x in [1000.0, -1000.0] {
-      let sequence = try #require(game.commander.flightSimulation.allocateSpawn())
+      let allocatedSequence = game.commander.flightSimulation.allocateSpawn()
+      let sequence = try #require(allocatedSequence)
       let id = try stationAutoAddNativeAttacker(
         &game, position: .init(x, 0, 0), sequence: sequence, facingPlayer: true)
       let index = try #require(game.bodies.firstIndex { $0.id == id })
