@@ -19,13 +19,28 @@ enum NativeMissionActorAdmissionPreparation: Sendable {
 final class NativeMissionActorAdmissionPlan: Sendable {
   let retentionPatch: MissionActorRetentionPatch
   let sceneBodyIDs: [UUID: Int]
-  fileprivate let source: MissionActorAdmissionSource
-  fileprivate let context: EncounterContext
-  fileprivate let anchor: SpaceBody
-  fileprivate let previousFlight: FlightSimulationState
+  private let storedSource: MissionActorAdmissionSource
+  fileprivate var source: MissionActorAdmissionSource {
+    _read { yield storedSource }
+  }
+  private let storedContext: EncounterContext
+  fileprivate var context: EncounterContext {
+    _read { yield storedContext }
+  }
+  private let storedAnchor: SpaceBody
+  fileprivate var anchor: SpaceBody {
+    _read { yield storedAnchor }
+  }
+  private let storedPreviousFlight: FlightSimulationState
+  fileprivate var previousFlight: FlightSimulationState {
+    _read { yield storedPreviousFlight }
+  }
   fileprivate let previousBodies: [SpaceBody]
   fileprivate let previousBodyID: Int
-  fileprivate let flight: FlightSimulationState
+  private let storedFlight: FlightSimulationState
+  fileprivate var flight: FlightSimulationState {
+    _read { yield storedFlight }
+  }
   fileprivate let admittedBodies: [SpaceBody]
 
   fileprivate init(
@@ -36,13 +51,13 @@ final class NativeMissionActorAdmissionPlan: Sendable {
   ) {
     self.retentionPatch = retentionPatch
     self.sceneBodyIDs = sceneBodyIDs
-    self.source = source
-    self.context = context
-    self.anchor = anchor
-    self.previousFlight = previousFlight
+    storedSource = source
+    storedContext = context
+    storedAnchor = anchor
+    storedPreviousFlight = previousFlight
     self.previousBodies = previousBodies
     self.previousBodyID = previousBodyID
-    self.flight = flight
+    storedFlight = flight
     self.admittedBodies = admittedBodies
   }
 }
@@ -323,11 +338,20 @@ extension Game {
   private static func validateMissionActorAdmissionCommitFacts(
     original: borrowing Game, plan: NativeMissionActorAdmissionPlan, context: EncounterContext?
   ) throws {
-    guard !original.docked, context == plan.context, original.scriptAnchor == plan.anchor,
+    guard !original.docked, let context, context == plan.context,
+      Self.missionActorAdmissionAnchorMatches(original: original, plan: plan),
       original.withReadOnlyCommander({ $0.flightSimulation == plan.previousFlight }),
       original.nextBodyID == plan.previousBodyID,
       original.bodies == plan.previousBodies
     else { throw NativeMissionActorAdmissionError.stalePlan }
+  }
+
+  @inline(never)
+  private static func missionActorAdmissionAnchorMatches(
+    original: borrowing Game, plan: NativeMissionActorAdmissionPlan
+  ) -> Bool {
+    guard let anchor = original.scriptAnchor else { return false }
+    return anchor == plan.anchor
   }
 
   @inline(never)
@@ -342,22 +366,36 @@ extension Game {
   }
 
   private func validateMissionActorAdmissionScene(context: EncounterContext?) throws {
-    let flight = withReadOnlyCommander { $0.flightSimulation }
-    let actualSystem = missionActorAdmissionSystemIdentity
-    let bodyCursor = nextBodyID
+    try Self.validateMissionActorAdmissionSceneAddresses(original: self)
+    for index in bodies.indices {
+      if try Self.validateMissionActorAdmissionSceneCondition(body: bodies[index]) {
+        try Self.validateMissionActorAdmissionSceneBinding(
+          original: self, body: bodies[index], context: context)
+      }
+    }
+  }
+
+  /// Global address/pose/counter temporaries return before any per-body condition or binding frame.
+  @inline(never)
+  private static func validateMissionActorAdmissionSceneAddresses(
+    original: borrowing Game
+  ) throws {
+    let flight = original.withReadOnlyCommander { $0.flightSimulation }
+    let actualSystem = original.missionActorAdmissionSystemIdentity
+    let bodyCursor = original.nextBodyID
     var identities: [ActorIdentity] = []
     var spawns: [SpawnIdentity] = []
     var missions: [UUID] = []
     var bodyIDs: [Int] = []
-    for index in bodies.indices {
-      if let identity = bodies[index].physical?.identity { identities.append(identity) }
-      if let spawn = bodies[index].physical?.spawnIdentity { spawns.append(spawn) }
-      if let mission = bodies[index].missionActorID { missions.append(mission) }
-      bodyIDs.append(bodies[index].id)
+    for index in original.bodies.indices {
+      if let identity = original.bodies[index].physical?.identity { identities.append(identity) }
+      if let spawn = original.bodies[index].physical?.spawnIdentity { spawns.append(spawn) }
+      if let mission = original.bodies[index].missionActorID { missions.append(mission) }
+      bodyIDs.append(original.bodies[index].id)
     }
-    guard flight.valid, (1..<1_000_000_000).contains(nextBodyID),
-      Set(bodyIDs).count == bodies.count,
-      Self.missionActorAdmissionScenePosesAreValid(bodies: bodies, bodyCursor: bodyCursor),
+    guard flight.valid, (1..<1_000_000_000).contains(original.nextBodyID),
+      Set(bodyIDs).count == original.bodies.count,
+      Self.missionActorAdmissionScenePosesAreValid(bodies: original.bodies, bodyCursor: bodyCursor),
       Set(identities).count == identities.count, Set(spawns).count == spawns.count,
       Set(missions).count == missions.count,
       identities.allSatisfy({
@@ -369,10 +407,6 @@ extension Game {
           $0, system: actualSystem, visit: flight.visit, nextFlightSpawn: flight.nextSpawn)
       })
     else { throw NativeMissionActorAdmissionError.invalidScene }
-    for index in bodies.indices {
-      try Self.validateMissionActorAdmissionSceneBody(
-        original: self, body: bodies[index], context: context)
-    }
   }
 
   @inline(never)
@@ -389,36 +423,36 @@ extension Game {
   }
 
   @inline(never)
-  private static func validateMissionActorAdmissionSceneBody(
-    original: borrowing Game, body: borrowing SpaceBody, context: EncounterContext?
-  ) throws {
+  private static func validateMissionActorAdmissionSceneCondition(
+    body: borrowing SpaceBody
+  ) throws -> Bool {
     if !(body.energy <= 0) {
-      guard body.physical != nil else { throw NativeMissionActorAdmissionError.invalidScene }
+      if case .none = body.physical { throw NativeMissionActorAdmissionError.invalidScene }
     }
     guard body.physical?.velocity.finite ?? true,
       body.physical?.velocity.length.isFinite ?? true,
       body.physical?.npc?.resources?.valid ?? true
     else { throw NativeMissionActorAdmissionError.invalidCondition }
-    if body.energy > 0 {
-      let requiresBinding: Bool
-      if body.missionActorID != nil {
-        requiresBinding = true
-      } else if body.missionInstanceID != nil {
-        requiresBinding = true
-      } else {
-        requiresBinding = body.scriptNPC != nil
-      }
-      if requiresBinding {
-        guard let context, let descriptor = original.currentMissionActorDescriptor(bodyID: body.id),
-          body.physical?.population == .mission, body.physical?.npc?.role == .mission
-        else { throw NativeMissionActorAdmissionError.invalidScene }
-        do {
-          _ = try MissionNativeBridge.bindActor(
-            descriptor: descriptor, body: copy body, context: context)
-        } catch {
-          throw NativeMissionActorAdmissionError.invalidScene
-        }
-      }
+    guard body.energy > 0 else { return false }
+    if body.missionActorID != nil { return true }
+    if body.missionInstanceID != nil { return true }
+    if case .some = body.scriptNPC { return true }
+    return false
+  }
+
+  /// Only a live mission-marked body enters descriptor/context and owned bridge argument storage.
+  @inline(never)
+  private static func validateMissionActorAdmissionSceneBinding(
+    original: borrowing Game, body: borrowing SpaceBody, context: EncounterContext?
+  ) throws {
+    guard let context, let descriptor = original.currentMissionActorDescriptor(bodyID: body.id),
+      body.physical?.population == .mission, body.physical?.npc?.role == .mission
+    else { throw NativeMissionActorAdmissionError.invalidScene }
+    do {
+      _ = try MissionNativeBridge.bindActor(
+        descriptor: descriptor, body: copy body, context: context)
+    } catch {
+      throw NativeMissionActorAdmissionError.invalidScene
     }
   }
 
