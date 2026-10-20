@@ -187,14 +187,18 @@ func courierNativeIssuanceTravelContactAndPaymentAreUnique(variant: ScriptCourie
   let fixture = try CourierFixture()
   defer { fixture.clean() }
   for variant in [ScriptCourierVariant.data, .package] {
-    var game = fixture.game()
+    let dataPinned = CourierNativeFixture.rows[2]
+    let pinned = variant == .data ? dataPinned : CourierNativeFixture.rows[1]
+    var game = try dataPinned.game(using: fixture)
     game.commander.cargo[0] = game.commander.standardCargoCapacity
-    let (key, offer) = try fixture.usable(&game)
+    let (key, offer) = try fixture.usable(&game, row: dataPinned.row)
     let board = try #require(game.commander.contracts.boards[key])
     let selected = try #require(
-      board.offers.first {
-        $0.courier?.variant == variant && $0.courier!.calendarLowerBoundSeconds < $0.duration
-      })
+      board.offers.indices.contains(pinned.row) ? board.offers[pinned.row] : nil)
+    try #require(
+      selected.courier?.variant == variant
+        && selected.courier!.calendarLowerBoundSeconds < selected.duration)
+    try pinned.verify(board, selected)
     let quote = game.contractAcceptanceQuote(board: key, offer: selected.id)
     #expect(quote.allowed == (variant == .data))
     if variant == .data {
@@ -306,7 +310,7 @@ func courierPriorInputsKeepTheirDrawsAndRefuseInfeasibleCurrentWorldRoutes(
 ) async throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game(system: pinned.origin)
+  var game = try pinned.game(using: fixture)
   let (key, offer) = try fixture.offer(&game, row: pinned.row)
   try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let terms = try #require(offer.courier)
@@ -326,8 +330,10 @@ func courierPriorInputsKeepTheirDrawsAndRefuseInfeasibleCurrentWorldRoutes(
 @Test func courierOriginalEventCannotBorrowLaterConfirmationOrOutliveDrainBudget() throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
-  let (key, offer) = try fixture.usable(&game)
+  let pinned = CourierNativeFixture.rows[0]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let id = Game.contractJobIdentity(offer.id)
   // A native queue near its bound prevents the original acceptance from reaching this turn's drain.
   let other = UUID()

@@ -184,6 +184,9 @@ import os
   let journal = game.commander.scriptState.savedClueJournal
   let owner = game.commander.equipmentOwnerID
   game.commander.credits = 10_000_000
+  let destinationFuel = try #require(ShipCatalogue.ship("SH013")?.game?.fuel)
+  game.commander.fuel = destinationFuel
+  try #require(game.commander.valid)
   game.commander.navigationPlan = nil
   game.key("6")
   game.showroom.selection = "SH013"
