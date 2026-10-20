@@ -542,3 +542,7 @@ Record clean native6freeze9a2 + UI9c159 + central2 exact composition821ea1d2/aut
 ## Record893 partial failure and targeted existing-case policy
 
 Record d249readonlyBlackjackscalar phase, actual893 zero completedmethods/twenty-twoUNKNOWN/twenty-eightincompletecases/oneactualAsteroidissue plusSIG10/noIPS and wholeclosure. Allfive888passes requalify, only unrelated3/3retain. Root permits existingCrossing alone/defaultflags-stack-concurrency-fixtures and actualAsteroid as needed, remainingaffectedcases still qualify in boundedbatches/CI. No fullPASS/testscope/semantic waiver/blindfullrepeat/G1job/GUIrepoll. Scoped Markdown lint/whitespace/historyhashpreservation only.
+
+## Preserve first W03 MBA compile failure
+
+Record821ea1d2 matching MBA emit-module/duplicateattribute failure at nativeSave237,10.965sinner/11.564souter, closed/noresidual/sourceprefsunchanged. CLI/all20methods21cases UNRUN. Root assigned G2 one-filefix; G1 waits exactfreeze and replaces only ownedpath preserving16, G3samecachedqualification. No G1fix/nativeownershipoverlap/mainjob/prebuildreview/PASSclaim. Scoped Markdown lint/whitespace and historicalhashpreservation only.
