@@ -429,12 +429,14 @@ enum ScriptSaveStore {
 
   @inline(never)
   private static func validateSemanticPublicationSizes(
-    commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    commander: borrowing Commander, diagnostics: ScriptRefusalDiagnostic?,
     diagnosticBoundary: ScriptRefusalBoundary
   ) throws {
     let semantic = JSONEncoder()
-    guard try semantic.encode(commander.scriptState).count <= 33_554_432,
-      try semantic.encode(commander.contracts).count <= 33_554_432
+    let scriptSizeValid = try commander.withReadOnlyScriptState {
+      try semantic.encode($0).count <= 33_554_432
+    }
+    guard scriptSizeValid, try semantic.encode(commander.contracts).count <= 33_554_432
     else {
       diagnostics?.record(
         diagnosticBoundary,
