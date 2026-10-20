@@ -374,13 +374,19 @@ private func nativeArrivalWreckFixture() throws -> (Game, SalvageSite) {
       .init(0, 0, 1), .init(0, 0, -1), .init(1, 0, 0), .init(-1, 0, 0),
       .init(0, 1, 0), .init(0, -1, 0),
     ]
-    guard
-      let observer = directions.map({ site.position + $0 * distance }).first(where: {
-        ($0 - anchors.planet.position).length > anchors.planet.radius * 2
-          && ($0 - anchors.sun.position).length > anchors.sun.radius * 4
-          && ($0 - anchors.station.position).length > 1200
-      })
-    else { continue }
+    let observers: [Vector3] = directions.map { direction -> Vector3 in
+      let displacement: Vector3 = direction * distance
+      return site.position + displacement
+    }
+    let observer: Vector3? = observers.first { position -> Bool in
+      let planetDistance: Double = (position - anchors.planet.position).length
+      guard planetDistance > anchors.planet.radius * 2 else { return false }
+      let sunDistance: Double = (position - anchors.sun.position).length
+      guard sunDistance > anchors.sun.radius * 4 else { return false }
+      let stationDistance: Double = (position - anchors.station.position).length
+      return stationDistance > 1200
+    }
+    guard let observer else { continue }
     let before = game.commander.flightSimulation.pose
     let translation = before.shipVector(observer - before.position)
     game.commander.flightSimulation.pose.position = observer
@@ -409,12 +415,24 @@ extension NativeCrimboRuntimeTests {
     game.commander.fuel = 11
     game.commander.cargo[CommodityIdentity.food.rawValue] = 7
     if unsettledDeath {
-      var record = try #require(
-        JSONSerialization.jsonObject(
-          with: JSONEncoder().encode(game.commander.salvageLedger)) as? [String: Any])
-      record["revision"] = UInt64.max
-      game.commander.salvageLedger = try JSONDecoder().decode(
-        SalvageLedger.self, from: JSONSerialization.data(withJSONObject: record))
+      let current = try #require(game.commander.alienStorageState?.current.snapshot)
+      let native = try #require(
+        game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+      try #require(
+        native.source == .generated(site)
+          && native.binding == game.bodies[index].physical?.identity)
+      let saturated = AlienStorageSnapshot(
+        owner: current.owner, revision: current.revision, worldRevision: UInt64.max,
+        world: current.world, sources: current.sources, attachments: current.attachments,
+        upgrades: current.upgrades, receipts: current.receipts, commands: current.commands)
+      try saturated.validate()
+      try game.commander.replaceAlienStorage(with: saturated)
+      try #require(
+        game.commander.alienStorageStateValid
+          && game.commander.alienStorageState?.current.worldRevision == UInt64.max)
+      #expect(throws: AlienStorageError.arithmeticOverflow) {
+        try saturated.replacingNativeWorld(saturated.world)
+      }
       game.bodies[index].energy = 0
       game.resolveDestroyed()
       #expect(game.hasUnsettledWreckDeaths)
