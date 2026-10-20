@@ -357,10 +357,30 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   return index
 }
 
+// Only these gun-interception units use the example's declared SH023 trial hull.
+// The shared fixture retains the normal development hull for its other consumers.
+private func declaredNPCGunGame(_ fixture: NPCFixture) throws -> (Game, UUID) {
+  let pack = try ScriptPackLibrary.read(fixture.directory)
+  var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = 70
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.screen = .status
+  try game.commander.prepareEquipment(legacy: false)
+  game.scriptPacks = [pack]
+  let id = try game.acceptScriptMission(pack)
+  game.launch()
+  game.emitScriptEvent("station.undocked")
+  game.drainScriptEvents()
+  return (game, id)
+}
+
 @Test func npcLasersAndPlasmaSpendActualEnergyHeatAndCooldownAndDamageRealColliders() throws {
   let fixture = try NPCFixture()
   defer { fixture.clean() }
-  var (game, id) = try fixture.game()
+  var (game, id) = try declaredNPCGunGame(fixture)
   let index = try aimNPCAtPlayer(&game, id: id)
   let shield = game.frontShield
   game.advanceScriptNPCWeapons(delta: 0.1)
@@ -393,7 +413,7 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
 @Test func plasmaHitsTheActualInterveningShipAndECMCannotDestroyOrClaimPlasma() throws {
   let fixture = try NPCFixture()
   defer { fixture.clean() }
-  var (game, id) = try fixture.game()
+  var (game, id) = try declaredNPCGunGame(fixture)
   _ = try aimNPCAtPlayer(&game, id: id)
   let wing = try npcIndex(game, id, "wing")
   game.bodies[wing].position = .init(0, 25, 700)

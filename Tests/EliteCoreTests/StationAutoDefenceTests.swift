@@ -802,8 +802,9 @@ private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attack
   async throws
 {
   var game = try await stationAutoEntryBoundary()
+  // Preserve the attacker's range while crossing SH025's real side surface.
   let first = try stationAutoAddNativeAttacker(
-    &game, position: .init(0, -20, 600), sequence: 906, facingPlayer: true)
+    &game, position: .init(600, -20, 0), sequence: 906, facingPlayer: true)
   let second = try stationAutoAddNativeAttacker(
     &game, position: .init(300, 0, 800), sequence: 907, facingPlayer: true)
   let playerActor = try #require(game.commander.flightSimulation.player)
