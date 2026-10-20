@@ -340,3 +340,7 @@ Record G1 ONE full CLEAN d6e review and308d integration: six exact code/test pat
 ## Reserve current cover-tactics implementation and coherent mission run
 
 Record828/829 coherent three-file MC1 batch with original7/9 selection and existing guards. Reserve Root-approved exact four G2 protected-threat cover paths/three focused methods; fresh native actually active/non-EMP per-source evasion selection, offensive law/authority unchanged, deterministic existing routes preserved. Authoring is noncompeting, runtime needs concrete freeze/next slot and owner PASS before review. No historical carrier trace prerequisite, new baseline/probe or survival promise.
+
+## Freeze and allocate protected-source cover tests
+
+Record exact2d0a four-path freeze/three methods-seven cases and actual829 zero-terminal stack failure/whole closure. Grant G2830/831 immediately after checks, owner units before one Root final qualified review. Preserve failed crash chain outside canonical and existing offensive/native/law/physics guards; no historical probe, integration or survival claim. No per-diagnostic ledger updates or new competing G1 job.
