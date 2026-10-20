@@ -273,9 +273,17 @@ import Testing
   game.launch()
   game.inSystemJump()
   #expect(game.message == "MASS LOCKED")
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 10000))]
+  let departure = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(
+      position: departure.position - departure.orientation.apply(.init(0, 0, 10000)),
+      orientation: departure.orientation))
   game.key("j")
-  #expect(game.bodies[0].position.z == 7000)
+  let jumpedStation = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+  #expect(jumpedStation.position.z == 7000)
+  #expect(jumpedStation.physical?.identity == departure.identity)
   game.key("g")
   #expect(game.commander.galaxy == 0)
   try game.commander.grantEquipment(
@@ -284,20 +292,29 @@ import Testing
   #expect(game.commander.fittedEquipment(at: .utility(.galacticHyperdrive)) != nil)
   game.key("g")
   #expect(
-    game.commander.galaxy == 1 && game.commander.fuel == 70
+    game.commander.galaxy == 1 && game.commander.fuel == game.commander.fuelCapacity
       && !game.commander.equipment.contains("Galactic Hyperdrive"))
   try game.commander.grantEquipment(
     TargetingTier.docking.equipmentName, at: .targetingCore,
     provenance: .grant("jump-docking-fixture"))
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
-  game.key("tab")
+  let arrival = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(
+      position: arrival.position - arrival.orientation.apply(.init(0, 0, 1500)),
+      orientation: arrival.orientation))
+  for _ in 0..<(game.bodies.count * 2) {
+    game.key("tab")
+    if game.autoPilot.targetActor == arrival.identity { break }
+  }
+  try #require(game.autoPilot.targetID == 0 && game.autoPilot.targetActor == arrival.identity)
   #expect(game.dockingComputer)
   game.key("p")
   #expect(!game.dockingComputer)
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
   game.key("tab")
   let anchors = try #require(game.commander.flightSimulation.anchors)
-  for _ in 0..<game.bodies.count {
+  for _ in 0..<(game.bodies.count * 2) {
     if let selected = game.autoTargetBody, selected.id == 0,
       selected.nativeStationIdentity == nil, selected.physical?.identity == anchors.station.identity
     {
@@ -316,14 +333,30 @@ import Testing
       rawValue:
         "target=\(String(describing: game.autoPilot.targetID)), actor=\(String(describing: game.autoPilot.targetActor)), status=\(game.autoPilot.status), distance=\(String(describing: game.autoTargetBody?.position.length)), energy=\(game.energy), pendingRRS=\(game.pendingNativeStationDock != nil)"
     ))
+  #expect(game.nativeMainStationDockEvidenceIsCurrent)
   game.launch()
-  game.speed = 0
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 89.5))]
+  let manual = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  let port = MainStationGeometry.docking
+  // Cross the original half-unit doorway boundary; stationary overlap cannot mint arrival.
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(
+      position: manual.position + manual.orientation.apply(port.center + port.outward * 0.5),
+      orientation: manual.orientation))
+  game.speed = 2
   game.tick(delta: 0.02)
   #expect(game.docked)
+  #expect(game.nativeMainStationDockEvidenceIsCurrent)
   game.launch()
+  let impact = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(
+      position: impact.position - impact.orientation.apply(.init(50, 0, 50)),
+      orientation: impact.orientation))
   game.speed = 20
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(50, 0, 50))]
   game.tick(delta: 0.02)
   #expect(!game.docked && game.message == "DOCKING COLLISION")
 }

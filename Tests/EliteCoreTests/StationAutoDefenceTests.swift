@@ -1381,8 +1381,8 @@ func stationAutoFiniteBrakingPreservesOnlyAValidatedCourse(condition: String) {
   }
 }
 
-@Test(arguments: ["resume"])
-func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition: String)
+@Test(arguments: ["resume", "unsafe-stop"])
+func stationAutoRealPoliceDepartureRetainsClearEntryAndRefusesUnsafeStop(condition: String)
   async throws
 {
   let storage = try NativeStationTestStorage()
@@ -1412,8 +1412,7 @@ func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition:
   game.autoPilot.setApproachVelocity(.init(0, 0, 21.451299950917527))
   let attacker = try stationAutoAddNativeAttacker(
     &game, position: .init(300, 0, -600), sequence: 923, facingPlayer: true)
-  // The real first police wave has three ships. A lone ambient pirate legitimately
-  // flees immediately; four stock allies sustain this new fixture's native attack.
+  // Four stock attackers sustain actual native pressure while security handles departures.
   var attackers = [attacker]
   for member in 0..<3 {
     let id = try stationAutoAddNativeAttacker(
@@ -1448,6 +1447,17 @@ func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition:
     $0.physical?.spawnIdentity?.producer == .security && $0.hull == .viper
   }
   try #require(!police.isEmpty, "The real accepted attack must launch actual station police")
+  // Real departures are wholly behind and laterally outside this forward entry course.
+  // Prove separation from independent effective-hull bounds, before reading guidance.
+  let playerRadius = game.commander.playerMesh.vertices.map(\.length).max() ?? .infinity
+  try #require(playerRadius.isFinite && playerRadius > 0)
+  for officer in police {
+    let officerRadius = game.gameplayMesh(for: officer).vertices.map(\.length).max() ?? .infinity
+    try #require(officerRadius.isFinite && officerRadius > 0)
+    let separation = playerRadius + officerRadius
+    try #require(officer.position.z < -separation)
+    try #require(hypot(officer.position.x, officer.position.y) > separation)
+  }
   let currentStation = try #require(game.autoTargetBody)
   let liveAttacker = try #require(game.bodies.first { $0.id == attacker })
   #expect(liveAttacker.hostile)
@@ -1458,71 +1468,12 @@ func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition:
     game.bodies.append(.init(id: id, hull: .cargo, position: .init(0, 0, 100)))
     game.ensurePhysicalActors()
   }
-  StationDefenceRefusalObservation.enable(&game)
   let proposal = game.stationAutoGuidance(target: currentStation)
   let guidance = try #require(proposal)
-  if StationDefenceRefusalObservation.enabled {
-    // Measurement only: current native poses and the existing pure course/material queries.
-    // No simulation step, actor mutation or permission replacement occurs here.
-    let pose = game.commander.flightSimulation.pose
-    let depth = -currentStation.entrancePosition.dot(currentStation.entranceNormal)
-    let advance = currentStation.entranceNormal * -(depth - min(0.5, depth * 0.5))
-    let end = pose.systemPoint(advance)
-    let radius = game.commander.playerMesh.vertices.map(\.length).max() ?? .infinity
-    var course: [String: String]? = [:]
-    var refused = false
-    let clear = game.nativeStationAutoEntryCourseIsClear(
-      currentStation, advance: advance, terminalSpeed: min(48, game.workLimits.speed),
-      observation: &course, bodyCourseRefused: &refused)
-    var officers: [[String: String]] = []
-    for officer in police.prefix(8) {
-      let mesh = game.gameplayMesh(for: officer)
-      let world = game.modelPose(of: officer)
-      let assessment = game.nativeStationCourseObstacleAssessment(
-        officer, from: pose.position, to: end, radius: radius, mesh: mesh)
-      officers.append([
-        "body": String(officer.id), "actor": String(describing: officer.physical?.identity),
-        "catalogue": officer.physical?.catalogueShipID ?? "nil",
-        "worldPose": String(describing: world),
-        "localPosition": String(describing: officer.position),
-        "velocity": String(describing: officer.physical?.velocity),
-        "angularVelocity": String(describing: officer.physical?.angularVelocity),
-        "spin": "\(officer.rotation),\(officer.rotationRate)",
-        "meshRadius": String(mesh.vertices.map(\.length).max() ?? .infinity),
-        "material": String(describing: assessment),
-      ])
-    }
-    let measured: [String: Any] = [
-      "phase": "original-resume-failing-oracle", "playerShip": game.commander.shipID,
-      "player": String(describing: game.commander.flightSimulation.player),
-      "playerPose": String(describing: pose),
-      "playerVelocity": String(describing: game.flightWorldVelocity),
-      "playerRadius": String(radius), "stationBody": String(currentStation.id),
-      "stationActor": String(describing: currentStation.physical?.identity),
-      "stationPose": String(describing: game.modelPose(of: currentStation)),
-      "stationVelocity": String(describing: currentStation.physical?.velocity),
-      "advance": String(describing: advance), "acceleration": String(game.workLimits.acceleration),
-      "speedLimit": String(game.workLimits.speed),
-      "validatedEntry": String(game.autoPilot.validatedMovingEntry),
-      "guidanceMovingEntry": String(guidance.movingEntryAllowed),
-      "guidanceBraking": String(guidance.entryBrakingAllowed),
-      "nativeCourseClear": String(clear), "bodyCourseRefused": String(refused),
-      "firstCourse": game.stationAutoDefence?.firstEntryCourseObservation ?? [:],
-      "course": course ?? [:], "police": officers,
-    ]
-    if let bytes = try? JSONSerialization.data(withJSONObject: measured, options: [.sortedKeys]),
-      bytes.count <= 32768
-    {
-      var line = Data("STATION_POLICE_COURSE_OBSERVATION ".utf8)
-      line.append(bytes)
-      line.append(Data("\n".utf8))
-      FileHandle.standardError.write(line)
-    }
-  }
   try #require(guidance.hazard == .active)
-  try #require(!guidance.movingEntryAllowed)
-  try #require(!guidance.joinedIncoming)
   if condition == "unsafe-stop" {
+    try #require(!guidance.movingEntryAllowed)
+    try #require(!guidance.joinedIncoming)
     #expect(!guidance.entryBrakingAllowed)
     let unsafeRuntime = GameRuntime(game: game, saveURL: storage.url)
     let before = game.flightWorldVelocity
@@ -1532,27 +1483,28 @@ func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition:
     #expect((game.flightWorldVelocity - before).length <= game.workLimits.acceleration * 0.1 + 1e-8)
     return
   }
-  try #require(guidance.entryBrakingAllowed)
-  let beforeBraking = game.flightWorldVelocity
+  try #require(guidance.movingEntryAllowed)
+  try #require(!guidance.joinedIncoming)
+  #expect(!guidance.entryBrakingAllowed)
+  let beforeClearEntryVelocity = game.flightWorldVelocity
+  let beforePosition = game.commander.flightSimulation.pose.position
   game = await runtime.advance(delta: 0.1)
   #expect(game.autoPilot.stationDefencePhase == .returning)
+  #expect(game.autoPilot.finalApproach && game.autoPilot.validatedMovingEntry)
+  #expect((game.commander.flightSimulation.pose.position - beforePosition).dot(beforeClearEntryVelocity) > 0)
   #expect(
-    !game.autoPilot.ready && !game.autoPilot.finalApproach && game.autoPilot.validatedMovingEntry)
-  #expect(game.autoPilot.status == "BRAKING FOR CLEAR DOCKING COURSE")
-  #expect(game.flightWorldVelocity.length < beforeBraking.length)
-  #expect(
-    (game.flightWorldVelocity - beforeBraking).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+    (game.flightWorldVelocity - beforeClearEntryVelocity).length <= game.workLimits.acceleration * 0.1 + 1e-8)
   #expect(game.autoPilot.facingError < 0.02 && game.autoPilot.rateError < 0.02)
   let clearStation = try #require(game.autoTargetBody)
   let depth = -clearStation.entrancePosition.dot(clearStation.entranceNormal)
   let geometryClear = game.nativeStationAutoEntryCourseIsClear(
     clearStation, advance: clearStation.entranceNormal * -(depth - 0.5), terminalSpeed: 48)
   try #require(geometryClear, "Real native police steering must clear actual hull material")
-  let afterBraking = game.flightWorldVelocity
+  let afterEntry = game.flightWorldVelocity
   game = await runtime.advance(delta: 0.1)
   #expect(game.autoPilot.finalApproach && game.autoPilot.stationDefencePhase == .returning)
   #expect(
-    (game.flightWorldVelocity - afterBraking).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+    (game.flightWorldVelocity - afterEntry).length <= game.workLimits.acceleration * 0.1 + 1e-8)
   for _ in 0..<180 where !game.docked {
     let before = game.flightWorldVelocity
     game = await runtime.advance(delta: 0.1)

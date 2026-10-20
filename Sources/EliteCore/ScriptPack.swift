@@ -57,7 +57,6 @@ public struct ScriptManifest: Codable, Sendable {
   var stationJourney: NativeStationPassengerJourneyDefinition? = nil
   var orbitalOutlook: NativeOrbitalOutlookJourneyDefinition? = nil
   var originalRescue: NativeOriginalRescueDefinition? = nil
-  var orbitalEvacuation: NativeOriginalEvacuationDefinition? = nil
   public let npcs: [ScriptNPCDefinition]?
   public let models: [ScriptNPCModel]?
   public let modules: [ScriptModuleDefinition]?
@@ -111,7 +110,6 @@ public enum ScriptCapabilities {
     "finance-obligations-basic-v2", "procurement-contracts-basic-v2", "freight-contracts-basic-v2",
     ScriptFinanceInterest.capability,
     "native-station-passengers-v1", "native-orbital-outlook-v1", "native-original-rescue-v1",
-    "native-orbital-evacuation-v1",
     "npc-wormhole-transit-v2",
     ScriptNavigationTradeContent.capability,
   ]
@@ -154,7 +152,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain repairLoop stationJourney orbitalOutlook originalRescue orbitalEvacuation npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain repairLoop stationJourney orbitalOutlook originalRescue npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -211,13 +209,6 @@ public enum ScriptPackLibrary {
     }
     if root.contains(key: "originalRescue") {
       let declaration = try root.table(forKey: "originalRescue")
-      try keys(
-        declaration, "batch sourceGalaxy sourceSystem destinationGalaxy destinationSystem people")
-      let people = try declaration.array(forKey: "people")
-      for index in 0..<people.count { try keys(people.table(atIndex: index), "id name") }
-    }
-    if root.contains(key: "orbitalEvacuation") {
-      let declaration = try root.table(forKey: "orbitalEvacuation")
       try keys(
         declaration, "batch sourceGalaxy sourceSystem destinationGalaxy destinationSystem people")
       let people = try declaration.array(forKey: "people")
@@ -464,7 +455,6 @@ public enum ScriptPackLibrary {
     try validateProcurement(manifest)
     try validateFreight(manifest)
     try validateStationPassengerJourney(manifest)
-    try validateOriginalEvacuationJourney(manifest)
     try validateOrbitalOutlookJourney(manifest)
     try validateOriginalRescueJourney(manifest)
     try validateCollections(manifest)

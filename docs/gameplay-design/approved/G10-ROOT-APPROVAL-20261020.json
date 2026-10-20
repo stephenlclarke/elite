@@ -1,0 +1,77 @@
+{
+  "status": "Root approved queued successor; not assigned; no current implementation permission",
+  "approvalDate": "2026-10-20",
+  "rootThread": "01a134a1-be40-77d0-9e11-64a775729232",
+  "ledgerID": "G10",
+  "milestone": "M06",
+  "familyID": "l337.contract/consented-survey",
+  "handoff": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G10-CONSENTED-SURVEY-COMPLETE-JOURNEY-APPROVED-HANDOFF-20261020.md",
+  "handoffSHA256": "ee76463452b88c8f3fcb50c19b9492784e47a869c4ecedaa751bd37e5050d43e",
+  "sourcePreflightCheckpoint": "78e0290fe98b6774cb18b2341bd0ae3fab40c3ec",
+  "predecessor": "G14 owner-qualified, independently clean-reviewed and integrated by G1",
+  "dispatch": "Root alone dispatches; no coder messaging or implementation started",
+  "proposedOwner": "G3 / MBA after assignment",
+  "integrator": "G1",
+  "approvedOrdinaryDefaults": {
+    "issuer": "Avenor G0/S7 actual main orbital",
+    "survey": "three G10-owned registered calibration markers at Renas G0/S185",
+    "receiver": "Avenor G0/S7 actual main orbital",
+    "routeLegs": 2,
+    "hazard": 0,
+    "rewardCR": 730,
+    "rewardNative": 7300,
+    "cargoTonnes": 0,
+    "berths": 0,
+    "depositCR": 0,
+    "deadlineSeconds": 0,
+    "orderedTargets": 3,
+    "qualifiedNativeSecondsEach": 12,
+    "surfaceRangeNativeUnits": [
+      250,
+      1500
+    ],
+    "boresightDegrees": 2,
+    "maximumQualifiedIntervalSeconds": 0.1,
+    "sight": "actual nearest-hit line of sight",
+    "observation": "existing fitted targeting computer; no caller-supplied synthetic elapsed time",
+    "controls": "Preserve W/Return/E/Q; no new shortcut",
+    "interruption": "Pause freezes; interruption/load resets unfinished dwell; completed readings persist",
+    "templates": "Existing supported SH040 marker geometry/deployment pattern with new G10 identities/permission; collision-clear poses frozen before qualification",
+    "settlement": "Actual final measurement reception commits frozen reward and consented-survey-family-trace once; third scan alone pays nothing"
+  },
+  "conditionalSaveReservation": {
+    "normal": 49,
+    "alien": 50,
+    "afterG14Normal": 47,
+    "afterG14Alien": 48,
+    "policy": "Genuine G10-only/composed claims; no other family claim manufactured; lower envelopes strict"
+  },
+  "ownership": {
+    "prospectiveImplementationPaths": 24,
+    "pathsListedInHandoff": true,
+    "ledgerAssignment": "G1 records at the next natural checkpoint; not part of 24 implementation paths",
+    "conditionalSharedHooks": {
+      "Sources/EliteCore/Game.swift": "Only optional survey runtime/reset plus G10 pre/post-native-frame calls; exact post-G14 preflight and ownership availability required",
+      "Sources/EliteCore/ScriptMissionState.swift": "Only typed optional survey state/accessor/Codable within existing COW storage; exact post-G14 preflight and ownership availability required"
+    },
+    "noCurrentEditPermission": true,
+    "extraPaths": "Exact additional production caller path/hunk requires Root approval before editing",
+    "exclude": "G1 M01 release/runtime and G2 current fixture triage; preserve G05/G08/G14 validation"
+  },
+  "qualification": "Meaningful owner-focused unit PASS and native pack CLI/digest; one independent complete bugs/performance/style CLEAN review before G1 integration; no GUI/full CI/profiling/repeated unaffected cohorts",
+  "nextTwoCandidates": [
+    {
+      "ledgerID": "G09",
+      "familyID": "l337.contract/identified-salvage",
+      "status": "Existing backlog candidate only; not assigned; requires own source/collection/receiver seam approval"
+    },
+    {
+      "ledgerID": "W05",
+      "familyID": "l337.wayfarer-service/record-recovery",
+      "status": "Existing backlog candidate only; not assigned; requires own recorder/custodian/service seam approval"
+    }
+  ],
+  "canonicalCopy": "G1 will copy exact handoff/approval bytes to docs/gameplay-design/approved and update index/ledger at the next natural checkpoint",
+  "researcherCampaignRoute": "Researcher-origin mission design routes only through Root to MissionCoder1",
+  "scopeLimit": "Persist existing approved handoff only; no new research, requirements, implementation, runtime or canonical edit"
+}

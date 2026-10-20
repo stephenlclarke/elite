@@ -61,11 +61,6 @@ extension ScriptPackLibrary {
       "l337-consented-freight")
   }
 
-  static var bundledOrbitalEvacuationDirectory: URL {
-    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
-      "l337-orbital-evacuation")
-  }
-
   static var bundledOriginalRescueDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-custody-rescue")
@@ -196,12 +191,6 @@ extension ScriptPackLibrary {
     } catch {
       library.errors.append("Bundled original custody rescue pack: " + error.localizedDescription)
     }
-    do {
-      let evacuation = try read(bundledOrbitalEvacuationDirectory)
-      if !library.packs.contains(where: { $0.digest == evacuation.digest }) {
-        library.packs.append(evacuation)
-      }
-    } catch { library.errors.append("Bundled evacuation pack: " + error.localizedDescription) }
     return library
   }
 }

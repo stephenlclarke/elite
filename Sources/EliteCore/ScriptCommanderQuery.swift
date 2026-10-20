@@ -34,14 +34,6 @@ extension Game {
         "status": orbitalOutlookScanStatus.map(ScriptValue.string) ?? .null,
       ])
     }
-    if let state = commander.nativePeople?.orbitalEvacuation {
-      fields["orbital_evacuation"] = .object([
-        "registered": .integer(Int64(state.people.count)),
-        "aboard": .integer(
-          Int64(commander.nativePeople?.held.filter { $0.person.evacuation != nil }.count ?? 0)),
-        "destination": .integer(185), "closed": .bool(state.terminalOperation != nil),
-      ])
-    }
     if let state = commander.nativePeople?.originalRescue {
       fields["original_rescue"] = .object([
         "mission": .string(state.mission.uuidString),
@@ -56,15 +48,13 @@ extension Game {
     return .object(fields)
   }
   private var scriptCommanderLocationQuery: ScriptValue {
-    let location = withReadOnlyCommander { ($0.galaxy, $0.system) }
-    let system = systems[location.1]
-    return .object([
-      "galaxy": .integer(Int64(location.0)),
-      "system": .integer(Int64(location.1)), "name": .string(system.name),
-      "x": .integer(Int64(system.x)), "y": .integer(Int64(system.y)),
-      "government": .integer(Int64(system.government)),
-      "economy": .integer(Int64(system.economy)),
-      "technology": .integer(Int64(system.technology)), "docked": .bool(docked),
+    .object([
+      "galaxy": .integer(Int64(commander.galaxy)),
+      "system": .integer(Int64(commander.system)), "name": .string(currentSystem.name),
+      "x": .integer(Int64(currentSystem.x)), "y": .integer(Int64(currentSystem.y)),
+      "government": .integer(Int64(currentSystem.government)),
+      "economy": .integer(Int64(currentSystem.economy)),
+      "technology": .integer(Int64(currentSystem.technology)), "docked": .bool(docked),
       "main_station": .bool(docked && dockedAtMainStation),
     ])
   }

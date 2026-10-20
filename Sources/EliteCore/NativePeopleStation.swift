@@ -4,7 +4,6 @@ enum NativePeopleStationRow: Equatable, Sendable {
   case journey(NativeStationPassengerJourneyAction)
   case outlook(NativeOrbitalOutlookJourneyAction)
   case rescue(NativeOriginalRescueAction)
-  case evacuation(NativeOriginalEvacuationAction)
   case care(NativePeopleOrigin)
   case sale(NativePersonReference)
   case history(UUID)
@@ -13,7 +12,6 @@ enum NativePeopleStationRow: Equatable, Sendable {
     case .journey(let action): "people/journey/" + action.rawValue
     case .outlook(let action): "people/outlook/" + action.rawValue
     case .rescue(let action): "people/rescue/" + action.rawValue
-    case .evacuation(let action): "people/evacuation/" + action.rawValue
     case .care(let origin): "people/care/" + origin.rawValue
     case .sale(let person): "people/sale/" + person.key
     case .history(let id): "people/history/" + id.uuidString
@@ -24,7 +22,6 @@ enum NativePeopleStationRow: Equatable, Sendable {
     case .journey(let action): action.action
     case .outlook(let action): action.action
     case .rescue(let action): action.action
-    case .evacuation(let action): action.action
     case .care: "Transfer to care"
     case .sale: "Sell one"
     case .history: "Closed"
@@ -65,8 +62,7 @@ struct NativePeopleStationQuote: Sendable {
 
 extension Game {
   var nativePeopleRows: [ContractBoardRow] {
-    let journeys =
-      stationPassengerRows + orbitalOutlookRows + originalRescueRows + originalEvacuationRows
+    let journeys = stationPassengerRows + orbitalOutlookRows + originalRescueRows
     guard let state = commander.nativePeople else { return journeys }
     var rows: [NativePeopleStationRow] = []
     if state.heldPods.contains(where: { $0.origin == .rescuedPod }) {
@@ -84,8 +80,6 @@ extension Game {
         case .journey(let action): title = action.title
         case .outlook(let action): title = action.title
         case .rescue(let action): title = action.title
-        case .evacuation(let action): title = action.title
-        case .care(.orbitalEvacuee): title = "Original evacuation / agreed receiver"
         case .care(.stationPassenger):
           title = "Original station passengers / agreed passage reception"
         case .care(.originalRescuedPod): title = "Original rescue / agreed care and transport"
@@ -103,7 +97,6 @@ extension Game {
     if case .journey(let action) = row { return stationPassengerQuote(action) }
     if case .outlook(let action) = row { return orbitalOutlookQuote(action) }
     if case .rescue(let action) = row { return originalRescueQuote(action) }
-    if case .evacuation(let action) = row { return originalEvacuationQuote(action) }
     var issues: [String] = []
     var members: [NativePersonReference] = []
     var context: NativeMainStationArrivalContext?
@@ -112,14 +105,11 @@ extension Game {
     if !commander.nativePeopleStateValid { issues.append("Person custody is invalid.") }
     if let state = commander.nativePeople {
       switch row {
-      case .journey, .outlook, .rescue, .evacuation: break
+      case .journey, .outlook, .rescue: break
       case .care(let origin):
         members = state.held.filter { $0.origin == origin }.map(\.person)
         if origin == .originalRescuedPod {
           issues.append("Use this original rescue's exact care and receiver row.")
-        }
-        if origin == .orbitalEvacuee {
-          issues.append("Use the original evacuation group receiver row.")
         }
         if origin == .stationPassenger {
           issues.append("Use the original passage's agreed native receiver.")
@@ -173,10 +163,6 @@ extension Game {
       try confirmOriginalRescueAction(quote, action: action)
       return
     }
-    if case .evacuation(let action) = quote.row {
-      try confirmOriginalEvacuationAction(quote, action: action)
-      return
-    }
     let current = nativePeopleQuote(quote.row)
     guard screen == .contracts, contractBoard.detail, contractBoard.selected?.people == quote.row,
       contractBoard.peopleQuote?.reviewToken == quote.reviewToken,
@@ -188,7 +174,7 @@ extension Game {
     var candidate = self
     let kind: NativePeopleTransfer
     switch quote.row {
-    case .journey, .outlook, .rescue, .evacuation: throw SaveError.invalidCommander
+    case .journey, .outlook, .rescue: throw SaveError.invalidCommander
     case .care: kind = .care
     case .sale: kind = .sale
     case .history: throw SaveError.invalidCommander
@@ -210,7 +196,6 @@ extension Game {
     try closeStationPassengerTransfer(operation)
     try closeOrbitalOutlookTransfer(operation)
     try closeOriginalRescueTransfer(operation)
-    try closeOriginalEvacuationTransfer(operation)
     guard Self.transferredNativePeopleCommanderIsValid(self) else {
       throw SaveError.invalidCommander
     }
@@ -293,28 +278,6 @@ extension Game {
     else { throw SaveError.invalidCommander }
     try transferNativePeople(members, kind: .care, dock: dock, price: 0, operation: operation)
   }
-  @inline(never)
-  mutating func transferOriginalEvacuationJourney(
-    members: [NativePersonReference], dock: NativeMainStationDockReceipt, operation: UUID
-  ) throws {
-    try validateOriginalEvacuationTransfer(members: members, dock: dock)
-    try transferNativePeople(members, kind: .care, dock: dock, price: 0, operation: operation)
-  }
-  @inline(never)
-  private func validateOriginalEvacuationTransfer(
-    members: [NativePersonReference], dock: NativeMainStationDockReceipt
-  ) throws {
-    guard nativeMainStationDockEvidenceIsCurrent, dock == commander.nativeStations?.currentMainDock,
-      let custody = commander.nativePeople, let source = custody.orbitalEvacuation,
-      source.boarding != nil, source.terminalOperation == nil, members == source.references,
-      members.allSatisfy({ person in custody.held.contains { $0.person == person } }),
-      NativeOriginalEvacuation.sourceMatches(dock)
-        || NativeOriginalEvacuation.destinationMatches(dock)
-    else {
-      throw MissionPackError(
-        "All four original living people need the agreed receiver or actual source return.")
-    }
-  }
   mutating func transferStationPassengerJourney(
     members: [NativePersonReference], dock: NativeMainStationDockReceipt, operation: UUID
   ) throws {
@@ -360,9 +323,6 @@ extension Game {
   }
 
   var nativePeopleDetail: [String] {
-    if case .evacuation(let action) = contractBoard.selected?.people {
-      return originalEvacuationDetail(action)
-    }
     if case .rescue(let action) = contractBoard.selected?.people {
       return originalRescueDetail(action)
     }
@@ -420,9 +380,7 @@ extension Game {
     return rows + quote.issues
   }
   var nativePeoplePageFacts: [String] {
-    let journeyFacts =
-      stationPassengerFacts + orbitalOutlookFacts + originalRescueFactsForPage
-      + originalEvacuationFacts
+    let journeyFacts = stationPassengerFacts + orbitalOutlookFacts + originalRescueFactsForPage
     guard let state = commander.nativePeople else { return journeyFacts }
     var result =
       journeyFacts + [

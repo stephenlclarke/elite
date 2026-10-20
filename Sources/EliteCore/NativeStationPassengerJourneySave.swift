@@ -5,12 +5,6 @@ extension NativeStationPassengerJourney {
     let held = commander.nativePeople?.held.filter { $0.person.station != nil } ?? []
     for berth in commander.accommodation.ownedBerths {
       if case .nativePerson(let person) = berth.use {
-        if person.evacuation != nil {
-          guard NativeOriginalEvacuation.berthValid(berth, commander: commander) else {
-            return false
-          }
-          continue
-        }
         if person.rescue != nil {
           guard NativeOriginalRescueJourney.berthValid(berth, commander: commander) else {
             return false
@@ -318,7 +312,7 @@ extension NativeStationPassengerJourneySave {
   /// Inspect only the native header/mission/contract paths, never authored script data keys.
   static func validateFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?,
-    allowOriginalRescue: Bool = false, allowOriginalEvacuation: Bool = false
+    allowOriginalRescue: Bool = false
   ) throws {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
       root["stationJourney"] == nil, root["nativePerson"] == nil
@@ -433,10 +427,6 @@ extension NativeStationPassengerJourneySave {
         let decoded = try JSONDecoder().decode(
           PassengerPlaceUse.self, from: JSONSerialization.data(withJSONObject: use))
         guard case .nativePerson(let person) = decoded else { throw SaveError.invalidCommander }
-        if let evacuation = person.evacuation {
-          guard allowOriginalEvacuation, evacuation.valid else { throw SaveError.invalidCommander }
-          continue
-        }
         if let rescue = person.rescue {
           // The coordinator has already validated this rescue in its original G08 schema.
           guard allowOriginalRescue, rescue.valid else { throw SaveError.invalidCommander }
