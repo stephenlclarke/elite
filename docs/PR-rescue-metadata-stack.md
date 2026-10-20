@@ -20,3 +20,9 @@ G1's matching owner selection is four nonparameterized methods/four cases:
 Owner compilation and execution are pending. The author performs only source parse/format, semantic-preservation, Markdown and diff checks, with no native build, test, reproducer, debugger or CI run. G1 qualifies the matching frozen source when available; causal compiler or unit corrections come first. One independent bugs/performance/style review of the passing freeze precedes integration. The next normal required full CI must establish whether the hosted fault is repaired; no current global pass or release completion is claimed.
 
 See [the observed release blocker](ISSUE-rescue-metadata-stack.md).
+
+## Compiler compatibility correction
+
+Actual matching owner build 1099 failed before tests with three Swift borrow-consumption diagnostics: the borrowed body was captured by the synchronous closure, filter consumed the borrowed bodies array, and the short-circuit fits autoclosure captured the borrowed Commander. The original compiler output remains retained at /tmp/elite-M01-rescue-build-1099/build.log. Four selected methods remain unrun; this is not a test failure or a native repair qualification.
+
+The wrapper now explicitly copies only the small SpaceBody before closure capture. The reader counts matching identities through array indices instead of consuming filter, at the same final validation point. Cargo tonnes and capacity are read into integer locals only inside the original ready-and-not-held branch, so the comparison no longer captures Commander in a short-circuit autoclosure. The false branch still skips those reads. Whole Commander stays borrowed; no guard, authority, metadata or test expectation is relaxed. All four selected methods and test sources remain unchanged from the initial freeze. Source format/strict lint, paired Markdown and diff checks pass; the corrected matching owner build and execution remain pending.

@@ -7,3 +7,5 @@ The small metadata wrapper enters originalRescueFacts for ordinary non-station/n
 The stack probe establishes exhaustion at the reader boundary; it does not establish exact optimized frame sizes or identify every implicit temporary. The correction should use the existing synchronous stored-Commander borrow, preserve every classifier predicate and keep genuine rescue metadata and guidance working. Matching owner compilation and focused native qualification must precede independent review and integration; full required CI remains necessary. No stack limit, concurrency, timeout, serialization or gate waiver is allowed.
 
 See [the correction and qualification plan](PR-rescue-metadata-stack.md).
+
+The initial borrowed-reader freeze encountered three actual owner compiler errors before any selected test ran. The causal correction uses an explicit small-body copy for closure capture, indexed identity counting and branch-local scalar cargo projections. It preserves the stored Commander borrow and short-circuit behavior; original compiler evidence remains retained. No author native job is authorized.
