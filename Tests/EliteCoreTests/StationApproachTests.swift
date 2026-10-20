@@ -38,8 +38,8 @@ private func approachGame(
 
 private func engageMainApproachStation(_ game: inout Game, identity: ActorIdentity) throws {
   game.ensurePhysicalActors()
-  // Native RRS stations may be nearer; select the actual main station through ordinary Tab.
-  for _ in 0..<game.bodies.count {
+  // A retained partial cycle may already have visited main; finish it and allow one fresh cycle.
+  for _ in 0..<(game.bodies.count * 2) {
     game.key("tab")
     if game.autoPilot.targetActor == identity { break }
   }

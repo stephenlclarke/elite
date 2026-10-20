@@ -99,7 +99,8 @@ func fitEliteEMPTestEnergy(_ game: inout Game) throws {
 /// Charge, cooldown, reacquisition and every pulse share that budget; no actor or clock is moved.
 @discardableResult
 func disableNativeEMPActor(
-  _ actor: ActorIdentity, game: inout Game, stopAfterFirstEmission: Bool = false
+  _ actor: ActorIdentity, game: inout Game, stopAfterFirstEmission: Bool = false,
+  afterFirstEmission: ((inout Game) throws -> Void)? = nil
 ) throws -> Int {
   game.selectFlightTool(.empPirateBlaster)
   let initialEMPDischarge =
@@ -111,6 +112,7 @@ func disableNativeEMPActor(
   var lastStart: Double?
   var lastRelease: Double?
   var lastCancellation: Double?
+  var handledFirstEmission = false
   for frame in 0..<800 {
     let body = try #require(game.bodies.first { $0.physical?.identity == actor })
     if game.isEMPDisabled(body) { return 800 - frame }
@@ -175,6 +177,13 @@ func disableNativeEMPActor(
         + "preTickTargetElectrical=\(String(describing: body.physical?.npc?.resources?.electrical?.remaining))"
     }
     try #require(continuingFlight, Comment(rawValue: failureDetails))
+    if let afterFirstEmission, !handledFirstEmission, observedReleases == 1,
+      let charge = observedCharge, charge.phase == .released,
+      charge.player == game.commander.flightSimulation.player, charge.target == actor
+    {
+      handledFirstEmission = true
+      try afterFirstEmission(&game)
+    }
     if stopAfterFirstEmission,
       game.dischargeAudio.events.last(where: { $0.tool == .empPirateBlaster })?.id
         != initialEMPDischarge,
