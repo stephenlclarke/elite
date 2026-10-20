@@ -4,7 +4,7 @@ Updated 20 October 2026. This is the current delivery guide, not a content-compl
 
 ## Player-facing milestone roadmap
 
-**Current assignment register:** **M01 FIRST:**3476c78 matching903buildPASS/904singlecoreUNKNOWN(0PASS/0issues),all10ownedstarts closed; borrowing annotation left actualbinary unchanged/unqualified. Onlybaseline3/3retained; pending25methods39cases/target28/42 per current ownerplan. Root returned mainCPU to MC1 after890wholeclosure, no G1competing job. **GUI890:** human Unlocked-and-ready, but ONEactualdesktop availability call still reportedlocked/apps empty; BLOCKEDBEFOREAPP/no savewrite/process. No repeatpoll/question. **MBA:** G13/M05-F35-K09Mutualrelief assignedG3 on33304385/exact14paths, in-development;G2reviewAFTERownerPASS/G1integration. W03source33304385Rootverifiedall17;889artifactexcludesW03, no appreleaseclaim.
+**Current assignment register:** **M01 FIRST:**1ea6dd8a matching905buildPASS/changedbinary041f3b57;906singlecore0PASS1UNKNOWN/signal10/0issues/noIPS,all10ownedstarts closed/registryreleased. Root authorised ONE907 diagnostic on samechangedbinary/actualcase for concrete fault/caller-frame evidence, no rebuild/probe/fallback. Baseline3/3retain/currentpending25methods39cases-target28/42; notqualified/no failedchainintegration. **GUI890:** human Unlocked-and-ready, but ONEactualdesktop availability call still reportedlocked/apps empty; BLOCKEDBEFOREAPP/no savewrite/process. No repeatpoll/question. **MBA:** G13/M05-F35-K09Mutualrelief assignedG3 on33304385/exact14paths, in-development;G2reviewAFTERownerPASS/G1integration. W03source33304385Rootverifiedall17;889artifactexcludesW03, no appreleaseclaim.
 
 **Next executable milestone: M01.** Dependable flight/mission/save completion remains in development; no unqualified MC1 chain is integrated. Already qualified renderer/docking/cap/G03/stable-offer/W01/W02 source does not close full milestones/artwork/playable release. M01 remains first; W03bounded source is integrated, and Root assigned G13mutualrelief as the sole parallel MBA item. Owner focused PASS then ONE independent bugs/performance/style review of the coherent diff precedes G1 integration. Reuse unaffected evidence; broad integration/system/performance gates remain batched, final mainCI/coverage/sanitizer/leak/PR/mainSonar/release required.
 
@@ -16,7 +16,7 @@ All milestone statuses below are functional statuses. Prepared source/data, deli
 
 ### M01 - Dependable everyday flight, trade, missions and saving
 
-**Status:** in development;3476c78/903buildPASS/904singlecoreUNKNOWN0PASS0issues, actualbinaryunchanged by borrowing annotation; no qualification. Baseline3/3retain; currentpending25methods39cases/target28/42 includes existing equipmentreader1/9 and directpolicyreader2/2. **Owner:** MC1 soleimplementation/focusedexecutor/mainCPUresumed viaRoot after890no-launchclosure; G1soleintegration/CI/publisher. **Dependencies:** M01FIRST/no fixture-stack-concurrency/fullPASSwaiver. G13assignedG3/noMC1overlap; W03sourceintegrated, signed889excludesW03/GUIunexercised.
+**Status:** in development;1ea6dd8a/905buildPASS actualchangedbinary041f3b57,906singlecoreUNKNOWN0PASS0issues/noIPS,wholeclosed. RootONE907samebinarysinglecasediagnostic authorised only/no rebuild-probe-fallback. Baseline3/3retain/currentpending25methods39cases-target28/42, no wholequalification. **Owner:** MC1 soleimplementation/focusedexecutor, Rootscope/causaldecisions; G1soleintegration/CI/publisher/ledgeronly. **Dependencies:** M01FIRST/no stack-concurrency-fixture/fullPASSwaiver. G13assignedG3/in-development; W03sourceintegrated,889artifact/890toolaccessfailuredespitehumanunlock unchanged/no repoll.
 
 **Player journey:** Continue the saved commander, launch, fly/jump, accept a reachable job, dock, receive the outcome and reopen the same saved game.
 
@@ -2082,3 +2082,21 @@ G3exact14paths:
 - `Sources/EliteCore/ScriptClueJournal.swift`
 
 Shared clueauthority paths13/14 are withinRootG3scope: exactG13receipt predicate at award ANDretainedjournal/productionpin, generic accepted/incomplete/foreign/stripped receipts refused. No MC1Game/Director/equipment/save/publication/preflight/schema path, no hook workaround. Extraactualpersistence/schema need returnsRootbeforeediting. Existingwriter/pledgeledger/cluetrust reused, no new framework. NativeCLI validates actualfrozenproductionpack/digest; sourcefreeze→ownermeaningfulPASS→ONEG2fullboundaryreview→G1integration; broadfinalquality gates remainseparate.
+
+## Superseded pre905/906 mission snapshot
+
+**Current assignment register:** **M01 FIRST:**3476c78 matching903buildPASS/904singlecoreUNKNOWN(0PASS/0issues),all10ownedstarts closed; borrowing annotation left actualbinary unchanged/unqualified. Onlybaseline3/3retained; pending25methods39cases/target28/42 per current ownerplan. Root returned mainCPU to MC1 after890wholeclosure, no G1competing job. **GUI890:** human Unlocked-and-ready, but ONEactualdesktop availability call still reportedlocked/apps empty; BLOCKEDBEFOREAPP/no savewrite/process. No repeatpoll/question. **MBA:** G13/M05-F35-K09Mutualrelief assignedG3 on33304385/exact14paths, in-development;G2reviewAFTERownerPASS/G1integration. W03source33304385Rootverifiedall17;889artifactexcludesW03, no appreleaseclaim.
+
+**Status:** in development;3476c78/903buildPASS/904singlecoreUNKNOWN0PASS0issues, actualbinaryunchanged by borrowing annotation; no qualification. Baseline3/3retain; currentpending25methods39cases/target28/42 includes existing equipmentreader1/9 and directpolicyreader2/2. **Owner:** MC1 soleimplementation/focusedexecutor/mainCPUresumed viaRoot after890no-launchclosure; G1soleintegration/CI/publisher. **Dependencies:** M01FIRST/no fixture-stack-concurrency/fullPASSwaiver. G13assignedG3/noMC1overlap; W03sourceintegrated, signed889excludesW03/GUIunexercised.
+
+## Actual905 changed binary,906 core failure and one907 capture authority
+
+Current **1ea6dd8a5105708e9e93ec6301bb24c351e2ea46** implements Root exact904 Commander.valid phase approval: SAMEcatalogueguard then SAMEequipmentStateValid then private noninline helper ENTIREunchanged remaining suffix/order; suffix temporaries begin only AFTER equipmentvalidation. Prior3476borrowingannotations unchanged. This is approved bounded phase repair, no new representation/state/schema/guard/order waiver. Unlike903unchangedbinary, actual905 finalbinary CHANGED SHA256 `041f3b5794b1aa50b85d2e134b48d69d63a5c3a2abc6289670d4217b785d687f`; existing902proof was authoritative for900=903 only, not silently relabelled current905 fault.
+
+Actual905 matchingmaintainedDEBUGcoveragebuild PASS49.771sinner/50.456souter,0tests,60ownedstarts gone/terminal26030andpreserver70223closed/868artifacts2881inputs+prefs preserved/no timeoutcleanup. Actual906 SINGLEexistingactualCrossing **0PASS/0terminalFAILED/1UNKNOWN/0issues**,signal10/exit1/no matchedIPS,11.300sinner/12.520souter;all10ownedstarts gone/terminal28556closed,868artifacts2881inputs+prefs unchanged/no timeoutcleanup, registryreleased. Still unqualified; phasechange alone is no progress/PASSclaim.
+
+Root authorises **ONE907diagnostic** of SAMEactualfailingcase on SAMEfrozen905changedbinary/working explicitframeworkenvironment to obtain concrete currentfault/caller-frame evidence. No rebuild/probe/fallback/newdiagnosticcampaign/wholecohortrepeat, diagnosticNOTqualification. Currentbaseline3/3retained, pending25methods39cases/target28methods42cases unchanged. G1 updates ledger only/no executor/audit/sourcework; G13soleMBA in-development,890actualtoolaccessfailuredespitehumanunlock/no repoll,889artifactexcludesW03 unchanged.
+
+`/tmp/elite-launch-compile-905/agent-game-test-verification-905.json` SHA256 `f10aa760900401bbed4ec7a9d80b502239f6f0f82281d4f35fa259c63eb69c8a`.
+
+`/tmp/elite-station-qualification-906/agent-game-test-verification-906.json` SHA256 `ce20fa379d49c8ead9ab112b2396f9a313dbf81bb5e0da76cdf470940cbc51f4`.

@@ -578,3 +578,7 @@ Root903/904actualwholeclosure handover grantsG1existing889briefvisible/manualsav
 ## Close890 tool-access failure and persist G13 exact assignment
 
 DespiteactualhumanUnlockedandready/safe903904handover, ONE890desktopcall reportedlocked/apps empty; no app/process/save/visibleframes launched. Protectedprimaryprefs-save/889binary472resourcesunchanged, exacterror/blockedwholeclosure/registryreleased, RootreturnedMC1CPU/no repoll/question/alternativeprobe/Slackclaim. Record3476annotationunchangedbinary/903PASS904singlecoreUNKNOWN/10ownedclosed/currentpending25methods39cases-target28/42. G13soleparallelG3assigned exact14paths/333base/500CRnativepledge/noGame-saveoverlap, durablehandoff/G2reviewAFTERownerPASS/G1integrator. No staleunassigned/physical-lockfact/usableappclaim. ScopedMarkdown/whitespace/historyhashpreservation only.
+
+## Record905 changed binary and906 unknown core
+
+Record1ea6Root-approved unchanged Commander.valid suffixphase,905buildPASS/new041f3b57binary,906singlecoreUNKNOWN/signal10/0issues/noIPS/all10ownedclosed/registryreleased. RootONE907samechangedbinaryactualcase diagnostic only/no rebuild-probe-fallback; no qualificationscope/PASSwaiver. Baseline3/3retain/currentpending25/39-target28/42, G13in-development/890toolaccessfailuredespitehumanunlock/no repoll unchanged. Scoped Markdownlint/whitespace/historyhashes only; G1no competingjob/source/audit.
