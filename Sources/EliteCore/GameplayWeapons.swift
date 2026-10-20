@@ -142,7 +142,7 @@ extension Game {
     do {
       contact = try nearestMissionCollision(
         from: body.position, direction: direction.unit,
-        range: min(1500, direction.length + 1), radius: 0,
+        range: direction.length + 1, radius: 0,
         excludingBodyIDs: [bodyID], includePlayer: true)
     } catch { return nil }
     if let contact, contact.selectedTargetBody?.scriptNPC != nil {
