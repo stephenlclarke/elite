@@ -15,6 +15,7 @@ private func courierGame() throws -> (Game, LoadedMissionPack) {
   let entry = try MissionPackLibrary.read(courierURL)
   var game = Game(executive: false)
   game.screen = .status
+  try game.commander.prepareEquipment(legacy: false)
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   return (game, entry)
 }
@@ -71,10 +72,11 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   var (game, entry) = try courierGame()
   game.key("b")
   let before = game.commander
-  game.commander.cargo[0] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = hold
   game.key("return")
   #expect(
-    game.commander.cargoTonnes == 20 && game.commander.missionProgress == before.missionProgress)
+    game.commander.cargoTonnes == hold && game.commander.missionProgress == before.missionProgress)
   game.commander.cargo[0] = 0
   game.commander.system = 129
   game.key("return")
@@ -235,7 +237,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.key("b")
   game.key("return")
   game.launch()
-  game.bodies = []
+  #expect(game.bodies.contains { $0.id == 0 && $0.hull == .station })
   game.tick(delta: 0.1)
   #expect(game.commander.missionProgress[entry.pack.stateID]?.seconds == 0.1)
   for screen in [Screen.help, .gallery, .navigation, .showroom, .handoff, .rumour, .secret] {
@@ -253,8 +255,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   try await runtime.load(from: save)
   game = await runtime.snapshot()
   #expect(game.commander.missionProgress[entry.pack.stateID]?.seconds == 0.1)
-  game.launch()
-  game.bodies = []
+  #expect(!game.docked && !game.paused)
   game.tick(delta: 0.1)
   #expect(game.commander.missionProgress[entry.pack.stateID]?.stage == "complete")
   #expect(game.commander.credits == 1500)
@@ -396,12 +397,15 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.key("b")
   game.key("return")
   game.launch()
-  game.bodies = []
   game.tick(delta: 0.1)
   #expect(game.commander.credits == 1000 && game.commander.cargoTonnes == 0)
   #expect(game.missionCatalogue.last?.status == .failed)
   #expect(game.missionCatalogue.last?.completed == 1)
-  game.commander.system = 129
+  game.selectedSystem = 129
+  game.arrive()
+  #expect(
+    game.commander.system == 129
+      && game.commander.flightSimulation.anchors?.system == game.systemIdentity)
   game.dock()
   game.key("b")
   #expect(game.commander.credits == 1000 && game.screen != .handoff)

@@ -4,6 +4,66 @@ import math
 import re
 
 
+def resolved_texture_names(lines, tokens):
+    """Resolve DAT numeric NAMES indices separately from the retained raw tokens."""
+    lines = [line.strip() for line in lines if line.strip()]
+    headers = [i for i, line in enumerate(lines) if re.match(r'^NAMES(?:\s|$)', line)]
+    assert len(headers) <= 1, 'Duplicate source texture names'
+    names = []
+    if headers:
+        start = headers[0]
+        header = lines[start].split()
+        assert len(header) == 2 and header[1].isdigit(), 'Invalid source texture name count'
+        count = int(header[1])
+        assert 0 < count <= 4096, 'Invalid source texture name count'
+        names = lines[start + 1:start + 1 + count]
+        assert len(names) == count, 'Truncated source texture names'
+        assert all(name and len(name.split()) == 1 and name not in
+                   {'END', 'NORMALS', 'TANGENTS', 'TEXTURES', 'NAMES'} for name in names), 'Invalid source texture name'
+        end = start + 1 + count
+        assert end == len(lines) or lines[end] in {'END', 'NORMALS', 'TANGENTS'}, 'Invalid source texture name count'
+    result = []
+    for token in tokens:
+        assert isinstance(token, str) and token and len(token.split()) == 1, 'Invalid source texture token'
+        if re.fullmatch(r'[+-]?\d+', token):
+            index = int(token)
+            assert 0 <= index < len(names), 'Invalid source texture name index'
+            result.append(names[index])
+        else:
+            result.append(token)
+    return result
+
+
+def resolved_diffuse_map(definitions, definition_id, material_name):
+    """Use Oolite's shallow like_ship overrides, without modifying source dictionaries."""
+    assert isinstance(definition_id, str) and definition_id, 'Invalid source ship definition'
+    assert isinstance(material_name, str) and material_name, 'Invalid source material name'
+    chain, seen = [], set()
+    key = definition_id
+    while key:
+        assert isinstance(key, str) and key not in seen and len(chain) < 128, 'Invalid source inheritance'
+        assert key in definitions and isinstance(definitions[key], dict), 'Missing source ship definition'
+        seen.add(key)
+        raw = definitions[key]
+        chain.append(raw)
+        key = raw.get('like_ship')
+        assert key is None or isinstance(key, str) and key, 'Invalid source parent definition'
+    # OOShipRegistry mergeShip:withParent: replaces top-level dictionary values.
+    # In particular, a child's materials dictionary replaces the parent's whole map.
+    materials = {}
+    for raw in reversed(chain):
+        if 'materials' in raw:
+            materials = raw['materials']
+            assert isinstance(materials, dict), 'Invalid source materials'
+    material = materials.get(material_name, {})
+    assert isinstance(material, dict), 'Invalid source material'
+    diffuse = material.get('diffuse_map', material_name)
+    if isinstance(diffuse, dict):
+        diffuse = diffuse.get('name')
+    assert isinstance(diffuse, str) and diffuse and not diffuse.isspace(), 'Invalid source diffuse map'
+    return diffuse
+
+
 def dat_appearance(lines, corner_orders, source, license):
     """Read raw face triples and normalized UVs in the final geometry corner order."""
     start = lines.index('FACES') + 1

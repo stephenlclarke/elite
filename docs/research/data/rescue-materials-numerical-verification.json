@@ -1,0 +1,355 @@
+{
+  "profile_id": "PROJECT-P30-MATERIALS-6-v1",
+  "scope": "Independent C/Python selected source count/late/budget expressions, plus exact rational continuous-ideal derivation and exhaustive midpoint-grid inequality cross-check. Synthetic inputs; not historical engine RNG distribution or native route/AI/physics/custody parity.0/0sourceNaN recorded, selected project repair checked separately.",
+  "total": 23,
+  "passed": 23,
+  "runtime": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "clang": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
+  },
+  "inputs": [
+    {
+      "path": "/tmp/elite-gap-research/materials-numerical-oracle.c",
+      "sha256": "76bfeaadeac0f8c25d505921437554192bb43c0089aa8d31f7d6e5d9c7518c04"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P30/Scripts/rescue_scenario_6.js",
+      "sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P30/Scripts/rescue_missions.js",
+      "sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f"
+    }
+  ],
+  "continuous_ideal_distribution": {
+    "derivation": "For count>=k, k=2..4: integral_0^(1/k\u00b2)(1-k\u00b2v)dv=1/(2k\u00b2). Independent draws per shared loop guard multiply conditional slot-reach tails. Ignore source finite-RNG zero event for this continuous model; global board capacity/availability can truncate actual slots.",
+    "counts1_to4": [
+      "7/8",
+      "5/72",
+      "7/288",
+      "1/32"
+    ],
+    "conditional_slots1_to4_reached": [
+      "1",
+      "1/8",
+      "1/144",
+      "1/4608"
+    ],
+    "grid_size": 256,
+    "midpoint_pairs_exhaustively_checked": 65536,
+    "histogram": [
+      57344,
+      4538,
+      1606,
+      2048
+    ],
+    "independent_integer_inequality_histogram": [
+      57344,
+      4538,
+      1606,
+      2048
+    ]
+  },
+  "cases": [
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0,
+        0,
+        0
+      ],
+      "source_result": "NaN",
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.014541903510689735,
+      "passed": true
+    },
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0.5,
+        0,
+        0
+      ],
+      "source_result": 4.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.004292000085115433,
+      "passed": true
+    },
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0,
+        0.5,
+        0
+      ],
+      "source_result": 1.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.00200001522898674,
+      "passed": true
+    },
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0.01,
+        0.5,
+        0
+      ],
+      "source_result": 1.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.002499902620911598,
+      "passed": true
+    },
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0.99,
+        0.25,
+        0
+      ],
+      "source_result": 1.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.001334119588136673,
+      "passed": true
+    },
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0.5,
+        0.125,
+        0
+      ],
+      "source_result": 2.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0008330680429935455,
+      "passed": true
+    },
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0.9,
+        0.1,
+        0
+      ],
+      "source_result": 3.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.000791158527135849,
+      "passed": true
+    },
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0.64,
+        0.04,
+        0
+      ],
+      "source_result": 4.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0006670597940683365,
+      "passed": true
+    },
+    {
+      "kind": "source two-draw offer count",
+      "input": [
+        0.99,
+        0.001,
+        0
+      ],
+      "source_result": 4.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0005417969077825546,
+      "passed": true
+    },
+    {
+      "kind": "late delivered net reputation",
+      "input": [
+        200,
+        200,
+        0
+      ],
+      "source_result": -0.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0018749851733446121,
+      "passed": true
+    },
+    {
+      "kind": "late delivered net reputation",
+      "input": [
+        200.01,
+        200,
+        0
+      ],
+      "source_result": -0.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0011669471859931946,
+      "passed": true
+    },
+    {
+      "kind": "late delivered net reputation",
+      "input": [
+        86599.999,
+        200,
+        0
+      ],
+      "source_result": -0.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0007918570190668106,
+      "passed": true
+    },
+    {
+      "kind": "late delivered net reputation",
+      "input": [
+        86600,
+        200,
+        0
+      ],
+      "source_result": -1.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0009168870747089386,
+      "passed": true
+    },
+    {
+      "kind": "late delivered net reputation",
+      "input": [
+        864200,
+        200,
+        0
+      ],
+      "source_result": -10.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0008749775588512421,
+      "passed": true
+    },
+    {
+      "kind": "late delivered net reputation",
+      "input": [
+        864200.1,
+        200,
+        0
+      ],
+      "source_result": -10.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0009171199053525925,
+      "passed": true
+    },
+    {
+      "kind": "late delivered net reputation",
+      "input": [
+        10000200,
+        200,
+        0
+      ],
+      "source_result": -10.0,
+      "remaining_budget": null,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.00062515027821064,
+      "passed": true
+    },
+    {
+      "kind": "finite hunter request and remaining budget",
+      "input": [
+        3,
+        0,
+        0
+      ],
+      "source_result": 0.0,
+      "remaining_budget": 3.0,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0018749851733446121,
+      "passed": true
+    },
+    {
+      "kind": "finite hunter request and remaining budget",
+      "input": [
+        3,
+        0.5,
+        0
+      ],
+      "source_result": 0.0,
+      "remaining_budget": 3.0,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.001084059476852417,
+      "passed": true
+    },
+    {
+      "kind": "finite hunter request and remaining budget",
+      "input": [
+        3,
+        0.99,
+        0
+      ],
+      "source_result": 2.0,
+      "remaining_budget": 1.0,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0007920898497104645,
+      "passed": true
+    },
+    {
+      "kind": "finite hunter request and remaining budget",
+      "input": [
+        3,
+        0,
+        1
+      ],
+      "source_result": 3.0,
+      "remaining_budget": 0.0,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0007499475032091141,
+      "passed": true
+    },
+    {
+      "kind": "finite hunter request and remaining budget",
+      "input": [
+        1,
+        0,
+        1
+      ],
+      "source_result": 0.0,
+      "remaining_budget": 1.0,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.00062515027821064,
+      "passed": true
+    },
+    {
+      "kind": "finite hunter request and remaining budget",
+      "input": [
+        0,
+        0.99,
+        0
+      ],
+      "source_result": 0.0,
+      "remaining_budget": 0.0,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0006249174475669861,
+      "passed": true
+    },
+    {
+      "kind": "finite hunter request and remaining budget",
+      "input": [
+        65,
+        0.999,
+        1
+      ],
+      "source_result": 65.0,
+      "remaining_budget": 0.0,
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0007080379873514175,
+      "passed": true
+    }
+  ]
+}

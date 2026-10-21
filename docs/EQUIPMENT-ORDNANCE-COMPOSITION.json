@@ -1,0 +1,33 @@
+{
+  "source": "7cadd2e10d33ca02db12bbce740bdcdc5cb4a68a",
+  "equipment_npc_inventory_terminal_base": "9ae1b4c22be7169c990118bb90975ddc71d3b632",
+  "original_ordnance_source": "767846d5f5321a6ee9cb7a0ef82f0192c4a3bbcf",
+  "original_ordnance_focused_test_source": "98451bf4643838edef8b46e8cd211943e6056a39",
+  "cherry_picked_original_commits": [
+    "4c26d12",
+    "767846d",
+    "2b7fd45",
+    "98451bf"
+  ],
+  "composed_production_commits": [
+    "78d4fb4",
+    "bd35a99"
+  ],
+  "composed_test_commits": [
+    "16ffadf",
+    "7cadd2e"
+  ],
+  "automatic_merge_conflicts": false,
+  "preserved_base_sha256": {
+    "Sources/EliteCore/NPCPersistenceRuntime.swift": "cce65b426e747c2b2a1659e669e904581bbb1c8db570403e1f67267e69723a49",
+    "Sources/EliteCore/NPCPersistentReferences.swift": "f21fed314d5005cce1fce244577043aba6a487560435b71793fb5771006df4f2",
+    "Sources/EliteCore/NPCPersistenceLedger.swift": "b6dd12a05c6ce5653f621b8a90950e8c64df2f5e6178bc9ed453996752b4dafb",
+    "Sources/EliteCore/InventoryInteraction.swift": "93c4759038ab193cf87e30075f8ea971f5dd072f854a6da39942db0a0b659607",
+    "Sources/EliteMac/EliteApp.swift": "1020dc9c355590df320e255fc8058855c99c616d25ec2a714aa848b624d28d9c",
+    "Sources/EliteCore/SalvageLedger.swift": "090036b7833da1d45a531a79d4d4c705f4db9c7f71d5d6e9e6f1c6ce8ff1dcd3"
+  },
+  "compiled": false,
+  "tests_executed": false,
+  "full_ci_passed": false,
+  "source_status": "Source-only composition; original isolated passes do not establish combined acceptance."
+}

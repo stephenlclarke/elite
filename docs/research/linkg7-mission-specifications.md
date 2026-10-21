@@ -1,0 +1,57 @@
+# LinkG7 0.1: Great Rift prototype trial
+
+P21 is now recovered: LinkG7 v0.1.zip,6768 bytes, public file631078585 inside the [author's shared folder](https://app.box.com/s/bpl582x1hu). [Recovery provenance](data/legacy-source-recovery.json) pins the archive and all eight textual members. Source requires Oolite1.75.0-1.75.99; readme requests trunk1.75.0.4324 or newer. The0.1 change adds missing shipdata; its instructions still call the folder0.0. Scripts identify Captain Okti/Oktay Sarioglu. No original dialogue/models are copied into this profile.
+
+[16 selected callback checks](data/linkg7-source-fixtures.json) establish offers, payments, equipment unlock, arrival stages, four jump mappings and wrong-galaxy/decline defects. [Route/gear facts](data/linkg7-route-bindings.json) independently match eight named endpoints between the recovered C galaxy generator and the current Swift Universe, measure connected components and state a necessary numerical compatibility repair. This is a complete bounded project adaptation, not proof of original Oolite1.75 wormhole/fuel/timing parity.
+
+## Mission graph and payments
+
+Source first offer appears docked at any station in Galaxy7 (zero6), with no existing linkG7_Status and no competing mission screen. There is no combat-score, legal, cargo or hardware prerequisite. Accept -> STAGE1, mark Orramaor73, pay5000CR expenses immediately, request briefing. Decline -> STAGE_WAIT and text promises recontact at Arberi151, but source has no STAGE_WAIT handler. Project repair provides that reoffer at Arberi's orbital main station; further declines remain pending and never pay an advance. Back leaves an unanswered offer pending. Persist a unique acceptance/advance ID, so replayed callbacks cannot farm5000.
+
+Dock an orbital station in Orramaor73 while STAGE1 -> STAGE2; briefing makes prototype available. Source globally changes EquipmentInfo.effectiveTechLevel from99 to14 and adds no explicit stage-based shop condition. Current project's Orramaor technology index is2, so a generic index14 shop gate would prevent installation at the briefing station. Project repair supplies a dedicated Orramaor station-service installation at0CR during STAGE2, independent of ordinary technology stock. This is one unique owned mission device, not an unlimited free general-equipment purchase. Installing at another station or merely possessing an unrelated module cannot advance the trial. Source purchase event displays operating instructions but does not change stage.
+
+Travel across the rift using an outward link, arrive Articeso229: STAGE2 -> STAGE3. Traverse the isolated cluster by normal hyperspace travel to Esarxeve17 or Xeonar178, use the return link, arrive Belere192: STAGE3 -> STAGE4. Return to an orbital station in Orramaor73 while STAGE4 -> COMPLETED, pay25000CR once, clear instructions/marker and retain the prototype. Source event progression only tests system IDs, not galaxy or actual device use; project repair requires Galaxy7 and the corresponding saved outbound/return transit ID. No incidental visit to system229/192 in another galaxy, or forced location edit, can complete it. No extra kill/wave/escort objective, deadline or invented final battle exists.
+
+The prototype remains usable after completion at the same four origin systems. Leaving Galaxy7 neither removes the hardware nor clears the campaign; return to resume. An installed/stored/lost module does not reset stage or advance payments. If lost/destroyed before completion, the same unique prototype ownership record can be restored through Orramaor service at0CR, without making a second copy or resetting prior use; this is an explicit recovery repair because source defines no replacement mechanism. Hardware damaged but repairable follows ordinary repair service, not a free duplication award.
+
+## Verified systems and corridors
+
+| System ID in G7 | Verified name | Byte chart coordinates | Function |
+| --- | --- | --- | --- |
+| 73 | Orramaor | 29,125 | Briefing, installation and final debrief |
+| 151 | Arberi | 40,128 | Decline/reoffer repair |
+| 194 | Tiared | 21,124 | Outward activation |
+| 89 | Maedrebe | 10,98 | Alternative outward activation |
+| 229 | Articeso | 3,137 | Outward arrival/checkpoint |
+| 17 | Esarxeve | 45,211 | Return activation; source text misspells Esarxseve |
+| 178 | Xeonar | 39,181 | Alternative return activation |
+| 192 | Belere | 57,180 | Return arrival/checkpoint |
+
+The current7LY graph has229 systems in Orramaor's component and27 in Articeso's. Articeso can reach Esarxeve by normal jumps; Belere can reach Orramaor. Articeso cannot normally reach Orramaor. Thus this is a real two-corridor crossing, not a return to the original entry point. Generate the normal within-component routes with the common selected galaxy/distance profile; do not create extra bridges to hide the rift.
+
+| Activation origin | First helper's normal destination | Forced interstellar midpoint | Final second-hop arrival |
+| --- | --- | --- | --- |
+| Tiared194 | Maedrebe89 | Exact fractional midpoint15.5,111 | Articeso229 |
+| Maedrebe89 | Tiared194 | Exact fractional midpoint15.5,111 | Articeso229 |
+| Esarxeve17 | Xeonar178 | 42,196 | Belere192 |
+| Xeonar178 | Esarxeve17 | 42,196 | Belere192 |
+
+Source adds one LRSpython at physical coordinates100000,100000,100000, gives it7LY fuel, teleports the player within independently random0-500m negative offsets, points the ship toward the helper and calls helper.exitSystem(firstDestination). Player scriptedMisjump=true forces interstellar exit. On that exit the main worldscript creates a second helper at the same physical coordinates, repeats positioning and sends it to the saved final destination. On a normal final arrival, clear autoJump/destination flags. LR-python is a Cobra Mark III trader-base derivative named LongRange Cobra with magenta laser/nullAI/bounty0/likelyCargo0; it is not a new Python hull. No separate bespoke player ship is granted.
+
+Both source helper steps retry with while(!exitSystemSucceeded), spawning more ships without a limit. Failed spawn also dereferences ships[0]. Project replaces this with a two-phase serialized transit using one logical helper per phase, no collision-producing overlap, and at most one transition attempt per simulation tick. Pending remains saved, failure displays Retry/Cancel and never busy-loops. Cancel before leaving restores pre-activation position/orientation and mission state; cancel after interstellar arrival retains that safe midpoint and a resume option for the stored second phase. It must not strand a commander with an unusable device or repeat the advance.
+
+There is a numerical range trap: preserving the exact outward midpoint15.5,111 makes Articeso7.2LY away under the project's quantized distance function, beyond the helper's7LY fuel. Retrying cannot fix that geometry. Necessary labelled project repair: floor the intermediate chart position to byte indices15,111 before calculating the second hop; its range is then6.8LY. Return midpoint42,196 already gives6.8LY. First helper pairs are6.8LY outward and6.4LY return. The route appendix records both exact/floored values; do not claim this rounding was verified in Oolite1.75, silently increase normal jump range or change the named destinations.
+
+Use the pinned modern [WormholeEntity calculation](https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/WormholeEntity.m#L171) as an explicitly borrowed timing profile: halfway misjump time=0.75*d_first^2 hours, second ordinary hop=d_second^2 hours. With the project's quantized/floored distances, total80.92 hours outward and76.96 hours return (291312/277056 seconds). Advance the world clock once per committed phase, including other jobs' deadlines; visual travel follows the project's ordinary wormhole animation. This is not a claim of exact old-engine timing. Player follows helper wormholes, so there is no additional commander fuel payment in this project profile, no cash fare and no forced healing/ammunition refill. First phase uses the selected profile's misjump legal rule; second phase uses its ordinary system-entry legal rule once, preserving any active mission overrides.
+
+## Equipment, saves and gallery
+
+Source device ID EQ_LINKG7_GREATRIFT_AUTOJUMPER, price0, source tech99 initially/effective14 after briefing, available_to_all true, activation through primed equipment. Equipment owns activated; world-script registration does not grant a device to every ship. Project requires the unique fitted operational prototype, undocked flight, Galaxy7 and origin17/89/178/194, rejects interstellar manual activation/system-1, and blocks another activation while a transit is pending. The saved automatic second phase is the only exception to interstellar rejection. No attacks are deliberately spawned; ambient combat follows the ordinary universe, without teleporting hostile actors along with the helper by accident.
+
+The source defines no equipment-space weight. Necessary project estimate: zero cargo tonnes and one special equipment slot; record this separately from cargo hold capacity. Docking computer, drive, forward laser and initial missile player baselines remain independent. Swapping hulls preserves the same prototype ID/state: fit it if the special slot is free, otherwise store it with its condition. A pending interstellar transit blocks shipyard transactions; a stored prototype cannot activate. Ship ownership changes never reissue advance/reward, refill missiles or unlock an unearned trial checkpoint.
+
+GameRuntime saves source/project profile, stage and origin galaxy, initial acceptance/advance claim, marked destination, unique prototype/condition/fit-or-storage, installed briefing service ID, outbound/return trial IDs, helper phase, physical/chart coordinates, selected floor repair, safe resume point/orientation, target destination, committed clock increments, pre-activation player fuel/legal state and final reward claim. Migrate old STAGE_WAIT into reoffer pending and STAGE2 with missing technology unlock into installation pending. Ambiguous old autoJump flags resume one safe second phase after validation, never grant STAGE4 automatically. Final reward and terminal flag commit together.
+
+Gallery entry: offer/accept, Orramaor briefing, fit prototype, outward Articeso arrival, return Belere arrival, Orramaor debrief. Display5000CR advance separately from25000CR completion payment and retained equipment. Show exact four origins, both arrival destinations, current fit/storage state, pending recovery and next normal-travel waypoint. No per-hop travel percentage or helper-spawn count is a mission milestone.
+
+Acceptance: any G7 orbital first offer, decline/reoffer at151, duplicate choices,5000 once, Orramaor-only service despite tech index2, free unique fitting/replacement, all four mapped origins, wrong galaxy/system/interstellar activation, transit without fitted device, spawn/exit failure and finite retries, zero-length facing vector, no duplicate helpers, exact/floored outbound7.2/6.8 range check, both component routes, return order/checkpoint identity, committed world-clock time once, other-mission deadline effects, source flag cleanup, mid-transit save/reload/cancel/resume, equipment storage/swap,25000 once and retained post-completion device. The16 source callbacks and independently matched routes establish these selected facts; full historical1.75 binary flight remains outside the verified boundary.

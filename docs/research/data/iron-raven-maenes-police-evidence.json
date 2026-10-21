@@ -1,0 +1,1170 @@
+{
+  "profile_id": "P19-MAENES-ORDINARY-POLICE-v1",
+  "scope": "Ordinary actual mainstation response, not mandatoryscripted mission waves. Fullselectedrequireddependencyrolepools, defaultgov2/overridefalse, rawpositivefits and complete meshvertexbounds. Actualweighted selection/launch/dockfit/target/capacity/worldAI/save needsnativeacceptance. No newcanonrow/refit/crewfact.",
+  "source_inputs": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-conditions.js",
+      "sha256": "e212965cac4ad39a506939b6c2d5b0741ac10719a9dc6d8eb3e192ba53729ab0"
+    },
+    {
+      "path": "/tmp/elite-gap-research/dependencies/Commies/Scripts/commies_conditions.js",
+      "sha256": "bea32248bff14c1b0d3ac4addfb154dc301ba5b172b2020e4e34200302194dfb"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/StationEntity.m",
+      "sha256": "98453362e1794419fafbace128b2232746bb0401ea5dac3d055f18efb3c8bead"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Universe.m",
+      "sha256": "062c2282d8ebc5214a34233a0828e041b704214370fdc16526e75d4d6ca56f2a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntity.m",
+      "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Config/autoAImap.plist",
+      "sha256": "b03109ab761b8ad59733999bd6da17eefc33fe75954c72a5a740b2b8c78d598b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/oolite-defenseShipAI.js",
+      "sha256": "ff2406d9db5b022abcd9c4559641fe158ff17ce143b2301f04480afd759c5c9b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Scripts/oolite-priorityai.js",
+      "sha256": "fc3fe2a7b30f2133a8e5cfd345b55f3ccb4587e3b7bc431ee7b081864a83dcfd"
+    }
+  ],
+  "role_pools": {
+    "police": [
+      {
+        "definition_id": "viper",
+        "weight": 1,
+        "condition_script": null
+      },
+      {
+        "definition_id": "comviper",
+        "weight": 5,
+        "condition_script": "commies_conditions.js"
+      },
+      {
+        "definition_id": "IR-quico-viper",
+        "weight": 4,
+        "condition_script": "IR-conditions.js"
+      },
+      {
+        "definition_id": "IR-policekrait",
+        "weight": 100,
+        "condition_script": "IR-conditions.js"
+      }
+    ],
+    "interceptor": [
+      {
+        "definition_id": "viper-interceptor",
+        "weight": 1,
+        "condition_script": null
+      },
+      {
+        "definition_id": "comviper",
+        "weight": 5,
+        "condition_script": "commies_conditions.js"
+      }
+    ]
+  },
+  "definitions": [
+    {
+      "id": "viper",
+      "own": {
+        "like_ship": "oolite_template_viper"
+      },
+      "resolved": {
+        "weapon_position_forward": "0.0 -0.15 35.0344",
+        "max_energy": "180",
+        "ai_type": "oolite-policeAI.js",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "missiles": "1",
+        "aft_eject_position": "0.0 6.5 -28.0",
+        "max_flight_pitch": "1.8",
+        "materials": {
+          "Hull": {
+            "emission_map": {
+              "name": "oolite_viper_diffuse.png",
+              "extract_channel": "a"
+            },
+            "diffuse_map": "oolite_viper_diffuse.png",
+            "shininess": "45",
+            "normal_map": "oolite_viper_normal.png",
+            "emission_modulate_color": [
+              "0.9926",
+              "0.9686",
+              "0.7325",
+              "1.0"
+            ],
+            "specular_color": [
+              "0.5",
+              "0.5",
+              "0.5"
+            ],
+            "gloss": "0.55"
+          },
+          "Engine": {
+            "emission_modulate_color": [
+              "0.7325",
+              "0.9686",
+              "0.9926",
+              "1.0"
+            ],
+            "gloss": "0.55",
+            "specular_color": [
+              "0.6",
+              "0.5",
+              "0.5"
+            ],
+            "diffuse_map": "oolite_viper_diffuse.png",
+            "shininess": "45",
+            "emission_map": {
+              "name": "oolite_viper_diffuse.png",
+              "extract_channel": "a"
+            }
+          }
+        },
+        "max_flight_speed": "320",
+        "hyperspace_motor": "no",
+        "subentities": [
+          {
+            "phase": "0.6",
+            "position": [
+              "-21.88",
+              "0.0",
+              "-20.63"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.7",
+            "position": [
+              "-18.75",
+              "0.0",
+              "-13.75"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.8",
+            "position": [
+              "-15.63",
+              "0.0",
+              "-6.88"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.9",
+            "position": [
+              "-12.50",
+              "0.0",
+              "0.00"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.6",
+            "position": [
+              "21.88",
+              "0.0",
+              "-20.63"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.7",
+            "position": [
+              "18.75",
+              "0.0",
+              "-13.75"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.8",
+            "position": [
+              "15.63",
+              "0.0",
+              "-6.88"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.9",
+            "position": [
+              "12.50",
+              "0.0",
+              "0.0"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          }
+        ],
+        "weapon_position_aft": "0.0 0.0 -27.5",
+        "energy_recharge_rate": "4",
+        "scan_class": "CLASS_POLICE",
+        "thrust": "32",
+        "weapon_position_port": "-12.5 0.0 0.0",
+        "weapon_position_starboard": "12.5 0.0 0.0",
+        "frangible": "0",
+        "name": "GalCop Viper",
+        "has_escape_pod": "yes",
+        "exhaust": [
+          "11.5223 -0.0416 -26.249 4.0 4.0 1.2",
+          "-11.5223 -0.0416 -26.249 4.0 4.0 1.2"
+        ],
+        "roles": "police",
+        "model": "oolite_viper.dat",
+        "max_flight_roll": "2.8",
+        "laser_color": "magentaColor",
+        "missile_launch_position": "0.0 -8.5 -11.0",
+        "has_ecm": "yes",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO"
+      }
+    },
+    {
+      "id": "IR-quico-viper",
+      "own": {
+        "like_ship": "oolite_template_viper",
+        "roles": "IR-quico-viper police(4)",
+        "materials": {
+          "Hull": {
+            "emission_map": {
+              "name": "IR-quico-viper.png",
+              "extract_channel": "a"
+            },
+            "diffuse_map": "IR-quico-viper.png",
+            "shininess": "45",
+            "normal_map": "IR-quico-viper-normal.png",
+            "emission_modulate_color": [
+              "0.9926",
+              "0.9686",
+              "0.7325",
+              "1.0"
+            ],
+            "specular_color": [
+              "0.5",
+              "0.5",
+              "0.5"
+            ],
+            "gloss": "0.55"
+          },
+          "Engine": {
+            "emission_modulate_color": [
+              "0.7325",
+              "0.9686",
+              "0.9926",
+              "1.0"
+            ],
+            "gloss": "0.55",
+            "specular_color": [
+              "0.6",
+              "0.5",
+              "0.5"
+            ],
+            "diffuse_map": "oolite_viper_diffuse.png",
+            "shininess": "45",
+            "emission_map": {
+              "name": "oolite_viper_diffuse.png",
+              "extract_channel": "a"
+            }
+          }
+        },
+        "name": "QuiCo Viper",
+        "condition_script": "IR-conditions.js",
+        "laser_color": "blueColor"
+      },
+      "resolved": {
+        "weapon_position_forward": "0.0 -0.15 35.0344",
+        "max_energy": "180",
+        "ai_type": "oolite-policeAI.js",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "missiles": "1",
+        "aft_eject_position": "0.0 6.5 -28.0",
+        "max_flight_pitch": "1.8",
+        "materials": {
+          "Hull": {
+            "emission_map": {
+              "name": "IR-quico-viper.png",
+              "extract_channel": "a"
+            },
+            "diffuse_map": "IR-quico-viper.png",
+            "shininess": "45",
+            "normal_map": "IR-quico-viper-normal.png",
+            "emission_modulate_color": [
+              "0.9926",
+              "0.9686",
+              "0.7325",
+              "1.0"
+            ],
+            "specular_color": [
+              "0.5",
+              "0.5",
+              "0.5"
+            ],
+            "gloss": "0.55"
+          },
+          "Engine": {
+            "emission_modulate_color": [
+              "0.7325",
+              "0.9686",
+              "0.9926",
+              "1.0"
+            ],
+            "gloss": "0.55",
+            "specular_color": [
+              "0.6",
+              "0.5",
+              "0.5"
+            ],
+            "diffuse_map": "oolite_viper_diffuse.png",
+            "shininess": "45",
+            "emission_map": {
+              "name": "oolite_viper_diffuse.png",
+              "extract_channel": "a"
+            }
+          }
+        },
+        "max_flight_speed": "320",
+        "hyperspace_motor": "no",
+        "subentities": [
+          {
+            "phase": "0.6",
+            "position": [
+              "-21.88",
+              "0.0",
+              "-20.63"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.7",
+            "position": [
+              "-18.75",
+              "0.0",
+              "-13.75"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.8",
+            "position": [
+              "-15.63",
+              "0.0",
+              "-6.88"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.9",
+            "position": [
+              "-12.50",
+              "0.0",
+              "0.00"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.6",
+            "position": [
+              "21.88",
+              "0.0",
+              "-20.63"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.7",
+            "position": [
+              "18.75",
+              "0.0",
+              "-13.75"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.8",
+            "position": [
+              "15.63",
+              "0.0",
+              "-6.88"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.9",
+            "position": [
+              "12.50",
+              "0.0",
+              "0.0"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          }
+        ],
+        "weapon_position_aft": "0.0 0.0 -27.5",
+        "energy_recharge_rate": "4",
+        "scan_class": "CLASS_POLICE",
+        "thrust": "32",
+        "weapon_position_port": "-12.5 0.0 0.0",
+        "weapon_position_starboard": "12.5 0.0 0.0",
+        "frangible": "0",
+        "name": "QuiCo Viper",
+        "has_escape_pod": "yes",
+        "exhaust": [
+          "11.5223 -0.0416 -26.249 4.0 4.0 1.2",
+          "-11.5223 -0.0416 -26.249 4.0 4.0 1.2"
+        ],
+        "roles": "IR-quico-viper police(4)",
+        "model": "oolite_viper.dat",
+        "max_flight_roll": "2.8",
+        "laser_color": "blueColor",
+        "missile_launch_position": "0.0 -8.5 -11.0",
+        "has_ecm": "yes",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "condition_script": "IR-conditions.js"
+      }
+    },
+    {
+      "id": "viper-interceptor",
+      "own": {
+        "like_ship": "oolite_template_viper-interceptor"
+      },
+      "resolved": {
+        "weapon_position_forward": "0.0 -0.15 35.034",
+        "max_energy": "280",
+        "ai_type": "oolite-policeAI.js",
+        "forward_weapon_type": "WEAPON_MILITARY_LASER",
+        "missiles": "3",
+        "aft_eject_position": "0.0 10.5 -22.0",
+        "max_flight_pitch": "2",
+        "materials": {
+          "Hull": {
+            "emission_map": {
+              "name": "oolite_viper_interceptor_diffuse.png",
+              "extract_channel": "a"
+            },
+            "diffuse_map": "oolite_viper_interceptor_diffuse.png",
+            "shininess": "45",
+            "normal_map": "oolite_viper_interceptor_normal.png",
+            "emission_modulate_color": [
+              "0.9926",
+              "0.9686",
+              "0.7325",
+              "1.0"
+            ],
+            "specular_color": [
+              "0.5",
+              "0.5",
+              "0.5"
+            ],
+            "gloss": "0.55"
+          },
+          "Engine": {
+            "emission_modulate_color": [
+              "0.7325",
+              "0.9686",
+              "0.9926",
+              "1.0"
+            ],
+            "gloss": "0.55",
+            "specular_color": [
+              "0.5",
+              "0.5",
+              "0.5"
+            ],
+            "diffuse_map": "oolite_viper_interceptor_diffuse.png",
+            "shininess": "45",
+            "emission_map": {
+              "name": "oolite_viper_interceptor_diffuse.png",
+              "extract_channel": "a"
+            }
+          }
+        },
+        "max_flight_speed": "520",
+        "subentities": [
+          {
+            "phase": "0.6",
+            "position": [
+              "-21.88",
+              "0.0",
+              "-20.63"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.7",
+            "position": [
+              "-18.75",
+              "0.0",
+              "-13.75"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.8",
+            "position": [
+              "-15.63",
+              "0.0",
+              "-6.88"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.9",
+            "position": [
+              "-12.50",
+              "0.0",
+              "0.00"
+            ],
+            "color": {
+              "hue": "260"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.6",
+            "position": [
+              "21.88",
+              "0.0",
+              "-20.63"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.7",
+            "position": [
+              "18.75",
+              "0.0",
+              "-13.75"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.8",
+            "position": [
+              "15.63",
+              "0.0",
+              "-6.88"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          },
+          {
+            "phase": "0.9",
+            "position": [
+              "12.50",
+              "0.0",
+              "0.0"
+            ],
+            "color": {
+              "hue": "310"
+            },
+            "initially_on": "no",
+            "size": "6",
+            "type": "flasher",
+            "bright_fraction": "0.3"
+          }
+        ],
+        "fuel": "160",
+        "weapon_position_aft": "0.0 -8.0 -32.0",
+        "energy_recharge_rate": "6",
+        "scan_class": "CLASS_POLICE",
+        "thrust": "50",
+        "weapon_position_port": "-23.75 0.0 -1.75",
+        "weapon_position_starboard": "23.75 0.0 -1.75",
+        "frangible": "no",
+        "name": "GalCop Viper Interceptor",
+        "has_escape_pod": "yes",
+        "exhaust": [
+          "11.5223 -0.0416 -26.249 4.0 4.0 1.5",
+          "0.0 -0.0416 -26.249 4.0 4.0 1.5",
+          "-11.5223 -0.0416 -26.249 4.0 4.0 1.5"
+        ],
+        "roles": "interceptor wingman",
+        "has_fuel_injection": "yes",
+        "model": "oolite_viper_interceptor.dat",
+        "max_flight_roll": "4.2",
+        "laser_color": "magentaColor",
+        "missile_launch_position": "0.0 -10.5 -9.0",
+        "has_ecm": "yes",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO"
+      }
+    }
+  ],
+  "model_envelopes": [
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Models/oolite_viper.dat",
+      "sha256": "11892066baf8f60fa1f4ff9a0479559a9ec8f52db522f061fd669e6cef10914e",
+      "vertex_count": 1113,
+      "minimum": [
+        -25,
+        -8.79061,
+        -30.165
+      ],
+      "maximum": [
+        25,
+        9.34572,
+        35.0344
+      ],
+      "solid_subentities": 0,
+      "basis": "all raw vertices; own scale1, source subentities are flashers only. No native octree/face/material/docking proof."
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Models/oolite_viper_interceptor.dat",
+      "sha256": "620b10946bca5171b17726f0ad27e5b5151a5e347c9c498b43d4f60fe5a9501b",
+      "vertex_count": 1186,
+      "minimum": [
+        -25,
+        -8.79061,
+        -30.165
+      ],
+      "maximum": [
+        25,
+        9.34572,
+        35.0344
+      ],
+      "solid_subentities": 0,
+      "basis": "all raw vertices; own scale1, source subentities are flashers only. No native octree/face/material/docking proof."
+    }
+  ],
+  "NPCprofiles": [
+    {
+      "definition_id": "viper",
+      "canonical_ship_id": "SH136",
+      "canonical_limit": "Interceptor exactwholehullidentity remains separate; do not maptoFFE ViperMkII SH137. CoreViper/QuiCo same sourcebasefamilySH136; no newrow.",
+      "cargo_tonnes": 0,
+      "speed": 320,
+      "acceleration": 160,
+      "roll": 2.8,
+      "pitch": 1.8,
+      "yaw": 1.8,
+      "energy": 180,
+      "regeneration": 4,
+      "forward_laser": "EQ_WEAPON_BEAM_LASER",
+      "weapon_info": {
+        "damage": "6.0",
+        "color": "yellowColor",
+        "threat_assessment": "0.5",
+        "energy": "0.5",
+        "shot_temperature": "3.2",
+        "fx_shot_hit_name": "[beam-laser-player-laser-hit]",
+        "range": "15000",
+        "recharge_rate": "0.1",
+        "fx_shot_miss_name": "[beam-laser-player-laser-miss]"
+      },
+      "weapon_facings": 1,
+      "muzzle": "0.0 -0.15 35.0344",
+      "initial_missiles": 1,
+      "missile_capacity": 1,
+      "fuel_raw": 0,
+      "hyperspace_motor": false,
+      "spool_seconds": 15,
+      "ECM": true,
+      "escape_pod": true,
+      "injectors": false,
+      "booster": false,
+      "enhancer": false,
+      "operating_crew": 1,
+      "crew_status": "SH136commonborrow forViper/QuiCo; labelled soloNPCestimate forInterceptor, notsource crewfact",
+      "initial_charter_cabins": 0,
+      "AI_at_actual_station_launch": "oolite-defenseShipAI.js, actualstationgroup/target/launchqueue/dockfit andcleanbounty; not simply declaredpoliceAI",
+      "actual_stock_rule": "new draws once includingmissiletypes/equipment/crew; same actor preserved across reload/no stockgrant. Escape only on genuine sourceejection/admission; actuallivingpods protected1t custody."
+    },
+    {
+      "definition_id": "IR-quico-viper",
+      "canonical_ship_id": "SH136",
+      "canonical_limit": "Interceptor exactwholehullidentity remains separate; do not maptoFFE ViperMkII SH137. CoreViper/QuiCo same sourcebasefamilySH136; no newrow.",
+      "cargo_tonnes": 0,
+      "speed": 320,
+      "acceleration": 160,
+      "roll": 2.8,
+      "pitch": 1.8,
+      "yaw": 1.8,
+      "energy": 180,
+      "regeneration": 4,
+      "forward_laser": "EQ_WEAPON_BEAM_LASER",
+      "weapon_info": {
+        "damage": "6.0",
+        "color": "yellowColor",
+        "threat_assessment": "0.5",
+        "energy": "0.5",
+        "shot_temperature": "3.2",
+        "fx_shot_hit_name": "[beam-laser-player-laser-hit]",
+        "range": "15000",
+        "recharge_rate": "0.1",
+        "fx_shot_miss_name": "[beam-laser-player-laser-miss]"
+      },
+      "weapon_facings": 1,
+      "muzzle": "0.0 -0.15 35.0344",
+      "initial_missiles": 1,
+      "missile_capacity": 1,
+      "fuel_raw": 0,
+      "hyperspace_motor": false,
+      "spool_seconds": 15,
+      "ECM": true,
+      "escape_pod": true,
+      "injectors": false,
+      "booster": false,
+      "enhancer": false,
+      "operating_crew": 1,
+      "crew_status": "SH136commonborrow forViper/QuiCo; labelled soloNPCestimate forInterceptor, notsource crewfact",
+      "initial_charter_cabins": 0,
+      "AI_at_actual_station_launch": "oolite-defenseShipAI.js, actualstationgroup/target/launchqueue/dockfit andcleanbounty; not simply declaredpoliceAI",
+      "actual_stock_rule": "new draws once includingmissiletypes/equipment/crew; same actor preserved across reload/no stockgrant. Escape only on genuine sourceejection/admission; actuallivingpods protected1t custody."
+    },
+    {
+      "definition_id": "viper-interceptor",
+      "canonical_ship_id": null,
+      "canonical_limit": "Interceptor exactwholehullidentity remains separate; do not maptoFFE ViperMkII SH137. CoreViper/QuiCo same sourcebasefamilySH136; no newrow.",
+      "cargo_tonnes": 0,
+      "speed": 520,
+      "acceleration": 250,
+      "roll": 4.2,
+      "pitch": 2,
+      "yaw": 2,
+      "energy": 280,
+      "regeneration": 6,
+      "forward_laser": "EQ_WEAPON_MILITARY_LASER",
+      "weapon_info": {
+        "damage": "12.0",
+        "color": "magentaColor",
+        "threat_assessment": "1.0",
+        "energy": "1.1",
+        "shot_temperature": "4.25",
+        "fx_shot_hit_name": "[mil-laser-player-laser-hit]",
+        "range": "30000",
+        "recharge_rate": "0.1",
+        "fx_shot_miss_name": "[mil-laser-player-laser-miss]"
+      },
+      "weapon_facings": 1,
+      "muzzle": "0.0 -0.15 35.034",
+      "initial_missiles": 3,
+      "missile_capacity": 3,
+      "fuel_raw": 160,
+      "hyperspace_motor": true,
+      "spool_seconds": 15,
+      "ECM": true,
+      "escape_pod": true,
+      "injectors": true,
+      "booster": false,
+      "enhancer": false,
+      "operating_crew": 1,
+      "crew_status": "SH136commonborrow forViper/QuiCo; labelled soloNPCestimate forInterceptor, notsource crewfact",
+      "initial_charter_cabins": 0,
+      "AI_at_actual_station_launch": "oolite-defenseShipAI.js, actualstationgroup/target/launchqueue/dockfit andcleanbounty; not simply declaredpoliceAI",
+      "actual_stock_rule": "new draws once includingmissiletypes/equipment/crew; same actor preserved across reload/no stockgrant. Escape only on genuine sourceejection/admission; actuallivingpods protected1t custody."
+    }
+  ],
+  "selected_default_conditions": "actualMaenes23/G8/government2/Commiesoverridefalse: IR-quico-viper true;IR-policekrait false;comviper false. Nativeactualcallbacks toverify separately.",
+  "selected_positive_pool": "police:coreviper weight1 +QuiCoViper weight4 =>total5;interceptor:coreViperInterceptor weight1. Defaultprofileonly, not optionaloverridevariant.",
+  "source_launch": "actuallaunchPolice loopsatmost4perinvocation while defenders_launched<max_police; requiresactualdock,target,fitsInDock andqueuedbody admission. Choosesinterceptor iff(Ranrot&3)+9<TL; missingTLdefaults6. May abortremaininglaunchesifreal targetgone. Actualshipscleanpolice/stationgroup/target/heatprotection/nativeDefenderAI; no TaskForceJulietwave. Ordinarystationmax_police/techlevel/ambientworld authoritative, not fixedmission count.",
+  "condition_cases": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-conditions.js",
+      "key": "IR-quico-viper",
+      "galaxy": 7,
+      "system": 23,
+      "government": 2,
+      "override": false,
+      "actual": true,
+      "expected": true,
+      "passed": true,
+      "duration_ms": 0.38475
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-conditions.js",
+      "key": "IR-quico-viper",
+      "galaxy": 7,
+      "system": 24,
+      "government": 2,
+      "override": false,
+      "actual": false,
+      "expected": false,
+      "passed": true,
+      "duration_ms": 1.101625
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-conditions.js",
+      "key": "IR-quico-viper",
+      "galaxy": 6,
+      "system": 23,
+      "government": 2,
+      "override": false,
+      "actual": false,
+      "expected": false,
+      "passed": true,
+      "duration_ms": 0.309625
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-conditions.js",
+      "key": "IR-policekrait",
+      "galaxy": 7,
+      "system": 23,
+      "government": 2,
+      "override": false,
+      "actual": false,
+      "expected": false,
+      "passed": true,
+      "duration_ms": 0.234667
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-conditions.js",
+      "key": "IR-policekrait",
+      "galaxy": 7,
+      "system": 23,
+      "government": 0,
+      "override": false,
+      "actual": true,
+      "expected": true,
+      "passed": true,
+      "duration_ms": 0.187917
+    },
+    {
+      "path": "/tmp/elite-gap-research/dependencies/Commies/Scripts/commies_conditions.js",
+      "key": "comviper",
+      "galaxy": 7,
+      "system": 23,
+      "government": 2,
+      "override": false,
+      "actual": false,
+      "expected": false,
+      "passed": true,
+      "duration_ms": 0.211458
+    },
+    {
+      "path": "/tmp/elite-gap-research/dependencies/Commies/Scripts/commies_conditions.js",
+      "key": "comviper",
+      "galaxy": 7,
+      "system": 23,
+      "government": 4,
+      "override": false,
+      "actual": true,
+      "expected": true,
+      "passed": true,
+      "duration_ms": 0.161375
+    },
+    {
+      "path": "/tmp/elite-gap-research/dependencies/Commies/Scripts/commies_conditions.js",
+      "key": "comviper",
+      "galaxy": 7,
+      "system": 23,
+      "government": 2,
+      "override": true,
+      "actual": true,
+      "expected": true,
+      "passed": true,
+      "duration_ms": 0.166875
+    }
+  ],
+  "actual_defender_initializer": {
+    "parameters": {
+      "oolite_friendlyRoles": [
+        "oolite-trader",
+        "oolite-bounty-hunter",
+        "oolite-scavenger",
+        "oolite-shuttle"
+      ],
+      "oolite_flag_selfDestructAbandonedShip": true,
+      "oolite_flag_markOffenders": true
+    },
+    "setup_calls": [
+      [
+        "communicationsRole",
+        "defenseShip"
+      ]
+    ],
+    "priorities": [
+      {
+        "condition": {
+          "source_method": "conditionLosingCombat"
+        },
+        "behaviour": {
+          "source_method": "behaviourFleeCombat"
+        },
+        "reconsider": 5
+      },
+      {
+        "condition": {
+          "source_method": "conditionInCombat"
+        },
+        "configuration": {
+          "source_method": "configurationAcquireCombatTarget"
+        },
+        "behaviour": {
+          "source_method": "behaviourRepelCurrentTarget"
+        },
+        "reconsider": 5
+      },
+      {
+        "condition": {
+          "source_method": "conditionMothershipIsAttackingHostileTarget"
+        },
+        "configuration": {
+          "source_method": "configurationAcquireCombatTarget"
+        },
+        "behaviour": {
+          "source_method": "behaviourRepelCurrentTarget"
+        },
+        "reconsider": 5
+      },
+      {
+        "condition": {
+          "source_method": "conditionHomeStationNearby"
+        },
+        "configuration": {
+          "source_method": "configurationSetHomeStationForDocking"
+        },
+        "behaviour": {
+          "source_method": "behaviourDockWithStation"
+        },
+        "reconsider": 30
+      },
+      {
+        "condition": {
+          "source_method": "conditionHomeStationExists"
+        },
+        "configuration": {
+          "source_method": "configurationSetDestinationToHomeStation"
+        },
+        "behaviour": {
+          "source_method": "behaviourApproachDestination"
+        },
+        "reconsider": 30
+      },
+      {
+        "condition": {
+          "source_method": "conditionFriendlyStationNearby"
+        },
+        "configuration": {
+          "source_method": "configurationSetNearbyFriendlyStationForDocking"
+        },
+        "behaviour": {
+          "source_method": "behaviourDockWithStation"
+        },
+        "reconsider": 30
+      },
+      {
+        "condition": {
+          "source_method": "conditionFriendlyStationExists"
+        },
+        "configuration": {
+          "source_method": "configurationSetDestinationToNearestFriendlyStation"
+        },
+        "behaviour": {
+          "source_method": "behaviourApproachDestination"
+        },
+        "reconsider": 30
+      },
+      {
+        "label": "Wormhole search",
+        "condition": {
+          "source_method": "conditionWormholeNearby"
+        },
+        "configuration": {
+          "source_method": "configurationSetDestinationToNearestWormhole"
+        },
+        "behaviour": {
+          "source_method": "behaviourApproachDestination"
+        },
+        "reconsider": 30
+      },
+      {
+        "label": "No wormholes nearby",
+        "condition": {
+          "source_method": "conditionCanWitchspaceOut"
+        },
+        "configuration": {
+          "source_method": "configurationSelectWitchspaceDestination"
+        },
+        "behaviour": {
+          "source_method": "behaviourEnterWitchspace"
+        },
+        "reconsider": 10
+      },
+      {
+        "label": "Lurk around witchpoint",
+        "configuration": {
+          "source_method": "configurationSetDestinationToWitchpoint"
+        },
+        "behaviour": {
+          "source_method": "behaviourApproachDestination"
+        },
+        "reconsider": 10
+      }
+    ],
+    "missing_prototype_members": [],
+    "source_methods": [
+      "behaviourApproachDestination",
+      "behaviourDockWithStation",
+      "behaviourEnterWitchspace",
+      "behaviourFleeCombat",
+      "behaviourRepelCurrentTarget",
+      "conditionCanWitchspaceOut",
+      "conditionFriendlyStationExists",
+      "conditionFriendlyStationNearby",
+      "conditionHomeStationExists",
+      "conditionHomeStationNearby",
+      "conditionInCombat",
+      "conditionLosingCombat",
+      "conditionMothershipIsAttackingHostileTarget",
+      "conditionWormholeNearby",
+      "configurationAcquireCombatTarget",
+      "configurationSelectWitchspaceDestination",
+      "configurationSetDestinationToHomeStation",
+      "configurationSetDestinationToNearestFriendlyStation",
+      "configurationSetDestinationToNearestWormhole",
+      "configurationSetDestinationToWitchpoint",
+      "configurationSetHomeStationForDocking",
+      "configurationSetNearbyFriendlyStationForDocking",
+      "templateWitchspaceJumpAnywhere"
+    ],
+    "duration_ms": 0.3335,
+    "claim": "Runs actual AI initialization and actual library templates against method-reference/configuration spies. Does not run conditions/combat/physics, RNG or native simulation."
+  },
+  "verification": {
+    "actual_condition_cases": 8,
+    "actual_priority_initializers": 1,
+    "passed": true
+  }
+}
