@@ -1,0 +1,89 @@
+{
+  "profile_id": "PROJECT-P30-SLAVER-4A-v1",
+  "scope": "Selected actual-source narrow patches with mocked engine plus exhaustive uniform-pilot marginal equivalence and discrete escort residue comparison. No native game/custody/renderer implementation tests. Source observations retained separately.",
+  "runtime": "v26.9.0",
+  "total": 16,
+  "passed": 16,
+  "cases": [
+    {
+      "name": "patched defender BASE_FOUND existingfalse",
+      "duration_ms": 1.3222080000000034,
+      "passed": true
+    },
+    {
+      "name": "patched defender BASE_FOUND existingtrue",
+      "duration_ms": 0.26112499999999983,
+      "passed": true
+    },
+    {
+      "name": "patched forced ejection captures station before launch",
+      "duration_ms": 1.280542000000004,
+      "passed": true
+    },
+    {
+      "name": "patched actual slaver launch required false",
+      "duration_ms": 0.3689999999999998,
+      "passed": true
+    },
+    {
+      "name": "patched actual slaver launch required true",
+      "duration_ms": 0.251458999999997,
+      "passed": true
+    },
+    {
+      "name": "patched slaver death stops existing timer false",
+      "duration_ms": 0.3709580000000017,
+      "passed": true
+    },
+    {
+      "name": "patched slaver death stops existing timer true",
+      "duration_ms": 0.18608300000000355,
+      "passed": true
+    },
+    {
+      "name": "patched zero-time target rejection 0",
+      "duration_ms": 0.230792000000001,
+      "passed": true
+    },
+    {
+      "name": "patched zero-time target rejection 36",
+      "duration_ms": 0.20037500000000108,
+      "passed": true
+    },
+    {
+      "name": "uniform saved pilot identity preserves source n/5 for every fixed subset size1",
+      "duration_ms": 0.026291999999997984,
+      "passed": true
+    },
+    {
+      "name": "uniform saved pilot identity preserves source n/5 for every fixed subset size2",
+      "duration_ms": 0.006499999999995509,
+      "passed": true
+    },
+    {
+      "name": "uniform saved pilot identity preserves source n/5 for every fixed subset size3",
+      "duration_ms": 0.005707999999998492,
+      "passed": true
+    },
+    {
+      "name": "uniform saved pilot identity preserves source n/5 for every fixed subset size4",
+      "duration_ms": 0.006791999999997245,
+      "passed": true
+    },
+    {
+      "name": "uniform saved pilot identity preserves source n/5 for every fixed subset size5",
+      "duration_ms": 0.00462500000000432,
+      "passed": true
+    },
+    {
+      "name": "mixed escort integer residues gov0",
+      "duration_ms": 0.013750000000001705,
+      "passed": true
+    },
+    {
+      "name": "mixed escort integer residues gov1",
+      "duration_ms": 0.0006669999999999732,
+      "passed": true
+    }
+  ]
+}

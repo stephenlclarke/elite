@@ -1,0 +1,18 @@
+Selected Commies 2.20 Ray texture artwork
+
+Sunray diffuse (comray_sun.png), Military Stingray diffuse (comrayii.png), and
+shared Ray details (commies_details.png) are retained from the exact archive
+identified in manifest.json. Source artwork: GearsNSuch and Commies contributors.
+The original README explicitly identifies the Ray and derivatives as new artwork
+created with Blender and GIMP and licenses the models and textures under
+CC BY-NC-SA 3.0. Full original README and package manifest accompany these files;
+the legal code is bundled in Legal/CC-BY-NC-SA-3.0.txt. This selection does not
+extend the project MIT licence to these assets or clear unrelated package art.
+
+PNG originals are unchanged. XYZZY preparation preserves RGB and replaces alpha
+with opaque 255 in the derived .rgba cache: source diffuse alpha is a specular
+channel, not hull transparency. SHA-256 fingerprints identify originals and caches.
+Native adaptation: diffuse-only, existing per-face lighting/emissive policy,
+v=0 at the top image row. Source normal, specular, emission and shader maps are not
+rendered, and source-renderer fidelity is not claimed. Original geometry/UV tokens
+remain in each ship TOML; explicit resolved bindings record NAMES/material overrides.

@@ -1,0 +1,3684 @@
+{
+  "profile_id": "P19-IRON-RAVEN-2.0.2-ANALYSIS-v1",
+  "research_ready": false,
+  "runtime_ready": false,
+  "status": "FullP19researchopen: fourboundedstrands,Kinnaird/sharedselector,Weisssurveillance andLEXICONcapture complete anddelivered. Prelude/activation/sharedbookscope/Cherkasova/laterfinales andwhole-hull playerconversions remainopen.",
+  "source_version": "2.0.2",
+  "archive": {
+    "download_url": "https://wiki.alioth.net/img_auth.php/7/7f/Iron_Raven_2.0.2.oxz",
+    "sha256": "361ea6547493c6ace297d4d2ad643fd314121d37b20be2fe47ccfe890052f937",
+    "bytes_fetched": 77387646,
+    "license": "CC BY-NC-SA 3",
+    "requires_oxps": [
+      {
+        "version": "2.11",
+        "identifier": "oolite.oxp.DrNil.Commies"
+      },
+      {
+        "version": "1.0",
+        "identifier": "oolite.oxp.ArexackHeretic.att1"
+      },
+      {
+        "version": "1.52",
+        "identifier": "oolite.oxp.Killer_Wolf.Adder_Mark_III"
+      },
+      {
+        "version": "0",
+        "identifier": "oolite.oxp.cim.ships-library"
+      }
+    ]
+  },
+  "source_members_checked": 57,
+  "source_files": [
+    {
+      "path": "AIs/IR-cannonAI.plist",
+      "sha256": "3f1e0abf03947c7820128a7942e1af8a81dc15840878008fa98eaf48862f15ae",
+      "lines": 20
+    },
+    {
+      "path": "AIs/IR-cherkasova-enterAI.plist",
+      "sha256": "c05a6b23275aeb1332dceb46c2122659cdb760918d2ae0615bcf2fe93dfb48a8",
+      "lines": 41
+    },
+    {
+      "path": "AIs/IR-dumb-cannonAI.plist",
+      "sha256": "a5fabd9224d1e01126c7abbdfb9db2b813497ceebdc0fbd77f064d958cc6b0e8",
+      "lines": 17
+    },
+    {
+      "path": "AIs/IR-escapeAI.plist",
+      "sha256": "82436fec1d9e722c27ce268a442868b0850a9721b4844e9e4d9920e2f6628d20",
+      "lines": 13
+    },
+    {
+      "path": "AIs/IR-escortAI.plist",
+      "sha256": "d455c6fe16e834513c2784487faca911bf6b0263a83f06c7ef5a245f94040af4",
+      "lines": 63
+    },
+    {
+      "path": "AIs/IR-followleaderAI.plist",
+      "sha256": "be7b910a60f5253efde70759a6d16eb7fa1e014d84a4b34fbcd9aae4066e648e",
+      "lines": 53
+    },
+    {
+      "path": "AIs/IR-fuelsample-AI.plist",
+      "sha256": "8d59bfe8caaa3783c63e6483855a201c58eabbf094da7cef2a8049a0b4860da7",
+      "lines": 19
+    },
+    {
+      "path": "AIs/IR-kinnairdfleeAI.plist",
+      "sha256": "af3b50100b34f7de0307b36b48f9e25d18219e147d1918cd3dbc368eee60d2eb",
+      "lines": 36
+    },
+    {
+      "path": "AIs/IR-krait-enterAI.plist",
+      "sha256": "a3ceb7aff5005a21e81e5d3265b107728db087d8c7e2995ba2f97c0f69b19a2f",
+      "lines": 83
+    },
+    {
+      "path": "AIs/IR-kraitAI.plist",
+      "sha256": "355b4c9377625ef4d246f1472395ea5da89aad87e3e727923cec82ef8b1cbb08",
+      "lines": 101
+    },
+    {
+      "path": "AIs/IR-pirateAI.plist",
+      "sha256": "ae0552a9d7abda8cfa269c1b2b745ce04e02ca0786d3219fa7186cb85dfc4743",
+      "lines": 73
+    },
+    {
+      "path": "AIs/IR-piratepatrolAI.plist",
+      "sha256": "93fa854816401ea9555be969c6dafacc2023cbe22d3a8ba71c134f0e92bc559d",
+      "lines": 28
+    },
+    {
+      "path": "AIs/IR-sabotageAI.plist",
+      "sha256": "b927d043e3782c32a3e39fdfa54c6a0457303f2b0b7cace86255d4a1dc821984",
+      "lines": 13
+    },
+    {
+      "path": "AIs/IR-sdf-leaderAI.plist",
+      "sha256": "b39630bd9ab98c93593ff31be33639bacd93f1fde39eed885509f87488fb1004",
+      "lines": 25
+    },
+    {
+      "path": "AIs/IR-sdf-transporterattackAI.plist",
+      "sha256": "85cffe3ba170092ce65614508ffd619f7d8ecfe045a5da2eac8478ca94470d5b",
+      "lines": 23
+    },
+    {
+      "path": "AIs/IR-target-droneAI.plist",
+      "sha256": "e2994b3d0b18cf5a070974c95ed3b88ff275412a48763a77041788d36fbde09d",
+      "lines": 41
+    },
+    {
+      "path": "AIs/IR-targetplayerAI.plist",
+      "sha256": "2119a8567e29d828f54867e76484f3b64ca3e44b417d9c10cf33e27f9ca40951",
+      "lines": 32
+    },
+    {
+      "path": "AIs/IR-transport-exitAI.plist",
+      "sha256": "29e614d1758c2c714dd51301831a9f6e966718a30588c417dfbd680b45d52930",
+      "lines": 50
+    },
+    {
+      "path": "AIs/IR-weiss1AI.plist",
+      "sha256": "ce5468a226255c6084187fa15c6bfd5b1d86a3d0879f2c67a33b9f3899105469",
+      "lines": 62
+    },
+    {
+      "path": "AIs/IR-weiss2AI.plist",
+      "sha256": "3c1884b5a4bcc05c2b750efa37d542db0deba736cafddbed96ee82e6296ce537",
+      "lines": 45
+    },
+    {
+      "path": "AIs/IR-wingmanAI.plist",
+      "sha256": "8b676edca6ebc4324f1dd01fdc4990e1565816a16ac5caa9415d3f2ddac91b3a",
+      "lines": 66
+    },
+    {
+      "path": "Config/characters.plist",
+      "sha256": "99153a2d02757bbf0bf178d34e9b4bf88c8feb1b27bd5d3878c4658d56ef17c3",
+      "lines": 8
+    },
+    {
+      "path": "Config/descriptions.plist",
+      "sha256": "71aa8b4ac2e8ba9952ca118178f2d9d4a4a71c703bb34beb3aae4d6e2fb524b4",
+      "lines": 74
+    },
+    {
+      "path": "Config/equipment.plist",
+      "sha256": "5d50f4fb2af5ef7f871a34868be540e51e71220c1ea10f6e64deefbd0de8cc0c",
+      "lines": 26
+    },
+    {
+      "path": "Config/missiontext.plist",
+      "sha256": "288335f9100111ed1284016143b38311716fc4ad32849c7af31e92c84fc0be79",
+      "lines": 706
+    },
+    {
+      "path": "Config/shipdata.plist",
+      "sha256": "a08dda1663458176a69292f1083910e938d44c8117180f6fc30dcd75df7ac74a",
+      "lines": 1519
+    },
+    {
+      "path": "Config/world-scripts.plist",
+      "sha256": "f7508ee7c9d722d3c410555f58c64c701db770eee9d2caee0dc1fb8987604d7c",
+      "lines": 9
+    },
+    {
+      "path": "Scripts/IR-anarchist.js",
+      "sha256": "c8ac2a2a1e0c0760e3cb08045456080c4d2b25f27ef7803d08dce0595555f80e",
+      "lines": 40
+    },
+    {
+      "path": "Scripts/IR-brief.js",
+      "sha256": "3e4a645973a07d31ff5ed884793e2f0abef7d96708777cefb2f68485a905667a",
+      "lines": 40
+    },
+    {
+      "path": "Scripts/IR-cherkasova.js",
+      "sha256": "4e7ad0037e1c048bca49ce437f3074cc8f65ef7c39bd9428a93c3d437952667b",
+      "lines": 121
+    },
+    {
+      "path": "Scripts/IR-conditions.js",
+      "sha256": "e212965cac4ad39a506939b6c2d5b0741ac10719a9dc6d8eb3e192ba53729ab0",
+      "lines": 50
+    },
+    {
+      "path": "Scripts/IR-damaged-escape-pod.js",
+      "sha256": "233282fdde5ca2306a33cfc4a7ac79ebf430eb543976fab17562e478f694c006",
+      "lines": 22
+    },
+    {
+      "path": "Scripts/IR-defences.js",
+      "sha256": "23ce32e0370ce1ac1ac129805191f4bd536403fca6e0ee7bc38d8cc92a4aa299",
+      "lines": 26
+    },
+    {
+      "path": "Scripts/IR-escortviper.js",
+      "sha256": "e4548ac99b96bdd438a39beb9ba265d1bef4fb9dbc9e71280e54e8d097b4b743",
+      "lines": 10
+    },
+    {
+      "path": "Scripts/IR-finance.js",
+      "sha256": "e412efebe3c4475ce73b705c1e1a7c9dacce92a866c0c01b26ecbba19d9ba688",
+      "lines": 65
+    },
+    {
+      "path": "Scripts/IR-fuel-sample.js",
+      "sha256": "970614fed48c425b31634c20430f70bbab886886bdf38599d3b6b6c65a8c9dc3",
+      "lines": 82
+    },
+    {
+      "path": "Scripts/IR-fuel-station.js",
+      "sha256": "e0207fd69fd518ff25442363941b8669c62a2daa5d1ebd796e4d067756ce87c3",
+      "lines": 40
+    },
+    {
+      "path": "Scripts/IR-fuel-waste.js",
+      "sha256": "d6599032fd63f0d94e8186e4fa7088142c68705e87f664fc1fd1ca6676018200",
+      "lines": 30
+    },
+    {
+      "path": "Scripts/IR-isabella.js",
+      "sha256": "e2100225e9e6e24614d7d2bf8ea812182fd53dd78be429656fd1bd0d33401093",
+      "lines": 13
+    },
+    {
+      "path": "Scripts/IR-juliet-leader.js",
+      "sha256": "f883bb1b7c464749522f91ad1a66a4e1b3d977d74ef8bcc611c67a10c86e965e",
+      "lines": 17
+    },
+    {
+      "path": "Scripts/IR-krait.js",
+      "sha256": "74b26d695ab15eb69dd32bd2812c024f999e6a006a9c3544891c2a7b332c5f37",
+      "lines": 61
+    },
+    {
+      "path": "Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7",
+      "lines": 3099
+    },
+    {
+      "path": "Scripts/IR-mfd.js",
+      "sha256": "3eeddde1bf2e07767921c4bd75222fb4b6383cf932a27a2c78d8e20c1c4c36df",
+      "lines": 456
+    },
+    {
+      "path": "Scripts/IR-sabotage-mine.js",
+      "sha256": "27980dd4f8fede0cc1381b9c0fdabf5083680d8201a9e8cac38ea6e3dfc2be2e",
+      "lines": 15
+    },
+    {
+      "path": "Scripts/IR-sdf-courier.js",
+      "sha256": "977d94281a0e4bcd04e6a756aa36b6182cfdedd5047a91445d0d5e71440b474f",
+      "lines": 13
+    },
+    {
+      "path": "Scripts/IR-sdf-leader.js",
+      "sha256": "145607824d584921f3e15a2560f80f4eab6809d9ca768f1d67432aef960cabc5",
+      "lines": 46
+    },
+    {
+      "path": "Scripts/IR-sdf-ringhals.js",
+      "sha256": "0ffddb21501ad5afa93e3ac532743e07f97a1ca1b0bb8fefe6b6818f0521804f",
+      "lines": 15
+    },
+    {
+      "path": "Scripts/IR-sdf-transporter.js",
+      "sha256": "dd1d1228de0be0c4c9d2b42b3a0d14a7c203ce4ef854909498afb173b9980930",
+      "lines": 70
+    },
+    {
+      "path": "Scripts/IR-SDF.js",
+      "sha256": "42667bd9bd081dc31ab8a99365561f02cc330d9430d4f7f278950c8c55274145",
+      "lines": 24
+    },
+    {
+      "path": "Scripts/IR-shipment.js",
+      "sha256": "fb6facb5eb11f0cbe1fb3c998216fc9c30b4c1ea820560a469271cfa1e2f170a",
+      "lines": 25
+    },
+    {
+      "path": "Scripts/IR-sirius-tanker.js",
+      "sha256": "b6fcf098768176db3c501e55e73002745d650a723bc2cf56a32931c0a20cfc73",
+      "lines": 57
+    },
+    {
+      "path": "Scripts/IR-target-drone.js",
+      "sha256": "a2d53620f8a794ea8fbecfb54c850a6e9a0fb807d266b6872c5aecae98e3e289",
+      "lines": 18
+    },
+    {
+      "path": "Scripts/IR-transport.js",
+      "sha256": "102f282518434a91926f5a7fe348862616f560f9293c034c322f13c48dffd588",
+      "lines": 66
+    },
+    {
+      "path": "Scripts/IR-weiss.js",
+      "sha256": "52cf45e46ed6478718fdaba9e84a2ae9941a733b3d8fb5a75fc0492947d14005",
+      "lines": 63
+    },
+    {
+      "path": "manifest.plist",
+      "sha256": "3f7c7e85ad2230a52533cc36ca1b5ac6d5d1f82d5948bc441fbc77828fceeeb3",
+      "lines": 17
+    },
+    {
+      "path": "readme.txt",
+      "sha256": "a8dc6c2d8e8569ca76ee06419cb9b84ad99dd79e9a64160567a060d769eb35d7",
+      "lines": 73
+    },
+    {
+      "path": "requires.plist",
+      "sha256": "8e3dc6350923ac86cf54a6b0f6f15eb7b239211969d7445ad91a8c48d5654769",
+      "lines": 1
+    }
+  ],
+  "source_function_inventory": [
+    {
+      "name": "$resetSettings",
+      "line": 201
+    },
+    {
+      "name": "startUp",
+      "line": 211
+    },
+    {
+      "name": "systemWillPopulate",
+      "line": 251
+    },
+    {
+      "name": "startUpComplete",
+      "line": 346
+    },
+    {
+      "name": "playerWillSaveGame",
+      "line": 373
+    },
+    {
+      "name": "shipWillLaunchFromStation",
+      "line": 391
+    },
+    {
+      "name": "shipExitedWitchspace",
+      "line": 559
+    },
+    {
+      "name": "shipEnteredStationAegis",
+      "line": 699
+    },
+    {
+      "name": "missionScreenEnded",
+      "line": 719
+    },
+    {
+      "name": "shipDockedWithStation",
+      "line": 724
+    },
+    {
+      "name": "missionScreenOpportunity",
+      "line": 729
+    },
+    {
+      "name": "guiScreenChanged",
+      "line": 744
+    },
+    {
+      "name": "shipTargetAcquired",
+      "line": 761
+    },
+    {
+      "name": "shipBeingAttacked",
+      "line": 820
+    },
+    {
+      "name": "playerBoughtNewShip",
+      "line": 835
+    },
+    {
+      "name": "playerJumpFailed",
+      "line": 841
+    },
+    {
+      "name": "shipWillDockWithStation",
+      "line": 852
+    },
+    {
+      "name": "addIRinterface",
+      "line": 863
+    },
+    {
+      "name": "questionScreens",
+      "line": 894
+    },
+    {
+      "name": "showIRlog",
+      "line": 963
+    },
+    {
+      "name": "showIRlogPage",
+      "line": 974
+    },
+    {
+      "name": "logChoices",
+      "line": 994
+    },
+    {
+      "name": "_runScreen",
+      "line": 1009
+    },
+    {
+      "name": "_formatText",
+      "line": 1047
+    },
+    {
+      "name": "_setInstructionsKey",
+      "line": 1082
+    },
+    {
+      "name": "missionScreens",
+      "line": 1108
+    },
+    {
+      "name": "checkManifest",
+      "line": 1987
+    },
+    {
+      "name": "choiceEvaluation",
+      "line": 2009
+    },
+    {
+      "name": "setupQuestions",
+      "line": 2505
+    },
+    {
+      "name": "setupStatus",
+      "line": 2526
+    },
+    {
+      "name": "incrementShipmentQuestion",
+      "line": 2538
+    },
+    {
+      "name": "incrementFinanceQuestion",
+      "line": 2545
+    },
+    {
+      "name": "incrementSDFQuestion",
+      "line": 2552
+    },
+    {
+      "name": "incrementDefencesQuestion",
+      "line": 2559
+    },
+    {
+      "name": "DefencesReply",
+      "line": 2566
+    },
+    {
+      "name": "$addSystemShips",
+      "line": 2603
+    },
+    {
+      "name": "$systemShipsPosition",
+      "line": 2611
+    },
+    {
+      "name": "LaxesoriReply",
+      "line": 2622
+    },
+    {
+      "name": "KorshkovReply",
+      "line": 2629
+    },
+    {
+      "name": "JulietReply",
+      "line": 2637
+    },
+    {
+      "name": "MaenesReply",
+      "line": 2828
+    },
+    {
+      "name": "$sendDelayedMessage",
+      "line": 2932
+    },
+    {
+      "name": "$sendReply",
+      "line": 2937
+    },
+    {
+      "name": "$addPadLogEntry",
+      "line": 2942
+    },
+    {
+      "name": "$addAllInfoToPad",
+      "line": 2950
+    },
+    {
+      "name": "$addDataToPad",
+      "line": 2961
+    },
+    {
+      "name": "$addPadCharacter",
+      "line": 2969
+    },
+    {
+      "name": "$sendSystemComms",
+      "line": 2996
+    },
+    {
+      "name": "$dumpSavedData",
+      "line": 3006
+    },
+    {
+      "name": "turnStation",
+      "line": 3015
+    },
+    {
+      "name": "clearIRMissionVariables",
+      "line": 3024
+    },
+    {
+      "name": "$padTextRight",
+      "line": 3042
+    },
+    {
+      "name": "$padTextLeft",
+      "line": 3084
+    },
+    {
+      "name": "$cleanUp",
+      "line": 3089
+    }
+  ],
+  "inventory_limits": "Regex function/variable/role inventory is discovery metadata, not a proved complete campaign/event/state graph or mission count.",
+  "main_state_symbols": [
+    "IR_CHERKASOVA_1",
+    "IR_IBANEZ_1",
+    "IR_IBANEZ_2",
+    "IR_IBANEZ_3",
+    "IR_IBANEZ_4",
+    "IR_IBANEZ_5",
+    "IR_JANES_1",
+    "IR_KINNAIRD_1",
+    "IR_KINNAIRD_2",
+    "IR_KINNAIRD_3",
+    "IR_KINNAIRD_4",
+    "IR_LEXICON_1",
+    "IR_LEXICON_2",
+    "IR_LEXICON_4",
+    "IR_LOA_1",
+    "IR_LOA_2",
+    "IR_LOA_3",
+    "IR_LOA_4",
+    "IR_LOA_5",
+    "IR_LOA_6",
+    "IR_LOA_7",
+    "IR_LOA_8",
+    "IR_LOA_9",
+    "IR_RAAED_1",
+    "IR_WEISS_1",
+    "IR_WEISS_2a",
+    "IR_WEISS_2b",
+    "IR_WEISS_3",
+    "IR_WEISS_4",
+    "IR_completed",
+    "IR_courier",
+    "IR_courier_B",
+    "IR_epilogue",
+    "IR_imperator",
+    "IR_imperator_B",
+    "IR_imperator_alt",
+    "IR_imperator_alt_B",
+    "IR_interceptionfail_A",
+    "IR_interceptionfail_B",
+    "IR_invite",
+    "IR_landers",
+    "IR_landers_B",
+    "IR_sources_1",
+    "IR_sources_2",
+    "IR_sources_3",
+    "IR_sources_4",
+    "IR_sources_5",
+    "IR_sources_6",
+    "IR_sources_7",
+    "IR_tankers",
+    "IR_tankers_B",
+    "IR_weiss_scooped"
+  ],
+  "four_parallel_strands": [
+    "shipment",
+    "finance",
+    "SDF",
+    "defences"
+  ],
+  "join": "At Vegedius main station, source IR_status IR_IBANEZ_4 and exact IR_quest_count4; count advances on resolved shipment including failure. Branches/failure endings still require full closure.",
+  "prelude": [
+    "Initial main-station summons in G8; no kill/equipment gate in selected handler",
+    "Vegedius7initialbriefing",
+    "Raaed230Lexiconcontact: optionalPlanetFallsourcecase; requiredorbitalreplacement",
+    "Vegedius7report",
+    "Biraa232Lindbergcontact",
+    "Vegedius7fullbriefing initializes4questioncounters1/statuscounters0,parentquestcount0"
+  ],
+  "route_bindings": [
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 7,
+      "name": "VEGEDIUS",
+      "x": 147,
+      "y": 121
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 230,
+      "name": "RAAED",
+      "x": 244,
+      "y": 39
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 232,
+      "name": "BIRAA",
+      "x": 117,
+      "y": 248
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 31,
+      "name": "AARZARI",
+      "x": 10,
+      "y": 48
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 114,
+      "name": "RELELEAT",
+      "x": 81,
+      "y": 129
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 219,
+      "name": "USTIZA",
+      "x": 133,
+      "y": 201
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 142,
+      "name": "TIBIRI",
+      "x": 97,
+      "y": 173
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 23,
+      "name": "MAENES",
+      "x": 108,
+      "y": 91
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 180,
+      "name": "ARANCE",
+      "x": 223,
+      "y": 145
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 82,
+      "name": "INORLE",
+      "x": 59,
+      "y": 80
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 171,
+      "name": "ALETIUS",
+      "x": 39,
+      "y": 234
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 112,
+      "name": "ATMALA",
+      "x": 183,
+      "y": 226
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 35,
+      "name": "ATANON",
+      "x": 114,
+      "y": 151
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 41,
+      "name": "ORLAAROR",
+      "x": 122,
+      "y": 128
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 149,
+      "name": "ARENXEON",
+      "x": 165,
+      "y": 67
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 63,
+      "name": "EDSOAN",
+      "x": 123,
+      "y": 20
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 130,
+      "name": "TIATZA",
+      "x": 123,
+      "y": 62
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 240,
+      "name": "EDZAAR",
+      "x": 172,
+      "y": 63
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 119,
+      "name": "LAXESORI",
+      "x": 111,
+      "y": 60
+    }
+  ],
+  "route_evidence": {
+    "path": "docs/research/data/rescue-route-bindings.json",
+    "sha256": "3166c79411db815afc32215d00f58e44a6958a279f4e1f3a617ab68a8ac9debb",
+    "status": "Bound to prior2048independentC/Swiftverifiedsystemtable; not a new current-native execution or route/timing simulation."
+  },
+  "raw_ship_definitions": {
+    "IR-sdf-courier": {
+      "max_energy": "500",
+      "bounty": "500",
+      "forward_weapon_type": "WEAPON_BEAM_LASER",
+      "ai_type": "route1traderAI.plist",
+      "missiles": "2",
+      "max_flight_pitch": "1.5",
+      "max_flight_speed": "415",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-sdf-asp-courier.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-sdf-asp-courier.png",
+          "shininess": "42",
+          "normal_map": "IR-sdf-asp-normal.png",
+          "specular_map": "IR-sdf-asp-specular.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "gloss": "1.0"
+        },
+        "Gun": {
+          "gloss": "0.622",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "oolite_asp_subents.png",
+          "shininess": "42"
+        }
+      },
+      "like_ship": "oolite_template_asp",
+      "energy_recharge_rate": "2.5",
+      "has_shield_booster": "1.0",
+      "likely_cargo": "2",
+      "thrust": "50",
+      "beacon": "K",
+      "name": "SDF Courier",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "roles": "IR-sdf-courier",
+      "script": "IR-sdf-courier.js",
+      "has_scoop": "0.0",
+      "has_fuel_injection": "0.0",
+      "max_cargo": "10",
+      "auto_ai": "yes",
+      "laser_color": "cyanColor",
+      "has_ecm": "1.0",
+      "max_flight_roll": "2.3",
+      "has_shield_enhancer": "0.0",
+      "beacon_label": "SDF Courier",
+      "cargo_type": "CARGO_NOT_CARGO"
+    },
+    "IR-yk-ad": {
+      "like_ship": "IR-ad-buoy",
+      "ai_type": "buoyAI.plist",
+      "roles": "IR-yk-ad buoy(10000)",
+      "model": "IR-yk-ad.dat",
+      "name": "Navigation Buoy",
+      "condition_script": "IR-conditions.js"
+    },
+    "IR-quit-ad": {
+      "like_ship": "IR-ad-buoy",
+      "ai_type": "buoyAI.plist",
+      "roles": "IR-quit-ad buoy(10000)",
+      "model": "IR-quit-ad.dat",
+      "name": "Navigation Buoy",
+      "condition_script": "IR-conditions.js"
+    },
+    "IR-sdf-imperator-dock": {
+      "ai_type": "nullAI.plist",
+      "energy_recharge_rate": "2.5",
+      "roles": "IR-imperator-dock",
+      "materials": {
+        "Darkmetal_tex.png": {
+          "gloss": "0.6",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "emission_map": {
+            "name": "IR-sdf-imperator-dock.png",
+            "extract_channel": "a"
+          },
+          "emission_modulate_color": {
+            "red": "7000",
+            "green": "7000",
+            "blue": "7000"
+          },
+          "diffuse_map": "IR-sdf-imperator-dock.png"
+        }
+      },
+      "name": "dock",
+      "model": "IR-sdf-imperator-dock.dat"
+    },
+    "IR-fuel-sample": {
+      "script": "IR-fuel-sample.js",
+      "roles": "IR-fuel-sample",
+      "materials": {
+        "IR-fuel-pod.png": {
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "gloss": "0.6",
+          "diffuse_map": "IR-fuel-pod.png"
+        }
+      },
+      "ai_type": "IR-fuelsample-AI.plist",
+      "model": "IR-fuel-pod.dat",
+      "max_energy": "500",
+      "cargo_type": "CARGO_SCRIPTED_ITEM",
+      "like_ship": "barrel",
+      "name": "Fuel Sample"
+    },
+    "IR-quico-transporter": {
+      "roles": "IR-quico-transporter",
+      "script": "IR-weiss.js",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-quico-transporter.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-quico-transporter.png",
+          "shininess": "42",
+          "normal_map": "IR-sdf-transporter-normal.png",
+          "specular_map": "IR-sdf-transporter-specular.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.25",
+            "0.25",
+            "0.25"
+          ],
+          "gloss": "0.65"
+        }
+      },
+      "fuel": "100",
+      "ai_type": "IR-weiss2AI.plist",
+      "beacon": "Q",
+      "beacon_label": "QuiCo Transporter",
+      "auto_ai": "false",
+      "like_ship": "oolite_template_transporter",
+      "name": "QuiCo Transporter",
+      "hyperspace_motor": "yes"
+    },
+    "IR-cannon-laser": {
+      "ai_type": "nullAI.plist",
+      "model": "IR-cannon-laser.dat",
+      "roles": "IR-cannon-laser",
+      "name": "Defence Cannon"
+    },
+    "IR-commObject": {
+      "bounty": "0",
+      "scanner_display_color2": "clearColor",
+      "scanner_display_color1": "clearColor",
+      "has_military_jammer": "yes",
+      "roles": "ir_system_comms",
+      "script_info": {
+        "randomshipnames": "no"
+      },
+      "cargo_type": "CARGO_NOT_CARGO",
+      "like_ship": "alloy",
+      "scan_class": "CLASS_NO_DRAW",
+      "name": "System Comms"
+    },
+    "IR-nuit2port": {
+      "density": "0.0000001",
+      "model": "IR_nuit2_port.dat",
+      "materials": {
+        "nuit2_portSKIN.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "6700"
+          },
+          "gloss": "0.8",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR_nuit2_portSKIN.png",
+          "emission_map": "IR_nuit2_portLITES.png",
+          "normal_map": "IR_nuit2_portNORM.png"
+        }
+      },
+      "roles": "IR_KW_nuit2Subent"
+    },
+    "IR-weiss-pod": {
+      "script": "IR-weiss.js",
+      "roles": "IR-weiss-pod",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "max_energy": "500",
+      "cargo_type": "CARGO_SCRIPTED_ITEM",
+      "like_ship": "escape-capsule",
+      "name": "Escape Capsule"
+    },
+    "IR-disabled-transport": {
+      "scan_class": "CLASS_ROCK",
+      "roles": "IR-disabled-transport",
+      "max_energy": "9000",
+      "max_missiles": "0",
+      "is_external_dependency": "true",
+      "like_ship": "att1",
+      "escorts": "0",
+      "max_flight_speed": "0",
+      "unpiloted": "true",
+      "fuel": "0",
+      "subentities": [],
+      "ai_type": "dumbAI.plist",
+      "name": "Armoured Transport (disabled)"
+    },
+    "IR-sdf-transporter": {
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-sdf-transporter.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-sdf-transporter.png",
+          "shininess": "42",
+          "normal_map": "IR-sdf-transporter-normal.png",
+          "specular_map": "IR-sdf-transporter-specular.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.25",
+            "0.25",
+            "0.25"
+          ],
+          "gloss": "0.65"
+        }
+      },
+      "beacon_label": "SDF Assault Lander",
+      "max_energy": "800",
+      "roles": "IR-sdf-transporter",
+      "like_ship": "oolite_template_transporter",
+      "escorts": "2",
+      "model_scale_factor": "1.6",
+      "script": "IR-sdf-transporter.js",
+      "beacon": "L",
+      "bounty": "50",
+      "auto_ai": "false",
+      "ai_type": "IR-followleaderAI.plist",
+      "escort_role": "IR-sdf-asp",
+      "name": "SDF Assault Lander"
+    },
+    "IR-komodo-dock": {
+      "ai_type": "nullAI.plist",
+      "materials": {
+        "komodo-dock-sides.png": {
+          "emission_map": "IR-komodo-dock-sides-em-map.png",
+          "normal_map": "IR-komodo-dock-sides-normal-map.png",
+          "diffuse_map": "IR-komodo-dock-sides.png"
+        },
+        "komodo-dock-TB.png": {
+          "normal_map": "IR-komodo-dock-TB-normal-map.png",
+          "diffuse_map": "IR-komodo-dock-TB.png"
+        },
+        "komodo-dock-back.png": {
+          "emission_map": "IR-komodo-dock-back-em-map.png",
+          "normal_map": "IR-komodo-dock-back-normal-map.png",
+          "diffuse_map": "IR-komodo-dock-back.png"
+        }
+      },
+      "model": "IR-komodo-dock-flat.dat",
+      "name": "Docking Slit (horizontal)",
+      "roles": "IR-komodo-dock"
+    },
+    "IR-cherkasova-alt": {
+      "roles": "IR-cherkasova-alt",
+      "script": "IR-cherkasova.js",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ],
+        "randomshipnames": "no"
+      },
+      "density": "500000",
+      "ai_type": "IR-wingmanAI.plist",
+      "like_ship": "IR-cherkasova",
+      "name": "unknown mass"
+    },
+    "IR-isabella": {
+      "max_energy": "1000",
+      "ai_type": "route1traderAI.plist",
+      "forward_weapon_type": "WEAPON_BEAM_LASER",
+      "missiles": "2",
+      "max_flight_pitch": "1.5",
+      "max_flight_speed": "400",
+      "materials": {
+        "Hull": {
+          "normal_map": "KW_adder_mark_III_normal.png",
+          "gloss": "0.62",
+          "specular_color": [
+            "0.1",
+            "0.1",
+            "0.1"
+          ],
+          "emission_map": "KW_adder_mark_III_emission.png",
+          "emission_modulate_color": {
+            "red": "9546",
+            "green": "9540",
+            "blue": "6450"
+          },
+          "diffuse_map": "IR-isabella-mk3-tex.png"
+        }
+      },
+      "like_ship": "KW_adder_mark_III_01",
+      "energy_recharge_rate": "10",
+      "has_shield_booster": "0.05",
+      "likely_cargo": "4",
+      "max_missiles": "2",
+      "frangible": "no",
+      "name": "Adder Mark III",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "roles": "IR-isabella",
+      "script": "IR-isabella.js",
+      "has_fuel_injection": "0.25",
+      "model": "KW_adder_mark_III_tsoj.dat",
+      "max_flight_roll": "2.8",
+      "has_ecm": "0.45",
+      "is_external_dependency": "yes"
+    },
+    "IR-pleasureworld-ad": {
+      "like_ship": "IR-ad-buoy",
+      "ai_type": "buoyAI.plist",
+      "roles": "IR-pw-ad buoy(10000)",
+      "model": "IR-pw-ad.dat",
+      "name": "Navigation Buoy",
+      "condition_script": "IR-conditions.js"
+    },
+    "IR-cannon-panels": {
+      "ai_type": "nullAI.plist",
+      "max_energy": "10000000",
+      "roles": "IR-cannon-panels",
+      "model": "IR-cannon-panels.dat",
+      "name": "Defence Cannon"
+    },
+    "IR-GSE-ad": {
+      "like_ship": "IR-ad-buoy",
+      "ai_type": "buoyAI.plist",
+      "roles": "IR-GSE-ad buoy(10000)",
+      "model": "IR-GSE-ad.dat",
+      "name": "Navigation Buoy",
+      "condition_script": "IR-conditions.js"
+    },
+    "IR-quico-viper": {
+      "like_ship": "oolite_template_viper",
+      "roles": "IR-quico-viper police(4)",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-quico-viper.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-quico-viper.png",
+          "shininess": "45",
+          "normal_map": "IR-quico-viper-normal.png",
+          "emission_modulate_color": [
+            "0.9926",
+            "0.9686",
+            "0.7325",
+            "1.0"
+          ],
+          "specular_color": [
+            "0.5",
+            "0.5",
+            "0.5"
+          ],
+          "gloss": "0.55"
+        },
+        "Engine": {
+          "emission_modulate_color": [
+            "0.7325",
+            "0.9686",
+            "0.9926",
+            "1.0"
+          ],
+          "gloss": "0.55",
+          "specular_color": [
+            "0.6",
+            "0.5",
+            "0.5"
+          ],
+          "diffuse_map": "oolite_viper_diffuse.png",
+          "shininess": "45",
+          "emission_map": {
+            "name": "oolite_viper_diffuse.png",
+            "extract_channel": "a"
+          }
+        }
+      },
+      "name": "QuiCo Viper",
+      "condition_script": "IR-conditions.js",
+      "laser_color": "blueColor"
+    },
+    "IR-target-drone": {
+      "roles": "IR-target-drone",
+      "bounty": "1000",
+      "unpiloted": "true",
+      "script": "IR-target-drone.js",
+      "ai_type": "IR-target-droneAI.plist",
+      "max_energy": "100",
+      "missiles": "0",
+      "like_ship": "gecko",
+      "name": "Target Drone"
+    },
+    "IR-anarchypython": {
+      "bounty": "0",
+      "likely_cargo": "0",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-anarchy-python.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-anarchy-python.png",
+          "shininess": "42",
+          "normal_map": "IR-anarchy-python-normal.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.25",
+            "0.25",
+            "0.25"
+          ],
+          "gloss": "0.75"
+        },
+        "Engines": {
+          "emission_map": {
+            "name": "oolite_python_subents_trader.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "oolite_python_subents_trader.png",
+          "shininess": "12",
+          "normal_map": "IR-anarchy-python-engines-normal.png",
+          "emission_modulate_color": {
+            "red": "7325",
+            "green": "9686",
+            "blue": "9926"
+          },
+          "specular_color": [
+            "0.3",
+            "0.3",
+            "0.3"
+          ],
+          "gloss": "0.622"
+        }
+      },
+      "roles": "IR-anarchypython pirate(0)",
+      "ai_type": "IR-piratepatrolAI.plist",
+      "laser_color": "magentaColor",
+      "model": "oolite_python_trader.dat",
+      "script": "IR-anarchist.js",
+      "script_info": {
+        "randomshipnames": "pirate"
+      },
+      "like_ship": "oolite_template_python",
+      "name": "Anarchist Python"
+    },
+    "IR-comray": {
+      "like_ship": "commilray",
+      "ai_type": "route1patrolAI.plist",
+      "roles": "IR-comray",
+      "is_external_dependency": "true",
+      "name": "Soviet Military Ray",
+      "condition_script": "IR-conditions.js"
+    },
+    "IR-sirius-tanker": {
+      "max_energy": "800",
+      "bounty": "20",
+      "ai_type": "IR-followleaderAI.plist",
+      "missiles": "2",
+      "subentities": [
+        {
+          "subentity_key": "IR-bluetank",
+          "type": "standard",
+          "position": [
+            "0",
+            "0",
+            "23.12825"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "subentity_key": "IR-redtank",
+          "type": "standard",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "subentity_key": "IR-bluetank",
+          "type": "standard",
+          "position": [
+            "0",
+            "0",
+            "-23.531"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        }
+      ],
+      "max_flight_pitch": "0.9",
+      "materials": {
+        "Greymetal_tex.png": {
+          "gloss": "0.7",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR-sirius-tanker-metal.png",
+          "normal_map": "IR-sirius-tanker-normal.png"
+        },
+        "Darkmetal_tex.png": {
+          "gloss": "0.7",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR-sirius-tanker-metal.png",
+          "normal_map": "IR-sirius-tanker-normal.png"
+        },
+        "IR-sirius-tanker.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "8700"
+          },
+          "gloss": "0.7",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "emission_map": "IR-sirius-tanker-emission.png",
+          "diffuse_map": "IR-sirius-tanker.png",
+          "normal_map": "IR-sirius-tanker-normal.png"
+        }
+      },
+      "max_flight_speed": "300",
+      "energy_recharge_rate": "3.0",
+      "thrust": "20",
+      "beacon": "T",
+      "escort_ship": "IR-sdf-asp",
+      "name": "Sirius Tanker",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "exhaust": [
+        "4.5 -0.5 -55.0 4.0 4.0 6.0",
+        "-4.5 -0.5 -55.0 4.0 4.0 6.0"
+      ],
+      "roles": "IR-sirius-tanker",
+      "script": "IR-sirius-tanker.js",
+      "escorts": "2",
+      "max_cargo": "20",
+      "max_flight_roll": "1.1",
+      "missile_launch_position": "0.0 -3.5 16.5",
+      "has_ecm": "1.0",
+      "model": "IR-sirius-tanker.dat",
+      "beacon_label": "Sirius Tanker"
+    },
+    "IR-sdf-imperator": {
+      "max_energy": "5000",
+      "bounty": "100",
+      "ai_type": "IR-sdf-leaderAI.plist",
+      "missiles": "0",
+      "subentities": [
+        {
+          "is_dock": "yes",
+          "subentity_key": "IR-sdf-imperator-dock",
+          "type": "standard",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "subentity_key": "IR-sdf-impturret",
+          "type": "ball_turret",
+          "position": [
+            "176",
+            "39",
+            "74"
+          ],
+          "orientation": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ]
+        },
+        {
+          "subentity_key": "IR-sdf-impturret",
+          "type": "ball_turret",
+          "position": [
+            "-176",
+            "39",
+            "74"
+          ],
+          "orientation": [
+            "0",
+            "-1",
+            "0",
+            "1"
+          ]
+        },
+        {
+          "subentity_key": "IR-sdf-impturret",
+          "type": "ball_turret",
+          "position": [
+            "-176",
+            "39",
+            "-170.75"
+          ],
+          "orientation": [
+            "0",
+            "-1",
+            "0",
+            "1"
+          ]
+        },
+        {
+          "subentity_key": "IR-sdf-impturret",
+          "type": "ball_turret",
+          "position": [
+            "176",
+            "39",
+            "-170.75"
+          ],
+          "orientation": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "max_flight_pitch": "0.2",
+      "materials": {
+        "IR-sdf-imperator.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "8700"
+          },
+          "gloss": "0.7",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "emission_map": "IR-sdf-imperator-emission.png",
+          "diffuse_map": "IR-sdf-imperator.png",
+          "normal_map": "IR-sdf-imperator-normal.png"
+        }
+      },
+      "max_flight_speed": "290",
+      "energy_recharge_rate": "4.0",
+      "has_shield_booster": "0.0",
+      "likely_cargo": "40",
+      "thrust": "20",
+      "beacon": "I",
+      "name": "SDF Imperator",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "exhaust": [
+        "-68.164 39.33 -482.08 45 45 40",
+        "68.164 39.33 -482.08 45 45 40"
+      ],
+      "roles": "IR-sdf-imperator",
+      "script": "IR-sdf-leader.js",
+      "has_scoop": "0.0",
+      "has_fuel_injection": "0.0",
+      "escorts": "6",
+      "max_cargo": "40",
+      "has_ecm": "1.0",
+      "model": "IR-sdf-imperator.dat",
+      "escort_role": "IR-sdf-fleet-escort",
+      "has_shield_enhancer": "0.0",
+      "max_flight_roll": "0.4",
+      "beacon_label": "SDF Imperator"
+    },
+    "IR-luftslotte": {
+      "has_shipyard": "false",
+      "materials": {
+        "nuit2_coreSKIN.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "6700"
+          },
+          "gloss": "0.8",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR_nuit2_coreSKIN.png",
+          "emission_map": "IR_nuit2_coreLITES.png",
+          "normal_map": "IR_nuit2_coreNORM.png"
+        }
+      },
+      "beacon_label": "Luftslotte 6",
+      "has_npc_traffic": "false",
+      "max_energy": "25000",
+      "roles": "IR-luft-core station(0)",
+      "scan_class": "CLASS_STATION",
+      "script_info": {
+        "bgs_tunnel_texture": "IR-luft-tunnel.png"
+      },
+      "thrust": "100",
+      "subentities": [
+        {
+          "is_dock": "false",
+          "subentity_key": "IR-nuit2hub",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "is_dock": "false",
+          "subentity_key": "IR-nuit2lring",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "is_dock": "false",
+          "subentity_key": "IR-nuit2port",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "is_dock": "false",
+          "subentity_key": "IR-nuit2struts",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "is_dock": "true",
+          "subentity_key": "IR-nuit2dock",
+          "position": [
+            "0",
+            "0",
+            "712.39"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "is_dock": "false",
+          "subentity_key": "IR-nuit2uring",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-1",
+          "size": "100",
+          "type": "flasher",
+          "position": "96 -150 1300",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-1",
+          "size": "100",
+          "type": "flasher",
+          "position": "-96 -150 1300",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.9",
+          "size": "100",
+          "type": "flasher",
+          "position": "146 -150 1800",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.9",
+          "size": "100",
+          "type": "flasher",
+          "position": "-146 -150 1800",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.8",
+          "size": "100",
+          "type": "flasher",
+          "position": "196 -150.0 2300",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.8",
+          "size": "100",
+          "type": "flasher",
+          "position": "-196 -150.0 2300",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.7",
+          "size": "100",
+          "type": "flasher",
+          "position": "246 -150.0 2800",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.7",
+          "size": "100",
+          "type": "flasher",
+          "position": "-246 -150.0 2800",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.6",
+          "size": "100",
+          "type": "flasher",
+          "position": "296 -150.0 3300",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.6",
+          "size": "100",
+          "type": "flasher",
+          "position": "-296 -150.0 3300",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.5",
+          "size": "100",
+          "type": "flasher",
+          "position": "346 -150. 3800",
+          "color": {
+            "hue": "120"
+          }
+        },
+        {
+          "frequency": "0.5",
+          "phase": "-0.5",
+          "size": "100",
+          "type": "flasher",
+          "position": "-346 -150. 3800",
+          "color": {
+            "hue": "120"
+          }
+        }
+      ],
+      "beacon": "L",
+      "frangible": "false",
+      "allegiance": "private",
+      "max_defense_ships": "20",
+      "density": "0.0000001",
+      "ai_type": "oolite-stationAI.js",
+      "has_ecm": "true",
+      "model": "IR_nuit2_core.dat",
+      "name": "Luftslotte 6"
+    },
+    "IR-korshkov-ad": {
+      "like_ship": "IR-ad-buoy",
+      "ai_type": "buoyAI.plist",
+      "roles": "IR-korshkov-ad buoy(10000)",
+      "model": "IR-korshkov-ad.dat",
+      "name": "Navigation Buoy",
+      "condition_script": "IR-conditions.js"
+    },
+    "IR-policekrait": {
+      "bounty": "0",
+      "likely_cargo": "0",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-police-krait.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-police-krait.png",
+          "shininess": "42",
+          "normal_map": "IR-redkrait-normal.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.25",
+            "0.25",
+            "0.25"
+          ],
+          "gloss": "0.7"
+        }
+      },
+      "script": "IR-anarchist.js",
+      "ai_type": "IR-piratepatrolAI.plist",
+      "laser_color": "magentaColor",
+      "roles": "IR-policekrait police(100)",
+      "condition_script": "IR-conditions.js",
+      "like_ship": "oolite_template_krait",
+      "scan_class": "CLASS_POLICE",
+      "name": "Anarchist Enforcer"
+    },
+    "IR-fuel-station": {
+      "max_energy": "5000",
+      "ai_type": "nullAI.plist",
+      "missiles": "0",
+      "subentities": [
+        {
+          "frequency": "0.15",
+          "phase": "1",
+          "size": "80",
+          "type": "flasher",
+          "position": [
+            "0",
+            "0",
+            "70"
+          ],
+          "color": {
+            "hue": "35.0"
+          }
+        },
+        {
+          "frequency": "0.15",
+          "phase": "0.75",
+          "size": "80",
+          "type": "flasher",
+          "position": [
+            "0",
+            "0",
+            "80"
+          ],
+          "color": {
+            "hue": "75.0"
+          }
+        },
+        {
+          "frequency": "0.15",
+          "phase": "-0.75",
+          "size": "80",
+          "type": "flasher",
+          "position": [
+            "0",
+            "0",
+            "70"
+          ],
+          "color": {
+            "hue": "25.0"
+          }
+        },
+        {
+          "frequency": "0.0",
+          "phase": "-1",
+          "size": "120",
+          "type": "flasher",
+          "position": [
+            "0",
+            "0",
+            "50"
+          ],
+          "color": {
+            "hue": "0.0"
+          }
+        },
+        {
+          "frequency": "0.0",
+          "phase": "-1",
+          "size": "80",
+          "type": "flasher",
+          "position": [
+            "0",
+            "0",
+            "50"
+          ],
+          "color": {
+            "hue": "0.0"
+          }
+        },
+        {
+          "frequency": "0.15",
+          "phase": "-0.5",
+          "size": "50",
+          "type": "flasher",
+          "position": [
+            "-15",
+            "-15",
+            "80"
+          ],
+          "color": {
+            "hue": "47.0"
+          }
+        },
+        {
+          "frequency": "0.15",
+          "phase": "0.5",
+          "size": "50",
+          "type": "flasher",
+          "position": [
+            "15",
+            "15",
+            "70"
+          ],
+          "color": {
+            "hue": "75.0"
+          }
+        },
+        {
+          "frequency": "0.15",
+          "phase": "-1",
+          "size": "50",
+          "type": "flasher",
+          "position": [
+            "-15",
+            "15",
+            "80"
+          ],
+          "color": {
+            "hue": "50.0"
+          }
+        },
+        {
+          "frequency": "0.15",
+          "phase": "-1",
+          "size": "50",
+          "type": "flasher",
+          "position": [
+            "15",
+            "-15",
+            "7"
+          ],
+          "color": {
+            "hue": "43.0"
+          }
+        },
+        {
+          "frequency": "0.15",
+          "phase": "0.25",
+          "size": "50",
+          "type": "flasher",
+          "position": [
+            "0",
+            "15",
+            "80"
+          ],
+          "color": {
+            "hue": "10.0"
+          }
+        },
+        {
+          "frequency": "0.15",
+          "phase": "0.25",
+          "size": "50",
+          "type": "flasher",
+          "position": [
+            "0",
+            "-15",
+            "70"
+          ],
+          "color": {
+            "hue": "10.0"
+          }
+        },
+        {
+          "frequency": "1",
+          "phase": "-0.60",
+          "size": "20",
+          "type": "flasher",
+          "position": [
+            "0",
+            "539",
+            "-70"
+          ],
+          "color": {
+            "hue": "75.0"
+          }
+        },
+        {
+          "frequency": "1",
+          "phase": "-0.60",
+          "size": "20",
+          "type": "flasher",
+          "position": [
+            "0",
+            "-539",
+            "-70"
+          ],
+          "color": {
+            "hue": "75.0"
+          }
+        },
+        {
+          "frequency": "1",
+          "phase": "-0.60",
+          "size": "20",
+          "type": "flasher",
+          "position": [
+            "539",
+            "0",
+            "-70"
+          ],
+          "color": {
+            "hue": "75.0"
+          }
+        },
+        {
+          "frequency": "1",
+          "phase": "-0.60",
+          "size": "20",
+          "type": "flasher",
+          "position": [
+            "-539",
+            "0",
+            "-70"
+          ],
+          "color": {
+            "hue": "75.0"
+          }
+        }
+      ],
+      "max_flight_pitch": "0.0",
+      "materials": {
+        "IR-fuelstation.png": {
+          "specular_map": "IR-fuelstation-specular.png",
+          "gloss": "0.6",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR-fuelstation2.png",
+          "normal_map": "IR-fuelstation-normal.png"
+        },
+        "IR-fuelstation-panels.png": {
+          "gloss": "0.7",
+          "specular_color": [
+            "0.6",
+            "0.6",
+            "0.6"
+          ],
+          "diffuse_map": "IR-fuelstation-panels.png",
+          "normal_map": "IR-fuelstation-panels-normal.png"
+        }
+      },
+      "max_flight_speed": "0.0",
+      "unpiloted": "true",
+      "scan_class": "CLASS_STATION",
+      "energy_recharge_rate": "10",
+      "max_missiles": "0",
+      "scanner_range": "60000",
+      "beacon": "F",
+      "name": "Fuel Reprocessing Facility",
+      "script_info": {
+        "almanac_object_naming": "Off"
+      },
+      "roles": "IR-fuelprocessor",
+      "script": "IR-fuel-station.js",
+      "model": "IR-fuelstation.dat",
+      "max_flight_roll": "0.0",
+      "beacon_label": "Fuel Reprocessing Facility",
+      "is_carrier": "false"
+    },
+    "IR-ad-buoy": {
+      "max_flight_pitch": "2.0",
+      "beacon_label": "Ad Buoy",
+      "roles": "IR-ad-buoy",
+      "max_energy": "750",
+      "energy_recharge_rate": "2",
+      "thrust": "0",
+      "max_flight_roll": "2.0",
+      "max_flight_speed": "0.0",
+      "unpiloted": "true",
+      "beacon": "N",
+      "subentities": [
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "0",
+            "135",
+            "33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "0",
+            "-135",
+            "33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "0",
+            "135",
+            "-33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "0",
+            "-135",
+            "-33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "250",
+            "135",
+            "33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "250",
+            "-135",
+            "33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "250",
+            "135",
+            "-33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "250",
+            "-135",
+            "-33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "-250",
+            "135",
+            "33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "-250",
+            "-135",
+            "33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "-250",
+            "135",
+            "-33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        },
+        {
+          "frequency": "0",
+          "phase": "0",
+          "size": "75",
+          "type": "flasher",
+          "position": [
+            "-250",
+            "-135",
+            "-33.5"
+          ],
+          "color": {
+            "hue": "60"
+          }
+        }
+      ],
+      "ai_type": "buoyAI.plist",
+      "model": "IR-quit-ad.dat",
+      "name": "Ad Buoy"
+    },
+    "IR-disabled-sdf-courier": {
+      "scan_class": "CLASS_ROCK",
+      "beacon_label": "SDF Courier (disabled)",
+      "roles": "IR-disabled-sdf-courier",
+      "max_energy": "10000",
+      "max_missiles": "0",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "like_ship": "IR-sdf-courier",
+      "escorts": "0",
+      "max_flight_speed": "0",
+      "unpiloted": "true",
+      "fuel": "0",
+      "beacon": "K",
+      "subentities": [],
+      "ai_type": "dumbAI.plist",
+      "name": "SDF Courier (disabled)"
+    },
+    "IR-tiger-mamba": {
+      "like_ship": "oolite_template_mamba",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-tiger-mamba.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-tiger-mamba.png",
+          "shininess": "42",
+          "normal_map": "IR-tiger-mamba-normal.png",
+          "specular_map": "IR-tiger-mamba-specular.png",
+          "emission_modulate_color": [
+            "0.9926",
+            "0.9686",
+            "0.7325",
+            "1.0"
+          ],
+          "specular_color": [
+            "0.25",
+            "0.25",
+            "0.25"
+          ],
+          "gloss": "0.67"
+        },
+        "Gun": {
+          "gloss": "0.622",
+          "specular_color": [
+            "0.6",
+            "0.5",
+            "0.5"
+          ],
+          "diffuse_map": "oolite_mamba_subents.png",
+          "shininess": "40",
+          "normal_map": "oolite_mamba_subents_normal.png"
+        }
+      },
+      "roles": "IR-tigermamba",
+      "name": "Mamba"
+    },
+    "IR-nuit2lring": {
+      "density": "0.0000001",
+      "model": "IR_nuit2_lowerring.dat",
+      "materials": {
+        "nuit2_lowerringSKIN.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "6700"
+          },
+          "gloss": "0.8",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR_nuit2_lowerringSKIN.png",
+          "emission_map": "IR_nuit2_lowerringLITES.png",
+          "normal_map": "IR_nuit2_lowerringNORM.png"
+        }
+      },
+      "roles": "IR_KW_nuit2Subent",
+      "rotational_velocity": "-0.9808 0.0 0.055 0.0"
+    },
+    "IR-sdf-impturret": {
+      "roles": "ballturret",
+      "model_scale_factor": "2.5",
+      "materials": {
+        "ah_turret1_tex.png": {
+          "gloss": "0.65",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR-sdf-turret-tex.png",
+          "normal_map": "IR-sdf-turret-normal.png"
+        }
+      },
+      "thrust": "5",
+      "ai_type": "nullAI.plist",
+      "model": "IR-sdf-impturret.dat",
+      "laser_color": "cyanColor",
+      "energy_recharge_rate": "2.5",
+      "name": "Ball Turret",
+      "weapon_energy": "10"
+    },
+    "IR-navy-frigate": {
+      "ai_type": "route1patrolAI.plist",
+      "interstellar_undocking": "yes",
+      "allows_fast_docking": "no",
+      "max_flight_roll": "0.3",
+      "requires_docking_clearance": "yes",
+      "weapon_position_forward": "0.0 8.0 57.5",
+      "missile_launch_position": "-125.0 -60.0 250.0",
+      "thrust": "15",
+      "max_cargo": "0",
+      "materials": {
+        "komodo_texture.png": {
+          "specular_map": "IR-komodo-specular.png",
+          "gloss": "0.7",
+          "emission_map": "IR-komodo-em-map.png",
+          "diffuse_map": "IR-komodo-diffuse.png",
+          "normal_map": "IR-komodo-normal.png"
+        }
+      },
+      "subentities": [
+        {
+          "is_dock": "yes",
+          "subentity_key": "IR-komodo-dock",
+          "position": [
+            "-4.4",
+            "-28.7",
+            "-435.4"
+          ],
+          "orientation": [
+            "0",
+            "0",
+            "1",
+            "0"
+          ]
+        },
+        {
+          "orientation": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "subentity_key": "IR-komodo-box",
+          "position": [
+            "116",
+            "-27",
+            "-75"
+          ]
+        },
+        {
+          "orientation": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "subentity_key": "IR-komodo-box",
+          "position": [
+            "-125",
+            "-27",
+            "-75"
+          ]
+        },
+        {
+          "phase": "0.0",
+          "position": [
+            "92.0",
+            "-63.0",
+            "-435.0"
+          ],
+          "frequency": "1",
+          "color": "greenColor",
+          "size": "10",
+          "type": "flasher",
+          "bright_fraction": "0.2"
+        },
+        {
+          "phase": "0.0",
+          "position": [
+            "-102.0",
+            "-63.0",
+            "-435.0"
+          ],
+          "frequency": "1",
+          "color": "greenColor",
+          "size": "10",
+          "type": "flasher",
+          "bright_fraction": "0.2"
+        },
+        {
+          "phase": "0.0",
+          "position": [
+            "92.0",
+            "3.0",
+            "-435.0"
+          ],
+          "frequency": "1",
+          "color": "greenColor",
+          "size": "10",
+          "type": "flasher",
+          "bright_fraction": "0.2"
+        },
+        {
+          "phase": "0.0",
+          "position": [
+            "-102.0",
+            "3.0",
+            "-435.0"
+          ],
+          "frequency": "1",
+          "color": "greenColor",
+          "size": "10",
+          "type": "flasher",
+          "bright_fraction": "0.2"
+        }
+      ],
+      "weapon_position_starboard": "16.25 1.75 0.0",
+      "has_escape_pod": "no",
+      "cargo_type": "CARGO_NOT_CARGO",
+      "max_energy": "50000",
+      "weapon_position_aft": "0.0 8.625 -54.125",
+      "aft_weapon_type": "NONE",
+      "equipment_tech_level": "13",
+      "aft_eject_position": "NONE",
+      "escort_role": "interceptor",
+      "equipment_price_factor": "2.5",
+      "missiles": "32",
+      "max_missiles": "32",
+      "missile_load_time": "1.5",
+      "roles": "IR-navy-frigate",
+      "script": "IR-juliet-leader.js",
+      "beacon": "J",
+      "beacon_label": "Task Force Juliet",
+      "name": "Task Force Juliet",
+      "allegiance": "restricted",
+      "fuel": "70",
+      "has_scoop": "yes",
+      "max_flight_speed": "100",
+      "model": "IR-komodo.dat",
+      "escorts": "5",
+      "weapon_position_port": "-16.25 1.75 0.0",
+      "missile_role": "EQ_HARDENED_MISSILE",
+      "max_flight_pitch": "0.1",
+      "script_info": {
+        "bgs_tunnel_texture": "IR-komodo-tunnel.png"
+      },
+      "forward_weapon_type": "NONE",
+      "auto_ai": "no",
+      "allows_auto_docking": "no",
+      "likely_cargo": "0",
+      "scan_class": "CLASS_MILITARY",
+      "exhaust": [
+        "143 -26.0 -470.0 10.0 10.0 100.0",
+        "-143 -26.0 -470.0 10.0 10.0 100.0"
+      ],
+      "is_carrier": "yes",
+      "max_defense_ships": "0",
+      "market": "none",
+      "frangible": "no",
+      "has_npc_traffic": "no",
+      "has_ecm": "yes",
+      "energy_recharge_rate": "50.0"
+    },
+    "IR-sdf-ringhals": {
+      "ai_type": "route1patrolAI.plist",
+      "exhaust_emissive_color": [
+        "1.0",
+        "0.89",
+        "0.4"
+      ],
+      "weapon_position_forward": "0.0 -1.235823 49.27569",
+      "starboard_weapon_type": "WEAPON_NONE",
+      "missile_launch_position": "0.0 -10.0 42.0",
+      "thrust": "20",
+      "max_cargo": "20",
+      "materials": {
+        "Ophidian_Hull": {
+          "emission_map": {
+            "name": "IR-ophidian-normal.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-ophidian-diffuse.png",
+          "shininess": "5",
+          "normal_map": "IR-ophidian-normal.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "gloss": "0.6"
+        }
+      },
+      "has_shield_enhancer": "0.0",
+      "weapon_position_starboard": "22.268045 1.453079 0.5491",
+      "bounty": "100",
+      "max_energy": "1000",
+      "weapon_position_aft": "0.0 9.47824 -47.39549",
+      "has_shield_booster": "0.0",
+      "aft_weapon_type": "WEAPON_NONE",
+      "script": "IR-sdf-ringhals.js",
+      "aft_eject_position": "0.0 -11.35 -51.5",
+      "missiles": "2",
+      "roles": "IR-sdf-ringhals IR-sdf-fleet-escort(6)",
+      "name": "SDF Cruiser",
+      "scoop_position": "0.0 -5.248801 36.55221",
+      "port_weapon_type": "WEAPON_NONE",
+      "max_flight_speed": "300",
+      "has_scoop": "0.0",
+      "model": "IR-griff-ophidian.dat",
+      "has_fuel_injection": "0.0",
+      "weapon_position_port": "-22.268045 1.453079 0.5491",
+      "max_flight_pitch": "1.0",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "forward_weapon_type": "WEAPON_BEAM_LASER",
+      "auto_ai": "yes",
+      "likely_cargo": "2",
+      "exhaust": [
+        "8.932374 4.25646 -45.52668 6.4 4.0 0.6",
+        "-8.932374 4.25646 -45.52668 6.4 4.0 0.6"
+      ],
+      "frangible": "0",
+      "has_ecm": "1.0",
+      "max_flight_roll": "1.85",
+      "energy_recharge_rate": "2.5"
+    },
+    "IR-komodo-box": {
+      "model": "rock-box.dat",
+      "materials": {
+        "dark_metal.png": {
+          "specular_map": "IR-komodo-specular.png",
+          "gloss": "0.5",
+          "diffuse_map": "IR-komodo-metal.png"
+        },
+        "bottom_metal.png": {
+          "specular_map": "IR-komodo-specular.png",
+          "gloss": "0.5",
+          "diffuse_map": "IR-komodo-metal.png"
+        }
+      },
+      "model_scale_factor": "1.5"
+    },
+    "IR-fuel-waste": {
+      "script": "IR-fuel-waste.js",
+      "like_ship": "barrel",
+      "roles": "IR-fuel-waste",
+      "max_energy": "500",
+      "cargo_type": "CARGO_SCRIPTED_ITEM"
+    },
+    "IR-transport-alternate": {
+      "beacon_label": "Armoured Transport",
+      "roles": "IR-transport-alternate trader(0)",
+      "max_energy": "1000",
+      "is_external_dependency": "true",
+      "like_ship": "att1",
+      "escorts": "4",
+      "script": "IR-transport.js",
+      "fuel": "100",
+      "beacon": "T",
+      "has_fuel_injection": "0.0",
+      "auto_ai": "false",
+      "ai_type": "route1traderAI.plist",
+      "name": "Armoured Transport"
+    },
+    "IR-escortviper": {
+      "roles": "IR-escortviper",
+      "script": "IR-escortviper.js",
+      "fuel": "100",
+      "ai_type": "IR-escortAI.plist",
+      "like_ship": "escortviper",
+      "is_external_dependency": "true",
+      "name": "Armoured Escort"
+    },
+    "IR-starstrike": {
+      "weapon_position_forward": "0.0 -2.5 34",
+      "max_energy": "1500",
+      "bounty": "0",
+      "forward_weapon_type": "WEAPON_MILITARY_LASER",
+      "missiles": "4",
+      "ai_type": "route1patrolAI.plist",
+      "max_flight_pitch": "1.8",
+      "materials": {
+        "SS_fuselage_tex.png": {
+          "emission_modulate_color": {
+            "red": "5790",
+            "green": "5790",
+            "blue": "8700"
+          },
+          "gloss": "0.7",
+          "specular_color": [
+            "0.7",
+            "0.7",
+            "0.7"
+          ],
+          "emission_map": "SS_fuselage_emission.png",
+          "diffuse_map": "SS_fuselage2_tex.png",
+          "normal_map": "SS_fuselage_normal.png"
+        }
+      },
+      "max_flight_speed": "350",
+      "aft_eject_position": "0.0 7.5 -16.5",
+      "fuel": "150",
+      "subentities": [
+        {
+          "subentity_key": "ss_wings",
+          "type": "standard",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        }
+      ],
+      "scan_class": "CLASS_MILITARY",
+      "energy_recharge_rate": "3.0",
+      "has_shield_booster": "1.0",
+      "thrust": "30",
+      "name": "Soviet Starstrike",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "exhaust": [
+        "0 0 -20 2.5 2.0 5.0"
+      ],
+      "roles": "IR-starstrike",
+      "has_scoop": "0.0",
+      "has_fuel_injection": "1.0",
+      "max_cargo": "0",
+      "max_flight_roll": "3.2",
+      "has_ecm": "1.0",
+      "missile_launch_position": "0.0 -4.7 -0.7",
+      "model": "ss_fuselage.dat",
+      "has_shield_enhancer": "1.0"
+    },
+    "IR-nuit2uring": {
+      "density": "0.0000001",
+      "model": "IR_nuit2_topring.dat",
+      "materials": {
+        "nuit2_topringSKIN.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "6700"
+          },
+          "gloss": "0.8",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR_nuit2_topringSKIN.png",
+          "emission_map": "IR_nuit2_topringLITES.png",
+          "normal_map": "IR_nuit2_topringNORM.png"
+        }
+      },
+      "roles": "IR_KW_nuit2Subent",
+      "rotational_velocity": "0.9808 0.0 0.055 0.0"
+    },
+    "IR-cannon": {
+      "roles": "ballturret",
+      "frangible": "false",
+      "materials": {
+        "IR-sc-panels.png": {
+          "gloss": "0.7",
+          "specular_color": [
+            "0.6",
+            "0.6",
+            "0.6"
+          ],
+          "diffuse_map": "IR-fuelstation-panels.png",
+          "normal_map": "IR-fuelstation-panels-normal.png"
+        },
+        "metal512.png": {
+          "gloss": "0.6",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR-sirius-tanker-metal.png",
+          "normal_map": "IR-sirius-tanker-metal-normal.png"
+        }
+      },
+      "thrust": "1.0",
+      "ai_type": "nullAI.plist",
+      "max_energy": "50000",
+      "model": "IR-cannoncombined.dat",
+      "laser_color": "yellowColor",
+      "name": "Ball Turret",
+      "weapon_energy": "25"
+    },
+    "IR-nuit2struts": {
+      "density": "0.0000001",
+      "model": "IR_nuit2_struts.dat",
+      "materials": {
+        "nuit2_strutsSKIN.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "6700"
+          },
+          "gloss": "0.8",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR_nuit2_strutsSKIN.png",
+          "emission_map": "IR_nuit2_strutsLITES.png",
+          "normal_map": "IR_nuit2_strutsNORM.png"
+        }
+      },
+      "roles": "IR_KW_nuit2Subent"
+    },
+    "IR-redtank": {
+      "max_flight_roll": "0.04",
+      "max_flight_speed": "0",
+      "materials": {
+        "Redtank_tex.png": {
+          "gloss": "0.7",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR-redtank_tex.png",
+          "normal_map": "IR-tank-normal.png"
+        }
+      },
+      "roles": "redtank",
+      "ai_type": "nullAI.plist",
+      "max_energy": "200",
+      "max_flight_pitch": "0.04",
+      "model": "IR-redtank.dat",
+      "energy_recharge_rate": "0.0",
+      "thrust": "0.5",
+      "name": "red tank"
+    },
+    "IR-pw-worm": {
+      "roles": "IR-weiss-shuttle",
+      "script": "IR-weiss.js",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-pw-worm.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-pw-worm.png",
+          "shininess": "42",
+          "normal_map": "IR-pw-worm-normal.png",
+          "specular_map": "IR-pw-worm-specular.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.25",
+            "0.25",
+            "0.25"
+          ],
+          "gloss": "0.85"
+        }
+      },
+      "bounty": "50",
+      "ai_type": "fallingShuttleAI.plist",
+      "max_energy": "500",
+      "like_ship": "oolite_template_worm",
+      "name": "PleasureWorld Worm Shuttle"
+    },
+    "IR-anarchypython-alt": {
+      "like_ship": "IR-anarchypython",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "roles": "IR-anarchypython-alt pirate(0)",
+      "escort_roles": [
+        {
+          "min": "1",
+          "role": "pirate-light-fighter",
+          "max": "1"
+        },
+        {
+          "min": "1",
+          "role": "pirate-medium-fighter",
+          "max": "1"
+        }
+      ]
+    },
+    "IR-cannon-core": {
+      "max_flight_pitch": "1.0",
+      "scan_class": "CLASS_POLICE",
+      "roles": "IR-cannon-core",
+      "max_energy": "10000000",
+      "thrust": "75",
+      "laser_color": "yellowColor",
+      "max_flight_roll": "1.0",
+      "max_flight_speed": "0",
+      "scanner_range": "25000",
+      "subentities": [
+        {
+          "subentity_key": "IR-cannon",
+          "weapon_energy": "15",
+          "type": "ball_turret",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        }
+      ],
+      "ai_type": "IR-cannonAI.plist",
+      "model": "alloy.dat",
+      "name": "Defence Cannon"
+    },
+    "IR-transport": {
+      "beacon_label": "Armoured Transport",
+      "roles": "IR-transport trader(0)",
+      "max_energy": "1000",
+      "like_ship": "att1",
+      "escorts": "2",
+      "script": "IR-transport.js",
+      "fuel": "100",
+      "beacon": "T",
+      "has_fuel_injection": "0.0",
+      "auto_ai": "false",
+      "ai_type": "IR-transport-exitAI.plist",
+      "name": "Armoured Transport"
+    },
+    "ss_wings": {
+      "max_flight_pitch": "0.08",
+      "materials": {
+        "SS_wings_tex.png": {
+          "gloss": "0.7",
+          "specular_color": [
+            "0.7",
+            "0.7",
+            "0.7"
+          ],
+          "diffuse_map": "SS_wings_tex.png",
+          "normal_map": "SS_wings_normal.png"
+        }
+      },
+      "roles": "ss_wings",
+      "max_energy": "1000",
+      "energy_recharge_rate": "0",
+      "thrust": "0.5",
+      "max_flight_roll": "0.04",
+      "max_flight_speed": "0",
+      "max_cargo": "0",
+      "frangible": "false",
+      "ai_type": "nullAI.plist",
+      "model": "ss_wings.dat",
+      "name": "SS wings"
+    },
+    "IR-sabotage-mine": {
+      "script": "IR-sabotage-mine.js",
+      "like_ship": "qbomb",
+      "roles": "EQ_IR_SABOTAGE_MINE",
+      "ai_type": "IR-sabotageAI.plist",
+      "name": "Electronic Warfare Pod"
+    },
+    "IR-bluetank": {
+      "max_flight_roll": "0.04",
+      "max_flight_speed": "0",
+      "materials": {
+        "Bluetank_tex.png": {
+          "gloss": "0.7",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR-bluetank_tex.png",
+          "normal_map": "IR-tank-normal.png"
+        }
+      },
+      "roles": "bluetank",
+      "ai_type": "nullAI.plist",
+      "max_energy": "200",
+      "max_flight_pitch": "0.04",
+      "model": "IR-bluetank.dat",
+      "energy_recharge_rate": "0.0",
+      "thrust": "0.5",
+      "name": "blue tank"
+    },
+    "IR-giantray": {
+      "like_ship": "comgrc",
+      "ai_type": "route1patrolAI.plist",
+      "roles": "IR-giantray",
+      "is_external_dependency": "true",
+      "name": "Soviet Giant Ray",
+      "condition_script": "IR-conditions.js"
+    },
+    "IR-damaged-escape-pod": {
+      "roles": "IR-damaged-escape-pod",
+      "script": "IR-damaged-escape-pod.js",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "ai_type": "IR-escapeAI.plist",
+      "max_energy": "500",
+      "cargo_type": "CARGO_SCRIPTED_ITEM",
+      "like_ship": "escape-capsule",
+      "name": "Escape Capsule (damaged)"
+    },
+    "heating_up_Cargopod": {
+      "script": "IR-fuel-sample.js",
+      "roles": "IR-fuel-sample-irradiated",
+      "materials": {
+        "IR-fuel-pod.png": {
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "gloss": "0.6",
+          "diffuse_map": "IR-fuel-pod.png"
+        }
+      },
+      "max_energy": "500",
+      "model": "IR-fuel-pod.dat",
+      "cargo_type": "CARGO_SCRIPTED_ITEM",
+      "like_ship": "barrel",
+      "shaders": {
+        "IR-fuel-pod.png": {
+          "textures": [
+            "IR-fuel-pod.png"
+          ],
+          "fragment_shader": "heating_up_cargopod.fragment",
+          "uniforms": {
+            "timeSinceSpawn": "timeElapsedSinceSpawn",
+            "uColorMap": {
+              "type": "texture",
+              "value": "0"
+            },
+            "HeatupTime": {
+              "type": "float",
+              "value": "50.0"
+            },
+            "uTime": "universalTime"
+          },
+          "vertex_shader": "feudal-vertex-shader.vertex"
+        }
+      },
+      "name": "Fuel Sample (irradiated)"
+    },
+    "IR-kinnaird": {
+      "weapon_position_forward": "0.0 -2 25",
+      "max_energy": "5000",
+      "bounty": "100",
+      "forward_weapon_type": "WEAPON_MILITARY_LASER",
+      "ai_type": "IR-kinnairdfleeAI.plist",
+      "aft_eject_position": "0.0 7.5 -16.5",
+      "max_flight_pitch": "1.5",
+      "materials": {
+        "IR-mospurtex.png": {
+          "emission_modulate_color": {
+            "red": "7560",
+            "green": "7560",
+            "blue": "7560"
+          },
+          "gloss": "0.7",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "emission_map": "IR-mospurtex-emission.png",
+          "diffuse_map": "IR-mospurtex.png",
+          "normal_map": "IR-mospurtex-normal.png"
+        }
+      },
+      "max_flight_speed": "360",
+      "missiles": "3",
+      "fuel": "150",
+      "energy_recharge_rate": "4.0",
+      "has_shield_booster": "1.0",
+      "likely_cargo": "2",
+      "thrust": "35",
+      "name": "Pieter Kinnaird",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "exhaust": [
+        "14 2 -33 5 5 30",
+        "-14 2 -33 5 5 30",
+        "26.5 0.2 -33 2 2 15",
+        "-26.5 0.2 -33 2 2 15"
+      ],
+      "roles": "IR-kinnaird",
+      "has_scoop": "0.0",
+      "has_fuel_injection": "1.0",
+      "max_cargo": "20",
+      "max_flight_roll": "2.3",
+      "has_ecm": "1.0",
+      "missile_launch_position": "0.0 -3.5 16.5",
+      "model": "IR-mospur.dat",
+      "has_shield_enhancer": "1.0"
+    },
+    "IR-cannon-body": {
+      "ai_type": "nullAI.plist",
+      "model": "IR-cannon-body.dat",
+      "roles": "IR-cannon-body",
+      "name": "Defence Cannon"
+    },
+    "IR-nuit2dock": {
+      "ai_type": "nullAI.plist",
+      "model": "IR_nuit2_dock.dat",
+      "materials": {
+        "nuit2_dockSKIN.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "6700"
+          },
+          "gloss": "0.8",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR_nuit2_dockSKIN.png",
+          "emission_map": "IR_nuit2_dockLITES.png",
+          "normal_map": "IR_nuit2_dockNORM.png"
+        }
+      },
+      "roles": "IR_KW_nuit2_Dock",
+      "is_dock": "true",
+      "name": "LuftsLotte 6 Dock"
+    },
+    "ss_lowviswings": {
+      "max_flight_pitch": "0.08",
+      "materials": {
+        "ss_lowviswing.png": {
+          "gloss": "0.7",
+          "specular_color": [
+            "0.7",
+            "0.7",
+            "0.7"
+          ],
+          "diffuse_map": "ss_lowviswing.png",
+          "normal_map": "SS_wings_normal.png"
+        }
+      },
+      "roles": "ss_lowviswings",
+      "max_energy": "50000",
+      "energy_recharge_rate": "0",
+      "thrust": "0.5",
+      "max_flight_roll": "0.04",
+      "max_flight_speed": "0",
+      "max_cargo": "0",
+      "frangible": "false",
+      "ai_type": "nullAI.plist",
+      "model": "ss_lowviswings.dat",
+      "name": "SS wings"
+    },
+    "IR-cherkasova": {
+      "ai_type": "IR-wingmanAI.plist",
+      "weapon_position_forward": "0.0 -2.5 34",
+      "missile_launch_position": "0.0 -4.7 -0.7",
+      "thrust": "30",
+      "max_cargo": "0",
+      "materials": {
+        "ss_lowvisfus.png": {
+          "emission_modulate_color": {
+            "red": "5790",
+            "green": "5790",
+            "blue": "8700"
+          },
+          "gloss": "0.7",
+          "specular_color": [
+            "0.7",
+            "0.7",
+            "0.7"
+          ],
+          "emission_map": "SS_fuselage_emission.png",
+          "diffuse_map": "ss_lowvisfus2.png",
+          "normal_map": "ss_lowvisfus_normal.png"
+        }
+      },
+      "subentities": [
+        {
+          "subentity_key": "ss_lowviswings",
+          "type": "standard",
+          "position": [
+            "0",
+            "0",
+            "0"
+          ],
+          "orientation": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "frequency": "1",
+          "phase": "0.25",
+          "size": "2.5",
+          "type": "flasher",
+          "position": [
+            "0.0",
+            "4.6",
+            "9.6"
+          ],
+          "color": {
+            "hue": "0.0"
+          }
+        }
+      ],
+      "has_shield_enhancer": "1.0",
+      "bounty": "0",
+      "max_energy": "20000",
+      "has_shield_booster": "1.0",
+      "script": "IR-cherkasova.js",
+      "aft_eject_position": "0.0 7.5 -16.5",
+      "missiles": "10",
+      "roles": "IR-cherkasova",
+      "pilot": "major_cherkasova",
+      "max_missiles": "10",
+      "beacon": "Z",
+      "name": "Major Cherkasova",
+      "beacon_label": "Major Cherkasova",
+      "fuel": "150",
+      "max_flight_speed": "320",
+      "has_scoop": "0.0",
+      "model": "ss_lowvisfuselage.dat",
+      "has_fuel_injection": "1.0",
+      "max_flight_pitch": "1.8",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "forward_weapon_type": "WEAPON_MILITARY_LASER",
+      "scan_class": "CLASS_MILITARY",
+      "exhaust": [
+        "0 0 -15 2.5 2.0 5.0"
+      ],
+      "has_ecm": "1.0",
+      "max_flight_roll": "3.2",
+      "energy_recharge_rate": "3.0"
+    },
+    "IR-sdf-asp": {
+      "max_energy": "400",
+      "ai_type": "pirateAI.plist",
+      "forward_weapon_type": "WEAPON_BEAM_LASER",
+      "missiles": "2",
+      "subentities": [
+        {
+          "frequency": "2",
+          "phase": "0.25",
+          "size": "8",
+          "type": "flasher",
+          "position": [
+            "-5.0",
+            "10.5",
+            "7.50"
+          ],
+          "color": {
+            "hue": "310.0"
+          }
+        },
+        {
+          "frequency": "2",
+          "phase": "0",
+          "size": "8",
+          "type": "flasher",
+          "position": [
+            "5.0",
+            "10.5",
+            "6.50"
+          ],
+          "color": {
+            "hue": "260.0"
+          }
+        },
+        {
+          "frequency": "2",
+          "phase": "0.25",
+          "size": "8",
+          "type": "flasher",
+          "position": [
+            "-5.0",
+            "10.5",
+            "6.50"
+          ],
+          "color": {
+            "hue": "310.0"
+          }
+        },
+        {
+          "frequency": "2",
+          "phase": "0",
+          "size": "8",
+          "type": "flasher",
+          "position": [
+            "5.0",
+            "10.5",
+            "7.50"
+          ],
+          "color": {
+            "hue": "260.0"
+          }
+        }
+      ],
+      "max_flight_pitch": "1",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-sdf-asp.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-sdf-asp.png",
+          "shininess": "42",
+          "normal_map": "IR-sdf-asp-normal.png",
+          "specular_map": "IR-sdf-asp-specular.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "gloss": "1.0"
+        },
+        "Gun": {
+          "gloss": "0.622",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "oolite_asp_subents.png",
+          "shininess": "42"
+        }
+      },
+      "max_flight_speed": "400",
+      "fuel": "10",
+      "like_ship": "oolite_template_asp",
+      "energy_recharge_rate": "4",
+      "has_shield_booster": "0.8",
+      "likely_cargo": "0",
+      "thrust": "50",
+      "name": "SDF Asp",
+      "script_info": {
+        "bcc_disable_defaults": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "11"
+        ]
+      },
+      "roles": "IR-sdf-asp IR-sdf-fleet-escort",
+      "has_fuel_injection": "1.0",
+      "max_flight_roll": "2",
+      "laser_color": "cyanColor",
+      "auto_ai": "yes",
+      "has_ecm": "1.0",
+      "cargo_type": "CARGO_NOT_CARGO"
+    },
+    "IR-nuit2hub": {
+      "density": "0.0000001",
+      "model": "IR_nuit2_hub.dat",
+      "materials": {
+        "nuit2_hubSKIN.png": {
+          "emission_modulate_color": {
+            "red": "6700",
+            "green": "6700",
+            "blue": "6700"
+          },
+          "gloss": "0.8",
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "diffuse_map": "IR_nuit2_hubSKIN.png",
+          "emission_map": "IR_nuit2_hubLITES.png",
+          "normal_map": "IR_nuit2_hubNORM.png"
+        }
+      },
+      "roles": "IR_KW_nuit2Subent"
+    },
+    "IR-krait": {
+      "max_energy": "2000",
+      "ai_type": "IR-kraitAI.plist",
+      "forward_weapon_type": "WEAPON_MILITARY_LASER",
+      "missiles": "3",
+      "bounty": "100",
+      "max_flight_pitch": "2.5",
+      "hyperspace_motor": "true",
+      "max_flight_speed": "300",
+      "materials": {
+        "Hull": {
+          "emission_map": {
+            "name": "IR-redkrait.png",
+            "extract_channel": "a"
+          },
+          "diffuse_map": "IR-redkrait.png",
+          "shininess": "42",
+          "normal_map": "IR-redkrait-normal.png",
+          "emission_modulate_color": {
+            "red": "9926",
+            "green": "9686",
+            "blue": "7325"
+          },
+          "specular_color": [
+            "0.25",
+            "0.25",
+            "0.25"
+          ],
+          "gloss": "0.9"
+        }
+      },
+      "fuel": "70",
+      "like_ship": "oolite_template_krait",
+      "energy_recharge_rate": "2.5",
+      "has_shield_booster": "1.0",
+      "likely_cargo": "2",
+      "thrust": "35",
+      "cargo_carried": "Radioactives",
+      "name": "Krait",
+      "escort_ship": "IR-tiger-mamba",
+      "script_info": {
+        "randomshipnames": "pirate"
+      },
+      "roles": "IR-krait",
+      "script": "IR-krait.js",
+      "has_scoop": "0.0",
+      "has_fuel_injection": "1.0",
+      "max_cargo": "20",
+      "max_flight_roll": "2.75",
+      "auto_ai": "false",
+      "has_ecm": "1.0",
+      "escorts": "4",
+      "has_shield_enhancer": "1.0",
+      "cargo_type": "CARGO_NOT_CARGO"
+    },
+    "IR-fuel-sample-canister": {
+      "script": "IR-fuel-sample.js",
+      "roles": "EQ_IR_FUEL_SAMPLE_MINE",
+      "materials": {
+        "IR-fuel-pod.png": {
+          "specular_color": [
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          "gloss": "0.6",
+          "diffuse_map": "IR-fuel-pod.png"
+        }
+      },
+      "max_energy": "250",
+      "model": "IR-fuel-pod.dat",
+      "like_ship": "barrel",
+      "name": "Fuel Sample"
+    }
+  },
+  "raw_equipment": [
+    [
+      "2",
+      "100000",
+      "Korshkov Fuel Sample",
+      "EQ_IR_FUEL_SAMPLE_MINE",
+      "High-performance fuel sample developed by the engineers at OKB Korshkov. The sample mounts onto a missile pylon so it can be easily deployed into the upper atmosphere of a star. You will be charged 10,000Cr for the use of Korshkov's expertise and facilities.",
+      {
+        "condition_script": "IR-conditions.js",
+        "available_to_all": "true",
+        "incompatible_with_equipment": "EQ_IR_FUEL_SAMPLE_MINE"
+      }
+    ],
+    [
+      "2",
+      "0",
+      "**NWE SECURITY RESTRICTED",
+      "EQ_IR_SABOTAGE_MINE",
+      "Modified electronic warfare pod developed to sabotage the Maenes defence system. When activated the pod sends a search pulse to all defence cannons in range; the cannons should interpret this as a threat and attempt to engage your ship.",
+      {
+        "condition_script": "IR-conditions.js",
+        "available_to_all": "true",
+        "incompatible_with_equipment": "EQ_IR_SABOTAGE_MINE"
+      }
+    ]
+  ],
+  "selected_finance_findings": {
+    "materials": {
+      "radioactives_tonnes": 10,
+      "alloys_tonnes": 5,
+      "minerals_tonnes": 2,
+      "alien_items_tonnes": 2,
+      "platinum_kilograms": 1,
+      "partial_deliveries": true
+    },
+    "wait_days": {
+      "engineer_decision": 5,
+      "sample_preparation": 10,
+      "rumour_after_reprocessing": 20,
+      "report_after_wife_response": 10
+    },
+    "sample_equipment_price_tenths_of_credit": 100000,
+    "sample_temperature_comparison": ">=0.7",
+    "sample_AI_after_hot_pause_seconds": 5,
+    "reprocess_source_death_proximity": "Actual fuel-sample death with finance IRRADIATE_SUCCESS, exactly1processor, distance strictly<250; any deathcause allowed by selected source callback, not a verified intended deposit transaction.",
+    "wife_meeting_payment_credits": 1000,
+    "wife_choices": [
+      "AFFAIR_CONFIRMED",
+      "AFFAIR_DENIED"
+    ],
+    "loan": {
+      "linked_shipment_question_no": 2,
+      "principal_credits": 500000,
+      "repayment_credits": 550000,
+      "deadline_days": 60,
+      "manual_payment_checks_balance": false,
+      "default_deduction_checks_balance": false,
+      "issue": "Unchecked JS deduction passes through pinned native credit setter: negative result clamps0; manual payment stillmarksPAID/defaultmarksDEFAULTED. Earlierplain-JSmocknegativebalancewasnotnativeevidence. IR_load_remainingtypo remains."
+    }
+  },
+  "confirmed_source_defects_or_adaptation_gaps": [
+    "IR-isabella.js straysemicolon causes everydock tosetWIFE_DOCKED irrespectiveofpriorphase",
+    "checkManifest doesnotclearstalePART/TRUE whennothingvalidaboard",
+    "incrementDefencesQuestion usesIR_Defences_question_no wrongcase forkey whiledisplaystringusescorrectfield",
+    "manual/defaultloan deductions lackbalanceguard, butnativecreditsclamp0; sourcecanmarksettledwithshortcash",
+    "sourceSDFspecialcargo/removal invokesdestructivewholeholdAPIs; ownerrequiresprotectedselectivecustodyadapter",
+    "playerBoughtNewShip clearsTIPPEDOFFsourceinvestigationstate; ownerrequiresmissionpreservation",
+    "RaaedPlanetFallandothergroundnarrative requireexplicitstationcontactreplacements",
+    "sample award ignores return/capacity success; radiatedstate mayadvancewithoutactualpylonreceipt",
+    "sample destruction nearprocessor counts asprocessed; stableconsignment/exactfacility/receiptneeded"
+  ],
+  "surface_reference_keys": [
+    "IR_sdf_transport_report",
+    "IR_RAAED_1a",
+    "IR_LOA_known_2a",
+    "IR_revisit_spacebar",
+    "IR_LEXICON_3a",
+    "IR_RAAED_PF_INFO",
+    "IR_PIRATE_intro",
+    "IR_IBANEZ_2c",
+    "IR_weiss_3b",
+    "IR_LOA_helped_2a",
+    "IR_maenes_reply_80",
+    "IR_RAAED_INFO",
+    "IR_finance_quest_7alt",
+    "IR_weiss_3a",
+    "IR_RAAED_1e",
+    "IR_kinnaird_4a",
+    "IR_JANES_1b",
+    "IR_kinnaird_4b",
+    "IR_finance_quest_7a",
+    "IR_LOA_unknown_2a",
+    "IR_RAAED_1c",
+    "IR_PIRATE_intro_alt"
+  ],
+  "verification": {
+    "source_members_matched": 57,
+    "selected_source_fixture_file": "iron-raven-source-fixtures.json",
+    "actual_source_callbacks_passed": 67,
+    "independently_generated_system_table_bindings": 19,
+    "raw_definition_count": 63,
+    "full_graph_or_AI_or_geometry_or_native_game_or_binary_parity": false,
+    "recovered_distribution_and_dependency_members_checked": 119,
+    "recovered_archives_checked": 3,
+    "native_credit_binding_correction": "OOJSPlayer.m->PlayerEntityScriptMethods.m->PlayerEntityLoadSave.m clampsnegative0 androundspositive10*CR; no negativebalanceclaim."
+  },
+  "remaining_work": [
+    "Read/close allmissionScreens/choiceEvaluationbranches andentitycallbacks",
+    "Selecteddependencyfullrawparentresolutions/modelenvelopes/AI/nativeequipmentreaders",
+    "Pincomplete sourcejoin/failure/finale/reward/optionalstorygraphs",
+    "Chooseindividuallylabellednecessaryrepairsandstationadaptations,do notinventunfinishedauthorfuturemissions",
+    "Actualsample/party/cargo/loan/encounterreceipts/time/death/abandonment/retry/offsystem/save/shipyard/gallery contracts",
+    "Addsource/patch/independentnumerical/identity/route/geometrychecks,finaleligibilityreadinessaudit,thenincrementalhandoff"
+  ],
+  "bounded_finance_specification": {
+    "research_ready": true,
+    "delivered": "2026-10-14",
+    "specification": "../iron-raven-finance-specifications.md",
+    "mechanics": "iron-raven-finance-mechanics.json",
+    "runtime_ready": false
+  },
+  "bounded_shipment_specification": {
+    "profile_id": "PROJECT-P19-SHIPMENT-v1",
+    "research_ready": true,
+    "runtime_ready": false,
+    "specification": "../iron-raven-shipment-specifications.md",
+    "mechanics": "iron-raven-shipment-mechanics.json",
+    "delivery": "Confirmed message to Elite Coder01a131fd-24b4-79a1-aff2-a2c1618d2698 on2026-10-14; native implementation/gallery pending."
+  },
+  "bounded_SDF_specification": {
+    "profile_id": "PROJECT-P19-SDF-v1",
+    "research_ready": true,
+    "runtime_ready": false,
+    "specification": "../iron-raven-sdf-specifications.md",
+    "mechanics": "iron-raven-sdf-mechanics.json",
+    "delivery": "Confirmed message to Elite Coder01a131fd-24b4-79a1-aff2-a2c1618d2698 on2026-10-14; native implementation/gallery pending."
+  },
+  "bounded_defences_specification": {
+    "profile_id": "PROJECT-P19-DEFENCES-v1",
+    "research_ready": true,
+    "runtime_ready": false,
+    "specification": "../iron-raven-defences-specifications.md",
+    "mechanics": "iron-raven-defences-mechanics.json",
+    "delivery": "Confirmed message to Elite Coder01a131fd-24b4-79a1-aff2-a2c1618d2698 on2026-10-14; native implementation/Gallery pending."
+  },
+  "bounded_Kinnaird_specification": {
+    "profile_id": "P19-KINNAIRD-2.0.2-PROJECT-v1",
+    "research_ready": true,
+    "runtime_ready": false,
+    "specification": "../iron-raven-kinnaird-specifications.md",
+    "mechanics": "iron-raven-kinnaird-mechanics.json",
+    "delivery": "Confirmed message to Elite Coder01a131fd-24b4-79a1-aff2-a2c1618d2698 on2026-10-14; native implementation/Gallery pending."
+  },
+  "bounded_Weiss_specification": {
+    "profile_id": "P19-WEISS-2.0.2-PROJECT-v1",
+    "research_ready": true,
+    "runtime_ready": false,
+    "specification": "../iron-raven-weiss-specifications.md",
+    "mechanics": "iron-raven-weiss-mechanics.json",
+    "delivery": "Confirmed message to Elite Coder01a131fd-24b4-79a1-aff2-a2c1618d2698 on2026-10-14; native implementation/Gallery pending."
+  },
+  "bounded_LEXICON_specification": {
+    "profile_id": "P19-LEXICON-2.0.2-PROJECT-v1",
+    "research_ready": true,
+    "runtime_ready": false,
+    "specification": "../iron-raven-lexicon-specifications.md",
+    "mechanics": "iron-raven-lexicon-mechanics.json",
+    "delivery": "Confirmed message to Elite Coder01a131fd-24b4-79a1-aff2-a2c1618d2698 on2026-10-14; native implementation/Gallery pending."
+  }
+}

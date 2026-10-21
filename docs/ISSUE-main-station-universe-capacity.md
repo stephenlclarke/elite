@@ -1,0 +1,7 @@
+# Original main-station history stops after 256 locations across the universe
+
+Original main-station identities and their observations/resources persist across all eight galaxies. Their canonical domain includes systems 0 through PLUGH (256) in each galaxy: 8 x 257 = 2,056 locations. The current global 256-entry limits in registration, NativeStationWorld validation/bounded decoding and ScriptEngineState resource validation therefore stop a legitimate 257th location from being retained. Resource registration silently returns at that limit; main-station and observation registration throw capacity errors.
+
+The repair must allow the complete existing canonical domain while preserving finite bounds and retained history. It must not evict observations, reset counters, fabricate arrival/service receipts or expand the separate 372-record RRS catalogue, RRS producer system range, job limits or station authority. See [implementation](PR-main-station-universe-capacity.md). No GitHub issue or PR has been created for this source-only task.
+
+The PLUGH registration fixture also needs the existing legitimate discovery prerequisite before selecting that current system. Use the docked station-rumour action in the private setup rather than altering the production discovery guard or directly setting discovery bits.

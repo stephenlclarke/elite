@@ -42,54 +42,34 @@ public struct StationLayout: Sendable {
 extension Game {
   public func marketAvailability(_ index: Int) -> String {
     if !docked { return "DOCK TO TRADE" }
+    if !stationAllowsMarketServices { return "SERVICE UNAVAILABLE" }
     if screen == .sell {
+      if index == 3, commander.nativeCaptiveCount > 0, commander.sellableCargo(index) == 0 {
+        return "REVIEW CAPTIVE SALE"
+      }
       if commander.sellableCargo(index) > 0 { return "SELL" }
       return index == 10 && commander.markedFirearms > 0 ? "RESERVED" : "NONE HELD"
     }
     if market[index].quantity == 0 { return "NO STOCK" }
     if commander.availableCredits < market[index].price { return "NO CASH" }
-    if Commodity.all[index].unit == "t" && commander.cargoTonnes >= commander.capacity {
+    if commander.cargo[index] >= Int.max / 17
+      || (Commodity.all[index].unit == "t"
+        && commander.cargoTonnes >= commander.tradeCargoCapacity)
+    {
       return "HOLD FULL"
     }
     return "BUY"
   }
   public var informationRows: [(String, Ink)] {
     if screen == .inventory {
-      var rows: [(String, Ink)] = [
-        (
-          "Cargo: \(commander.cargoTonnes) tonnes"
-            + (commander.unlimitedCargo ? " (unlimited capacity)" : "/\(commander.capacity)"),
-          .white
-        )
-      ]
-      rows += commander.cargo.indices.filter { commander.cargo[$0] > 0 }.map { index in
-        (
-          Commodity.all[index].name + ": \(commander.cargo[index]) \(Commodity.all[index].unit)"
-            + (index == 10 && commander.markedFirearms > 0 ? " (1 mission item)" : ""),
-          CommodityCategory.at(index).ink
-        )
-      }
-      for id in commander.missionProgress.keys.sorted() {
-        let title =
-          missionPacks.entries.first { $0.pack.stateID == id }?.pack.mission.title ?? "Missing pack"
-        for (key, quantity) in commander.missionProgress[id]!.payloads.sorted(by: {
-          $0.key < $1.key
-        }) where quantity > 0 {
-          rows.append(
-            (
-              "Reserved " + String(title.prefix(18)) + ": " + String(key.prefix(14))
-                + " \(quantity)t", .cyan
-            ))
-        }
-      }
-      rows += [("Lasers", .yellow)] + commander.laserMountSummary.map { ("  " + $0, .cyan) }
-      return rows
+      return inventoryInformationRows(width: viewportWidth).map { ($0.text, $0.ink) }
     }
     let criminalStatus = commander.legal < 50 ? "Offender" : "Fugitive"
     let legal = commander.legal == 0 ? "Clean" : criminalStatus
     var rows: [(String, Ink)] = [
       ("Ship: " + commander.ship.name, .cyan),
       ("Present system: " + currentSystem.name, .white),
+      ("Station: " + (nativeStationName ?? "Main orbital station"), .white),
       ("Hyperspace: " + targetSystem.name, .white),
       ("Condition: " + flightStatus, .white),
       (
@@ -99,42 +79,159 @@ extension Game {
       ),
       (String(format: "Cash: %.1f CR", Double(commander.credits) / 10), .white),
       ("Legal status: " + legal, .white),
-      ("Rating: " + commander.rank, .white), ("Lasers", .yellow),
+      ("Rating: " + commander.rank, .white),
+      ("Cargo used: \(commander.cargoTonnes)t", .white),
+      ("Missiles: \(commander.missiles)", .white),
+      (
+        "Shield: "
+          + fittedSummary(.shield, fallback: commander.shieldBooster?.equipmentName ?? "Basic")
+          + String(
+            format: " - front %.0f / rear %.0f", commander.shieldCapacity,
+            commander.rearShieldCapacity), .white
+      ),
+      (
+        "Navigation: "
+          + fittedSummary(
+            .navigation,
+            fallback: commander.navigationTier?.label ?? "Basic"), .white
+      ),
+      (
+        "Energy: "
+          + fittedSummary(
+            .energy,
+            fallback:
+              commander.equipment.contains(Equipment.eliteEnergyUnit)
+              ? Equipment.eliteEnergyUnit
+              : commander.equipment.contains(Equipment.navalEnergyUnit)
+                ? Equipment.navalEnergyUnit
+                : commander.equipment.contains("Extra Energy Unit") ? "Extra Energy Unit" : "Basic"),
+        .white
+      ),
+      (
+        "Targeting core: " + (commander.targetingTier?.label ?? "None")
+          + (commander.targetingTier.map { $0 > .basic } == true
+            ? " (includes lower core tiers)" : ""),
+        .white
+      ),
+      (specialtySummary("Mining", slot: .targetingMining), .white),
+      (specialtySummary("Salvage", slot: .targetingSalvage), .white),
+      ("Fittings and cargo manifest: Inventory (9)", .cyan),
     ]
-    rows += commander.laserMountSummary.map { ("  " + $0, .cyan) }
-    rows += [
-      ("Equipment", .yellow),
-      ("  Targeting: " + (commander.targetingTier?.label ?? "None"), .white),
-      ("  Navigation: " + (commander.navigationTier?.label ?? "None"), .white),
-      ("  Fuel storage: \(commander.fuelStorageUnits)/4", .white),
-    ]
-    rows += commander.equipment.sorted().filter {
-      LaserKind.from($0) == nil && TargetingTier.from($0) == nil && NavigationTier.from($0) == nil
-        && !["Fuel", "Missile"].contains($0)
-    }.map { ("  " + $0, .white) }
     if commander.missionStage != .notStarted { rows.append((commander.missionStage.status, .cyan)) }
     return rows
+  }
+  private func fittedSummary(_ slot: ComponentFittingSlot, fallback: String) -> String {
+    guard let item = commander.fittedEquipment(at: slot) else {
+      guard commander.equipmentInventory == nil else { return "None" }
+      let canonical =
+        EquipmentRuntimeCatalog.node(for: fallback).flatMap { node in
+          EquipmentRuntimeCatalog.graph.nodes.first { $0.id == node }?.displayName
+        } ?? fallback
+      return canonical + " (legacy)"
+    }
+    return equipmentName(item)
+  }
+  private func specialtySummary(_ label: String, slot: ComponentFittingSlot) -> String {
+    let module = commander.fittedEquipment(at: slot)?.node.key
+    let legacy =
+      commander.equipmentInventory == nil
+      && commander.equipment.contains("Targeting: " + label + " Module")
+    let installed = module != nil || legacy
+    let core = commander.targetingTier?.label ?? "none"
+    return label + ": " + (installed ? "module fitted" : "no module")
+      + "; core: " + core
+  }
+  func equipmentName(_ item: OwnedEquipmentItem) -> String {
+    let canonical =
+      EquipmentRuntimeCatalog.graph.nodes.first { $0.id == item.node }?.displayName
+      ?? item.node.key
+    guard let component = item.component,
+      let grade = EquipmentModuleTemplates.displayName(for: component.grade)
+    else { return canonical }
+    let family: String
+    switch component.family {
+    case EquipmentModuleTemplates.shieldFamily: family = "Shield"
+    case EquipmentModuleTemplates.navigationFamily: family = "Navigation"
+    case EquipmentModuleTemplates.energyFamily: family = "Energy"
+    default: return canonical
+    }
+    return grade + " " + family
+  }
+  func equipmentOrigin(_ origin: EquipmentAcquisitionProvenance) -> String {
+    switch origin {
+    case .standard: "Standard"
+    case .paid: "Purchased"
+    case .grant: "Granted"
+    case .recovered: "Recovered"
+    case .reward: "Reward"
+    case .earned: "Earned"
+    case .xyzzy: "XYZZY grant"
+    case .missionIssue: "Mission issued"
+    case .legacyUnknown: "Acquisition unknown"
+    }
+  }
+  private func utilityName(_ utility: ComponentUtility) -> String {
+    switch utility {
+    case .miningLaser: "Mining work tool"
+    case .salvageCutter: "Salvage cutter"
+    case .empPirateBlaster: Equipment.empPirateBlaster
+    case .fuelScoops: "Fuel scoops"
+    case .ecm: "ECM system"
+    case .escapePod: "Escape pod"
+    case .energyBomb: "Energy bomb"
+    case .cargoExpansion: "Cargo expansion"
+    case .galacticHyperdrive: "Galactic hyperdrive"
+    }
+  }
+  func equipmentSlot(_ slot: ComponentFittingSlot) -> String {
+    switch slot {
+    case .shield: "Fitted shield"
+    case .energy: "Fitted energy"
+    case .navigation: "Fitted navigation"
+    case .targetingCore: "Fitted targeting core"
+    case .targetingMining: "Fitted mining targeting"
+    case .targetingSalvage: "Fitted salvage targeting"
+    case .drive: "Fitted drive"
+    case .laser(let mount): "Fitted " + mount.label + " combat mount"
+    case .missilePylon(let index): "Fitted pylon \(index + 1)"
+    case .utility(let utility): "Fitted " + utilityName(utility)
+    case .fuelStorage(let index): "Fitted fuel storage \(index + 1)"
+    case .spareEscapePod(let index): "Spare escape pod \(index + 1)"
+    case .hullStructure: "Hull structure"
+    }
   }
 }
 extension Display {
   public static func marketScreen(_ game: Game, width: Double, height: Double) -> Frame {
     var frame = cockpit(game, width: width, height: height)
-    let layout = StationLayout(game: game, width: width, height: height, footer: 92)
-    let marketTitle = game.screen == .sell ? "SELL CARGO" : "MARKET PRICES"
-    let title = game.screen == .buy ? "BUY CARGO" : marketTitle
-    frame.label(title, layout.left, 12, scale: layout.font, ink: .yellow)
+    let layout = StationLayout(game: game, width: width, height: height, footer: 144)
+    frame.label(
+      game.docked ? "MARKET - " + (game.screen == .sell ? "SELL" : "BUY") : "MARKET PRICES",
+      layout.left, 12, scale: layout.font, ink: .yellow)
+    let controls = MarketLayout(game: game, width: width, height: height)
+    if game.docked {
+      for (text, bounds, selected) in [
+        ("Buy", controls.buy, game.screen != .sell),
+        ("Sell", controls.sell, game.screen == .sell),
+        (game.screen == .sell ? "Sell one" : "Buy one", controls.trade, false),
+      ] {
+        frame.stroke(bounds.x, bounds.maxY, bounds.maxX, bounds.maxY, selected ? .yellow : .cyan)
+        frame.label(
+          text, bounds.x + 8, bounds.y + 6, scale: layout.font, ink: selected ? .yellow : .cyan)
+      }
+    }
     frame.label(
       String(format: "Cash %.1f CR", Double(game.commander.credits) / 10), layout.left, 32,
       scale: layout.font)
     let offsets = [0.0, 0.40, 0.55, 0.69, 0.83]
     for (index, label) in ["Product", "Price CR", "Stock", "Hold", "Action"].enumerated() {
       frame.label(
-        label, layout.left + offsets[index] * layout.width, 52, scale: layout.font, ink: .yellow)
+        label, layout.left + offsets[index] * layout.width, 90, scale: layout.font, ink: .yellow)
     }
     let start = max(0, min(game.selection - layout.count + 1, Commodity.all.count - layout.count))
     for index in start..<min(Commodity.all.count, start + layout.count) {
       let item = Commodity.all[index]
-      let y = 76 + Double(index - start) * layout.row
+      let y = 114 + Double(index - start) * layout.row
       frame.label(
         index == game.selection ? ">" : "", layout.left - 12, y, scale: layout.font, ink: .white)
       frame.label(
@@ -153,23 +250,26 @@ extension Display {
       let row = index / 3
       frame.label(
         category.rawValue, layout.left + Double(column) * layout.width / 3,
-        layout.bottom + 4 + Double(row) * layout.row, scale: layout.font, ink: category.ink)
+        layout.bottom + 40 + Double(row) * layout.row, scale: layout.font, ink: category.ink)
     }
     frame.label(
-      "Category colour; stock/cash/hold determine purchase.", layout.left, layout.bottom + 42,
+      "Category colour; stock/cash/hold determine purchase.", layout.left, layout.bottom + 78,
       scale: layout.font, ink: .cyan)
     frame.label(
-      "Restricted cargo affects legal status on launch.", layout.left, layout.bottom + 58,
+      "Restricted cargo affects legal status on launch.", layout.left, layout.bottom + 94,
       scale: layout.font, ink: .orange)
-    var actions = "Arrows: select  Return: trade  Esc: back  K: help"
-    if game.screen == .market {
-      actions =
-        game.docked
-        ? "Prices  1: buy  2: sell  Esc: back  K: help" : "Prices only  Esc: back  K: help"
-    }
+    let actions =
+      game.docked
+      ? "Up/Down: item  Tab: buy/sell  Return: trade one"
+      : "Prices only  Esc: back  K: help"
     frame.label(
-      actions, layout.left, layout.bottom + 74,
+      actions, layout.left, layout.bottom + 110,
       scale: layout.font, ink: .cyan)
+    if game.docked {
+      frame.label(
+        "Left: sell one  Right: buy one  Esc: back  K: help", layout.left,
+        layout.bottom + 126, scale: layout.font, ink: .cyan)
+    }
     return frame
   }
   public static func information(_ game: Game, width: Double, height: Double) -> Frame {
@@ -178,6 +278,52 @@ extension Display {
     frame.label(
       game.screen == .inventory ? "INVENTORY" : "COMMANDER " + game.commander.name, layout.left, 12,
       scale: layout.font, ink: .yellow)
+    if game.screen == .inventory {
+      let rows = game.inventoryInformationRows(width: width)
+      let window = ScrollWindow(
+        count: rows.count, visible: layout.count, offset: game.informationScroll)
+      var interaction = InventoryInteraction()
+      interaction.selected = game.inventoryActionSelection
+      var buttons: [(label: String, bounds: CanvasRect)] = []
+      for (index, row) in rows.dropFirst(window.offset).prefix(layout.count).enumerated() {
+        let y = 56 + Double(index) * layout.row
+        frame.label(row.text, layout.left, y, scale: layout.font, ink: row.ink)
+        if let preview = row.preview, let command = preview.command {
+          let bounds = CanvasRect(
+            x: layout.left + layout.width - InventoryInteraction.actionWidth,
+            y: y - 4, width: InventoryInteraction.actionWidth, height: layout.row)
+          interaction.controls.append(.init(bounds: bounds, command: command))
+          buttons.append((preview.label, bounds))
+        }
+      }
+      for (index, button) in buttons.enumerated() {
+        let selected = interaction.selectedIndex == index
+        let ink: Ink = selected ? .cyan : .blue
+        let bounds = button.bounds
+        frame.stroke(bounds.x, bounds.y, bounds.maxX, bounds.y, ink)
+        frame.stroke(bounds.maxX, bounds.y, bounds.maxX, bounds.maxY, ink)
+        frame.stroke(bounds.maxX, bounds.maxY, bounds.x, bounds.maxY, ink)
+        frame.stroke(bounds.x, bounds.maxY, bounds.x, bounds.y, ink)
+        if selected {
+          frame.label(
+            ">", bounds.x + 4, bounds.y + 4, scale: layout.font, ink: .cyan)
+        }
+        frame.label(
+          button.label,
+          bounds.x + (bounds.width - Double(button.label.count) * 6 * layout.font) / 2,
+          bounds.y + 4, scale: layout.font, ink: selected ? .cyan : .white)
+      }
+      frame.inventoryInteraction = interaction
+      let notice = game.messageTime > 0 ? game.message : window.hint ?? ""
+      let footer =
+        MissionNotice.wrap(notice, width: Int(layout.width / (6 * layout.font))).first ?? ""
+      frame.label(footer, layout.left, layout.bottom, scale: layout.font, ink: .cyan)
+      frame.label(
+        interaction.primary == nil
+          ? "Esc: back  K: help" : "Tab: action  Return: apply  Esc: back  K: help",
+        layout.left, layout.bottom + 18, scale: layout.font, ink: .cyan)
+      return frame
+    }
     let rows = game.informationRows
     let window = ScrollWindow(
       count: rows.count, visible: layout.count, offset: game.informationScroll)
