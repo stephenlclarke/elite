@@ -245,6 +245,7 @@ struct NativeUtilityRuntimeTests {
     try await f.refusedWrite(runtime, quote: install, label: "utility-install")
     runtime = try await f.reloaded(runtime)
     let before = await runtime.snapshot().commander
+    let frozenReward = try #require(before.nativeUtility?.active?.rewardTenths)
     await #expect(throws: (any Error).self) { try await runtime.confirmNativeUtility(install) }
     #expect(await runtime.snapshot().commander == before)
     install = try await runtime.nativeUtilityQuote(.install)
@@ -252,7 +253,7 @@ struct NativeUtilityRuntimeTests {
     let receive = try await runtime.nativeUtilityQuote(.receive)
     try await f.refusedWrite(runtime, quote: receive, label: "utility-receive")
     try await runtime.confirmNativeUtility(receive)
-    #expect(await runtime.snapshot().commander.credits == before.credits)
+    #expect(await runtime.snapshot().commander.credits == before.credits + frozenReward)
   }
 
   @Test func wrongDockPausedChangedInventoryAndSubstituteCommodityCannotAuthorizeInstallation()
