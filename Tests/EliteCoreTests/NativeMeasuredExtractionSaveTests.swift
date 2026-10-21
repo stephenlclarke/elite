@@ -235,3 +235,62 @@ private func measuredReadRehash(
     valueCodec: pointer.valueCodec)
   return try ScriptSaveStore.read(JSONEncoder().encode(changed), from: save).0
 }
+
+extension NativeMeasuredExtractionSaveTests {
+  @Test func actualMovingOriginalIntakePreservesIssuedIdentityAndAmount() async throws {
+    let f = try NativeMeasuredExtractionFixture()
+    defer { f.files.clean() }
+    let runtime = try await f.runtime()
+    try await f.accept(runtime)
+    try await f.extract(runtime)
+    let extracted = await runtime.snapshot()
+    let ordinaryCargo = extracted.commander.cargo
+    // Use real elapsed native motion; never replace the source, payload or its velocity.
+    _ = await runtime.advance(delta: 0.05)
+    try await f.collect(runtime, count: 1)
+    let collected = await runtime.snapshot()
+    let state = try #require(collected.measuredExtractionState)
+    let source = try #require(collected.commander.scriptState.savedMeasuredExtractionSource)
+    let extraction = try #require(state.extraction)
+    let intake = try #require(state.captures.first)
+    let issued = try #require(extraction.emitted.first { $0.identity == intake.payload.identity })
+    #expect(intake.payload.identity == issued.identity && intake.payload.amount == issued.amount)
+    #expect(intake.payload.position != issued.position)
+    #expect(intake.payload.position.finite && intake.payload.velocity.finite)
+    #expect(
+      NativeMeasuredExtractionSave.intakeValid(
+        intake, source: source, state: state, commander: collected.commander))
+    #expect(
+      NativeMeasuredExtractionSave.validateClaims(collected.commander, requireRecordedLoss: true))
+    #expect(collected.commander.cargo == ordinaryCargo)
+
+    func reauthorized(_ payload: TypedCargoPayload) throws -> MeasuredIntake {
+      var changed = MeasuredIntake(
+        operation: intake.operation, permission: intake.permission, extraction: intake.extraction,
+        original: intake.original, payload: payload, body: intake.body,
+        player: intake.player, carrier: intake.carrier, inventoryRevision: intake.inventoryRevision,
+        scoops: intake.scoops, relativeSpeed: intake.relativeSpeed,
+        physicalTime: intake.physicalTime,
+        epoch: intake.epoch, authority: intake.authority)
+      changed.authority = try NativeMeasuredExtraction.intakeAuthority(changed)
+      return changed
+    }
+    let forgeries: [TypedCargoPayload] = [
+      .init(
+        identity: .ore(NativeMeasuredExtraction.root, fragment: 12), amount: intake.payload.amount,
+        position: intake.payload.position, velocity: intake.payload.velocity),
+      .init(
+        identity: intake.payload.identity, amount: .init(commodity: .minerals, quantity: 2),
+        position: intake.payload.position, velocity: intake.payload.velocity),
+      .init(
+        identity: intake.payload.identity, amount: .init(commodity: .food, quantity: 1),
+        position: intake.payload.position, velocity: intake.payload.velocity),
+    ]
+    for payload in forgeries {
+      let changed = try reauthorized(payload)
+      #expect(
+        !NativeMeasuredExtractionSave.intakeValid(
+          changed, source: source, state: state, commander: collected.commander))
+    }
+  }
+}
