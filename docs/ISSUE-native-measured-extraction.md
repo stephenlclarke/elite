@@ -21,3 +21,7 @@ See [implementation and qualification notes](PR-native-measured-extraction.md). 
 ## Compiler qualification correction
 
 G1 execution 1152 failed in the new save validator before CLI or unit execution. The native Swift compiler rejected borrowed values captured by Boolean right-hand sides and nested collection closures, including a reported noncopyable-copy compiler bug. Preserve every proof and custody predicate while expressing the same checks through scalar identities, ordered guards and explicit bounded loops. This is a source compatibility correction, not a validation waiver.
+
+## Native identity checkpoint
+
+G1 native CLI execution 1154 passed and supplied the actual installed-content digest, now pinned in the existing native helper. The matching test build and owner units remain required; CLI validation alone does not qualify runtime behavior. See the linked PR notes for the exact digest and retained raw result.

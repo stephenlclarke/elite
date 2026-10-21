@@ -144,8 +144,8 @@ public struct NativeMeasuredExtractionSelectionFacts: Sendable, Equatable {
 
 enum NativeMeasuredExtraction {
   static let stateID = "l337.contract/measured-extraction"
-  // Filled only from the installed native CLI during G1 qualification.
-  static let digest = String(repeating: "0", count: 64)
+  // Installed native pack CLI qualification 1154, source a342ccc2.
+  static let digest = "31b26af2735fb907355acb2d4dba5fca3b3622032f4a95642a50c5421aa021c2"
   static let boardID = "measured-extraction"
   static let root = RockIdentity(system: .init(galaxy: 0, system: 7), field: 5, rock: 0)
   static let source = ContractStationIdentity(galaxy: 0, system: 7, stationClass: "main-orbital")
