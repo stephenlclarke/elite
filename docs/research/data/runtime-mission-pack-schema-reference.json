@@ -1,0 +1,563 @@
+{
+  "profile_id": "CODER-MISSION-PACK-SCHEMA1-MERGED-2026-10-14",
+  "status": "Current authority is independently verified merged-main schema1/engine1.0.0 atfa2f83b87f0831fd1bcef75f7cba17b2d97c187e; older provisional/e8df committed snapshots retained as historical evidence. Research readiness/delivery/playable implementation remain separate.",
+  "sources": [
+    {
+      "path": "/Users/sclarke/.codex/worktrees/mission-packs/elite/docs/MISSION-PACKS.md",
+      "sha256": "04d69819a1819ccb0c7d90fbdc5a875bb0c797dadfb5209754931b5b5a3dbf51",
+      "bytes": 5427
+    },
+    {
+      "path": "/Users/sclarke/.codex/worktrees/mission-packs/elite/docs/mission-packs/courier.toml",
+      "sha256": "858467f5da429f2de6986348baddf8213ab2947517dd91bc046425b59fbd0117",
+      "bytes": 2050
+    }
+  ],
+  "format": {
+    "schemaVersion": 1,
+    "one_TOML_one_mission": true,
+    "max_bytes": 262144,
+    "tables": [
+      "mission",
+      "stages",
+      "transitions",
+      "dialogs"
+    ],
+    "save_identity": "packID/missionID",
+    "capabilities": [
+      "state-machine-v1",
+      "dialog-v1",
+      "economy-v1",
+      "cargo-v1",
+      "clock-v1"
+    ],
+    "events": [
+      "dock",
+      "contact",
+      "confirm",
+      "targetRemoved",
+      "targetDestroyed",
+      "clock"
+    ],
+    "conditions": "Typed AND predicates; only allowlisted fields/operators, no arbitrary code.",
+    "actions": "Allowlisted ordered transactions; credits in tenths, payload amounts tonnes and protected, transition/stage/receipts atomic.",
+    "clock": "Saved stage elapsed time advances only during unpaused flight; dock arrival before subsequent clock event. Not equivalent to arbitrary historical clocks.",
+    "transition_order": "File order, maximum1per mission/event, no recursive dispatch; packpriority thenID.",
+    "confirmation": "Dock/contact dialog preview, Confirm rechecks stage/location/conditions; Back no mutation.",
+    "external_limit": "No reserved bundled engine bindings, arbitrary NPC spawning, new AI, station boards, crew/cabins or equipment storage support.",
+    "save_mismatch": "Missing/version/digest mismatch suspends preserved state/payloads; no resets/rewardreplay/guessed migration.",
+    "validation_commands": [
+      "swift run Elite --validate-mission-pack path/to/pack.toml",
+      "make mission-packs-check"
+    ],
+    "validation_status": "Commands declared/planned by provisional reference, not independently run as released implementation.",
+    "example": "New project courier, not historical Elite campaign and not yet runtime-validated.",
+    "historical_draft_reference_only": true
+  },
+  "research_policy": "Use actual finalized coder schema, retain source graph and unsupported primitives; do not flatten RRS/person/AI/clock/specific-station mechanisms into less faithful schema1 courier semantics to obtain passing TOML. Do not install research-only incomplete or unsupported missions.",
+  "followup_coder_draft_snapshot": {
+    "date": "2026-10-14",
+    "status": "Expanded provisional source reference, not independently run native release validation. Original snapshot hashes above are historical and remain preserved.",
+    "files": [
+      {
+        "path": "/Users/sclarke/.codex/worktrees/mission-packs/elite/docs/MISSION-PACKS.md",
+        "sha256": "68f78329f84b911e02aef19186240d199b4e31a12af8a73132359b03e10be6a6",
+        "bytes": 7683
+      },
+      {
+        "path": "/Users/sclarke/.codex/worktrees/mission-packs/elite/docs/mission-packs/courier.toml",
+        "sha256": "858467f5da429f2de6986348baddf8213ab2947517dd91bc046425b59fbd0117",
+        "bytes": 2050
+      }
+    ],
+    "limits": {
+      "IDs": "lowercase letter then lowercaseletters/digits/dots/hyphens,1..80chars;localflag/receipt/payloadnamesalsouppercase",
+      "stages": [
+        1,
+        64
+      ],
+      "transitions": [
+        1,
+        128
+      ],
+      "milestones": [
+        1,
+        64
+      ],
+      "conditions_per_transition_max": 32,
+      "actions_per_transition_max": 32,
+      "dialog_characters_max": 12000,
+      "transition_IDs_once_only": true,
+      "repeat_instances": "Futureinstance/receiptmodelrequired;cannotreuseonelooptransitionID",
+      "dependencies": "Exactinstalledpackversions, notautomaticmissioncompletionprerequisites",
+      "legacy_read_adapter": "Readsoldnaval/Blackjackstatewithoutrewriting;firstnewtransitionpersistsatomicimportedprogress",
+      "save_size_limit_bytes": 4194304
+    }
+  },
+  "current_authority": "latest_main_schema_1_recheck",
+  "committed_schema_1_reference": {
+    "commit": "e8df7f11e09beb7402dae8d52a84e5a8831d0105",
+    "branch_reported": "mission-packs",
+    "pull_request": "https://github.com/stephenlclarke/elite/pull/8",
+    "immutable_reference": "https://github.com/stephenlclarke/elite/blob/e8df7f11e09beb7402dae8d52a84e5a8831d0105/docs/MISSION-PACKS.md",
+    "status": "LocallyvalidatedPRcontractpercoder;committedreference/validation/actioncodeindependentlyinspected.Mainpublication/Sonarpending,notclaimedmergedhere.",
+    "source_files": [
+      {
+        "path": "docs/MISSION-PACKS.md",
+        "commit": "e8df7f11e09beb7402dae8d52a84e5a8831d0105",
+        "sha256": "68f78329f84b911e02aef19186240d199b4e31a12af8a73132359b03e10be6a6",
+        "git_blob": "2ad83d104f38c97e694bf9284655dbcac2fafebb",
+        "bytes": 7683
+      },
+      {
+        "path": "docs/mission-packs/courier.toml",
+        "commit": "e8df7f11e09beb7402dae8d52a84e5a8831d0105",
+        "sha256": "858467f5da429f2de6986348baddf8213ab2947517dd91bc046425b59fbd0117",
+        "git_blob": "00f62d687b1ac5da3c1594862879a83613eb032a",
+        "bytes": 2050
+      },
+      {
+        "path": "Sources/EliteCore/MissionPack.swift",
+        "commit": "e8df7f11e09beb7402dae8d52a84e5a8831d0105",
+        "sha256": "736f788a3bea964412eb306a38b6e0aefacd4b5c13ecd9a46a2bbcbc49dbc07c",
+        "git_blob": "bb7b443306b20ae2821e96929c799904c8cf11e3",
+        "bytes": 7834
+      },
+      {
+        "path": "Sources/EliteCore/PackValidation.swift",
+        "commit": "e8df7f11e09beb7402dae8d52a84e5a8831d0105",
+        "sha256": "5e50df9a02be70f825880a570b40a28c4e7acf65b289ae8063a465559c8c09c3",
+        "git_blob": "802f96125e8ee18bbf7280f9de16e8b110f5bb65",
+        "bytes": 8643
+      },
+      {
+        "path": "Sources/EliteCore/PackTransactions.swift",
+        "commit": "e8df7f11e09beb7402dae8d52a84e5a8831d0105",
+        "sha256": "63d187ae6b5f1172d4cbc2311e988b3d336fbd5ead852f977f44042622a647aa",
+        "git_blob": "550215149fa8e841ecfdd817e93fb9a5169f6c79",
+        "bytes": 4651
+      },
+      {
+        "path": "Sources/EliteCore/PackRuntime.swift",
+        "commit": "e8df7f11e09beb7402dae8d52a84e5a8831d0105",
+        "sha256": "dda86141b903c780e70c4773b8f40b6fcc8a0ff3cacf27ee9e080540c1799258",
+        "git_blob": "08f03b5968b9cfbddfdf85b054756018dae3954b",
+        "bytes": 10270
+      },
+      {
+        "path": "Sources/EliteCore/PackKeys.swift",
+        "commit": "e8df7f11e09beb7402dae8d52a84e5a8831d0105",
+        "sha256": "740c91628612fed5caedebb6474ce688c33c532cbed286696650ed17c0cc8aa4",
+        "git_blob": "882e3a3742e4cd9ef8f931ba3b2508f187be83d9",
+        "bytes": 1761
+      }
+    ],
+    "schemaVersion": 1,
+    "engine_contract": "1.0.0",
+    "external_events": [
+      "dock",
+      "contact",
+      "clock"
+    ],
+    "confirmation": "Revalidatedtransactionphasewithconfirmation=true, notanemittedconfirmevent.",
+    "bundled_only_events": [
+      "targetRemoved",
+      "targetDestroyed"
+    ],
+    "capabilities": [
+      "state-machine-v1",
+      "dialog-v1",
+      "economy-v1",
+      "cargo-v1",
+      "clock-v1"
+    ],
+    "clock": "Persistedstageflightseconds;freezesdocked/paused/dialog/read-only/offline,nolaunch/jump/calendaradvancement.",
+    "limits": {
+      "IDs": "lowercase letter then lowercaseletters/digits/dots/hyphens,1..80chars;localflag/receipt/payloadnamesalsouppercase",
+      "stages": [
+        1,
+        64
+      ],
+      "transitions": [
+        1,
+        128
+      ],
+      "milestones": [
+        1,
+        64
+      ],
+      "conditions_per_transition_max": 32,
+      "actions_per_transition_max": 32,
+      "dialog_characters_max": 12000,
+      "transition_IDs_once_only": true,
+      "repeat_instances": "Futureinstance/receiptmodelrequired;cannotreuseonelooptransitionID",
+      "dependencies": "Exactinstalledpackversions, notautomaticmissioncompletionprerequisites",
+      "legacy_read_adapter": "Readsoldnaval/Blackjackstatewithoutrewriting;firstnewtransitionpersistsatomicimportedprogress",
+      "save_size_limit_bytes": 4194304
+    },
+    "additional_limit_verified_in_code": "Externalcreditsactiononlyaddsnonnegativeamount;negativeamountfailsvalidation. creditsWrappedreservedbundled-only. Paidquotes/debits/nativezero-clampedsettlementrequireanewreviewedprimitive,notnegativegrantorwrappedarithmetic.",
+    "unsupported": [
+      "NPCspawning/AI/newencounters",
+      "calendar/independentmissiontimers",
+      "repeatablecontractinstances",
+      "partialmaterialmin/remainingtransactions",
+      "missionpylons/thermal/sweptcapture",
+      "boards/stationservices",
+      "crew/cabins/equipmentstorage",
+      "parentcampaignjoins",
+      "externalcreditdebits/paidquotes/clampedloanpayment"
+    ],
+    "coder_reported_validation": {
+      "swift_tests": 219,
+      "python_checks": 9,
+      "coverage_percent": 92.53,
+      "TSAN": "clean",
+      "ASAN": "clean",
+      "leaks": 0,
+      "courier": "Installedwithoutrebuild,Laveaccept/flight/actualZaonceautodock/50CRonce/Complete+2receiptsreloadobservedbycoder",
+      "independent_reexecution_this_research_turn": false
+    }
+  },
+  "historical_profile_id": "CODER-MISSION-PACK-SCHEMA1-DRAFT-2026-10-14",
+  "merged_main_schema_1_reference": {
+    "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+    "branch_reported": "main (local ref independently verified)",
+    "pull_request": "https://github.com/stephenlclarke/elite/pull/8",
+    "immutable_reference": "https://github.com/stephenlclarke/elite/blob/fa2f83b87f0831fd1bcef75f7cba17b2d97c187e/docs/MISSION-PACKS.md",
+    "status": "Merged main authority independently confirmed by local main ref, exact committed docs/model/validation/runtime/actions/gallery/test blobs and GitHub PR8 MERGED/mergeSHA/mergedAt. Individual researched campaigns remain unsupported/queued; coder full-CI report not independently rerun here.",
+    "source_files": [
+      {
+        "path": "docs/MISSION-PACKS.md",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "c4408d073db5b678e0fa27029833a24c2d07f97960ae0cef863e351527ee56d3",
+        "git_blob": "0c53b7f30fcc51931ba8dc51d4593a57d1b395d5",
+        "bytes": 8248
+      },
+      {
+        "path": "docs/mission-packs/courier.toml",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "858467f5da429f2de6986348baddf8213ab2947517dd91bc046425b59fbd0117",
+        "git_blob": "00f62d687b1ac5da3c1594862879a83613eb032a",
+        "bytes": 2050
+      },
+      {
+        "path": "Sources/EliteCore/MissionPack.swift",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "75d31b46feb71d82c6b5fdb0b990cbb0d220c8d5373db76780e50c4ab50d734e",
+        "git_blob": "36447e09e86b9a59a8d78f7e7034eb03fd22ab43",
+        "bytes": 7946
+      },
+      {
+        "path": "Sources/EliteCore/PackValidation.swift",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "c3a877c9149e1b416eb4d6cfa57a094eac05d37382ffcef74a8497191bce4179",
+        "git_blob": "0f01aa17527702e77e4e14a077c8befd0f15e4c8",
+        "bytes": 9534
+      },
+      {
+        "path": "Sources/EliteCore/PackTransactions.swift",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "63d187ae6b5f1172d4cbc2311e988b3d336fbd5ead852f977f44042622a647aa",
+        "git_blob": "550215149fa8e841ecfdd817e93fb9a5169f6c79",
+        "bytes": 4651
+      },
+      {
+        "path": "Sources/EliteCore/PackRuntime.swift",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "6bd0eab194e3d054c7a12cce5c1314be353c329b72a87634148da0f86a09898d",
+        "git_blob": "edaea68ba9a1013d1c42074a373b4272d1979fd6",
+        "bytes": 10342
+      },
+      {
+        "path": "Sources/EliteCore/PackKeys.swift",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "7820a09b65d1567c1a33464dd33e17069ca6d312810d8bcdcb3cdaab6fca8615",
+        "git_blob": "9a37cbe4bcac2cc52e787451cdcd6e2074bf0504",
+        "bytes": 1769
+      },
+      {
+        "path": "Sources/EliteCore/PackGallery.swift",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "f3f0a8bce124da59134040916a7c466c19b9ef8223024a1ca4908a34e545c38b",
+        "git_blob": "026e83167f4a37bc7b39ce52a727977df8961f07",
+        "bytes": 2304
+      },
+      {
+        "path": "Tests/EliteCoreTests/MissionPackTests.swift",
+        "commit": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e",
+        "sha256": "a7164cfb05abaa91d02e4fed57ca27a287caeccaf22ac20e66877738ba46cf8c",
+        "git_blob": "8a2c6658a5747ba003f149fb6a1a5fbc4d584bdb",
+        "bytes": 17913
+      }
+    ],
+    "schemaVersion": 1,
+    "engine_contract": "1.0.0",
+    "external_events": [
+      "dock",
+      "contact",
+      "clock"
+    ],
+    "confirmation": "Revalidatedtransactionphasewithconfirmation=true, notanemittedconfirmevent.",
+    "bundled_only_events": [
+      "targetRemoved",
+      "targetDestroyed"
+    ],
+    "capabilities": [
+      "state-machine-v1",
+      "dialog-v1",
+      "economy-v1",
+      "cargo-v1",
+      "clock-v1"
+    ],
+    "clock": "Persistedstageflightseconds;freezesdocked/paused/dialog/read-only/offline,nolaunch/jump/calendaradvancement.",
+    "limits": {
+      "IDs": "lowercase letter then lowercaseletters/digits/dots/hyphens,1..80chars;localflag/receipt/payloadnamesalsouppercase",
+      "stages": [
+        1,
+        64
+      ],
+      "transitions": [
+        1,
+        128
+      ],
+      "milestones": [
+        1,
+        64
+      ],
+      "conditions_per_transition_max": 32,
+      "actions_per_transition_max": 32,
+      "dialog_characters_max": 12000,
+      "transition_IDs_once_only": true,
+      "repeat_instances": "Futureinstance/receiptmodelrequired;cannotreuseonelooptransitionID",
+      "dependencies": "Exactinstalledpackversions, notautomaticmissioncompletionprerequisites",
+      "legacy_read_adapter": "Readsoldnaval/Blackjackstatewithoutrewriting;firstnewtransitionpersistsatomicimportedprogress",
+      "save_size_limit_bytes": 4194304
+    },
+    "additional_limit_verified_in_code": "Externalcreditsactiononlyaddsnonnegativeamount;negativeamountfailsvalidation. creditsWrappedreservedbundled-only. Paidquotes/debits/nativezero-clampedsettlementrequireanewreviewedprimitive,notnegativegrantorwrappedarithmetic.",
+    "unsupported": [
+      "NPCspawning/AI/newencounters",
+      "calendar/independentmissiontimers",
+      "repeatablecontractinstances",
+      "partialmaterialmin/remainingtransactions",
+      "missionpylons/thermal/sweptcapture",
+      "boards/stationservices",
+      "crew/cabins/equipmentstorage",
+      "parentcampaignjoins",
+      "externalcreditdebits/paidquotes/clampedloanpayment"
+    ],
+    "coder_reported_validation": {
+      "swift_tests": 220,
+      "coverage_percent": 92.55,
+      "TSAN": "clean",
+      "ASAN": "clean",
+      "leaks": 0,
+      "independent_reexecution_this_research_turn": false,
+      "status": "Reported by Elite Coder after merge notification, not claimed independently rerun or exact-main Sonar checked here."
+    },
+    "github_merge_evidence": {
+      "mergeCommit": {
+        "oid": "fa2f83b87f0831fd1bcef75f7cba17b2d97c187e"
+      },
+      "mergedAt": "2026-10-14T02:24:13Z",
+      "state": "MERGED",
+      "url": "https://github.com/stephenlclarke/elite/pull/8"
+    },
+    "terminal_outcomes": {
+      "allowed": [
+        "complete",
+        "failed"
+      ],
+      "terminal_only": true,
+      "outgoing_transitions": false,
+      "complete_requires_all_milestones": true,
+      "failed_retains_actual_milestones": true,
+      "runtime_disallows_later_dispatch_and_clock": true,
+      "gallery_failed_status": true,
+      "payment_limit": "No replay/restart or automatic success-reward grant. Incoming transition actions are applied independently of target outcome; an explicitly specified valid positive-credit failure/late payment is not prohibited merely by outcome=failed. Preserve source P30 late full-pay failed outcome, still requiring its missing native mechanics."
+    },
+    "equipment_flags_only": [
+      "E.C.M. System",
+      "Fuel Scoops",
+      "Escape Pod",
+      "Energy Bomb",
+      "Extra Energy Unit",
+      "Naval Energy Unit",
+      "Galactic Hyperdrive"
+    ],
+    "unsupported_equipment_actions": [
+      "lasers",
+      "computers",
+      "shield boosters",
+      "cargo bays",
+      "fuel stock",
+      "missile stock",
+      "legacy equipment requiring dedicated fitting/stock primitives"
+    ]
+  },
+  "latest_main_schema_1_recheck": {
+    "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+    "branch": "main (HEAD/main independently matched)",
+    "date": "2026-10-14",
+    "immutable_reference": "https://github.com/stephenlclarke/elite/blob/0d64f3dd9199eb7b4e60d51411650506d100ec0f/docs/MISSION-PACKS.md",
+    "prior_reference": "merged_main_schema_1_reference",
+    "source_files": [
+      {
+        "path": "docs/MISSION-PACKS.md",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "c4408d073db5b678e0fa27029833a24c2d07f97960ae0cef863e351527ee56d3",
+        "git_blob": "0c53b7f30fcc51931ba8dc51d4593a57d1b395d5",
+        "bytes": 8248,
+        "identical_to_verified_PR8_merge": true
+      },
+      {
+        "path": "docs/mission-packs/courier.toml",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "858467f5da429f2de6986348baddf8213ab2947517dd91bc046425b59fbd0117",
+        "git_blob": "00f62d687b1ac5da3c1594862879a83613eb032a",
+        "bytes": 2050,
+        "identical_to_verified_PR8_merge": true
+      },
+      {
+        "path": "Sources/EliteCore/MissionPack.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "75d31b46feb71d82c6b5fdb0b990cbb0d220c8d5373db76780e50c4ab50d734e",
+        "git_blob": "36447e09e86b9a59a8d78f7e7034eb03fd22ab43",
+        "bytes": 7946,
+        "identical_to_verified_PR8_merge": true
+      },
+      {
+        "path": "Sources/EliteCore/PackValidation.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "c3a877c9149e1b416eb4d6cfa57a094eac05d37382ffcef74a8497191bce4179",
+        "git_blob": "0f01aa17527702e77e4e14a077c8befd0f15e4c8",
+        "bytes": 9534,
+        "identical_to_verified_PR8_merge": true
+      },
+      {
+        "path": "Sources/EliteCore/PackTransactions.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "63d187ae6b5f1172d4cbc2311e988b3d336fbd5ead852f977f44042622a647aa",
+        "git_blob": "550215149fa8e841ecfdd817e93fb9a5169f6c79",
+        "bytes": 4651,
+        "identical_to_verified_PR8_merge": true
+      },
+      {
+        "path": "Sources/EliteCore/PackRuntime.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "6bd0eab194e3d054c7a12cce5c1314be353c329b72a87634148da0f86a09898d",
+        "git_blob": "edaea68ba9a1013d1c42074a373b4272d1979fd6",
+        "bytes": 10342,
+        "identical_to_verified_PR8_merge": true
+      },
+      {
+        "path": "Sources/EliteCore/PackKeys.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "7820a09b65d1567c1a33464dd33e17069ca6d312810d8bcdcb3cdaab6fca8615",
+        "git_blob": "9a37cbe4bcac2cc52e787451cdcd6e2074bf0504",
+        "bytes": 1769,
+        "identical_to_verified_PR8_merge": true
+      },
+      {
+        "path": "Sources/EliteCore/PackGallery.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "f3f0a8bce124da59134040916a7c466c19b9ef8223024a1ca4908a34e545c38b",
+        "git_blob": "026e83167f4a37bc7b39ce52a727977df8961f07",
+        "bytes": 2304,
+        "identical_to_verified_PR8_merge": true
+      },
+      {
+        "path": "Tests/EliteCoreTests/MissionPackTests.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "a7164cfb05abaa91d02e4fed57ca27a287caeccaf22ac20e66877738ba46cf8c",
+        "git_blob": "8a2c6658a5747ba003f149fb6a1a5fbc4d584bdb",
+        "bytes": 17913,
+        "identical_to_verified_PR8_merge": true
+      }
+    ],
+    "status": "All9exactcommittedschema/model/keys/validation/transaction/runtime/Gallery/testblobsremainidentical toverifiedPR8merge. Latestdistribution/notarizationcommitaddsnonewmissionprimitive; no newnativeCI/Sonarverifiedbythisresearchcheck."
+  },
+  "previous_main_schema_1_rechecks": [
+    {
+      "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+      "branch": "main (HEAD/main independently matched)",
+      "date": "2026-10-14",
+      "immutable_reference": "https://github.com/stephenlclarke/elite/blob/3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56/docs/MISSION-PACKS.md",
+      "prior_reference": "merged_main_schema_1_reference",
+      "source_files": [
+        {
+          "path": "docs/MISSION-PACKS.md",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "c4408d073db5b678e0fa27029833a24c2d07f97960ae0cef863e351527ee56d3",
+          "git_blob": "0c53b7f30fcc51931ba8dc51d4593a57d1b395d5",
+          "bytes": 8248,
+          "identical_to_verified_PR8_merge": true
+        },
+        {
+          "path": "docs/mission-packs/courier.toml",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "858467f5da429f2de6986348baddf8213ab2947517dd91bc046425b59fbd0117",
+          "git_blob": "00f62d687b1ac5da3c1594862879a83613eb032a",
+          "bytes": 2050,
+          "identical_to_verified_PR8_merge": true
+        },
+        {
+          "path": "Sources/EliteCore/MissionPack.swift",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "75d31b46feb71d82c6b5fdb0b990cbb0d220c8d5373db76780e50c4ab50d734e",
+          "git_blob": "36447e09e86b9a59a8d78f7e7034eb03fd22ab43",
+          "bytes": 7946,
+          "identical_to_verified_PR8_merge": true
+        },
+        {
+          "path": "Sources/EliteCore/PackValidation.swift",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "c3a877c9149e1b416eb4d6cfa57a094eac05d37382ffcef74a8497191bce4179",
+          "git_blob": "0f01aa17527702e77e4e14a077c8befd0f15e4c8",
+          "bytes": 9534,
+          "identical_to_verified_PR8_merge": true
+        },
+        {
+          "path": "Sources/EliteCore/PackTransactions.swift",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "63d187ae6b5f1172d4cbc2311e988b3d336fbd5ead852f977f44042622a647aa",
+          "git_blob": "550215149fa8e841ecfdd817e93fb9a5169f6c79",
+          "bytes": 4651,
+          "identical_to_verified_PR8_merge": true
+        },
+        {
+          "path": "Sources/EliteCore/PackRuntime.swift",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "6bd0eab194e3d054c7a12cce5c1314be353c329b72a87634148da0f86a09898d",
+          "git_blob": "edaea68ba9a1013d1c42074a373b4272d1979fd6",
+          "bytes": 10342,
+          "identical_to_verified_PR8_merge": true
+        },
+        {
+          "path": "Sources/EliteCore/PackKeys.swift",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "7820a09b65d1567c1a33464dd33e17069ca6d312810d8bcdcb3cdaab6fca8615",
+          "git_blob": "9a37cbe4bcac2cc52e787451cdcd6e2074bf0504",
+          "bytes": 1769,
+          "identical_to_verified_PR8_merge": true
+        },
+        {
+          "path": "Sources/EliteCore/PackGallery.swift",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "f3f0a8bce124da59134040916a7c466c19b9ef8223024a1ca4908a34e545c38b",
+          "git_blob": "026e83167f4a37bc7b39ce52a727977df8961f07",
+          "bytes": 2304,
+          "identical_to_verified_PR8_merge": true
+        },
+        {
+          "path": "Tests/EliteCoreTests/MissionPackTests.swift",
+          "commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+          "sha256": "a7164cfb05abaa91d02e4fed57ca27a287caeccaf22ac20e66877738ba46cf8c",
+          "git_blob": "8a2c6658a5747ba003f149fb6a1a5fbc4d584bdb",
+          "bytes": 17913,
+          "identical_to_verified_PR8_merge": true
+        }
+      ],
+      "status": "All9 committed contract/model/validation/runtime/transaction/gallery/test blobs remain byte-identical to verifiedfa2PR8merge. No newmissionprimitive or nativeCI/Sonar verification is claimed by this recheck."
+    }
+  ]
+}
