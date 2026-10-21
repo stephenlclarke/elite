@@ -115,7 +115,9 @@ struct ScriptDurabilityTests {
     let before = game.commander
     #expect(game.requiresScriptDurability && game.commander == before)
     game.commander.scriptState = ScriptEngineState()
-    let berth = PassengerBerth(id: UUID(uuidString: "61000000-0000-0000-0000-000000000001")!)
+    let berth = PassengerBerth(
+      id: UUID(uuidString: "61000000-0000-0000-0000-000000000001")!, cabinID: UUID())
+    game.commander.accommodation.ownedCabins = [.init(id: berth.cabinID, grade: .stateroomSingle)]
     game.commander.accommodation.ownedBerths = [berth]
     #expect(game.requiresScriptDurability && game.commander.scriptState.calendarLedger == nil)
   }

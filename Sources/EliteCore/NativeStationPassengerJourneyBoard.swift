@@ -138,13 +138,13 @@ extension Game {
     }
     guard commander.passengerFit?.allowed == true, offer.berths.count == 2,
       offer.berths.allSatisfy({ offered in
-        commander.accommodation.fittedBerths.contains(where: {
+        commander.accommodation.availablePlaces(privateCabin: true).contains(where: {
           $0 == offered && !$0.use.used && $0.lifeSupportWorking && $0.humanoidCompatible
         })
       })
     else {
       return
-        "Fit two actual empty compatible berths with working life support, then request fresh replies."
+        "Fit two separate empty awake-compatible cabins with working life support, then request fresh replies."
     }
     let systems = Universe.systemsIncludingPlugh(number: 0)
     guard systems[7].distance(to: systems[185]) <= commander.maximumJumpDistance else {
@@ -264,6 +264,8 @@ extension Game {
           $0.id == boarding.berths[index]
         })
       else { throw SaveError.invalidCommander }
+      commander.accommodation.ownedBerths[slot].mode = .awake
+      commander.accommodation.ownedBerths[slot].privateCabin = true
       commander.accommodation.ownedBerths[slot].use = .nativePerson(reference)
       custody.admissions.append(
         .init(
@@ -360,9 +362,7 @@ extension Game {
         String(describing: source.boarding?.mission), String(describing: source.terminalOperation),
       ]
     }
-    facts += commander.accommodation.fittedBerths.map {
-      "\($0.id):\($0.use):\($0.lifeSupportWorking):\($0.humanoidCompatible)"
-    }
+    facts += commander.accommodation.cabinFacts
     return facts
   }
   func stationPassengerDetail(_ action: NativeStationPassengerJourneyAction) -> [String] {
@@ -370,7 +370,7 @@ extension Game {
     var lines = [
       "Mira Talen and Oren Vey / original native Avenor people",
       "Agreed destination: Renas main orbital; actual L1 H0, 610 CR, untimed.",
-      "Two actual free compatible life-supported berths; no additional cargo or deposit.",
+      "Two separate awake-compatible life-supported cabins; no additional cargo or deposit.",
       "Requesting passage is not consent or boarding. Both native replies and both actual berths are required.",
       "Back changes no person, request, cabin, cash or clue.",
     ]

@@ -247,7 +247,7 @@ def main():
                 ('hold_used_by_cabins', 'Hold used by cabins', 0, 't'),
                 ('usable_cargo_after_fit', 'Usable cargo after fit', profile['fields']['cargo_tonnes']['value'], 't')]:
                 fields.append(field(key, value, label, unit, status='standard unladen refit',
-                                    basis='Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each.'))
+                                    basis='Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places.'))
             facings = int(profile['fields']['laser_facing_mask']['value'])
             for mount, bit in [('rear',2),('left',4),('right',8)]:
                 fields.append(field(mount+'_laser','Empty (standard refit)' if facings & bit else 'Unsupported mount',

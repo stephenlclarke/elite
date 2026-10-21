@@ -72,14 +72,17 @@ extension Commander {
     }
     let berths = candidate.accommodation.fittedBerths
     let occupied = candidate.cargoTonnes
-    let cabinCargo = berths.count * AccommodationFitting.tonnesPerCommonBerth
+    let cabinCargo =
+      candidate.accommodation.fittedCabins.count * AccommodationFitting.tonnesPerCabin
     let fit = AccommodationFitting.evaluate(
       profile: profile, holdTonnes: candidate.standardCargoCapacity,
       freightTonnes: occupied - cabinCargo, otherFittedCargoTonnes: 0,
-      otherFittedEquipmentUnits: units, berths: berths)
+      otherFittedEquipmentUnits: units, cabins: candidate.accommodation.fittedCabins, berths: berths
+    )
     return .init(
       equipmentCapacity: profile.equipmentUnits,
-      reservedEquipmentUnits: berths.count * AccommodationFitting.equipmentUnitsPerCommonBerth,
+      reservedEquipmentUnits: candidate.accommodation.fittedCabins.count
+        * AccommodationFitting.equipmentUnitsPerCabin,
       nodeEquipmentUnits: costs, projectedCargoCapacity: candidate.standardCargoCapacity,
       occupiedCargoTonnes: occupied,
       accommodationAllowed: candidate.accommodation.valid && fit.allowed

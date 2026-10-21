@@ -244,7 +244,18 @@ Every hull carries a real Basic Hyperspace Drive. Intermediate (5,000 CR, displa
 
 ### Passenger cabins
 
-At a main orbital station, open **Equipment (3)** and select **Passenger Berth** under **Passenger Facilities**. **Return** buys and fits one berth, with a base project-estimate price of **1,000 CR** before any station discount. Each fitted berth uses **5t of cargo space and one equipment unit**. The row shows fitted and stored counts; insufficient cash or physical fitting space prevents purchase.
+At a main orbital station, open **Equipment (3)** and select a layout under **Passenger Facilities**. **Return** buys one complete physical cabin. Every fitted cabin uses **5t of cargo space and one equipment unit**, regardless of grade or occupancy. Each passenger has a separate place and identity. The shop shows fitted/stored cabin counts, occupied/reserved/free places and life-support/stasis condition; insufficient cash or physical fitting space prevents purchase.
+
+| Cabin | Places | Initial base price |
+| --- | ---: | ---: |
+| Packed Stasis Cabin | 20 densely packed stasis pods | 1,000 CR |
+| Economy Cabin | 8 | 2,500 CR |
+| Standard Cabin | 4 | 5,000 CR |
+| Luxury Cabin | 2 | 10,000 CR |
+| Single Stateroom | 1 | 20,000 CR |
+| Double Stateroom | 2 | 20,000 CR |
+
+These prices and intermediate capacities are initial project balance defaults, before station discounts. Packed stasis transport is a cargo-hold module, with no walk-around living quarters, and requires explicit stasis consent. Other grades support awake travel and cryopods, including long-journey stasis in staterooms. Existing native passengers retain their awake/private-cabin promises: two places in one shared cabin do not satisfy a promise of two separate cabins. Occupied or reserved cabins cannot be stored; compatible hull exchanges preserve all cabin, place and passenger identities. Current saves include the complete physical layout; no old cabin-save migration is supplied.
 
 With Passenger Berth selected, **S** stores an empty fitted cabin and **R** refits an empty stored cabin. Storage/refitting preserves the same owned cabin and charges no second purchase price. A used or reserved cabin cannot be removed; refitting needs sufficient space. Repeated held keys do not repeat the action. **K** shows these cabin keys when Passenger Berth is selected. These keys apply to the selected cabin row, so ordinary flight and other station controls keep their existing meanings.
 

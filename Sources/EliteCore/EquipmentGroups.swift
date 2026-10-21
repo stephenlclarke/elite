@@ -36,7 +36,7 @@ public enum EquipmentGroups {
         ]
       ),
       ("Emergency Equipment", ["Escape Pod"]),
-      ("Passenger Facilities", [PassengerCabin.equipmentName]),
+      ("Passenger Facilities", PassengerCabinGrade.allCases.map(\.equipmentName)),
     ]
     let catalogue = Dictionary(
       uniqueKeysWithValues: Equipment.all.enumerated().map { ($0.element.name, $0.offset) })

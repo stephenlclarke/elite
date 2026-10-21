@@ -102,10 +102,12 @@ extension Commander {
     let identities = [
       ("required_crew_including_commander", "Required crew", "people"),
       ("reserved_crew_accommodation", "Reserved crew quarters", "people"),
-      ("fitted_passenger_berths", "Fitted passenger berths", "berths"),
-      ("stored_passenger_berths", "Stored passenger berths", "berths"),
+      ("fitted_passenger_cabins", "Fitted passenger cabins", "cabins"),
+      ("fitted_passenger_berths", "Fitted passenger places", "places"),
+      ("stored_passenger_cabins", "Stored passenger cabins", "cabins"),
       ("passengers_aboard", "Passengers aboard", "people"),
-      ("free_passenger_places", "Free passenger places", "people"),
+      ("free_passenger_places", "Free awake passenger places", "people"),
+      ("free_stasis_places", "Free stasis passenger places", "people"),
       ("hold_used_by_cabins", "Cabin footprint", "t"),
       ("equipment_capacity_units", "Equipment capacity", "units"),
       ("free_equipment_units", "Free equipment units", "units"),
@@ -121,13 +123,16 @@ extension Commander {
       }
     }
     let fitted = current.fitted.count
-    let aboard = current.people.values.reduce(0) { count, person in
-      if case .cabin = person.location { return count + 1 }
-      return count
-    }
+    let aboard = current.fittedBerths.filter {
+      switch $0.use {
+      case .occupied, .nativePerson, .extraCrew: true
+      default: false
+      }
+    }.count
     let values = [
-      profile.operatingCrew, profile.intrinsicCrewQuarters, fitted,
-      current.ownedBerths.count - fitted, aboard, fit.freeCompatiblePlaces, fit.cabinCargo,
+      profile.operatingCrew, profile.intrinsicCrewQuarters, fitted, current.fittedBerths.count,
+      current.storedCabins.count, aboard, fit.freeCompatiblePlaces,
+      current.availablePlaces(mode: .stasis).count, fit.cabinCargo,
       profile.equipmentUnits, fit.freeEquipmentUnits, fit.usableCargo,
     ]
     let source = ship.profiles.first { $0.group == "project-refit-v1" }?.fields ?? []

@@ -325,10 +325,9 @@ private func verifyStationOwnedFitting(
   #expect(game.nativeStationBoardContext != nil && !game.stationAllowsEquipmentServices)
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: storage.url), from: storage.url)
   #expect(saved == game.commander)
-  let cabin = PassengerBerth()
-  game.commander.accommodation.ownedBerths.append(cabin)
+  let cabin = game.commander.accommodation.addCabin(.stateroomSingle, fitted: false)
   let unchanged = game.commander
-  #expect(throws: (any Error).self) { try game.setPassengerBerthFitted(cabin.id, fitted: true) }
+  #expect(throws: (any Error).self) { try game.setPassengerBerthFitted(cabin, fitted: true) }
   #expect(game.commander == unchanged)
 }
 

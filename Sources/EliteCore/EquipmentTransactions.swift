@@ -176,7 +176,9 @@ extension Game {
   }
 
   func equipmentPurchaseRequirement(_ item: Equipment) -> String? {
-    if item.name == PassengerCabin.equipmentName { return passengerBerthQuote.issues.first }
+    if let grade = PassengerCabinGrade.equipment(item.name) {
+      return passengerCabinQuote(grade).issues.first
+    }
     guard equipmentAvailable(item) else {
       return Equipment.isReward(item.name)
         ? Equipment.rewardLabel(item.name) : "Requires TL\(item.requiredTechnologyLevel)"

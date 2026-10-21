@@ -10,6 +10,7 @@ extension Commander {
       try candidate.transferEquipment(to: shipID, hullID: inventory.activeHull)
     } else {
       candidate.shipID = shipID
+      guard candidate.accommodationValid else { throw EquipmentRuntimeError.incompatibleFit }
     }
     return candidate
   }
@@ -22,6 +23,7 @@ extension Commander {
     candidate.shipID = shipID
     guard candidate.freightCargoValid else { throw EquipmentRuntimeError.incompatibleFit }
     guard let inventory = equipmentInventory else {
+      guard candidate.accommodationValid else { throw EquipmentRuntimeError.incompatibleFit }
       self = candidate
       return
     }

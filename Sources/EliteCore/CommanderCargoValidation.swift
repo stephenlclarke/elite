@@ -42,7 +42,8 @@ extension Commander {
         total = addition.partialValue
       }
     }
-    let cabins = accommodation.fittedBerths.count.multipliedReportingOverflow(by: 5)
+    let cabins = accommodation.fittedCabins.count.multipliedReportingOverflow(
+      by: AccommodationFitting.tonnesPerCabin)
     guard !cabins.overflow else { return nil }
     let occupied = total.addingReportingOverflow(cabins.partialValue)
     guard !occupied.overflow else { return nil }

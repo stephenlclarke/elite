@@ -6,8 +6,10 @@ extension Display {
     let cockpit = CockpitLayout(game: game, width: width, height: height)
     let layout = EquipmentLayout(game: game, width: width, height: height)
     let accommodation = game.commander.accommodation
-    let fittedCabins = accommodation.fitted.count
-    let storedCabins = max(0, accommodation.ownedBerths.count - fittedCabins)
+    let cabinSelected =
+      Equipment.all.indices.contains(game.selection)
+      && PassengerCabinGrade.equipment(Equipment.all[game.selection].name) != nil
+    let extraFooter = cabinSelected ? 2 * layout.row : 0
     let right = layout.left + layout.contentWidth
     frame.label("EQUIP SHIP", layout.left, 12, scale: layout.font, ink: .yellow)
     func rightLabel(_ text: String, y: Double, ink: Ink) -> BitmapLabel {
@@ -56,8 +58,11 @@ extension Display {
     }
     let buyingFor = game.equipmentWorkTool ? "Mining work tool" : game.equipmentMount.label
     func ownership(_ item: Equipment) -> (fitted: Bool, held: Bool) {
-      if item.name == PassengerCabin.equipmentName {
-        return (fittedCabins > 0, storedCabins > 0)
+      if let grade = PassengerCabinGrade.equipment(item.name) {
+        return (
+          accommodation.fittedCabins.contains { $0.grade == grade },
+          accommodation.storedCabins.contains { $0.grade == grade }
+        )
       }
       if let inventory = game.commander.equipmentInventory,
         let node = EquipmentRuntimeCatalog.node(for: item.name)
@@ -119,8 +124,10 @@ extension Display {
           status =
             fitted
             ? "FITTED" : owned.held ? "STORED" : Equipment.rewardLabel(item.name).uppercased()
-        } else if item.name == PassengerCabin.equipmentName {
-          status = "\(fittedCabins) FIT / \(storedCabins) STORED"
+        } else if let grade = PassengerCabinGrade.equipment(item.name) {
+          let fitted = accommodation.fittedCabins.filter { $0.grade == grade }.count
+          let stored = accommodation.storedCabins.filter { $0.grade == grade }.count
+          status = "\(fitted) FIT / \(stored) STORED"
         } else if item.name == FuelStorage.equipmentName {
           status =
             "\(game.commander.fuelStorageUnits)/4 "
@@ -137,7 +144,8 @@ extension Display {
     }
     if game.messageTime > 0 {
       frame.label(
-        game.message, layout.left, cockpit.dashboardTop - 82, scale: layout.font, ink: .orange)
+        game.message, layout.left, cockpit.dashboardTop - 82 - extraFooter, scale: layout.font,
+        ink: .orange)
     }
     if Equipment.all.indices.contains(game.selection) {
       let item = Equipment.all[game.selection]
@@ -160,10 +168,22 @@ extension Display {
         description += "Fitted. "
       }
       if owned.held { description += "Stored item owned. " }
-      if item.name == PassengerCabin.equipmentName {
+      if let grade = PassengerCabinGrade.equipment(item.name) {
+        let cabins = accommodation.fittedCabins.filter { $0.grade == grade }
+        let ids = Set(cabins.map(\.id))
+        let places = accommodation.fittedBerths.filter { ids.contains($0.cabinID) }
+        let available = accommodation.availablePlaces(mode: grade.supportsAwake ? .awake : .stasis)
+          .filter { ids.contains($0.cabinID) }.count
+        let used = places.filter { $0.use.used }.count
+        let reserved = places.filter { if case .reserved = $0.use { true } else { false } }.count
+        let life =
+          cabins.allSatisfy(\.lifeSupportWorking) && places.allSatisfy(\.lifeSupportWorking)
+        let stasis = cabins.allSatisfy(\.stasisWorking)
         description +=
-          String(format: "Price: project estimate %.1f CR. ", Double(game.shopPrice(item)) / 10)
-          + "5t / 1 equipment unit. S: store empty cabin. R: refit stored cabin. Return: buy."
+          grade.description
+          + String(format: " %.1f CR; 5t/1 unit. ", Double(game.shopPrice(item)) / 10)
+          + "\(used - reserved) occupied/\(reserved) reserved/\(available) free. Life \(life ? "OK" : "FAULT"), stasis \(stasis ? "OK" : "FAULT"). "
+          + "Return: buy. S: store empty. R: refit."
       } else if item.name == FuelStorage.equipmentName {
         description += "Fuel storage \(game.commander.fuelStorageUnits)/4. Refuel separately."
       } else if game.equipmentPurchaseRequirement(item) == nil {
@@ -171,9 +191,9 @@ extension Display {
       }
       let lines = MissionNotice.wrap(
         description, width: Int(layout.contentWidth / (6 * layout.font)))
-      for (index, line) in lines.prefix(3).enumerated() {
+      for (index, line) in lines.prefix(cabinSelected ? 5 : 3).enumerated() {
         frame.label(
-          line, layout.left, cockpit.dashboardTop - 62 + Double(index) * layout.row,
+          line, layout.left, cockpit.dashboardTop - 62 - extraFooter + Double(index) * layout.row,
           scale: layout.font,
           ink: .cyan)
       }
@@ -220,7 +240,10 @@ public struct EquipmentLayout: Sendable {
     let top = CockpitLayout(game: game, width: width, height: height).dashboardTop
     // Include the last row only when its complete glyph fits above the message reserve.
     // Compact cockpits may have room for the selected item without its category heading.
-    let available = top - 82 - listTop - 7 * font
+    let cabinSelected =
+      Equipment.all.indices.contains(game.selection)
+      && PassengerCabinGrade.equipment(Equipment.all[game.selection].name) != nil
+    let available = top - 82 - (cabinSelected ? 2 * row : 0) - listTop - 7 * font
     count = max(1, Int(floor(available / row)) + 1)
     let selected = EquipmentGroups.rows.firstIndex(of: .item(game.selection)) ?? 1
     var candidate =

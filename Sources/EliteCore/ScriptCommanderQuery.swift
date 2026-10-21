@@ -162,16 +162,30 @@ extension Commander {
     return
       profile.map { value in
         .object([
-          "profile": .string("project-common-charter-v1"),
+          "profile": .string("project-cabin-places-v2"),
           "required_operating_crew": .integer(Int64(value.operatingCrew)),
           "intrinsic_crew_quarters": .integer(Int64(value.intrinsicCrewQuarters)),
           "crew_status": .string(value.crewStatus), "crew_basis": .string(value.crewBasis),
           "equipment_capacity_units": .integer(Int64(value.equipmentUnits)),
+          "fitted_cabins": .integer(Int64(accommodation.fittedCabins.count)),
+          "stored_cabins": .integer(Int64(accommodation.storedCabins.count)),
+          "stasis_places": .integer(Int64(accommodation.availablePlaces(mode: .stasis).count)),
+          "cabins": .array(
+            accommodation.ownedCabins.map { cabin in
+              .object([
+                "id": .string(cabin.id.uuidString), "grade": .string(cabin.grade.rawValue),
+                "places": .integer(Int64(cabin.grade.places)),
+                "fitted": .bool(accommodation.fitted.contains(cabin.id)),
+                "life_support": .bool(cabin.lifeSupportWorking),
+                "stasis_working": .bool(cabin.stasisWorking),
+              ])
+            }),
           "fitted_berths": .integer(Int64(berths.count)),
           "stored_berths": .integer(Int64(accommodation.storedBerths.count)),
           "occupied_berths": .integer(Int64(occupied)),
           "reserved_berths": .integer(Int64(reserved)),
           "extra_crew_berths": .integer(Int64(extraCrew)),
+          "free_awake_places": fit.map { .integer(Int64($0.freeCompatiblePlaces)) } ?? .null,
           "free_compatible_places": fit.map { .integer(Int64($0.freeCompatiblePlaces)) } ?? .null,
           "fit_allowed": fit.map { .bool($0.allowed) } ?? .null,
         ])

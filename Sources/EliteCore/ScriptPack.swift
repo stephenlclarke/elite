@@ -361,7 +361,7 @@ public enum ScriptPackLibrary {
       for index in 0..<parties.count {
         try keys(
           parties.table(atIndex: index),
-          "id names pickupGalaxy pickupSystem destinationGalaxy destinationSystem")
+          "id names pickupGalaxy pickupSystem destinationGalaxy destinationSystem transportMode")
       }
     }
     if root.contains(key: "trial") {

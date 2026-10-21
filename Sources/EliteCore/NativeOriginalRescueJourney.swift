@@ -258,12 +258,23 @@ enum NativeOriginalRescueJourney {
       offer.id == state.offers.last?.id && offer.dock == current
       && offer.carrier == carrier && offer.inventoryRevision == inventory.revision
       && offer.epoch == epoch
-    let eligible =
-      request.destination == offer.destination && offer.path == [85, 241]
+    let eligible: Bool
+    if request.destination == offer.destination && offer.path == [85, 241]
       && offer.berths.count == 2 && berth?.lifeSupportWorking == true
-      && berth?.humanoidCompatible == true
-      && berth?.use == .reserved(mission: state.mission, person: identity.id)
-      && offer.berths.indices.contains(ordinal) && offer.berths[ordinal] == berth
+      && berth?.humanoidCompatible == true, let berth
+    {
+      let supported = commander.accommodation.supports(berth, mode: .awake)
+      if supported {
+        eligible =
+          berth.privateCabin
+          && berth.use == .reserved(mission: state.mission, person: identity.id)
+          && offer.berths.indices.contains(ordinal) && offer.berths[ordinal] == berth
+      } else {
+        eligible = false
+      }
+    } else {
+      eligible = false
+    }
     return .init(
       sequence: UInt64(state.replies.count + 1), person: identity, request: request,
       offer: offer.id, kind: !fresh ? .withdraw : (eligible ? .accept : .refuse),

@@ -3,6 +3,19 @@ import Testing
 
 @testable import EliteCore
 
+private func testAccommodationFit(
+  profile: ShipAccommodationProfile, holdTonnes: Int, freightTonnes: Int,
+  otherFittedCargoTonnes: Int, otherFittedEquipmentUnits: Int,
+  berths: [PassengerBerth], requestedParty: Int = 0, humanoidParty: Bool = true
+) -> AccommodationFit {
+  let ids = Set(berths.map(\.cabinID))
+  return AccommodationFitting.evaluate(
+    profile: profile, holdTonnes: holdTonnes, freightTonnes: freightTonnes,
+    otherFittedCargoTonnes: otherFittedCargoTonnes,
+    otherFittedEquipmentUnits: otherFittedEquipmentUnits,
+    cabins: ids.map { OwnedPassengerCabin(id: $0, grade: .stateroomSingle) },
+    berths: berths, requestedParty: requestedParty, humanoidParty: humanoidParty)
+}
 private func cobraAccommodation() throws -> ShipAccommodationProfile {
   try ShipAccommodationProfile(ship: #require(ShipCatalogue.ship("SH023")))
 }
@@ -14,7 +27,7 @@ private func cobraAccommodation() throws -> ShipAccommodationProfile {
   for ship in ships {
     let profile = try ShipAccommodationProfile(ship: ship)
     #expect(profile.operatingCrew >= 1 && profile.intrinsicCrewQuarters >= profile.operatingCrew)
-    let report = AccommodationFitting.evaluate(
+    let report = testAccommodationFit(
       profile: profile, holdTonnes: ship.game!.cargo,
       freightTonnes: 0, otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0, berths: [])
     #expect(report.allowed && report.usableCargo == ship.game!.cargo)
@@ -25,20 +38,20 @@ private func cobraAccommodation() throws -> ShipAccommodationProfile {
 }
 @Test func aPassengerPartyNeedsActuallyFittedSparePlacesAndBothFitBudgets() throws {
   let profile = try cobraAccommodation()
-  let cabin = PassengerBerth()
-  let noCabin = AccommodationFitting.evaluate(
+  let cabin = PassengerBerth(cabinID: UUID())
+  let noCabin = testAccommodationFit(
     profile: profile, holdTonnes: 20, freightTonnes: 0,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0, berths: [], requestedParty: 1)
   #expect(!noCabin.allowed)
-  let fits = AccommodationFitting.evaluate(
+  let fits = testAccommodationFit(
     profile: profile, holdTonnes: 20, freightTonnes: 15,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 11, berths: [cabin], requestedParty: 1)
   #expect(fits.allowed && fits.usableCargo == 0 && fits.freeEquipmentUnits == 0)
-  let holdFull = AccommodationFitting.evaluate(
+  let holdFull = testAccommodationFit(
     profile: profile, holdTonnes: 20, freightTonnes: 16,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 11, berths: [cabin], requestedParty: 1)
   #expect(!holdFull.allowed && holdFull.issues.contains { $0.contains("1 more tonne") })
-  let equipmentFull = AccommodationFitting.evaluate(
+  let equipmentFull = testAccommodationFit(
     profile: profile, holdTonnes: 20, freightTonnes: 0,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 12, berths: [cabin], requestedParty: 1)
   #expect(
@@ -48,39 +61,43 @@ private func cobraAccommodation() throws -> ShipAccommodationProfile {
   let profile = try cobraAccommodation()
   let person = UUID()
   let mission = UUID()
-  let occupied = PassengerBerth(use: .occupied(person: person))
-  let reserved = PassengerBerth(use: .reserved(mission: mission, person: nil))
-  let extra = PassengerBerth(use: .extraCrew(person: UUID()))
-  let report = AccommodationFitting.evaluate(
+  let occupied = PassengerBerth(cabinID: UUID(), use: .occupied(person: person))
+  let reserved = PassengerBerth(cabinID: UUID(), use: .reserved(mission: mission, person: nil))
+  let extra = PassengerBerth(cabinID: UUID(), use: .extraCrew(person: UUID()))
+  let report = testAccommodationFit(
     profile: profile, holdTonnes: 20, freightTonnes: 0,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0, berths: [occupied, reserved, extra],
     requestedParty: 1)
   #expect(!report.allowed && report.freeCompatiblePlaces == 0 && report.cabinCargo == 15)
-  let duplicate = AccommodationFitting.evaluate(
+  let duplicate = testAccommodationFit(
     profile: profile, holdTonnes: 20, freightTonnes: 0,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0,
-    berths: [occupied, PassengerBerth(use: .reserved(mission: mission, person: person))])
+    berths: [
+      occupied, PassengerBerth(cabinID: UUID(), use: .reserved(mission: mission, person: person)),
+    ])
   #expect(!duplicate.allowed)
-  let badLife = AccommodationFitting.evaluate(
+  let badLife = testAccommodationFit(
     profile: profile, holdTonnes: 20, freightTonnes: 0,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0,
-    berths: [PassengerBerth(lifeSupportWorking: false, use: .occupied(person: person))])
+    berths: [
+      PassengerBerth(cabinID: UUID(), lifeSupportWorking: false, use: .occupied(person: person))
+    ])
   #expect(!badLife.allowed)
 }
 @Test func zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation() throws {
   let ship = try #require(ShipCatalogue.ship("SH033"))
-  let cabin = PassengerBerth()
+  let cabin = PassengerBerth(cabinID: UUID())
   let profile = try ShipAccommodationProfile(ship: ship)
-  let zero = AccommodationFitting.evaluate(
+  let zero = testAccommodationFit(
     profile: profile, holdTonnes: ship.game!.cargo, freightTonnes: 0,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0, berths: [cabin], requestedParty: 1)
   #expect(!zero.allowed && zero.cabinCargo == 5)
-  let alien = AccommodationFitting.evaluate(
+  let alien = testAccommodationFit(
     profile: try cobraAccommodation(), holdTonnes: 20, freightTonnes: 0,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0, berths: [cabin], requestedParty: 1,
     humanoidParty: false)
   #expect(!alien.allowed && alien.freeCompatiblePlaces == 0)
-  let duplicate = AccommodationFitting.evaluate(
+  let duplicate = testAccommodationFit(
     profile: try cobraAccommodation(), holdTonnes: 20, freightTonnes: 0,
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0, berths: [cabin, cabin])
   #expect(!duplicate.allowed)
@@ -106,9 +123,10 @@ private func cobraAccommodation() throws -> ShipAccommodationProfile {
   let crew = try #require(
     commander.gameShipProfile.fields.first { $0.key == "required_crew_including_commander" })
   #expect(crew.number == 4 && crew.basis == profile.crewBasis)
-  let cabin = PassengerBerth()
+  let cabin = PassengerBerth(cabinID: UUID())
+  commander.accommodation.ownedCabins = [.init(id: cabin.cabinID, grade: .stateroomSingle)]
   commander.accommodation.ownedBerths = [cabin]
-  commander.accommodation.fitted = [cabin.id]
+  commander.accommodation.fitted = [cabin.cabinID]
   #expect(commander.valid && commander.passengerFit?.usableCargo == 115)
   #expect(
     commander.gameShipProfile.fields.first { $0.key == "fitted_passenger_berths" }?.number == 1)

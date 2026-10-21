@@ -23,9 +23,10 @@ public struct EquipmentPurchaseContext: Sendable, Equatable {
 
   public func passengerBerthFitting(fitted: Bool) -> PassengerBerthFittingIntent? {
     guard Equipment.all.indices.contains(selection),
-      Equipment.all[selection].name == PassengerCabin.equipmentName,
-      let berth = commander.accommodation.ownedBerths.first(where: {
-        !$0.use.used && commander.accommodation.fitted.contains($0.id) != fitted
+      let grade = PassengerCabinGrade.equipment(Equipment.all[selection].name),
+      let berth = commander.accommodation.ownedCabins.first(where: {
+        $0.grade == grade && commander.accommodation.cabinIsEmpty($0.id)
+          && commander.accommodation.fitted.contains($0.id) != fitted
       })
     else { return nil }
     return .init(context: self, berth: berth.id, fitted: fitted)
@@ -99,7 +100,7 @@ extension Game {
 
   public var passengerBerthSelected: Bool {
     screen == .equipment && Equipment.all.indices.contains(selection)
-      && Equipment.all[selection].name == PassengerCabin.equipmentName
+      && PassengerCabinGrade.equipment(Equipment.all[selection].name) != nil
   }
 
   mutating func passengerCabinKey(_ key: String) -> Bool {
@@ -175,8 +176,8 @@ extension Game {
       if item.name == "Missile", commander.missiles >= commander.missileCapacity {
         throw ShopRefusal(.missileRackFull)
       }
-      if item.name == PassengerCabin.equipmentName {
-        let berth = try confirmPassengerBerth(passengerBerthQuote)
+      if let grade = PassengerCabinGrade.equipment(item.name) {
+        let berth = try confirmPassengerBerth(passengerCabinQuote(grade))
         receipt = .purchase(item: item.name, physicalItem: berth, fitted: true)
       } else if item.name == "Fuel" {
         guard equipmentAvailable(item), commander.availableCredits >= context.price else {

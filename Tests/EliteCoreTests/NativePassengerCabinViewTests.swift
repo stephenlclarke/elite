@@ -8,7 +8,7 @@ import Testing
 private func cabinShopGame() throws -> Game {
   var game = Game(executive: false)
   game.screen = .equipment
-  game.commander.credits = 100000
+  game.commander.credits = 1_000_000
   game.selection = try #require(
     Equipment.all.firstIndex { $0.name == PassengerCabin.equipmentName })
   return game
@@ -41,6 +41,7 @@ private func cabinShopGame() throws -> Game {
 @Test func cabinFittingIntentRefusesStalePausedWrongStationAndCapacityWithoutCharging() throws {
   var game = try cabinShopGame()
   let id = try game.confirmPassengerBerth(game.passengerBerthQuote)
+  let placeIDs = game.commander.accommodation.ownedBerths.map(\.id)
   let store = try #require(game.equipmentPurchaseContext?.passengerBerthFitting(fitted: false))
   for changed in ["pause", "station", "selection", "epoch"] {
     var candidate = game
@@ -58,14 +59,16 @@ private func cabinShopGame() throws -> Game {
   }
   let cash = game.commander.credits
   #expect(game.performEquipmentMutation(.passengerBerth(store)).applied)
-  #expect(game.commander.accommodation.storedBerths.map(\.id) == [id])
+  #expect(game.commander.accommodation.storedCabins.map(\.id) == [id])
+  #expect(game.commander.accommodation.storedBerths.map(\.id) == placeIDs)
   #expect(!game.performEquipmentMutation(.passengerBerth(store)).applied)
   game.commander.cargo[0] = game.commander.standardCargoCapacity
   let refit = try #require(game.equipmentPurchaseContext?.passengerBerthFitting(fitted: true))
   let full = game.commander
   #expect(game.performEquipmentMutation(.passengerBerth(refit)) == .refused(.fittingUnavailable))
   #expect(game.commander == full && game.commander.credits == cash)
-  #expect(game.commander.accommodation.storedBerths.map(\.id) == [id])
+  #expect(game.commander.accommodation.storedCabins.map(\.id) == [id])
+  #expect(game.commander.accommodation.storedBerths.map(\.id) == placeIDs)
 }
 
 @MainActor
@@ -104,7 +107,11 @@ private struct NativeCabinFixture {
       try await delegate.runtime.load(from: save, persistMigrations: false)
       await delegate.runtime.key("3")
       for _ in EquipmentGroups.itemIndices { await delegate.runtime.key("down") }
+      await delegate.runtime.key("up")
       view.game = await delegate.runtime.snapshot()
+      try #require(
+        Equipment.all[view.game.selection].name == PassengerCabinGrade.stateroomSingle.equipmentName
+      )
       view.pending.removeAll()
       #expect(view.game.passengerBerthSelected)
       return .init(
@@ -234,9 +241,12 @@ extension NativeViewTests {
     await fixture.delegate.processPendingCommands(in: fixture.view)
     let berth = try #require(fixture.view.game.commander.accommodation.fittedBerths.first?.id)
     try #require(!beforeBuy.accommodation.ownedBerths.contains { $0.id == berth })
+    let cabin = try #require(fixture.view.game.commander.accommodation.fittedCabins.first?.id)
+    #expect(cabin != berth)
     var expectedPurchase = beforeBuy
-    expectedPurchase.accommodation.ownedBerths.append(PassengerBerth(id: berth))
-    expectedPurchase.accommodation.fitted.insert(berth)
+    expectedPurchase.accommodation.ownedCabins.append(.init(id: cabin, grade: .stateroomSingle))
+    expectedPurchase.accommodation.ownedBerths.append(PassengerBerth(id: berth, cabinID: cabin))
+    expectedPurchase.accommodation.fitted.insert(cabin)
     expectedPurchase.credits -= price
     #expect(fixture.view.game.commander == expectedPurchase)
     #expect(fixture.view.game.commander.credits == cash - PassengerCabin.price)
@@ -288,8 +298,8 @@ extension NativeViewTests {
     try fixture.queue(1, text: "s")
     let stale = try #require(fixture.view.pendingPassengerBerthFittings.first)
     // Returning to identical cabin custody still invalidates the previously painted epoch.
-    try await fixture.delegate.runtime.setPassengerBerthFitted(berth, fitted: false)
-    try await fixture.delegate.runtime.setPassengerBerthFitted(berth, fitted: true)
+    try await fixture.delegate.runtime.setPassengerBerthFitted(cabin, fitted: false)
+    try await fixture.delegate.runtime.setPassengerBerthFitted(cabin, fitted: true)
     let beforeStale = await fixture.delegate.runtime.snapshot().commander
     await fixture.delegate.processPendingCommands(in: fixture.view)
     #expect(fixture.view.game.commander == beforeStale)
@@ -315,7 +325,7 @@ extension NativeViewTests {
     await fixture.delegate.processPendingCommands(in: fixture.view)
     #expect(fixture.view.game.commander == before)
     #expect(try Data(contentsOf: fixture.save) == oldBytes)
-    #expect(fixture.view.game.commander.accommodation.fitted == [berth])
+    #expect(fixture.view.game.commander.accommodation.fitted == [cabin])
     #expect(fixture.view.game.message == "MISSION SAVE FAILED - ACTION NOT COMMITTED")
     try FileManager.default.removeItem(at: root)
     try FileManager.default.moveItem(at: backup, to: root)
@@ -359,7 +369,7 @@ extension NativeViewTests {
 }
 
 @Test func cabinStorefrontDoesNotBecomeLegacyHardwareOrBreakMaximumRefits() throws {
-  #expect(Equipment.all.last?.name == PassengerCabin.equipmentName)
+  #expect(Equipment.all.last?.name == PassengerCabinGrade.stateroomDouble.equipmentName)
   #expect(!Equipment.validNames.contains(PassengerCabin.equipmentName))
   #expect(!Equipment.maximumHardware.contains(PassengerCabin.equipmentName))
   #expect(EquipmentRuntimeCatalog.node(for: PassengerCabin.equipmentName) == nil)

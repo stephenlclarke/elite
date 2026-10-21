@@ -16,7 +16,7 @@ public struct ScriptTrialDefinition: Codable, Sendable {
     return (0..<8).contains(galaxy) && (0...255).contains(system)
       && (0...4_294_967_295).contains(credits) && (0...128).contains(cabins)
       && cabins * 5 <= performance.cargo && cabins <= accommodation.equipmentUnits
-      && credits >= cabins * PassengerCabin.price
+      && credits >= cabins * PassengerCabinGrade.economy.price
       && (offer.map { (0..<16).contains($0) } ?? true)
   }
 }
@@ -124,7 +124,9 @@ extension Game {
       trial.energy = trial.commander.performance.energy
       trial.frontShield = trial.commander.shieldCapacity
       trial.rearShield = trial.commander.shieldCapacity
-      for _ in 0..<scene.cabins { try trial.confirmPassengerBerth(trial.passengerBerthQuote) }
+      for _ in 0..<scene.cabins {
+        try trial.confirmPassengerBerth(trial.passengerCabinQuote(.economy))
+      }
     }
     // Reviews bind the physical property, mirrors and mining policy published by the writer.
     try trial.commander.prepareEquipment(legacy: false)

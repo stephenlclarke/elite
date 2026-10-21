@@ -61,7 +61,13 @@ struct MarketCargoBoundsTests {
 
   @Test func fittedCabinsAndFreightShowTheSameHoldLimitAsTheActorPurchase() async throws {
     var game = Game(executive: false)
-    game.commander.credits = 100000
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
+    try #require(game.commander.valid && game.commander.standardCargoCapacity == 30)
+    game.commander.credits = 1_000_000
     game.commander.unlimitedCargo = true
     var berths: [UUID] = []
     var cabinDebit = 0
@@ -75,12 +81,13 @@ struct MarketCargoBoundsTests {
     try #require(remaining == 10 && game.commander.cargoTonnes == 4 * 5)
     try #require(game.commander.standardCargoCapacity == 30)
     #expect(game.commander.accommodation.fitted == Set(berths))
-    #expect(game.commander.credits == 100000 - cabinDebit)
+    #expect(game.commander.credits == 1_000_000 - cabinDebit)
     try #require(Commodity.all[0].unit == "t")
     game.commander.cargo[0] = remaining
     game.screen = .buy
     game.selection = 0
-    game.market[0] = .init(price: 2, quantity: 2)
+    game.market[0].quantity = 2
+    try #require(game.commander.valid)
     let runtime = GameRuntime(game: game)
     let before = await runtime.snapshot()
     try #require(before.commander.unlimitedCargo)

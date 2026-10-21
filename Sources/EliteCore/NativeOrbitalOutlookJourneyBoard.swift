@@ -149,13 +149,13 @@ extension Game {
     }
     guard commander.passengerFit?.allowed == true, offer.berths.count == 2,
       offer.berths.allSatisfy({ offered in
-        commander.accommodation.fittedBerths.contains(where: {
+        commander.accommodation.availablePlaces(privateCabin: true).contains(where: {
           $0 == offered && !$0.use.used && $0.lifeSupportWorking && $0.humanoidCompatible
         })
       })
     else {
       return
-        "Fit two actual empty compatible berths with working life support, then request fresh replies."
+        "Fit two separate empty awake-compatible cabins with working life support, then request fresh replies."
     }
     let systems = Universe.systemsIncludingPlugh(number: 0)
     guard systems[7].distance(to: systems[185]) <= commander.maximumJumpDistance else {
@@ -278,6 +278,8 @@ extension Game {
           $0.id == boarding.berths[index]
         })
       else { throw SaveError.invalidCommander }
+      commander.accommodation.ownedBerths[slot].mode = .awake
+      commander.accommodation.ownedBerths[slot].privateCabin = true
       commander.accommodation.ownedBerths[slot].use = .nativePerson(reference)
       custody.admissions.append(
         .init(
@@ -372,9 +374,7 @@ extension Game {
         String(describing: source.boarding?.mission), String(describing: source.terminalOperation),
       ]
     }
-    facts += commander.accommodation.fittedBerths.map {
-      "\($0.id):\($0.use):\($0.lifeSupportWorking):\($0.humanoidCompatible)"
-    }
+    facts += commander.accommodation.cabinFacts
     return facts
   }
   func orbitalOutlookDetail(_ action: NativeOrbitalOutlookJourneyAction) -> [String] {
@@ -382,7 +382,7 @@ extension Game {
     var lines = [
       "Lysa Renn and Tovan Hale / original native Avenor people",
       "Agreed itinerary: Avenor - three ordered Renas views - Avenor; L2 H0, 870 CR, untimed.",
-      "Two actual free compatible life-supported berths; no additional cargo or deposit.",
+      "Two separate awake-compatible life-supported cabins; no additional cargo or deposit.",
       "Requesting passage is not consent or boarding. Both native replies and both actual berths are required.",
       "Each view needs 12 continuous native flight seconds: front view, fitted targeting, 250-1500 surface flight units, 2 degree aim and clear nearest-hit sight.",
       "Pause freezes observation. Interruption or load resets only the unfinished view; completed views persist.",
