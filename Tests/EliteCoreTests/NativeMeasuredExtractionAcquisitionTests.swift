@@ -191,7 +191,17 @@ extension NativeMeasuredExtractionAcquisitionTests {
     await runtime.setControls(controls)
     for _ in 0..<1000 {
       _ = await runtime.advance(delta: 0.05)
-      if try await f.state(runtime).losses.isEmpty == false { break }
+      if reason == "combat" {
+        // The first ordinary damage fails permission; terminal native destruction
+        // must separately create the actual breakup before its yield can be checked.
+        if await runtime.snapshot().commander.miningLedger.breakups[NativeMeasuredExtraction.root]
+          != nil
+        {
+          break
+        }
+      } else if try await f.state(runtime).losses.isEmpty == false {
+        break
+      }
     }
     await runtime.setControls(Controls())
     let game = await runtime.snapshot()
@@ -202,9 +212,15 @@ extension NativeMeasuredExtractionAcquisitionTests {
       game.commander.scriptState.instances[state.permission.mission]?.payloads.isEmpty == true)
     #expect(game.commander.scriptState.savedClueJournal == nil)
     if reason == "combat" {
+      let breakup = try #require(
+        game.commander.miningLedger.breakups[NativeMeasuredExtraction.root])
+      #expect(breakup.maximumCollectibleUnits == 0)
+      #expect(breakup.birthMassKg == 20000 && breakup.aggregateMassKg == 20000)
       #expect(
-        game.commander.miningLedger.breakups[NativeMeasuredExtraction.root]?.maximumCollectibleUnits
-          == 0)
+        !game.commander.miningLedger.pendingPayloads.contains { item in
+          if case .ore(let root, _) = item.identity { return root == NativeMeasuredExtraction.root }
+          return false
+        })
     }
   }
 

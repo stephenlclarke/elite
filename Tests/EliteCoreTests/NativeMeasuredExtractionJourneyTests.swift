@@ -222,6 +222,24 @@ struct NativeMeasuredExtractionFixture {
       if await runtime.snapshot().selectedFlightTool == .miningLaser { break }
     }
     try #require(await runtime.snapshot().selectedFlightTool == .miningLaser)
+    // A trigger held during approach is stopped on attaining hold. Reach the real
+    // native ready state with the trigger released, then extraction presses it.
+    await runtime.setControls(Controls())
+    for _ in 0..<400 {
+      _ = await runtime.advance(delta: 0.05)
+      if await runtime.snapshot().workGuidance?.holding == true { break }
+    }
+    let ready = await runtime.snapshot()
+    let selected = try #require(ready.informationTargetBody)
+    try #require(selected.physical?.rock == NativeMeasuredExtraction.root)
+    try #require(ready.workGuidance?.parent == selected.physical?.identity)
+    try #require(ready.workGuidance?.mode == .hold(.mining))
+    try #require(
+      ready.workGuidance?.holding == true,
+      "Native Mining hold did not attain readiness: \(ready.workGuidance?.status ?? "no guidance"); message=\(ready.message)"
+    )
+    try #require(!ready.workFireSuspended)
+    try #require(ready.selectedFlightTool == .miningLaser)
   }
   func extract(_ runtime: GameRuntime) async throws {
     try await aim(runtime)

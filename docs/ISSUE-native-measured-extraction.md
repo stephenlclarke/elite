@@ -49,3 +49,11 @@ Execution 1164 identifies accommodation as the rejecting group in the reconstruc
 ## Native tool-cycle and fit-counter correction
 
 Execution 1166 advances past real acceptance. Mining hold acquisition already selects the mining tool, so the positive fixture must exercise the native W cycle back to Mining instead of assuming a combat starting selection. The over-equipped fit is genuinely refused, but the displayed free-equipment counter is clamped to zero; prove the deficit directly from actual fitted cost minus hull budget and preserve its exact native issue and actual refusal assertions.
+
+## Ordinary combat terminal-state exercise
+
+The combat refusal case must reach actual native breakup before asserting its ordinary collectible limit. Permission fails on the first ordinary damaging hit, while native breakup exists only after terminal damage. Continue bounded real combat fire to that terminal event, require the breakup and preserve zero collectible yield, full twenty-tonne aggregate mass, no mining witness/capture and no success assertion.
+
+## Trigger timing at genuine Mining hold
+
+The positive fixture must attain the actual Mining hold with the trigger released before pressing it. Native Mining is blocked during approach, and the transition to holding stops an already-held trigger until release. Wait bounded native frames for the same original actor to reach real holding readiness and assert the actual mode, parent and selected tool; never cancel guidance to hide a readiness failure or write guidance/latch state.
