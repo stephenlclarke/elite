@@ -4115,13 +4115,21 @@
       "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326249034",
       "composed_helper_sha": "b8cd1cfa32c2535ee0ce2cbc92d7431771274967",
       "github_run": 39673657024,
-      "unit_status": "in_progress",
+      "unit_status": "MBA independently verified exact-head maintained artifact PASS",
       "selection_methods": 78,
       "new_regression_methods": 4,
       "new_expanded_cases": 5,
       "ready_findings": 0,
-      "awaiting_verification_findings": 2,
-      "usable_build_delivered": false
+      "awaiting_verification_findings": 0,
+      "usable_build_delivered": false,
+      "verified_methods": 78,
+      "verified_expanded_cases": 104,
+      "source_review": "no additional actionable defect",
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326400743",
+      "closed_issues": [
+        34,
+        35
+      ]
     },
     {
       "event": "C08.P02 assigned G1 after corrections pushed",
@@ -4129,6 +4137,16 @@
       "base": "8c82f02410ef821d4c8b2eb6ae20dbadd5f10660",
       "scope": "stages3\u20134: Navidor clinic receiving, Enmadan failed workshop cassette collection",
       "owner": "G1",
+      "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-21T20:58:01Z",
+      "event": "MBA closed34 after actual focused source/unit verification;35 already closed",
+      "head": "8c82f02410ef821d4c8b2eb6ae20dbadd5f10660",
+      "verified_methods": 78,
+      "verified_expanded_cases": 104,
+      "ready_findings": 0,
+      "awaiting_verification_findings": 0,
       "usable_build_delivered": false
     }
   ]
