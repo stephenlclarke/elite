@@ -90,6 +90,17 @@ All other already integrated G/W/T family implementations retain the exact deliv
 
 ### Ready reviewer corrections
 
+**Warning remediation helper activated:** Six ready P3 MBA findings26–31 would interrupt ledger development. G3 is assigned issue remediation only on an isolated `fix/swift-warning-noise` branch based on `fdcec1420b824c849e574af4ea994e4b3222fd71`; G1 keeps catalogue/ledger implementation. No shared source ownership, local build or new integration test. G3 pushes one bounded warning packet/PR and requests automated review; G1 composes it and G2 verifies source/diagnostic removal in existing GitHub execution before closure. No feature/adjacent cleanup authority.
+
+| Child | Owner and bounded source scope | State |
+| --- | --- | --- |
+| M01.P02.I26 | G3; two guard-map expressions in `Sources/EliteCore/NativeSalvageCycleProof.swift` | assigned; [issue26](https://github.com/stephenlclarke/elite/issues/26) |
+| M01.P02.I27 | G3; two nonoptional wrappers in `Tests/EliteCoreTests/GameplayCombatTests.swift` and `GameplayOrdnanceRuntimeTests.swift` | assigned; [issue27](https://github.com/stephenlclarke/elite/issues/27) |
+| M01.P02.I28 | G3; three result-discard expressions in `NativeOrbitalOutlookScanTests.swift`, `NativeOriginalSurveyScanTests.swift`, `NativeOriginalRescueCapsuleTests.swift` under `Tests/EliteCoreTests/` | assigned; [issue28](https://github.com/stephenlclarke/elite/issues/28) |
+| M01.P02.I29 | G3; unused binding in `Tests/EliteCoreTests/NativeWormholeTransitTests.swift` | assigned; [issue29](https://github.com/stephenlclarke/elite/issues/29) |
+| M01.P02.I30 | G3; intentional throwing failure spelling in `Tests/EliteCoreTests/ScriptProcurementFixture.swift`, preserving message/throw/budget | assigned; [issue30](https://github.com/stephenlclarke/elite/issues/30) |
+| M01.P02.I31 | G3; bounded explicit JSON encode/decode steps in `Tests/EliteCoreTests/NativeMeasuredExtractionAcquisitionTests.swift`; preserve throwing semantics, no speculative investigation | assigned; diagnostic hypothesis remains unproved until GitHub [issue31](https://github.com/stephenlclarke/elite/issues/31) |
+
 | Packet | Priority, owner and state | Bounded correction and evidence |
 | --- | --- | --- |
 | M02.P02.I24 / F05 | P1; correction written by G1 on actual base `e022de06a99f21cb7e403d54e26f2ace968b5695`, canonical development branch; G2 verifies | [MBA finding24](https://github.com/stephenlclarke/elite/issues/24): `Sources/EliteMac/EliteApp.swift` spin-mode caller still invokes latch-clearing `reset()`, bypassing the model fix. Limit scope to shared trackpad mode-transition policy, that caller, affected isolated unit selection/regression and matching notes. Preserve genuine lifecycle reset behavior. Correction pushed `dfd9d91238bae8b9f5fc17df3f73b8b3130d9a1e`; G2 source review found no further actionable defect ([review](https://github.com/stephenlclarke/elite/issues/23#issuecomment-6321591225)). Issue24 remains open/awaiting-mba until correction-head GitHub run39638491701 is verified; no integration execution. One ready root cause, below issue-only helper threshold. |
