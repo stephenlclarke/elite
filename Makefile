@@ -1,14 +1,16 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: ci-capture-check help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
+.PHONY: ci-capture-check help build run test unit-ci coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test ci-capture-check coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
+	@printf '%s\n' 'build run test unit-ci ci-capture-check coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
 	./script/build_and_run.sh
 test:
 	swift test
+unit-ci:
+	python3 Tools/CI/isolated_units.py
 coverage coverage-check:
 	./script/coverage.sh
 threads:
