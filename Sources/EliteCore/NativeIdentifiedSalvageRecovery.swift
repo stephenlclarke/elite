@@ -54,24 +54,25 @@ extension Game {
       body.hull == .cobra, body.position.finite, body.orientation.validRotation
     else { return nil }
     let currentBody = copy body
-    let retained = withReadOnlyScriptState { ($0.savedIdentifiedSalvageSource, $0.instances) }
     let currentSystem = systemIdentity
     return withReadOnlyCommander { commander in
-      Self.identifiedSalvageAlias(
-        currentBody, source: retained.0, instances: retained.1, system: currentSystem,
-        commander: commander)
+      commander.withReadOnlyScriptState { state in
+        Self.identifiedSalvageAlias(
+          currentBody, source: state.savedIdentifiedSalvageSource, instances: state.instances,
+          system: currentSystem, commander: commander)
+      }
     }
   }
 
   @inline(never)
   private static func identifiedSalvageAlias(
-    _ body: borrowing SpaceBody, source: NativeIdentifiedSalvageSource?,
+    _ body: borrowing SpaceBody, source: borrowing NativeIdentifiedSalvageSource?,
     instances: borrowing [UUID: ScriptInstance], system: SystemIdentity,
     commander: borrowing Commander
   ) -> String? {
     guard let bodyMission = body.missionInstanceID, let logical = body.missionActorID,
       body.hull == .cobra, body.position.finite, body.orientation.validRotation,
-      let source = source,
+      let source = copy source,
       source.batch == NativeIdentifiedSalvage.batch, source.owner.valid,
       source.owner.world == commander.equipmentOwnerID,
       source.owner.system == SystemIdentity(galaxy: 0, system: 7),
