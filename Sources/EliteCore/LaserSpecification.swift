@@ -91,23 +91,3 @@ extension Commander {
     LaserMount.allCases.map { $0.label + ": " + (laser(on: $0)?.equipmentName ?? "Empty") }
   }
 }
-extension Game {
-  mutating func purchaseLaser(_ kind: LaserKind, item: Equipment) {
-    guard commander.performance.supports(equipmentMount) else {
-      notify("THIS HULL HAS NO " + equipmentMount.label.uppercased() + " LASER MOUNT")
-      return
-    }
-    guard commander.laser(on: equipmentMount) != kind else {
-      notify(equipmentMount.label.uppercased() + " " + item.name.uppercased() + " ALREADY FITTED")
-      return
-    }
-    guard equipmentAvailable(item), commander.availableCredits >= item.price
-    else {
-      notify("NOT AVAILABLE")
-      return
-    }
-    commander.installLaser(kind, on: equipmentMount)
-    if !commander.unlimitedCash { commander.credits -= item.price }
-    notify(item.name.uppercased() + " FITTED " + equipmentMount.label.uppercased())
-  }
-}

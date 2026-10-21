@@ -1,0 +1,5 @@
+# Schema-11 identity fixture must not carry a current station namespace
+
+The historical prepared-identity test now launches a current native station world, then replaces its physical scene with the original main-station/cargo capacity fixture and retags the save as schema 11. That leaves station bindings without their actual bodies and later attempts to import a native namespace through a pre-21 header. Both refusals are correct; neither validates the intended historical prepared-NPC identity migration.
+
+Construct this explicitly historical fixture without native station authority. Require no RRS/main docking custody, RRS contracts or new mission calendar, then remove its current station namespace before the existing historical physical scene is assembled. Keep all identity, component condition, capacity, forgery rollback and modern-resave assertions. Current saves downgraded with native authority must still refuse in the existing raw/native save suite. See [the correction](PR-historical-identity-namespace.md).

@@ -7,16 +7,19 @@ public enum NavigationTier: Int, Sendable, Codable, CaseIterable, Comparable {
   public var label: String {
     switch self {
     case .basic: "Basic"
-    case .advanced: "Advanced"
-    case .military: "Military"
+    case .advanced: "Intermediate"
+    case .military: "Advanced"
     }
   }
-  public var equipmentName: String { "Navigation: " + label }
+  /// Persisted keys retain their original spellings when player-facing grades change.
+  public var equipmentName: String {
+    "Navigation: " + ["Basic", "Advanced", "Military"][rawValue - 1]
+  }
   public var price: Int { [10000, 30000, 90000][rawValue - 1] }
   public var jumpCap: Double { Double(rawValue * 7) }
   public var technology: Int { [4, 7, 10][rawValue - 1] }
-  public func radius(capacity: Int) -> Double? {
-    self == .military ? nil : Double(capacity) / 10 + (self == .basic ? 7 : 14)
+  public func radius(capacity: Int, fuelMultiplier: Double = 1) -> Double? {
+    self == .military ? nil : Double(capacity) / (10 * fuelMultiplier) + (self == .basic ? 7 : 14)
   }
   static func from(_ name: String) -> Self? { allCases.first { $0.equipmentName == name } }
 }
@@ -50,7 +53,17 @@ public struct RouteAlternative: Sendable {
   public let tradeEstimate: Double
 }
 extension Commander {
-  public var navigationTier: NavigationTier? { equipment.compactMap(NavigationTier.from).max() }
+  public var navigationTier: NavigationTier? {
+    if equipmentInventory != nil {
+      guard let component = fittedComponent(at: .navigation),
+        let index = EquipmentModuleTemplates.navigation.grades.firstIndex(where: {
+          $0.identity == component.grade
+        })
+      else { return nil }
+      return NavigationTier(rawValue: index + 1)
+    }
+    return equipment.compactMap(NavigationTier.from).max()
+  }
   public mutating func installNavigationComputer(_ tier: NavigationTier) {
     let effective = max(tier, navigationTier ?? tier)
     equipment.subtract(NavigationTier.allCases.map(\.equipmentName))
@@ -68,7 +81,7 @@ struct NavigationGraph {
       game.knownSystems.filter {
         $0.id != source.id
           && source.distance(to: $0)
-            <= min(game.commander.jumpCap, Double(game.commander.fuelCapacity) / 10)
+            <= game.commander.fullTankJumpDistance
       }.map(\.id)
     }
   }
@@ -77,14 +90,21 @@ struct NavigationGraph {
       a == game.commander.system
       ? game.market : MarketItem.at(game.systems[a], fluctuation: 0)
     let sale = MarketItem.minimumPrices(at: game.systems[b])
+    let sellableTonnes = Commodity.all.indices.reduce(0.0) { total, index in
+      total + (Commodity.all[index].unit == "t" ? Double(game.commander.sellableCargo(index)) : 0)
+    }
+    let reservedTonnes = max(0, Double(game.commander.cargoTonnes) - sellableTonnes)
+    let tradingRoom = max(0, Double(game.commander.tradeCargoCapacity) - reservedTonnes)
     return Commodity.all.indices.map { index in
-      Double(max(0, sale[index] - market[index].price))
-        * min(63, Double(market[index].quantity), Double(game.commander.capacity))
+      let quantity = min(63, Double(market[index].quantity))
+      let load = Commodity.all[index].unit == "t" ? min(quantity, tradingRoom) : quantity
+      return Double(max(0, sale[index] - market[index].price)) * load
     }.max() ?? 0
   }
   func cargoSale(_ id: Int) -> Double {
-    zip(game.commander.cargo, MarketItem.minimumPrices(at: game.systems[id])).reduce(0) {
-      $0 + Double($1.0) * Double($1.1)
+    let prices = MarketItem.minimumPrices(at: game.systems[id])
+    return Commodity.all.indices.reduce(0.0) { total, index in
+      total + Double(game.commander.sellableCargo(index)) * Double(prices[index])
     }
   }
   func path(from origin: Int, to destination: Int, fuel: Int, scoring: Int) -> [Int]? {
@@ -103,7 +123,7 @@ struct NavigationGraph {
       visited.insert(node)
       for next in edges[node] where !visited.contains(next) {
         let distance = game.systems[node].distance(to: game.systems[next])
-        if node == origin && distance > Double(fuel) / 10 { continue }
+        if node == origin && distance > game.commander.fuelDistance(for: fuel) { continue }
         let risk = Double(7 - game.systems[next].government) * 0.15
         let weight: Double
         switch scoring {
@@ -139,7 +159,7 @@ struct NavigationGraph {
         candidates.append((label, path))
       }
     }
-    if game.commander.cargo.contains(where: { $0 > 0 }) {
+    if Commodity.all.indices.contains(where: { game.commander.sellableCargo($0) > 0 }) {
       let waypoints = game.knownSystems.filter { $0.id != origin && $0.id != destination }.sorted {
         a, b in cargoSale(a.id) == cargoSale(b.id) ? a.id < b.id : cargoSale(a.id) > cargoSale(b.id)
       }.prefix(8)
@@ -178,7 +198,8 @@ struct NavigationGraph {
     let legs = Array(zip(remaining, remaining.dropFirst()))
     let distance = legs.reduce(0.0) { $0 + game.systems[$1.0].distance(to: game.systems[$1.1]) }
     let units = legs.reduce(0) {
-      $0 + Int((game.systems[$1.0].distance(to: game.systems[$1.1]) * 10).rounded())
+      $0
+        + game.commander.jumpFuelCost(distance: game.systems[$1.0].distance(to: game.systems[$1.1]))
     }
     let risk = remaining.dropFirst().reduce(0.0) {
       $0 + Double(7 - game.systems[$1].government) * 0.15
@@ -193,12 +214,15 @@ struct NavigationGraph {
 
 extension Game {
   public var navigationPlanningRadius: Double? {
-    commander.navigationTier?.radius(capacity: commander.fuelCapacity)
+    commander.navigationTier?.radius(
+      capacity: commander.fuelCapacity, fuelMultiplier: commander.jumpFuelMultiplier)
   }
   public func canPlan(to system: StarSystem) -> Bool {
     guard let tier = commander.navigationTier, knownSystems.contains(system) else { return false }
     return tier == .military
-      || currentSystem.distance(to: system) <= (tier.radius(capacity: commander.fuelCapacity) ?? 0)
+      || currentSystem.distance(to: system)
+        <= (tier.radius(
+          capacity: commander.fuelCapacity, fuelMultiplier: commander.jumpFuelMultiplier) ?? 0)
   }
   mutating func openNavigation() {
     if screen == .chart && !mapIsCurrentGalaxy {
@@ -276,6 +300,7 @@ extension Game {
       }
       let cancelledJump = jumpCountdown != nil
       jumpCountdown = nil
+      if requiresScriptDurability { cancelCalendarJourney() }
       commander.navigationPlan = plan
       if let next = plan.nextSystem { selectedSystem = next }
       if navigationReturn == .chart {
@@ -296,6 +321,7 @@ extension Game {
   public mutating func cancelNavigation() {
     commander.navigationPlan = nil
     jumpCountdown = nil
+    if requiresScriptDurability { cancelCalendarJourney() }
     selectedSystem = commander.system
     notify("NAVIGATION ROUTE CLEARED")
   }
@@ -305,6 +331,7 @@ extension Game {
       notify("ROUTE CLEARED - MANUAL DESTINATION")
     }
     jumpCountdown = nil
+    if requiresScriptDurability { cancelCalendarJourney() }
     selectedSystem = id
   }
   mutating func navigationDocked() {
@@ -312,7 +339,7 @@ extension Game {
     guard commander.navigationTier != nil, plan.valid,
       zip(plan.path, plan.path.dropFirst()).allSatisfy({
         systems[$0].distance(to: systems[$1])
-          <= min(commander.jumpCap, Double(commander.fuelCapacity) / 10)
+          <= commander.fullTankJumpDistance
       })
     else {
       commander.navigationPlan = nil
@@ -337,14 +364,14 @@ extension Game {
     guard plan.valid, commander.navigationTier != nil, plan.galaxy == commander.galaxy,
       plan.path[plan.stopIndex] == commander.system, let next = plan.nextSystem,
       currentSystem.distance(to: systems[next])
-        <= min(commander.jumpCap, Double(commander.fuelCapacity) / 10)
+        <= commander.fullTankJumpDistance
     else {
       commander.navigationPlan = nil
       notify("NAVIGATION ROUTE INVALID")
       return
     }
     selectedSystem = next
-    let cost = Int((currentSystem.distance(to: systems[next]) * 10).rounded())
+    let cost = commander.jumpFuelCost(distance: currentSystem.distance(to: systems[next]))
     notify(
       "NEXT: " + systems[next].name
         + (cost <= commander.availableJumpFuel ? "" : " - REFUEL REQUIRED"))
@@ -362,7 +389,7 @@ extension Game {
       zip(plan.path.dropFirst(plan.stopIndex), plan.path.dropFirst(plan.stopIndex + 1))
         .allSatisfy({
           systems[$0].distance(to: systems[$1])
-            <= min(commander.jumpCap, Double(commander.fuelCapacity) / 10)
+            <= commander.fullTankJumpDistance
         })
     else { return false }
     return currentSystem.distance(to: systems[next]) <= commander.maximumJumpDistance
