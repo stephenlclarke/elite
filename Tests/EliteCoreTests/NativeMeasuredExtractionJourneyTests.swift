@@ -72,16 +72,109 @@ struct NativeMeasuredExtractionFixture {
   }
   func accept(_ runtime: GameRuntime) async throws {
     await runtime.beginScriptRefusalObservation()
-    try await confirm(runtime, .accept)
+    let page = try await review(runtime, .accept)
+    let before = await runtime.snapshot()
+    let reviewed = try #require(before.contractBoard.measuredExtractionQuote)
+    try #require(reviewed.allowed, "\(reviewed.issues)")
+    await runtime.scriptPageKey("right", expected: page)
+    await runtime.scriptPageKey("return", expected: page)
     let accepted = await runtime.snapshot()
     let refusal = await runtime.scriptRefusalObservationDetail()
     let dock = accepted.commander.nativeStations?.currentMainDock
     let quote = accepted.contractBoard.measuredExtractionQuote
     let context =
       "dock=\(dock?.station.key ?? "none")/\(dock?.sequence ?? 0); dockCurrent=\(accepted.nativeMainStationDockEvidenceIsCurrent); quote=\(quote?.action.rawValue ?? "none")/\(String(describing: quote?.allowed)); issues=\(quote?.issues.joined(separator: ";") ?? "none")"
+    var reconstruction = "not needed"
+    if accepted.measuredExtractionState == nil {
+      // Diagnostic only: this genuine reviewed candidate is never installed or saved.
+      // It is not the discarded publication candidate and cannot prove their equality.
+      var candidate = before
+      do {
+        try candidate.confirmMeasuredExtraction(reviewed)
+        let commander = candidate.commander
+        var facts: [String] = [
+          "RECONSTRUCTED diagnostic candidate; actual publication candidate unavailable"
+        ]
+        facts.append(
+          "actual rollback matches preconfirm commander=\(accepted.commander == before.commander)")
+        facts.append(
+          "epoch unchanged=\(candidate.nativeStationRuntimeEpoch == before.nativeStationRuntimeEpoch)"
+        )
+        facts.append(
+          "physicalTime=\(commander.flightSimulation.physicalTime)/preconfirm=\(before.commander.flightSimulation.physicalTime)"
+        )
+        facts.append("commander=\(commander.valid)")
+        facts.append("measuredClaims=\(NativeMeasuredExtractionSave.validateClaims(commander))")
+        facts.append("recordClaims=\(WayfarerRecordRecoverySave.validateClaims(commander))")
+        facts.append("identifiedClaims=\(NativeIdentifiedSalvageSave.validateClaims(commander))")
+        facts.append("equipment=\(commander.equipmentStateValid)")
+        facts.append("scriptState=\(commander.scriptState.valid)")
+        facts.append(
+          "contracts=\(commander.contractsValid); boardStorage=\(commander.contracts.valid)")
+        facts.append(
+          "issuedEquipment=\(commander.issuedEquipmentValid); legacyIssues=\(commander.legacyIssueStateValid)"
+        )
+        facts.append("station=\(commander.nativeStationStateValid)")
+        facts.append("emp=\(commander.empCustodyStateValid)")
+        facts.append("electrical=\(commander.electricalStateValid)")
+        facts.append("alien=\(commander.alienStorageStateValid)")
+        facts.append("salvageSources=\(commander.nativeSalvageOriginalSourcesValid)")
+        facts.append("freight=\(commander.freightCargoValid)")
+        facts.append("navigationTrade=\(commander.navigationTradeStateValid)")
+        facts.append("markets=\(commander.originalMarkets.valid)")
+        facts.append("finance=\(commander.financeStateValid)")
+        facts.append("wormholes=\(commander.nativeWormholeHistoryValid)")
+        facts.append("people=\(commander.nativePeopleStateValid)")
+        facts.append("accommodation=\(commander.accommodationValid)")
+        facts.append(
+          "cargo=\(String(describing: commander.checkedCargoTonnes))/capacity=\(commander.capacity)"
+        )
+        facts.append("fuel=\(commander.fuel)/capacity=\(commander.fuelCapacity)")
+        facts.append("missiles=\(commander.missiles)/capacity=\(commander.missileCapacity)")
+        facts.append(
+          "flight=\(commander.flightSimulation.valid); mining=\(commander.miningLedger.valid); debris=\(commander.cargoDebrisLedger.valid); npcs=\(commander.npcPersistence.valid)"
+        )
+        facts.append(
+          "navigation=\(commander.navigationPlan?.valid ?? true); blackjack=\(commander.blackjack.valid)"
+        )
+        facts.append(
+          "equipmentNames=\(commander.equipment.isSubset(of: Equipment.validNames)); nameCount=\(commander.name.count)"
+        )
+        facts.append(
+          "scriptNextEvent=\(commander.scriptState.nextEvent); calendar=\(commander.scriptState.calendarSeconds)"
+        )
+        if let source = commander.scriptState.savedMeasuredExtractionSource {
+          facts.append(
+            "sourceIdentity=\(source.id == NativeMeasuredExtraction.identity(source.owner)); sourceOwner=\(source.owner.world == commander.equipmentOwnerID); historicalDock=\(NativeMeasuredExtractionSave.historicalDock(source.registration, commander: commander))"
+          )
+          let bytes = try JSONEncoder().encode(source)
+          facts.append("reconstructed source=\(String(decoding: bytes, as: UTF8.self))")
+        }
+        if let state = candidate.measuredExtractionState {
+          facts.append(
+            "permissionReach=\(state.permission.reach.valid); permissionRoute=\(NativeMeasuredExtraction.route(state.permission.reach))"
+          )
+          let bytes = try JSONEncoder().encode(state)
+          facts.append("reconstructed state=\(String(decoding: bytes, as: UTF8.self))")
+          if let mission = commander.scriptState.instances[state.permission.mission] {
+            facts.append("contractValid=\(mission.contract?.valid ?? false)")
+            let bytes = try JSONEncoder().encode(mission)
+            facts.append("reconstructed mission=\(String(decoding: bytes, as: UTF8.self))")
+            if let key = mission.contract?.boardKey, let board = commander.contracts.boards[key] {
+              let bytes = try JSONEncoder().encode(board)
+              facts.append("reconstructed board=\(String(decoding: bytes, as: UTF8.self))")
+            }
+          }
+        }
+        reconstruction = facts.joined(separator: "; ")
+      } catch {
+        reconstruction =
+          "RECONSTRUCTED diagnostic candidate threw \(error); never installed or saved"
+      }
+    }
     try #require(
       accepted.measuredExtractionState != nil,
-      "Native acceptance: \(accepted.message); action=\(accepted.contractBoard.action); detail=\(accepted.contractBoard.detail); \(context); refusal=\(refusal ?? "none")"
+      "Native acceptance: \(accepted.message); action=\(accepted.contractBoard.action); detail=\(accepted.contractBoard.detail); \(context); refusal=\(refusal ?? "none"); \(reconstruction)"
     )
   }
 

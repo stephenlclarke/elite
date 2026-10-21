@@ -37,3 +37,7 @@ Execution 1158 passed the corrected bundled discovery methods but rejected equip
 ## Acceptance refusal evidence
 
 Execution 1160 passes initial hardware setup but the positive native acceptance assertion observes no committed mission. Preserve that assertion and report the actual native message and existing refusal-observer detail. No product fix is claimed until the rejecting boundary is identified; do not inject accepted state or relax validation.
+
+## Reconstructed validation context
+
+Execution 1162 confirms current native acceptance inputs and failure at nativeSaveValidation with Commander.valid false. Preserve the actual positive assertion and use only a separately reconstructed diagnostic candidate from the genuine pre-confirmation snapshot and reviewed operation to identify validator groups. Never install or save that reconstruction, and never treat its results as proof of equality with the discarded publication candidate.
