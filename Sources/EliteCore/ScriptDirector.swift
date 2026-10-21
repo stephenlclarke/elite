@@ -155,6 +155,16 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.fieldRelief != nil || pack.manifest.stateID == WayfarerFieldRelief.stateID {
+      guard WayfarerFieldRelief.matches(pack) else {
+        return "Restore the original field-relief mission content."
+      }
+      if !commander.scriptState.instances.values.contains(where: {
+        $0.definition == WayfarerFieldRelief.stateID && $0.digest == pack.digest
+      }) {
+        return "Use Station Contracts at the actual Avenor source for native field relief."
+      }
+    }
     // Unrelated missions do not use a navigation binding; decide that before resolving one.
     if pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability)
       || pack.manifest.stateID == ScriptNavigationTradeContent.sourceID
@@ -305,6 +315,9 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    guard pack.manifest.fieldRelief == nil,
+      pack.manifest.stateID != WayfarerFieldRelief.stateID
+    else { throw MissionPackError("Use the actual native field-relief collection.") }
     guard scriptUnavailable(pack, navigationBinding: navigationBinding) == nil,
       commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,

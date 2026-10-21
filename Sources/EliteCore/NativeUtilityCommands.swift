@@ -21,6 +21,12 @@ extension Game {
     else {
       throw MissionPackError("A current dock, original property and durable writer are required.")
     }
+    if action != .returnMaterials, fieldReliefPack == nil {
+      throw MissionPackError("Restore the original field-relief mission content.")
+    }
+    if action == .collect {
+      try OriginalServiceReservationPolicy.requireAvailableSlot(commander.scriptState)
+    }
     var source: NativeMainStationArrivalContext?
     var target: NativeUtilityServiceContext?
     var route: [Int] = []
@@ -138,20 +144,30 @@ extension Game {
       state.consignments[index].returned = .init(source.receipt)
       state.consignments[index].phase = .returned
     }
-    try replaceNativeUtility(state)
+    try replaceNativeUtility(state, previous: quote.expected, action: quote.action)
     notify(
       quote.action == .receive
-        ? "CREW RECEIPT RECORDED - NO PAYMENT OR CLUE"
+        ? "CREW RECEIPT AND FIELD RELIEF PAYMENT RECORDED"
         : "UTILITY PROPERTY RECORDED")
   }
 
-  private mutating func replaceNativeUtility(_ state: NativeUtilityState) throws {
+  private mutating func replaceNativeUtility(
+    _ state: NativeUtilityState, previous: NativeUtilityState, action: NativeUtilityAction?
+  ) throws {
     guard var world = commander.nativeStations else { throw SaveError.invalidCommander }
     try world.ledger.replaceUtility(state)
     var candidate = commander
     candidate.nativeStations = world
-    guard candidate.valid else { throw SaveError.invalidCommander }
-    commander = candidate
+    // Swap with the existing candidate, so native and story joins become valid together.
+    // On refusal the original Commander is restored before the actor publication boundary.
+    swap(&commander, &candidate)
+    do {
+      try applyFieldReliefTransition(previous: previous, action: action)
+      guard commander.valid else { throw SaveError.invalidCommander }
+    } catch {
+      swap(&commander, &candidate)
+      throw error
+    }
   }
 
   mutating func recordNativeUtilityLoss(_ cause: NativeUtilityLossCause) throws {
@@ -166,7 +182,7 @@ extension Game {
       cause: cause, visit: commander.flightSimulation.visit,
       physicalTime: commander.flightSimulation.physicalTime, energy: energy)
     state.consignments[index].phase = .lost
-    try replaceNativeUtility(state)
+    try replaceNativeUtility(state, previous: commander.nativeUtility!, action: nil)
   }
   mutating func loseNativeUtilityOnEscape() throws { try recordNativeUtilityLoss(.escape) }
 }
