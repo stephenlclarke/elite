@@ -175,6 +175,31 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
     }
   }
 
+  /// Exchange only portable property. Retain compatible installed slots and
+  /// preserve unsupported/excess fittings as held items, without auto-fitting spares.
+  func transferringPortableItems(to context: OwnedEquipmentContext) throws -> Self {
+    guard context.owner == owner else { throw OwnedEquipmentError.wrongOwner }
+    guard revision < UInt64.max else { throw OwnedEquipmentError.revisionExhausted }
+    var installed: [EquipmentFamilyID: Int] = [:]
+    let portable = items.filter { $0.boundHull == nil }.map { item in
+      var destination: ComponentFittingLocation?
+      if let slot = item.location?.slot,
+        context.supportedSlots.contains(slot),
+        context.nodes[item.node]?.slots.contains(slot) == true,
+        let limit = context.familyLimits[item.node.family],
+        installed[item.node.family, default: 0] < limit
+      {
+        destination = .init(hullInstanceID: context.activeHull, slot: slot)
+        installed[item.node.family, default: 0] += 1
+      }
+      return item.moved(to: destination)
+    }
+    let candidate = try Self(
+      owner: owner, activeHull: context.activeHull, revision: revision + 1, items: portable)
+    try candidate.validate(context: context)
+    return candidate
+  }
+
   public mutating func admit(
     _ item: OwnedEquipmentItem, expectedRevision: UInt64, context: OwnedEquipmentContext
   ) throws {

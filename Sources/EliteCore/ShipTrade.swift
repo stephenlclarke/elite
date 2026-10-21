@@ -17,6 +17,7 @@ public struct ShipTradeQuote: Sendable {
       String(format: "Resulting cash: %.1f CR", Double(balance) / 10),
       "Cargo, fuel, portable equipment and mission property transfer.",
       "Hull-bound fittings leave with the sold hull.",
+      "Unsupported portable fittings remain owned in storage.",
       "No new lasers, missiles or free fuel are included.",
     ] + (issues.isEmpty ? ["Compatible fit. Confirm to exchange hulls."] : issues)
   }
@@ -76,12 +77,12 @@ extension Game {
       issues.append("Cargo expansion cannot transfer to this hull. Choose a compatible hull.")
     }
     for mount in LaserMount.allCases
-    where commander.laser(on: mount) != nil && !next.supports(mount) {
+    where projected.laser(on: mount) != nil && !next.supports(mount) {
       issues.append(mount.label + " laser has no matching mount. Choose a compatible hull.")
     }
-    if commander.missiles > next.missiles {
+    if projected.missiles > next.missiles {
       issues.append(
-        "Use excess missiles first: \(commander.missiles) held; \(next.missiles) pylons available.")
+        "Use excess missiles first: \(projected.missiles) held; \(next.missiles) pylons available.")
     }
     if commander.fuel > projected.fuelCapacity {
       issues.append("Use excess fuel first; new tank is smaller.")

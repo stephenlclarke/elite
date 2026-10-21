@@ -13,6 +13,12 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "PortableHullTransferUnitTests": (
+        "smallerHullStoresPortableOverflowWithItsActualItemAndComponentHistory",
+        "installedFamilyLimitStoresExcessEvenWhenSlotsRemainSupported",
+        "returningToALargerHullDoesNotRefitStoredSparesOrRecreateSoldBoundItems",
+        "foreignOwnerUnknownNodeAndExhaustedRevisionRefuseWithoutChangingSource",
+    ),
     "FlightControlAuthorityUnitTests": (
         "allSharedFlightBindingsRoundTripWithoutFunctionKeys",
         "targetSelectionAndFilterInterruptTheHeldToolWithoutBecomingFire",

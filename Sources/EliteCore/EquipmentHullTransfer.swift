@@ -27,19 +27,9 @@ extension Commander {
       self = candidate
       return
     }
-    guard inventory.revision < UInt64.max else { throw OwnedEquipmentError.revisionExhausted }
-    let portable = inventory.items.filter { $0.boundHull == nil }.map { item in
-      OwnedEquipmentItem(
-        id: item.id, node: item.node, provenance: item.provenance, component: item.component,
-        location: item.location.map { .init(hullInstanceID: hullID, slot: $0.slot) },
-        preferredSlot: item.preferredSlot, retainedLegacyState: item.retainedLegacyState,
-        nativeRepairLoopCondition: item.nativeRepairLoopCondition)
-    }
-    let transferred = try OwnedEquipmentInventory(
-      owner: inventory.owner, activeHull: hullID, revision: inventory.revision + 1, items: portable)
-    try transferred.validate(
-      context: EquipmentRuntimeCatalog.context(
-        owner: inventory.owner, hull: hullID, performance: candidate.nativePerformance))
+    let context = EquipmentRuntimeCatalog.context(
+      owner: inventory.owner, hull: hullID, performance: candidate.nativePerformance)
+    let transferred = try inventory.transferringPortableItems(to: context)
     candidate.savedEquipmentInventory = transferred
     // Quotes reuse the current hull identity and must not create transfer history.
     if inventory.activeHull != hullID {
