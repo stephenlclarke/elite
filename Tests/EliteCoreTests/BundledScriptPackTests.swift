@@ -189,7 +189,7 @@ struct BundledScriptPackTests {
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
           bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
           NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
-          WayfarerRecordRecovery.digest,
+          WayfarerRecordRecovery.digest, NativeMeasuredExtraction.digest,
         ])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
@@ -213,6 +213,7 @@ struct BundledScriptPackTests {
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
         NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
+        NativeMeasuredExtraction.digest,
       ])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
@@ -241,6 +242,7 @@ struct BundledScriptPackTests {
         bundledConsentedFreightDigest, bundledCabinJourneyDigest, bundledOrbitalOutlookDigest,
         bundledOriginalRescueDigest, NativeOriginalEvacuation.digest, NativeOriginalSurvey.digest,
         NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
+        NativeMeasuredExtraction.digest,
       ])
   }
 
@@ -388,6 +390,7 @@ struct BundledScriptPackTests {
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
         NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
+        NativeMeasuredExtraction.digest,
       ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)

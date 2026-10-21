@@ -24,6 +24,12 @@ struct NativeMeasuredExtractionFixture {
     try game.commander.initializeEquipment(
       owner: UUID(), hull: UUID(), legacy: false, xyzzyGrant: true
     ) { UUID() }
+    // Initialization retains add-on modules as held equipment. Fit the actual items;
+    // the mining work-tool, core and scoops still come from the supported native fit.
+    try game.commander.grantEquipment(
+      "Targeting: Mining Module", at: .targetingMining, provenance: .xyzzy)
+    try game.commander.grantEquipment(
+      "Targeting: Salvage Module", at: .targetingSalvage, provenance: .xyzzy)
     game.commander.fuel = game.commander.fuelCapacity
     game.energy = game.commander.performance.energy
     game.frontShield = game.commander.shieldCapacity

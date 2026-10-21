@@ -25,3 +25,7 @@ G1 execution 1152 failed in the new save validator before CLI or unit execution.
 ## Native identity checkpoint
 
 G1 native CLI execution 1154 passed and supplied the actual installed-content digest, now pinned in the existing native helper. The matching test build and owner units remain required; CLI validation alone does not qualify runtime behavior. See the linked PR notes for the exact digest and retained raw result.
+
+## Native fixture qualification correction
+
+Execution 1156 exposed three initial-fixture/discovery groups: G12 add-on modules retained as held by legacy-set initialization, an ore helper fitting a mining utility on a hull without its declared slot, and expected discovery lists omitting the newly installed pack. Correct the actual initial equipment fit, choose a supported initial ore-fixture hull and include the actual discovered pack in order. Preserve all source, native mining, custody, loss, processing, payment and save assertions. Root approved the additional MiningOreRuntimeTests.swift initial-fit hunk, bringing cumulative scope to 32 paths.
