@@ -1093,3 +1093,99 @@ extension FlightWorkGuidanceRuntimeTests {
     #expect([game.energy, game.laserHeat, game.fireCooldown] == resources)
   }
 }
+
+extension FlightWorkGuidanceRuntimeTests {
+  @Test(arguments: [Vector3(0, 0, 0), .init(0.01, 0.02, 0.03), .init(0.2, 0.001, 0.5)])
+  func nativeOreAdmissionAndSelectionPreserveRequestedPhysicalSpin(omega: Vector3) throws {
+    var game = try workRuntimeGame(module: .mining)
+    try game.commander.grantEquipment(
+      "Mining Laser", at: .utility(.miningLaser), provenance: .grant("native ore spin fixture"))
+    let anchors = try #require(game.commander.flightSimulation.anchors)
+    let field = try #require(MiningFields.generate(anchors: anchors, seed: game.gameplaySeed).first)
+    let rock = try #require(field.rocks.first)
+    game.miningFields = [.init(position: field.position, rocks: [rock])]
+    game.commander.flightSimulation.pose.position = rock.position - .init(0, 0, 500)
+    game.activateNearbyMiningFields()
+    // Stop before the next ecology tick admits the actual terminal hit's native output.
+    for _ in 0..<300 {
+      _ = game.fireMiningWorkTool()
+      if game.commander.miningLedger.isDepleted(rock.identity) { break }
+      game.tick(delta: 0.1)
+    }
+    try #require(game.commander.miningLedger.isDepleted(rock.identity))
+    let context = try #require(game.gameplayContext())
+    let requests = game.commander.miningLedger.pendingSpawnRequests(
+      context: context, fields: game.miningFields)
+    var request = try #require(requests.first)
+    let payload = try #require(request.payload)
+    try #require(
+      request.identity.producer == .mining && request.angularVelocity == Vector3(0, 0, 0))
+    // Vary only the not-yet-admitted request; existing body momentum is never rewritten.
+    request.angularVelocity = omega
+    let receipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit, revision: context.revision,
+        batches: [.init(requests: [request], atomic: true)], intents: []))
+    game.commander.miningLedger.acknowledge(receipts: receipts)
+    let actor = try #require(receipts.first?.actor)
+    let admitted = try #require(game.bodies.first { $0.physical?.identity == actor })
+    #expect(game.commander.miningLedger.boundActor(for: payload) == actor)
+    #expect(
+      admitted.physical?.spawnIdentity == request.identity && admitted.physical?.payload == payload)
+    #expect(admitted.physical?.angularVelocity == omega && admitted.physical?.canonicalSpin == true)
+    #expect(admitted.rotation == 0 && admitted.rotationRate == 0)
+    let native = Mesh.hull(.cargo)
+    #expect(game.gameplayMesh(for: admitted).vertices == native.vertices)
+    #expect(game.gameplayMesh(for: admitted).faces == native.faces)
+    let before = game.modelPose(of: admitted)
+    #expect((before.orientation.x - request.orientation.x).length < 1e-9)
+    #expect((before.orientation.y - request.orientation.y).length < 1e-9)
+    #expect((before.orientation.z - request.orientation.z).length < 1e-9)
+
+    let legacySequence =
+      (game.bodies.compactMap { $0.physical?.spawnIdentity?.sequence }.max() ?? 0) + 1
+    let legacy = SpawnRequest(
+      identity: .init(
+        system: context.system, visit: context.visit, sequence: legacySequence, member: 0),
+      population: .cargo, hull: .cargo, position: request.position + .init(1000, 0, 0),
+      orientation: Basis3(), velocity: .init(0, 0, 0), npc: nil, rock: nil, payload: nil,
+      priority: .ordinary)
+    let legacyContext = try #require(game.gameplayContext())
+    let legacyReceipts = game.admitEncounterPlan(
+      .init(
+        system: legacyContext.system, visit: legacyContext.visit, revision: legacyContext.revision,
+        batches: [.init(requests: [legacy], atomic: true)], intents: []))
+    let legacyActor = try #require(legacyReceipts.first?.actor)
+    let legacyBefore = try #require(game.bodies.first { $0.physical?.identity == legacyActor })
+    #expect(legacyBefore.rotationRate == 0.5 && legacyBefore.physical?.canonicalSpin != true)
+
+    game.workTargetFilter = .mining
+    game.key("tab")
+    try #require(
+      game.workGuidance?.parent == actor && game.workGuidance?.mode == .autoScoop(.mining))
+    let selected = try #require(game.bodies.first { $0.physical?.identity == actor })
+    #expect(game.modelPose(of: selected) == before)
+    #expect(selected.physical?.angularVelocity == omega && selected.physical?.canonicalSpin == true)
+    game.tick(delta: 0.05)
+    let advanced = try #require(game.bodies.first { $0.physical?.identity == actor })
+    #expect(advanced.physical?.angularVelocity == omega)
+    #expect(game.commander.miningLedger.boundActor(for: payload) == actor)
+    let orientation = game.modelPose(of: advanced).orientation
+    if omega.length == 0 {
+      #expect((orientation.x - before.orientation.x).length < 1e-9)
+      #expect((orientation.y - before.orientation.y).length < 1e-9)
+      #expect((orientation.z - before.orientation.z).length < 1e-9)
+    } else {
+      #expect(orientation != before.orientation)
+    }
+    let legacyAfter = try #require(game.bodies.first { $0.physical?.identity == legacyActor })
+    #expect(legacyAfter.rotationRate == 0.5 && legacyAfter.rotation > legacyBefore.rotation)
+    // Fast requested spin remains fast; admission must not manufacture scoop eligibility.
+    let radius = try #require(native.vertices.map(\.length).max())
+    let physical = try #require(advanced.physical)
+    #expect(physical.angularVelocity.length * radius == omega.length * radius)
+    if omega.z == 0.5 {
+      #expect(omega.length * radius > ScoopApproachController.maximumRelativeSpeed)
+    }
+  }
+}
