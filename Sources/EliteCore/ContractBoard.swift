@@ -18,6 +18,7 @@ public struct ContractBoardRow: Sendable {
   var coldChain: WayfarerColdChainBoardRow? = nil
   var survey: NativeOriginalSurveyAction? = nil
   var glassMeridian: NativeGlassMeridianAction? = nil
+  var wayfarerInduction: NativeWayfarerInductionAction? = nil
   var flightReception: NativeFlightReceptionAction? = nil
   var measuredExtraction: NativeMeasuredExtractionAction? = nil
   var recordRecovery: WayfarerRecordRecoveryAction? = nil
@@ -25,6 +26,7 @@ public struct ContractBoardRow: Sendable {
   var utility: NativeUtilityAction? = nil
   public var key: String {
     if let utility { return utility.utilityKey }
+    if let key = wayfarerInduction?.key { return key }
     if let key = glassMeridian?.key { return key }
     if let key = flightReception?.key { return key }
     if let key: String = measuredExtraction?.key { return key }
@@ -60,6 +62,7 @@ private enum ContractBoardReview: Sendable {
   case coldChain(WayfarerColdChainBoardReview)
   case survey(NativeOriginalSurveyReview)
   case glassMeridian(NativeGlassMeridianReview)
+  case wayfarerInduction(NativeWayfarerInductionReview)
   case flightReception(NativeFlightReceptionReview)
   case measuredExtraction(NativeMeasuredExtractionReview)
   case recordRecovery(WayfarerRecordRecoveryReview)
@@ -178,6 +181,19 @@ public struct ContractBoardUI: Sendable {
       if let newValue {
         review = .survey(newValue)
       } else if case .survey(_)? = review {
+        review = nil
+      }
+    }
+  }
+  var wayfarerInductionQuote: NativeWayfarerInductionReview? {
+    get {
+      guard case .wayfarerInduction(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .wayfarerInduction(newValue)
+      } else if case .wayfarerInduction(_)? = review {
         review = nil
       }
     }
@@ -307,6 +323,7 @@ extension Game {
     candidate.contractBoard.repairLoopQuote = nil
     candidate.contractBoard.coldChainQuote = nil
     candidate.contractBoard.surveyQuote = nil
+    candidate.contractBoard.wayfarerInductionQuote = nil
     candidate.contractBoard.glassMeridianQuote = nil
     candidate.contractBoard.flightReceptionQuote = nil
     candidate.contractBoard.measuredExtractionQuote = nil
@@ -327,6 +344,7 @@ extension Game {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
     var rows =
       rrsCourierRows + financeRows + nativePeopleRows + providerContractRows + originalSurveyRows
+      + wayfarerInductionRows
       + glassMeridianRows
       + flightReceptionRows
       + measuredExtractionRows
@@ -368,7 +386,8 @@ extension Game {
       if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil
         || contractBoard.peopleQuote != nil || contractBoard.providerQuote != nil
         || contractBoard.coldChainQuote != nil || contractBoard.repairLoopQuote != nil
-        || contractBoard.surveyQuote != nil || contractBoard.glassMeridianQuote != nil
+        || contractBoard.surveyQuote != nil || contractBoard.wayfarerInductionQuote != nil
+        || contractBoard.glassMeridianQuote != nil
         || contractBoard.flightReceptionQuote != nil
         || contractBoard.measuredExtractionQuote != nil
         || contractBoard.recordRecoveryQuote != nil
@@ -385,6 +404,10 @@ extension Game {
       return
     }
     contractBoard.utilityQuote = nil
+    if let action = contractBoard.selected?.wayfarerInduction {
+      contractBoard.wayfarerInductionQuote = wayfarerInductionReview(action)
+      return
+    }
     if let action = contractBoard.selected?.glassMeridian {
       contractBoard.glassMeridianQuote = glassMeridianReview(action)
       return
@@ -405,6 +428,7 @@ extension Game {
       contractBoard.identifiedSalvageQuote = identifiedSalvageReview(action)
       return
     }
+    contractBoard.wayfarerInductionQuote = nil
     contractBoard.glassMeridianQuote = nil
     contractBoard.flightReceptionQuote = nil
     contractBoard.measuredExtractionQuote = nil
@@ -504,6 +528,7 @@ extension Game {
       contractBoard.repairLoopQuote = nil
       contractBoard.coldChainQuote = nil
       contractBoard.surveyQuote = nil
+      contractBoard.wayfarerInductionQuote = nil
       contractBoard.glassMeridianQuote = nil
       contractBoard.flightReceptionQuote = nil
       contractBoard.measuredExtractionQuote = nil
@@ -526,6 +551,18 @@ extension Game {
         contractBoard.utilityQuote = nil
         return
       }
+      if let action = contractBoard.selected?.wayfarerInduction {
+        guard contractBoard.action == .accept, let quote = contractBoard.wayfarerInductionQuote,
+          quote.action == action, quote.allowed
+        else {
+          throw MissionPackError("Review the current induction action and choose Confirm or Back.")
+        }
+        try confirmWayfarerInduction(quote)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.wayfarerInductionQuote = nil
+        return
+      }
       if let action = contractBoard.selected?.glassMeridian {
         guard action == .accept, contractBoard.action == .accept,
           let quote = contractBoard.glassMeridianQuote
@@ -535,6 +572,7 @@ extension Game {
         try confirmGlassMeridian(quote)
         refreshContractRows()
         contractBoard.detail = false
+        contractBoard.wayfarerInductionQuote = nil
         contractBoard.glassMeridianQuote = nil
         return
       }
@@ -545,6 +583,7 @@ extension Game {
         try confirmFlightReception(quote)
         refreshContractRows()
         contractBoard.detail = false
+        contractBoard.wayfarerInductionQuote = nil
         contractBoard.glassMeridianQuote = nil
         contractBoard.flightReceptionQuote = nil
         return
@@ -558,6 +597,7 @@ extension Game {
         try confirmMeasuredExtraction(quote)
         refreshContractRows()
         contractBoard.detail = false
+        contractBoard.wayfarerInductionQuote = nil
         contractBoard.glassMeridianQuote = nil
         contractBoard.flightReceptionQuote = nil
         contractBoard.measuredExtractionQuote = nil
@@ -570,6 +610,7 @@ extension Game {
         try confirmRecordRecovery(quote)
         refreshContractRows()
         contractBoard.detail = false
+        contractBoard.wayfarerInductionQuote = nil
         contractBoard.glassMeridianQuote = nil
         contractBoard.flightReceptionQuote = nil
         contractBoard.measuredExtractionQuote = nil
@@ -583,6 +624,7 @@ extension Game {
         try confirmIdentifiedSalvage(quote)
         refreshContractRows()
         contractBoard.detail = false
+        contractBoard.wayfarerInductionQuote = nil
         contractBoard.glassMeridianQuote = nil
         contractBoard.flightReceptionQuote = nil
         contractBoard.measuredExtractionQuote = nil

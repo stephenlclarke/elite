@@ -79,7 +79,8 @@ extension Game {
     }
     var review: UUID? = nil
     if contractBoard.detail {
-      review = contractBoard.glassMeridianQuote?.reviewToken
+      review = contractBoard.wayfarerInductionQuote?.reviewToken
+      if review == nil { review = contractBoard.glassMeridianQuote?.reviewToken }
       if review == nil { review = contractBoard.flightReceptionQuote?.reviewToken }
       if review == nil { review = contractBoard.measuredExtractionQuote?.reviewToken }
       if review == nil { review = contractBoard.recordRecoveryQuote?.reviewToken }

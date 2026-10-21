@@ -456,7 +456,8 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard NativeFirstCommoditySaleSave.validateClaims(self),
+    guard NativeWayfarerInductionSave.validateClaims(self),
+      NativeFirstCommoditySaleSave.validateClaims(self),
       NativeGlassMeridianSave.validateClaims(self),
       NativeFleetDiscoverySave.validateClaims(self),
       NativeFlightReceptionSave.validateClaims(self),
@@ -887,6 +888,7 @@ public struct Game: Sendable {
       !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
       value.scriptState.savedFleetDiscovery == nil,
       value.scriptState.firstNativeCommoditySale == nil,
+      !NativeWayfarerInductionSave.hasClaims(value),
       value.scriptState.financeLedger == nil, value.scriptState.savedClueJournal == nil,
       !value.scriptState.instances.values.contains(where: { $0.savedNavigationTrade != nil })
     else {
@@ -1904,6 +1906,10 @@ public struct Game: Sendable {
       notify("SAMPLE LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
     }
+    do { _ = try candidate.loseWayfarerInductionCrate(.escapePod) } catch {
+      notify("INDUCTION CRATE LOSS NOT SAVED - ESCAPE NOT COMMITTED")
+      return
+    }
     do { try candidate.loseNativeUtilityOnEscape() } catch {
       notify("UTILITY MATERIAL LOSS NOT SAVED - ESCAPE NOT COMMITTED")
       return
@@ -2615,6 +2621,7 @@ public actor GameRuntime {
       commitNativePeopleLoss()
     }
     // Acts only on the measured fatal state; retries its durable proposal after writer refusal.
+    commitWayfarerInductionCrateLoss()
     commitWayfarerColdChainFatalLoss()
     commitWayfarerRepairLoopFatalLoss()
     commitNativeUtilityFatalLoss()

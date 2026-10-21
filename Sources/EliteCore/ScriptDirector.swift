@@ -155,6 +155,18 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.wayfarerInduction != nil
+      || pack.manifest.stateID == NativeWayfarerInduction.stateID
+    {
+      guard pack.digest == NativeWayfarerInduction.digest,
+        pack.manifest.wayfarerInduction?.valid == true
+      else { return "Restore the approved Wayfarer Exchange opening." }
+      if !commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeWayfarerInduction.stateID && $0.digest == pack.digest
+      }) {
+        return "Use Station Contracts at Avenor for Senn's induction commission."
+      }
+    }
     if pack.manifest.glassMeridian != nil || pack.manifest.stateID == NativeGlassMeridian.stateID {
       if let reason = NativeGlassMeridian.availability(
         pack,
@@ -339,6 +351,9 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    guard pack.manifest.wayfarerInduction == nil,
+      pack.manifest.stateID != NativeWayfarerInduction.stateID
+    else { throw MissionPackError("Use Senn's actual induction commission review.") }
     guard pack.manifest.glassMeridian == nil, pack.manifest.stateID != NativeGlassMeridian.stateID
     else { throw MissionPackError("Use the actual Venn commission review.") }
     guard pack.manifest.flightReception == nil,
@@ -1302,9 +1317,18 @@ extension Game {
     }
     let state = scriptGalleryEntryValues(stateID)
     let reason = scriptGalleryEntryReason(pack, stateID: stateID)
-    let openingIssue: String? =
-      pack.manifest.stateID == NativeGlassMeridian.stateID
-        && state?.milestones.contains(1) == true ? NativeGlassMeridian.laterStages : nil
+    let openingIssue: String?
+    if pack.manifest.stateID == NativeWayfarerInduction.stateID,
+      state?.milestones.contains(1) == true
+    {
+      openingIssue = NativeWayfarerInduction.laterStages
+    } else if pack.manifest.stateID == NativeGlassMeridian.stateID,
+      state?.milestones.contains(1) == true
+    {
+      openingIssue = NativeGlassMeridian.laterStages
+    } else {
+      openingIssue = nil
+    }
     let suspension = state?.suspension ?? reason ?? openingIssue
     let status: GalleryStatus =
       suspension != nil

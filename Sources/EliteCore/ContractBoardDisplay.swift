@@ -31,6 +31,8 @@ extension Display {
     var rows: [String]
     if row.utility != nil {
       rows = game.nativeUtilityDetail
+    } else if row.wayfarerInduction != nil {
+      rows = game.wayfarerInductionDetail()
     } else if row.glassMeridian != nil {
       rows = game.glassMeridianDetail()
     } else if let action = row.flightReception {
@@ -174,6 +176,7 @@ extension Display {
         let coldChain = game.contractBoard.coldChainQuote
         let provider = game.contractBoard.providerQuote
         let survey = game.contractBoard.surveyQuote
+        let wayfarerInduction = game.contractBoard.wayfarerInductionQuote
         let glassMeridian = game.contractBoard.glassMeridianQuote
         let flightReception = game.contractBoard.flightReceptionQuote
         let measuredExtraction = game.contractBoard.measuredExtractionQuote
@@ -182,6 +185,7 @@ extension Display {
         let available =
           action == .back
           || (utility != nil && action == .accept && utility?.allowed == true)
+          || (wayfarerInduction != nil && action == .accept && wayfarerInduction?.allowed == true)
           || (glassMeridian != nil && action == .accept && glassMeridian?.allowed == true)
           || (flightReception != nil && action == .accept && flightReception?.allowed == true)
           || (measuredExtraction != nil && action == .accept && measuredExtraction?.allowed == true)
@@ -204,7 +208,8 @@ extension Display {
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
             + (action == .accept
-              && (glassMeridian != nil || flightReception != nil || measuredExtraction != nil
+              && (wayfarerInduction != nil || glassMeridian != nil || flightReception != nil
+                || measuredExtraction != nil
                 || recordRecovery != nil
                 || identifiedSalvage != nil
                 || survey != nil
@@ -256,6 +261,8 @@ extension Display {
         }
         var preferredSummary: String? =
           row.reason
+          ?? (row.wayfarerInduction == nil
+            ? nil : "Exchange induction / sealed 1t / review the 1800s flight allowance")
           ?? (row.glassMeridian == nil
             ? nil : "Venn commission / two clock readings / opening only")
           ?? (row.flightReception == nil

@@ -74,6 +74,11 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-custody-rescue")
   }
+  static var bundledWayfarerInductionDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-wayfarer-induction")
+  }
+
   static var bundledGlassMeridianDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-glass-meridian")
@@ -276,6 +281,12 @@ extension ScriptPackLibrary {
         library.packs.append(practice)
       }
     } catch { library.errors.append("Bundled flight practice pack: " + error.localizedDescription) }
+    do {
+      let induction = try read(bundledWayfarerInductionDirectory)
+      if !library.packs.contains(where: { $0.digest == induction.digest }) {
+        library.packs.append(induction)
+      }
+    } catch { library.errors.append("Bundled Exchange induction: " + error.localizedDescription) }
     do {
       let opening = try read(bundledGlassMeridianDirectory)
       if !library.packs.contains(where: { $0.digest == opening.digest }) {
