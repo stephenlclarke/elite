@@ -29,3 +29,7 @@ MBA source authoring and source-only formatting/strict lint, exact scope/old-tes
 ## Test assertion compiler correction
 
 The focused 1217 build rejected the mutating ledger destroy call inside the testing macro. The completion test now evaluates that same call once into a local Boolean before asserting it. The payload, action order, state and oracle remain unchanged; production code is unchanged. Source formatting and lint checks are complete; matching native qualification remains assigned to G1.
+
+## Full-hold recovery selection
+
+The actual 1219 batch passed 11 methods and 21 cases; the full-hold case failed because ordinary target classification checks tools and shape while the native scoop checks cargo capacity at collection. Recovery selection now joins the actual pending item and applies the same zero-tonnes-or-fit rule using max(0, capacity - cargoTonnes) for ordinary unprotected ore. Protected payloads retain the existing authority evaluation. Global target classification, intake guards, pending cargo, momentum and the full-hold blocked oracle remain unchanged. The fixture additionally asserts zero free tonnes. Matching qualification must rerun the full-hold case and the resume and genuine mining handoff cases that exercise the changed selection path; the remaining nine methods and 19 cases have bounded source-dependency retention evidence. Native execution remains assigned to G1.
