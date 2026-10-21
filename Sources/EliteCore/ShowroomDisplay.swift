@@ -462,8 +462,8 @@ extension Display {
       "", "CURRENT FITTED CRAFT: " + commander.ship.name.uppercased(),
       "Native performance units stay separate from source/project units.",
       "Required crew: \(count("required_crew_including_commander")); reserved crew quarters: \(count("reserved_crew_accommodation")) (\(crewStatus))",
-      "Fitted berths: \(count("fitted_passenger_berths")); passengers aboard: \(count("passengers_aboard")); free places: \(count("free_passenger_places"))",
-      "Cabin footprint: \(accommodation["hold_used_by_cabins"]?.text ?? "Unavailable"); stored berths: \(count("stored_passenger_berths"))",
+      "Fitted cabins: \(count("fitted_passenger_cabins")); places: \(count("fitted_passenger_berths")); passengers aboard: \(count("passengers_aboard")); free awake/stasis places: \(count("free_passenger_places"))/\(count("free_stasis_places"))",
+      "Cabin footprint: \(accommodation["hold_used_by_cabins"]?.text ?? "Unavailable"); stored cabins: \(count("stored_passenger_cabins"))",
       "Usable cargo after fit: \(accommodation["usable_cargo_after_fit"]?.text ?? "Unavailable") free (physical)",
       "Cargo \(commander.cargoTonnes)/\(capacityText) t; missiles \(commander.missiles)/\(commander.missileCapacity)",
       String(

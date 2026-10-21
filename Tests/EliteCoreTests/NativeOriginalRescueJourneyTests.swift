@@ -25,7 +25,7 @@ struct NativeOriginalRescueFixture {
       game.selectedSystem = 85
       game.market = MarketItem.at(game.currentSystem)
     }
-    game.commander.credits = 300000
+    game.commander.credits = 1_000_000
     try game.prepareG03FlightEquipment()
     if tools {
       for name in ["Fuel Scoops", "Targeting: Salvage Module"] {

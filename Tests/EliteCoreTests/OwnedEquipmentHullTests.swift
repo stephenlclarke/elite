@@ -209,8 +209,9 @@ private func ownedHullSaveFiles(at directory: URL) throws -> [String: Data] {
     try game.commander.grantEquipment(
       LaserKind.military.equipmentName, at: .laser(mount), provenance: .grant("hull-fixture"))
   }
-  let cabin = PassengerBerth()
-  game.commander.accommodation.ownedBerths = [cabin]
+  let cabin = OwnedPassengerCabin(grade: .stateroomSingle)
+  game.commander.accommodation.ownedCabins = [cabin]
+  game.commander.accommodation.ownedBerths = [PassengerBerth(cabinID: cabin.id)]
   game.commander.accommodation.fitted = [cabin.id]
   let before = game.commander
   #expect(throws: (any Error).self) {

@@ -13,7 +13,7 @@ module = "scripts/main.lua"
 [mission]
 id = "charter"
 title = "Scripted passenger demonstration"
-briefing = "Fit an empty passenger berth at Lave's main orbital station, then accept to board Ari. Deliver Ari to Zaonce's main orbital station. Each fitted berth occupies five tonnes and one equipment unit."
+briefing = "Fit an empty awake-compatible passenger place at Lave's main orbital station, then accept to board Ari. Deliver Ari to Zaonce's main orbital station. Each physical cabin occupies five tonnes and one equipment unit regardless of its number of passenger places."
 destination = "Galaxy 1, Zaonce (system 129)"
 reward = "100 credits on confirmed delivery."
 milestones = ["Board Ari in an actual fitted cabin", "Deliver Ari to Zaonce orbital station"]

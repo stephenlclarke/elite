@@ -262,6 +262,7 @@ enum NativeOriginalRescueJourney {
       request.destination == offer.destination && offer.path == [85, 241]
       && offer.berths.count == 2 && berth?.lifeSupportWorking == true
       && berth?.humanoidCompatible == true
+      && berth.map { commander.accommodation.supports($0, mode: .awake) && $0.privateCabin } == true
       && berth?.use == .reserved(mission: state.mission, person: identity.id)
       && offer.berths.indices.contains(ordinal) && offer.berths[ordinal] == berth
     return .init(

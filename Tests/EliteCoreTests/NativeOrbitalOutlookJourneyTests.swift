@@ -268,3 +268,45 @@ struct NativeOrbitalOutlookJourneyTests {
     #expect(lost.commander.valid)
   }
 }
+
+extension NativeOrbitalOutlookJourneyTests {
+  @Test func outlookPrivateAwakeConsentRejectsPackedPodsAndTwoPlacesInOnePhysicalCabin()
+    async throws
+  {
+    let fixture = try NativeOrbitalOutlookFixture()
+    defer { fixture.files.clean() }
+    let runtime = try await fixture.runtime(cabins: 0)
+    let packed = await runtime.passengerCabinQuote(.cryogenic)
+    try await runtime.confirmPassengerBerth(packed)
+    try await fixture.confirm(runtime, .request)
+    let stasisOnly = try await fixture.source(runtime)
+    let stasisOffer = try #require(stasisOnly.latestOffer)
+    #expect(stasisOffer.berths.isEmpty)
+    #expect(stasisOnly.latestReplies(for: stasisOffer).map(\.kind) == [.refuse, .refuse])
+    let shared = await runtime.passengerCabinQuote(.stateroomDouble)
+    try await runtime.confirmPassengerBerth(shared)
+    try await fixture.confirm(runtime, .request)
+    let oneCabin = try await fixture.source(runtime)
+    let oneOffer = try #require(oneCabin.latestOffer)
+    #expect(oneOffer.berths.count == 1)
+    #expect(oneCabin.latestReplies(for: oneOffer).map(\.kind) == [.refuse, .refuse])
+    let separate = await runtime.passengerCabinQuote(.stateroomSingle)
+    try await runtime.confirmPassengerBerth(separate)
+    try await fixture.confirm(runtime, .request)
+    let agreed = try await fixture.source(runtime)
+    let offer = try #require(agreed.latestOffer)
+    #expect(Set(offer.berths.map(\.cabinID)).count == 2)
+    #expect(agreed.latestReplies(for: offer).map(\.kind) == [.accept, .accept])
+    try await fixture.confirm(runtime, .board)
+    let aboard = await runtime.snapshot().commander
+    #expect(
+      aboard.nativePeople?.held.filter {
+        $0.person.station?.batch == NativeOrbitalOutlookJourney.batch
+      }.count == 2)
+    #expect(
+      aboard.accommodation.fittedBerths.filter { $0.use.used }.allSatisfy {
+        $0.mode == .awake && $0.privateCabin
+      })
+    #expect(aboard.valid)
+  }
+}

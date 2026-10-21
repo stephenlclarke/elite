@@ -161,9 +161,9 @@ enum NativeOriginalEvacuation {
       let carrier = commander.hullInstanceID,
       let inventory = commander.equipmentInventory
     else { throw MissionPackError("Request passage from the actual Avenor passage office.") }
-    let slots = commander.accommodation.fittedBerths.filter {
-      !$0.use.used && $0.lifeSupportWorking && $0.humanoidCompatible
-    }.sorted { $0.id.uuidString < $1.id.uuidString }
+    let slots = commander.accommodation.availablePlaces(privateCabin: true).sorted {
+      $0.id.uuidString < $1.id.uuidString
+    }
     let reach = ScriptCourierReach(commander)
     let route =
       ScriptCourierGeneration.routes(origin: source, reach: reach).first {
@@ -234,7 +234,9 @@ enum NativeOriginalEvacuation {
     }
     let offered = offer.berths.indices.contains(index) ? offer.berths[index] : nil
     let berth = offered?.id
-    let observed = commander.accommodation.fittedBerths.first { $0.id == berth }
+    let observed = commander.accommodation.availablePlaces(privateCabin: true).first {
+      $0.id == berth
+    }
     let inventoryRevision = inventory.revision
     let kind: NativeStationPassageReplyKind
     if request.intent == .withdrawn || state.latestOffer?.id != offer.id || offer.dock != dock

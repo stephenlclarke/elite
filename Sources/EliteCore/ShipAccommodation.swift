@@ -91,14 +91,49 @@ public enum PassengerPlaceUse: Sendable, Equatable, Codable {
 }
 public struct PassengerBerth: Sendable, Equatable, Codable, Identifiable {
   public let id: UUID
+  public let cabinID: UUID
+  public let cabinGrade: PassengerCabinGrade
+  public let ordinal: Int
+  public var mode: PassengerTransportMode
+  public var privateCabin: Bool
   public var lifeSupportWorking: Bool
   public var humanoidCompatible: Bool
   public var use: PassengerPlaceUse
+  private enum CodingKeys: String, CodingKey {
+    case id, cabinID, cabinGrade, ordinal, mode, privateCabin, lifeSupportWorking,
+      humanoidCompatible, use
+  }
+  public init(from decoder: any Decoder) throws {
+    try validateCabinRecordKeys(
+      decoder,
+      [
+        "id", "cabinID", "cabinGrade", "ordinal", "mode", "privateCabin", "lifeSupportWorking",
+        "humanoidCompatible", "use",
+      ])
+    let fields = try decoder.container(keyedBy: CodingKeys.self)
+    id = try fields.decode(UUID.self, forKey: .id)
+    cabinID = try fields.decode(UUID.self, forKey: .cabinID)
+    cabinGrade = try fields.decode(PassengerCabinGrade.self, forKey: .cabinGrade)
+    ordinal = try fields.decode(Int.self, forKey: .ordinal)
+    mode = try fields.decode(PassengerTransportMode.self, forKey: .mode)
+    privateCabin = try fields.decode(Bool.self, forKey: .privateCabin)
+    lifeSupportWorking = try fields.decode(Bool.self, forKey: .lifeSupportWorking)
+    humanoidCompatible = try fields.decode(Bool.self, forKey: .humanoidCompatible)
+    use = try fields.decode(PassengerPlaceUse.self, forKey: .use)
+  }
   public init(
-    id: UUID = UUID(), lifeSupportWorking: Bool = true, humanoidCompatible: Bool = true,
+    id: UUID = UUID(), cabinID: UUID, cabinGrade: PassengerCabinGrade = .stateroomSingle,
+    ordinal: Int = 0,
+    mode: PassengerTransportMode = .awake, privateCabin: Bool = false,
+    lifeSupportWorking: Bool = true, humanoidCompatible: Bool = true,
     use: PassengerPlaceUse = .empty
   ) {
     self.id = id
+    self.cabinID = cabinID
+    self.cabinGrade = cabinGrade
+    self.ordinal = ordinal
+    self.mode = mode
+    self.privateCabin = privateCabin
     self.lifeSupportWorking = lifeSupportWorking
     self.humanoidCompatible = humanoidCompatible
     self.use = use
@@ -113,28 +148,31 @@ public struct AccommodationFit: Sendable, Equatable {
   public var allowed: Bool { issues.isEmpty }
 }
 public enum AccommodationFitting {
-  public static let tonnesPerCommonBerth = 5
-  public static let equipmentUnitsPerCommonBerth = 1
+  public static let tonnesPerCabin = 5
+  public static let equipmentUnitsPerCabin = 1
 
   /// Callers supply actual fitted equipment costs; theoretical expansion/storage are excluded.
   public static func evaluate(
     profile: ShipAccommodationProfile, holdTonnes: Int,
     freightTonnes: Int, otherFittedCargoTonnes: Int, otherFittedEquipmentUnits: Int,
-    berths: [PassengerBerth], requestedParty: Int = 0, humanoidParty: Bool = true
+    cabins: [OwnedPassengerCabin], berths: [PassengerBerth], requestedParty: Int = 0,
+    humanoidParty: Bool = true
   ) -> AccommodationFit {
     let quantities = [
       holdTonnes, freightTonnes, otherFittedCargoTonnes, otherFittedEquipmentUnits, requestedParty,
     ]
-    guard quantities.allSatisfy({ (0...100000).contains($0) }), berths.count <= 10000 else {
+    guard quantities.allSatisfy({ (0...100000).contains($0) }), berths.count <= 10000,
+      cabins.count <= 10000
+    else {
       return .init(
         usableCargo: 0, freeEquipmentUnits: 0, freeCompatiblePlaces: 0, cabinCargo: 0,
         issues: ["Invalid accommodation quantities."])
     }
-    let cabinCargo = berths.count * tonnesPerCommonBerth
+    let cabinCargo = cabins.count * tonnesPerCabin
     let usable = holdTonnes - freightTonnes - otherFittedCargoTonnes - cabinCargo
     let equipment =
-      profile.equipmentUnits - otherFittedEquipmentUnits - berths.count
-      * equipmentUnitsPerCommonBerth
+      profile.equipmentUnits - otherFittedEquipmentUnits - cabins.count
+      * equipmentUnitsPerCabin
     var issues: [String] = []
     if Set(berths.map(\.id)).count != berths.count {
       issues.append("A berth module cannot be fitted more than once.")
@@ -152,9 +190,22 @@ public enum AccommodationFitting {
     {
       issues.append("Occupied or reserved accommodation needs compatible working life support.")
     }
-    let free = berths.filter {
-      !$0.use.used && $0.lifeSupportWorking && (humanoidParty ? $0.humanoidCompatible : false)
-    }.count
+    var accommodation = ShipAccommodation()
+    accommodation.ownedCabins = cabins
+    accommodation.ownedBerths = berths
+    accommodation.fitted = Set(cabins.map(\.id))
+    if !accommodation.layoutValid {
+      issues.append("Cabin layouts and place identities must match owned physical modules.")
+    }
+    let hardware = Dictionary(cabins.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+    if berths.contains(where: { place in
+      guard place.use.used else { return false }
+      guard let cabin = hardware[place.cabinID], cabin.lifeSupportWorking else { return true }
+      return place.mode == .stasis ? !cabin.stasisWorking : !cabin.grade.supportsAwake
+    }) {
+      issues.append("Occupied or reserved places need working, compatible transport hardware.")
+    }
+    let free = humanoidParty ? accommodation.availablePlaces().count : 0
     if requestedParty > 0 && !humanoidParty {
       issues.append("This party needs a separately supported environmental accommodation adapter.")
     }

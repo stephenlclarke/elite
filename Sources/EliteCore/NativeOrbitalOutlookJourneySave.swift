@@ -96,7 +96,8 @@ extension NativeOrbitalOutlookJourney {
         (0..<8).contains(offer.destination.galaxy), (0..<256).contains(offer.destination.system),
         offer.physicalTime.isFinite, offer.physicalTime >= 0,
         offer.physicalTime <= commander.flightSimulation.physicalTime,
-        offer.berths.count <= 2, Set(offer.berths.map(\.id)).count == offer.berths.count,
+        offer.berths.count <= 2, commander.accommodation.validPrivateOffer(offer.berths),
+        Set(offer.berths.map(\.id)).count == offer.berths.count,
         offer.berths.allSatisfy({ !$0.use.used && $0.lifeSupportWorking && $0.humanoidCompatible })
       else { return false }
       let route = itineraryRoute(reach: offer.reach, requested: offer.destination)

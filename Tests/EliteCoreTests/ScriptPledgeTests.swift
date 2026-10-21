@@ -742,6 +742,7 @@ func pledgeClosedDeclarationAndGeneratedTermsRefuseUnsupportedAuthority(mode: St
   game.key("return")
   #expect(game.commander.missionProgress[legacy.pack.stateID]?.payloads["parcel"] == 1)
   game.screen = .status
+  game.commander.credits = 1_000_000
   try game.confirmPassengerBerth(game.passengerBerthQuote)
   let passengers = try ScriptPackLibrary.read(
     examples.appendingPathComponent("scripted-passengers"))

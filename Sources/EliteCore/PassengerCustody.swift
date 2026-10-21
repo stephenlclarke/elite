@@ -10,6 +10,8 @@ public struct ScriptPassengerParty: Codable, Sendable {
   public let pickupSystem: Int
   public let destinationGalaxy: Int
   public let destinationSystem: Int
+  /// An explicit declaration is required before this party may be frozen for transport.
+  public let transportMode: PassengerTransportMode?
   var valid: Bool {
     PackValidation.localID(id) && (1...32).contains(names.count)
       && names.allSatisfy { (1...80).contains($0.count) }
@@ -26,37 +28,110 @@ public struct ScriptPassenger: Codable, Sendable, Equatable, Identifiable {
   public let mission: UUID
   public let party: String
   public let name: String
+  public let transportMode: PassengerTransportMode
   public var location: PassengerLocation
 }
 public struct ShipAccommodation: Codable, Sendable, Equatable {
+  public var ownedCabins: [OwnedPassengerCabin] = []
   public var ownedBerths: [PassengerBerth] = []
   public var fitted: Set<UUID> = []
   public var people: [UUID: ScriptPassenger] = [:]
   public init() {}
-  public var fittedBerths: [PassengerBerth] { ownedBerths.filter { fitted.contains($0.id) } }
-  public var storedBerths: [PassengerBerth] { ownedBerths.filter { !fitted.contains($0.id) } }
-  public var valid: Bool {
-    let ids = Set(ownedBerths.map(\.id))
-    guard ownedBerths.count <= 10000, ids.count == ownedBerths.count,
-      fitted.isSubset(of: ids), people.count <= 4096,
-      storedBerths.allSatisfy({ !$0.use.used })
+  private enum CodingKeys: String, CodingKey { case ownedCabins, ownedBerths, fitted, people }
+  public init(from decoder: any Decoder) throws {
+    try validateCabinRecordKeys(decoder, ["ownedCabins", "ownedBerths", "fitted", "people"])
+    let fields = try decoder.container(keyedBy: CodingKeys.self)
+    func records<T: Decodable>(_ type: T.Type, key: CodingKeys, limit: Int) throws -> [T] {
+      var input = try fields.nestedUnkeyedContainer(forKey: key)
+      if let count = input.count, count > limit { throw SaveError.invalidCommander }
+      var result: [T] = []
+      while !input.isAtEnd {
+        guard result.count < limit else { throw SaveError.invalidCommander }
+        result.append(try input.decode(T.self))
+      }
+      return result
+    }
+    ownedCabins = try records(OwnedPassengerCabin.self, key: .ownedCabins, limit: 10000)
+    ownedBerths = try records(PassengerBerth.self, key: .ownedBerths, limit: 10000)
+    let fittedIDs = try records(UUID.self, key: .fitted, limit: 10000)
+    fitted = Set(fittedIDs)
+    guard fitted.count == fittedIDs.count else { throw SaveError.invalidCommander }
+    // The current cabin format stores bounded alternating person-ID/person records.
+    var input = try fields.nestedUnkeyedContainer(forKey: .people)
+    if let count = input.count, count > 8192 { throw SaveError.invalidCommander }
+    people = [:]
+    while !input.isAtEnd {
+      guard people.count < 4096 else { throw SaveError.invalidCommander }
+      let id = try input.decode(UUID.self)
+      guard people[id] == nil else { throw SaveError.invalidCommander }
+      people[id] = try input.decode(ScriptPassenger.self)
+    }
+    guard valid else { throw SaveError.invalidCommander }
+  }
+  public func encode(to encoder: any Encoder) throws {
+    var fields = encoder.container(keyedBy: CodingKeys.self)
+    try fields.encode(ownedCabins, forKey: .ownedCabins)
+    try fields.encode(ownedBerths, forKey: .ownedBerths)
+    try fields.encode(fitted.sorted { $0.uuidString < $1.uuidString }, forKey: .fitted)
+    var records = fields.nestedUnkeyedContainer(forKey: .people)
+    for (id, person) in people.sorted(by: { $0.key.uuidString < $1.key.uuidString }) {
+      try records.encode(id)
+      try records.encode(person)
+    }
+  }
+  public var fittedBerths: [PassengerBerth] { ownedBerths.filter { fitted.contains($0.cabinID) } }
+  public var storedBerths: [PassengerBerth] { ownedBerths.filter { !fitted.contains($0.cabinID) } }
+  var layoutValid: Bool {
+    let cabinIDs = Set(ownedCabins.map(\.id))
+    let placeIDs = Set(ownedBerths.map(\.id))
+    guard ownedCabins.count <= 10000, ownedBerths.count <= 10000,
+      cabinIDs.count == ownedCabins.count, placeIDs.count == ownedBerths.count,
+      cabinIDs.isDisjoint(with: placeIDs), fitted.isSubset(of: cabinIDs),
+      ownedBerths.allSatisfy({ cabinIDs.contains($0.cabinID) })
     else { return false }
+    let places = Dictionary(grouping: ownedBerths, by: \.cabinID)
+    for cabin in ownedCabins {
+      let members = places[cabin.id] ?? []
+      guard members.count == cabin.grade.places,
+        members.allSatisfy({ $0.cabinGrade == cabin.grade }),
+        Set(members.map(\.ordinal)) == Set(0..<cabin.grade.places),
+        members.filter({ $0.use.used && $0.privateCabin }).isEmpty
+          || members.filter({ $0.use.used }).count == 1
+      else { return false }
+    }
+    return true
+  }
+  public var valid: Bool {
+    guard layoutValid, people.count <= 4096, storedBerths.allSatisfy({ !$0.use.used })
+    else { return false }
+    let cabins = Dictionary(uniqueKeysWithValues: ownedCabins.map { ($0.id, $0) })
+    for place in ownedBerths where place.use.used {
+      guard let cabin = cabins[place.cabinID], fitted.contains(cabin.id), cabin.lifeSupportWorking,
+        place.lifeSupportWorking, place.humanoidCompatible,
+        place.mode == .stasis ? cabin.stasisWorking : cabin.grade.supportsAwake
+      else { return false }
+    }
+    let placesByID = Dictionary(uniqueKeysWithValues: ownedBerths.map { ($0.id, $0) })
+    let physicalIDs = Set(cabins.keys).union(placesByID.keys)
     var cabinPeople: Set<UUID> = []
     for berth in ownedBerths {
       if let person = berth.use.personID {
-        guard cabinPeople.insert(person).inserted else { return false }
+        guard !physicalIDs.contains(person), cabinPeople.insert(person).inserted else {
+          return false
+        }
       }
       if case .nativePerson(let person) = berth.use {
         guard let id = person.nativeID,
           person.station?.valid == true || person.rescue?.valid == true
             || person.evacuation?.valid == true,
-          fitted.contains(berth.id), berth.lifeSupportWorking,
-          berth.humanoidCompatible, people[id] == nil
+          fitted.contains(berth.cabinID), berth.lifeSupportWorking,
+          berth.humanoidCompatible, berth.privateCabin, berth.mode == .awake, people[id] == nil
         else { return false }
       }
+      if case .extraCrew = berth.use, berth.mode != .awake { return false }
       if case .occupied(let person) = berth.use {
-        guard fitted.contains(berth.id), berth.lifeSupportWorking, berth.humanoidCompatible,
-          people[person]?.location == .cabin(berth.id)
+        guard fitted.contains(berth.cabinID), berth.lifeSupportWorking, berth.humanoidCompatible,
+          people[person]?.location == .cabin(berth.id), people[person]?.transportMode == berth.mode
         else { return false }
       }
     }
@@ -66,7 +141,7 @@ public struct ShipAccommodation: Codable, Sendable, Equatable {
       else { return false }
       switch person.location {
       case .cabin(let berth):
-        return ownedBerths.contains { $0.id == berth && $0.use == .occupied(person: id) }
+        return placesByID[berth]?.use == .occupied(person: id)
       case .delivered(let galaxy, let system):
         return !cabinPeople.contains(id) && (0..<8).contains(galaxy) && (0...255).contains(system)
       }
@@ -102,9 +177,10 @@ extension Commander {
     else { return nil }
     return AccommodationFitting.evaluate(
       profile: profile, holdTonnes: standardCargoCapacity,
-      freightTonnes: cargoTonnes - accommodation.fittedBerths.count * 5,
+      freightTonnes: cargoTonnes - accommodation.fittedCabins.count
+        * AccommodationFitting.tonnesPerCabin,
       otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: commonEquipmentUnits,
-      berths: accommodation.fittedBerths)
+      cabins: accommodation.fittedCabins, berths: accommodation.fittedBerths)
   }
   /// Explicit common-project costs; lasers/pylons and intrinsic docking are separate.
   /// Hardware without a more specific common adapter uses the documented one-unit estimate.
@@ -161,10 +237,10 @@ extension Game {
         throw MissionPackError(
           "This party is not waiting at this station or is already in custody.")
       }
+      let mode = party.transportMode ?? .awake
+      let available = Set(accommodation.availablePlaces(mode: mode).map(\.id))
       let places = accommodation.ownedBerths.indices.filter {
-        let berth = accommodation.ownedBerths[$0]
-        return accommodation.fitted.contains(berth.id) && !berth.use.used
-          && berth.lifeSupportWorking && berth.humanoidCompatible
+        available.contains(accommodation.ownedBerths[$0].id)
       }.sorted {
         accommodation.ownedBerths[$0].id.uuidString < accommodation.ownedBerths[$1].id.uuidString
       }
@@ -174,9 +250,12 @@ extension Game {
       }
       for (index, place) in zip(ids.indices, places) {
         let berth = accommodation.ownedBerths[place].id
+        accommodation.ownedBerths[place].privateCabin = false
+        accommodation.ownedBerths[place].mode = mode
         accommodation.ownedBerths[place].use = .occupied(person: ids[index])
         accommodation.people[ids[index]] = ScriptPassenger(
           id: ids[index], mission: state.id, party: partyID, name: party.names[index],
+          transportMode: mode,
           location: .cabin(berth))
       }
     } else if op == "passengers.deliver" {
@@ -188,7 +267,7 @@ extension Game {
         guard let person = accommodation.people[id], person.mission == state.id,
           person.party == partyID, case .cabin(let berth) = person.location,
           let index = accommodation.ownedBerths.firstIndex(where: { $0.id == berth }),
-          accommodation.fitted.contains(berth),
+          accommodation.placeIsFitted(berth),
           accommodation.ownedBerths[index].use == .occupied(person: id)
         else { throw MissionPackError("Actual owned passengers aboard are required for delivery.") }
         accommodation.ownedBerths[index].use = .empty

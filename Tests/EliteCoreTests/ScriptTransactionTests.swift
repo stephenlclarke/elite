@@ -182,7 +182,7 @@ private struct DurableFixture {
   let fixture = try DurableFixture()
   defer { fixture.clean() }
   var game = try fixture.game(accepted: false, destination: false)
-  game.commander.credits = 100000
+  game.commander.credits = 1_000_000
   let runtime = GameRuntime(game: game, saveURL: fixture.url)
   try await runtime.save(to: fixture.url)
   let quote = await runtime.passengerBerthQuote()
@@ -193,7 +193,8 @@ private struct DurableFixture {
   try fixture.restoreWriter()
   try await runtime.confirmPassengerBerth(quote)
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
-  #expect(saved.accommodation.ownedBerths.count == 1 && saved.credits == 90000)
+  #expect(
+    saved.accommodation.ownedBerths.count == 1 && saved.credits == 1_000_000 - PassengerCabin.price)
 }
 private func actualGameOverRuntime(_ fixture: DurableFixture) async throws -> GameRuntime {
   var game = try fixture.game(destination: false)
@@ -604,7 +605,7 @@ private func fitPhysicalDeathTargeting(_ game: inout Game) throws {
   let fixture = try DurableFixture()
   defer { fixture.clean() }
   var game = try fixture.game(accepted: false, destination: false)
-  game.commander.credits = 100000
+  game.commander.credits = 1_000_000
   try game.confirmPassengerBerth(game.passengerBerthQuote)
   let owned = game.commander.accommodation
   var legacy = game.commander

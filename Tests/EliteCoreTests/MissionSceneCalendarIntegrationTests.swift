@@ -91,9 +91,10 @@ struct MissionSceneCalendarIntegrationTests {
       id: UUID(), definition: "fixture/passenger", version: "1.0.0",
       digest: String(repeating: "a", count: 64))
     game.commander.scriptState.instances[instance.id] = instance
-    let berth = PassengerBerth(use: .reserved(mission: instance.id, person: nil))
+    let berth = PassengerBerth(cabinID: UUID(), use: .reserved(mission: instance.id, person: nil))
+    game.commander.accommodation.ownedCabins = [.init(id: berth.cabinID, grade: .stateroomSingle)]
     game.commander.accommodation.ownedBerths = [berth]
-    game.commander.accommodation.fitted = [berth.id]
+    game.commander.accommodation.fitted = [berth.cabinID]
     game.launch()
     #expect(!game.docked && game.commander.valid)
     let before = game
