@@ -481,14 +481,34 @@ extension NativeMeasuredExtractionJourneyTests {
         \.id))
     try #require(expectedOriginals.count == 12)
     try #require(extracted.measuredExtractionState?.captures.isEmpty == true)
+    try #require(
+      extracted.workRecoveryRock == NativeMeasuredExtraction.root,
+      "Extraction did not hand off same-source recovery; time=\(extracted.commander.flightSimulation.physicalTime); mode=\(String(describing: extracted.workGuidance?.mode)); parent=\(String(describing: extracted.workGuidance?.parent)); braking=\(String(describing: extracted.workBraking?.velocity)); message=\(String(extracted.message.prefix(192))); energy=\(extracted.energy); shields=\(extracted.frontShield)/\(extracted.rearShield)"
+    )
     var preceding = extracted
     var observedOperations: Set<UUID> = []
     var observedOriginals: Set<UUID> = []
     var observedActors: Set<ActorIdentity> = []
-    for _ in 0..<(12 * 600) {
+    for step in 0..<(12 * 600) {
       let current = await runtime.advance(delta: 0.1)
       let currentState = try #require(current.measuredExtractionState)
       let currentSource = try #require(current.commander.scriptState.savedMeasuredExtractionSource)
+      if currentState.captures.count < 12
+        && current.workRecoveryRock != NativeMeasuredExtraction.root
+      {
+        let pending = current.commander.miningLedger.pendingPayloads.filter { item in
+          if case .ore(let root, _) = item.identity { return root == NativeMeasuredExtraction.root }
+          return false
+        }
+        let bound = pending.filter {
+          current.commander.miningLedger.boundActor(for: $0.identity) != nil
+        }.count
+        let context =
+          "Automatic recovery stopped; step=\(step + 1); time=\(preceding.commander.flightSimulation.physicalTime)->\(current.commander.flightSimulation.physicalTime); captures=\(currentState.captures.count)/12; priorMode=\(String(describing: preceding.workGuidance?.mode)); mode=\(String(describing: current.workGuidance?.mode)); priorParent=\(String(describing: preceding.workGuidance?.parent)); parent=\(String(describing: current.workGuidance?.parent)); priorBraking=\(String(describing: preceding.workBraking?.velocity)); braking=\(String(describing: current.workBraking?.velocity)); priorMessage=\(String(preceding.message.prefix(192))); message=\(String(current.message.prefix(192))); energy=\(preceding.energy)->\(current.energy); frontShield=\(preceding.frontShield)->\(current.frontShield); rearShield=\(preceding.rearShield)->\(current.rearShield); pending=\(pending.count); bound=\(bound)"
+        try #require(
+          current.workRecoveryRock == NativeMeasuredExtraction.root,
+          "\(String(context.prefix(2048)))")
+      }
       for intake in currentState.captures where !observedOperations.contains(intake.operation) {
         let priorWork = try #require(preceding.workGuidance)
         let body = try #require(intake.body.first)
