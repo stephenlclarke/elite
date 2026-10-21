@@ -322,3 +322,55 @@ func renderedVertexViewsPreserveIndependentNearPlaneAndViewportClipWitness(scree
   let afterTime = game.time
   #expect(afterScreen == screen && afterStyle == .whiteWireframe && afterTime == 0)
 }
+
+@Test(arguments: ShipDisplayStyle.allCases)
+func frontVisibilityPreservesGenuineNativeStationGeometryAndRevokedAuthority(
+  style: ShipDisplayStyle
+) throws {
+  var game = try NativeStationTestFixture.launched()
+  game.commander.shipDisplayStyle = style
+  game.screen = .left
+  let stationIDs = game.bodies.filter { $0.nativeStationIdentity != nil }.map(\.id)
+  try #require(stationIDs.count == 2)
+  for id in stationIDs {
+    let original = try #require(game.bodies.first { $0.id == id })
+    var pose = ShipPose()
+    pose.position =
+      game.commander.flightSimulation.pose.systemPoint(original.position)
+      - Vector3(0, 0, 10000)
+    NativeStationTestFixture.reframe(&game, to: pose)
+    let station = try #require(game.bodies.first { $0.id == id })
+    let identity = try #require(station.nativeStationIdentity)
+    let physical = try #require(station.physical)
+    let world = try #require(game.commander.nativeStations)
+    let flight = game.commander.flightSimulation
+    let layout = CockpitLayout(game: game, width: game.viewportWidth, height: game.viewportHeight)
+    try #require(game.nativeStationBodyIsCurrent(station))
+    #expect(Display.visibleInFront(station, game: game, layout: layout))
+    let visibleWorld = game.commander.nativeStations
+    let visibleFlight = game.commander.flightSimulation
+    #expect(visibleWorld == world && visibleFlight == flight)
+
+    // Retaining source markers cannot substitute for the actual admitted body binding.
+    var unbound = station
+    unbound.id += 10000
+    #expect(!Display.visibleInFront(unbound, game: game, layout: layout))
+    game.commander.nativeStations = nil
+    #expect(!Display.visibleInFront(station, game: game, layout: layout))
+    #expect(game.commander.nativeStations == nil)
+    game.commander.nativeStations = world
+    try game.commander.nativeStations?.ledger.destroy(
+      identity, binding: .init(actor: physical.identity, bodyID: station.id))
+    let destroyed = game.commander.nativeStations
+    #expect(!Display.visibleInFront(station, game: game, layout: layout))
+    let afterDestroyed = game.commander.nativeStations
+    #expect(afterDestroyed == destroyed)
+    game.commander.nativeStations = world
+    #expect(Display.visibleInFront(station, game: game, layout: layout))
+    let afterWorld = game.commander.nativeStations
+    let afterFlight = game.commander.flightSimulation
+    let afterStyle = game.commander.shipDisplayStyle
+    #expect(afterWorld == world && afterFlight == flight)
+    #expect(game.screen == .left && afterStyle == style)
+  }
+}

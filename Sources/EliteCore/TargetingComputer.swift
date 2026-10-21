@@ -61,11 +61,13 @@ extension Display {
   {
     var front = copy game
     front.screen = .front
+    // Resolve authorized geometry before entering the renderer with its owned Game frame.
+    let mesh = front.scriptNPCMesh(body) ?? front.gameplayMesh(for: body)
     var frame = Frame()
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: layout.width, height: layout.height)
     frame.flightClip = layout.flightClip
-    draw(body, game: front, into: &frame, projection: layout.projection)
+    draw(body, game: front, into: &frame, projection: layout.projection, mesh: mesh)
     return !frame.shipLines.isEmpty || frame.hasShipSurfaces
   }
 }
