@@ -4205,6 +4205,20 @@
       "owner": "G1",
       "decision_scope": "SH061 existing approved geometry20metres/authoredunit,40t custodian seed stores,6crew; retain flight stats and real transit/receiving",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Haflinger physical-source prerequisite pushed; actual ark adapter continues",
+      "head": "b0bb67949557327014026225ff1e1b0abd35d588",
+      "base": "d498fed7be17a7d6598df83c3ee4039e5aa52f61",
+      "ledger_parent": "M04.H061.units",
+      "new_methods": 3,
+      "unit_status": "pending",
+      "source_review": "MBA exact delta/necessary callers reviewed; no actionable defect",
+      "next_assigned": "M10.P01.C08",
+      "usable_build_delivered": false,
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326746645",
+      "github_run": 39677429396,
+      "selection_methods": 95
     }
   ]
 }
