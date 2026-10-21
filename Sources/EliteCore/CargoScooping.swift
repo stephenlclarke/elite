@@ -32,6 +32,10 @@ extension Game {
           else { continue }
         }
       }
+      if let payload = body.physical?.payload, measuredPayloadIsAllocated(payload) {
+        observeMeasuredIntake(body)
+        continue
+      }
       if let payload = body.physical?.payload {
         guard let context = gameplayContext() else { continue }
         var cargo = commander.cargo

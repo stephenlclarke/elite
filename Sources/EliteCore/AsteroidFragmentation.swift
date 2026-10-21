@@ -137,9 +137,13 @@ extension Game {
     let motion = AsteroidMotion(
       position: commander.flightSimulation.pose.systemPoint(bodies[index].position),
       velocity: physical.velocity, physicalTime: commander.flightSimulation.physicalTime)
-    switch commander.miningLedger.hit(
+    let sourceBody = bodies[index]
+    let measuredAttempt = beginMeasuredExtractionHit(body: sourceBody, incident: incident)
+    let result = commander.miningLedger.hit(
       rock: rock, incident: incident, damage: damage, motion: motion)
-    {
+    observeMeasuredExtractionResult(
+      attempt: measuredAttempt, body: sourceBody, incident: incident, result: result)
+    switch result {
     case .damaged(let remaining):
       bodies[index].energy = remaining
       if commander.miningLedger.breakups[identity] != nil {

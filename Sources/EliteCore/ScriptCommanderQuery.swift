@@ -20,6 +20,18 @@ extension Game {
         "calendar_seconds": .number(receipt.calendarSeconds),
       ])
     }
+    if let state = measuredExtractionState,
+      let source = commander.scriptState.savedMeasuredExtractionSource
+    {
+      fields["measured_extraction"] = .object([
+        "extracted": .bool(state.extraction != nil),
+        "raw_held": .integer(Int64(NativeMeasuredExtraction.rawHeld(source).count)),
+        "captured": .integer(Int64(state.captures.count)),
+        "products_held": .integer(
+          Int64((state.processing?.products ?? []).filter { $0.custody == .held }.count)),
+        "processed": .bool(state.processing != nil), "closed": .bool(state.reception != nil),
+      ])
+    }
     if let state = recordRecoveryState {
       fields["record_recovery"] = .object([
         "identified": .bool(state.identification != nil),

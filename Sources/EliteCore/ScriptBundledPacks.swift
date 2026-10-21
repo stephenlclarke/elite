@@ -70,6 +70,10 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-custody-rescue")
   }
+  static var bundledMeasuredExtractionDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-measured-extraction")
+  }
   static var bundledRecordRecoveryDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-record-recovery")
@@ -237,6 +241,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled crew record recovery pack: " + error.localizedDescription)
+    }
+    do {
+      let extraction = try read(bundledMeasuredExtractionDirectory)
+      if !library.packs.contains(where: { $0.digest == extraction.digest }) {
+        library.packs.append(extraction)
+      }
+    } catch {
+      library.errors.append("Bundled measured extraction pack: " + error.localizedDescription)
     }
     return library
   }

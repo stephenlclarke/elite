@@ -29,7 +29,9 @@ extension Display {
   static func contractDetailRows(_ game: Game, width: Double) -> [String] {
     guard let row = game.contractBoard.selected else { return ["No contract selected."] }
     var rows: [String]
-    if let action = row.recordRecovery {
+    if let action = row.measuredExtraction {
+      rows = game.measuredExtractionDetail(action)
+    } else if let action = row.recordRecovery {
       rows = game.recordRecoveryDetail(action)
     } else if let action = row.identifiedSalvage {
       rows = game.identifiedSalvageDetail(action)
@@ -122,6 +124,9 @@ extension Display {
           : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
     var detailReason: String? {
+      if let reason: String = game.contractBoard.measuredExtractionQuote?.issues.first {
+        return reason
+      }
       if let reason: String = game.contractBoard.recordRecoveryQuote?.issues.first { return reason }
       if let reason: String = game.contractBoard.identifiedSalvageQuote?.issues.first {
         return reason
@@ -161,10 +166,12 @@ extension Display {
         let coldChain = game.contractBoard.coldChainQuote
         let provider = game.contractBoard.providerQuote
         let survey = game.contractBoard.surveyQuote
+        let measuredExtraction = game.contractBoard.measuredExtractionQuote
         let recordRecovery = game.contractBoard.recordRecoveryQuote
         let identifiedSalvage = game.contractBoard.identifiedSalvageQuote
         let available =
           action == .back
+          || (measuredExtraction != nil && action == .accept && measuredExtraction?.allowed == true)
           || (recordRecovery != nil && action == .accept && recordRecovery?.allowed == true)
           || (identifiedSalvage != nil && action == .accept && identifiedSalvage?.allowed == true)
           || (survey != nil && action == .accept && survey?.allowed == true)
@@ -184,7 +191,8 @@ extension Display {
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
             + (action == .accept
-              && (recordRecovery != nil || identifiedSalvage != nil || survey != nil
+              && (measuredExtraction != nil || recordRecovery != nil || identifiedSalvage != nil
+                || survey != nil
                 || provider != nil || coldChain != nil
                 || repairLoop != nil)
               ? "Confirm"
