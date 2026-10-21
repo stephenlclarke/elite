@@ -45,3 +45,7 @@ Execution 1162 confirms current native acceptance inputs and failure at nativeSa
 ## Contract equipment-fit acceptance correction
 
 Execution 1164 identifies accommodation as the rejecting group in the reconstructed candidate. The native equipment-unit budget is independent of hold tonnes: the maximum-hardware SH023 fixture fits eighteen units against a twelve-unit budget. Its legacy outfit is permitted before a contract, while actual acceptance activates contract-fit validation. The G12 quote omitted that native fit requirement and advertised an operation that could not publish. Require the actual passengerFit issues alongside the unchanged twelve-tonne hold and required-tools checks. Use a valid required-hardware fit for positive journeys and preserve the original over-equipped fixture in a refusal regression. No capacity is enlarged, no equipment is assigned zero cost and no strict save predicate is relaxed.
+
+## Native tool-cycle and fit-counter correction
+
+Execution 1166 advances past real acceptance. Mining hold acquisition already selects the mining tool, so the positive fixture must exercise the native W cycle back to Mining instead of assuming a combat starting selection. The over-equipped fit is genuinely refused, but the displayed free-equipment counter is clamped to zero; prove the deficit directly from actual fitted cost minus hull budget and preserve its exact native issue and actual refusal assertions.
