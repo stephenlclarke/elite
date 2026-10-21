@@ -198,6 +198,7 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let berths = game.commander.accommodation.ownedBerths
   try #require(berths.count == 2)
   let empty = try #require(berths.last?.cabinID)
+  let emptyPlace = try #require(berths.last?.id)
   try game.setPassengerBerthFitted(empty, fitted: false)
   let mission = try game.acceptScriptMission(pack)
   let runtime = GameRuntime(game: game)
@@ -206,7 +207,8 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let passenger = try #require(original.accommodation.people.values.first)
   let instance = try #require(original.scriptState.instances[mission])
   try #require(instance.suspension == nil && passenger.mission == mission)
-  #expect(original.accommodation.storedBerths.map(\.id) == [empty])
+  #expect(original.accommodation.storedCabins.map(\.id) == [empty])
+  #expect(original.accommodation.storedBerths.map(\.id) == [emptyPlace])
   let folder = FileManager.default.temporaryDirectory.appendingPathComponent(
     "passenger-save-" + UUID().uuidString)
   try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -248,7 +250,8 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   #expect(loaded.commander.accommodation.people.count == 1)
   #expect(loaded.commander.accommodation.people[passenger.id] == passenger)
   #expect(loaded.commander.accommodation.ownedBerths == commander.accommodation.ownedBerths)
-  #expect(loaded.commander.accommodation.storedBerths.map(\.id) == [empty])
+  #expect(loaded.commander.accommodation.storedCabins.map(\.id) == [empty])
+  #expect(loaded.commander.accommodation.storedBerths.map(\.id) == [emptyPlace])
   await restored.key("b")
   let suspended = await restored.snapshot()
   #expect(suspended.commander.accommodation == commander.accommodation)

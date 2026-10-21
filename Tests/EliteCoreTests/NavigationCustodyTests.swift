@@ -74,6 +74,12 @@ extension NavigationCustodyTests {
   @Test(arguments: [false, true])
   func purchasedCabinReservesRealHoldEvenWithUnlimitedCargo(unlimited: Bool) throws {
     var game = Game(executive: false)
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
+    try #require(game.commander.valid && game.commander.standardCargoCapacity == 30)
     let hold = game.commander.standardCargoCapacity
     let freeHold = hold - 5
     game.commander.credits = 1_000_000
@@ -96,6 +102,12 @@ extension NavigationCustodyTests {
 
   @Test func purchasedCabinsFillActualHoldAndLeaveNoTonneTradeOrPurchaseRoom() throws {
     var game = Game(executive: false)
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
+    try #require(game.commander.valid && game.commander.standardCargoCapacity == 30)
     game.commander.credits = 2_000_000
     let hold = game.commander.standardCargoCapacity
     let cabinTonnes = AccommodationFitting.tonnesPerCabin

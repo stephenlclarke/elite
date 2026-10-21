@@ -43,7 +43,7 @@ import Testing
   #expect(after.shipID == "SH001" && after.missiles == 1 && after.valid)
   #expect(after.credits == quote.balance)
   #expect(after.accommodation == before.accommodation)
-  #expect(after.accommodation.storedBerths.map(\.id) == [cabin])
+  #expect(after.accommodation.storedCabins.map(\.id) == [cabin])
   try verifyOwnedHullPortableProperty(before: before, after: after)
   for id in stored {
     #expect(after.equipmentInventory?.items.first { $0.id == id }?.location == nil)
