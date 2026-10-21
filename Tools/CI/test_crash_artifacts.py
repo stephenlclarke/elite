@@ -1,6 +1,7 @@
 """Filesystem/report fixtures only: never launch make, the app or a native test image."""
 from datetime import datetime, timedelta
 import hashlib
+import io
 import json
 from pathlib import Path
 import shlex
@@ -45,6 +46,341 @@ class RuntimeChildEnvironmentTests(unittest.TestCase):
                                    'output-to': 'stderr', 'threads': 'crashed',
                                    'registers': 'crashed', 'images': 'mentioned'})
         self.assertEqual(len(setting.split(',')), len(options))
+
+
+
+class OwnedFaultStackTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.workspace = Path(temporary.name).resolve()
+        self.evidence = self.workspace / 'evidence'
+        self.evidence.mkdir()
+        self.image = self.workspace / '.build/arm64-apple-macosx/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests'
+        self.image.parent.mkdir(parents=True)
+        self.image.write_bytes(b'fake-image-never-executed')
+        self.argv = ['/toolchain/swiftpm-testing-helper', '--test-bundle-path', str(self.image),
+                     '--enable-code-coverage', str(self.image), '--testing-library', 'swift-testing']
+        self.row = {'start': 'Wed Oct 21 01:31:44 2026', 'command': shlex.join(self.argv), 'parent': 10}
+        self.rows = {21: dict(self.row)}
+        self.cleaned = []
+        self.calls = []
+        self.session = {'pid': 21, 'status': 'target-exited', 'handedBack': True}
+        self.payload = b'bounded debugger fixture output'
+        self.timeout = False
+        self.observer_code = 0
+        self.budget = artifacts.ArtifactBudget()
+        self.hook = artifacts.OwnedFaultStack(
+            self.workspace, self.evidence, self.budget, self.snapshot, self.cleanup, self.popen)
+
+    def snapshot(self):
+        return {pid: dict(row) for pid, row in self.rows.items()}
+
+    def cleanup(self, identity):
+        if artifacts.same_process(identity, self.rows.get(identity['pid'])):
+            self.cleaned.append(identity['pid'])
+            self.rows.pop(identity['pid'])
+
+    def popen(self, command, **kwargs):
+        self.calls.append((command, kwargs))
+        self.rows[55] = {'start': 'observer-start', 'command': 'fixture-lldb', 'parent': 10}
+        self.rows[56] = {'start': 'server-start', 'command': 'fixture-debugserver', 'parent': 55}
+        if self.session is not None:
+            self.hook.session.write_text(json.dumps(self.session))
+        owner = self
+
+        class Observer:
+            pid = 55
+            stdout = io.BytesIO(owner.payload)
+
+            def poll(self):
+                return owner.observer_code
+
+            def wait(self, timeout):
+                if owner.timeout:
+                    raise subprocess.TimeoutExpired(command, timeout)
+                if owner.observer_code is None:
+                    owner.observer_code = 0
+                return owner.observer_code
+
+        return Observer()
+
+    def start(self):
+        self.hook.consider({21: self.row})
+
+    def test_only_exact_unfiltered_normal_owned_coverage_is_eligible(self):
+        self.assertIsNotNone(artifacts.coverage_helper(21, self.row, self.workspace))
+        for change in [self.argv + ['--filter', 'aTest'],
+                       [item.replace('/arm64-apple-macosx/debug/', '/tsan/debug/') for item in self.argv],
+                       [item.replace('/arm64-apple-macosx/debug/', '/asan/debug/') for item in self.argv],
+                       [item.replace('--enable-code-coverage', '--other') for item in self.argv]]:
+            self.assertIsNone(artifacts.coverage_helper(
+                21, dict(self.row, command=shlex.join(change)), self.workspace))
+        self.hook.consider({})
+        self.assertFalse(self.hook.attempted)
+        self.assertEqual(self.calls, [])
+
+    def test_reused_pid_is_rejected_before_attach_and_consumes_one_attempt(self):
+        self.rows[21]['start'] = 'foreign-reused-pid'
+        self.start()
+        self.rows[21] = dict(self.row)
+        self.start()
+        self.assertTrue(self.hook.attempted)
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.cleaned, [])
+
+    def test_early_exit_is_not_attached_or_cleaned_up(self):
+        self.rows.clear()
+        self.start()
+        self.assertEqual(self.hook.finish()['status'], 'identity-changed-or-exited')
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.cleaned, [])
+
+    def test_one_attempt_and_explicit_no_init_pid_session_command(self):
+        self.start()
+        self.start()
+        result = self.hook.finish()
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(self.calls[0][0][:5],
+                         ['xcrun', 'lldb', '--no-lldbinit', '--batch', '-o'])
+        self.assertEqual(result['status'], 'target-exited')
+        self.assertFalse(result['diagnosticallyInterrupted'])
+        self.assertEqual(self.cleaned, [])
+
+    def test_attach_denial_is_logged_once_without_cleanup_or_retry(self):
+        self.session.update(status='attach-denied', error='fixture permission denial')
+        self.start()
+        result = self.hook.finish()
+        self.start()
+        self.assertEqual(result['status'], 'attach-denied')
+        self.assertFalse(result['diagnosticallyInterrupted'])
+        self.assertEqual(self.cleaned, [])
+        self.assertEqual(len(self.calls), 1)
+
+    def test_unresolved_detach_requires_guarded_owned_cleanup_before_teardown(self):
+        self.session.update(status='fault-captured', handedBack=False)
+        self.observer_code = None
+        self.start()
+        self.rows[77] = {'start': 'foreign', 'command': 'unrelated', 'parent': 1}
+        self.hook.poll()
+        result = self.hook.finish()
+        self.assertEqual(result['status'], 'DIAGNOSTICALLY_INTERRUPTED')
+        self.assertEqual(set(self.cleaned), {21, 55, 56})
+        self.assertIn(77, self.rows)
+        self.assertEqual(result['remainingMatchedOwned'], [])
+
+    def test_timeout_cleans_only_still_matching_owned_identities(self):
+        self.timeout, self.observer_code = True, None
+        self.start()
+        self.rows[21]['start'] = 'reused-target'
+        result = self.hook.finish()
+        self.assertTrue(result['diagnosticallyInterrupted'])
+        self.assertNotIn(21, self.cleaned)
+        self.assertEqual(set(self.cleaned), {55, 56})
+        self.assertIn(21, self.rows)
+
+    def test_missing_session_observer_failure_is_inconclusive(self):
+        self.session = None
+        self.start()
+        result = self.hook.finish()
+        self.assertTrue(result['diagnosticallyInterrupted'])
+        self.assertEqual(set(self.cleaned), {21, 55, 56})
+
+    def test_observer_exception_cleanup_retains_unclosed_target_as_inconclusive(self):
+        self.start()
+        def refused_cleanup(identity):
+            raise PermissionError('fixture cleanup denied')
+        self.hook.cleanup = refused_cleanup
+        self.hook._interrupt('fixture observer failure')
+        result = self.hook.finish()
+        self.assertTrue(result['diagnosticallyInterrupted'])
+        self.assertIn(21, result['remainingMatchedOwned'])
+        self.assertIn('cleanup denied', result['cleanupError'])
+
+    def test_log_cap_is_reserved_then_charged_once_in_shared_budget(self):
+        self.payload = b'x' * (artifacts.FAULT_LOG_LIMIT + 4096)
+        self.start()
+        self.assertEqual(self.budget.used, artifacts.FAULT_LOG_LIMIT)
+        result = self.hook.finish()
+        self.assertTrue(result['logTruncated'])
+        self.assertEqual(self.hook.log.stat().st_size, artifacts.FAULT_LOG_LIMIT)
+        self.assertEqual(self.budget.used, artifacts.FAULT_LOG_LIMIT)
+        self.hook.finish()
+        self.assertEqual(self.budget.used, artifacts.FAULT_LOG_LIMIT)
+
+    def test_budget_refusal_never_starts_debugger(self):
+        self.budget.limit = artifacts.FAULT_LOG_LIMIT - 1
+        self.start()
+        self.assertEqual(self.hook.finish()['status'], 'diagnostic-budget-refused')
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.budget.used, 0)
+
+    def test_actual_cleanup_rechecks_reused_pid_between_term_and_kill(self):
+        identity = dict(self.row, pid=21)
+        sent = []
+        def send(pid, signum):
+            sent.append((pid, signum))
+            self.rows[21]['start'] = 'foreign-after-term'
+        artifacts.cleanup_owned_identity(identity, self.snapshot, send_signal=send)
+        self.assertEqual(sent, [(21, artifacts.signal.SIGTERM)])
+        self.assertEqual(self.rows[21]['start'], 'foreign-after-term')
+
+    def test_actual_cleanup_escalates_only_same_owned_identity_under_existing_budget(self):
+        identity = dict(self.row, pid=21)
+        sent = []
+        ticks = iter(range(30))
+        def send(pid, signum):
+            sent.append((pid, signum))
+            if signum == artifacts.signal.SIGKILL:
+                self.rows.pop(pid)
+        artifacts.cleanup_owned_identity(
+            identity, self.snapshot, send_signal=send, clock=lambda: next(ticks), sleep=lambda _: None)
+        self.assertEqual(sent, [(21, artifacts.signal.SIGTERM), (21, artifacts.signal.SIGKILL)])
+        self.assertNotIn(21, self.rows)
+
+    def test_actual_result_is_preserved_and_inconclusive_never_becomes_pass(self):
+        for original in (2, -4, 130):
+            result = {'status': 'DIAGNOSTICALLY_INTERRUPTED', 'diagnosticallyInterrupted': True}
+            self.assertEqual(artifacts.fault_capture_exit_code(original, result), original)
+        result = {'status': 'DIAGNOSTICALLY_INTERRUPTED', 'diagnosticallyInterrupted': True}
+        self.assertEqual(artifacts.fault_capture_exit_code(0, result), 125)
+        result = {'status': 'fault-captured', 'diagnosticallyInterrupted': False}
+        self.assertEqual(artifacts.fault_capture_exit_code(0, result), 125)
+        self.assertTrue(result['diagnosticallyInterrupted'])
+        result = {'status': 'attach-denied', 'diagnosticallyInterrupted': False}
+        self.assertEqual(artifacts.fault_capture_exit_code(0, result), 0)
+
+    def run_session(self, mode):
+        identity = artifacts.coverage_helper(21, self.row, self.workspace)
+        identity_path = self.evidence / 'identity.json'
+        identity_path.write_text(json.dumps(identity))
+        calls = []
+        class Error:
+            failed = False
+            def Fail(self): return self.failed
+            def Success(self): return not self.failed
+        class Process:
+            state = 1
+            stop_id = 1
+            def GetStopID(self): return self.stop_id
+            def IsValid(self): return mode != 'denied'
+            def GetState(self): return self.state
+            def GetUnixSignals(self):
+                return SimpleNamespace(SetShouldStop=lambda *a: True,
+                                       SetShouldNotify=lambda *a: True,
+                                       SetShouldSuppress=lambda *a: calls.append(('pass', a)) or True)
+            def Continue(self):
+                calls.append('continue')
+                if mode == 'exception': raise RuntimeError('fixture observer exception')
+                self.state = 3 if mode == 'exit' else 1
+                if mode != 'stale-attach-stop': self.stop_id += 1
+                return Error()
+            def __iter__(self):
+                return iter([SimpleNamespace(GetStopReason=lambda: 9)])
+            def Detach(self, keep_stopped):
+                calls.append(('detach', keep_stopped))
+                error = Error()
+                if mode == 'detach-failure':
+                    error.failed = True
+                    self.state = 3
+                else:
+                    self.state = 4
+                return error
+        process = Process()
+        def attach(listener, pid, error):
+            calls.append(('attach', pid))
+            error.failed = mode == 'denied'
+            return process
+        fake = SimpleNamespace(
+            SBError=Error, eStateExited=3, eStateDetached=4, eStateStopped=1,
+            eStateCrashed=2, eStopReasonException=9, eStopReasonSignal=10,
+            SBCommandReturnObject=lambda: SimpleNamespace(GetOutput=lambda: 'fixture stack',
+                                                         GetError=lambda: ''))
+        debugger = SimpleNamespace(
+            SetAsync=lambda value: calls.append(('async', value)),
+            CreateTarget=lambda path: SimpleNamespace(AttachToProcessWithID=attach),
+            GetListener=lambda: None,
+            GetCommandInterpreter=lambda: SimpleNamespace(
+                HandleCommand=lambda command, output: calls.append(command)))
+        raw = (self.row['start'] + ' ' + self.row['command']).encode()
+        def advance_fake_stop(_):
+            calls.append('advance-stop-id')
+            process.stop_id += 1
+        with patch.dict('sys.modules', {'lldb': fake}), \
+                patch.object(artifacts.time, 'sleep', side_effect=advance_fake_stop), \
+                patch.object(artifacts.subprocess, 'check_output', return_value=raw), \
+                patch('builtins.print'):
+            artifacts.run_owned_fault_session(debugger, identity_path, self.hook.session,
+                                              self.hook.cancel)
+        return json.loads(self.hook.session.read_text()), calls
+
+    def test_session_fault_capture_detaches_resuming_without_kill_or_expressions(self):
+        result, calls = self.run_session('fault')
+        self.assertEqual(result['status'], 'fault-captured')
+        self.assertTrue(result['handedBack'])
+        self.assertIn(('detach', False), calls)
+        self.assertIn('thread backtrace all -c 64', calls)
+        self.assertTrue(all(not (isinstance(c, str) and 'expression' in c) for c in calls))
+
+    def test_session_denial_never_continues_or_detaches_invalid_process(self):
+        result, calls = self.run_session('denied')
+        self.assertEqual(result['status'], 'attach-denied')
+        self.assertTrue(result['handedBack'])
+        self.assertNotIn('continue', calls)
+        self.assertNotIn(('detach', False), calls)
+
+    def test_session_observer_exception_still_detaches_and_reports_failure(self):
+        result, calls = self.run_session('exception')
+        self.assertEqual(result['status'], 'observer-error')
+        self.assertTrue(result['handedBack'])
+        self.assertIn(('detach', False), calls)
+
+    def test_session_natural_exit_does_not_detach_or_cleanup(self):
+        result, calls = self.run_session('exit')
+        self.assertEqual(result['status'], 'target-exited')
+        self.assertTrue(result['handedBack'])
+        self.assertNotIn(('detach', False), calls)
+
+    def test_observer_start_failure_does_not_signal_unattached_helper(self):
+        def missing_debugger(*args, **kwargs):
+            raise FileNotFoundError('fixture missing debugger')
+        self.hook.popen = missing_debugger
+        self.start()
+        result = self.hook.finish()
+        self.assertEqual(result['status'], 'observer-start-failed')
+        self.assertTrue(result['diagnosticallyInterrupted'])
+        self.assertEqual(self.cleaned, [])
+
+    def test_attach_stop_is_not_misclassified_as_a_new_fault(self):
+        result, calls = self.run_session('stale-attach-stop')
+        self.assertEqual(result['status'], 'fault-captured')
+        self.assertIn('advance-stop-id', calls)
+        self.assertLess(calls.index('advance-stop-id'), calls.index('thread backtrace all -c 64'))
+
+    def test_live_observer_exec_transition_retains_current_cleanup_identity(self):
+        self.observer_code = None
+        self.start()
+        self.rows[55]['command'] = 'fixture-lldb-after-xcrun-exec'
+        self.hook.poll()
+        self.hook._interrupt('fixture lifecycle failure')
+        result = self.hook.finish()
+        self.assertTrue(result['diagnosticallyInterrupted'])
+        self.assertEqual(set(self.cleaned), {21, 55, 56})
+
+    def test_reader_failure_cannot_leave_debugger_blocked_on_output(self):
+        self.observer_code = None
+        self.start()
+        self.hook.result['readerError'] = 'fixture output failure'
+        self.hook.poll()
+        result = self.hook.finish()
+        self.assertTrue(result['diagnosticallyInterrupted'])
+        self.assertEqual(set(self.cleaned), {21, 55, 56})
+
+    def test_session_failed_detach_is_never_claimed_handed_back(self):
+        result, calls = self.run_session('detach-failure')
+        self.assertEqual(result['status'], 'fault-captured')
+        self.assertFalse(result['handedBack'])
+        self.assertIn('detachError', result)
 
 
 class CrashArtifactTests(unittest.TestCase):

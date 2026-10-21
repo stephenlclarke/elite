@@ -9,7 +9,8 @@ import subprocess
 import threading
 import time
 
-from crash_artifacts import (ArtifactBudget, collect_reports, report_snapshot,
+from crash_artifacts import (ArtifactBudget, OwnedFaultStack, collect_reports, report_snapshot,
+                             cleanup_owned_identity, fault_capture_exit_code,
                              retain_test_images, runtime_child_environment, sha as streaming_sha)
 
 assert os.environ.get('GITHUB_ACTIONS') == 'true', 'Hosted-only diagnostic; no local invocation.'
@@ -28,6 +29,7 @@ stop = threading.Event()
 current = {}
 records = []
 exit_code = 1
+budget = ArtifactBudget()
 crash_roots = [Path.home() / 'Library/Logs/DiagnosticReports', Path('/Library/Logs/DiagnosticReports')]
 baseline = report_snapshot(crash_roots)
 tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode().split('\0')
@@ -78,8 +80,11 @@ def follow(pid):
 def monitor(pid):
     try:
         while not stop.wait(0.1):
-            follow(pid)
+            owned = follow(pid)
+            fault_stack.consider(owned)
+            fault_stack.poll()
     except Exception as error:
+        fault_stack._interrupt(error)
         monitor_errors.append({'type': type(error).__name__, 'detail': str(error)})
         stop.set()
 
@@ -98,6 +103,10 @@ def terminate(pid):
         deadline = time.monotonic() + 5
         while follow(pid) and time.monotonic() < deadline:
             time.sleep(0.1)
+
+
+fault_stack = OwnedFaultStack(
+    root, evidence, budget, snapshot, lambda identity: cleanup_owned_identity(identity, snapshot))
 
 
 def observe_natural_exit(pid, budget=2.0, interval=0.1):
@@ -160,6 +169,9 @@ def run(name, command):
         finally:
             stop.set()
             watcher.join(timeout=5)
+        diagnostic = fault_stack.finish()
+        code = fault_capture_exit_code(code, diagnostic)
+        write(evidence / 'owned-fault-stack.json', diagnostic)
         if interrupted:
             natural_exit = {'skipped': 'interrupted', 'timeline': []}
             remaining = follow(process.pid)
@@ -174,6 +186,7 @@ def run(name, command):
     record = {'command': command, 'runtimeBacktrace': child_environment['SWIFT_BACKTRACE'],
               'parentPID': process.pid, 'makeExitCode': process.returncode,
               'exitCode': code, 'interrupted': interrupted,
+              'faultStackDiagnostic': diagnostic,
               'durationSeconds': time.monotonic() - started, 'rawSHA256': sha(log),
               'naturalExitObservation': natural_exit,
               'remainingBeforeCleanup': remaining, 'remainingAfterCleanup': remaining_after_cleanup,
@@ -219,7 +232,6 @@ finally:
              'baselineDirectories': baseline['directories']}
     images = []
     if exit_code != 0:
-        budget = ArtifactBudget()
         try:
             # These are actual already-owned helper paths, not a guessed local replacement.
             images = retain_test_images(process_history, root, evidence, head, budget)

@@ -6,9 +6,11 @@ import os
 from pathlib import Path
 import re
 import shlex
+import signal
 import shutil
 import subprocess
 import time
+import threading
 
 ARTIFACT_LIMIT = 512 * 1024 * 1024
 REPORT_SUFFIXES = {'.ips', '.crash'}
@@ -21,6 +23,325 @@ def runtime_child_environment(parent):
     child = dict(parent)
     child['SWIFT_BACKTRACE'] = RUNTIME_BACKTRACE
     return child
+
+
+
+FAULT_LOG_LIMIT = 1024 * 1024
+
+
+def same_process(identity, row):
+    """PID alone never authorizes attaching to or cleaning up a process."""
+    return row is not None and all(identity[key] == row.get(key) for key in ('start', 'command'))
+
+
+def cleanup_owned_identity(identity, snapshot, send_signal=os.kill,
+                           clock=time.monotonic, sleep=time.sleep):
+    """Failure-boundary cleanup: freshly match before every TERM/KILL, never a PID-only kill."""
+    for signum in (signal.SIGTERM, signal.SIGKILL):
+        if not same_process(identity, snapshot().get(identity['pid'])):
+            return
+        try:
+            send_signal(identity['pid'], signum)
+        except ProcessLookupError:
+            return
+        deadline = clock() + 5
+        while same_process(identity, snapshot().get(identity['pid'])) and clock() < deadline:
+            sleep(0.1)
+
+
+def coverage_helper(pid, row, workspace):
+    """Only the observed, unfiltered, normal arm64 coverage helper is eligible."""
+    argv = arguments(row)
+    if not argv or not Path(argv[0]).is_absolute() or Path(argv[0]).name != 'swiftpm-testing-helper':
+        return None
+    image = Path(workspace) / '.build/arm64-apple-macosx/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests'
+    expected = [argv[0], '--test-bundle-path', str(image), '--enable-code-coverage',
+                str(image), '--testing-library', 'swift-testing']
+    if argv != expected or not row.get('start'):
+        return None
+    try:
+        confined(image, Path(workspace) / '.build')
+        if not image.is_file():
+            return None
+    except (OSError, ValueError):
+        return None
+    return {'pid': pid, 'start': row['start'], 'command': row['command'], 'arguments': argv}
+
+
+def fault_capture_exit_code(code, diagnostic):
+    """Keep actual failing status; diagnostic uncertainty can only turn success into failure."""
+    if code:
+        return code
+    if diagnostic['diagnosticallyInterrupted']:
+        return 125
+    if diagnostic['status'] == 'fault-captured':
+        diagnostic.update(status='DIAGNOSTICALLY_INTERRUPTED', diagnosticallyInterrupted=True,
+                          detail='A captured fault did not produce a failing make status.')
+        return 125
+    return code
+
+
+class OwnedFaultStack:
+    """One diagnostic attempt in the existing owned-process observer, never a test runner."""
+    def __init__(self, workspace, evidence, budget, snapshot, cleanup, popen=subprocess.Popen):
+        self.workspace, self.evidence, self.budget = Path(workspace), Path(evidence), budget
+        self.snapshot, self.cleanup, self.popen = snapshot, cleanup, popen
+        self.identity = None
+        self.observer = None
+        self.observer_owned = {}
+        self.reader = None
+        self.reserved = False
+        self.attempted = False
+        self.result = {'status': 'no-eligible-helper', 'diagnosticallyInterrupted': False}
+        self.log = self.evidence / 'owned-fault-stack.log'
+        self.session = self.evidence / 'owned-fault-stack-session.json'
+        self.cancel = self.evidence / 'owned-fault-stack-cancel'
+
+    def _remember_observer(self, rows):
+        if self.observer is None:
+            return
+        pid = self.observer.pid
+        if not self.observer_owned and pid in rows:
+            self.observer_owned[pid] = dict(rows[pid], pid=pid)
+        elif (pid in self.observer_owned and pid in rows
+              and self.observer_owned[pid]['start'] == rows[pid]['start']
+              and self.observer.poll() is None):
+            # xcrun may exec LLDB without changing PID/start. A still-live Popen
+            # child cannot have been reaped/reused; retain its current full argv.
+            self.observer_owned[pid] = dict(rows[pid], pid=pid)
+        changed = True
+        while changed:
+            changed = False
+            for child, row in rows.items():
+                parent = row.get('parent')
+                if (child not in self.observer_owned and parent in self.observer_owned
+                        and same_process(self.observer_owned[parent], rows.get(parent))):
+                    self.observer_owned[child] = dict(row, pid=child)
+                    changed = True
+
+    def _interrupt(self, reason):
+        self.result.update(status='DIAGNOSTICALLY_INTERRUPTED', diagnosticallyInterrupted=True,
+                           detail=str(reason)[:2048])
+        try:
+            rows = self.snapshot()
+        except Exception as error:
+            self.result['cleanupError'] = str(error)[:2048]
+            self.result['remainingMatchedOwned'] = 'UNKNOWN: identity observation failed'
+            return
+        for identity in [self.identity, *reversed(list(self.observer_owned.values()))]:
+            if identity and same_process(identity, rows.get(identity['pid'])):
+                # The callback MUST freshly revalidate again before every cleanup signal.
+                try:
+                    self.cleanup(identity)
+                except Exception as error:
+                    self.result['cleanupError'] = str(error)[:2048]
+        try:
+            remaining = self.snapshot()
+        except Exception as error:
+            self.result['cleanupError'] = str(error)[:2048]
+            self.result['remainingMatchedOwned'] = 'UNKNOWN: identity observation failed'
+            return
+        self.result['remainingMatchedOwned'] = [
+            identity['pid'] for identity in [self.identity, *self.observer_owned.values()]
+            if identity and same_process(identity, remaining.get(identity['pid']))]
+
+    def _drain(self):
+        try:
+            with self.log.open('xb') as stream:
+                retained = 0
+                while True:
+                    block = self.observer.stdout.read1(65536)
+                    if not block:
+                        break
+                    available = max(0, FAULT_LOG_LIMIT - retained)
+                    stream.write(block[:available])
+                    retained += min(len(block), available)
+                    if len(block) > available:
+                        self.result['logTruncated'] = True
+        except Exception as error:
+            self.result['readerError'] = str(error)[:2048]
+
+    def consider(self, owned):
+        if self.attempted:
+            return
+        for pid, row in owned.items():
+            identity = coverage_helper(pid, row, self.workspace)
+            if identity is None:
+                continue
+            self.attempted, self.identity = True, identity
+            if not same_process(identity, self.snapshot().get(pid)):
+                self.result['status'] = 'identity-changed-or-exited'
+                return
+            if not self.budget.permits(FAULT_LOG_LIMIT):
+                self.result['status'] = 'diagnostic-budget-refused'
+                return
+            self.budget.used += FAULT_LOG_LIMIT
+            self.reserved = True
+            identity_path = self.evidence / 'owned-fault-stack-identity.json'
+            identity_path.write_text(json.dumps(identity) + '\n')
+            script = ('script import sys,lldb; sys.path.insert(0, ' + repr(str(self.workspace / 'Tools/CI'))
+                      + '); import crash_artifacts; crash_artifacts.run_owned_fault_session('
+                      + 'lldb.debugger, ' + repr(str(identity_path)) + ', '
+                      + repr(str(self.session)) + ', ' + repr(str(self.cancel)) + ')')
+            try:
+                self.observer = self.popen(
+                    ['xcrun', 'lldb', '--no-lldbinit', '--batch', '-o', script],
+                    cwd=self.workspace, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                self._remember_observer(self.snapshot())
+                self.result['status'] = 'observing'
+                self.reader = threading.Thread(target=self._drain)
+                self.reader.start()
+            except Exception as error:
+                if self.observer is None:
+                    self.result.update(status='observer-start-failed', diagnosticallyInterrupted=True,
+                                       detail=str(error)[:2048])
+                else:
+                    self._interrupt(error)
+            return
+
+    def poll(self):
+        if self.observer is None or self.result['status'] != 'observing':
+            return
+        self._remember_observer(self.snapshot())
+        if 'readerError' in self.result:
+            self._interrupt('Observer output reader failed.')
+            return
+        code = self.observer.poll()
+        if code is None:
+            if self.session.is_file() and self.session.stat().st_size <= 8192:
+                session = json.loads(self.session.read_text())
+                if session.get('pid') == self.identity['pid'] and not session.get('handedBack'):
+                    self.result['session'] = session
+                    self._interrupt('Debugger reports unresolved detach; guarded cleanup required.')
+            return
+        self.result['observerExitCode'] = code
+        try:
+            if not self.session.is_file() or self.session.stat().st_size > 8192:
+                raise ValueError('Missing or oversized debugger session result.')
+            session = json.loads(self.session.read_text())
+            if session.get('pid') != self.identity['pid']:
+                raise ValueError('Debugger session identity mismatch.')
+            self.result['session'] = session
+            if session.get('status') in ('observer-error', 'unexpected-stop', 'observer-cancelled'):
+                raise ValueError('Debugger observation ended inconclusively.')
+            if code != 0 or not session.get('handedBack'):
+                raise ValueError('Debugger did not establish detached-or-exited target.')
+            self.result['status'] = session['status']
+        except Exception as error:
+            self._interrupt(error)
+
+    def finish(self):
+        """Cooperate first; unresolved debugger lifetime is explicitly inconclusive."""
+        if self.observer is not None:
+            self.cancel.touch(exist_ok=True)
+            try:
+                self.observer.wait(timeout=5)
+                self.poll()
+            except subprocess.TimeoutExpired:
+                self._interrupt('Observer cancellation timed out.')
+            except Exception as error:
+                self._interrupt(error)
+            if self.reader is not None:
+                self.reader.join(timeout=5)
+                if self.reader.is_alive() or 'readerError' in self.result:
+                    self._interrupt('Observer output did not close cleanly.')
+        if self.reserved:
+            self.budget.used -= FAULT_LOG_LIMIT
+            self.budget.used += self.log.stat().st_size if self.log.exists() else 0
+            self.reserved = False
+        self.result['attempted'] = self.attempted
+        if self.identity:
+            self.result['identity'] = self.identity
+        return self.result
+
+
+def run_owned_fault_session(debugger, identity_path, session_path, cancel_path):
+    """Runs inside LLDB only. No test launch, expression, core dump, kill or retry."""
+    import lldb
+    identity = json.loads(Path(identity_path).read_text())
+    result = {'pid': identity['pid'], 'status': 'not-attached', 'handedBack': False}
+    process = None
+    attached = False
+    try:
+        raw = subprocess.check_output(
+            ['ps', '-p', str(identity['pid']), '-o', 'lstart=,command=']).decode().strip()
+        fields = raw.split(None, 5)
+        row = {'start': ' '.join(fields[:5]), 'command': fields[5]} if len(fields) == 6 else None
+        if not same_process(identity, row):
+            result.update(status='identity-changed-or-exited', handedBack=True)
+            return
+        debugger.SetAsync(False)
+        target = debugger.CreateTarget(identity['arguments'][0])
+        error = lldb.SBError()
+        process = target.AttachToProcessWithID(debugger.GetListener(), identity['pid'], error)
+        if error.Fail():
+            result['status'] = 'attach-denied'
+            result['error'] = str(error)[:2048]
+            # A partial attachment still needs the explicit finally detach.
+            result['handedBack'] = not process.IsValid()
+            return
+        attached = True
+        debugger.SetAsync(True)
+        signals = process.GetUnixSignals()
+        for number in (4, 6, 10, 11):
+            if not (signals.SetShouldStop(number, True)
+                    and signals.SetShouldNotify(number, True)
+                    and signals.SetShouldSuppress(number, False)):
+                raise RuntimeError('Unable to install fatal-signal observation policy.')
+        attached_stop = process.GetStopID()
+        error = process.Continue()
+        if error.Fail():
+            raise RuntimeError(str(error))
+        while not Path(cancel_path).exists():
+            state = process.GetState()
+            if state in (lldb.eStateExited, lldb.eStateDetached):
+                result.update(status='target-exited', handedBack=True)
+                return
+            if (state in (lldb.eStateStopped, lldb.eStateCrashed)
+                    and process.GetStopID() != attached_stop):
+                fatal = any(
+                    thread.GetStopReason() == lldb.eStopReasonException
+                    or (thread.GetStopReason() == lldb.eStopReasonSignal
+                        and thread.GetStopReasonDataAtIndex(0) in (4, 6, 10, 11))
+                    for thread in process)
+                result['status'] = 'fault-captured' if fatal else 'unexpected-stop'
+                if fatal:
+                    for command in ('thread backtrace all -c 64', 'register read', 'image list -u -f'):
+                        output = lldb.SBCommandReturnObject()
+                        debugger.GetCommandInterpreter().HandleCommand(command, output)
+                        print(command, flush=True)
+                        print((output.GetOutput() or '')[:FAULT_LOG_LIMIT], flush=True)
+                        print((output.GetError() or '')[:4096], flush=True)
+                return
+            time.sleep(0.1)
+        result['status'] = 'observer-cancelled'
+    except subprocess.CalledProcessError:
+        result.update(status='identity-changed-or-exited', handedBack=True)
+    except Exception as error:
+        result.update(status='observer-error', error=str(error)[:2048])
+    finally:
+        if process is not None and process.IsValid():
+            if process.GetState() in (lldb.eStateExited, lldb.eStateDetached):
+                result['handedBack'] = True
+                if result['status'] == 'observer-cancelled':
+                    result['status'] = 'target-exited'
+            else:
+                error = process.Detach(False)
+                result['handedBack'] = (error.Success() and process.GetState()
+                                        in (lldb.eStateExited, lldb.eStateDetached))
+                if error.Fail():
+                    result['detachError'] = str(error)[:2048]
+        elif not attached and result['status'] == 'attach-denied':
+            result['handedBack'] = True
+        destination = Path(session_path)
+        temporary = destination.with_suffix('.pending')
+        temporary.write_text(json.dumps(result) + '\n')
+        temporary.replace(destination)
+        # Do not return into batch teardown with a live, unresolved attachment.
+        # The parent reads this failure and revalidates identities before owned cleanup.
+        while (process is not None and process.IsValid() and not result['handedBack']
+               and process.GetState() not in (lldb.eStateExited, lldb.eStateDetached)):
+            time.sleep(0.1)
 
 
 def sha(path):
