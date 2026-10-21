@@ -129,3 +129,11 @@ The actual 1231 boundary retained twenty pending ore items with eighteen bound a
 Recovery selection now applies that ordinary fit prefilter only when the candidate has no measured-extraction facts. Those facts still require the active allocated original, current actor and binding, system and visit, committed extraction, same carrier and reserved fit. The existing target evaluation still requires the targeting core, mining module, scoops, native shape and fits result. Every intake, identity, safety, admission and deadline guard remains unchanged. Adding ore to protectedPayloads would prevent native pending spawning and is not used.
 
 Ordinary candidates have nil measured-extraction facts, so the new predicate reduces exactly to their previous condition. The automatic twelve-original test and its handoff/first-loss observation remain byte-exact. No test, runtime field, helper, probe, cargo credit or timeout change is introduced. MBA source checks verify the inverse restores the whole original guidance file. G1 owns one matching compile and the same existing automatic method/case once; downstream qualification remains held pending the actual result.
+
+## Bounded automatic journey progress
+
+Actual 1233 reached the original six-hundred-second runner timeout with only a method-start record. Captures, recovery stage, processing and reception are unknown. Scoped source inspection found bounded controller and validation loops, not a proved nontermination or excessive-cost defect.
+
+The existing automatic test now writes direct synchronous standard-error stage markers and at most thirteen recovery checkpoints: the first step and each six-hundredth step. Each line is capped at five hundred and twelve bytes including its newline. Checkpoints read only existing snapshots; no extra query, snapshot, helper, runtime field, per-step logging or profiling is introduced.
+
+Removing the progress statements restores the whole prior test exactly. Actions, order, neutral controls, seven-thousand-two-hundred steps, original runner timeout, full physics, first-loss observation, twelve originals, processing, payment, clue and replay checks remain unchanged. This is evidence only. G1 runs the same existing automatic method and case once on a matching build after public publishing is coherently dispatched; downstream cases remain held.

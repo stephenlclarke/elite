@@ -458,17 +458,25 @@ extension NativeMeasuredExtractionJourneyTests {
   @Test func actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception()
     async throws
   {
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=setup".utf8).prefix(511) + Data([10]))
     let f = try NativeMeasuredExtractionFixture()
     defer { f.files.clean() }
     let runtime = try await f.runtime()
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=runtime-ready".utf8).prefix(511) + Data([10]))
     let before = await runtime.snapshot().commander
     try await f.accept(runtime)
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=allocated".utf8).prefix(511) + Data([10]))
     let allocated = await runtime.snapshot()
     #expect(allocated.commander.cargoTonnes == before.cargoTonnes + 12)
     #expect(allocated.commander.cargo == before.cargo)
     #expect(OriginalServiceReservationPolicy.activeCount(allocated.commander.scriptState) == 1)
     try await f.extract(runtime)
     let extracted = await runtime.snapshot()
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=extracted".utf8).prefix(511) + Data([10]))
     let witness = try #require(extracted.measuredExtractionState?.extraction)
     #expect(
       witness.emitted.count == 20 && witness.emitted.reduce(0) { $0 + $1.amount.quantity } == 20)
@@ -493,6 +501,13 @@ extension NativeMeasuredExtractionJourneyTests {
       let current = await runtime.advance(delta: 0.1)
       let currentState = try #require(current.measuredExtractionState)
       let currentSource = try #require(current.commander.scriptState.savedMeasuredExtractionSource)
+      if step == 0 || (step + 1) % 600 == 0 {
+        FileHandle.standardError.write(
+          Data(
+            "G12 automatic recovery step=\(step + 1); time=\(current.commander.flightSimulation.physicalTime); captures=\(currentState.captures.count)/12; mode=\(String(describing: current.workGuidance?.mode)); status=\(String((current.workGuidance?.status ?? "none").prefix(96)))"
+              .utf8
+          ).prefix(511) + Data([10]))
+      }
       if currentState.captures.count < 12
         && current.workRecoveryRock != NativeMeasuredExtraction.root
       {
@@ -543,6 +558,8 @@ extension NativeMeasuredExtractionJourneyTests {
     #expect(observedOriginals == expectedOriginals && observedActors.count == 12)
     #expect(
       NativeMeasuredExtractionSave.validateClaims(preceding.commander, requireRecordedLoss: true))
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=recovered".utf8).prefix(511) + Data([10]))
     let aboard = await runtime.snapshot()
     #expect(
       aboard.commander.cargo == before.cargo
@@ -554,10 +571,16 @@ extension NativeMeasuredExtractionJourneyTests {
       }.count == 8)
     try await f.renas(runtime)
     let raw = await runtime.snapshot()
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=processing-station".utf8).prefix(511) + Data([10]))
     #expect(!raw.measuredExtractionReview(.receive).allowed)
     let cash = raw.commander.credits
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=process-start".utf8).prefix(511) + Data([10]))
     try await f.confirm(runtime, .process)
     let graded = await runtime.snapshot()
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=processed".utf8).prefix(511) + Data([10]))
     let state = try #require(graded.measuredExtractionState)
     let processing = try #require(state.processing)
     #expect(
@@ -567,8 +590,12 @@ extension NativeMeasuredExtractionJourneyTests {
       graded.commander.credits == cash && graded.commander.cargoTonnes == raw.commander.cargoTonnes)
     #expect(!graded.measuredExtractionReview(.process).allowed)
     #expect(graded.commander.scriptState.savedClueJournal == nil)
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=receive-start".utf8).prefix(511) + Data([10]))
     try await f.confirm(runtime, .receive)
     let received = await runtime.snapshot()
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=received".utf8).prefix(511) + Data([10]))
     let receivedJournal = received.commander.scriptState.savedClueJournal
     let firstClues = try #require(receivedJournal)
     #expect(firstClues.awards.count == 1)
@@ -589,5 +616,7 @@ extension NativeMeasuredExtractionJourneyTests {
     #expect(await runtime.snapshot().commander.credits == cash + 8900)
     let repeatedJournal = await runtime.snapshot().commander.scriptState.savedClueJournal
     #expect(repeatedJournal == firstClues)
+    FileHandle.standardError.write(
+      Data("G12 automatic stage=complete".utf8).prefix(511) + Data([10]))
   }
 }
