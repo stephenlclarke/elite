@@ -1,0 +1,7 @@
+# Make approved G02 courier jobs discoverable in the packaged game
+
+Bundle the unchanged `project.generated-couriers@1.0.0` manifest and Lua, and add a default-library loader that combines them with existing user script packs through the current validated reader. Exact content deduplicates; every distinct installed version/digest remains available for saved-state resolution. The explicit directory loader keeps its external-only behavior, and discovery writes no user files or accepted state.
+
+Normal AppKit startup calls `loadDefaultScriptPacks()` after schema-1 mission loading and before commander restoration, reporting combined returned errors through the existing alert. The captured `restoreOnLaunch` flag preserves injected libraries in controlled launches, and cancellation guards prevent later startup work after cancellation. Contracts and Gallery use the current courier engine and durability gates. No generator, save migration, automatic acceptance or mission scope is added.
+
+Validation is **source-only, uncompiled and unexecuted**. Seven authored methods/eight cases cover resource identity, read-only discovery, installed-content compatibility/errors, actual Contracts/Gallery access and exact saved consignment restoration. Static hashes, JSON/TOML checks, strict formatting and whitespace checks pass. Native focused tests, packaged startup, current full CI and final-head review remain outstanding. See the [shipping contract and evidence limits](ISSUE-bundled-generated-couriers.md).

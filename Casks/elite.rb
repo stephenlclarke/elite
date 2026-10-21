@@ -1,14 +1,16 @@
 cask "elite" do
-  version "1.3.1"
-  sha256 "2452a5a486b6b772c323a6c0647e9c217a9c7c55e0fe4f2df768073bc1541ad2"
+  version "1.4.0"
+  sha256 "a9e8a165eac6a8c483ec71b73992ad838c13b606232d45aee4fe236e6655ed7a"
 
-  url "https://raw.githubusercontent.com/stephenlclarke/elite/1ef005e0c73971a360a0e3bb52792a9286a761d3/releases/macos/Elite-#{version}-universal.zip"
+  # Artifact commit: bba862c558530ea2d40d634f84fbd490d9cc3401
+  url "https://github.com/stephenlclarke/elite/releases/download/v#{version}/Elite-#{version}-universal.zip"
   name "Elite"
   desc "Space trading and combat game inspired by BBC Micro Elite"
   homepage "https://github.com/stephenlclarke/elite"
 
   livecheck do
-    skip "Published archives are pinned to a reviewed repository commit"
+    url :homepage
+    strategy :github_latest
   end
 
   depends_on macos: :sonoma

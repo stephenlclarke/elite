@@ -1,0 +1,43 @@
+schemaVersion = 2
+missionAPI = 2
+id = "example.finance-obligation"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "finance-obligations-basic-v2", "gallery-basic-v2"]
+priority = 480
+source = "Original fixed-principal finance demonstration; not GSE, Iron Raven or Bank of the Black Monks."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "loan"
+title = "Independent loan demonstration"
+briefing = "An original lender offers 200.0 CR at this system's original main orbital station. Launch and return through its real doorway before reviewing Finance in Station Contracts. Borrow only with an explicit native Confirm. Partial payments carry unpaid principal; accepted debt survives this demonstration ending."
+destination = "This system's original main orbital station"
+reward = "Optional loan, not a reward; no interest or deadline."
+milestones = ["Review the optional loan and speak to Mission Contacts after borrowing"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+
+[[loans]]
+id = "workshop"
+profile = "fixed-principal-v1"
+creditor = "example.workshop-lender"
+title = "Workshop loan"
+principal = 2000
+galaxy = 0
+system = 237
+
+[trial]
+ship = "SH023"
+galaxy = 0
+system = 237
+credits = 1000
+cabins = 0
+flight = false

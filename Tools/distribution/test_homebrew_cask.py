@@ -3,7 +3,7 @@
 import copy
 import unittest
 
-from homebrew_cask import existing_release, render_cask
+from homebrew_cask import existing_release, release_url, render_cask
 
 
 class HomebrewCaskTests(unittest.TestCase):
@@ -21,10 +21,22 @@ class HomebrewCaskTests(unittest.TestCase):
         cask = render_cask(self.manifest, self.revision)
         self.assertEqual(existing_release(cask), ("1.3.1", self.revision))
         self.assertIn('sha256 "' + "b" * 64 + '"', cask)
-        self.assertIn("/" + self.revision + "/releases/macos/", cask)
+        self.assertIn("# Artifact commit: " + self.revision, cask)
+        self.assertIn("github.com/stephenlclarke/elite/releases/download/v#{version}/", cask)
+        self.assertEqual(release_url("1.3.1"),
+                         "https://github.com/stephenlclarke/elite/releases/download/"
+                         "v1.3.1/Elite-1.3.1-universal.zip")
+        self.assertIn("    url :homepage\n    strategy :github_latest", cask)
         self.assertIn("depends_on macos: :sonoma", cask)
         for forbidden in ("no_quarantine", "zap", "preflight", "postflight", "uninstall"):
             self.assertNotIn(forbidden, cask)
+
+    def test_legacy_cask_can_be_checked_without_changing_its_trusted_download(self):
+        legacy = render_cask(self.manifest, self.revision, release_assets=False)
+        self.assertEqual(existing_release(legacy), ("1.3.1", self.revision))
+        self.assertIn("/" + self.revision + "/releases/macos/", legacy)
+        self.assertNotIn("# Artifact commit:", legacy)
+        self.assertNotEqual(legacy, render_cask(self.manifest, self.revision))
 
     def test_unverified_or_incompatible_artifact_is_rejected(self):
         for key, value in (

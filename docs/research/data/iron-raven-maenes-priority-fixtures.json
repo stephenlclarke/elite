@@ -1,0 +1,202 @@
+{
+  "profile_id": "P19-MAENES-PRIORITY-WORKING-v1",
+  "scope": "Actual source escort initializer and actual library templates with method-reference/configuration spies. Active role escort chosen by pinned setUpOneEscort reader for auto_ai yes, not inferred from raw pirate/patrol tables. No actual native condition/flight/combat/formation/spawn/RNG/save proof.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/oolite-escortAI.js",
+      "sha256": "dc24382d3aa2d17a7cc85d596b7123cf9013580445700bb51698456c2acddda6"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Scripts/oolite-priorityai.js",
+      "sha256": "fc3fe2a7b30f2133a8e5cfd345b55f3ccb4587e3b7bc431ee7b081864a83dcfd"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Config/autoAImap.plist",
+      "sha256": "b03109ab761b8ad59733999bd6da17eefc33fe75954c72a5a740b2b8c78d598b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntity.m",
+      "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623"
+    }
+  ],
+  "escort": {
+    "parameters": {
+      "oolite_flag_scanIgnoresUnpowered": true
+    },
+    "setup_calls": [
+      [
+        "communicationsRole",
+        "escort"
+      ]
+    ],
+    "priorities": [
+      {
+        "condition": {
+          "source_method": "conditionLosingCombat"
+        },
+        "behaviour": {
+          "source_method": "behaviourFleeCombat"
+        },
+        "reconsider": 5
+      },
+      {
+        "condition": {
+          "source_method": "conditionMothershipInCombat"
+        },
+        "truebranch": [
+          {
+            "condition": {
+              "source_method": "conditionMothershipUnderAttack"
+            },
+            "configuration": {
+              "source_method": "configurationAcquireDefensiveEscortTarget"
+            },
+            "behaviour": {
+              "source_method": "behaviourRepelCurrentTarget"
+            },
+            "reconsider": 5
+          },
+          {
+            "condition": {
+              "source_method": "conditionMothershipIsAttacking"
+            },
+            "configuration": {
+              "source_method": "configurationAcquireOffensiveEscortTarget"
+            },
+            "behaviour": {
+              "source_method": "behaviourDestroyCurrentTarget"
+            },
+            "reconsider": 5
+          },
+          {
+            "behaviour": {
+              "source_method": "behaviourRejoinMothership"
+            },
+            "reconsider": 5
+          }
+        ]
+      },
+      {
+        "condition": {
+          "source_method": "conditionInCombat"
+        },
+        "configuration": {
+          "source_method": "configurationAcquireCombatTarget"
+        },
+        "behaviour": {
+          "source_method": "behaviourRepelCurrentTarget"
+        },
+        "reconsider": 5
+      },
+      {
+        "condition": {
+          "source_method": "conditionWitchspaceEntryRequested"
+        },
+        "behaviour": {
+          "source_method": "behaviourEnterWitchspace"
+        },
+        "reconsider": 15
+      },
+      {
+        "condition": {
+          "source_method": "conditionIsEscorting"
+        },
+        "behaviour": {
+          "source_method": "behaviourEscortMothership"
+        },
+        "reconsider": 60
+      },
+      {
+        "condition": {
+          "source_method": "conditionFriendlyStationNearby"
+        },
+        "configuration": {
+          "source_method": "configurationSetNearbyFriendlyStationForDocking"
+        },
+        "behaviour": {
+          "source_method": "behaviourDockWithStation"
+        },
+        "reconsider": 30
+      },
+      {
+        "preconfiguration": {
+          "source_method": "configurationCheckScanner"
+        },
+        "condition": {
+          "source_method": "conditionScannerContainsShipNeedingEscort"
+        },
+        "behaviour": {
+          "source_method": "behaviourOfferToEscort"
+        },
+        "reconsider": 15
+      },
+      {
+        "condition": {
+          "source_method": "conditionFriendlyStationExists"
+        },
+        "configuration": {
+          "source_method": "configurationSetDestinationToNearestFriendlyStation"
+        },
+        "behaviour": {
+          "source_method": "behaviourApproachDestination"
+        },
+        "reconsider": 30
+      },
+      {
+        "condition": {
+          "source_method": "conditionCanWitchspaceOut"
+        },
+        "configuration": {
+          "source_method": "configurationSelectWitchspaceDestination"
+        },
+        "behaviour": {
+          "source_method": "behaviourEnterWitchspace"
+        },
+        "reconsider": 20
+      },
+      {
+        "configuration": {
+          "source_method": "configurationSetDestinationToWitchpoint"
+        },
+        "behaviour": {
+          "source_method": "behaviourApproachDestination"
+        },
+        "reconsider": 30
+      }
+    ],
+    "missing_prototype_members": [],
+    "source_methods": [
+      "behaviourApproachDestination",
+      "behaviourDestroyCurrentTarget",
+      "behaviourDockWithStation",
+      "behaviourEnterWitchspace",
+      "behaviourEscortMothership",
+      "behaviourFleeCombat",
+      "behaviourOfferToEscort",
+      "behaviourRejoinMothership",
+      "behaviourRepelCurrentTarget",
+      "conditionCanWitchspaceOut",
+      "conditionFriendlyStationExists",
+      "conditionFriendlyStationNearby",
+      "conditionInCombat",
+      "conditionIsEscorting",
+      "conditionLosingCombat",
+      "conditionMothershipInCombat",
+      "conditionMothershipIsAttacking",
+      "conditionMothershipUnderAttack",
+      "conditionScannerContainsShipNeedingEscort",
+      "conditionWitchspaceEntryRequested",
+      "configurationAcquireCombatTarget",
+      "configurationAcquireDefensiveEscortTarget",
+      "configurationAcquireOffensiveEscortTarget",
+      "configurationCheckScanner",
+      "configurationSelectWitchspaceDestination",
+      "configurationSetDestinationToNearestFriendlyStation",
+      "configurationSetDestinationToWitchpoint",
+      "configurationSetNearbyFriendlyStationForDocking"
+    ],
+    "duration_ms": 0.457125,
+    "claim": "Runs actual AI initialization and actual library templates against method-reference/configuration spies. Does not run conditions/combat/physics, RNG or native simulation."
+  },
+  "passed": true
+}

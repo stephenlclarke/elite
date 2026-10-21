@@ -1,12 +1,78 @@
 import AppKit
-import EliteCore
 import Testing
 
+@testable import EliteCore
 @testable import EliteMac
+
+@MainActor
+func verifyNativePaintedKey(
+  _ view: GameView, key: String, painted: ScriptPagePresentation
+) throws {
+  let packet = try #require(view.pending.last)
+  try #require(packet.hasPrefix("script-page-key:"))
+  let parts = packet.dropFirst("script-page-key:".count).split(separator: ":", maxSplits: 1)
+  try #require(parts.count == 2)
+  let bytes = try #require(Data(base64Encoded: String(parts[0])))
+  let proof = try JSONDecoder().decode(ScriptPagePresentation.self, from: bytes)
+  #expect(proof == painted && String(parts[1]) == key)
+}
 
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeMenusRetireDuplicateNavigationAcceleratorsAndKeepPrimaryScreens()
+    async throws
+  {
+    _ = NSApplication.shared
+    let delegate = AppDelegate(restoreOnLaunch: false)
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
+    let view = try #require(window.contentView as? GameView)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
+    view.game.screen = .status
+    let commander = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
+    #expect(commander.item(withTitle: "Ship Showroom") == nil)
+    let screens = try #require(NSApp.mainMenu?.item(withTitle: "Screens")?.submenu)
+    delegate.menuNeedsUpdate(screens)
+    #expect(screens.items.allSatisfy { $0.keyEquivalent.isEmpty })
+    for number in [1, 2] {
+      let item = try #require(screens.items.first { $0.tag == number })
+      #expect(item.isHidden && !delegate.validateMenuItem(item))
+    }
+    for number in [6, 7] {
+      let item = try #require(screens.items.first { $0.tag == number })
+      #expect(!item.isHidden && delegate.validateMenuItem(item))
+      screens.performActionForItem(at: screens.index(of: item))
+      #expect(view.pending.last == "screen:\(number)")
+    }
+    view.pending.removeAll()
+    let retired = try #require(
+      NSEvent.keyEvent(
+        with: .keyDown, location: .zero,
+        modifierFlags: [.command, .shift], timestamp: 0, windowNumber: window.windowNumber,
+        context: nil, characters: "W", charactersIgnoringModifiers: "w", isARepeat: false,
+        keyCode: 13))
+    view.keyDown(with: retired)
+    #expect(view.pending.isEmpty && view.game.screen == .status)
+    let save = try #require(commander.item(withTitle: "Save Commander"))
+    let open = try #require(commander.item(withTitle: "Open Commander..."))
+    #expect(save.keyEquivalent == "s" && save.keyEquivalentModifierMask == .command)
+    #expect(open.keyEquivalent == "o" && open.keyEquivalentModifierMask == [.command, .shift])
+    view.game.launch()
+    delegate.menuNeedsUpdate(screens)
+    for number in [1, 2] {
+      let item = try #require(screens.items.first { $0.tag == number })
+      #expect(!item.isHidden && delegate.validateMenuItem(item))
+    }
+  }
+
   @MainActor @Test func nativeSaveIncludesEarlierQueuedCobraRestore() async throws {
     let id = UUID().uuidString
     let preferences = try #require(UserDefaults(suiteName: id))
@@ -42,10 +108,11 @@ struct NativeViewTests {
     view.pending = ["x", "y", "z", "z", "y"]
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
     menu.performActionForItem(at: 0)
-    #expect(view.pending.last == "commander-save:" + url.path)
+    #expect(view.pending.last == "commander-file")
+    #expect(view.pendingCommanderFiles.last == .saveActive)
     await delegate.processPendingCommands(in: view)
     #expect(view.pending.isEmpty)
-    let persisted = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+    let persisted = try NativeSaveTestFixture.readVersionedCommander(from: url)
     #expect(persisted.shipID == "SH023" && persisted.credits == 12345)
     #expect(persisted.name == "CLARKE" && saves.startupURL == url)
   }
@@ -67,6 +134,7 @@ struct NativeViewTests {
     let saves = CommanderSaveSession(preferences: preferences, defaultURL: url)
     let delegate = AppDelegate(saves: saves)
     let before = await delegate.runtime.snapshot().commander
+    let beforePacks = await delegate.runtime.snapshot().scriptPacks.map(\.digest)
     let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
     delegate.applicationDidFinishLaunching(notification)
     let window = try #require(delegate.window)
@@ -78,6 +146,8 @@ struct NativeViewTests {
     await loop.value
     #expect(delegate.loop == nil)
     #expect(await delegate.runtime.snapshot().commander == before)
+    let afterPacks = await delegate.runtime.snapshot().scriptPacks.map(\.digest)
+    #expect(afterPacks == beforePacks)
     #expect(view.pending == ["x", "y", "z", "z", "y"])
   }
 
@@ -166,8 +236,18 @@ struct NativeViewTests {
           with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
           windowNumber: 0, context: nil, characters: text, charactersIgnoringModifiers: text,
           isARepeat: false, keyCode: code))
+      let protectedKey =
+        ScriptPagePresentation.controlKeys.contains(expected)
+        || ScriptPagePresentation.galleryContextKeys.contains(expected)
+      if protectedKey { try paintCampaignGalleryView(view) }
+      let painted = view.paintedMissionMenuPresentation
       view.keyDown(with: event)
-      #expect(view.pending.last == expected && view.held.isEmpty)
+      if protectedKey {
+        try verifyNativePaintedKey(view, key: expected, painted: #require(painted))
+      } else {
+        #expect(view.pending.last == expected)
+      }
+      #expect(view.held.isEmpty)
       view.keyUp(with: event)
       #expect(!view.held.contains(expected))
     }
@@ -360,7 +440,7 @@ extension NativeViewTests {
     for key in "xyzzy" { game.key(String(key)) }
     game.key("return")
     game.bodies = [.init(id: 1, hull: .constrictor, position: .init(0, 0, 1000))]
-    game.key("r")
+    game.key("tab")
     game.targetPanelExpanded = true
     for width in [512, 1512] {
       for style in ShipDisplayStyle.allCases {
@@ -434,29 +514,51 @@ extension NativeViewTests {
       NSEvent.mouseEvent(
         with: .leftMouseDown, location: .init(x: 100, y: 48), modifierFlags: [], timestamp: 0,
         windowNumber: 0, context: nil, eventNumber: 0, clickCount: 1, pressure: 1))
+    try paintCampaignGalleryView(view)
+    let painted = try #require(view.paintedMissionMenuPresentation)
+    let point = view.convert(click.locationInWindow, from: nil)
     view.mouseDown(with: click)
-    #expect(view.pending.first?.hasPrefix("handoff-click:") == true)
+    let packet = try #require(view.pending.first)
+    try #require(packet.hasPrefix("script-page-click:"))
+    let parts = packet.dropFirst("script-page-click:".count).split(separator: ":")
+    try #require(parts.count == 3)
+    let bytes = try #require(Data(base64Encoded: String(parts[0])))
+    let proof = try JSONDecoder().decode(ScriptPagePresentation.self, from: bytes)
+    #expect(proof == painted)
+    #expect(Double(parts[1]) == point.x && Double(parts[2]) == point.y)
     view.game.key("k")
     #expect(PlayerHelp.pages(for: view.game).first?.title == "MISSION DIALOG")
   }
 }
 
 extension NativeViewTests {
-  @MainActor @Test func rClearsHeldSteeringAndStationGuidanceOwnsTheTrackpad() throws {
+  @MainActor @Test func tabClearsHeldSteeringAndStationGuidanceOwnsTheTrackpad() throws {
     let view = GameView()
-    view.game.launch()
     view.game.commander.installTargetingComputer(.military)
+    view.game.launch()
+    #expect(
+      view.game.commander.equipmentInventory != nil
+        && view.game.commander.targetingTier == .military)
     view.game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 1500))]
     view.held = ["x", "left", ",", " "]
     view.updateTrackpad(positions: [.zero, .zero, .zero])
+    let retired = try #require(
+      NSEvent.keyEvent(
+        with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0,
+        context: nil, characters: "r", charactersIgnoringModifiers: "r", isARepeat: false,
+        keyCode: 15))
+    view.keyDown(with: retired)
+    #expect(view.held.contains("x") && view.held.contains("left"))
+    view.game.key("r")
+    #expect(view.game.autoPilot.targetID == nil && !view.game.dockingComputer)
     let event = try #require(
       NSEvent.keyEvent(
         with: .keyDown, location: .zero,
-        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "r",
-        charactersIgnoringModifiers: "r", isARepeat: false, keyCode: 15))
+        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\t",
+        charactersIgnoringModifiers: "\t", isARepeat: false, keyCode: 48))
     view.keyDown(with: event)
     #expect(view.controls.pitch == 0 && view.controls.roll == 0 && view.controls.yaw == 0)
-    view.game.key("r")
+    view.game.key("tab")
     #expect(view.game.dockingComputer && view.controls.throttle == 0 && view.held.isEmpty)
     view.updateTrackpad(positions: [.zero, .zero, .zero])
     #expect(view.controls.throttle == 0 && view.trackpad.fingerCount == 0)
@@ -515,7 +617,7 @@ extension NativeViewTests {
     #expect(view.pending.first?.hasPrefix("showroom-click:") == true)
   }
   @MainActor @Test func macBookControlsUseArrowsDeleteReturnAndSafeModifierCommands() throws {
-    let view = GameView()
+    let view = GameView(frame: .init(x: 0, y: 0, width: 512, height: 518))
     view.game.launch()
     func event(
       _ code: UInt16, _ text: String = "", flags: NSEvent.ModifierFlags = [], repeated: Bool = false
@@ -526,17 +628,28 @@ extension NativeViewTests {
           timestamp: 0, windowNumber: 0, context: nil, characters: text,
           charactersIgnoringModifiers: text, isARepeat: repeated, keyCode: code))
     }
-    for (code, text) in [(UInt16(126), ""), (123, ""), (49, " "), (36, "\r")] {
+    for (code, text, key) in [
+      (UInt16(126), "", "up"), (123, "", "left"), (49, " ", " "), (36, "\r", "return"),
+    ] {
+      if code != 49 { try paintCampaignGalleryView(view) }
+      let painted = view.paintedMissionMenuPresentation
       view.keyDown(with: try event(code, text))
+      if code != 49 {
+        try verifyNativePaintedKey(view, key: key, painted: #require(painted))
+      }
     }
     #expect(view.controls.pitch == 1 && view.controls.roll == 1)
     #expect(view.controls.throttle == 1 && view.controls.fire)
     view.game.key("4")
     #expect(view.held.isEmpty && view.controls.throttle == 0 && !view.controls.fire)
+    try paintCampaignGalleryView(view)
+    let beforeDown = try #require(view.paintedMissionMenuPresentation)
     view.keyDown(with: try event(125, flags: .option))
-    #expect(view.pending.last == "pagedown")
+    try verifyNativePaintedKey(view, key: "pagedown", painted: beforeDown)
+    try paintCampaignGalleryView(view)
+    let beforeUp = try #require(view.paintedMissionMenuPresentation)
     view.keyDown(with: try event(126, flags: .option))
-    #expect(view.pending.last == "pageup")
+    try verifyNativePaintedKey(view, key: "pageup", painted: beforeUp)
     view.game.key("/")
     view.game.key("a")
     #expect(view.performKeyEquivalent(with: try event(51, flags: .command)))
@@ -553,10 +666,19 @@ extension NativeViewTests {
     #expect(view.controls.throttle == -1)
     view.keyUp(with: try event(51))
     #expect(view.controls.throttle == 0)
-    view.game.commander.equipment.insert("Energy Bomb")
-    view.game.commander.installTargetingComputer(.basic)
+    try view.game.commander.grantEquipment(
+      TargetingTier.basic.equipmentName, at: .targetingCore,
+      provenance: .grant("MacBook targeting fixture"))
+    #expect(
+      view.game.commander.equipmentInventory != nil && view.game.commander.targetingTier == .basic)
+    try view.game.commander.grantEquipment(
+      "Energy Bomb", at: .utility(.energyBomb), provenance: .grant("MacBook bomb fixture"))
+    let bomb = try #require(view.game.commander.fittedEquipment(at: .utility(.energyBomb)))
+    let credits = view.game.commander.credits
     view.game.key("tab")
     #expect(view.game.commander.equipment.contains("Energy Bomb"))
+    #expect(view.game.commander.fittedEquipment(at: .utility(.energyBomb)) == bomb)
+    #expect(view.game.commander.credits == credits)
     view.game.paused = true
     #expect(view.held.isEmpty && !view.controls.fire)
   }

@@ -10,6 +10,31 @@ modelSource = "Oolite 574ca848"
 dimensions = [61.4758, 14.6341, 51.2832]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 2
+family = "gecko"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "pirate", "weight" = 4 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "common"
+galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
+regions = ["deepSpace", "tradeLane"]
+basis = "retained source facts + project classification judgement. Project raiding/interception usage; explicit human-named preferences take priority, other assignments use retained source roles or stated project judgement. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
+primaryRole = "pirate"
+placementStatus = "declared"
+isCapital = false
+primaryType = "pirate"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 2
+
 [game]
 cargo = 2
 speed = 27.429
