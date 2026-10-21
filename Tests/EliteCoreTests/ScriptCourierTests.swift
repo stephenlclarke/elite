@@ -125,7 +125,10 @@ struct CourierFixture {
 func courierNativeIssuanceTravelContactAndPaymentAreUnique(variant: ScriptCourierVariant) throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  let pinned = CourierNativeFixture.rows[variant == .data ? 0 : 1]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, variant: variant, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let id = try fixture.accept(&game, variant: variant)
   let original = try #require(game.commander.scriptState.instances[id])
   #expect(
@@ -279,7 +282,7 @@ func courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row: Int
   let fixture = try CourierFixture()
   defer { fixture.clean() }
   let pinned = CourierNativeFixture.rows[row]
-  var game = fixture.game(system: pinned.origin)
+  var game = try pinned.game(using: fixture)
   let (key, offer) = try fixture.usable(&game, row: row)
   try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)

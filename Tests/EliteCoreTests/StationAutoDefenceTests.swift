@@ -1188,6 +1188,11 @@ private func stationAutoAlignedActiveEntryScene(inwardSpeed: Double = 80) async 
 @Test(arguments: ["near-miss", "obstructing", "unjoined", "unknown-source", "stale-body"])
 func stationAutoRetainedViperCourseUsesActualHull(condition: String) throws {
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.screen = .status
   game.launch()
   game.speed = 0

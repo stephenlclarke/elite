@@ -978,6 +978,22 @@ private func reboundJumpLimitWorldAfterLoad(
         adjacency["\(min(i,j)):\(max(i,j))", default: 0] += 1
       }
     }
-    #expect(adjacency.values.allSatisfy { $0 == 2 })
+    if hull == .station {
+      let aperture = MainStationGeometry.docking.aperture.map {
+        MainStationGeometry.docking.center + $0
+      }
+      let indices = aperture.compactMap { point in mesh.vertices.firstIndex(of: point) }
+      #expect(indices.count == aperture.count)
+      let doorway = Set(indices.indices.map { index in
+        let i = indices[index]
+        let j = indices[(index + 1) % indices.count]
+        return "\(min(i,j)):\(max(i,j))"
+      })
+      let boundary = Set(adjacency.filter { $0.value == 1 }.keys)
+      #expect(doorway.count == 4 && boundary == doorway)
+      #expect(adjacency.allSatisfy { doorway.contains($0.key) ? $0.value == 1 : $0.value == 2 })
+    } else {
+      #expect(adjacency.values.allSatisfy { $0 == 2 })
+    }
   }
 }
