@@ -70,7 +70,46 @@ class RefinedDesignTests(unittest.TestCase):
         deltas = json.loads(Path("Tests/Fixtures/ship-catalogue-balance-baseline-deltas.json").read_text())["ships"]
         balance = {row["id"]: row for row in json.loads(Path("docs/research/data/ship-catalogue-balance.json").read_text())["ships"]}
         self.assertTrue(set(baseline).issubset(ships))
+        old_cabin_basis = (
+            "Zero fitted charter berths; operating quarters are outside usable cargo. "
+            "Berths require 5t plus one equipment unit each."
+        )
+        new_cabin_basis = (
+            "Zero fitted charter berths; operating quarters are outside usable cargo. "
+            "Cabin modules require 5t plus one equipment unit each, independent of "
+            "grade or occupied places."
+        )
+
+        def restore_reviewed_cabin_basis(value, delta, ident):
+            profile = next(
+                (p for p in value["profiles"] if p["id"] == "PROJECT-PLAYER-" + ident),
+                None,
+            )
+            if profile is None:
+                return 0
+            fields = {field["key"]: field for field in profile["fields"]}
+            if "fitted_passenger_berths" not in fields:
+                return 0
+            keys = [
+                "fitted_passenger_berths",
+                "passengers_aboard",
+                "free_passenger_places",
+                "hold_used_by_cabins",
+            ]
+            # Balanced hold fields retain their separate exact afterSHA256 below.
+            if not any(c["key"] == "usable_cargo_after_fit" for c in delta.get("fields", [])):
+                keys.append("usable_cargo_after_fit")
+            for key in keys:
+                self.assertEqual(fields[key]["basis"], new_cabin_basis, (ident, key))
+                fields[key]["basis"] = old_cabin_basis
+            return len(keys)
+
+        def assert_original_record(value, record, ident):
+            self.assertEqual(digest(value), record["unchangedRecord"], ident)
+
         source_count = 0
+        cabin_ships = 0
+        cabin_fields = 0
         for ident, record in baseline.items():
             ship = ships[ident]
             if ident == "SH025":
@@ -82,6 +121,18 @@ class RefinedDesignTests(unittest.TestCase):
             # Reverse only the reviewed project balance delta, keeping the original
             # whole-record and imported geometry pins below fully authoritative.
             delta = deltas.get(ident, {})
+            if ident == "SH001":
+                wrong_wording = copy.deepcopy(preserved)
+                profile = next(
+                    p for p in wrong_wording["profiles"] if p["id"] == "PROJECT-PLAYER-SH001"
+                )
+                field = next(f for f in profile["fields"] if f["key"] == "fitted_passenger_berths")
+                field["basis"] += " changed"
+                with self.assertRaises(AssertionError):
+                    restore_reviewed_cabin_basis(wrong_wording, delta, ident)
+            restored = restore_reviewed_cabin_basis(preserved, delta, ident)
+            cabin_ships += int(restored > 0)
+            cabin_fields += restored
             if "name" in delta:
                 self.assertEqual(preserved["name"], delta["name"]["after"], ident)
                 preserved["name"] = delta["name"]["before"]
@@ -142,11 +193,20 @@ class RefinedDesignTests(unittest.TestCase):
                         ident,
                     )
                     field.update(text="0 t", number=0, status=old_status, basis=old_basis)
-            self.assertEqual(
-                digest(preserved),
-                record["unchangedRecord"],
-                ident,
-            )
+            assert_original_record(preserved, record, ident)
+            if ident == "SH001":
+                changed_game = copy.deepcopy(preserved)
+                changed_game["game"]["cargo"] += 1
+                with self.assertRaises(AssertionError):
+                    assert_original_record(changed_game, record, ident)
+                changed_number = copy.deepcopy(preserved)
+                profile = next(
+                    p for p in changed_number["profiles"] if p["id"] == "PROJECT-PLAYER-SH001"
+                )
+                field = next(f for f in profile["fields"] if f["key"] == "fitted_passenger_berths")
+                field["number"] += 1
+                with self.assertRaises(AssertionError):
+                    assert_original_record(changed_number, record, ident)
             if record["sourceGeometry"]:
                 d = ship["design"]
                 self.assertEqual(
@@ -167,6 +227,8 @@ class RefinedDesignTests(unittest.TestCase):
                 )
                 source_count += 1
         self.assertEqual(source_count, 74)
+        self.assertEqual(cabin_ships, 157)
+        self.assertEqual(cabin_fields, 731)
 
     def test_each_recipe_regenerates_complete_materials_and_real_detail_with_valid_faces(
         self,
