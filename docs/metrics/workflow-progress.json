@@ -4293,7 +4293,16 @@
       "verified_methods": 109,
       "verified_expanded_cases": 141,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328328399",
-      "evidence_scope": "Pure policy/shape/pack codec methods; not native journey or writer-refusal execution"
+      "evidence_scope": "Pure policy/shape/pack codec methods; not native journey or writer-refusal execution",
+      "retained_verification": {
+        "head": "5c70245ea67a6776581ff97cb750f3e01967fdc3",
+        "github_run": 39689038706,
+        "methods": 109,
+        "expanded_cases": 141,
+        "status": "MBA verified existing hosted PASS",
+        "url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328513863",
+        "scope": "Unchanged maintained selection; no native journey or usable delivery"
+      }
     },
     {
       "event": "MBA found misplaced Make recipe boundary; G1 assigned narrow correction",
