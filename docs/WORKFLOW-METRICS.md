@@ -24,9 +24,9 @@ Do not infer a speedup from this short early sample or extrapolate it to a daily
 
 ## Latest observed checkpoint
 
-At the21 October first-sale verification checkpoint, the cohort has17 product source packets (ten feature, seven fix), including two inherited packets and two corrective rework packets. Fifteen have independent source review and relevant maintained GitHub units verified. The latest verified exact-head first-sale run passed67methods/91expandedcases; these are component results, not whole-game acceptance. CI setup, shared-binding refactoring and warning maintenance are excluded from product throughput.
+At the21 October offer-routing verification checkpoint, the cohort has17 product source packets (ten feature, seven fix), including two inherited packets and two corrective rework packets. Sixteen have independent source review and relevant maintained GitHub units verified. The original caller-failure packet remains recorded as corrected rework. The latest verified exact-head offer-routing run passed68methods/92expandedcases; these are component results, not whole-game acceptance. CI setup, shared-binding refactoring and warning maintenance are excluded from product throughput.
 
-No new usable build or published release has been delivered in this cohort. Automated review returned a generic service error and remains unresolved; it does not stop the developer. The current developer assignment is the Wayfarer Exchange opening; Burro’s physical-source, retained comparison and first-sale prerequisite units are verified; the Glass Meridian offer-routing regression awaits its existing hosted result. Full Burro activation and later campaign stages remain outstanding. This short window does not establish a causal speedup.
+No new usable build or published release has been delivered in this cohort. Automated review returned a generic service error and remains unresolved; it does not stop the developer. The current developer assignment is the Wayfarer Exchange opening; Burro’s physical-source, retained comparison and first-sale prerequisite units are verified; the Glass Meridian offer-routing regression is also verified. All queued source/unit review through9b71b1c9 is complete. Full Burro activation and later campaign stages remain outstanding. This short window does not establish a causal speedup.
 
 ## Lightweight maintenance
 
