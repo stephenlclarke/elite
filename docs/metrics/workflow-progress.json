@@ -1355,6 +1355,18 @@
       "evidence": "https://github.com/stephenlclarke/elite/pull/32#issuecomment-6322335992",
       "automated_review": "pending/service failure; issues not closed",
       "new_playable_release": false
+    },
+    {
+      "at": "2026-10-21T18:01:56Z",
+      "event": "T01 hosted compilation failure and correction assigned",
+      "head": "904ece0af77fed064f80b111315870259dea2578",
+      "run": 39648091127,
+      "conclusion": "failure",
+      "unit_cases_executed": 0,
+      "issue": "https://github.com/stephenlclarke/elite/issues/33",
+      "packet": "T01.P01.I33",
+      "root_cause": "eight-token expression exceeds hosted Swift type-check budget",
+      "owner": "G1"
     }
   ]
 }
