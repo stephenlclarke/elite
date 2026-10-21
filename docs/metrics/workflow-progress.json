@@ -1155,6 +1155,18 @@
       "head": "dfd9d91238bae8b9f5fc17df3f73b8b3130d9a1e",
       "issue": "https://github.com/stephenlclarke/elite/issues/24",
       "finding_to_correction_comment_seconds": 384
+    },
+    {
+      "at": "2026-10-21T17:31:24Z",
+      "event": "warning maintenance verified in existing helper and canonical GitHub logs",
+      "source": "043a41f1cc323edce5266b0c47c8263bec19c264",
+      "canonical": "51a96b86c32b4d4212db31a77951c1e0927cc283",
+      "removed_warning_locations": 8,
+      "remaining_warning_locations": 2,
+      "unresolved_issue": 27,
+      "evidence": "https://github.com/stephenlclarke/elite/pull/32#issuecomment-6322335992",
+      "automated_review": "pending/service failure; issues not closed",
+      "new_playable_release": false
     }
   ]
 }
