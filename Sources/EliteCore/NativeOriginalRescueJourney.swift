@@ -236,6 +236,13 @@ enum NativeOriginalRescueJourney {
     }
   }
 
+  private static func privateAwakeCabinIsSupported(
+    _ berth: PassengerBerth?, commander: borrowing Commander
+  ) -> Bool {
+    guard let berth else { return false }
+    return commander.accommodation.supports(berth, mode: .awake) && berth.privateCabin
+  }
+
   @inline(never)
   private static func replyToTransportOffer(
     _ identity: NativeOriginalRescueIdentity, offer: NativeStationPassageOffer,
@@ -262,7 +269,7 @@ enum NativeOriginalRescueJourney {
       request.destination == offer.destination && offer.path == [85, 241]
       && offer.berths.count == 2 && berth?.lifeSupportWorking == true
       && berth?.humanoidCompatible == true
-      && berth.map { commander.accommodation.supports($0, mode: .awake) && $0.privateCabin } == true
+      && privateAwakeCabinIsSupported(berth, commander: commander)
       && berth?.use == .reserved(mission: state.mission, person: identity.id)
       && offer.berths.indices.contains(ordinal) && offer.berths[ordinal] == berth
     return .init(

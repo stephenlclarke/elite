@@ -17,3 +17,9 @@ Retain affected ShipAccommodationTests, PassengerCustodyTests, NativePassengerCa
 ## Compatibility and risk
 
 The current cabin save shape changes deliberately without backwards decoding or migration. Existing operating crew quarters remain intrinsic and outside these cargo modules. Native/person/save/actor integration must qualify as one coherent change; source checks do not establish behavior or performance. Paired issue: docs/ISSUE-passenger-cabin-grades.md. No PR has been created by this author.
+
+## Compiler-only correction
+
+Actual matching build 1269 compilation rejects the optional berth.map closure because it captures borrowed Commander in NativeOriginalRescueJourney.replyToTransportOffer. The raw build evidence is retained at /tmp/elite-FR058-cabin-build-1269/build.log, SHA256 8707838e33dc7c4f7f4defc90b1c4ffebd8669b43e13ae6839e871822a1e5ac0. No tests ran on that rejected build.
+
+The child replaces only that predicate with a private optional-place helper taking borrowing Commander at the same short-circuit position. Nil returns false; working awake support is checked before private-cabin status in the original order. No owned Commander copy, moved predicate evaluation, state/storage/schema/authority change or test selection change is introduced. Parent 6694b3821a04b069ce2b2c6617da3e16ef4e883d remains immutable. Whole-source inverse and the other 205 parent feature blobs are verified; source checks do not establish compiler success. G1 owns a fresh matching compilation, then the unchanged primary 11-method/12-case cohort before remaining focused qualification and full independent review.

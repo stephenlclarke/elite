@@ -11,3 +11,9 @@ Add the six explicit storefront layouts and physical OwnedPassengerCabin records
 ## Validation
 
 Authoring is isolated on the MBA, where native execution is unavailable. Swift formatting, strict lint and static scope/data checks are performed before freeze. Focused runtime/unit selectors are listed in the paired PR note. Compilation and actual owner execution remain pending G1 after M01 publication; no source/style result is a native PASS. One complete independent review follows focused owner PASS. No compatibility decoder, save migration, new mission or equipment framework is introduced.
+
+## Compiler-only correction
+
+Actual matching build 1269 compilation rejects the optional berth.map closure because it captures borrowed Commander in NativeOriginalRescueJourney.replyToTransportOffer. The raw build evidence is retained at /tmp/elite-FR058-cabin-build-1269/build.log, SHA256 8707838e33dc7c4f7f4defc90b1c4ffebd8669b43e13ae6839e871822a1e5ac0. No tests ran on that rejected build.
+
+The child replaces only that predicate with a private optional-place helper taking borrowing Commander at the same short-circuit position. Nil returns false; working awake support is checked before private-cabin status in the original order. No owned Commander copy, moved predicate evaluation, state/storage/schema/authority change or test selection change is introduced. Parent 6694b3821a04b069ce2b2c6617da3e16ef4e883d remains immutable. Whole-source inverse and the other 205 parent feature blobs are verified; source checks do not establish compiler success. G1 owns a fresh matching compilation, then the unchanged primary 11-method/12-case cohort before remaining focused qualification and full independent review.
