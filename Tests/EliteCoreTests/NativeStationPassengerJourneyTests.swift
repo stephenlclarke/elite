@@ -15,7 +15,7 @@ struct NativeStationJourneyFixture {
   func runtime(cabins: Int = 2, escapeReady: Bool = false) async throws -> GameRuntime {
     var game = try ScriptProcurementFixture.freshG03FlightGame()
     // Controlled initial funds; all equipment and cabins still require actual paid purchases.
-    game.commander.credits = 200000
+    game.commander.credits = 1_000_000
     try game.prepareG03FlightEquipment()
     if escapeReady {
       let pod = try #require(Equipment.all.first { $0.name == "Escape Pod" })
@@ -126,7 +126,7 @@ struct NativeStationPassengerJourneyTests {
     let page = try await NativePeopleTestFixture.review(runtime, row: .journey(.board))
     await runtime.scriptPageKey("right", expected: page)
     let snapshot = await runtime.snapshot()
-    let id = try #require(snapshot.commander.accommodation.fittedBerths.first?.id)
+    let id = try #require(snapshot.commander.accommodation.fittedCabins.first?.id)
     try await runtime.setPassengerBerthFitted(id, fitted: false)
     let before = await runtime.snapshot().commander
     await runtime.scriptPageKey("return", expected: page)
@@ -164,7 +164,7 @@ struct NativeStationPassengerJourneyTests {
     #expect(source.latestReplies(for: refused).map(\.kind) == [.refuse, .refuse])
     let original = try await f.source(runtime)
     let offer = try #require(original.latestOffer)
-    let id = try #require(offer.berths.first?.id)
+    let id = try #require(offer.berths.first?.cabinID)
     try await runtime.setPassengerBerthFitted(id, fitted: false)
     let changed = await runtime.snapshot()
     let reply = try NativeStationPassengerJourney.replyToPassageOffer(

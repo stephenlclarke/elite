@@ -61,7 +61,7 @@ struct MarketCargoBoundsTests {
 
   @Test func fittedCabinsAndFreightShowTheSameHoldLimitAsTheActorPurchase() async throws {
     var game = Game(executive: false)
-    game.commander.credits = 100000
+    game.commander.credits = 1_000_000
     game.commander.unlimitedCargo = true
     var berths: [UUID] = []
     var cabinDebit = 0
@@ -75,7 +75,7 @@ struct MarketCargoBoundsTests {
     try #require(remaining == 10 && game.commander.cargoTonnes == 4 * 5)
     try #require(game.commander.standardCargoCapacity == 30)
     #expect(game.commander.accommodation.fitted == Set(berths))
-    #expect(game.commander.credits == 100000 - cabinDebit)
+    #expect(game.commander.credits == 1_000_000 - cabinDebit)
     try #require(Commodity.all[0].unit == "t")
     game.commander.cargo[0] = remaining
     game.screen = .buy

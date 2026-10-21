@@ -76,7 +76,7 @@ extension NavigationCustodyTests {
     var game = Game(executive: false)
     let hold = game.commander.standardCargoCapacity
     let freeHold = hold - 5
-    game.commander.credits = 100000
+    game.commander.credits = 1_000_000
     game.commander.unlimitedCargo = unlimited
     try game.confirmPassengerBerth(game.passengerBerthQuote)
     try #require(game.commander.accommodation.fittedBerths.count == 1)
@@ -96,9 +96,9 @@ extension NavigationCustodyTests {
 
   @Test func purchasedCabinsFillActualHoldAndLeaveNoTonneTradeOrPurchaseRoom() throws {
     var game = Game(executive: false)
-    game.commander.credits = 100000
+    game.commander.credits = 2_000_000
     let hold = game.commander.standardCargoCapacity
-    let cabinTonnes = AccommodationFitting.tonnesPerCommonBerth
+    let cabinTonnes = AccommodationFitting.tonnesPerCabin
     try #require(hold > 0 && hold % cabinTonnes == 0)
     let cabinCount = hold / cabinTonnes
     for _ in 0..<cabinCount { try game.confirmPassengerBerth(game.passengerBerthQuote) }
@@ -158,7 +158,7 @@ extension NavigationCustodyTests {
 
   @Test func nonTonneTradeStillLoadsWithAnOccupiedHold() throws {
     var game = Game(executive: false)
-    game.commander.credits = 100000
+    game.commander.credits = 100_000
     let hold = game.commander.tradeCargoCapacity
     game.commander.cargo[0] = hold
     let destination = try navigationTradeMargin(&game, commodity: 13)

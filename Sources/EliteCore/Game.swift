@@ -499,13 +499,15 @@ public struct Equipment: Sendable {
   public static let navalLaser = "Naval Laser"
   public static let empPirateBlaster = "EMP Pirate Blaster"
   public static var validNames: Set<String> {
-    Set(all.map(\.name)).subtracting([FuelStorage.equipmentName, PassengerCabin.equipmentName])
-      .union(Set(HyperspaceDriveTier.allCases.map(\.label)))
-      .union([
-        navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
-        "Targeting: Mining Module", "Targeting: Salvage Module", "Salvage Cutter",
-        "Elite Shield Module",
-      ])
+    Set(all.map(\.name)).subtracting(
+      [FuelStorage.equipmentName] + PassengerCabinGrade.allCases.map(\.equipmentName)
+    )
+    .union(Set(HyperspaceDriveTier.allCases.map(\.label)))
+    .union([
+      navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
+      "Targeting: Mining Module", "Targeting: Salvage Module", "Salvage Cutter",
+      "Elite Shield Module",
+    ])
   }
   public static var maximumHardware: Set<String> {
     validNames.subtracting(
@@ -563,8 +565,10 @@ public struct Equipment: Sendable {
       .init(name: ShieldBooster.capital.equipmentName, price: 0, technology: 0),
       .init(name: HyperspaceDriveTier.intermediate.label, price: 50000, technology: 9),
       .init(name: HyperspaceDriveTier.advanced.label, price: 150000, technology: 12),
-      .init(name: PassengerCabin.equipmentName, price: PassengerCabin.price, technology: 0),
     ]
+    + PassengerCabinGrade.allCases.map {
+      .init(name: $0.equipmentName, price: $0.price, technology: 0)
+    }
 }
 
 public struct Controls: Sendable {

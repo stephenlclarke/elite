@@ -79,7 +79,8 @@ extension NativeOriginalRescueJourney {
       let boarding = state.boarding, boarding.berths.indices.contains(person.ordinal),
       person.owner == state.owner, person.valid, state.terminalOperation == nil,
       boarding.berths[person.ordinal] == berth.id,
-      commander.accommodation.fitted.contains(berth.id), berth.lifeSupportWorking,
+      commander.accommodation.fitted.contains(berth.cabinID), berth.lifeSupportWorking,
+      berth.privateCabin, berth.mode == .awake,
       berth.humanoidCompatible, custody.held.contains(where: { $0.person == reference })
     else { return false }
     return true
@@ -333,7 +334,8 @@ extension NativeOriginalRescueJourney {
         offer.path
           == (ScriptCourierGeneration.routes(origin: source, reach: offer.reach).contains([85, 241])
             ? [85, 241] : []),
-        offer.berths.count <= 2, offer.physicalTime.isFinite,
+        offer.berths.count <= 2, commander.accommodation.validPrivateOffer(offer.berths),
+        offer.physicalTime.isFinite,
         offer.physicalTime <= commander.flightSimulation.physicalTime
       else { return false }
     }
@@ -409,7 +411,8 @@ extension NativeOriginalRescueJourney {
         }),
         let identity = state.references[ordinal].rescue,
         commander.hullInstanceID == state.carrier,
-        commander.accommodation.fitted.contains(berth.id), berth.lifeSupportWorking,
+        commander.accommodation.fitted.contains(berth.cabinID), berth.lifeSupportWorking,
+        berth.privateCabin, berth.mode == .awake,
         berth.humanoidCompatible
       else { return false }
       if state.boarding != nil {

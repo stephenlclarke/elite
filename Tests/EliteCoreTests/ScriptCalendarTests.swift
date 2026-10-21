@@ -74,7 +74,7 @@ private func clearTravelArea(_ game: inout Game) {
 {
   var game = Game(executive: false)
   game.screen = .status
-  game.commander.credits = 100_000
+  game.commander.credits = 1_000_000
   try game.commander.prepareEquipment(legacy: false)
   try game.confirmPassengerBerth(game.passengerBerthQuote)
   try #require(game.commander.accommodation != ShipAccommodation())

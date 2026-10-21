@@ -82,9 +82,7 @@ extension Game {
       if state != nil || contractStation != NativeOriginalRescueJourney.source {
         issues.append("This finite Cedamar incident cannot be accepted again.")
       }
-      let berths = commander.accommodation.fittedBerths.filter {
-        !$0.use.used && $0.lifeSupportWorking && $0.humanoidCompatible
-      }
+      let berths = commander.accommodation.availablePlaces(privateCabin: true)
       if berths.count < 2 || commander.passengerFit?.allowed != true {
         issues.append("Fit two free compatible working cabins for the original people.")
       }
@@ -297,9 +295,9 @@ extension Game {
     else { throw SaveError.invalidCommander }
     ensureScriptCalendar(origin: .newCommander)
     let slots = Array(
-      commander.accommodation.fittedBerths.filter {
-        !$0.use.used && $0.lifeSupportWorking && $0.humanoidCompatible
-      }.sorted { $0.id.uuidString < $1.id.uuidString }.prefix(2))
+      commander.accommodation.availablePlaces(privateCabin: true).sorted {
+        $0.id.uuidString < $1.id.uuidString
+      }.prefix(2))
     guard slots.count == 2 else { throw SaveError.invalidCommander }
     let boardKey = pack.digest + "/custody-rescue/" + NativeOriginalRescueJourney.source.key
     let key = "original-" + NativeOriginalRescueJourney.batch
@@ -343,6 +341,8 @@ extension Game {
         }),
         let person = state.references[ordinal].rescue
       else { throw SaveError.invalidCommander }
+      commander.accommodation.ownedBerths[index].mode = .awake
+      commander.accommodation.ownedBerths[index].privateCabin = true
       commander.accommodation.ownedBerths[index].use = .reserved(
         mission: missionID, person: person.id)
     }
@@ -383,6 +383,8 @@ extension Game {
           $0.id == state.reservedBerths[ordinal]
         })
       else { throw SaveError.invalidCommander }
+      commander.accommodation.ownedBerths[index].mode = .awake
+      commander.accommodation.ownedBerths[index].privateCabin = true
       commander.accommodation.ownedBerths[index].use = .nativePerson(state.references[ordinal])
     }
     custody.originalRescue = state
@@ -541,6 +543,6 @@ extension Game {
       state.owner.uuidString, state.operation.uuidString, String(state.captures.count),
       String(state.offers.count), String(state.replies.count), String(describing: state.boarding),
       String(describing: state.record?.operation), String(describing: state.terminalOperation),
-    ]
+    ] + commander.accommodation.cabinFacts
   }
 }

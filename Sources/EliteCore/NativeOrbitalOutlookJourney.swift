@@ -158,9 +158,9 @@ enum NativeOrbitalOutlookJourney {
       let carrier = game.commander.hullInstanceID,
       let inventory = game.commander.equipmentInventory
     else { throw MissionPackError("Request passage from the actual Avenor passage office.") }
-    let slots = game.commander.accommodation.fittedBerths.filter {
-      !$0.use.used && $0.lifeSupportWorking && $0.humanoidCompatible
-    }.sorted { $0.id.uuidString < $1.id.uuidString }
+    let slots = game.commander.accommodation.availablePlaces(privateCabin: true).sorted {
+      $0.id.uuidString < $1.id.uuidString
+    }
     let reach = ScriptCourierReach(game.commander)
     let route = itineraryRoute(reach: reach, requested: requested)
     if let previous = state.latestOffer {
@@ -210,7 +210,9 @@ enum NativeOrbitalOutlookJourney {
     let epoch = game.nativeStationRuntimeEpoch
     let offered = offer.berths.indices.contains(index) ? offer.berths[index] : nil
     let berth = offered?.id
-    let observed = game.commander.accommodation.fittedBerths.first { $0.id == berth }
+    let observed = game.commander.accommodation.availablePlaces(privateCabin: true).first {
+      $0.id == berth
+    }
     let inventoryRevision = inventory.revision
     let kind: NativeOrbitalPassageReplyKind
     if request.intent == .withdrawn || state.latestOffer?.id != offer.id || offer.dock != dock
