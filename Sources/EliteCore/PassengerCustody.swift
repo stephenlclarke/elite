@@ -163,6 +163,7 @@ extension Commander {
   /// Charter fitting uses the real hold even when legacy unlimited-cargo policy is enabled.
   public var tradeCargoCapacity: Int {
     accommodation.fitted.isEmpty && !requiresContractFit && (nativePeople?.held.isEmpty ?? true)
+      && (nativeUtility?.heldTonnes ?? 0) == 0
       && (scriptState.calendarLedger == nil || xyzzyActive)
       ? capacity : standardCargoCapacity
   }
