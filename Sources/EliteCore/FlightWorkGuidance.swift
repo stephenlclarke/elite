@@ -328,6 +328,13 @@ extension Game {
   func workSurfaceStillAuthorized(
     _ state: FlightWorkGuidance, body: SpaceBody, context: EncounterContext
   ) -> Bool {
+    if let payload = body.physical?.payload, measuredPayloadIsAllocated(payload) {
+      return state.mode == .autoScoop(.mining) && commander.targetingTier != nil
+        && commander.fittedEquipment(at: .targetingMining) != nil
+        && commander.fittedEquipment(at: .utility(.fuelScoops)) != nil
+        && measuredExtractionFacts(body, context: context)?.fits == true
+        && automaticScoopShapeCompatible(body, context: context)
+    }
     if WayfarerRecordRecovery.marker(body, commander: commander) {
       guard state.mode == .autoScoop(.salvage), hasRecordRecoveryTools,
         recordRecoveryFacts(body, context: context)?.fits == true,
