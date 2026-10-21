@@ -24,9 +24,9 @@ Do not infer a speedup from this short early sample or extrapolate it to a daily
 
 ## Latest observed checkpoint
 
-At21 October18:39:27UTC, the cohort has11 product source packets (six feature, five fix), including two inherited packets and two corrective rework packets. Ten have independent source review and relevant maintained GitHub units verified. The latest exact-head fleet-discovery run passed48methods/70expandedcases; these are component results, not whole-game acceptance. CI setup, shared-binding refactoring and warning maintenance are excluded from product throughput.
+At the21 October mission verification checkpoint, the cohort has13 product source packets (eight feature, five fix), including two inherited packets and two corrective rework packets. Eleven have independent source review and relevant maintained GitHub units verified. The latest verified exact-head Glass Meridian opening run passed54methods/77expandedcases; these are component results, not whole-game acceptance. CI setup, shared-binding refactoring and warning maintenance are excluded from product throughput.
 
-No new usable build or published release has been delivered in this cohort. Automated review returned a generic service error and remains unresolved; it does not stop the developer. The current developer assignment is the ledger’s Glass Meridian opening, with later campaign stages still outstanding. This short window does not establish a causal speedup.
+No new usable build or published release has been delivered in this cohort. Automated review returned a generic service error and remains unresolved; it does not stop the developer. The current developer assignment is the ledger’s comparison-rating precision correction; fleet-display units are pending and later Glass Meridian stages remain outstanding. This short window does not establish a causal speedup.
 
 ## Lightweight maintenance
 
