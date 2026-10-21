@@ -22,7 +22,11 @@ final class GameView: NSView {
         pressedKeys.removeAll()
         trackpad.reset()
       }
-      if !acceptsTrackpadFlight || game.spin.mode != oldValue.spin.mode { trackpad.reset() }
+      if !acceptsTrackpadFlight {
+        trackpad.reset()
+      } else if game.spin.mode != oldValue.spin.mode {
+        trackpad.setSpinMode(game.spin.mode)
+      }
       modelInventoryInputGeneration = processedInventoryInputGeneration
     }
   }

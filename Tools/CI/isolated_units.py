@@ -21,6 +21,9 @@ METHODS = {
     "TrackpadContactSafetyTests": (
         "rejectedSystemGestureStaysSuppressedWhenContactsDropToSteering",
         "modeChangeCannotRearmAnInvalidTouchUntilEveryFingerLifts",
+        "callerModeTransitionPreservesRejectionBeforeTheNextTouchEvent",
+        "callerModeTransitionClearsActiveControlsSynchronously",
+        "explicitLifecycleResetStillClearsRejectionAndActiveContacts",
     ),
     "AsteroidDebrisContactTests": (
         "aMaterialCornerResponseSeparatesAllCertifiedFacesWithoutAddingEnergy",
