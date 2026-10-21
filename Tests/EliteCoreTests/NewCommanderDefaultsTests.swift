@@ -151,6 +151,15 @@ struct NewCommanderDefaultsTests {
     game.commander.name = "Previous Pilot"
     game.commander.credits = 1
     game.screen = .gameOver
+    let directHelp = PlayerHelp.pages(for: game).flatMap(\.rows)
+    #expect(directHelp.contains("RETURN / SPACE - NEW COMMANDER"))
+    #expect(!directHelp.contains { $0.contains("JAMESON") })
+    game.key("k")
+    #expect(game.screen == .help && game.helpReturn == .gameOver)
+    #expect(PlayerHelp.pages(for: game).flatMap(\.rows).contains("RETURN / SPACE - NEW COMMANDER"))
+    #expect(game.commander.name == "Previous Pilot" && game.commander.credits == 1)
+    game.key("escape")
+    #expect(game.screen == .gameOver)
     game.key("return")
     #expect(game.commander.name == "Rowan Calder" && game.commander.credits == 7200)
     #expect(game.commander.shipID == "SH025" && game.commander.fuel == 130)
