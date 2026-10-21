@@ -1,0 +1,122 @@
+{
+  "package_id": "P21",
+  "version": "0.1",
+  "scope": "Selected exact JS callback mocks, no original Oolite1.75 wormhole/physics/fuel parity. Unbounded retry body not executed.",
+  "runtime": "v26.9.0",
+  "total": 16,
+  "passed": 16,
+  "cases": [
+    {
+      "name": "choice 1_Yes",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.18887499999999946,
+      "passed": true
+    },
+    {
+      "name": "choice 2_No",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.009792000000000911,
+      "passed": true
+    },
+    {
+      "name": "source promised Arberi reoffer missing",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.04220899999999972,
+      "passed": true
+    },
+    {
+      "name": "Orramaor equipment unlock14",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.03591600000000028,
+      "passed": true
+    },
+    {
+      "name": "arrival 229",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.06408299999999834,
+      "passed": true
+    },
+    {
+      "name": "arrival 192",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.010875000000002188,
+      "passed": true
+    },
+    {
+      "name": "final25000 paid once",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.023709000000000202,
+      "passed": true
+    },
+    {
+      "name": "source wrong-galaxy arrival advances defect",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.012916000000000594,
+      "passed": true
+    },
+    {
+      "name": "corridor 194",
+      "source": "Scripts/linkG7_autoJumper.js",
+      "source_sha256": "5ee259f3e5bde60421b375604b976ed93eede076fa140429ef6a3c7dce8f7e6b",
+      "duration_ms": 0.032374999999998266,
+      "passed": true
+    },
+    {
+      "name": "corridor 89",
+      "source": "Scripts/linkG7_autoJumper.js",
+      "source_sha256": "5ee259f3e5bde60421b375604b976ed93eede076fa140429ef6a3c7dce8f7e6b",
+      "duration_ms": 0.013833999999999236,
+      "passed": true
+    },
+    {
+      "name": "corridor 17",
+      "source": "Scripts/linkG7_autoJumper.js",
+      "source_sha256": "5ee259f3e5bde60421b375604b976ed93eede076fa140429ef6a3c7dce8f7e6b",
+      "duration_ms": 0.006458000000002073,
+      "passed": true
+    },
+    {
+      "name": "corridor 178",
+      "source": "Scripts/linkG7_autoJumper.js",
+      "source_sha256": "5ee259f3e5bde60421b375604b976ed93eede076fa140429ef6a3c7dce8f7e6b",
+      "duration_ms": 0.004832999999997867,
+      "passed": true
+    },
+    {
+      "name": "invalid origin -1/6",
+      "source": "Scripts/linkG7_autoJumper.js",
+      "source_sha256": "5ee259f3e5bde60421b375604b976ed93eede076fa140429ef6a3c7dce8f7e6b",
+      "duration_ms": 0.04029200000000088,
+      "passed": true
+    },
+    {
+      "name": "invalid origin 73/6",
+      "source": "Scripts/linkG7_autoJumper.js",
+      "source_sha256": "5ee259f3e5bde60421b375604b976ed93eede076fa140429ef6a3c7dce8f7e6b",
+      "duration_ms": 0.004084000000002419,
+      "passed": true
+    },
+    {
+      "name": "invalid origin 194/0",
+      "source": "Scripts/linkG7_autoJumper.js",
+      "source_sha256": "5ee259f3e5bde60421b375604b976ed93eede076fa140429ef6a3c7dce8f7e6b",
+      "duration_ms": 0.0035410000000020148,
+      "passed": true
+    },
+    {
+      "name": "normal arrival clears transient jump flags",
+      "source": "Scripts/linkG7_main.js",
+      "source_sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+      "duration_ms": 0.015791999999997586,
+      "passed": true
+    }
+  ]
+}

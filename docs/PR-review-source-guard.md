@@ -1,0 +1,9 @@
+# Refuse uncommitted source in authoritative Sonar analysis
+
+The Sonar entry point reuses the distribution source-checkpoint guard, including its maintained-source path policy. It pins the initial commit, verifies its required format, and repeats the branch and source checks after coverage. Only that original commit is passed to the scanner. Distribution keeps its existing default behavior; its guard accepts an action label for accurate analysis errors.
+
+Nine offline test methods exercise the actual entry point in temporary Git repositories with local settings, coverage and scanner fixtures. They cover all maintained path categories, ignored build outputs, tracked changes, and changes to source, branch or clean HEAD during coverage. The ordinary distribution test target discovers them, so the combined quality gate also executes them.
+
+Independent source review closed without findings. Controlled execution against the original entry point produced eight expected subtest failures, proving that every maintained path category reached the offline scanner. The fixed entry point passed all nine methods in 2.121 seconds; shell syntax passed and tracked input hashes were unchanged. Evidence is retained in `/tmp/elite-review-source-guard-027/controlled-result.json` and its hashed logs.
+
+The first fixture run is preserved as failed: inherited shell startup files replaced PATH and selected the installed scanner, which rejected missing project properties before analysis. The fixture now removes BASH_ENV and ENV from its child environment, ensuring its local substitutes are used. The controlled reproduction and passing run are separate evidence, not a relabelled initial pass. Final integrated quality validation remains pending. No authoritative analysis was published. Motivation: [issue handoff](ISSUE-review-source-guard.md).

@@ -11,6 +11,31 @@ spec.loader.exec_module(reference)
 
 
 class ShipReferenceTests(unittest.TestCase):
+    def test_texture_pixels_manifest_and_notices_invalidate_shared_fingerprint(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for name in ['Sources/EliteCore/Geometry.swift', 'Sources/EliteMac/NativeGraphics.swift',
+                         'Sources/EliteMac/ShipMedia.swift', 'Package.resolved']:
+                path = root/name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b'unchanged renderer')
+            absent = reference.shared_hash(root)
+            textures = root/'Sources/EliteCore/Resources/ShipTextures'
+            textures.mkdir(parents=True)
+            self.assertEqual(reference.shared_hash(root), absent)
+            for name in ['comray_sun.png', 'manifest.json', 'NOTICE.md']:
+                before = reference.shared_hash(root)
+                path = textures/name
+                path.write_bytes(b'original bytes')
+                added = reference.shared_hash(root)
+                self.assertNotEqual(added, before)
+                path.write_bytes(b'changed bytes')
+                self.assertNotEqual(reference.shared_hash(root), added)
+            # Renaming a dependency also changes identity even when bytes match.
+            before = reference.shared_hash(root)
+            (textures/'NOTICE.md').rename(textures/'ATTRIBUTION.md')
+            self.assertNotEqual(reference.shared_hash(root), before)
+
     def test_content_dependencies_and_unchanged_reuse(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);spec_a=root/'SH001.toml';spec_b=root/'SH002.toml';gif=root/'SH001.gif'
@@ -33,8 +58,8 @@ class ShipReferenceTests(unittest.TestCase):
 
     def test_all_runtime_definitions_include_geometry_and_preserve_source_profiles(self):
         ships=reference.ship_files.read_ships()
-        self.assertEqual(len(ships),168)
-        self.assertEqual(sum('game' in s for s in ships),159)
+        self.assertEqual(len(ships),171)
+        self.assertEqual(sum('game' in s for s in ships),162)
         self.assertEqual(sum('recipe' in s['design'] for s in ships),94)
         originals=[]
         for ship in ships:

@@ -1,0 +1,617 @@
+{
+  "profile_id": "P19-PRELUDE-NARROW-PATCH-v1",
+  "scope": "Exact occurrence-checked edits execute 12 original Continue-callback guards, orbital Raaed gate, nonfatal missing/throwing reader registration, question docking/galaxy/main/offer gate and stale-interface cleanup. Does not implement final-page Confirm, per-page durable receipts, atomic native initialization, local orbital text/book fallback or native save/UI/gallery. Those remain explicit specification/native acceptance requirements. Synthetic callback/API cases are bounded evidence only.",
+  "source": {
+    "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+    "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+  },
+  "patched_sha256": "80c55041f7666da6c90c440fd9e0c35508b524e3c47f33c1be03eb1323c68aae",
+  "edits": [
+    {
+      "before": "// special cases: if planetfall in use, player needs to fly down to the surface.\r\n\tif (system.ID == 230) { // RAAED\r\n\t\tif (((!this._pf && p.dockedStation.isMainStation) || p.dockedStation.hasRole(\"planetFall2_mainSurface\")) && missionVariables.IR_offer == null) {\r\n\t\t\tif (missionVariables.IR_status == \"IR_IBANEZ_2\") {\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 230 });\r\n\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1a\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1b\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1c\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1d\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\t\t\t\tthis.$addPadCharacter(\"lexicon\");\r\n\t\t\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1e\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\" });\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_status = \"IR_RAAED_1\";\r\n\t\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_IBANEZ_INFO\");\r\n\t\t\t\t\t\t\t\tmission.markSystem({ name: this.name, system: 7 });\r\n\t\t\t\t\t\t\t});\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n",
+      "after": "// special cases: if planetfall in use, player needs to fly down to the surface.\r\n\tif (system.ID == 230) { // RAAED\r\n\t\tif (((!this._pf && p.dockedStation.isMainStation) || p.dockedStation.hasRole(\"planetFall2_mainSurface\")) && missionVariables.IR_offer == null) {\r\n\t\t\tif (missionVariables.IR_status == \"IR_IBANEZ_2\") {\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 230 });\r\n\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1a\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1b\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1c\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1d\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\t\t\t\tthis.$addPadCharacter(\"lexicon\");\r\n\t\t\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_RAAED_1e\", screenID: \"iron_raven_special\", overlay: \"IR_forest.png\" });\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_status = \"IR_RAAED_1\";\r\n\t\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_IBANEZ_INFO\");\r\n\t\t\t\t\t\t\t\tmission.markSystem({ name: this.name, system: 7 });\r\n\t\t\t\t\t\t\t});\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n"
+    },
+    {
+      "before": "\t\tif (missionVariables.IR_status == null) {\r\n\t\t\tthis._runScreen({ overlay: { name: \"IR_title.png\", height: 546 }, choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\tthis._runScreen({ messageKey: \"IR_IBANEZ_1\" });\r\n\t\t\t\tthis._setInstructionsKey(\"IR_IBANEZ_INFO\");\r\n\t\t\t\tmission.markSystem({ name: this.name, system: 7 });\r\n\t\t\t\tmissionVariables.IR_status = \"IR_IBANEZ_1\";\r\n\t\t\t\tmissionVariables.IR_order_date = clock.days - 30;\r\n\t\t\t\tthis.$addDataToPad(\"GALCOP.INTELLIGENCE\");\r\n\t\t\t\tthis.$addDataToPad(\"INFOS.GHC\");\r\n\t\t\t\tthis.$addDataToPad(\"SYSTEMS.VEGEDIUS\");\r\n\t\t\t});\r\n\t\t\treturn;\r\n\t\t}\r\n\r\n",
+      "after": "\t\tif (missionVariables.IR_status == null) {\r\n\t\t\tthis._runScreen({ overlay: { name: \"IR_title.png\", height: 546 }, choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\tthis._runScreen({ messageKey: \"IR_IBANEZ_1\" });\r\n\t\t\t\tthis._setInstructionsKey(\"IR_IBANEZ_INFO\");\r\n\t\t\t\tmission.markSystem({ name: this.name, system: 7 });\r\n\t\t\t\tmissionVariables.IR_status = \"IR_IBANEZ_1\";\r\n\t\t\t\tmissionVariables.IR_order_date = clock.days - 30;\r\n\t\t\t\tthis.$addDataToPad(\"GALCOP.INTELLIGENCE\");\r\n\t\t\t\tthis.$addDataToPad(\"INFOS.GHC\");\r\n\t\t\t\tthis.$addDataToPad(\"SYSTEMS.VEGEDIUS\");\r\n\t\t\t});\r\n\t\t\treturn;\r\n\t\t}\r\n\r\n"
+    },
+    {
+      "before": "\t\t\tif (missionVariables.IR_status == \"IR_IBANEZ_1\") {\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 7 });\r\n\r\n\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_2a\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_2b\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\t\tthis.$addPadCharacter(\"ibanez\");\r\n\t\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_2c\" });\r\n\t\t\t\t\t\tmissionVariables.IR_status = \"IR_IBANEZ_2\";\r\n\t\t\t\t\t\tif (this._pf) {\r\n\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_RAAED_PF_INFO\");\r\n\t\t\t\t\t\t} else {\r\n\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_RAAED_INFO\");\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tmission.markSystem({ name: this.name, system: 230 });\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t\tif (missionVariables.IR_status == \"IR_RAAED_1\") { //return to Ibanez\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 7 });\r\n\r\n\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_3\" });\r\n\t\t\t\tmissionVariables.IR_status = \"IR_IBANEZ_3\";\r\n\t\t\t\tthis._setInstructionsKey(\"IR_JANES_INFO\");\r\n\t\t\t\tmission.markSystem({ name: this.name, system: 232 });\r\n\t\t\t\tthis.$addDataToPad(\"INFOS.JANES\");\r\n\t\t\t\tthis.$addDataToPad(\"SYSTEMS.BIRAA\");\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t\tif (missionVariables.IR_status == \"IR_JANES_1\") { // return to Ibanez for big briefing\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 7 });\r\n\r\n\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_4a\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_4b\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_4c\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_4d\" });\r\n\t\t\t\t\t\t\tmissionVariables.IR_status = \"IR_IBANEZ_4\";\r\n\t\t\t\t\t\t\tthis._setInstructionsKey(null);\r\n\t\t\t\t\t\t\tthis.setupQuestions();\r\n\t\t\t\t\t\t\tthis.setupStatus();\r\n\t\t\t\t\t\t\tworldScripts[\"IR-brief.js\"]._registerIRBrief();\r\n\t\t\t\t\t\t\tmissionVariables.IR_quest_count = 0;\r\n\t\t\t\t\t\t\tthis.addIRinterface();\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n",
+      "after": "\t\t\tif (missionVariables.IR_status == \"IR_IBANEZ_1\") {\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 7 });\r\n\r\n\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_2a\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_2b\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\t\tthis.$addPadCharacter(\"ibanez\");\r\n\t\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_2c\" });\r\n\t\t\t\t\t\tmissionVariables.IR_status = \"IR_IBANEZ_2\";\r\n\t\t\t\t\t\tif (this._pf) {\r\n\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_RAAED_PF_INFO\");\r\n\t\t\t\t\t\t} else {\r\n\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_RAAED_INFO\");\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tmission.markSystem({ name: this.name, system: 230 });\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t\tif (missionVariables.IR_status == \"IR_RAAED_1\") { //return to Ibanez\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 7 });\r\n\r\n\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_3\" });\r\n\t\t\t\tmissionVariables.IR_status = \"IR_IBANEZ_3\";\r\n\t\t\t\tthis._setInstructionsKey(\"IR_JANES_INFO\");\r\n\t\t\t\tmission.markSystem({ name: this.name, system: 232 });\r\n\t\t\t\tthis.$addDataToPad(\"INFOS.JANES\");\r\n\t\t\t\tthis.$addDataToPad(\"SYSTEMS.BIRAA\");\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t\tif (missionVariables.IR_status == \"IR_JANES_1\") { // return to Ibanez for big briefing\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 7 });\r\n\r\n\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_4a\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_4b\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_4c\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\t\t\tthis._runScreen({ title: expandMissionText(\"IR_name_ghc\"), messageKey: \"IR_IBANEZ_4d\" });\r\n\t\t\t\t\t\t\tmissionVariables.IR_status = \"IR_IBANEZ_4\";\r\n\t\t\t\t\t\t\tthis._setInstructionsKey(null);\r\n\t\t\t\t\t\t\tthis.setupQuestions();\r\n\t\t\t\t\t\t\tthis.setupStatus();\r\n\t\t\t\t\t\t\tworldScripts[\"IR-brief.js\"]._registerIRBrief();\r\n\t\t\t\t\t\t\tmissionVariables.IR_quest_count = 0;\r\n\t\t\t\t\t\t\tthis.addIRinterface();\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n"
+    },
+    {
+      "before": "\t\t\tif (missionVariables.IR_status == \"IR_IBANEZ_3\") { // quick visit to Janes\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 232 });\r\n\t\t\t\tthis._runScreen({ messageKey: \"IR_JANES_1a\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\tthis._runScreen({ messageKey: \"IR_JANES_1b\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\t\tthis.$addPadCharacter(\"lindberg\");\r\n\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_JANES_1c\" });\r\n\t\t\t\t\t\tmissionVariables.IR_status = \"IR_JANES_1\";\r\n\t\t\t\t\t\tthis._setInstructionsKey(\"IR_IBANEZ_INFO\");\r\n\t\t\t\t\t\tmission.markSystem({ name: this.name, system: 7 });\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n",
+      "after": "\t\t\tif (missionVariables.IR_status == \"IR_IBANEZ_3\") { // quick visit to Janes\r\n\t\t\t\tmission.unmarkSystem({ name: this.name, system: 232 });\r\n\t\t\t\tthis._runScreen({ messageKey: \"IR_JANES_1a\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\tthis._runScreen({ messageKey: \"IR_JANES_1b\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\t\tthis.$addPadCharacter(\"lindberg\");\r\n\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_JANES_1c\" });\r\n\t\t\t\t\t\tmissionVariables.IR_status = \"IR_JANES_1\";\r\n\t\t\t\t\t\tthis._setInstructionsKey(\"IR_IBANEZ_INFO\");\r\n\t\t\t\t\t\tmission.markSystem({ name: this.name, system: 7 });\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n"
+    },
+    {
+      "before": "((!this._pf && p.dockedStation.isMainStation) || p.dockedStation.hasRole(\"planetFall2_mainSurface\"))",
+      "after": "p.dockedStation.isMainStation"
+    },
+    {
+      "before": "worldScripts[\"IR-brief.js\"]._registerIRBrief();",
+      "after": "try { if (worldScripts[\"IR-brief.js\"] && worldScripts[\"Ships Library\"] && typeof worldScripts[\"Ships Library\"]._registerBook === \"function\") { worldScripts[\"IR-brief.js\"]._registerIRBrief(); missionVariables.IR_briefReaderPending = null; } else { missionVariables.IR_briefReaderPending = \"yes\"; } } catch (error) { missionVariables.IR_briefReaderPending = \"yes\"; }"
+    },
+    {
+      "before": "this.questionScreens = function () {",
+      "after": "this.questionScreens = function () { if (!player.ship.docked || galaxyNumber !== 7 || !player.ship.dockedStation.isMainStation || missionVariables.IR_offer != null) return;"
+    },
+    {
+      "before": "this.addIRinterface = function () {",
+      "after": "this.addIRinterface = function () { if (!player.ship.docked || !player.ship.dockedStation) return; player.ship.dockedStation.setInterface(\"IR_questions\", null);"
+    },
+    {
+      "before": "if (missionVariables.IR_status == \"IR_IBANEZ_4\") {\r\n\t\tvar scrTitle = \"\";",
+      "after": "if (galaxyNumber === 7 && player.ship.dockedStation.isMainStation && missionVariables.IR_status == \"IR_IBANEZ_4\") {\r\n\t\tvar scrTitle = \"\";"
+    }
+  ],
+  "total": 44,
+  "passed": 44,
+  "cases": [
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_1/0/BACK",
+      "passed": true,
+      "duration_ms": 4.162834,
+      "result": {
+        "phase": "IR_IBANEZ_1",
+        "messages": [
+          "IR_IBANEZ_2a"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_1/0/undefined",
+      "passed": true,
+      "duration_ms": 0.806584,
+      "result": {
+        "phase": "IR_IBANEZ_1",
+        "messages": [
+          "IR_IBANEZ_2a"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_1/1/BACK",
+      "passed": true,
+      "duration_ms": 0.640209,
+      "result": {
+        "phase": "IR_IBANEZ_1",
+        "messages": [
+          "IR_IBANEZ_2a",
+          "IR_IBANEZ_2b"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_1/1/undefined",
+      "passed": true,
+      "duration_ms": 0.512375,
+      "result": {
+        "phase": "IR_IBANEZ_1",
+        "messages": [
+          "IR_IBANEZ_2a",
+          "IR_IBANEZ_2b"
+        ]
+      }
+    },
+    {
+      "name": "Confirm all source Continue pages IR_IBANEZ_1",
+      "passed": true,
+      "duration_ms": 0.557667,
+      "result": {
+        "phase": "IR_IBANEZ_2"
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_2/0/BACK",
+      "passed": true,
+      "duration_ms": 0.559,
+      "result": {
+        "phase": "IR_IBANEZ_2",
+        "messages": [
+          "IR_RAAED_1a"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_2/0/undefined",
+      "passed": true,
+      "duration_ms": 0.443625,
+      "result": {
+        "phase": "IR_IBANEZ_2",
+        "messages": [
+          "IR_RAAED_1a"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_2/1/BACK",
+      "passed": true,
+      "duration_ms": 0.524667,
+      "result": {
+        "phase": "IR_IBANEZ_2",
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_2/1/undefined",
+      "passed": true,
+      "duration_ms": 0.440167,
+      "result": {
+        "phase": "IR_IBANEZ_2",
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_2/2/BACK",
+      "passed": true,
+      "duration_ms": 0.494,
+      "result": {
+        "phase": "IR_IBANEZ_2",
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b",
+          "IR_RAAED_1c"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_2/2/undefined",
+      "passed": true,
+      "duration_ms": 0.412917,
+      "result": {
+        "phase": "IR_IBANEZ_2",
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b",
+          "IR_RAAED_1c"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_2/3/BACK",
+      "passed": true,
+      "duration_ms": 0.396417,
+      "result": {
+        "phase": "IR_IBANEZ_2",
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b",
+          "IR_RAAED_1c",
+          "IR_RAAED_1d"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_2/3/undefined",
+      "passed": true,
+      "duration_ms": 0.485167,
+      "result": {
+        "phase": "IR_IBANEZ_2",
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b",
+          "IR_RAAED_1c",
+          "IR_RAAED_1d"
+        ]
+      }
+    },
+    {
+      "name": "Confirm all source Continue pages IR_IBANEZ_2",
+      "passed": true,
+      "duration_ms": 0.393292,
+      "result": {
+        "phase": "IR_RAAED_1"
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_3/0/BACK",
+      "passed": true,
+      "duration_ms": 0.451208,
+      "result": {
+        "phase": "IR_IBANEZ_3",
+        "messages": [
+          "IR_JANES_1a"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_3/0/undefined",
+      "passed": true,
+      "duration_ms": 0.51125,
+      "result": {
+        "phase": "IR_IBANEZ_3",
+        "messages": [
+          "IR_JANES_1a"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_3/1/BACK",
+      "passed": true,
+      "duration_ms": 0.636,
+      "result": {
+        "phase": "IR_IBANEZ_3",
+        "messages": [
+          "IR_JANES_1a",
+          "IR_JANES_1b"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_IBANEZ_3/1/undefined",
+      "passed": true,
+      "duration_ms": 0.399584,
+      "result": {
+        "phase": "IR_IBANEZ_3",
+        "messages": [
+          "IR_JANES_1a",
+          "IR_JANES_1b"
+        ]
+      }
+    },
+    {
+      "name": "Confirm all source Continue pages IR_IBANEZ_3",
+      "passed": true,
+      "duration_ms": 0.39575,
+      "result": {
+        "phase": "IR_JANES_1"
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_JANES_1/0/BACK",
+      "passed": true,
+      "duration_ms": 0.393417,
+      "result": {
+        "phase": "IR_JANES_1",
+        "messages": [
+          "IR_IBANEZ_4a"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_JANES_1/0/undefined",
+      "passed": true,
+      "duration_ms": 0.394417,
+      "result": {
+        "phase": "IR_JANES_1",
+        "messages": [
+          "IR_IBANEZ_4a"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_JANES_1/1/BACK",
+      "passed": true,
+      "duration_ms": 0.697333,
+      "result": {
+        "phase": "IR_JANES_1",
+        "messages": [
+          "IR_IBANEZ_4a",
+          "IR_IBANEZ_4b"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_JANES_1/1/undefined",
+      "passed": true,
+      "duration_ms": 0.616375,
+      "result": {
+        "phase": "IR_JANES_1",
+        "messages": [
+          "IR_IBANEZ_4a",
+          "IR_IBANEZ_4b"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_JANES_1/2/BACK",
+      "passed": true,
+      "duration_ms": 0.701958,
+      "result": {
+        "phase": "IR_JANES_1",
+        "messages": [
+          "IR_IBANEZ_4a",
+          "IR_IBANEZ_4b",
+          "IR_IBANEZ_4c"
+        ]
+      }
+    },
+    {
+      "name": "Guard actual Continue page IR_JANES_1/2/undefined",
+      "passed": true,
+      "duration_ms": 0.518333,
+      "result": {
+        "phase": "IR_JANES_1",
+        "messages": [
+          "IR_IBANEZ_4a",
+          "IR_IBANEZ_4b",
+          "IR_IBANEZ_4c"
+        ]
+      }
+    },
+    {
+      "name": "Confirm all source Continue pages IR_JANES_1",
+      "passed": true,
+      "duration_ms": 0.5875,
+      "result": {
+        "phase": "IR_IBANEZ_4"
+      }
+    },
+    {
+      "name": "Invitation title guard BACK",
+      "passed": true,
+      "duration_ms": 1.178125,
+      "result": {
+        "vars": {
+          "IR_status": null,
+          "IR_quest_count": 0
+        }
+      }
+    },
+    {
+      "name": "Invitation title guard undefined",
+      "passed": true,
+      "duration_ms": 0.501334,
+      "result": {
+        "vars": {
+          "IR_status": null,
+          "IR_quest_count": 0
+        }
+      }
+    },
+    {
+      "name": "Orbital-only Raaed patch PF/main false/false",
+      "passed": true,
+      "duration_ms": 0.40375,
+      "result": {
+        "phase": "IR_IBANEZ_2"
+      }
+    },
+    {
+      "name": "Orbital-only Raaed patch PF/main false/true",
+      "passed": true,
+      "duration_ms": 0.414583,
+      "result": {
+        "phase": "IR_RAAED_1"
+      }
+    },
+    {
+      "name": "Orbital-only Raaed patch PF/main true/false",
+      "passed": true,
+      "duration_ms": 0.597291,
+      "result": {
+        "phase": "IR_IBANEZ_2"
+      }
+    },
+    {
+      "name": "Orbital-only Raaed patch PF/main true/true",
+      "passed": true,
+      "duration_ms": 0.533875,
+      "result": {
+        "phase": "IR_RAAED_1"
+      }
+    },
+    {
+      "name": "Brief library missing leaves atomic initialization reachable",
+      "passed": true,
+      "duration_ms": 0.611375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 1,
+          "IR_shipment_question_key": "shipment_question_1",
+          "IR_shipment_question_string": "[shipment_question_string_1]",
+          "IR_SDF_question_no": 1,
+          "IR_SDF_question_key": "SDF_question_1",
+          "IR_SDF_question_string": "[SDF_question_string_1]",
+          "IR_finance_question_no": 1,
+          "IR_finance_question_key": "finance_question_1",
+          "IR_finance_question_string": "[finance_question_string_1]",
+          "IR_defences_question_no": 1,
+          "IR_defences_question_key": "defences_question_1",
+          "IR_defences_question_string": "[defences_question_string_1]",
+          "IR_question_settings": "SET",
+          "IR_shipment_status_no": 0,
+          "IR_finance_status_no": 0,
+          "IR_SDF_status_no": 0,
+          "IR_defences_status_no": 0,
+          "IR_briefReaderPending": "yes"
+        }
+      }
+    },
+    {
+      "name": "Brief library throws leaves atomic initialization reachable",
+      "passed": true,
+      "duration_ms": 0.65525,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 1,
+          "IR_shipment_question_key": "shipment_question_1",
+          "IR_shipment_question_string": "[shipment_question_string_1]",
+          "IR_SDF_question_no": 1,
+          "IR_SDF_question_key": "SDF_question_1",
+          "IR_SDF_question_string": "[SDF_question_string_1]",
+          "IR_finance_question_no": 1,
+          "IR_finance_question_key": "finance_question_1",
+          "IR_finance_question_string": "[finance_question_string_1]",
+          "IR_defences_question_no": 1,
+          "IR_defences_question_key": "defences_question_1",
+          "IR_defences_question_string": "[defences_question_string_1]",
+          "IR_question_settings": "SET",
+          "IR_shipment_status_no": 0,
+          "IR_finance_status_no": 0,
+          "IR_SDF_status_no": 0,
+          "IR_defences_status_no": 0,
+          "IR_briefReaderPending": "yes"
+        }
+      }
+    },
+    {
+      "name": "Brief library available leaves atomic initialization reachable",
+      "passed": true,
+      "duration_ms": 0.487375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 1,
+          "IR_shipment_question_key": "shipment_question_1",
+          "IR_shipment_question_string": "[shipment_question_string_1]",
+          "IR_SDF_question_no": 1,
+          "IR_SDF_question_key": "SDF_question_1",
+          "IR_SDF_question_string": "[SDF_question_string_1]",
+          "IR_finance_question_no": 1,
+          "IR_finance_question_key": "finance_question_1",
+          "IR_finance_question_string": "[finance_question_string_1]",
+          "IR_defences_question_no": 1,
+          "IR_defences_question_key": "defences_question_1",
+          "IR_defences_question_string": "[defences_question_string_1]",
+          "IR_question_settings": "SET",
+          "IR_shipment_status_no": 0,
+          "IR_finance_status_no": 0,
+          "IR_SDF_status_no": 0,
+          "IR_defences_status_no": 0
+        }
+      }
+    },
+    {
+      "name": "Guard actual question callback {\"galaxy\":6}",
+      "passed": true,
+      "duration_ms": 0.599375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0
+        }
+      }
+    },
+    {
+      "name": "Guard actual question callback {\"main\":false}",
+      "passed": true,
+      "duration_ms": 0.38675,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0
+        }
+      }
+    },
+    {
+      "name": "Guard actual question callback {\"docked\":false}",
+      "passed": true,
+      "duration_ms": 0.377792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0
+        }
+      }
+    },
+    {
+      "name": "Guard actual question callback {\"vars\":{\"IR_offer\":\"BUSY\"}}",
+      "passed": true,
+      "duration_ms": 0.39275,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        }
+      }
+    },
+    {
+      "name": "Legitimate orbital contact still records actual Abonlo introduction",
+      "passed": true,
+      "duration_ms": 0.531375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_alsto": "MET"
+        }
+      }
+    },
+    {
+      "name": "Clear stale question interface and select valid contact {\"galaxy\":6}",
+      "passed": true,
+      "duration_ms": 0.848625,
+      "result": {
+        "interfaces": [
+          {
+            "key": "IR_questions",
+            "present": false
+          },
+          {
+            "key": "IR_log",
+            "present": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Clear stale question interface and select valid contact {\"main\":false}",
+      "passed": true,
+      "duration_ms": 0.4475,
+      "result": {
+        "interfaces": [
+          {
+            "key": "IR_questions",
+            "present": false
+          },
+          {
+            "key": "IR_log",
+            "present": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Clear stale question interface and select valid contact {\"vars\":{\"IR_status\":\"IR_KINNAIRD_1\"}}",
+      "passed": true,
+      "duration_ms": 0.409042,
+      "result": {
+        "interfaces": [
+          {
+            "key": "IR_questions",
+            "present": false
+          },
+          {
+            "key": "IR_log",
+            "present": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Clear stale question interface and select valid contact {}",
+      "passed": true,
+      "duration_ms": 0.97175,
+      "result": {
+        "interfaces": [
+          {
+            "key": "IR_questions",
+            "present": false
+          },
+          {
+            "key": "IR_log",
+            "present": true
+          },
+          {
+            "key": "IR_questions",
+            "present": true
+          }
+        ]
+      }
+    }
+  ]
+}

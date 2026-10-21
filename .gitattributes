@@ -4,3 +4,4 @@ Sources/EliteCore/Resources/ModelLicenses/** conflict-marker-size=32 -text white
 Sources/EliteCore/Resources/*-LICENSE.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 Sources/EliteCore/Resources/Vector-MANIFEST.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 Sources/EliteCore/Resources/Legal/CC-*.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+Sources/EliteCore/Resources/ShipTextures/SOURCE-README.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

@@ -1,0 +1,140 @@
+{
+  "package_id": "P46",
+  "submissions": [
+    "Areidis terminal network",
+    "Specialist crystals"
+  ],
+  "scope": "Selected exact station callbacks plus literal decryption/duplicate-content verification. Original walking/cubes reference-only; necessary orbital project adaptation is specified separately. Not native AI/binary parity.",
+  "total": 17,
+  "passed": 17,
+  "cases": [
+    {
+      "name": "defence exact strict subentity boundary index0",
+      "source": "Scripts/vector_areidisStation.js",
+      "source_sha256": "73add7f5413800d4a6a5de5a6208b632a0c65bb6f6c3100e5bf5037d5d20e6b2",
+      "duration_ms": 0.19529200000000202,
+      "passed": true
+    },
+    {
+      "name": "defence exact strict subentity boundary index1",
+      "source": "Scripts/vector_areidisStation.js",
+      "source_sha256": "73add7f5413800d4a6a5de5a6208b632a0c65bb6f6c3100e5bf5037d5d20e6b2",
+      "duration_ms": 0.016874999999998863,
+      "passed": true
+    },
+    {
+      "name": "defence exact strict subentity boundary index2",
+      "source": "Scripts/vector_areidisStation.js",
+      "source_sha256": "73add7f5413800d4a6a5de5a6208b632a0c65bb6f6c3100e5bf5037d5d20e6b2",
+      "duration_ms": 0.009374999999998579,
+      "passed": true
+    },
+    {
+      "name": "defence exact strict subentity boundary index3",
+      "source": "Scripts/vector_areidisStation.js",
+      "source_sha256": "73add7f5413800d4a6a5de5a6208b632a0c65bb6f6c3100e5bf5037d5d20e6b2",
+      "duration_ms": 0.010750000000001592,
+      "passed": true
+    },
+    {
+      "name": "defence exact strict subentity boundary index4",
+      "source": "Scripts/vector_areidisStation.js",
+      "source_sha256": "73add7f5413800d4a6a5de5a6208b632a0c65bb6f6c3100e5bf5037d5d20e6b2",
+      "duration_ms": 0.008417000000001451,
+      "passed": true
+    },
+    {
+      "name": "source missing currentAreidis writes undefined key",
+      "source": "Scripts/vector_areidis.js",
+      "source_sha256": "179cdb4e4e592b3df4994e674534799fcf7c9b02443c823f6e9fa685598bf564",
+      "duration_ms": 0.09841700000000486,
+      "passed": true
+    },
+    {
+      "name": "terminal callback flag16",
+      "source": "Scripts/vector_areidis.js",
+      "source_sha256": "179cdb4e4e592b3df4994e674534799fcf7c9b02443c823f6e9fa685598bf564",
+      "duration_ms": 0.051042000000002474,
+      "passed": true
+    },
+    {
+      "name": "source code comms toggles defence fuel0",
+      "source": "Scripts/vector_areidisStation.js",
+      "source_sha256": "73add7f5413800d4a6a5de5a6208b632a0c65bb6f6c3100e5bf5037d5d20e6b2",
+      "duration_ms": 0.029583999999999833,
+      "passed": true
+    },
+    {
+      "name": "source code comms toggles defence fuel7",
+      "source": "Scripts/vector_areidisStation.js",
+      "source_sha256": "73add7f5413800d4a6a5de5a6208b632a0c65bb6f6c3100e5bf5037d5d20e6b2",
+      "duration_ms": 0.0089579999999998,
+      "passed": true
+    },
+    {
+      "name": "hint pod first specialist then Areidis stage0",
+      "source": "Scripts/vector_epodHintA.js",
+      "source_sha256": "d428430d66ba8d5fff95e179c871e6c5433dfbfb26cc9c76c6bbab9d699ccb1b",
+      "duration_ms": 0.031959000000000515,
+      "passed": true
+    },
+    {
+      "name": "hint pod first specialist then Areidis stage1",
+      "source": "Scripts/vector_epodHintA.js",
+      "source_sha256": "d428430d66ba8d5fff95e179c871e6c5433dfbfb26cc9c76c6bbab9d699ccb1b",
+      "duration_ms": 0.006083999999994205,
+      "passed": true
+    },
+    {
+      "name": "specialist identification radius25000",
+      "source": "Scripts/vector_specialiststation.js",
+      "source_sha256": "1cf7f4d4f146e0bd0299a5dde3018ea6ba1b7432ffb5adb2e20bba9f83c5d485",
+      "duration_ms": 0.03283299999999656,
+      "passed": true
+    },
+    {
+      "name": "specialist identification radius25001",
+      "source": "Scripts/vector_specialiststation.js",
+      "source_sha256": "1cf7f4d4f146e0bd0299a5dde3018ea6ba1b7432ffb5adb2e20bba9f83c5d485",
+      "duration_ms": 0.0045000000000001705,
+      "passed": true
+    },
+    {
+      "name": "specialist animation source duration1",
+      "source": "Scripts/vector_specialiststation.js",
+      "source_sha256": "1cf7f4d4f146e0bd0299a5dde3018ea6ba1b7432ffb5adb2e20bba9f83c5d485",
+      "duration_ms": 0.02908299999999997,
+      "passed": true
+    },
+    {
+      "name": "specialist animation source duration10",
+      "source": "Scripts/vector_specialiststation.js",
+      "source_sha256": "1cf7f4d4f146e0bd0299a5dde3018ea6ba1b7432ffb5adb2e20bba9f83c5d485",
+      "duration_ms": 0.006334000000002504,
+      "passed": true
+    },
+    {
+      "name": "specialist player aggression revokes ID",
+      "source": "Scripts/vector_specialiststation.js",
+      "source_sha256": "1cf7f4d4f146e0bd0299a5dde3018ea6ba1b7432ffb5adb2e20bba9f83c5d485",
+      "duration_ms": 0.03766699999999901,
+      "passed": true
+    },
+    {
+      "name": "specialist cutscene completes6 no ship grant",
+      "source": "Scripts/vector_news.js",
+      "source_sha256": "905df1e23d6b36be1d45faf55166b18e043aad2731fe86d9c1f3c44fd93c0297",
+      "duration_ms": 0.05799999999999983,
+      "passed": true
+    }
+  ],
+  "decryption": {
+    "helper_sha256": "26ea099788d673367fac80542783fea0b298ce5f9456eac226339a502fba7abd",
+    "missiontext_sha256": "cee5848b604057f113e2d4daa11c5580f6ac2a88a7ac6915c41d1e34afe1bd61",
+    "password_length": 8,
+    "decoded_message_sha256": "00cc6c225b8ad23c3c54e3f9055e97a6545365ebe7fab621f15edc8f5e16f6f0",
+    "same_payload_in_all_five": true,
+    "semantic_summary": "Diplomatic warning about Harkov losing control and risking exposure of the Inners; no recovered follow-on handler or reward.",
+    "original_prose_not_bundled": true
+  }
+}

@@ -1,0 +1,140 @@
+schemaVersion = 2
+missionAPI = 2
+id = "example.profiled-skirmish"
+version = "1.0.1"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "economy-v2", "profiled-encounters-v2", "gallery-basic-v2", "pack-modules-v2"]
+priority = 600
+source = "Original physical NPC/component demonstration. Declared figures are project example values, not historical ship specifications or full Oolite combat parity."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "skirmish"
+title = "Profiled skirmish demonstration"
+briefing = "Launch at Lave and defeat the two assigned training opponents. Their separate NPC fits, measured models, working turret and damage are saved. Return to Lave orbital station and confirm your report."
+destination = "Galaxy 1, Lave (system 7)"
+reward = "100 credits, plus declared native combat bounties."
+milestones = ["Accept skirmish", "Defeat both assigned ships", "Report at Lave orbital station"]
+requiredDestructionEncounters = ["opponents"]
+
+[trial]
+ship = "SH023"
+galaxy = 0
+system = 7
+credits = 10000
+cabins = 0
+flight = true
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "station.undocked"
+function = "undocked"
+[[handlers]]
+event = "encounter.admitted"
+function = "admitted"
+[[handlers]]
+event = "actor.destroyed"
+function = "destroyed"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[[dialogs]]
+id = "report"
+text = "Both actual training opponents were destroyed. Confirm your report and collect 100 credits."
+
+[[models]]
+id = "hull"
+path = "models/hull.json"
+sha256 = "fcec65adeb9cf2e67580149bec014ea4451e9c9189f0b05cd366cb4cf9373972"
+source = "Original model for the optional native mission-engine example; not an Elite or Oolite ship."
+license = "MIT"
+
+[[models]]
+id = "turret"
+path = "models/turret.json"
+sha256 = "ea40f2b8db5de78725eb0fa354376cf4025be0f744c76525f5b2ca05fc0c33bb"
+source = "Original model for the optional native mission-engine example; not an Elite or Oolite ship."
+license = "MIT"
+
+[[npcs]]
+id = "training-craft"
+name = "Profiled training opponent"
+source = "Original engine example"
+basis = "Explicit project fit in metres, metres per second, seconds, radians and integer decicredits; NPC zeros stay zero."
+model = "asset:hull"
+scale = 1.0
+energy = 120.0
+recharge = 1.0
+speed = 100.0
+acceleration = 50.0
+pitch = 1.0
+yaw = 1.0
+roll = 1.0
+missiles = 0
+fuel = 0.0
+ecm = false
+bounty = 50
+
+[[npcs.lasers]]
+id = "forward"
+kind = "laser"
+muzzle = {x=0.0,y=0.0,z=61.0}
+direction = {x=0.0,y=0.0,z=1.0}
+arc = 0.03
+damage = 6.0
+range = 15000.0
+interval = 0.1
+energy = 0.5
+heat = 3.2
+cooling = 12.0
+maximumHeat = 256.0
+
+[[npcs.components]]
+id = "turret"
+model = "asset:turret"
+scale = 1.0
+position = {x=0.0,y=25.0,z=0.0}
+orientation = {x={x=1.0,y=0.0,z=0.0},y={x=0.0,y=1.0,z=0.0},z={x=0.0,y=0.0,z=1.0}}
+energy = 40.0
+solid = true
+
+[[npcs.components.weapons]]
+id = "plasma"
+kind = "plasma"
+muzzle = {x=0.0,y=0.0,z=10.0}
+direction = {x=0.0,y=0.0,z=1.0}
+arc = 3.141592653589793
+trackingRate = 2.0
+damage = 15.0
+range = 6060.0
+interval = 0.27
+energy = 0.0
+heat = 0.0
+cooling = 0.0
+maximumHeat = 256.0
+projectileSpeed = 2000.0
+lifetime = 3.0
+collisionRadius = 2.0
+collisionDelay = 0.05
+
+[[encounters]]
+id = "opponents"
+galaxy = 0
+system = 7
+profile = "profiled-local-freeze-v1"
+actors = [
+  {id="lead", npc="training-craft", x=0.0, y=0.0, z=3000.0, hostile=true},
+  {id="wing", npc="training-craft", x=1000.0, y=0.0, z=4500.0, hostile=true}
+]
+
+[[modules]]
+id = "skirmish"
+path = "scripts/skirmish.lua"
