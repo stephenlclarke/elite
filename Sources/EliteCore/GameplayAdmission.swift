@@ -36,6 +36,15 @@ extension Game {
           continue
         }
         let pose = commander.flightSimulation.pose
+        let nativeOreMotion: Bool
+        if request.identity.producer == .mining, request.population == .cargo,
+          request.hull == .cargo, request.npc == nil, request.rock == nil,
+          request.catalogueShipID == nil, case .ore? = request.payload
+        {
+          nativeOreMotion = true
+        } else {
+          nativeOreMotion = false
+        }
         var body = SpaceBody(
           id: nextBodyID, hull: request.hull, position: pose.shipPoint(request.position))
         nextBodyID += 1
@@ -43,6 +52,8 @@ extension Game {
         body.orientation.y = pose.shipVector(request.orientation.y)
         body.orientation.z = pose.shipVector(request.orientation.z)
         body.rotationRate = request.npc == nil ? 0.5 : 0
+        // Native ore declares physical angular motion; do not add legacy display spin.
+        if nativeOreMotion { body.rotationRate = 0 }
         if request.identity.producer == .derelicts {
           body.rotationRate = 0
           body.missiles = 0
@@ -69,7 +80,9 @@ extension Game {
           velocity: request.velocity, rock: request.rock, payload: request.payload,
           spawnIdentity: request.identity, catalogueShipID: request.catalogueShipID,
           angularVelocity: request.angularVelocity, salvage: request.salvage)
-        if request.identity.producer == .derelicts { body.physical?.canonicalSpin = true }
+        if request.identity.producer == .derelicts || nativeOreMotion {
+          body.physical?.canonicalSpin = true
+        }
         if request.identity.producer != .persistence && request.identity.producer != .emp,
           let snapshot = NPCPersistenceSnapshot.capture(
             body: body, pose: pose, physicalTime: context.physicalTime,
