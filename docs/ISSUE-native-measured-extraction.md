@@ -29,3 +29,7 @@ G1 native CLI execution 1154 passed and supplied the actual installed-content di
 ## Native fixture qualification correction
 
 Execution 1156 exposed three initial-fixture/discovery groups: G12 add-on modules retained as held by legacy-set initialization, an ore helper fitting a mining utility on a hull without its declared slot, and expected discovery lists omitting the newly installed pack. Correct the actual initial equipment fit, choose a supported initial ore-fixture hull and include the actual discovered pack in order. Preserve all source, native mining, custody, loss, processing, payment and save assertions. Root approved the additional MiningOreRuntimeTests.swift initial-fit hunk, bringing cumulative scope to 32 paths.
+
+## Initial tank ordering correction
+
+Execution 1158 passed the corrected bundled discovery methods but rejected equipment grants in the two shared initial fixtures. Both selected SH023 while retaining 130 fuel units from the starting ship; SH023 has a 70-unit tank. Match the passing mining-tool fixture by setting fuel to the selected hull capacity before native equipment preparation or grant validation. Preserve runtime fuel use and every mining, collection, travel and custody assertion.

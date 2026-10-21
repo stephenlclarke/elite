@@ -17,6 +17,8 @@ struct NativeMeasuredExtractionFixture {
     var game = try ScriptProcurementFixture.freshG03FlightGame()
     // Initial owned fit is a fixture; source bodies, all mining, docking and custody remain native.
     game.commander.shipID = "SH023"
+    // Match the selected hull tank before any native equipment transaction validates it.
+    game.commander.fuel = game.commander.fuelCapacity
     game.commander.equipment = Equipment.maximumHardware
     game.commander.laserMounts = .init(front: .naval, left: .naval, right: .naval, rear: .naval)
     game.commander.xyzzyActive = true

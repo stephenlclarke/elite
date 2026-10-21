@@ -19,6 +19,8 @@ private func actualMinedOreGame() throws -> (Game, TypedCargoPayload, Int) {
   var game = Game(executive: false)
   // Initial fixture hull declares the utility slot used by the real mining tool below.
   game.commander.shipID = "SH023"
+  // Match the selected hull tank before any native equipment transaction validates it.
+  game.commander.fuel = game.commander.fuelCapacity
   try game.commander.prepareEquipment(legacy: false)
   try game.commander.grantEquipment(
     LaserKind.mining.equipmentName, at: .utility(.miningLaser),
