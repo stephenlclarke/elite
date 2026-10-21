@@ -4078,7 +4078,7 @@
       "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326000742",
       "github_run": 39671764452,
       "unit_status": "in_progress",
-      "source_review": "pending",
+      "source_review": "MBA completed exact delta and necessary callers; no additional actionable defect; hosted units pending",
       "product_packets_pushed": 18,
       "feature_packets": 11,
       "fix_packets": 7,
