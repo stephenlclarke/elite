@@ -198,7 +198,7 @@ struct MiningLedgerTests {
       maximumSpeedUnitsPerSecond: 144, legal: LegalRecord(), npc: nil, rock: nil, payload: nil)
     let context = EncounterContext(
       system: system, seed: 0, government: 0, visit: 1, revision: 1,
-      physicalTime: 0, anchors: anchors, player: player, actors: [],
+      physicalTime: 1, anchors: anchors, player: player, actors: [],
       protection: MissionProtection(), budget: AdmissionBudget(), perceptionRadius: 3000)
     let fields = [MiningField(position: rock().position, rocks: [rock()])]
     let requests = ledger.pendingSpawnRequests(context: context, fields: fields)
