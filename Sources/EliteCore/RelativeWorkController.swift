@@ -262,10 +262,15 @@ public struct RelativeWorkController: Sendable {
     }
     let availableAcceleration = input.limits.acceleration - workAcceleration.length
 
-    let closingSpeed = min(error.length * 1.5, sqrt(2 * availableAcceleration * error.length) * 0.7)
+    let positionResponse = 1.5
+    // Near hold: e'' + velocityResponse*e' + velocityResponse*positionResponse*e = 0.
+    // This derived pair is critically damped; independent gains previously overshot the hold.
+    let velocityResponse = 4 * positionResponse
+    let closingSpeed = min(
+      error.length * positionResponse, sqrt(2 * availableAcceleration * error.length) * 0.7)
     let desiredVelocity = (workVelocity + error.unit * closingSpeed).limited(to: input.limits.speed)
     var acceleration =
-      (workAcceleration + (desiredVelocity - input.velocity) * 3).limited(
+      (workAcceleration + (desiredVelocity - input.velocity) * velocityResponse).limited(
         to: input.limits.acceleration)
     var velocity = input.velocity + acceleration * input.delta
     // A speed projection is legal only when it respects this step's acceleration budget.
