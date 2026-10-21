@@ -13,13 +13,18 @@ struct NativeMeasuredExtractionFixture {
     pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledMeasuredExtractionDirectory)
   }
 
-  func runtime(freeTonnes: Int = 12) async throws -> GameRuntime {
+  func runtime(freeTonnes: Int = 12, excessHardware: Bool = false) async throws -> GameRuntime {
     var game = try ScriptProcurementFixture.freshG03FlightGame()
     // Initial owned fit is a fixture; source bodies, all mining, docking and custody remain native.
     game.commander.shipID = "SH023"
     // Match the selected hull tank before any native equipment transaction validates it.
     game.commander.fuel = game.commander.fuelCapacity
-    game.commander.equipment = Equipment.maximumHardware
+    let requiredHardware: Set<String> = [
+      TargetingTier.docking.equipmentName, NavigationTier.military.equipmentName,
+      "Fuel Scoops", "Escape Pod", "Large Cargo Bay", LaserKind.mining.equipmentName,
+      "Targeting: Mining Module", "Targeting: Salvage Module", "Salvage Cutter",
+    ]
+    game.commander.equipment = excessHardware ? Equipment.maximumHardware : requiredHardware
     game.commander.laserMounts = .init(front: .naval, left: .naval, right: .naval, rear: .naval)
     game.commander.xyzzyActive = true
     game.commander.autoTarget = true
@@ -37,6 +42,7 @@ struct NativeMeasuredExtractionFixture {
     game.frontShield = game.commander.shieldCapacity
     game.rearShield = game.commander.rearShieldCapacity
     game.commander.cargo[0] = game.commander.standardCargoCapacity - freeTonnes
+    if !excessHardware { try #require(game.commander.passengerFit?.allowed == true) }
     game.scriptPacks = [pack]
     let runtime = GameRuntime(game: game, saveURL: save)
     try await runtime.save(to: save)
@@ -325,6 +331,27 @@ struct NativeMeasuredExtractionJourneyTests {
       NativeMeasuredExtractionSave.validateClaims(received.commander, requireRecordedLoss: true))
     await runtime.key("return")
     #expect(await runtime.snapshot().commander.credits == cash + 8900)
+  }
+
+  @Test func twelveFreeTonnesAndRequiredToolsStillRefuseAnOverBudgetEquipmentFit() async throws {
+    let f = try NativeMeasuredExtractionFixture()
+    defer { f.files.clean() }
+    let runtime = try await f.runtime(excessHardware: true)
+    let page = try await f.review(runtime, .accept)
+    let before = await runtime.snapshot()
+    try #require(before.hasMeasuredExtractionFit)
+    try #require(before.commander.checkedCargoTonnes == before.commander.standardCargoCapacity - 12)
+    let fit = try #require(before.commander.passengerFit)
+    try #require(!fit.allowed && fit.freeEquipmentUnits < 0)
+    let quote = try #require(before.contractBoard.measuredExtractionQuote)
+    #expect(!quote.allowed)
+    #expect(fit.issues.allSatisfy { quote.issues.contains($0) })
+    await runtime.scriptPageKey("right", expected: page)
+    await runtime.scriptPageKey("return", expected: page)
+    let refused = await runtime.snapshot()
+    #expect(refused.commander == before.commander)
+    #expect(refused.measuredExtractionState == nil)
+    #expect(refused.commander.scriptState.savedMeasuredExtractionSource == nil)
   }
 
   @Test func officeBackAndInsufficientHoldCannotAllocateFiniteSource() async throws {

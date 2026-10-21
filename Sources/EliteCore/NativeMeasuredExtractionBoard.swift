@@ -90,6 +90,13 @@ extension Game {
       if !hasMeasuredExtractionFit {
         issues.append("Fit targeting, Mining targeting, a mining work tool and Fuel Scoops.")
       }
+      // Acceptance activates contract-fit rules even for a cabin-free legacy outfit.
+      // Equipment units are an independent native budget, not extra cargo tonnes.
+      if let fit = commander.passengerFit {
+        issues.append(contentsOf: fit.issues)
+      } else {
+        issues.append("The selected hull has no valid native accommodation fit.")
+      }
       if !NativeMeasuredExtraction.route(ScriptCourierReach(commander)) {
         issues.append("Refuel or refit for the actual Avenor to Renas route.")
       }
