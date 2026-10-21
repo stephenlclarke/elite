@@ -19,7 +19,9 @@ public struct ContractBoardRow: Sendable {
   var survey: NativeOriginalSurveyAction? = nil
   var recordRecovery: WayfarerRecordRecoveryAction? = nil
   var identifiedSalvage: NativeIdentifiedSalvageAction? = nil
+  var utility: NativeUtilityAction? = nil
   public var key: String {
+    if let utility { return utility.utilityKey }
     if let key: String = recordRecovery?.key { return key }
     if let key: String = identifiedSalvage?.key { return key }
     if let key: String = survey?.key { return key }
@@ -53,6 +55,7 @@ private enum ContractBoardReview: Sendable {
   case survey(NativeOriginalSurveyReview)
   case recordRecovery(WayfarerRecordRecoveryReview)
   case identifiedSalvage(NativeIdentifiedSalvageReview)
+  case utility(NativeUtilityBoardReview)
 }
 
 public struct ContractBoardUI: Sendable {
@@ -196,6 +199,19 @@ public struct ContractBoardUI: Sendable {
       }
     }
   }
+  var utilityQuote: NativeUtilityBoardReview? {
+    get {
+      guard case .utility(let value)? = review else { return nil }
+      return value
+    }
+    set {
+      if let newValue {
+        review = .utility(newValue)
+      } else if case .utility(_)? = review {
+        review = nil
+      }
+    }
+  }
   public init() {}
   var selected: ContractBoardRow? { rows.indices.contains(selection) ? rows[selection] : nil }
   var save: ContractScreenSave {
@@ -245,6 +261,7 @@ extension Game {
     candidate.contractBoard.surveyQuote = nil
     candidate.contractBoard.recordRecoveryQuote = nil
     candidate.contractBoard.identifiedSalvageQuote = nil
+    candidate.contractBoard.utilityQuote = nil
     candidate.gallery.providerIntent = nil
     candidate.contractBoard.presentationGeneration = UUID()
     publishContractBoard(&candidate)
@@ -263,6 +280,7 @@ extension Game {
       + identifiedSalvageRows
       + wayfarerColdChainRows(failures: failures)
       + wayfarerRepairLoopRows(failures: failures)
+      + nativeUtilityRows
     for pack in scriptPacks.sorted(by: {
       ($0.manifest.id, $0.manifest.version, $0.digest) < (
         $1.manifest.id, $1.manifest.version, $1.digest
@@ -297,7 +315,7 @@ extension Game {
         || contractBoard.peopleQuote != nil || contractBoard.providerQuote != nil
         || contractBoard.coldChainQuote != nil || contractBoard.repairLoopQuote != nil
         || contractBoard.surveyQuote != nil || contractBoard.recordRecoveryQuote != nil
-        || contractBoard.identifiedSalvageQuote != nil
+        || contractBoard.identifiedSalvageQuote != nil || contractBoard.utilityQuote != nil
       {
         contractBoard.action = .back
       }
@@ -305,6 +323,11 @@ extension Game {
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if let action = contractBoard.selected?.utility {
+      contractBoard.utilityQuote = nativeUtilityReview(action)
+      return
+    }
+    contractBoard.utilityQuote = nil
     if let action = contractBoard.selected?.recordRecovery {
       contractBoard.recordRecoveryQuote = recordRecoveryReview(action)
       return
@@ -366,6 +389,7 @@ extension Game {
         contractBoard.providerQuote = nil
         contractBoard.repairLoopQuote = nil
         contractBoard.coldChainQuote = nil
+        contractBoard.utilityQuote = nil
         gallery.providerIntent = nil
       } else {
         screen = contractBoard.previous
@@ -410,10 +434,23 @@ extension Game {
       contractBoard.surveyQuote = nil
       contractBoard.recordRecoveryQuote = nil
       contractBoard.identifiedSalvageQuote = nil
+      contractBoard.utilityQuote = nil
       gallery.providerIntent = nil
       return
     }
     do {
+      if let action = contractBoard.selected?.utility {
+        guard contractBoard.action == .accept, let review = contractBoard.utilityQuote,
+          review.action == action, let quote = review.quote, review.allowed
+        else {
+          throw MissionPackError("Review the current utility operation and choose Confirm or Back.")
+        }
+        try confirmNativeUtility(quote)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.utilityQuote = nil
+        return
+      }
       if let action = contractBoard.selected?.recordRecovery {
         guard contractBoard.action == .accept, let quote = contractBoard.recordRecoveryQuote,
           quote.action == action
@@ -433,6 +470,7 @@ extension Game {
         contractBoard.detail = false
         contractBoard.recordRecoveryQuote = nil
         contractBoard.identifiedSalvageQuote = nil
+        contractBoard.utilityQuote = nil
         return
       }
       if let action = contractBoard.selected?.survey {

@@ -458,7 +458,7 @@ public struct Commander: Sendable, Equatable, Codable {
   private func validAfterEquipment() -> Bool {
     guard WayfarerRecordRecoverySave.validateClaims(self) else { return false }
     guard NativeIdentifiedSalvageSave.validateClaims(self) else { return false }
-    return nativeStationStateValid
+    return nativeStationStateValid && nativeUtilityStateValid
       && empCustodyStateValid && electricalStateValid && alienStorageStateValid
       && nativeSalvageOriginalSourcesValid && freightCargoValid && navigationTradeStateValid
       && originalMarkets.valid
@@ -1878,6 +1878,10 @@ public struct Game: Sendable {
       notify("SAMPLE LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
     }
+    do { try candidate.loseNativeUtilityOnEscape() } catch {
+      notify("UTILITY MATERIAL LOSS NOT SAVED - ESCAPE NOT COMMITTED")
+      return
+    }
     guard candidate.loseWayfarerRepairLoopOnEscape() else {
       notify("REPAIR UNIT LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
@@ -2570,6 +2574,7 @@ public actor GameRuntime {
     // Acts only on the measured fatal state; retries its durable proposal after writer refusal.
     commitWayfarerColdChainFatalLoss()
     commitWayfarerRepairLoopFatalLoss()
+    commitNativeUtilityFatalLoss()
     commitRecordRecoveryLoss()
     commitIdentifiedSalvageLoss()
     game.observeNativeCrimboAttainedMotion(

@@ -227,3 +227,36 @@ extension GameRuntime {
     game.nativeMainStationArrivalContext(for: station)
   }
 }
+
+/// Ephemeral project utility service, independent of RRS board/shop capabilities.
+struct NativeUtilityServiceContext: Equatable, Sendable {
+  let receipt: NativeStationDockReceipt
+  let runtimeEpoch: UUID
+  let utilityRevision: UInt64
+  let engineer: UUID
+  fileprivate init(
+    receipt: NativeStationDockReceipt, runtimeEpoch: UUID, utility: NativeUtilityState
+  ) {
+    self.receipt = receipt
+    self.runtimeEpoch = runtimeEpoch
+    utilityRevision = utility.revision
+    engineer = utility.engineer
+  }
+}
+extension Game {
+  var nativeUtilityServiceContext: NativeUtilityServiceContext? {
+    guard docked, !dockedAtMainStation, !paused, scriptDurabilityAvailable,
+      nativeStationDockEvidenceIsCurrent, pendingNativeStationDock == nil,
+      commander.nativeStationStateValid, let world = commander.nativeStations,
+      let receipt = world.ledger.currentDock,
+      let record = world.ledger.records.first(where: { $0.identity == receipt.station }),
+      NativeUtilityState.isTarget(record.identity), record.tombstone == nil,
+      NativeStationSource.authentic(record, owner: world.ledger.world),
+      record.binding == receipt.dockingBinding, record.revision == receipt.lifecycleRevision,
+      receipt.commanderOwner == commander.equipmentOwnerID,
+      let pose = world.pose(for: record.identity), pose.energy > 0,
+      let utility = record.utility, utility.valid
+    else { return nil }
+    return .init(receipt: receipt, runtimeEpoch: nativeStationRuntimeEpoch, utility: utility)
+  }
+}

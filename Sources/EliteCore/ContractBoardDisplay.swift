@@ -29,7 +29,9 @@ extension Display {
   static func contractDetailRows(_ game: Game, width: Double) -> [String] {
     guard let row = game.contractBoard.selected else { return ["No contract selected."] }
     var rows: [String]
-    if let action = row.recordRecovery {
+    if row.utility != nil {
+      rows = game.nativeUtilityDetail
+    } else if let action = row.recordRecovery {
       rows = game.recordRecoveryDetail(action)
     } else if let action = row.identifiedSalvage {
       rows = game.identifiedSalvageDetail(action)
@@ -122,6 +124,7 @@ extension Display {
           : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
     var detailReason: String? {
+      if let reason = game.contractBoard.utilityQuote?.issues.first { return reason }
       if let reason: String = game.contractBoard.recordRecoveryQuote?.issues.first { return reason }
       if let reason: String = game.contractBoard.identifiedSalvageQuote?.issues.first {
         return reason
@@ -157,6 +160,7 @@ extension Display {
         let rrs = game.contractBoard.rrsQuote
         let finance = game.contractBoard.financeQuote
         let people = game.contractBoard.peopleQuote
+        let utility = game.contractBoard.utilityQuote
         let repairLoop = game.contractBoard.repairLoopQuote
         let coldChain = game.contractBoard.coldChainQuote
         let provider = game.contractBoard.providerQuote
@@ -165,6 +169,7 @@ extension Display {
         let identifiedSalvage = game.contractBoard.identifiedSalvageQuote
         let available =
           action == .back
+          || (utility != nil && action == .accept && utility?.allowed == true)
           || (recordRecovery != nil && action == .accept && recordRecovery?.allowed == true)
           || (identifiedSalvage != nil && action == .accept && identifiedSalvage?.allowed == true)
           || (survey != nil && action == .accept && survey?.allowed == true)
@@ -186,7 +191,7 @@ extension Display {
             + (action == .accept
               && (recordRecovery != nil || identifiedSalvage != nil || survey != nil
                 || provider != nil || coldChain != nil
-                || repairLoop != nil)
+                || repairLoop != nil || utility != nil)
               ? "Confirm"
               : action == .accept && people != nil
                 ? (people?.row.action ?? "Closed")
@@ -232,7 +237,10 @@ extension Display {
             $0.duration == 0 ? "no limit" : String(format: "%.0fs", $0.duration))
         }
         var preferredSummary: String? =
-          row.reason ?? (row.repairLoop == nil ? nil : "Repair loop / 2t / 610 CR on owner return")
+          row.reason
+          ?? (row.utility == nil
+            ? nil : "Field relief prerequisite / original 4t / no payment or clue")
+          ?? (row.repairLoop == nil ? nil : "Repair loop / 2t / 610 CR on owner return")
         if preferredSummary == nil {
           preferredSummary =
             (row.provider == nil ? nil : "Review native provider contract")

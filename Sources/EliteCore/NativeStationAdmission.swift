@@ -226,7 +226,9 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
     let records = NativeStationSource.bindings.map { binding in
       NativeStationRecord(
         identity: binding.identity(world: owner), descriptor: binding.descriptor,
-        revision: 1, binding: nil, tombstone: nil)
+        revision: 1, binding: nil, tombstone: nil,
+        utility: NativeUtilityState.isTarget(binding.identity(world: owner))
+          ? NativeUtilityState(owner: owner) : nil)
     }
     ledger = try NativeStationLedger(world: owner, records: records)
     poses = try NativeStationSource.bindings.map { binding in
@@ -265,6 +267,9 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
       ledger.valid, ledger.records.count == NativeStationLedger.recordLimit,
       poses.count == ledger.records.count, Set(poses.map(\.station)).count == poses.count,
       ledger.records.allSatisfy({ NativeStationSource.authentic($0, owner: ledger.world) }),
+      ledger.records.filter({ NativeUtilityState.isTarget($0.identity) }).count == 1,
+      ledger.records.first(where: { NativeUtilityState.isTarget($0.identity) })?.utility?.owner
+        == ledger.world,
       poses.allSatisfy(\.valid), Set(poses.map(\.station)) == Set(ledger.records.map(\.identity))
     else { return false }
     let conditions = Dictionary(uniqueKeysWithValues: poses.map { ($0.station, $0.energy) })

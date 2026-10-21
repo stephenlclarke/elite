@@ -207,8 +207,11 @@ extension Game {
         let source = NativeStationSource.binding(for: identity),
         bodies[index].energy > 0, nativeStationBodyIsCurrent(bodies[index])
       else { continue }
+      let utilityBonus =
+        commander.nativeStations?.ledger.records.first(where: { $0.identity == identity })?.utility?
+        .rechargeBonus ?? 0
       bodies[index].energy = min(
-        source.maximumEnergy, bodies[index].energy + source.recharge * delta)
+        source.maximumEnergy, bodies[index].energy + (source.recharge + utilityBonus) * delta)
     }
   }
 
