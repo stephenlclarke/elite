@@ -7,6 +7,10 @@ private func workRuntimeGame(module: WorkTargetSpecialty = .salvage, scoops: Boo
   -> Game
 {
   var game = Game(executive: false)
+  if module == .mining {
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
+  }
   try game.commander.prepareEquipment(legacy: false)
   try game.commander.grantEquipment(
     "Targeting: Military", at: .targetingCore, provenance: .grant("work fixture"))
