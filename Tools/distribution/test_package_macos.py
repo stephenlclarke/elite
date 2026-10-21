@@ -1,5 +1,6 @@
 """Preserve copied resource paths and exact bytes in either macOS bundle layout."""
 
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -27,6 +28,9 @@ class PackagedResourceTests(unittest.TestCase):
             "ShipTextures/Stingray/texture.png": b"stingray texture",
             "OriginalWorlds/catalogue.json": b"original worlds",
             "OriginalWorlds/PROVENANCE.json": b"world provenance",
+            "OriginalShipTextures/texture.png": b"original ship texture",
+            "OriginalFleetShowroomModels/SH084.json": b"original showroom model",
+            "OriginalMarkets/catalogue.json": b"original market catalogue",
             "Legal/NOTICE.txt": b"legal notice",
             "ModelLicenses/model.txt": b"model licence",
             "ASSET-NOTICE.txt": b"asset notice",
@@ -93,6 +97,9 @@ class PackagedResourceTests(unittest.TestCase):
                 "ScriptPacks/generated-couriers/main.lua",
                 "ShipTextures/RayDetails/texture.png",
                 "OriginalWorlds/catalogue.json",
+                "OriginalShipTextures/texture.png",
+                "OriginalFleetShowroomModels/SH084.json",
+                "OriginalMarkets/catalogue.json",
             ):
                 with self.subTest(nested=nested, relative=relative):
                     destination = self.populate_bundle(nested)
@@ -103,6 +110,16 @@ class PackagedResourceTests(unittest.TestCase):
                         RuntimeError, "Missing/changed packaged resource"
                     ):
                         package_macos.verify_resources(self.app)
+
+
+class PackagedResourceManifestTests(unittest.TestCase):
+    def test_copied_directories_match_the_package_manifest(self):
+        manifest = Path(package_macos.__file__).resolve().parents[2] / "Package.swift"
+        copied = set(
+            re.findall(r'\.copy\("Resources/([^"/]+)"\)', manifest.read_text())
+        )
+        self.assertTrue(copied)
+        self.assertEqual(set(package_macos.COPIED_RESOURCE_DIRECTORIES), copied)
 
 
 if __name__ == "__main__":

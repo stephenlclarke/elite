@@ -14,6 +14,16 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+COPIED_RESOURCE_DIRECTORIES = (
+    "Ships",
+    "MissionPacks",
+    "ScriptPacks",
+    "ShipTextures",
+    "OriginalWorlds",
+    "OriginalShipTextures",
+    "OriginalFleetShowroomModels",
+    "OriginalMarkets",
+)
 
 
 def run(*arguments, capture=False, check=True):
@@ -104,10 +114,7 @@ def verify_resources(app):
         relative = source.relative_to(ROOT / "Sources/EliteCore/Resources")
         target = (
             bundle / relative
-            if relative.parts[0]
-            in [
-                "Ships", "MissionPacks", "ScriptPacks", "ShipTextures", "OriginalWorlds"
-            ]
+            if relative.parts[0] in COPIED_RESOURCE_DIRECTORIES
             else bundle / source.name
         )
         if not target.is_file() or source.read_bytes() != target.read_bytes():
