@@ -473,7 +473,9 @@ extension Game {
         let item = pending.first(where: { $0.identity == payload }),
         let candidate = workTargetCandidate(for: body, context: context, frontVisible: true)
       else { return false }
-      if !context.protection.protectedPayloads.contains(payload) {
+      if candidate.measuredExtraction == nil
+        && !context.protection.protectedPayloads.contains(payload)
+      {
         let freeTonnes = max(0, commander.capacity - commander.cargoTonnes)
         guard item.amount.tonnes == 0 || item.amount.tonnes <= freeTonnes else { return false }
       }
