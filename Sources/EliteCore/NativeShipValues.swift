@@ -1,5 +1,9 @@
 import Foundation
 
+enum NativeShipValueFormat {
+  static func tenths(_ value: Double) -> String { String(format: "%.1f", value) }
+}
+
 public enum ComparisonRating: String, Sendable {
   case better = "BETTER"
   case worse = "WORSE"
@@ -25,12 +29,14 @@ public enum ComparisonRating: String, Sendable {
     guard let left = a.number, let right = b.number else {
       return a.text == b.text ? .same : .different
     }
-    // Match the displayed precision so equal-looking values never receive conflicting badges.
-    let delta = (right * 10).rounded() - (left * 10).rounded()
-    if delta == 0 { return .same }
+    guard left.isFinite, right.isFinite else { return .unavailable }
+    // Use the same formatter as the displayed fields, including its halfway rule.
+    if left == right || NativeShipValueFormat.tenths(left) == NativeShipValueFormat.tenths(right) {
+      return .same
+    }
     let lowerIsBetter = ["price", "jump_spool_seconds", "required_crew_including_commander"]
       .contains(b.key)
-    return (delta > 0) != lowerIsBetter ? .better : .worse
+    return (right > left) != lowerIsBetter ? .better : .worse
   }
 }
 extension Commander {
@@ -50,7 +56,8 @@ extension Commander {
     func field(_ key: String, _ label: String, _ number: Double, _ unit: String) -> ShipSpec {
       .init(
         key: key, label: label,
-        text: String(format: "%.1f", number) + (unit.isEmpty ? "" : " " + unit), number: number,
+        text: NativeShipValueFormat.tenths(number) + (unit.isEmpty ? "" : " " + unit),
+        number: number,
         unit: unit, status: "game", basis: "Authoritative ship TOML and carried equipment")
     }
     var fields = [
