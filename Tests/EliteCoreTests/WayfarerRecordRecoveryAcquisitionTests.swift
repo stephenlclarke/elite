@@ -153,33 +153,11 @@ struct WayfarerRecordRecoveryAcquisitionTests {
       #expect(failed.nativeRecordRecoveryPending != nil)
     }
     if stage == "identify" {
-      // Keep the real pending attempt in its originating runtime/epoch. Existing Tab guidance
-      // physically reaches the aperture while the writer remains blocked; no snapshot reload
-      // may carry this transient authority into a new runtime.
+      // Frame only the player inside the original actor's runtime. This preserves the
+      // producer's pending attempt and epoch while keeping all custody changes native.
       let identity = f.logical(accepted)
-      let actor = try #require(
-        failed.bodies.first { $0.missionActorID == identity }?.physical?.identity)
-      for _ in 0..<100 {
-        await runtime.key("tab")
-        if await runtime.snapshot().workGuidance?.parent == actor { break }
-      }
-      try #require(await runtime.snapshot().workGuidance?.parent == actor)
-      var scoopReady = false
-      for _ in 0..<600 {
-        let actual = await runtime.snapshot()
-        let body = try #require(actual.bodies.first { $0.missionActorID == identity })
-        let mesh = try #require(actual.scriptNPCMesh(body))
-        let radius = try #require(mesh.vertices.map(\.length).max())
-        let offset = body.position - Vector3(0, -45, 55)
-        if abs(offset.x) + radius <= 16 && abs(offset.y) + radius <= 16
-          && abs(offset.z) + radius <= 16
-        {
-          scoopReady = true
-          break
-        }
-        _ = await runtime.advance(delta: 0.05)
-      }
-      try #require(scoopReady, "Actual native guidance must reach the unchanged recorder aperture.")
+      try await runtime.framePendingRecordRecoveryAtActualAperture(identity: identity)
+      _ = await runtime.advance(delta: 0.05)
       let uncommitted = await runtime.snapshot()
       #expect(uncommitted.recordRecoveryState?.identification == nil)
       #expect(uncommitted.recordRecoveryState?.captures.isEmpty == true)
@@ -433,5 +411,33 @@ extension WayfarerRecordRecoveryAcquisitionTests {
     try await runtime.save(to: f.save)
     #expect(await runtime.snapshot().recordRecoveryState?.losses.count == 1)
     #expect(await runtime.snapshot().commander.scriptState.savedClueJournal == nil)
+  }
+}
+
+extension GameRuntime {
+  fileprivate func framePendingRecordRecoveryAtActualAperture(identity: UUID) throws {
+    let pending = try #require(game.nativeRecordRecoveryIdentificationPending)
+    let epoch = game.nativeStationRuntimeEpoch
+    let physicalTime = game.commander.flightSimulation.physicalTime
+    let state = game.recordRecoveryState
+    let source = game.commander.scriptState.savedRecordRecoverySource
+    let body = try #require(game.bodies.first { $0.missionActorID == identity })
+    var pose = game.commander.flightSimulation.pose
+    pose.position = pose.systemPoint(body.position) - pose.orientation.apply(.init(0, -45, 55))
+    NativeStationTestFixture.reframe(&game, to: pose)
+    game.speed = 0
+    game.pitch = 0
+    game.yaw = 0
+    game.roll = 0
+    #expect(game.nativeStationRuntimeEpoch == epoch)
+    #expect(game.commander.flightSimulation.physicalTime == physicalTime)
+    #expect(game.nativeRecordRecoveryIdentificationPending === pending)
+    #expect(game.recordRecoveryState == state)
+    #expect(game.commander.scriptState.savedRecordRecoverySource == source)
+    let framed = try #require(game.bodies.first { $0.missionActorID == identity })
+    let offset = framed.position - Vector3(0, -45, 55)
+    #expect(offset.length < 1e-6)
+    let context = try #require(game.gameplayContext())
+    #expect(game.automaticScoopShapeCompatible(framed, context: context))
   }
 }
