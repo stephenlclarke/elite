@@ -54,18 +54,19 @@ extension Game {
       body.hull == .cobra, body.position.finite, body.orientation.validRotation
     else { return nil }
     let currentBody = copy body
-    let retained = withReadOnlyScriptState { ($0.savedIdentifiedSalvageSource, $0.instances) }
     let currentSystem = systemIdentity
     return withReadOnlyCommander { commander in
-      Self.identifiedSalvageAlias(
-        currentBody, source: retained.0, instances: retained.1, system: currentSystem,
-        commander: commander)
+      commander.withReadOnlyScriptState { state in
+        Self.identifiedSalvageAlias(
+          currentBody, source: state.savedIdentifiedSalvageSource, instances: state.instances,
+          system: currentSystem, commander: commander)
+      }
     }
   }
 
   @inline(never)
   private static func identifiedSalvageAlias(
-    _ body: borrowing SpaceBody, source: NativeIdentifiedSalvageSource?,
+    _ body: borrowing SpaceBody, source: borrowing NativeIdentifiedSalvageSource?,
     instances: borrowing [UUID: ScriptInstance], system: SystemIdentity,
     commander: borrowing Commander
   ) -> String? {
