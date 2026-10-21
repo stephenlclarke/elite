@@ -4261,10 +4261,13 @@
       "ledger_parent": "M10.P01.C08.fuel",
       "github_run": 39682596661,
       "selection_methods": 103,
-      "source_review": "MBA exact model-only delta and five methods/six cases reviewed; no actionable finding",
-      "unit_status": "in_progress; actual artifact pending",
+      "source_review": "MBA no actionable finding in model prerequisite scope",
+      "unit_status": "MBA verified exact-head hosted PASS",
       "usable_build_delivered": false,
-      "scope": "Source/model prerequisite only; actual native admission/dock/fuel/transit/receiving remains unfinished"
+      "scope": "Source/model prerequisite only; actual native admission/dock/fuel/transit/receiving remains unfinished",
+      "verified_methods": 103,
+      "verified_expanded_cases": 135,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6327572301"
     }
   ]
 }
