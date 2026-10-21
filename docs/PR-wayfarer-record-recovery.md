@@ -14,9 +14,13 @@ Use existing native canonical SH058 scale 0.2 and SH141 scale 1 geometry. Separa
 
 Schema 53/54 independently admits W05-only Normal/Alien claims and lowers strictly through G09 51/52, G10 49/50 and existing predecessor validation. Source IDs remain stable across mission/content/visit changes. Historical fitted-item evidence survives later storage and native rebinding. Equivalent witness JSON is normalized for seals; mutation fixtures preserve the actual savedGeometry field and exact model hashes.
 
+## Review corrections
+
+Inventory describes a reserved slot only while the actual per-original payload is positive. Cancelling an uncollected job releases that claim while the finite original remains at its cradle; the existing cancellation cases assert real inventory before and after. The W05 review token uses typed locals and ordered appends with identical permission, identification-or-unidentified, captures, losses, held and reception-or-open order. This addresses the known Swift 6.1 expression-typing hazard observed in the adjacent G09 implementation; no W05 compiler failure is claimed.
+
 ## Validation
 
-G1 warm build 1118 passed on the initial source candidate. Installed native pack CLI 1119 passed and reported digest 460df445d7249498185e0ef150366b91eafddfdfc651968182cf487f9e208578; the shared production pin now uses that actual loader identity. Pack bytes and existing actual native geometry pins are unchanged. The pin correction requires a matching G1 build before owner execution; owner results and coverage remain pending.
+G1 warm build 1118 passed on the initial source candidate. Installed native pack CLI 1119 passed and reported digest 460df445d7249498185e0ef150366b91eafddfdfc651968182cf487f9e208578; the shared production pin now uses that actual loader identity. Pack bytes and existing actual native geometry pins are unchanged. The reviewed dc2d8058 source has an actual retained aggregate of 35 methods and 75 declared cases PASS across owner runs 1123, 1124, 1129 and 1137. The review corrections require a matching G1 build and the affected three methods/five cases before correction-only re-review; coverage remains unclaimed.
 
 The focused selection is all three new W05 suites and the new bundled W05 identity/geometry method, plus six affected bundled discovery/board methods, the G09 whole journey/contact-frame/strict rehash representatives, the G10 genuine predecessor cold-composition method and the G08 actual Tab-guided collection representative. Exact method/case selectors accompany the frozen handoff; authored tests do not establish PASS.
 
@@ -28,4 +32,4 @@ Base is qualified integrated G09 commit 99500a9fdc4d7364dc1348d748acd6312bacc583
 
 ## Links and remaining risks
 
-Authority is W05-CREW-RECORD-RECOVERY-COMPLETE-JOURNEY-DRAFT-20261020.md and W05-ROOT-APPROVAL-20261020.json in docs/gameplay-design/approved. No external PR exists. The pinned source freeze awaits matching compilation and owner qualification; no integration-ready, playable UI or release claim is made.
+Authority is W05-CREW-RECORD-RECOVERY-COMPLETE-JOURNEY-DRAFT-20261020.md and W05-ROOT-APPROVAL-20261020.json in docs/gameplay-design/approved. No external PR exists. The review correction child awaits matching compilation, affected owner qualification and correction-only clean review; no integration-ready, playable UI or release claim is made.

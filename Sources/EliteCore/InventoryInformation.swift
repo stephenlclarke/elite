@@ -69,9 +69,10 @@ extension Game {
         let disposition: String
         switch original.custody {
         case .cradle:
-          disposition =
+          let identification =
             state.identification == nil
-            ? "unidentified at cradle; slot reserved" : "identified at cradle; slot reserved"
+            ? "unidentified at cradle" : "identified at cradle"
+          disposition = tonnes > 0 ? identification + "; slot reserved" : identification
         case .held: disposition = "held protected property"
         case .returned: disposition = "returned to archive"
         case .lost: disposition = "genuinely lost"

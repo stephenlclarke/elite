@@ -246,13 +246,26 @@ struct WayfarerRecordRecoveryJourneyTests {
       try await f.collect(runtime)
       try await f.returnHome(runtime)
     }
-    let returnCash = await runtime.snapshot().commander.credits
+    let active = await runtime.snapshot()
+    let activeInventory = active.inventoryInformationRows(width: 1512).map(\.text).joined(
+      separator: " ")
+    if held {
+      #expect(activeInventory.contains("held protected property"))
+      #expect(!activeInventory.contains("slot reserved"))
+    } else {
+      #expect(activeInventory.contains("unidentified at cradle; slot reserved"))
+    }
+    let returnCash = active.commander.credits
     try await f.confirm(runtime, .cancel)
     let cancelled = await runtime.snapshot()
     #expect(cancelled.recordRecoveryState?.reception?.complete == false)
     #expect(cancelled.commander.credits == returnCash)
     #expect(cancelled.commander.scriptState.savedClueJournal == nil)
     #expect(cancelled.commander.cargoTonnes == before.cargoTonnes)
+    let cancelledInventory = cancelled.inventoryInformationRows(width: 1512).map(\.text).joined(
+      separator: " ")
+    #expect(!cancelledInventory.contains("slot reserved"))
+    #expect(cancelledInventory.contains(held ? "returned to archive" : "unidentified at cradle"))
     let original = try #require(
       cancelled.commander.scriptState.savedRecordRecoverySource?.originals.first)
     if held {
