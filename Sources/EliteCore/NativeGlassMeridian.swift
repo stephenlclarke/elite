@@ -56,6 +56,16 @@ enum NativeGlassMeridian {
   static let laterStages =
     "Opening complete. Stages 3-9 are not yet available; no payment or final clue."
 
+  static func availability(_ pack: ScriptPack, accepted: Bool) -> String? {
+    guard pack.manifest.stateID == stateID, pack.digest == digest,
+      pack.manifest.glassMeridian?.valid == true
+    else {
+      return "Restore the approved Glass Meridian opening."
+    }
+    return accepted
+      ? nil : "Use Station Contracts at the actual Avenor berth for Venn's commission."
+  }
+
   static func clockDefinitionValid(_ value: ScriptNPCDefinition) -> Bool {
     value.valid && value.id == markerID && value.name == "Certified Glass Meridian clock beacon"
       && value.model == "catalogue:SH040" && value.scale == 1 && value.energy == 100

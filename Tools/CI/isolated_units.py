@@ -35,6 +35,7 @@ METHODS = {
         "silhouetteClipsNearPlaneAndViewportAndRefusesNonFiniteProjectionInputs",
     ),
     "NativeGlassMeridianUnitTests": (
+        "unacceptedOpeningRoutesToTheActualBoardAndRejectsChangedPackPins",
         "entryRequiresThreeDistinctActualWorldsAndTwoIdentifiedTypesFromTheSameOwner",
         "contiguousNativeDwellSealsTwelveSecondsAndChangingTargetOrClockRestartsIt",
         "eitherClockOrderIsValidButDuplicateForeignAndOverlappingReadingsCannotAdvance",

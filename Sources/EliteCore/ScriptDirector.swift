@@ -155,6 +155,16 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.glassMeridian != nil || pack.manifest.stateID == NativeGlassMeridian.stateID {
+      if let reason = NativeGlassMeridian.availability(
+        pack,
+        accepted: commander.scriptState.instances.values.contains(where: {
+          $0.definition == NativeGlassMeridian.stateID && $0.digest == pack.digest
+        }))
+      {
+        return reason
+      }
+    }
     if pack.manifest.flightReception != nil
       || pack.manifest.stateID == NativeFlightReception.stateID
     {

@@ -256,6 +256,18 @@ struct NativeGlassMeridianUnitTests {
     #expect(NativeFleetDiscoverySave.lowerSchema(fleet) == (alien ? 60 : 59))
   }
 
+  @Test func unacceptedOpeningRoutesToTheActualBoardAndRejectsChangedPackPins() throws {
+    let pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledGlassMeridianDirectory)
+    #expect(
+      NativeGlassMeridian.availability(pack, accepted: false)?.contains("Station Contracts") == true
+    )
+    #expect(NativeGlassMeridian.availability(pack, accepted: true) == nil)
+    let changed = ScriptPack(
+      manifest: pack.manifest, source: pack.source, manifestBytes: pack.manifestBytes,
+      digest: String(repeating: "0", count: 64), models: pack.models)
+    #expect(NativeGlassMeridian.availability(changed, accepted: true)?.contains("Restore") == true)
+  }
+
   @Test func openingPackPinsRealClockGeometryAndAllNineAuthoredMilestonesWithoutATerminal() throws {
     let pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledGlassMeridianDirectory)
     #expect(pack.digest == NativeGlassMeridian.digest && pack.missingCapabilities.isEmpty)
