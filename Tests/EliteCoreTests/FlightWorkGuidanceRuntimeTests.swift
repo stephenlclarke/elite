@@ -1347,6 +1347,7 @@ extension FlightWorkGuidanceRuntimeTests {
       try #require(game.commander.miningLedger.boundActor(for: payload.identity) != nil)
     }
     game.commander.cargo[0] = game.commander.standardCargoCapacity  // Initial owned full-hold case.
+    #expect(max(0, game.commander.capacity - game.commander.cargoTonnes) == 0)
     game.workRecoveryRock = rock.identity
     game.selectNextMinedOre()
     #expect(game.workRecoveryRock == nil && game.workRecoveryAdmissionDeadline == nil)
