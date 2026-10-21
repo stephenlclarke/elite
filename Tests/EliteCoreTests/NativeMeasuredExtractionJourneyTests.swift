@@ -71,8 +71,18 @@ struct NativeMeasuredExtractionFixture {
     try #require(await runtime.snapshot().measuredExtractionState)
   }
   func accept(_ runtime: GameRuntime) async throws {
+    await runtime.beginScriptRefusalObservation()
     try await confirm(runtime, .accept)
-    try #require(await runtime.snapshot().measuredExtractionState != nil)
+    let accepted = await runtime.snapshot()
+    let refusal = await runtime.scriptRefusalObservationDetail()
+    let dock = accepted.commander.nativeStations?.currentMainDock
+    let quote = accepted.contractBoard.measuredExtractionQuote
+    let context =
+      "dock=\(dock?.station.key ?? "none")/\(dock?.sequence ?? 0); dockCurrent=\(accepted.nativeMainStationDockEvidenceIsCurrent); quote=\(quote?.action.rawValue ?? "none")/\(String(describing: quote?.allowed)); issues=\(quote?.issues.joined(separator: ";") ?? "none")"
+    try #require(
+      accepted.measuredExtractionState != nil,
+      "Native acceptance: \(accepted.message); action=\(accepted.contractBoard.action); detail=\(accepted.contractBoard.detail); \(context); refusal=\(refusal ?? "none")"
+    )
   }
 
   func aim(_ runtime: GameRuntime) async throws {

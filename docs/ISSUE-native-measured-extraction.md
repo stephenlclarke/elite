@@ -33,3 +33,7 @@ Execution 1156 exposed three initial-fixture/discovery groups: G12 add-on module
 ## Initial tank ordering correction
 
 Execution 1158 passed the corrected bundled discovery methods but rejected equipment grants in the two shared initial fixtures. Both selected SH023 while retaining 130 fuel units from the starting ship; SH023 has a 70-unit tank. Match the passing mining-tool fixture by setting fuel to the selected hull capacity before native equipment preparation or grant validation. Preserve runtime fuel use and every mining, collection, travel and custody assertion.
+
+## Acceptance refusal evidence
+
+Execution 1160 passes initial hardware setup but the positive native acceptance assertion observes no committed mission. Preserve that assertion and report the actual native message and existing refusal-observer detail. No product fix is claimed until the rejecting boundary is identified; do not inject accepted state or relax validation.
