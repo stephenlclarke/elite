@@ -194,14 +194,47 @@ public struct RelativeWorkController: Sendable {
     let normal = target.pose.orientation.apply(approach)
     let surface = target.pose.systemPoint(target.surfacePoint)
     let desired = Self.facing(normal: normal, target: target.pose.orientation)
-    var offset =
-      target.pose.orientation.apply(target.surfacePoint) + normal
-      * (clearance + input.playerRadius + Self.workMargin)
-    var workDistance = clearance + input.playerRadius + Self.workMargin
+    let surfaceNormal = target.pose.orientation.apply(localNormal)
+    let lateral = desired.y * input.collectionOffset
+    let minimumStandOff = clearance + input.playerRadius + Self.workMargin
+    let compensatedStandOff = max(
+      minimumStandOff,
+      (minimumStandOff - lateral.dot(surfaceNormal)) / approach.dot(localNormal))
+    var standOff = minimumStandOff
+    let baselineDistance =
+      input.collectionOffset > 0 ? (normal * minimumStandOff + lateral).length : minimumStandOff
+    if compensatedStandOff > minimumStandOff, approach.cross(localNormal).length > 0,
+      baselineDistance <= input.cutterRange
+    {
+      // A finite face/edge may already give the acquired ray enough actual hull gap.
+      // This prospective hold is a query only; actual motion still needs its own proof.
+      let baselineOffset =
+        target.pose.orientation.apply(target.surfacePoint) + normal * minimumStandOff + lateral
+      let baselineWork = target.pose.position + baselineOffset
+      let baselineVelocity = target.velocity + target.angularVelocity.cross(baselineOffset)
+      let baselineAcceleration = target.angularVelocity.cross(
+        target.angularVelocity.cross(baselineOffset))
+      guard
+        [baselineOffset, baselineWork, baselineVelocity, baselineAcceleration].allSatisfy(
+          Self.finite)
+      else { return inactive(.blocked(.invalidInput), input: input) }
+      var prospective = input
+      prospective.ship = .init(position: baselineWork, orientation: desired)
+      prospective.velocity = baselineVelocity
+      prospective.angularVelocity = target.angularVelocity
+      let baselineMetrics = Metrics(
+        target: target, work: baselineWork, surface: surface, error: 0, speed: 0, angle: 0,
+        clearance: clearance, workDistance: baselineDistance)
+      let holdSweep = Self.sweep(
+        prospective, target: target, metrics: baselineMetrics, acceleration: baselineAcceleration,
+        rates: Self.localRates(target.angularVelocity, basis: desired), purpose: .work)
+      if case .blocked = validate(holdSweep) { standOff = compensatedStandOff }
+    }
+    var offset = target.pose.orientation.apply(target.surfacePoint) + normal * standOff
+    var workDistance = standOff
     if input.collectionOffset > 0 {
-      let lateral = desired.y * input.collectionOffset
       offset = offset + lateral
-      workDistance = (normal * workDistance + lateral).length
+      workDistance = (normal * standOff + lateral).length
     }
     let work = target.pose.position + offset
     let workVelocity = target.velocity + target.angularVelocity.cross(offset)

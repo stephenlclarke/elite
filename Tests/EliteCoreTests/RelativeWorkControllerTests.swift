@@ -450,3 +450,117 @@ private func rwTick(
     #expect(output.status == .blocked(.invalidInput) && !output.motionValidated)
   }
 }
+
+private func rwClearancePlaneHull() throws -> PreparedHull {
+  try PreparedHull(
+    mesh: Mesh(
+      vertices: [
+        .init(-1000, -1000, -100), .init(1000, -1000, -100),
+        .init(1000, 1000, -100), .init(-1000, 1000, -100),
+        .init(-1000, -1000, 0), .init(1000, -1000, 0),
+        .init(1000, 1000, 0), .init(-1000, 1000, 0),
+      ],
+      faces: [
+        [0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4],
+        [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7],
+      ], preserveWinding: true))
+}
+
+@Test func relativeWorkObliqueDestinationClearsRealPlaneHullAndPreservesRangeBoundary() throws {
+  let hull = try rwClearancePlaneHull()
+  var target = rwTarget()
+  target.surfaceNormal = .init(0, 0, 1)
+  target.velocity = .init(2, 0, 0)
+  target.angularVelocity = .init(0, 0.01, 0)
+  var input = rwInput(target: target)
+  input.ship.position = .init(0, 0, 300)
+  input.playerRadius = 10
+  let approach = Vector3(sqrt(3) / 2, 0, 0.5)
+  var controller = RelativeWorkController(
+    parent: rwActor, category: .rock, approachDirection: approach)
+  var checked: [RelativeWorkSweep] = []
+  let output = controller.step(input) {
+    checked.append($0)
+    return HullSweepSafety.validate($0, target: hull).clearance
+  }
+  let sweep = try #require(output.validatedSweep)
+  let destination = sweep.workPosition
+  #expect(output.motionValidated && checked.count == 2)
+  let prospective = try #require(checked.first)
+  #expect(prospective.start != input.ship && sweep.start == input.ship)
+  #expect(prospective.target == target && prospective.targetEnd != target.pose)
+  #expect(prospective.duration == input.delta && prospective.playerRadius == 10)
+  #expect(prospective.initialVelocity.length > 0 && prospective.angularVelocity.length > 0)
+  #expect(sweep.requiredClearance == 120)
+  #expect(abs(destination.z - 131) < 1e-8)
+  #expect(destination.cross(approach).length < 1e-8)
+  let placement = HullSweepSafety.validatePlacement(
+    center: destination, radius: 10, hull: hull, pose: .init(), requiredClearance: 120)
+  #expect(placement.safe)
+  #expect((try #require(placement.minimumSampledClearance)) > 120.99)
+  // This admitted 60-degree approach previously placed the centre only65.5from the face.
+  let oldPlacement = HullSweepSafety.validatePlacement(
+    center: .init(sqrt(3) / 2 * 131, 0, 65.5), radius: 10,
+    hull: hull, pose: .init(), requiredClearance: 120)
+  #expect(oldPlacement.failure == .clearanceViolation)
+  for range in [261.999, 262.0, 262.001] {
+    var bounded = input
+    bounded.cutterRange = range
+    var candidate = RelativeWorkController(
+      parent: rwActor, category: .rock, approachDirection: approach)
+    let result = candidate.step(bounded) { HullSweepSafety.validate($0, target: hull).clearance }
+    #expect((result.status == .blocked(.toolRange)) == (range < 262))
+  }
+}
+
+@Test(arguments: [-1.0, 1.0])
+func relativeWorkObliqueCollectionOffsetPaysItsInwardNormalComponent(sign: Double) throws {
+  let hull = try rwClearancePlaneHull()
+  var target = rwTarget()
+  target.surfaceNormal = .init(0, 0, 1)
+  target.pose.orientation.y = .init(0, 0.5, -sign * sqrt(3) / 2)
+  target.pose.orientation.z = .init(0, sign * sqrt(3) / 2, 0.5)
+  var input = rwInput(target: target)
+  input.ship.position = .init(0, 0, 400)
+  input.playerRadius = 10
+  input.collectionOffset = 20
+  input.cutterRange = 1000
+  var controller = RelativeWorkController(
+    parent: rwActor, category: .rock, approachDirection: .init(0, -sign * sqrt(3) / 2, 0.5))
+  let output = controller.step(input) { HullSweepSafety.validate($0, target: hull).clearance }
+  let destination = try #require(output.workPosition)
+  #expect(output.motionValidated && output.requiredClearance == 120)
+  #expect(abs(destination.y - 20) < 1e-9 && abs(destination.x) < 1e-9)
+  // An independently checked plane support gap, not the implementation's distance formula.
+  let supportGap =
+    destination.dot(target.pose.orientation.apply(target.surfaceNormal).unit) - input.playerRadius
+  #expect(supportGap >= 120.99999999)
+}
+
+@Test(arguments: [0.0, 1e-12, Double.leastNonzeroMagnitude])
+func relativeWorkTangentApproachNeverBypassesFiniteOrToolRangeGuards(cosine: Double) throws {
+  let hull = try rwClearancePlaneHull()
+  var target = rwTarget()
+  target.surfaceNormal = .init(0, 0, 1)
+  var input = rwInput(target: target)
+  input.playerRadius = 10
+  input.ship.position = .init(0, 0, 400)
+  var controller = RelativeWorkController(
+    parent: rwActor, category: .rock, approachDirection: .init(1, 0, cosine))
+  var purposes: [RelativeWorkSweep.Purpose] = []
+  let output = controller.step(input) {
+    purposes.append($0.purpose)
+    return HullSweepSafety.validate($0, target: hull).clearance
+  }
+  if cosine == 1e-12 {
+    #expect(output.status == .blocked(.toolRange))
+    #expect(purposes == [.work, .braking])
+    #expect(output.validatedSweep?.purpose == .braking)
+  } else {
+    #expect(output.status == .blocked(.invalidInput))
+    #expect(purposes == (cosine == 0 ? [] : [.work]))
+    #expect(!output.motionValidated)
+  }
+  #expect(output.validatedSweep?.purpose != .work)
+  #expect(!output.transitions.contains(.selectTool(.miningLaser)))
+}
