@@ -1,0 +1,7 @@
+# test: establish valid empty ammunition for unlimited retaliation
+
+The unlimited retaliation method now throws and stores the fixture’s three actual fitted rounds through normal Commander equipment transactions, reading the current revision for each transaction. It requires zero fitted rounds, zero mirrored missiles, a valid Commander, and successful equipment validation before enabling the original unlimited flag. See [the problem](ISSUE-retaliation-owned-ammo-fixture.md).
+
+The shared fixture, production code, original loops, launch announcement counts, and final manual-disarm scenario are unchanged. Unlimited ammunition does not require an additional XYZZY provenance gate. Source formatting, Markdown lint, and whitespace checks cover this isolated change; focused execution and full validation remain pending with the canonical owner after run 222 closes. The exact caught error remains unobserved.
+
+Focused 226 exposed the shared helper's unowned raw ECM flag being removed by legitimate inventory mirroring. It now grants/fits genuine Military targeting and ECM before launch. Actual ECM storage and actual finite-round storage create valid negative equipment-loss/no-ammo states; unlimited and finite cases share the same real empty-rack setup. Original event/order/no-launch/manual-disarm assertions remain. Independent bounded source review is clean; all four helper consumers proceed to focused 227. No production ammunition or ECM policy changes.

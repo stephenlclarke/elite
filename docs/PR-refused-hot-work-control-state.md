@@ -1,0 +1,11 @@
+# fix(controls): admit stopped work before actor advance
+
+A shared control/work admission helper performs the existing native salvage flush whenever the tool is stopped, including an interrupted still-held Return. Both the actor advance entry and direct tick entry use it. The actor refuses before clock, restoration or physics phases; it preserves the deliberate transient safety stop and pending native work instead of performing later durable/body mutations after a tick-level refusal.
+
+The Q issue is representation roundoff, not thrust: the reported Z value differs by approximately `1.4e-14`. The regression now compares the norm of the full velocity-vector difference against `1e-9`, exactly as the existing `manualAndDamageInterruptionsPreserveActualMomentumAndSuppressHeldTool` and `actualQKeepsAllMomentumThroughNeutralSteering` release checks do. This bounds every component and detects real directional impulses. Production velocity representation is unchanged; no retained-world cache or second velocity authority is introduced.
+
+The existing four-case regression keeps whole-Commander/body/custody/selection/refusal equality strict and explicitly checks unchanged physical pose. It resubmits the same physically held Return level before its original single advance, then checks momentum with that same justified representation bound and the suspended fresh-press gate afterward. Whole-state comparisons are bound to booleans to avoid huge assertion dumps without changing their equality semantics. The nonzero input vector, one original tick, four cases and budgets are unchanged.
+
+## Validation
+
+Strict Swift formatting, paired Markdown lint and whitespace checks are source validation only. No compiler, test, probing, native, GUI, debugger or renderer jobs were run; no new runtime pass is claimed. Game edits are limited to the two reported control/work admission call sites. ScriptDirector, ScriptPersistence, EMP, catalogue/world and unrelated Game sections are unchanged. G1 owns one causal review and safe-closure integration, batching this with other necessary fixes; only the four-case failed method needs focused validation before final gates. The 25 accepted methods remain retained.

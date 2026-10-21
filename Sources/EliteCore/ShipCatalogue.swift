@@ -30,12 +30,14 @@ public struct CatalogueShip: Codable, Sendable, Equatable, Identifiable {
   public let geometryContext: String
   public let profiles: [ShipProfile]
   public let game: ShipPerformance?
+  public let catalogue: ShipCatalogueMetadata
   public let design: ShipDesign
   public let nativeHull: Hull?
   public let nativeDesign: ShipDesign?
   public let nativeCombat: NativeCombat?
   public var searchText: String {
-    [id, name, shipClass, appearances, evidence].joined(separator: " ")
+    ([id, name, shipClass, appearances, evidence] + (catalogue.aliases ?? [])).joined(
+      separator: " ")
   }
   public var previewMesh: Mesh? { ShipCatalogue.meshes[id] }
   public var availability: String {
@@ -57,6 +59,7 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   public let sourceFaceColours: [[Double]]?
   public let sourceTextures: [ShipSourceTexture]?
   public let sourceFaceTextures: [ShipSourceFaceTexture]?
+  public let resolvedTextures: [ShipResolvedTexture]?
   var valid: Bool {
     guard vertices.count >= 4, faces.count >= 4,
       vertices.allSatisfy({ $0.count == 3 && $0.allSatisfy(\.isFinite) }),
@@ -86,10 +89,11 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   }
 
   var rawMesh: Mesh {
-    Mesh(
+    if resolvedTextures?.isEmpty == false { ShipTextureAssets.preload() }
+    return Mesh(
       vertices: vertices.map { Vector3($0[0], $0[1], $0[2]) }, faces: faces,
       details: details ?? [], materials: materials ?? [], faceMaterials: faceMaterials ?? [],
-      preserveWinding: true)
+      faceTextures: resolvedFaceTextures, preserveWinding: true)
   }
   var mesh: Mesh { rawMesh.showroomNormalised }
 }
@@ -112,7 +116,7 @@ public enum ShipCatalogue {
     let mesh = ship.design.mesh
     return Mesh(
       vertices: mesh.vertices.map { $0 * 0.69 }, faces: mesh.faces, details: mesh.details,
-      materials: mesh.materials, faceMaterials: mesh.faceMaterials,
+      materials: mesh.materials, faceMaterials: mesh.faceMaterials, faceTextures: mesh.faceTextures,
       preserveWinding: true)
   }
   public static func nativeShip(_ hull: Hull) -> CatalogueShip? { nativeRecords[hull] }
@@ -138,7 +142,10 @@ public enum ShipCatalogue {
       guard ship.id == url.deletingPathExtension().lastPathComponent,
         ship.id.range(of: "^SH[0-9]{3}$", options: .regularExpression) != nil,
         !ship.name.isEmpty, ship.design.valid, ship.game?.valid ?? true,
-        ship.nativeDesign?.valid ?? true, ship.nativeCombat?.valid ?? true
+        ship.nativeDesign?.valid ?? true, ship.nativeCombat?.valid ?? true,
+        ship.catalogue.valid(
+          shipID: ship.id, performance: ship.game, nativeCombat: ship.nativeCombat),
+        ship.catalogue.validEffectiveCargo(performance: ship.game, profiles: ship.profiles)
       else { throw ShipFileError.invalid(url.lastPathComponent) }
       if let hull = ship.nativeHull, !nativeKinds.insert(hull).inserted {
         throw ShipFileError.invalid("Duplicate native hull: " + hull.rawValue)

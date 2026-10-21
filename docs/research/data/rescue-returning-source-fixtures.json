@@ -1,0 +1,410 @@
+{
+  "package_id": "P30",
+  "source_version": "1.5.4",
+  "profile": "PROJECT-P30-RETURNING-5A-v1",
+  "scope": "Selected actual returning-Arafura/script callbacks with mocked engine and Oolite lexical scope. Original quirks are recorded, not all selected project outcomes. Native timer/ship/AI/formation/Thargon/custody integration remains separate from these mocked checks.",
+  "runtime": "v26.9.0",
+  "total": 57,
+  "passed": 57,
+  "cases": [
+    {
+      "name": "5a own availability 19,0,0,0",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.1757909999999967,
+      "passed": true
+    },
+    {
+      "name": "5a own availability 20,0,0,0.399999",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.015916000000000707,
+      "passed": true
+    },
+    {
+      "name": "5a own availability 20,0,0,0.4",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.011292000000000968,
+      "passed": true
+    },
+    {
+      "name": "5a own availability 20,1,1,0",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.008250000000000313,
+      "passed": true
+    },
+    {
+      "name": "5a own availability 20,1,2,0",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.009584000000000259,
+      "passed": true
+    },
+    {
+      "name": "5a own callback has no legal/formation module gate; shared base5 gate remains separate",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.0247909999999969,
+      "passed": true
+    },
+    {
+      "name": "5a350pay/current system/wing identity",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.0259999999999998,
+      "passed": true
+    },
+    {
+      "name": "5a launch schedules arrival150 and warning30 1,true",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.029624999999999346,
+      "passed": true
+    },
+    {
+      "name": "5a launch schedules arrival150 and warning30 2,false",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.016542000000001167,
+      "passed": true
+    },
+    {
+      "name": "5a launch schedules arrival150 and warning30 2,true",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.034832999999999004,
+      "passed": true
+    },
+    {
+      "name": "5a launch schedules arrival150 and warning30 3,true",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.006499999999999062,
+      "passed": true
+    },
+    {
+      "name": "5a source ETA round-up and cadence 120",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.05487499999999912,
+      "passed": true
+    },
+    {
+      "name": "5a source ETA round-up and cadence 30.01",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.009957999999997469,
+      "passed": true
+    },
+    {
+      "name": "5a source ETA round-up and cadence 30",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.0191250000000025,
+      "passed": true
+    },
+    {
+      "name": "5a source ETA round-up and cadence 5.01",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.012333000000001704,
+      "passed": true
+    },
+    {
+      "name": "5a source ETA round-up and cadence 5",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.009417000000002673,
+      "passed": true
+    },
+    {
+      "name": "5a source ETA round-up and cadence 0",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.009208000000000993,
+      "passed": true
+    },
+    {
+      "name": "5a source ETA round-up and cadence -1",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.009624999999999773,
+      "passed": true
+    },
+    {
+      "name": "5a insert boat stops warnings/next opposition delay/wing suffix 0",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.07225000000000037,
+      "passed": true
+    },
+    {
+      "name": "5a insert boat stops warnings/next opposition delay/wing suffix 0.5",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.017250000000000654,
+      "passed": true
+    },
+    {
+      "name": "5a insert boat stops warnings/next opposition delay/wing suffix 0.999999",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.009332999999998037,
+      "passed": true
+    },
+    {
+      "name": "5a opposition category boundaries 0",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.11412500000000136,
+      "passed": true
+    },
+    {
+      "name": "5a opposition category boundaries 0.599999",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.014375000000001137,
+      "passed": true
+    },
+    {
+      "name": "5a opposition category boundaries 0.6",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.012291000000001162,
+      "passed": true
+    },
+    {
+      "name": "5a opposition category boundaries 0.899999",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.010625000000000995,
+      "passed": true
+    },
+    {
+      "name": "5a opposition category boundaries 0.9",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.023208999999997815,
+      "passed": true
+    },
+    {
+      "name": "5a opposition category boundaries 0.979999",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.029291000000000622,
+      "passed": true
+    },
+    {
+      "name": "5a opposition category boundaries 0.98",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.010792000000002133,
+      "passed": true
+    },
+    {
+      "name": "5a opposition category boundaries 0.999",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.010291999999999746,
+      "passed": true
+    },
+    {
+      "name": "5a reinforcement floor count clamp 0",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.029209000000001595,
+      "passed": true
+    },
+    {
+      "name": "5a reinforcement floor count clamp 2",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.0161660000000019,
+      "passed": true
+    },
+    {
+      "name": "5a reinforcement floor count clamp 10",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.04299999999999926,
+      "passed": true
+    },
+    {
+      "name": "5a first enemy target sequential halves 0.4999,0.9",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.036040999999997325,
+      "passed": true
+    },
+    {
+      "name": "5a first enemy target sequential halves 0.5,0.4999",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.014749999999999375,
+      "passed": true
+    },
+    {
+      "name": "5a first enemy target sequential halves 0.5,0.5",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.012458999999999776,
+      "passed": true
+    },
+    {
+      "name": "5a preserves Thargoid AI except source zero-bounty branch false",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.038833999999997815,
+      "passed": true
+    },
+    {
+      "name": "5a preserves Thargoid AI except source zero-bounty branch true",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.011665999999998178,
+      "passed": true
+    },
+    {
+      "name": "5a zero-bounty true Thargoid source overwrite to pirateAI",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.027457999999999316,
+      "passed": true
+    },
+    {
+      "name": "5a jump failure boundary 1",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.027709000000001538,
+      "passed": true
+    },
+    {
+      "name": "5a jump failure boundary 3",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.011625000000002217,
+      "passed": true
+    },
+    {
+      "name": "5a jump failure boundary 99",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.004374999999999574,
+      "passed": true
+    },
+    {
+      "name": "5a jump failure boundary 100",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.0038330000000001974,
+      "passed": true
+    },
+    {
+      "name": "5a jump failure boundary 1000",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.003959000000001822,
+      "passed": true
+    },
+    {
+      "name": "5a source NULL acceptance NO",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.02283299999999855,
+      "passed": true
+    },
+    {
+      "name": "5a source NULL acceptance YES",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.014583999999999264,
+      "passed": true
+    },
+    {
+      "name": "5a source NULL acceptance null",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.006250000000001421,
+      "passed": true
+    },
+    {
+      "name": "5a full deferred pay/+10 and-5 failure",
+      "source": "Scripts/rescue_scenario_5a.js",
+      "source_sha256": "5379fd4853f4b0a7a230b5a4ed3d80d0055c210f322d21b2c87b24386ffcac3e",
+      "duration_ms": 0.03570799999999963,
+      "passed": true
+    },
+    {
+      "name": "5a protected boat death extra-20 false",
+      "source": "Scripts/rescue_scenario_5a_arafura.js",
+      "source_sha256": "6dde354c6b9d211c7f02256871d64aa4a766145cc8d2925004114b6d0bc83e78",
+      "duration_ms": 0.02404200000000145,
+      "passed": true
+    },
+    {
+      "name": "5a protected boat death extra-20 true",
+      "source": "Scripts/rescue_scenario_5a_arafura.js",
+      "source_sha256": "6dde354c6b9d211c7f02256871d64aa4a766145cc8d2925004114b6d0bc83e78",
+      "duration_ms": 0.009958999999998497,
+      "passed": true
+    },
+    {
+      "name": "5a source any station/unconditional stage100 resurrection",
+      "source": "Scripts/rescue_scenario_5a_arafura.js",
+      "source_sha256": "6dde354c6b9d211c7f02256871d64aa4a766145cc8d2925004114b6d0bc83e78",
+      "duration_ms": 0.028584000000002163,
+      "passed": true
+    },
+    {
+      "name": "5a native station position first waystation only false",
+      "source": "Scripts/rescue_scenario_5a_arafura.js",
+      "source_sha256": "6dde354c6b9d211c7f02256871d64aa4a766145cc8d2925004114b6d0bc83e78",
+      "duration_ms": 0.026707999999999288,
+      "passed": true
+    },
+    {
+      "name": "5a native station position first waystation only true",
+      "source": "Scripts/rescue_scenario_5a_arafura.js",
+      "source_sha256": "6dde354c6b9d211c7f02256871d64aa4a766145cc8d2925004114b6d0bc83e78",
+      "duration_ms": 0.004457999999999629,
+      "passed": true
+    },
+    {
+      "name": "5a complaint throttle also gates defender request 10",
+      "source": "Scripts/rescue_scenario_5a_arafura.js",
+      "source_sha256": "6dde354c6b9d211c7f02256871d64aa4a766145cc8d2925004114b6d0bc83e78",
+      "duration_ms": 0.027459000000000344,
+      "passed": true
+    },
+    {
+      "name": "5a complaint throttle also gates defender request 10.001",
+      "source": "Scripts/rescue_scenario_5a_arafura.js",
+      "source_sha256": "6dde354c6b9d211c7f02256871d64aa4a766145cc8d2925004114b6d0bc83e78",
+      "duration_ms": 0.013166999999999263,
+      "passed": true
+    },
+    {
+      "name": "5a source optional formation willingness toggles",
+      "source": "Scripts/rescue_scenario_5a_arafura.js",
+      "source_sha256": "6dde354c6b9d211c7f02256871d64aa4a766145cc8d2925004114b6d0bc83e78",
+      "duration_ms": 0.012416000000001759,
+      "passed": true
+    },
+    {
+      "name": "shared source original raider hulk true death bonus 3",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.022624999999997897,
+      "passed": true
+    },
+    {
+      "name": "shared source original raider hulk true death bonus 100",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.006458000000002073,
+      "passed": true
+    }
+  ]
+}

@@ -20,7 +20,7 @@ extension Commander {
 }
 extension Equipment {
   public static func isReward(_ name: String) -> Bool {
-    [navalLaser, navalEnergyUnit, ShieldBooster.capital.equipmentName].contains(name)
+    [navalLaser, ShieldBooster.capital.equipmentName].contains(name)
   }
   public static func rewardLabel(_ name: String) -> String {
     if name == navalLaser { return "XYZZY grant" }
