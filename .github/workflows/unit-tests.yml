@@ -11,6 +11,9 @@ on:
       - 'Tools/CI/test_isolated_units.py'
       - '.github/workflows/unit-tests.yml'
       - 'Makefile'
+      - 'config/flight-controls.json'
+      - 'Tools/generate-flight-controls.py'
+      - 'Tools/tests/test_flight_controls.py'
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -42,6 +45,8 @@ jobs:
             isolated-units-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.key }}-${{ hashFiles('Package.swift', 'Package.resolved') }}-
       - name: Verify isolated report checks
         run: python3 -m unittest discover -s Tools/CI -p 'test_isolated_units.py'
+      - name: Verify shared control authority
+        run: make flight-controls-check
       - name: Run maintained isolated units
         run: make unit-ci
       - name: Upload exact-commit unit results

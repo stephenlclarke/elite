@@ -43,7 +43,7 @@ That comment is the handoff. Update the ledger once for the packet's implementat
 - File one `mba-finding` issue per actionable root cause: severity, SHA/path/line, expected/actual behavior, reproduction/evidence and suggested fix. Mark hypotheses. Advisory style preferences are comments, not blocking defects. Distinguish infrastructure failures from product bugs.
 - MBP comments the exact correction SHA and applies `awaiting-mba`; use `Refs #N`, not auto-closing keywords. MBA reviews corrections first and closes only after corrected code and fresh affected GitHub units are verified. Otherwise keep the issue open with evidence. The developer continues other ready work throughout.
 
-GitHub is the live issue/review state. The [completion ledger](COMPLETION-LEDGER.md) holds feature priorities and milestone transitions; [MBA-TEST-QUEUE.md](MBA-TEST-QUEUE.md) is a link/guide, not a duplicate live table. Do not update these files for every poll.
+The [completion ledger](COMPLETION-LEDGER.md) is the single source of truth for ALL work packet definitions, priority, dependencies, owners and progress. GitHub holds issue/review discussions and evidence linked back to ledger packet IDs, not an alternative work plan. [MBA-TEST-QUEUE.md](MBA-TEST-QUEUE.md) is a link/guide, not another packet register. Do not update these files for every poll.
 
 ## Issue backlog and ownership
 

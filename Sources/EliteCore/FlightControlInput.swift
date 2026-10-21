@@ -8,6 +8,17 @@ public enum FlightControlInput: Sendable {
   public static func action(for token: String) -> FlightControlAuthority.ActionID? {
     FlightControlAuthority.ActionID.allCases.first { Self.token(for: $0) == token.lowercased() }
   }
+  static func interruptsHeldTool(_ action: FlightControlAuthority.ActionID) -> Bool {
+    switch action {
+    case .changeWeapon, .releaseHold, .nextTarget, .targetFilter: true
+    case .fire, .ecm: false
+    }
+  }
+  static func helpRow(for action: FlightControlAuthority.ActionID) -> String {
+    let binding = action.binding
+    return binding.key.uppercased() + " - " + binding.label.uppercased()
+      + (action == .fire ? " (HOLD)" : "")
+  }
   public static func fireIsHeld(_ tokens: Set<String>) -> Bool {
     tokens.contains(token(for: .fire))
   }
@@ -38,10 +49,10 @@ extension Game {
   }
 
   func flightKeyStopsTool(_ token: String) -> Bool {
-    guard acceptsSharedFlightControls else { return false }
-    let action = FlightControlInput.action(for: token)
-    return action == .changeWeapon || action == .releaseHold
-      || ["tab", "f"].contains(token.lowercased())
+    guard acceptsSharedFlightControls, let action = FlightControlInput.action(for: token) else {
+      return false
+    }
+    return FlightControlInput.interruptsHeldTool(action)
   }
 
   /// This transient stop may precede a refused native command; it grants no persistent action.
@@ -95,6 +106,8 @@ extension Game {
     case .fire: observeFlightFire(held: true, explicitPress: true)
     case .ecm: ecm()
     case .releaseHold: _ = prepareFlightControlKey(token)
+    case .nextTarget: cycleAutoTarget()
+    case .targetFilter: cycleWorkTargetFilter()
     }
     return true
   }

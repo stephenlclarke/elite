@@ -25,9 +25,21 @@
       "key": "Q",
       "action": "Release hold",
       "detail": "End automatic hold/guidance and stop the active tool. Return control to the player while preserving momentum."
+    },
+    {
+      "id": "next_target",
+      "key": "Tab",
+      "action": "Next target",
+      "detail": "Select the next eligible actual target and engage supported automatic guidance. Stop held tool use before changing the target; require a fresh Return press before firing again."
+    },
+    {
+      "id": "target_filter",
+      "key": "F",
+      "action": "Target filter",
+      "detail": "Cycle Ships, Mining, Salvage and All. Release current automatic hold and stop held tool use before the next target selection. This flight action never confirms a menu choice."
     }
   ],
-  "footer": "W: CHANGE WEAPON | RETURN: FIRE | E: ECM | Q: RELEASE HOLD",
+  "footer": "W: CHANGE WEAPON | RETURN: FIRE | E: ECM | Q: RELEASE HOLD | TAB: NEXT TARGET | F: TARGET FILTER",
   "weaponNames": [
     "Main Laser",
     "Mining Laser",
@@ -36,7 +48,7 @@
   ],
   "automaticSelection": "Targeting any disabled ship for salvage selects fitted Salvage Cutter immediately. Targeting an asteroid selects fitted Mining Laser immediately. Selection never fires. W overrides the default for the current target without releasing hold.",
   "helpPolicy": [
-    "Generate README controls, help-screen flight blocks, contextual footers and the salvage guide labels from these four bindings. No help topic may assign another key to these actions.",
+    "Generate README controls, help-screen flight blocks, contextual footers and the salvage guide labels from these six bindings. No help topic may assign another key to these actions.",
     "Keep the primary Return action label Fire for every weapon. Mining, cutting and EMP charging are explained beneath it and in the actual weapon/activity indicator, not by changing the binding label.",
     "All flight views and help topics use Change weapon rather than alternating between Change tool and Change weapon; Q is Release hold rather than Off, Back or Cancel.",
     "Equipment prerequisites and temporarily blocked states are explained alongside the binding without remapping its key. Menu navigation and confirmation are clearly distinguished from Flight controls.",
@@ -202,6 +214,6 @@
       "WEAPON: NONE"
     ],
     "exampleNotice": "Examples illustrate display copy only. Numeric charge progress must come from the actual charge state.",
-    "help": "W: CHANGE WEAPON | RETURN: FIRE | E: ECM | Q: RELEASE HOLD. Keep this same control wording for every weapon; explain mining, cutting or EMP charging through the weapon name, actual activity state and secondary help text."
+    "help": "W: CHANGE WEAPON | RETURN: FIRE | E: ECM | Q: RELEASE HOLD | TAB: NEXT TARGET | F: TARGET FILTER. Keep this same control wording for every weapon; explain mining, cutting or EMP charging through the weapon name, actual activity state and secondary help text."
   }
 }

@@ -819,7 +819,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     menu.addItem(flight)
     flight.submenu = NSMenu(title: "Flight")
     let flightActions = [
-      ("Next Target", "tab"),
+      (
+        FlightControlAuthority.ActionID.nextTarget.binding.label,
+        FlightControlInput.token(for: .nextTarget)
+      ),
+      (
+        FlightControlAuthority.ActionID.targetFilter.binding.label,
+        FlightControlInput.token(for: .targetFilter)
+      ),
       (
         FlightControlAuthority.ActionID.changeWeapon.binding.label,
         FlightControlInput.token(for: .changeWeapon)

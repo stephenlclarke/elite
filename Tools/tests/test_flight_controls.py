@@ -134,6 +134,25 @@ class FlightControlsTests(unittest.TestCase):
         self.assertIn("strictly less than 5%", markdown)
         self.assertIn("without releasing hold", markdown)
 
+    def test_target_bindings_are_pinned_and_generated_for_every_topic(self):
+        self.assertEqual(self.run_cli()[0], 0)
+        markdown = (self.root / GENERATOR.MARKDOWN_PATH).read_text()
+        self.assertEqual(markdown.count("| Tab | Next target |"), 15)
+        self.assertEqual(markdown.count("| F | Target filter |"), 15)
+        swift = (self.root / GENERATOR.SWIFT_PATH).read_text()
+        self.assertIn('case nextTarget = "next_target"', swift)
+        self.assertIn('case targetFilter = "target_filter"', swift)
+
+    def test_target_key_conflicts_refuse_before_output(self):
+        for identifier in ("next_target", "target_filter"):
+            with self.subTest(identifier=identifier):
+                data = copy.deepcopy(AUTHORITY)
+                binding = next(item for item in data["bindings"] if item["id"] == identifier)
+                binding["key"] = "Return"
+                self.write(data)
+                self.assertEqual(self.run_cli()[0], 2)
+                self.assertFalse((self.root / "Sources").exists())
+
     def test_swift_repo_style_and_long_declarations(self):
         self.assertEqual(self.run_cli()[0], 0)
         swift = (self.root / GENERATOR.SWIFT_PATH).read_text()

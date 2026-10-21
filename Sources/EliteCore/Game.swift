@@ -976,17 +976,11 @@ public struct Game: Sendable {
     if !docked && screen.isFlight {
       if sharedFlightKey(key) { return }
       switch key {
-      case "tab":
-        cycleAutoTarget()
-        return
       case "pageup", "pagedown":
         pageTargetDetails(key == "pageup" ? -1 : 1)
         return
       case "i":
         targetPanelExpanded = !(targetPanelExpanded ?? (viewportWidth >= 1100))
-        return
-      case "f":
-        cycleWorkTargetFilter()
         return
       case "v":
         if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {

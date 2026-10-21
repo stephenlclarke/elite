@@ -75,10 +75,7 @@ public enum PlayerHelp {
     let rows = context.rows.flatMap { ScriptLibraryText.wrap($0, width: 40) }
     let footer =
       ["FLIGHT ONLY; MENUS KEEP THEIR KEYS"]
-      + FlightControlAuthority.ActionID.allCases.map {
-        $0.binding.key.uppercased() + " - " + $0.binding.label.uppercased()
-          + ($0 == .fire ? " (HOLD)" : "")
-      }
+      + FlightControlAuthority.ActionID.allCases.map(FlightControlInput.helpRow)
     let capacity = 16 - footer.count
     return stride(from: 0, to: max(1, rows.count), by: capacity).map { offset in
       HelpPage(
@@ -138,8 +135,9 @@ public enum PlayerHelp {
           "SPACE - ACCELERATE; DELETE - BRAKE",
           "HOLD RETURN TO USE THE SELECTED WEAPON",
           "W CYCLES FITTED WEAPONS; KEEPS HOLD",
-          "TAB - NEXT TARGET / AUTO GUIDANCE",
-          "F - SHIPS / MINING / SALVAGE / ALL",
+          FlightControlInput.helpRow(for: .nextTarget) + " / AUTO GUIDANCE",
+          FlightControlInput.token(for: .targetFilter).uppercased()
+            + " - SHIPS / MINING / SALVAGE / ALL",
           "WORK HOLD NEEDS ITS FITTED MODULE",
           "SMALL ITEMS: AUTO SCOOP; LARGE: HOLD",
           "Q RELEASES GUIDANCE; MOMENTUM REMAINS",

@@ -89,6 +89,8 @@ Everything essential works on a built-in MacBook keyboard. Delete means its norm
 
 Press P on charts or the navigation screen to toggle the automatic top-five profit scan, enabled by XYZZY. Ranked gold markers show profitable destinations within current jump range; navigation lists conservative estimates based on cargo, cash and local stock, before fuel and risk.
 
+W, Return, E, Q, Tab and F now share one [generated flight-action authority](docs/FLIGHT-CONTROLS.generated.md) for key dispatch, scoped help and Flight menu labels. Station and mission confirmation keep their own context.
+
 The [complete control guide](docs/CONTROLS.md) groups specialist flight actions, charts, missions, showroom, Mac commands and XYZZY options by activity. In-game K help follows the same scheme.
 
 ### Trackpad flight

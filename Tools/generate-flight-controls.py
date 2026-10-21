@@ -14,6 +14,8 @@ BINDINGS = (
     ("fire", "fire", "Return", "Fire"),
     ("ecm", "ecm", "E", "ECM"),
     ("release_hold", "releaseHold", "Q", "Release hold"),
+    ("next_target", "nextTarget", "Tab", "Next target"),
+    ("target_filter", "targetFilter", "F", "Target filter"),
 )
 TOPICS = (
     "flight", "combat", "targeting", "mining", "salvage", "emp", "ecm",
