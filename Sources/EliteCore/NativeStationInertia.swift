@@ -289,11 +289,13 @@ extension Game {
   )
     -> Bool
   {
-    guard let world = commander.nativeStations else { return true }
-    guard world.stationInertia.contains(where: { $0.station.system == systemIdentity }) else {
+    guard let world = withReadOnlyCommander({ $0.nativeStations }) else { return true }
+    let system = systemIdentity
+    guard world.stationInertia.contains(where: { $0.station.system == system }) else {
       return true
     }
     guard world.valid, time.isFinite, time >= 0 else { return false }
+    let pose = withReadOnlyCommander { $0.flightSimulation.pose }
     var changes: [(index: Int, position: Vector3, velocity: Vector3)] = []
     for index in bodies.indices where bodies[index].hull == .station {
       let body = bodies[index]
@@ -303,13 +305,13 @@ extension Game {
       guard let point = world.currentPosition(for: id, at: time),
         let physical = body.physical, (physical.velocity - state.velocity).length < 1e-7
       else { return false }
-      let actual = commander.flightSimulation.pose.systemPoint(body.position)
+      let actual = pose.systemPoint(body.position)
       let previous = oldTime.flatMap { world.currentPosition(for: id, at: $0) }
       guard
         (actual - point).length < 1e-5
           || previous.map({ (actual - $0).length < 1e-5 }) == true
       else { return false }
-      changes.append((index, commander.flightSimulation.pose.shipPoint(point), state.velocity))
+      changes.append((index, pose.shipPoint(point), state.velocity))
     }
     for change in changes {
       bodies[change.index].position = change.position
