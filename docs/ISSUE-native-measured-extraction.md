@@ -57,3 +57,7 @@ The combat refusal case must reach actual native breakup before asserting its or
 ## Trigger timing at genuine Mining hold
 
 The positive fixture must attain the actual Mining hold with the trigger released before pressing it. Native Mining is blocked during approach, and the transition to holding stops an already-held trigger until release. Wait bounded native frames for the same original actor to reach real holding readiness and assert the actual mode, parent and selected tool; never cancel guidance to hide a readiness failure or write guidance/latch state.
+
+## Exact native hold refusal context
+
+Execution 1170 fails actual holding readiness with the mapped PATH NOT CLEAR label. That label does not distinguish clearance, unresolved geometry or sweep budget refusal. Attach the existing read-only controller status to the same positive assertion before choosing a correction. Preserve the actual hold and every mining/receipt assertion; do not choose a different pose or relax clearance based on an ambiguous display label.

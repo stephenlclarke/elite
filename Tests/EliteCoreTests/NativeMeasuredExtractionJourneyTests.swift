@@ -236,7 +236,7 @@ struct NativeMeasuredExtractionFixture {
     try #require(ready.workGuidance?.mode == .hold(.mining))
     try #require(
       ready.workGuidance?.holding == true,
-      "Native Mining hold did not attain readiness: \(ready.workGuidance?.status ?? "no guidance"); message=\(ready.message)"
+      "Native Mining hold did not attain readiness: \(ready.workGuidance?.status ?? "no guidance"); controller=\(String(describing: ready.workGuidance?.controller.status)); message=\(ready.message)"
     )
     try #require(!ready.workFireSuspended)
     try #require(ready.selectedFlightTool == .miningLaser)
