@@ -1,0 +1,26 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.training"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "contracts-basic-v2", "native-flight-reception-v1"]
+priority = 590
+source = "Original T01 flight and reception practice, using the current owned fit and actual original main-station flight/doorway authority. No trial commander, payment, cargo, deadline or rank gate."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "flight-reception"
+title = "Flight and reception practice"
+briefing = "Choose this actual original main station as your training berth. Review your current fitting: Space accelerates, Delete brakes, arrows pitch/roll and 0/1/2/3 selects front/rear/left/right views; K opens contextual help, then launch without changing carrier or fitting. In front view, face the same live berth within 2 degrees and 1000-1500 centre flight units while closing toward it during a positive native flight interval. Clear sight is required. Then make a real safe doorway arrival and separately Confirm reception here. No cargo, payment, deposit or deadline. Back and cancellation never replace your commander or wipe a save."
+destination = "The issuing actual original main training berth"
+reward = "No extra credits. First verified reception grants this tutorial's journal clue once."
+milestones = ["Accept current-fit practice", "Measure real aligned approach", "Confirm actual training-berth reception"]
+
+[flightReception]
+profile = "native-main-berth-flight-v1"
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"

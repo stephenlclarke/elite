@@ -383,6 +383,7 @@ enum ScriptSaveStore {
   ) throws {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid, ScriptFreightVersionedSave.validateClaims(commander),
+      NativeFlightReceptionSave.validateClaims(commander),
       WayfarerFieldReliefSave.validateClaims(commander, requireRecordedLoss: true),
       NativeMeasuredExtractionSave.validateClaims(commander, requireRecordedLoss: true),
       WayfarerRecordRecoverySave.validateClaims(commander, requireRecordedLoss: true),
@@ -577,74 +578,77 @@ enum ScriptSaveStore {
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: WayfarerFieldReliefSave.hasClaims(commander)
+      schemaVersion: NativeFlightReceptionSave.hasClaims(commander)
         ? (alienPublication != nil
-          ? WayfarerFieldReliefSave.alienVersion : WayfarerFieldReliefSave.version)
-        : NativeMeasuredExtractionSave.hasClaims(commander)
+          ? NativeFlightReceptionSave.alienVersion : NativeFlightReceptionSave.version)
+        : WayfarerFieldReliefSave.hasClaims(commander)
           ? (alienPublication != nil
-            ? NativeMeasuredExtractionSave.alienVersion : NativeMeasuredExtractionSave.version)
-          : WayfarerRecordRecoverySave.hasClaims(commander)
+            ? WayfarerFieldReliefSave.alienVersion : WayfarerFieldReliefSave.version)
+          : NativeMeasuredExtractionSave.hasClaims(commander)
             ? (alienPublication != nil
-              ? WayfarerRecordRecoverySave.alienVersion : WayfarerRecordRecoverySave.version)
-            : NativeIdentifiedSalvageSave.hasClaims(commander)
+              ? NativeMeasuredExtractionSave.alienVersion : NativeMeasuredExtractionSave.version)
+            : WayfarerRecordRecoverySave.hasClaims(commander)
               ? (alienPublication != nil
-                ? NativeIdentifiedSalvageSave.alienVersion : NativeIdentifiedSalvageSave.version)
-              : NativeOriginalSurveySave.hasClaims(commander)
+                ? WayfarerRecordRecoverySave.alienVersion : WayfarerRecordRecoverySave.version)
+              : NativeIdentifiedSalvageSave.hasClaims(commander)
                 ? (alienPublication != nil
-                  ? NativeOriginalSurveySave.alienVersion : NativeOriginalSurveySave.version)
-                : NativeOriginalEvacuationSave.hasClaims(commander)
+                  ? NativeIdentifiedSalvageSave.alienVersion : NativeIdentifiedSalvageSave.version)
+                : NativeOriginalSurveySave.hasClaims(commander)
                   ? (alienPublication != nil
-                    ? NativeOriginalEvacuationSave.alienVersion
-                    : NativeOriginalEvacuationSave.version)
-                  : NativeOriginalRescueJourneySave.hasClaims(commander)
+                    ? NativeOriginalSurveySave.alienVersion : NativeOriginalSurveySave.version)
+                  : NativeOriginalEvacuationSave.hasClaims(commander)
                     ? (alienPublication != nil
-                      ? NativeOriginalRescueJourneySave.alienVersion
-                      : NativeOriginalRescueJourneySave.version)
-                    : NativeOrbitalOutlookJourneySave.hasClaims(commander)
+                      ? NativeOriginalEvacuationSave.alienVersion
+                      : NativeOriginalEvacuationSave.version)
+                    : NativeOriginalRescueJourneySave.hasClaims(commander)
                       ? (alienPublication != nil
-                        ? NativeOrbitalOutlookJourneySave.alienVersion
-                        : NativeOrbitalOutlookJourneySave.version)
-                      : NativeStationPassengerJourneySave.hasClaims(commander)
+                        ? NativeOriginalRescueJourneySave.alienVersion
+                        : NativeOriginalRescueJourneySave.version)
+                      : NativeOrbitalOutlookJourneySave.hasClaims(commander)
                         ? (alienPublication != nil
-                          ? NativeStationPassengerJourneySave.alienVersion
-                          : NativeStationPassengerJourneySave.version)
-                        : OriginalConsentedFreightSupplySave.hasClaims(commander)
+                          ? NativeOrbitalOutlookJourneySave.alienVersion
+                          : NativeOrbitalOutlookJourneySave.version)
+                        : NativeStationPassengerJourneySave.hasClaims(commander)
                           ? (alienPublication != nil
-                            ? OriginalConsentedFreightSupplySave.alienVersion
-                            : OriginalConsentedFreightSupplySave.version)
-                          : (WayfarerRepairLoopSave.hasClaims(commander)
-                            || WayfarerColdChainSave.seedTransferHasClaims(commander))
+                            ? NativeStationPassengerJourneySave.alienVersion
+                            : NativeStationPassengerJourneySave.version)
+                          : OriginalConsentedFreightSupplySave.hasClaims(commander)
                             ? (alienPublication != nil
-                              ? WayfarerRepairLoopSave.alienVersion
-                              : WayfarerRepairLoopSave.version)
-                            : WayfarerColdChainSave.hasClaims(commander)
+                              ? OriginalConsentedFreightSupplySave.alienVersion
+                              : OriginalConsentedFreightSupplySave.version)
+                            : (WayfarerRepairLoopSave.hasClaims(commander)
+                              || WayfarerColdChainSave.seedTransferHasClaims(commander))
                               ? (alienPublication != nil
-                                ? WayfarerColdChainSave.alienVersion
-                                : WayfarerColdChainSave.version)
-                              : ScriptNavigationTradeSave.hasClaims(commander)
+                                ? WayfarerRepairLoopSave.alienVersion
+                                : WayfarerRepairLoopSave.version)
+                              : WayfarerColdChainSave.hasClaims(commander)
                                 ? (alienPublication != nil
-                                  ? ScriptNavigationTradeSave.alienVersion
-                                  : ScriptNavigationTradeSave.version)
-                                : commander.scriptState.savedClueJournal != nil
+                                  ? WayfarerColdChainSave.alienVersion
+                                  : WayfarerColdChainSave.version)
+                                : ScriptNavigationTradeSave.hasClaims(commander)
                                   ? (alienPublication != nil
-                                    ? ScriptClueVersionedSave.alienVersion
-                                    : ScriptClueVersionedSave.version)
-                                  : commander.usesFreightNativeSaveVersion
+                                    ? ScriptNavigationTradeSave.alienVersion
+                                    : ScriptNavigationTradeSave.version)
+                                  : commander.scriptState.savedClueJournal != nil
                                     ? (alienPublication != nil
-                                      ? ScriptFreightVersionedSave.alienVersion
-                                      : ScriptFreightVersionedSave.version)
-                                    : alienPublication != nil
-                                      ? 27
-                                      : commander.usesEconomyMiningSaveVersion
-                                        ? 26
-                                        : commander.usesRingMiningSaveVersion
-                                          || commander.usesElectricalSaveVersion
-                                          || commander.usesModularDriveSaveVersion
-                                          ? 25
-                                          : commander.usesNativePeopleSaveVersion
-                                            ? 24
-                                            : commander.scriptState.financeLedger != nil
-                                              ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
+                                      ? ScriptClueVersionedSave.alienVersion
+                                      : ScriptClueVersionedSave.version)
+                                    : commander.usesFreightNativeSaveVersion
+                                      ? (alienPublication != nil
+                                        ? ScriptFreightVersionedSave.alienVersion
+                                        : ScriptFreightVersionedSave.version)
+                                      : alienPublication != nil
+                                        ? 27
+                                        : commander.usesEconomyMiningSaveVersion
+                                          ? 26
+                                          : commander.usesRingMiningSaveVersion
+                                            || commander.usesElectricalSaveVersion
+                                            || commander.usesModularDriveSaveVersion
+                                            ? 25
+                                            : commander.usesNativePeopleSaveVersion
+                                              ? 24
+                                              : commander.scriptState.financeLedger != nil
+                                                ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
       generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
@@ -670,6 +674,7 @@ enum ScriptSaveStore {
     try ScriptNavigationTradeSave.validateFields(pointerBytes, part: .contracts, schema: nil)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
     // The closed current service envelope admits W02, W03 or both after feature validation.
+    let flightReceptionEnvelope = NativeFlightReceptionSave.contains(pointer.schemaVersion)
     let fieldReliefEnvelope = WayfarerFieldReliefSave.contains(pointer.schemaVersion)
     let measuredExtractionEnvelope = NativeMeasuredExtractionSave.contains(pointer.schemaVersion)
     let recordRecoveryEnvelope = WayfarerRecordRecoverySave.contains(pointer.schemaVersion)
@@ -689,6 +694,7 @@ enum ScriptSaveStore {
       || pointer.schemaVersion == ScriptFreightVersionedSave.alienVersion
     let alien =
       pointer.schemaVersion == 27
+      || pointer.schemaVersion == NativeFlightReceptionSave.alienVersion
       || pointer.schemaVersion == WayfarerFieldReliefSave.alienVersion
       || pointer.schemaVersion == NativeMeasuredExtractionSave.alienVersion
       || pointer.schemaVersion == WayfarerRecordRecoverySave.alienVersion
@@ -712,7 +718,8 @@ enum ScriptSaveStore {
     guard pointer.format == "elite-script-save",
       (2...27).contains(pointer.schemaVersion) || freight || clues || navigation || coldChain
         || serviceEnvelope || supply || stationJourney || outlook || originalRescue || evacuation
-        || survey || identifiedSalvageEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || survey || identifiedSalvageEnvelope || flightReceptionEnvelope || fieldReliefEnvelope
+        || measuredExtractionEnvelope
         || recordRecoveryEnvelope,
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
@@ -762,7 +769,8 @@ enum ScriptSaveStore {
         try ScriptSaveJSONPreflight.validateRepairLoopFields(
           data, part: nativePart, schema: pointer.schemaVersion)
         // Both service profiles were checked against the actual envelope before lower gates run.
-        if fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+        if flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+          || recordRecoveryEnvelope
           || identifiedSalvageEnvelope
           || survey || evacuation
           || originalRescue || outlook
@@ -779,7 +787,8 @@ enum ScriptSaveStore {
       if name == "commander.json" {
         // This helper's >=27 branch describes Alien storage, not every newer envelope.
         let alienHeaderSchema =
-          fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+          flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+            || recordRecoveryEnvelope
             || identifiedSalvageEnvelope
             || survey || evacuation
             || originalRescue || outlook || freight
@@ -893,7 +902,8 @@ enum ScriptSaveStore {
       throw SaveError.invalidCommander
     }
     guard
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook
@@ -902,7 +912,8 @@ enum ScriptSaveStore {
         || coldChain || clues
         || navigation
         || freight == commander.usesFreightNativeSaveVersion,
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook
@@ -911,7 +922,8 @@ enum ScriptSaveStore {
         || coldChain
         || navigation
         || clues == (commander.scriptState.savedClueJournal != nil),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook
@@ -919,14 +931,16 @@ enum ScriptSaveStore {
         || serviceEnvelope
         || coldChain
         || navigation == ScriptNavigationTradeSave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook
         || stationJourney || supply
         || serviceEnvelope
         || coldChain == WayfarerColdChainSave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook
@@ -939,38 +953,48 @@ enum ScriptSaveStore {
       ScriptNavigationTradeSave.validateClaims(commander, binding: navigationBinding),
       WayfarerColdChainSave.validateClaims(commander),
       WayfarerRepairLoopSave.validateClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook
         || stationJourney
         || supply == OriginalConsentedFreightSupplySave.hasClaims(commander),
-      fieldReliefEnvelope == WayfarerFieldReliefSave.hasClaims(commander),
-      fieldReliefEnvelope
+      flightReceptionEnvelope == NativeFlightReceptionSave.hasClaims(commander),
+      flightReceptionEnvelope
+        || fieldReliefEnvelope == WayfarerFieldReliefSave.hasClaims(commander),
+      flightReceptionEnvelope || fieldReliefEnvelope
         || measuredExtractionEnvelope == NativeMeasuredExtractionSave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
         || recordRecoveryEnvelope == WayfarerRecordRecoverySave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope == NativeIdentifiedSalvageSave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope
         || survey == NativeOriginalSurveySave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation == NativeOriginalEvacuationSave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation
         || originalRescue == NativeOriginalRescueJourneySave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook == NativeOrbitalOutlookJourneySave.hasClaims(commander),
-      fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+      flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+        || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook
         || stationJourney == NativeStationPassengerJourneySave.hasClaims(commander),
+      NativeFlightReceptionSave.validateClaims(commander),
       WayfarerFieldReliefSave.validateClaims(commander, requireRecordedLoss: true),
       NativeMeasuredExtractionSave.validateClaims(commander, requireRecordedLoss: true),
       WayfarerRecordRecoverySave.validateClaims(commander, requireRecordedLoss: true),
@@ -984,7 +1008,8 @@ enum ScriptSaveStore {
     else {
       throw SaveError.invalidCommander
     }
-    if fieldReliefEnvelope || measuredExtractionEnvelope || recordRecoveryEnvelope
+    if flightReceptionEnvelope || fieldReliefEnvelope || measuredExtractionEnvelope
+      || recordRecoveryEnvelope
       || identifiedSalvageEnvelope || survey
       || evacuation || originalRescue
       || outlook || freight

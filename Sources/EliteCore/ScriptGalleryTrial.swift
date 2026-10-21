@@ -59,6 +59,9 @@ extension Game {
   }
   // Keep isolated trial storage out of the selected-entry/catalogue lookup frame.
   private func isolatedMissionTrialAvailable(_ pack: ScriptPack) -> Bool {
+    guard pack.manifest.flightReception == nil,
+      pack.manifest.stateID != NativeFlightReception.stateID
+    else { return false }
     var isolatedAvailability = self
     isolatedAvailability.scriptDurabilityAvailable = true
     isolatedAvailability.commander.scriptState = ScriptEngineState()

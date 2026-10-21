@@ -456,7 +456,9 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard WayfarerFieldReliefSave.validateClaims(self) else { return false }
+    guard NativeFlightReceptionSave.validateClaims(self),
+      WayfarerFieldReliefSave.validateClaims(self)
+    else { return false }
     guard NativeMeasuredExtractionSave.validateClaims(self) else { return false }
     guard WayfarerRecordRecoverySave.validateClaims(self) else { return false }
     guard NativeIdentifiedSalvageSave.validateClaims(self) else { return false }
@@ -692,6 +694,7 @@ public struct Game: Sendable {
     didSet {
       nativeOrbitalOutlookRuntime = .init()
       nativeOriginalSurveyRuntime = nil
+      nativeFlightReceptionPending = nil
       nativeMeasuredExtractionPending = nil
       nativeRecordRecoveryPending = nil
       nativeRecordRecoveryIdentificationPending = nil
@@ -700,6 +703,7 @@ public struct Game: Sendable {
   }
   var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
   var nativeOriginalSurveyRuntime: NativeOriginalSurveyRuntime?
+  var nativeFlightReceptionPending: NativeFlightReceptionPending?
   var nativeMeasuredExtractionPending: NativeMeasuredExtractionPending?
   var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending?
   var nativeRecordRecoveryIdentificationPending: WayfarerRecordRecoveryIdentificationPending?
@@ -1917,6 +1921,12 @@ public struct Game: Sendable {
     candidate.commander.cargo[10] = candidate.commander.markedFirearms
     candidate.commander.legal = 0
     candidate.commander.fuel = candidate.commander.fuelCapacity
+    do {
+      if candidate.activeFlightReception != nil { try candidate.finishFlightReception(.failed) }
+    } catch {
+      notify("PRACTICE LOSS NOT RECORDED - ESCAPE NOT COMMITTED")
+      return
+    }
     candidate.dock()
     guard candidate.docked, candidate.commander.valid else {
       notify(candidate.message)
@@ -2494,6 +2504,7 @@ public actor GameRuntime {
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
     guard let context = prepareAdvance(delta: delta) else { return snapshot() }
+    let flightReceptionStart = game.flightReceptionSample()
     let outlookStart = game.orbitalOutlookSample()
     let surveyStart = game.originalSurveySample()
     let recordStart = game.recordRecoveryIdentificationSample()
@@ -2515,6 +2526,7 @@ public actor GameRuntime {
     let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()
     if game.docked { game.stationAutoDefence = nil }
+    commitFlightReception(start: flightReceptionStart)
     commitOrbitalOutlookScan(start: outlookStart)
     commitOriginalSurveyScan(start: surveyStart)
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
@@ -2659,6 +2671,8 @@ public actor GameRuntime {
     var candidate = value
     var stage = ScriptRefusalStage.nativePeople
     do {
+      try candidate.recordFlightReceptionFailureIfNeeded()
+      _ = try candidate.applyFlightReceptionPending()
       try candidate.recordNativePeopleLossIfNeeded()
       candidate.stageMeasuredHullLoss()
       try candidate.applyMeasuredPending()
@@ -2677,6 +2691,7 @@ public actor GameRuntime {
       candidate.commander.mirrorFittedEquipment()
       stage = .nativeDestruction
       candidate.resolveDestroyed()
+      try candidate.recordFlightReceptionFailureIfNeeded()
       candidate.stageMeasuredHullLoss()
       try candidate.applyMeasuredPending()
       _ = try candidate.recordRecoveryLossIfNeeded()

@@ -13,6 +13,14 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeFlightReceptionUnitTests": (
+        "positiveBoundedAlignedApproachRetainsExactAuthorityAndRoundTrips",
+        "changedAuthorityClockOrUnmovedPoseCannotSupplyApproachEvidence",
+        "wrongAimRangeAndNonClosingMotionRefuseQualification",
+        "receptionRequiresMeasuredSameBerthLaterDoorwayReceiptAndSeparatePermission",
+        "strictLeafAndSharedSchemaPreserveLowerNativeFeatureGates",
+        "bundledLessonPinsCurrentFitZeroPaymentAndClosedNativeDeclaration",
+    ),
     "OriginalFleetCatalogueUnitTests": (
         "exactCatalogueJoinsPreserveAllOriginalIdentitiesRolesAndAccessRules",
         "sourceProfilesRetainEveryAuthoredFieldAndDoNotReplaceExistingProfiles",

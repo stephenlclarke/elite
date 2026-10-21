@@ -31,6 +31,8 @@ extension Display {
     var rows: [String]
     if row.utility != nil {
       rows = game.nativeUtilityDetail
+    } else if let action = row.flightReception {
+      rows = game.flightReceptionDetail(action)
     } else if let action = row.measuredExtraction {
       rows = game.measuredExtractionDetail(action)
     } else if let action = row.recordRecovery {
@@ -170,12 +172,14 @@ extension Display {
         let coldChain = game.contractBoard.coldChainQuote
         let provider = game.contractBoard.providerQuote
         let survey = game.contractBoard.surveyQuote
+        let flightReception = game.contractBoard.flightReceptionQuote
         let measuredExtraction = game.contractBoard.measuredExtractionQuote
         let recordRecovery = game.contractBoard.recordRecoveryQuote
         let identifiedSalvage = game.contractBoard.identifiedSalvageQuote
         let available =
           action == .back
           || (utility != nil && action == .accept && utility?.allowed == true)
+          || (flightReception != nil && action == .accept && flightReception?.allowed == true)
           || (measuredExtraction != nil && action == .accept && measuredExtraction?.allowed == true)
           || (recordRecovery != nil && action == .accept && recordRecovery?.allowed == true)
           || (identifiedSalvage != nil && action == .accept && identifiedSalvage?.allowed == true)
@@ -196,7 +200,8 @@ extension Display {
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
             + (action == .accept
-              && (measuredExtraction != nil || recordRecovery != nil || identifiedSalvage != nil
+              && (flightReception != nil || measuredExtraction != nil || recordRecovery != nil
+                || identifiedSalvage != nil
                 || survey != nil
                 || provider != nil || coldChain != nil
                 || repairLoop != nil || utility != nil)
@@ -246,6 +251,8 @@ extension Display {
         }
         var preferredSummary: String? =
           row.reason
+          ?? (row.flightReception == nil
+            ? nil : "Current-fit flight practice / no payment / Confirm required")
           ?? (row.utility == nil
             ? nil : "Field relief / original 4t / payment at verified reception")
           ?? (row.repairLoop == nil ? nil : "Repair loop / 2t / 610 CR on owner return")

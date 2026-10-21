@@ -10,7 +10,11 @@ enum OriginalServiceReservationPolicy {
 
   static func occupiesSlot(_ state: borrowing ScriptInstance) -> Bool {
     guard state.outcome == .active else { return false }
-    if case .some = state.contract, isContractDefinition(state.definition) { return true }
+    if case .some = state.contract,
+      isContractDefinition(state.definition) || state.definition == NativeFlightReception.stateID
+    {
+      return true
+    }
     if case .some = state.savedWayfarerRepairLoop {
       return state.definition == WayfarerRepairLoopDefinition.stateID
     }

@@ -80,7 +80,8 @@ extension Game {
     var review: UUID? = nil
     if contractBoard.detail {
       review =
-        contractBoard.measuredExtractionQuote?.reviewToken ?? contractBoard.recordRecoveryQuote?
+        contractBoard.flightReceptionQuote?.reviewToken ?? contractBoard.measuredExtractionQuote?
+        .reviewToken ?? contractBoard.recordRecoveryQuote?
         .reviewToken ?? contractBoard.identifiedSalvageQuote?
         .reviewToken ?? contractBoard.surveyQuote?.reviewToken
         ?? contractBoard.repairLoopQuote?.reviewToken

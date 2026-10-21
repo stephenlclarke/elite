@@ -74,6 +74,10 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-custody-rescue")
   }
+  static var bundledFlightReceptionDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-flight-reception")
+  }
   static var bundledMeasuredExtractionDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-measured-extraction")
@@ -262,6 +266,12 @@ extension ScriptPackLibrary {
     } catch {
       library.errors.append("Bundled measured extraction pack: " + error.localizedDescription)
     }
+    do {
+      let practice = try read(bundledFlightReceptionDirectory)
+      if !library.packs.contains(where: { $0.digest == practice.digest }) {
+        library.packs.append(practice)
+      }
+    } catch { library.errors.append("Bundled flight practice pack: " + error.localizedDescription) }
     return library
   }
 }

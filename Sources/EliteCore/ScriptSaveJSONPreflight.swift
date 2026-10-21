@@ -52,8 +52,10 @@ extension ScriptSaveJSONPreflight {
   static func validateRepairLoopFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
   ) throws {
-    try WayfarerFieldReliefSave.validateFields(data, part: part, schema: schema)
-    let fieldReliefSchema = WayfarerFieldReliefSave.lowerSchema(schema)
+    try NativeFlightReceptionSave.validateFields(data, part: part, schema: schema)
+    let flightReceptionSchema = NativeFlightReceptionSave.lowerSchema(schema)
+    try WayfarerFieldReliefSave.validateFields(data, part: part, schema: flightReceptionSchema)
+    let fieldReliefSchema = WayfarerFieldReliefSave.lowerSchema(flightReceptionSchema)
     try NativeMeasuredExtractionSave.validateFields(data, part: part, schema: fieldReliefSchema)
     let recordSchema = NativeMeasuredExtractionSave.lowerSchema(fieldReliefSchema)
     try WayfarerRecordRecoverySave.validateFields(data, part: part, schema: recordSchema)

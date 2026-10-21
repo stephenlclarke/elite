@@ -155,6 +155,20 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.flightReception != nil
+      || pack.manifest.stateID == NativeFlightReception.stateID
+    {
+      guard pack.digest == NativeFlightReception.digest,
+        pack.manifest.flightReception?.valid == true
+      else {
+        return "Restore the approved flight and reception practice."
+      }
+      if !commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeFlightReception.stateID && $0.digest == pack.digest
+      }) {
+        return "Use Station Contracts at an actual original main training berth."
+      }
+    }
     if pack.manifest.fieldRelief != nil || pack.manifest.stateID == WayfarerFieldRelief.stateID {
       guard WayfarerFieldRelief.matches(pack) else {
         return "Restore the original field-relief mission content."
@@ -315,6 +329,9 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    guard pack.manifest.flightReception == nil,
+      pack.manifest.stateID != NativeFlightReception.stateID
+    else { throw MissionPackError("Use the actual native training berth practice.") }
     guard pack.manifest.fieldRelief == nil,
       pack.manifest.stateID != WayfarerFieldRelief.stateID
     else { throw MissionPackError("Use the actual native field-relief collection.") }

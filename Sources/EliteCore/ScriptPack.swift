@@ -58,6 +58,7 @@ public struct ScriptManifest: Codable, Sendable {
   var stationJourney: NativeStationPassengerJourneyDefinition? = nil
   var orbitalOutlook: NativeOrbitalOutlookJourneyDefinition? = nil
   var originalSurvey: NativeOriginalSurveyDefinition? = nil
+  var flightReception: NativeFlightReceptionDefinition? = nil
   var measuredExtraction: NativeMeasuredExtractionDefinition? = nil
   var recordRecovery: WayfarerRecordRecoveryDefinition? = nil
   var identifiedSalvage: NativeIdentifiedSalvageDefinition? = nil
@@ -116,6 +117,7 @@ public enum ScriptCapabilities {
     "finance-obligations-basic-v2", "procurement-contracts-basic-v2", "freight-contracts-basic-v2",
     ScriptFinanceInterest.capability,
     "native-station-passengers-v1", "native-orbital-outlook-v1", "native-consented-survey-v1",
+    NativeFlightReception.capability,
     "native-measured-extraction-v1",
     "native-record-recovery-v1",
     WayfarerFieldRelief.capability,
@@ -164,7 +166,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain repairLoop fieldRelief stationJourney orbitalOutlook originalSurvey measuredExtraction recordRecovery identifiedSalvage originalRescue orbitalEvacuation npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain repairLoop fieldRelief stationJourney orbitalOutlook originalSurvey flightReception measuredExtraction recordRecovery identifiedSalvage originalRescue orbitalEvacuation npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -215,6 +217,9 @@ public enum ScriptPackLibrary {
       try keys(
         root.table(forKey: "fieldRelief"),
         "sourceSystem targetSystem tonnes maximumActive hazardTier baseReward perLegReward")
+    }
+    if root.contains(key: "flightReception") {
+      try keys(root.table(forKey: "flightReception"), "profile")
     }
     if root.contains(key: "measuredExtraction") {
       try keys(
@@ -506,6 +511,7 @@ public enum ScriptPackLibrary {
     try validateOriginalEvacuationJourney(manifest)
     try validateOrbitalOutlookJourney(manifest)
     try validateOriginalSurvey(manifest)
+    try validateFlightReception(manifest)
     try validateMeasuredExtraction(manifest)
     try validateRecordRecovery(manifest)
     try validateIdentifiedSalvage(manifest)
