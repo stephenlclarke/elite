@@ -161,23 +161,44 @@ extension Game {
     return identifiedSalvageCollision(body)?.mesh
   }
 
+  @inline(never)
   func identifiedSalvageFacts(_ body: borrowing SpaceBody, context: EncounterContext)
     -> NativeIdentifiedSalvageSelectionFacts?
   {
     guard let alias = identifiedSalvageAlias(body),
-      let index = NativeIdentifiedSalvage.aliases.firstIndex(of: alias),
-      let state = identifiedSalvageState,
-      let source = commander.scriptState.savedIdentifiedSalvageSource,
-      commander.scriptState.instances[state.permission.mission]?.outcome == .active,
-      state.losses.isEmpty, state.reception == nil,
-      state.permission.carrier == commander.hullInstanceID,
-      body.physical?.identity.system == context.system,
-      body.physical?.identity.visit == context.visit,
-      let logical = body.missionActorID
+      let index = NativeIdentifiedSalvage.aliases.firstIndex(of: alias)
     else { return nil }
-    return .init(
-      logicalActor: logical, original: source.originals[index].id,
-      fits: commander.cargoTonnes <= commander.standardCargoCapacity)
+    return identifiedSalvageFactsForEligibleBody(
+      index: index, actor: body.physical?.identity, logical: body.missionActorID,
+      system: context.system, visit: context.visit)
+  }
+
+  @inline(never)
+  private func identifiedSalvageFactsForEligibleBody(
+    index: Int, actor: ActorIdentity?, logical: UUID?, system: SystemIdentity, visit: UInt64
+  ) -> NativeIdentifiedSalvageSelectionFacts? {
+    withReadOnlyCommander { commander in
+      commander.withReadOnlyScriptState { scripts in
+        var selected: NativeIdentifiedSalvageState?
+        // Preserve the state's original first-matching-instance lookup, including nil.
+        for instance in scripts.instances.values {
+          if instance.definition == NativeIdentifiedSalvage.stateID {
+            selected = instance.savedIdentifiedSalvage
+            break
+          }
+        }
+        guard let state = selected,
+          let source = scripts.savedIdentifiedSalvageSource,
+          scripts.instances[state.permission.mission]?.outcome == .active,
+          state.losses.isEmpty, state.reception == nil,
+          state.permission.carrier == commander.hullInstanceID,
+          actor?.system == system, actor?.visit == visit, let logical
+        else { return nil }
+        return .init(
+          logicalActor: logical, original: source.originals[index].id,
+          fits: commander.cargoTonnes <= commander.standardCargoCapacity)
+      }
+    }
   }
 
   func identifiedSalvageMetadata(_ body: borrowing SpaceBody, context: EncounterContext)
