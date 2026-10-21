@@ -340,6 +340,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
   var savedWayfarerColdChainStock: WayfarerColdChainStockLedger?
   var savedWayfarerRepairLoopStock: WayfarerRepairLoopStockLedger?
   var savedFleetDiscovery: NativeFleetDiscovery?
+  var firstNativeCommoditySale: NativeFirstCommoditySale?
   var savedClueJournal: ScriptClueJournal?
   var financeLedger: ScriptFinanceLedger?
   var wormholeTransit: NativeWormholeTransitState?
@@ -397,7 +398,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
-    guard savedFleetDiscovery?.valid ?? true,
+    guard firstNativeCommoditySale?.valid ?? true, savedFleetDiscovery?.valid ?? true,
       WayfarerFieldReliefSave.engineValid(self),
       OriginalConsentedFreightSupply.engineValid(self),
       savedClueJournal?.valid(engine: self) ?? true, worldJobsValid, booksValid,

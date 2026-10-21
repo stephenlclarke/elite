@@ -456,7 +456,8 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard NativeGlassMeridianSave.validateClaims(self),
+    guard NativeFirstCommoditySaleSave.validateClaims(self),
+      NativeGlassMeridianSave.validateClaims(self),
       NativeFleetDiscoverySave.validateClaims(self),
       NativeFlightReceptionSave.validateClaims(self),
       WayfarerFieldReliefSave.validateClaims(self)
@@ -885,6 +886,7 @@ public struct Game: Sendable {
       !value.usesEconomyMiningSaveVersion,
       !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
       value.scriptState.savedFleetDiscovery == nil,
+      value.scriptState.firstNativeCommoditySale == nil,
       value.scriptState.financeLedger == nil, value.scriptState.savedClueJournal == nil,
       !value.scriptState.instances.values.contains(where: { $0.savedNavigationTrade != nil })
     else {
@@ -1334,6 +1336,14 @@ public struct Game: Sendable {
     if let practice {
       try recordNavigationTradeMarket(instance: practice, buying: buy, before: before, index: index)
     }
+    if !buy {
+      recordFirstNativeCommoditySale(
+        index: index,
+        before: .init(
+          stock: item.quantity, cargo: before.commander.cargo[index],
+          credits: before.commander.credits),
+        unitPrice: item.bidPrice)
+    }
   }
   public mutating func purchase() {
     guard docked, Equipment.all.indices.contains(selection) else { return }
@@ -1352,6 +1362,8 @@ public struct Game: Sendable {
     }
     let oldSelection = selection
     for index in commander.cargo.indices where commander.sellableCargo(index) > 0 {
+      let beforeSale = NativeSaleBalance(
+        stock: market[index].quantity, cargo: commander.cargo[index], credits: commander.credits)
       let saleQuantity = min(commander.sellableCargo(index), Int.max / 17 - market[index].quantity)
       let (revenue, overflow) = saleQuantity.multipliedReportingOverflow(
         by: market[index].bidPrice)
@@ -1360,6 +1372,8 @@ public struct Game: Sendable {
         ? 4_294_967_295 : min(4_294_967_295, commander.credits + min(revenue, 4_294_967_295))
       market[index].quantity += saleQuantity
       commander.cargo[index] -= saleQuantity
+      recordFirstNativeCommoditySale(
+        index: index, before: beforeSale, unitPrice: market[index].bidPrice)
     }
     let refuelCost = refillCost
     if commander.unlimitedFuel {

@@ -52,8 +52,10 @@ extension ScriptSaveJSONPreflight {
   static func validateRepairLoopFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
   ) throws {
-    try NativeGlassMeridianSave.validateFields(data, part: part, schema: schema)
-    let glassSchema = NativeGlassMeridianSave.lowerSchema(schema)
+    try NativeFirstCommoditySaleSave.validateFields(data, part: part, schema: schema)
+    let commerceSchema = NativeFirstCommoditySaleSave.lowerSchema(schema)
+    try NativeGlassMeridianSave.validateFields(data, part: part, schema: commerceSchema)
+    let glassSchema = NativeGlassMeridianSave.lowerSchema(commerceSchema)
     try NativeFleetDiscoverySave.validateFields(data, part: part, schema: glassSchema)
     let fleetSchema = NativeFleetDiscoverySave.lowerSchema(glassSchema)
     try NativeFlightReceptionSave.validateFields(data, part: part, schema: fleetSchema)

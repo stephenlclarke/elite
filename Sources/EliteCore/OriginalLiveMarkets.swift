@@ -34,6 +34,14 @@ public struct OriginalLiveMarkets: Codable, Sendable, Equatable {
     return values
   }()
 
+  /// Immutable prices also authenticate historical native commerce receipts.
+  static func initialQuote(galaxy: Int, system: Int, commodity: Int) -> MarketItem? {
+    guard let items = seeds[key(galaxy: galaxy, system: system)],
+      items.indices.contains(commodity)
+    else { return nil }
+    return items[commodity]
+  }
+
   static func initial(galaxy: Int, system: StarSystem) -> [MarketItem] {
     guard let items = seeds[key(galaxy: galaxy, system: system.id)] else {
       preconditionFailure("Original market has no world identity")
