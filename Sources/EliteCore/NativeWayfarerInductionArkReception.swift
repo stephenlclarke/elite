@@ -55,10 +55,25 @@ struct NativeInductionSeedReception: Codable, Sendable, Equatable {
 
 struct NativeArkFuelClosure: Codable, Sendable, Equatable {
   let operation: UUID
-  let receivingOperation: UUID
+  let receivingOperation: UUID?
+  let recoveryOperation: UUID?
   let recipient: UUID
   let balanceBefore: Int
   let returnedCredits: Int
+  init(
+    operation: UUID, receivingOperation: UUID? = nil, recoveryOperation: UUID? = nil,
+    recipient: UUID, balanceBefore: Int, returnedCredits: Int
+  ) {
+    self.operation = operation
+    self.receivingOperation = receivingOperation
+    self.recoveryOperation = recoveryOperation
+    self.recipient = recipient
+    self.balanceBefore = balanceBefore
+    self.returnedCredits = returnedCredits
+  }
+  static func recoveryIdentity(ark: UUID, recovery: UUID, credits: Int) -> UUID {
+    ScriptIdentity.uuid("native-ark-escrow-retirement-v1:\(ark):\(recovery):\(credits)")
+  }
   static func custodian(owner: UUID) -> UUID {
     ScriptIdentity.uuid("induction-seed-custodians-v1:\(owner):0:162")
   }

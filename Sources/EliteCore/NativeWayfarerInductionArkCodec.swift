@@ -6,11 +6,12 @@ extension NativeInductionArkSave {
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?
   ) throws {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-      !root.keys.contains("savedNativeArk"), !root.keys.contains("nativeArk")
+      !root.keys.contains("savedNativeArk"), !root.keys.contains("nativeArk"),
+      !root.keys.contains("savedArkReserve"), !root.keys.contains("savedArkRecovery")
     else { throw SaveError.invalidCommander }
     if let world = root["nativeStations"] as? [String: Any], world.keys.contains("arkFuel") {
       guard part == .commander,
-        schema == version || schema == alienVersion || schema == 77 || schema == 78,
+        supportsService(schema),
         let stocks = world["arkFuel"] as? [[String: Any]], !stocks.isEmpty,
         stocks.count <= NativeMainStationIdentity.maximumCount
       else { throw SaveError.invalidCommander }
@@ -53,10 +54,42 @@ extension NativeInductionArkSave {
       {
         guard !embedded, contains(schema) else { throw SaveError.invalidCommander }
       }
+      if mission.keys.contains("savedArkReserve") || mission.keys.contains("savedArkRecovery") {
+        guard !embedded, supportsReserve(schema),
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest,
+          let rawReserve = mission["savedArkReserve"] as? [String: Any],
+          let rawParent = mission["savedWayfarerInduction"] as? [String: Any]
+        else { throw SaveError.invalidCommander }
+        let reserveBytes = try JSONSerialization.data(withJSONObject: rawReserve)
+        let parentBytes = try JSONSerialization.data(withJSONObject: rawParent)
+        guard reserveBytes.count <= 8192, parentBytes.count <= 16_384 else {
+          throw SaveError.invalidCommander
+        }
+        let reserve = try JSONDecoder().decode(NativeInductionArkReserve.self, from: reserveBytes)
+        let parent = try JSONDecoder().decode(NativeWayfarerInductionState.self, from: parentBytes)
+        guard reserve.valid(permission: parent.permission),
+          (rawReserve as NSDictionary).isEqual(
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(reserve)))
+        else { throw SaveError.invalidCommander }
+        if let rawRecovery = mission["savedArkRecovery"] {
+          guard let object = rawRecovery as? [String: Any], let key = parent.seedKey else {
+            throw SaveError.invalidCommander
+          }
+          let bytes = try JSONSerialization.data(withJSONObject: object)
+          guard bytes.count <= 8192 else { throw SaveError.invalidCommander }
+          let recovery = try JSONDecoder().decode(NativeArkRecoveryReceipt.self, from: bytes)
+          guard recovery.valid(reserve: reserve, key: key, permission: parent.permission),
+            (object as NSDictionary).isEqual(
+              try JSONSerialization.jsonObject(with: JSONEncoder().encode(recovery)))
+          else { throw SaveError.invalidCommander }
+        }
+      }
       if let parent = mission["savedWayfarerInduction"] as? [String: Any],
         parent.keys.contains("seedReception")
       {
-        guard !embedded, schema == version || schema == alienVersion else {
+        guard !embedded, schema == version || schema == alienVersion || schema == 79 || schema == 80
+        else {
           throw SaveError.invalidCommander
         }
       }
@@ -67,7 +100,13 @@ extension NativeInductionArkSave {
         guard bytes.count <= 524_288, let bank = leaf["fuel"] as? [String: Any] else {
           throw SaveError.invalidCommander
         }
-        if schema != version && schema != alienVersion {
+        if !supportsReserve(schema) {
+          guard bank["reserveFunding"] == nil,
+            (leaf["authorization"] as? [String: Any])?["reserve"] == nil,
+            ((bank["closure"] as? [String: Any])?["recoveryOperation"]) == nil
+          else { throw SaveError.invalidCommander }
+        }
+        if !supportsReceiving(schema) {
           guard leaf["reception"] == nil, bank["closure"] == nil else {
             throw SaveError.invalidCommander
           }

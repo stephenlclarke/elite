@@ -13,6 +13,14 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeWayfarerInductionArkRecoveryUnitTests": (
+        "oneInitialReserveHasDistinctFiniteHullSeedCrewAndFuelFundingIdentities",
+        "replacingTheLostArkKeepsOriginalKeyAndHistoryWithoutPaymentOrMilestoneProgress",
+        "originalKeyLossCannotBeHiddenByReserveConsentOrMintAReplacementKey",
+        "retiringOldEscrowAndIssuingReserveFundingConservesBothSeparateFiniteAccounts",
+        "recoveryJoinRequiresRetainedActualLossBothOwnedJobsAndTheSameAcknowledgedSourceTransaction",
+        "closedRecoverySchemaRejectsOldForeignOrReplenishedReserveAndRetainsLegacyRebriefOrigin",
+    ),
     "NativeWayfarerInductionArkReceivingUnitTests": (
         "originalKeyReturnReleasesExactlyOneTonneAndUnlocksOnlyStageSevenOnce",
         "foreignKeyWrongCradleAndAlteredOriginalManifestCannotCompleteReceiving",

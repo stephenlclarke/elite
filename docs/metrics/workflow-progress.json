@@ -4334,6 +4334,37 @@
       "verified_methods": 115,
       "verified_expanded_cases": 147,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328738544"
+    },
+    {
+      "event": "Lareria receiving and original key return pushed; finite recovery assigned",
+      "head": "19618fca2338e2a5adab532a7c4c05ff249a9fd7",
+      "base": "725356a6c3ce35da05080111171a81162f0a8e33",
+      "ledger_parent": "M10.P02.C08",
+      "github_run": 39692866450,
+      "selection_methods": 121,
+      "new_methods": 6,
+      "source_review": "MBA completed; no actionable source finding",
+      "unit_status": "MBA verified compile FAIL before any unit execution",
+      "next_assigned": "M10.P02.C08.recovery",
+      "usable_build_delivered": false,
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328761703",
+      "finding": "https://github.com/stephenlclarke/elite/issues/38",
+      "correction_owner": "G1 at natural packet boundary",
+      "correction_sha": "442ba0f36fccab209d25e013d2d3c0df7bc85749",
+      "correction_run": 39693528460,
+      "correction_review": "MBA verified compiler fix;38 closed",
+      "correction_unit_status": "121methods executed;6new receiving pass;2stale boundary assertions fail",
+      "remaining_finding": "https://github.com/stephenlclarke/elite/issues/39",
+      "verified_receiving_methods": 6,
+      "full_batch_pass": true,
+      "boundary_correction_sha": "97fa4a8d711419a5ec28317eb17d6295cb1b3d50",
+      "boundary_correction_run": 39694973877,
+      "boundary_correction_review": "MBA verified and39 closed",
+      "qualified_head": "97fa4a8d711419a5ec28317eb17d6295cb1b3d50",
+      "verified_methods": 121,
+      "verified_expanded_cases": 153,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329143293",
+      "qualification_scope": "Corrected descendant source/pure units; original failures retained; no native journey or usable delivery"
     }
   ]
 }

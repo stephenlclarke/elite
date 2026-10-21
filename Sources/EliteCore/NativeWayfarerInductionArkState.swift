@@ -28,9 +28,37 @@ struct NativeArkLaunchAuthorization: Codable, Sendable, Equatable {
   let route: NativeArkRoutePlan
   let seeds: [UUID]
   let crew: [UUID]
+  let reserve: NativeInductionArkReserve?
+
+  init(
+    owner: UUID, parent: UUID, job: UUID, registeredArk: UUID, actor: UUID,
+    operation: UUID, stockIssue: UUID, loanOperation: UUID, sequence: UInt64,
+    dock: NativeMainStationDockReceipt, carrier: UUID, inventoryRevision: UInt64,
+    physicalTime: Double, flightSeconds: Double, route: NativeArkRoutePlan,
+    seeds: [UUID], crew: [UUID], reserve: NativeInductionArkReserve? = nil
+  ) {
+    self.owner = owner
+    self.parent = parent
+    self.job = job
+    self.registeredArk = registeredArk
+    self.actor = actor
+    self.operation = operation
+    self.stockIssue = stockIssue
+    self.loanOperation = loanOperation
+    self.sequence = sequence
+    self.dock = dock
+    self.carrier = carrier
+    self.inventoryRevision = inventoryRevision
+    self.physicalTime = physicalTime
+    self.flightSeconds = flightSeconds
+    self.route = route
+    self.seeds = seeds
+    self.crew = crew
+    self.reserve = reserve
+  }
 
   func valid(source: NativeInductionArkSource, key: NativeInductionVaultKeyLoan) -> Bool {
-    guard source.valid, owner == source.owner, parent == source.mission,
+    guard source.valid, reserve == source.reserve, owner == source.owner, parent == source.mission,
       registeredArk == source.actor, loanOperation == key.operation,
       loanOperation == source.loanOperation,
       job == NativeInductionArkPack.instance(registeredArk: registeredArk),
@@ -163,7 +191,7 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
 
   func shapeValid(source: NativeInductionArkSource, key: NativeInductionVaultKeyLoan) -> Bool {
     let a = authorization
-    guard a.valid(source: source, key: key), fuel.valid,
+    guard a.valid(source: source, key: key), fuel.valid, fuel.issue == source.issue,
       fuel.owner == a.owner, fuel.mission == a.parent, fuel.ark == a.registeredArk,
       fuel.loanOperation == a.loanOperation, legs.count <= 128,
       Set(legs.map(\.leg)).count == legs.count, legs.allSatisfy({ $0.valid(authorization: a) }),
@@ -220,8 +248,10 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
         reception.parent == a.parent, reception.flightSeconds >= a.flightSeconds,
         fuel.closure?.receivingOperation == reception.operation
       else { return false }
-    } else if fuel.closure != nil {
-      return false
+    } else if let closure = fuel.closure {
+      guard loss != nil, closure.receivingOperation == nil, closure.recoveryOperation != nil else {
+        return false
+      }
     }
     if let loss {
       guard loss.actor.visit >= a.dock.actor.visit, loss.actor.visit < UInt64(Int64.max),
@@ -232,5 +262,27 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
       else { return false }
     }
     return true
+  }
+}
+
+extension NativeArkLaunchAuthorization {
+  static func preparing(
+    source: NativeInductionArkSource, dock: NativeMainStationDockReceipt,
+    carrier: UUID, revision: UInt64, physicalTime: Double, flightSeconds: Double,
+    route: NativeArkRoutePlan, sequence: UInt64
+  ) throws -> NativeArkLaunchAuthorization {
+    let job = NativeInductionArkPack.instance(registeredArk: source.actor)
+    let operation = try identity(
+      registeredArk: source.actor, dock: dock,
+      carrier: carrier, revision: revision, physicalTime: physicalTime, route: route)
+    return NativeArkLaunchAuthorization(
+      owner: source.owner, parent: source.mission,
+      job: job, registeredArk: source.actor, actor: NativeInductionArkPack.actor(instance: job),
+      operation: operation,
+      stockIssue: ScriptIdentity.uuid("native-ark-initial-stock-v1:\(source.actor):\(operation)"),
+      loanOperation: source.loanOperation, sequence: sequence, dock: dock,
+      carrier: carrier, inventoryRevision: revision, physicalTime: physicalTime,
+      flightSeconds: flightSeconds, route: route, seeds: source.seeds, crew: source.crew,
+      reserve: source.reserve)
   }
 }

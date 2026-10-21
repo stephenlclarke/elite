@@ -1,7 +1,8 @@
 import Foundation
 
 enum NativeWayfarerInductionAction: String, Sendable {
-  case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, progress
+  case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, replaceArk,
+    progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
     switch self {
@@ -13,6 +14,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .keyLoan: "Enlirin seed vault / review consent and original key loan"
     case .launchArk: "Enlirin seed custodians / review original ark launch"
     case .receiveArk: "Lareria cradle / review original ark receiving and key return"
+    case .replaceArk: "Enlirin custodians / review the one reserved ark launch"
     case .progress: "Senn / current induction records"
     }
   }
@@ -36,8 +38,14 @@ extension Game {
     guard !isMissionTrial, wayfarerInductionPack != nil else { return [] }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
-      action =
-        state.action(at: systemIdentity)
+      if systemIdentity == NativeWayfarerInduction.seedSource, let link = state.ark,
+        state.seedReception == nil,
+        commander.scriptState.instances[link.job]?.savedNativeArk?.loss != nil
+      {
+        action = .replaceArk
+      } else {
+        action = state.action(at: systemIdentity)
+      }
     } else {
       guard systemIdentity == NativeWayfarerInduction.source else { return [] }
       action = .accept
@@ -83,7 +91,8 @@ extension Game {
     if commander.hullInstanceID == nil || commander.equipmentInventory == nil {
       issues.append("The actual owned carrier and fitting must be available.")
     }
-    if action != .receive && action != .service && action != .launchArk && action != .receiveArk,
+    if action != .receive && action != .service && action != .launchArk && action != .receiveArk
+      && action != .replaceArk,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -94,6 +103,7 @@ extension Game {
     case .receive, .cassette, .service, .keyLoan: issues += inductionContinuationIssues(action)
     case .launchArk: issues += inductionArkLaunchIssues()
     case .receiveArk: issues += inductionArkReceivingIssues()
+    case .replaceArk: issues += inductionArkReplacementIssues()
     case .progress: break
     }
     return issues
@@ -158,6 +168,7 @@ extension Game {
       let state = NativeWayfarerInductionState(permission: permission)
       guard state.valid else { throw SaveError.invalidCommander }
       mission.savedWayfarerInduction = state
+      mission.savedArkReserve = NativeInductionArkReserve(permission: permission)
       mission.milestones = [0]
       candidate.commander.scriptState.instances[missionID] = mission
       candidate.emitScriptEvent("mission.accepted", only: missionID)
@@ -202,6 +213,9 @@ extension Game {
     if quote.action == .receiveArk {
       try candidate.confirmInductionArkReceiving(dock: dock, carrier: carrier, revision: revision)
     }
+    if quote.action == .replaceArk {
+      try candidate.confirmInductionArkReplacement(dock: dock, carrier: carrier, revision: revision)
+    }
     self = candidate
   }
 
@@ -223,10 +237,35 @@ extension Game {
       "At Enlirin, review the seed custodians' consent before Confirm borrows their unique one-tonne vault key for Lareria's receiving cradle. The key stays their property; the seed travels aboard the ark.",
       "The loan is untimed, needs one free tonne and cannot be sold, fitted or released as personal equipment. At Enlirin, separately review and Confirm the one original ark registration; no extra player cargo space is required.",
       "The registered ark uses actual native aperture docking and its own custodian escrow for needed-hop fuel. Each real main station has a separate finite 100-LY ark-service reserve. Saving, revisiting or reopening never refills stock or funds; actual Lareria receiving and original key return need their separate Confirm review.",
+      "Original escort terms: one custodian Haflinger, forty unique seed tonnes and six living crew, with its own finite 1000 CR fuel escrow. Its authored tank is 13 LY, drive 9 LY per hop and spool 12 seconds; your separate original vault key occupies one tonne.",
+      "One initial reserve holds a distinct Haflinger, forty distinct seed tonnes, six distinct crew and a separate 1000 CR fuel issue. Only proved original-ark destruction and fresh Enlirin custodian consent can release it once. The same original key must still be aboard. Unused prior escrow returns to its custodian; no payment or progress is awarded.",
+      "The destroyed hull, seed and crew remain lost. Station fuel stock stays depleted. After the single reserve is consumed, no further launch or new key is available without a separate real authored source.",
       "These stages pay nothing and grant no accreditation or clue. "
         + NativeWayfarerInduction.laterStages,
     ]
     if let status = inductionArkStatus { lines.append(status) }
+    if let link = wayfarerInductionMission?.savedWayfarerInduction?.ark,
+      let state = commander.scriptState.instances[link.job]?.savedNativeArk
+    {
+      let route = state.authorization.route.worldKeys.compactMap {
+        try? Universe.originalWorlds.world(key: $0).name
+      }
+      lines.append("Registered escort route: " + route.joined(separator: " > "))
+      lines.append(
+        "Assigned manifest: forty seed tonnes and six crew; the original borrowed player key remains separate."
+      )
+      lines.append(
+        String(
+          format: "Current custodian fuel escrow: %.1f CR. Player cash is separate.",
+          Double(state.fuel.remainingCredits) / 10))
+    }
+    if let parent = wayfarerInductionMission {
+      lines.append(
+        parent.savedArkRecovery == nil
+          ? "Custodian reserve: one initial allocation available only after proved original loss and actual rebrief."
+          : "Custodian reserve consumed: no further hull, seed, crew or fuel-funding issue is available."
+      )
+    }
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
       if let reception = state.reception {
         lines.append(

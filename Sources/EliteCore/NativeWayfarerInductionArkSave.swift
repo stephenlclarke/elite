@@ -1,37 +1,62 @@
 import Foundation
 
 enum NativeInductionArkSave {
-  static let version = 79
-  static let alienVersion = 80
+  static let version = 81
+  static let alienVersion = 82
+  static func supportsReserve(_ schema: Int?) -> Bool {
+    schema == version || schema == alienVersion
+  }
+  static func supportsReceiving(_ schema: Int?) -> Bool {
+    supportsReserve(schema) || schema == 79 || schema == 80
+  }
+  static func supportsService(_ schema: Int?) -> Bool {
+    supportsReceiving(schema) || schema == 77 || schema == 78
+  }
   static func contains(_ schema: Int?) -> Bool {
-    schema == version || schema == alienVersion || schema == 77 || schema == 78 || schema == 75
-      || schema == 76
+    supportsService(schema) || schema == 75 || schema == 76
+  }
+  static func isAlien(_ schema: Int?) -> Bool {
+    schema == alienVersion || schema == 80 || schema == 78 || schema == 76
   }
   static func lowerSchema(_ schema: Int?) -> Int? {
     guard contains(schema) else { return schema }
-    return schema == alienVersion || schema == 78 || schema == 76
+    return isAlien(schema)
       ? NativeWayfarerInductionSave.alienVersion : NativeWayfarerInductionSave.version
   }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
     if commander.scriptState.instances.values.contains(where: NativeInductionArkPack.marked) {
       return true
     }
-    return commander.scriptState.instances.values.contains { $0.savedWayfarerInduction?.ark != nil }
+    return commander.scriptState.instances.values.contains {
+      $0.savedWayfarerInduction?.ark != nil || $0.savedArkReserve != nil
+        || $0.savedArkRecovery != nil
+    }
   }
 
   @inline(never)
   static func validateClaims(_ commander: borrowing Commander) -> Bool {
     let engine = commander.scriptState
     let jobs = engine.instances.values.filter { NativeInductionArkPack.marked($0) }
-    let parents = engine.instances.values.filter { $0.savedWayfarerInduction?.ark != nil }
-    guard jobs.count == parents.count, jobs.count <= 1 else { return false }
+    let parents = engine.instances.values.filter {
+      $0.savedWayfarerInduction != nil || $0.savedArkReserve != nil || $0.savedArkRecovery != nil
+    }
+    guard parents.count <= 1, jobs.count <= 2 else { return false }
+    var expectedJobs: Set<UUID> = []
+    for parent in parents {
+      guard recoveryParentValid(parent, commander: commander) else { return false }
+      if let current = parent.savedWayfarerInduction?.ark { expectedJobs.insert(current.job) }
+      if let retired = parent.savedArkRecovery?.retired { expectedJobs.insert(retired.job) }
+    }
+    guard Set(jobs.map(\.id)) == expectedJobs else { return false }
     for child in jobs {
       guard let state = child.savedNativeArk,
         let parent = engine.instances[state.authorization.parent],
         let leaf = parent.savedWayfarerInduction, let key = leaf.seedKey,
-        let service = leaf.cassetteService, let link = leaf.ark,
+        let service = leaf.cassetteService,
+        let link = leaf.ark?.job == child.id ? leaf.ark : parent.savedArkRecovery?.retired,
         let source = try? NativeInductionArkSource(
-          loan: key, permission: leaf.permission, service: service),
+          loan: key, permission: leaf.permission, service: service,
+          reserve: state.authorization.reserve),
         parent.definition == NativeWayfarerInduction.stateID,
         parent.digest == NativeWayfarerInduction.digest,
         child.definition == NativeInductionArkPack.stateID,
@@ -46,7 +71,12 @@ enum NativeInductionArkSave {
         link.job == child.id, link.registeredArk == source.actor,
         link.operation == state.authorization.operation, link.loanOperation == key.operation,
         state.shapeValid(source: source, key: key),
-        state.reception == leaf.seedReception,
+        child.id == leaf.ark?.job
+          ? (state.reception == leaf.seedReception && state.fuel.closure?.recoveryOperation == nil)
+          : (state.reception == nil && state.loss == parent.savedArkRecovery?.priorLoss),
+        child.id != leaf.ark?.job
+          || state.authorization.reserve
+            == (parent.savedArkRecovery == nil ? nil : parent.savedArkReserve),
         receivingClaimsValid(state, parent: parent, child: child, engine: engine),
         state.authorization.sequence <= engine.nextEvent,
         parent.hasAcknowledged(state.authorization.sequence),

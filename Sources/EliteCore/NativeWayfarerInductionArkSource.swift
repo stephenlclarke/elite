@@ -5,6 +5,8 @@ struct NativeInductionArkSource: Sendable {
   let owner: UUID
   let mission: UUID
   let loanOperation: UUID
+  let issue: NativeInductionArkIssue
+  let reserve: NativeInductionArkReserve?
   let actor: UUID
   let source: SystemIdentity
   let destination: SystemIdentity
@@ -19,7 +21,7 @@ struct NativeInductionArkSource: Sendable {
 
   init(
     loan: NativeInductionVaultKeyLoan, permission: NativeInductionPermission,
-    service: NativeInductionCassetteService
+    service: NativeInductionCassetteService, reserve: NativeInductionArkReserve? = nil
   ) throws {
     guard loan.valid(service: service, permission: permission),
       let original = OriginalFleetDefinitionData.definition(for: Self.hull),
@@ -27,21 +29,31 @@ struct NativeInductionArkSource: Sendable {
       performance.cargo >= Self.seedTonnes,
       let physical = try? OriginalHullPhysicalContract.haflinger.get()
     else { throw SaveError.invalidCommander }
+    guard reserve?.valid(permission: permission) ?? true else { throw SaveError.invalidCommander }
+    issue = reserve == nil ? .original : .reserve
+    self.reserve = reserve
     owner = permission.owner
     mission = permission.mission
     loanOperation = loan.operation
-    actor = Self.actorIdentity(mission: mission, loan: loanOperation)
+    actor = Self.actorIdentity(mission: mission, loan: loanOperation, issue: issue)
     source = NativeWayfarerInduction.seedSource
     destination = NativeWayfarerInduction.seedReceiver
     let namespace = "induction-original-ark-stock-v1:\(owner):\(actor)"
-    seeds = (0..<Self.seedTonnes).map { ScriptIdentity.uuid("\(namespace):seed:\($0)") }
-    crew = (0..<Self.crewCount).map { ScriptIdentity.uuid("\(namespace):crew:\($0)") }
+    seeds =
+      reserve?.seeds ?? (0..<Self.seedTonnes).map { ScriptIdentity.uuid("\(namespace):seed:\($0)") }
+    crew =
+      reserve?.crew ?? (0..<Self.crewCount).map { ScriptIdentity.uuid("\(namespace):crew:\($0)") }
     self.physical = physical
     definition = try Self.definition(physical: physical, performance: performance)
   }
 
-  static func actorIdentity(mission: UUID, loan: UUID) -> UUID {
-    ScriptIdentity.uuid("induction-original-seed-ark-v1:\(mission):\(loan)")
+  static func actorIdentity(mission: UUID, loan: UUID, issue: NativeInductionArkIssue = .original)
+    -> UUID
+  {
+    if issue == .reserve {
+      return ScriptIdentity.uuid("induction-reserve-seed-ark-v1:\(mission):\(loan)")
+    }
+    return ScriptIdentity.uuid("induction-original-seed-ark-v1:\(mission):\(loan)")
   }
 
   static func profile() throws -> ScriptNPCDefinition {
@@ -96,7 +108,8 @@ struct NativeInductionArkSource: Sendable {
 
   var valid: Bool {
     mission == NativeWayfarerInduction.mission(owner: owner)
-      && actor == Self.actorIdentity(mission: mission, loan: loanOperation)
+      && actor == Self.actorIdentity(mission: mission, loan: loanOperation, issue: issue)
+      && (issue == .reserve) == (reserve != nil)
       && source == NativeWayfarerInduction.seedSource
       && destination == NativeWayfarerInduction.seedReceiver
       && seeds.count == Self.seedTonnes && Set(seeds).count == Self.seedTonnes

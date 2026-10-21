@@ -105,6 +105,8 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
   let purchases: [NativeArkFuelPurchase]
   let refusal: NativeArkFuelRefusalRecord?
   let closure: NativeArkFuelClosure?
+  private let reserveFunding: UUID?
+  var issue: NativeInductionArkIssue { reserveFunding == nil ? .original : .reserve }
   static let initialCredits = 10_000  // 1000 CR in native decicredits; explicit project funding.
 
   init(source: NativeInductionArkSource) throws {
@@ -113,6 +115,7 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
     mission = source.mission
     ark = source.actor
     loanOperation = source.loanOperation
+    reserveFunding = source.reserve?.fuelFunding
     openingCredits = Self.initialCredits
     remainingCredits = openingCredits
     purchases = []
@@ -127,6 +130,7 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
     mission = previous.mission
     ark = previous.ark
     loanOperation = previous.loanOperation
+    reserveFunding = previous.reserveFunding
     openingCredits = previous.openingCredits
     remainingCredits = balance
     self.purchases = purchases
@@ -135,7 +139,7 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
   }
   private enum CodingKeys: String, CodingKey {
     case owner, mission, ark, loanOperation, openingCredits, remainingCredits, purchases, refusal,
-      closure
+      closure, reserveFunding
   }
   init(from decoder: any Decoder) throws {
     try NativeUtilityCoding.require(
@@ -144,7 +148,7 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
         "owner", "mission", "ark", "loanOperation", "openingCredits", "remainingCredits",
         "purchases",
       ],
-      optional: ["refusal", "closure"])
+      optional: ["refusal", "closure", "reserveFunding"])
     let values = try decoder.container(keyedBy: CodingKeys.self)
     owner = try values.decode(UUID.self, forKey: .owner)
     mission = try values.decode(UUID.self, forKey: .mission)
@@ -157,6 +161,7 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
       container: values, limit: 128)
     refusal = try values.decodeIfPresent(NativeArkFuelRefusalRecord.self, forKey: .refusal)
     closure = try values.decodeIfPresent(NativeArkFuelClosure.self, forKey: .closure)
+    reserveFunding = try values.decodeIfPresent(UUID.self, forKey: .reserveFunding)
     guard valid else { throw SaveError.invalidCommander }
   }
 
@@ -175,7 +180,7 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
     a.owner == b.owner && a.mission == b.mission && a.ark == b.ark
       && a.loanOperation == b.loanOperation && a.openingCredits == b.openingCredits
       && a.remainingCredits == b.remainingCredits && a.purchases == b.purchases
-      && a.refusal == b.refusal && a.closure == b.closure
+      && a.refusal == b.refusal && a.closure == b.closure && a.reserveFunding == b.reserveFunding
   }
 
   private func calculate(_ request: NativeArkFuelRequest, balance: Int)
@@ -274,9 +279,27 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
     return next
   }
 
+  func retiring(at receipt: NativeArkRecoveryReceipt) throws -> NativeArkFuelEscrow {
+    guard valid, closure == nil, issue == .original, receipt.retired.registeredArk == ark,
+      receipt.retired.loanOperation == loanOperation
+    else { throw SaveError.invalidCommander }
+    let closure = NativeArkFuelClosure(
+      operation: NativeArkFuelClosure.recoveryIdentity(
+        ark: ark, recovery: receipt.operation, credits: remainingCredits),
+      recoveryOperation: receipt.operation, recipient: NativeArkFuelClosure.custodian(owner: owner),
+      balanceBefore: remainingCredits, returnedCredits: remainingCredits)
+    let next = NativeArkFuelEscrow(self, purchases: purchases, balance: 0, closure: closure)
+    guard next.valid else { throw SaveError.invalidCommander }
+    return next
+  }
+
   var valid: Bool {
     guard mission == NativeWayfarerInduction.mission(owner: owner),
-      ark == NativeInductionArkSource.actorIdentity(mission: mission, loan: loanOperation),
+      ark
+        == NativeInductionArkSource.actorIdentity(
+          mission: mission, loan: loanOperation, issue: issue),
+      reserveFunding == nil
+        || reserveFunding == NativeInductionArkReserve.funding(owner: owner, mission: mission),
       openingCredits == Self.initialCredits, (0...openingCredits).contains(remainingCredits),
       purchases.count <= 128, Set(purchases.map(\.operation)).count == purchases.count
     else { return false }
@@ -291,13 +314,19 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
       balance = receipt.balanceAfter
     }
     if let closure {
-      return remainingCredits == 0 && refusal == nil && closure.balanceBefore == balance
-        && closure.returnedCredits == balance
-        && closure.recipient == NativeArkFuelClosure.custodian(owner: owner)
-        && closure.operation
-          == NativeArkFuelClosure.identity(
-            ark: ark,
-            receiving: closure.receivingOperation, credits: balance)
+      guard remainingCredits == 0, refusal == nil, closure.balanceBefore == balance,
+        closure.returnedCredits == balance,
+        closure.recipient == NativeArkFuelClosure.custodian(owner: owner)
+      else { return false }
+      if let receiving = closure.receivingOperation, closure.recoveryOperation == nil {
+        return closure.operation
+          == NativeArkFuelClosure.identity(ark: ark, receiving: receiving, credits: balance)
+      }
+      if let recovery = closure.recoveryOperation, closure.receivingOperation == nil {
+        return closure.operation
+          == NativeArkFuelClosure.recoveryIdentity(ark: ark, recovery: recovery, credits: balance)
+      }
+      return false
     }
     guard balance == remainingCredits else { return false }
     if let refusal {

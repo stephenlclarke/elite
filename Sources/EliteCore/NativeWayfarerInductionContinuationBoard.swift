@@ -7,7 +7,7 @@ extension NativeWayfarerInductionAction {
     case .pickup: NativeWayfarerInduction.clinic
     case .receive: NativeWayfarerInduction.receiver
     case .service: NativeWayfarerInduction.clinic
-    case .keyLoan, .launchArk: NativeWayfarerInduction.seedSource
+    case .keyLoan, .launchArk, .replaceArk: NativeWayfarerInduction.seedSource
     case .receiveArk: NativeWayfarerInduction.seedReceiver
     case .cassette: NativeWayfarerInduction.workshop
     }

@@ -12,7 +12,7 @@ extension Game {
       key.unit == NativeWayfarerInduction.vaultKeyUnit(owner: leaf.permission.owner)
     else {
       return [
-        "The same original ark, living crew, seed stock and unreturned original key are required."
+        "The same registered ark, living crew, seed stock and unreturned original key are required."
       ]
     }
     guard let contact = state.dockedContact,
@@ -21,7 +21,7 @@ extension Game {
       NativeInductionArkSave.allHopsReceived(state, engine: commander.scriptState)
     else {
       return [
-        "The original registered ark must complete every actual native hop and enter Lareria's real receiving berth."
+        "The registered ark must complete every actual native hop and enter Lareria's real receiving berth."
       ]
     }
     guard NativeInductionArkSave.validateClaims(commander),
@@ -69,7 +69,8 @@ extension Game {
     guard let service = leaf.cassetteService,
       nextArk.shapeValid(
         source: try NativeInductionArkSource(
-          loan: key, permission: leaf.permission, service: service), key: key)
+          loan: key, permission: leaf.permission, service: service,
+          reserve: state.authorization.reserve), key: key)
     else { throw SaveError.invalidCommander }
     parent.savedWayfarerInduction = nextParent
     parent.payloads = nextParent.payloads
@@ -77,18 +78,18 @@ extension Game {
     parent.revision += 1
     parent.acknowledge(sequence)
     parent.journal.append(
-      "Lareria's actual cradle received all forty original custodian seed-tonne units with the six original crew alive and returned the original loaned vault key. Stage7 is recorded; no payment, clue or accreditation. Later recorder recovery remains unavailable."
+      "Lareria's actual cradle received all forty registered custodian seed-tonne units with its six assigned crew alive and returned the original loaned vault key. Stage7 is recorded; no payment, clue or accreditation. Later recorder recovery remains unavailable."
     )
     child.savedNativeArk = nextArk
     child.milestones.insert(0)
     child.revision += 1
     child.acknowledge(sequence)
     child.journal.append(
-      "Original seed consignment received at its actual Lareria berth. Original key returned; unused fuel escrow returned to its custodian. The original ark remains in facility custody; no player reward or replacement issue."
+      "Registered seed consignment received at its actual Lareria berth. Original key returned; unused fuel escrow returned to its custodian. The original ark remains in facility custody; no player reward or replacement issue."
     )
     commander.scriptState.nextEvent = sequence
     commander.scriptState.instances[parent.id] = parent
     commander.scriptState.instances[child.id] = child
-    notify("ORIGINAL SEED ARK RECEIVED - ORIGINAL VAULT KEY RETURNED")
+    notify("REGISTERED SEED ARK RECEIVED - ORIGINAL VAULT KEY RETURNED")
   }
 }

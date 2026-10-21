@@ -58,7 +58,7 @@ extension Game {
         loss: .init(
           actor: physical.identity, observedPhysicalTime: commander.flightSimulation.physicalTime))
       child.journal.append(
-        "The original ark was physically destroyed. Its original crew and seed stock are lost; no replacement, receiving receipt or payment is created."
+        "The registered ark was physically destroyed. Its crew and seed stock remain lost; no replacement, receiving receipt or payment is created by destruction."
       )
     }
     if !docked, screen != .gameOver, next.loss == nil && next.dockedContact == nil,
@@ -130,30 +130,32 @@ extension Game {
     guard let link = wayfarerInductionMission?.savedWayfarerInduction?.ark,
       let child = commander.scriptState.instances[link.job], let state = child.savedNativeArk
     else { return nil }
+    let arkName = state.authorization.reserve == nil ? "Original ark" : "Reserve ark"
     if state.reception != nil {
       return
-        "Original forty seed tonnes received at Lareria; original vault key returned. Later accreditation stages remain locked."
+        "Registered forty seed tonnes received at Lareria; original vault key returned. Later accreditation stages remain locked."
     }
     if state.loss != nil {
-      return "Original ark destroyed; original crew and seed lost. No receiving credit."
+      return
+        "\(arkName) destroyed; its crew and seed are lost. Review actual Enlirin custodian recovery; no receiving credit."
     }
     if let contact = state.dockedContact {
       return
-        "Original ark berthed at G\(contact.station.system.galaxy + 1)-S\(contact.station.system.system)"
+        "\(arkName) berthed at G\(contact.station.system.galaxy + 1)-S\(contact.station.system.system)"
         + (state.serviceWait.map { " / " + $0.rawValue }
           ?? " / own fuel service or cradle receiving")
     }
     if state.admission == nil {
-      return "Original ark registered; depart Enlirin for native admission."
+      return "\(arkName) registered; depart Enlirin for native admission."
     }
     if let reference = state.legs.last,
       let leg = commander.scriptState.wormholeTransit?.legs[reference.leg]
     {
       return
-        "Original ark hop \(reference.hop + 1)/\(state.authorization.route.legDistancesLY.count): \(leg.phase.rawValue)"
+        "\(arkName) hop \(reference.hop + 1)/\(state.authorization.route.legDistancesLY.count): \(leg.phase.rawValue)"
         + (leg.refusal.map { " / " + $0 } ?? "")
     }
-    return "Original ark admitted; awaiting its own drive/fuel and an available native hop."
+    return "\(arkName) admitted; awaiting its own drive/fuel and an available native hop."
   }
 }
 

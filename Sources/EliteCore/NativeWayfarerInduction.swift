@@ -197,7 +197,10 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       guard ark.valid, let seedKey,
         ark.registeredArk
           == NativeInductionArkSource.actorIdentity(
-            mission: permission.mission, loan: seedKey.operation),
+            mission: permission.mission, loan: seedKey.operation)
+          || ark.registeredArk
+            == NativeInductionArkSource.actorIdentity(
+              mission: permission.mission, loan: seedKey.operation, issue: .reserve),
         ark.loanOperation == seedKey.operation
       else { return false }
     }

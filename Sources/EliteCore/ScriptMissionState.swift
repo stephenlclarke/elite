@@ -76,6 +76,8 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedNavigationTrade: ScriptNavigationTradeState?
   var savedOriginalSurvey: NativeOriginalSurveyState?
   var savedGlassMeridian: NativeGlassMeridianState?
+  var savedArkReserve: NativeInductionArkReserve?
+  var savedArkRecovery: NativeArkRecoveryReceipt?
   var savedNativeArk: NativeInductionArkState?
   var savedWayfarerInduction: NativeWayfarerInductionState?
   var savedFlightReception: NativeFlightReceptionState?
@@ -211,6 +213,14 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   var savedGlassMeridian: NativeGlassMeridianState? {
     _read { yield storage[0].savedGlassMeridian }
     _modify { yield &storage[0].savedGlassMeridian }
+  }
+  var savedArkReserve: NativeInductionArkReserve? {
+    _read { yield storage[0].savedArkReserve }
+    _modify { yield &storage[0].savedArkReserve }
+  }
+  var savedArkRecovery: NativeArkRecoveryReceipt? {
+    _read { yield storage[0].savedArkRecovery }
+    _modify { yield &storage[0].savedArkRecovery }
   }
   var savedNativeArk: NativeInductionArkState? {
     _read { yield storage[0].savedNativeArk }
@@ -519,6 +529,19 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       guard cargo.valid(state: instance, engine: self) else { return false }
     } else {
       guard instance.contract?.offer.freightPlan == nil else { return false }
+    }
+    if instance.savedArkReserve != nil || instance.savedArkRecovery != nil {
+      guard instance.definition == NativeWayfarerInduction.stateID,
+        instance.digest == NativeWayfarerInduction.digest,
+        let state = instance.savedWayfarerInduction, let reserve = instance.savedArkReserve,
+        reserve.valid(permission: state.permission)
+      else { return false }
+      if let recovery = instance.savedArkRecovery {
+        guard let key = state.seedKey,
+          recovery.valid(reserve: reserve, key: key, permission: state.permission),
+          state.ark == recovery.replacement
+        else { return false }
+      }
     }
     if NativeInductionArkPack.marked(instance) {
       guard instance.definition == NativeInductionArkPack.stateID,
