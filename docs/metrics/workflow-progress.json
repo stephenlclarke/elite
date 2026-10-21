@@ -4179,6 +4179,22 @@
       "github_run": 39675764624,
       "selection_methods": 88,
       "new_cases": 5
+    },
+    {
+      "event": "Consented vault-key loan pushed; exact missing ark provider and receiving dependencies assigned",
+      "head": "d498fed7be17a7d6598df83c3ee4039e5aa52f61",
+      "base": "e58251030e82dbeb14683f4f382836d9eae26382",
+      "ledger_parent": "C08.P03.B",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326620621",
+      "github_run": 39676452424,
+      "new_methods": 4,
+      "new_cases": 6,
+      "selection_methods": 92,
+      "unit_status": "pending",
+      "source_review": "pending",
+      "next_assigned": "M10.P01.C08",
+      "next_queued": "M10.P02.C08",
+      "usable_build_delivered": false
     }
   ]
 }
