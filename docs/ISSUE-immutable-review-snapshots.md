@@ -1,0 +1,5 @@
+# Read-only review resources inflate every Game value
+
+Live metadata established a 24,128-byte Game and 7,606-byte Commander. Contract and RRS review quotes embed a full Commander resources snapshot, while the ephemeral board review reserves its maximum inline payload even when absent. These read-only UI inputs therefore enlarge every Game value passing through unrelated simulation and admission paths. The actual 217 diagnostic again stopped in nested encounter admission before the projectile-capacity test reached its intended refusal.
+
+Store only these two frozen review inputs in immutable, compiler-checked Sendable reference storage. Keep mutable Commander/Game simulation actor-owned and preserve their public value semantics, constructors, readonly resource getters and every exact Commander equality/authority guard. This is not whole-Game boxing, a test execution flag, a skipped check or a save-format change. Verify nested copy-on-write isolation, real stale-review refusal, resulting instantiated Game size and the existing encounter/contract/RRS/rollback regressions. See [the implementation](PR-immutable-review-snapshots.md).

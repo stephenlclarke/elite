@@ -1,0 +1,67 @@
+schemaVersion = 2
+missionAPI = 2
+id = "example.branch-patrol"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["completion-receipts-v2", "exclusive-choices-v2", "script-lua-v1", "story-v2", "economy-v2", "classic-encounters-v2"]
+priority = 410
+source = "Original physical encounter demonstration using this game's classic NPC behavior; not a historical Elite mission or Oolite combat profile."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "patrol"
+title = "Scripted patrol demonstration"
+briefing = "Launch at Lave in Galaxy 1 and defeat the two assigned raiders. Return to Lave's main orbital station and confirm your report. Only destruction of the actual assigned ships qualifies; leaving the area does not."
+destination = "Galaxy 1, Lave (system 7)"
+reward = "100 credits, plus ordinary combat bounties."
+milestones = ["Accept patrol", "Defeat both assigned raiders", "Report at Lave orbital station"]
+requiredDestructionEncounters = ["raiders"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "station.undocked"
+function = "undocked"
+[[handlers]]
+event = "encounter.admitted"
+function = "admitted"
+[[handlers]]
+event = "encounter.pending"
+function = "pending"
+[[handlers]]
+event = "actor.destroyed"
+function = "destroyed"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[[dialogs]]
+id = "report"
+text = "Both assigned raiders have been destroyed. Confirm your report and collect 100 credits. Ordinary combat bounties are separate."
+
+[[encounters]]
+id = "raiders"
+galaxy = 0
+system = 7
+profile = "classic-local-freeze-v1"
+actors = [
+  {id="lead", hull="sidewinder", x=0, y=0, z=3000, hostile=true},
+  {id="wing", hull="sidewinder", x=0, y=0, z=4500, hostile=true}
+]
+
+[[receiptRequirements]]
+id = "chosen-assignment"
+stage = "acceptance"
+definition = "example.branch-choice/route"
+version = "1.0.0"
+digest = "ccfbf58a495be39a7b4976b8b60fe44f864824880498686e589d889ab71a4ba1"
+outcome = "complete"
+minimumCount = 1
+choiceGroup = "assignment"
+choice = "patrol"

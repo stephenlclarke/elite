@@ -11,7 +11,9 @@ The documented native balancing default is a 25% discount, rounded once to the n
 | Previously reward-only item | Chosen base price | PLUGH price |
 | --- | ---: | ---: |
 | Naval Laser, per mount | 18,000 CR | 13,500 CR |
-| Naval Energy Unit | 4,500 CR | 3,375 CR |
-| Capital Ship Shield Booster | 13,500 CR | 10,125 CR |
+| Advanced Energy Module (legacy Naval Energy Unit) | 4,500 CR | 3,375 CR |
+| Advanced II Shield Module (legacy Capital reward) | 13,500 CR | 10,125 CR |
 
 These three prices and the discount are project balancing choices, not historical Elite prices or user-specified amounts. Outside PLUGH, the original reward restrictions and ordinary market calculations remain unchanged. Older saves default to no discoveries; invalid masks or undiscovered secret destinations are rejected.
+
+The current module grades and accumulated upgrades are described in [Equipment modules](EQUIPMENT-MODULES.md). Elite component grade is reached through compatible upgrade progression; the preserved Capital reward item sold here is stock Advanced II. Existing saved reward keys and their prices remain unchanged.

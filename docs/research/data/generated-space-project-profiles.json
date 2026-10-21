@@ -1,0 +1,1681 @@
+{
+  "profile_set": "PROJECT-SPACE-GENERATORS-1",
+  "analysis_date": "2026-10-13",
+  "status": "Filled bounded project variants for14 retained generic objective families. Original edition/live-server distributions remain unverified. G04 is separately source-specified, not overwritten.",
+  "estimates_authorized_by_owner": true,
+  "seed_contract": {
+    "algorithm": "xorshift32",
+    "initial_state": "Stored nonzero UInt32; zero input maps to0x6D2B79F5. Use unsigned32-bit wrapping after every operation.",
+    "next": "state ^= state <<13; state ^= state >>17; state ^= state <<5; mask to32 bits after each step.",
+    "unit_interval": "nextUInt32 /4294967296.0",
+    "choice": "floor(unitInterval *candidateCount), from candidates sorted by stable system/entity ID.",
+    "freeze": "Store all choices on offer generation and all accepted parameters; no time-based/reroll draw during completion."
+  },
+  "common_clock": "Persistent project game-clock seconds; paused menus/paused game do not advance deadlines. Flight/witchspace/service simulation advances by the project clock. Deadline success requires confirmation time <=deadline.",
+  "money": "Store integer decicredits. Convert displayed common credit values by*10; round estimated reward formulas once at generation.",
+  "common_acceptance": "Only offer/accept when all stated equipment/cargo/berth requirements can be satisfied and a reachable orbital destination exists. Back changes nothing. Acceptance, custody and completion/payment are atomic once-only GameRuntime transactions.",
+  "common_hull_switch": "Preserve accepted mission IDs/state and unique equipment/items. Store incompatible personal equipment; block hull switch if required mission cargo/passengers cannot fit. No free missile refill.",
+  "common_failure": "Terminal failure releases outstanding station obligations and removes only owned mission encounter markers/unused grants. Already expended ammunition and legitimate engine bounties are not rolled back. No extra cash penalty unless the profile states one.",
+  "source_G04": "elite-a-courier-specifications.md and data/elite-a-courier-fixtures.json",
+  "profile_count": 14,
+  "profiles": [
+    {
+      "mission_id": "G02",
+      "profile_id": "PROJECT-SPACE-G02-1",
+      "objective_family": "Data/package courier",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "No commodity hold requirement for encrypted-data variant. Physical package variant requires one free tonne and uses a distinct saved variant ID.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          1,
+          1
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "accept unique sealed payload",
+        "fly to destination orbital station",
+        "confirm contact handoff"
+      ],
+      "success_predicate": "Correct unique payload handed to exact destination contact before deadline.",
+      "failure": [
+        "expiry",
+        "abandonment",
+        "physical-payload destruction"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          500,
+          750,
+          1000
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "spawn": "none beyond ordinary ambient traffic"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs."
+    },
+    {
+      "mission_id": "G03",
+      "profile_id": "PROJECT-SPACE-G03-1",
+      "objective_family": "Supplied freight/procurement",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Hold fits required quantity at acceptance; supplied cargo has unique issuer custody. Procurement variant accepts permitted market acquisition.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          5,
+          10
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "choose supplied or procurement variant at generation",
+        "load or acquire exact commodity quantity",
+        "deliver to destination station"
+      ],
+      "success_predicate": "Entire frozen quantity delivered; preserve partial delivery counts atomically.",
+      "failure": [
+        "expiry",
+        "abandonment",
+        "loss of unique supplied cargo"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          750,
+          1500,
+          2500
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "spawn": "none beyond ordinary ambient traffic"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "variants": [
+        "supplied",
+        "procurement"
+      ],
+      "commodity_pool": [
+        "food",
+        "textiles",
+        "machinery"
+      ],
+      "acceptance_fee": {
+        "value": 0,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "partial_delivery_allowed": true
+    },
+    {
+      "mission_id": "G05",
+      "profile_id": "PROJECT-SPACE-G05-1",
+      "objective_family": "Passenger transport",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "One berth per named passenger; each common-project berth consumes five tonnes.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          2,
+          3
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "board named passengers at origin station",
+        "transport to destination station",
+        "disembark all living passengers"
+      ],
+      "success_predicate": "All required identities disembark at destination before deadline.",
+      "failure": [
+        "expiry",
+        "abandonment",
+        "required passenger death/loss"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          1000,
+          1800,
+          2800
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "hull_profile": "O08 mamba NPC dictionary plus its selected source equipment/weapon reader",
+        "count_by_difficulty": {
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_radius": {
+          "value": 15000,
+          "units": "project distance units",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_location": "one mission signal point halfway along destination witchpoint-to-main-station route",
+        "activation": "on first arrival within 20000 units of the saved signal point",
+        "behaviour": "attack player; no regeneration after kills/reload; ordinary project pirate combat policy bound explicitly",
+        "wave_interval_seconds": {
+          "value": 5,
+          "units": "seconds after all current wave ships resolved",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "maximum_concurrent_ships": {
+          "value": 3,
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        }
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "risk_by_difficulty": {
+        "value": [
+          0,
+          1,
+          2
+        ],
+        "units": "project risk tier",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      }
+    },
+    {
+      "mission_id": "G06",
+      "profile_id": "PROJECT-SPACE-G06-1",
+      "objective_family": "VIP sightseeing",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "One free berth; working ship scanner. Generate only reachable space beacons, with <=3 route jumps in total.",
+      "count_by_difficulty": {
+        "value": [
+          2,
+          3,
+          5
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "board one VIP at origin station",
+        "visit ordered orbital/space beacons in frozen route order",
+        "scan each beacon",
+        "return VIP to origin station"
+      ],
+      "success_predicate": "Every ordered beacon scan complete and VIP alive at origin handoff.",
+      "failure": [
+        "expiry",
+        "abandonment",
+        "VIP death/loss"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          1500,
+          2500,
+          4000
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "spawn": "none beyond ordinary ambient traffic"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "passengers": {
+        "value": 1,
+        "units": "person",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "scan_range": {
+        "value": 3000,
+        "units": "project distance units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "continuous_scan_seconds": {
+        "value": 5,
+        "units": "seconds",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "scan_interrupt": "Reset current scan dwell to zero outside range/line-of-sight; completed beacon IDs stay complete.",
+      "satisfaction": "No random demands or hidden dissatisfaction in this explicitly bounded project variant."
+    },
+    {
+      "mission_id": "G07",
+      "profile_id": "PROJECT-SPACE-G07-1",
+      "objective_family": "Named-ship assassination",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Working forward weapon; no ground target.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          1,
+          1
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "accept exact target identity",
+        "locate saved destination signal",
+        "destroy target with player attribution",
+        "report at issuer origin station"
+      ],
+      "success_predicate": "Exact target killed by player, then report before deadline.",
+      "failure": [
+        "target escape",
+        "NPC/environmental target death",
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          2500,
+          5000,
+          8000
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "target_hull": "O08 cobra3-trader NPC dictionary, preserved source stats",
+        "escort_hull": "O08 sidewinder NPC",
+        "escorts_by_difficulty": {
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_position": "destination space signal at witchpoint-to-main-station route fraction0.5",
+        "target_escape_after_first_contact": {
+          "value": 180,
+          "units": "seconds of simulation flight time",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "behaviour": "target fights player until escape deadline, then attempts hyperspace; blocked jump retries every five seconds; escort uses project escort policy"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs."
+    },
+    {
+      "mission_id": "G08",
+      "profile_id": "PROJECT-SPACE-G08-1",
+      "objective_family": "Space combat quota",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Working weapon; explicit solo-player kill credit.",
+      "count_by_difficulty": {
+        "value": [
+          3,
+          6,
+          10
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "accept faction/role and region",
+        "destroy qualifying mission pirates",
+        "report at issuer station"
+      ],
+      "success_predicate": "Player-attributed unique kill IDs reach quota, then report before deadline.",
+      "failure": [
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          1800,
+          3500,
+          6000
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "hull_profile": "O08 mamba NPC dictionary plus its selected source equipment/weapon reader",
+        "count_by_difficulty": {
+          "value": [
+            3,
+            6,
+            10
+          ],
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_radius": {
+          "value": 15000,
+          "units": "project distance units",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_location": "one mission signal point halfway along destination witchpoint-to-main-station route",
+        "activation": "on first arrival within 20000 units of the saved signal point",
+        "behaviour": "attack player; no regeneration after kills/reload; ordinary project pirate combat policy bound explicitly",
+        "wave_interval_seconds": {
+          "value": 5,
+          "units": "seconds after all current wave ships resolved",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "maximum_concurrent_ships": {
+          "value": 3,
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        }
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "qualifying_role": "mission-tagged pirate mamba",
+      "shared_kill_credit": false
+    },
+    {
+      "mission_id": "G12",
+      "profile_id": "PROJECT-SPACE-G12-1",
+      "objective_family": "Hostage/cargo liberation",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Working scoop and one tonne per mission pod. A destroyed unscooped required pod fails the instance.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          2,
+          3
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "locate identified ship",
+        "disable it sufficiently to release mission pods",
+        "scoop living hostage pods",
+        "hand over at issuer station"
+      ],
+      "success_predicate": "Every required unique living hostage pod transferred at issuer station.",
+      "failure": [
+        "required pod destroyed",
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          2200,
+          4000,
+          6500
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "target_hull": "O08 python NPC, unique mission identity",
+        "release_energy_fraction": {
+          "value": 0.25,
+          "units": "fraction of target maximum energy",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_position": "destination mission signal at route fraction0.5",
+        "escorts": {
+          "hull_profile": "O08 mamba NPC dictionary plus its selected source equipment/weapon reader",
+          "count_by_difficulty": {
+            "value": [
+              0,
+              1,
+              2
+            ],
+            "units": "ships",
+            "status": "estimated project parameter",
+            "reason": "Original generator/server distribution is not established for this common project profile.",
+            "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+            "confidence": "provisional balance",
+            "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+          },
+          "spawn_radius": {
+            "value": 15000,
+            "units": "project distance units",
+            "status": "estimated project parameter",
+            "reason": "Original generator/server distribution is not established for this common project profile.",
+            "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+            "confidence": "provisional balance",
+            "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+          },
+          "spawn_location": "one mission signal point halfway along destination witchpoint-to-main-station route",
+          "activation": "on first arrival within 20000 units of the saved signal point",
+          "behaviour": "attack player; no regeneration after kills/reload; ordinary project pirate combat policy bound explicitly",
+          "wave_interval_seconds": {
+            "value": 5,
+            "units": "seconds after all current wave ships resolved",
+            "status": "estimated project parameter",
+            "reason": "Original generator/server distribution is not established for this common project profile.",
+            "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+            "confidence": "provisional balance",
+            "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+          },
+          "maximum_concurrent_ships": {
+            "value": 3,
+            "units": "ships",
+            "status": "estimated project parameter",
+            "reason": "Original generator/server distribution is not established for this common project profile.",
+            "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+            "confidence": "provisional balance",
+            "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+          }
+        },
+        "pod_profile": "O08 escape-capsule numerical resource; unique quest custody, not generic slaves or commodity lookalikes",
+        "release_rule": "First crossing to <=25% energy releases all required pods once; immediate target destruction before release counts as required passenger loss."
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs."
+    },
+    {
+      "mission_id": "G13",
+      "profile_id": "PROJECT-SPACE-G13-1",
+      "objective_family": "Space salvage",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Working scoop and required free cargo tonnes.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          2,
+          3
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "travel to saved wreck signal",
+        "scoop uniquely tagged items",
+        "return to issuer station"
+      ],
+      "success_predicate": "All required item identities transferred to issuer before deadline.",
+      "failure": [
+        "required item destroyed",
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          1200,
+          2200,
+          3500
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "hull_profile": "O08 mamba NPC dictionary plus its selected source equipment/weapon reader",
+        "count_by_difficulty": {
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_radius": {
+          "value": 15000,
+          "units": "project distance units",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_location": "one mission signal point halfway along destination witchpoint-to-main-station route",
+        "activation": "on first arrival within 20000 units of the saved signal point",
+        "behaviour": "attack player; no regeneration after kills/reload; ordinary project pirate combat policy bound explicitly",
+        "wave_interval_seconds": {
+          "value": 5,
+          "units": "seconds after all current wave ships resolved",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "maximum_concurrent_ships": {
+          "value": 3,
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        }
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "item_profile": "O08 barrel resource; individually tagged black-box/recovery items",
+      "wreck_site": "destination route fraction0.5; required items spawned within2000 project units of site once"
+    },
+    {
+      "mission_id": "G14",
+      "profile_id": "PROJECT-SPACE-G14-1",
+      "objective_family": "Ship data scan/download",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Working scanner; ordinary ship scanner serves this common project adapter. No terminal/SRV/on-foot scan.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          2,
+          3
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "visit ordered ship-scannable orbital points",
+        "hold scanner dwell at each",
+        "return signed data to issuer station"
+      ],
+      "success_predicate": "Correct unique data IDs captured and issuer handoff completed.",
+      "failure": [
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          1200,
+          2400,
+          3800
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "spawn": "none beyond ordinary ambient traffic"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "scan_range": {
+        "value": 3000,
+        "units": "project distance units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "continuous_scan_seconds": {
+        "value": 10,
+        "units": "seconds",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "interruption": "Leaving range/line-of-sight resets only current dwell; completed data remains.",
+      "alarm": "No undocumented alarm/prohibited-access model in this explicitly legal project variant."
+    },
+    {
+      "mission_id": "G16",
+      "profile_id": "PROJECT-SPACE-G16-1",
+      "objective_family": "Orbital installation sabotage",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Working weapon; target is a detached space relay, not a whole station or surface facility.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          1,
+          1
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "locate identified orbital relay",
+        "destroy only the tagged relay",
+        "return telemetry to issuer"
+      ],
+      "success_predicate": "Tagged relay destroyed by player and issuer handoff completed.",
+      "failure": [
+        "NPC/environmental relay destruction",
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          2500,
+          4500,
+          7000
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "relay_geometry": "O08 ballturret resource as explicitly borrowed proxy",
+        "relay_energy": {
+          "value": [
+            128,
+            256,
+            384
+          ],
+          "units": "project energy units by difficulty",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "relay_recharge": {
+          "value": 0,
+          "units": "energy/second",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "guards": {
+          "hull_profile": "O08 mamba NPC dictionary plus its selected source equipment/weapon reader",
+          "count_by_difficulty": {
+            "value": [
+              1,
+              2,
+              3
+            ],
+            "units": "ships",
+            "status": "estimated project parameter",
+            "reason": "Original generator/server distribution is not established for this common project profile.",
+            "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+            "confidence": "provisional balance",
+            "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+          },
+          "spawn_radius": {
+            "value": 15000,
+            "units": "project distance units",
+            "status": "estimated project parameter",
+            "reason": "Original generator/server distribution is not established for this common project profile.",
+            "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+            "confidence": "provisional balance",
+            "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+          },
+          "spawn_location": "one mission signal point halfway along destination witchpoint-to-main-station route",
+          "activation": "on first arrival within 20000 units of the saved signal point",
+          "behaviour": "attack player; no regeneration after kills/reload; ordinary project pirate combat policy bound explicitly",
+          "wave_interval_seconds": {
+            "value": 5,
+            "units": "seconds after all current wave ships resolved",
+            "status": "estimated project parameter",
+            "reason": "Original generator/server distribution is not established for this common project profile.",
+            "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+            "confidence": "provisional balance",
+            "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+          },
+          "maximum_concurrent_ships": {
+            "value": 3,
+            "units": "ships",
+            "status": "estimated project parameter",
+            "reason": "Original generator/server distribution is not established for this common project profile.",
+            "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+            "confidence": "provisional balance",
+            "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+          }
+        },
+        "position": "destination space signal at route fraction0.5"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "collateral": "Unrelated destruction never completes the objective and uses ordinary project legal rules."
+    },
+    {
+      "mission_id": "G20",
+      "profile_id": "PROJECT-SPACE-G20-1",
+      "objective_family": "Asteroid mining",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Working mining laser and scoop; required free cargo tonnes.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          3,
+          5
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "mine identified resource type from space asteroids",
+        "scoop/refine extracted tagged material",
+        "deliver to issuer"
+      ],
+      "success_predicate": "Required mined mass delivered with extraction provenance; market purchases do not count.",
+      "failure": [
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          1000,
+          2000,
+          3500
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "spawn": "none beyond ordinary ambient traffic"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "resource": "minerals",
+      "site": "reachable asteroid field in destination system; create mission asteroids only if no suitable field exists",
+      "asteroid_count_by_difficulty": {
+        "value": [
+          2,
+          6,
+          10
+        ],
+        "units": "asteroids",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "guaranteed_qualifying_yield_per_destroyed_mission_asteroid": {
+        "value": 1,
+        "units": "tonne",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "yield_rule": "One uniquely owned one-tonne mineral pod per designated asteroid, once, using the project mining callback. Ordinary asteroid yield remains separate."
+    },
+    {
+      "mission_id": "G21",
+      "profile_id": "PROJECT-SPACE-G21-1",
+      "objective_family": "Station donation",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "origin orbital station; no travel destination.",
+      "requirements": "Sufficient cash or chosen commodity available; no partial transfer.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          1,
+          1
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "show credit/commodity pledge at orbital station",
+        "confirm transfer"
+      ],
+      "success_predicate": "Single confirmed atomic pledge transfer.",
+      "failure": [
+        "Back leaves pending; no failure or penalty",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": null,
+        "status": "project choice",
+        "reason": "Immediate voluntary station donation; no expiry required."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          0,
+          0,
+          0
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 0,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "No cash reward. Increment issuer reputation by one once.",
+      "encounter": {
+        "spawn": "none beyond ordinary ambient traffic"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "credit_pledge_by_difficulty": {
+        "value": [
+          500,
+          1500,
+          3000
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "commodity_pledge_by_difficulty": {
+        "value": [
+          1,
+          3,
+          5
+        ],
+        "units": "tonnes of food",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "variants": [
+        "credits",
+        "food"
+      ],
+      "reputation_gain": {
+        "value": 1,
+        "units": "project reputation point",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      }
+    },
+    {
+      "mission_id": "G22",
+      "profile_id": "PROJECT-SPACE-G22-1",
+      "objective_family": "Space rescue/evacuation",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Freeze cabin or pod variant. Cabin: one berth/person. Pod: one cargo tonne/person plus working scoop. Never interchange capacities after acceptance.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          3,
+          5
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "pick up named evacuees at orbital rescue station or scoop saved space pods",
+        "transport living survivors",
+        "hand off at destination rescue station"
+      ],
+      "success_predicate": "All required living identities handed over at saved orbital rescue destination.",
+      "failure": [
+        "required passenger/pod destroyed",
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          1800,
+          3200,
+          5000
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "hull_profile": "O08 mamba NPC dictionary plus its selected source equipment/weapon reader",
+        "count_by_difficulty": {
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_radius": {
+          "value": 15000,
+          "units": "project distance units",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "spawn_location": "one mission signal point halfway along destination witchpoint-to-main-station route",
+        "activation": "on first arrival within 20000 units of the saved signal point",
+        "behaviour": "attack player; no regeneration after kills/reload; ordinary project pirate combat policy bound explicitly",
+        "wave_interval_seconds": {
+          "value": 5,
+          "units": "seconds after all current wave ships resolved",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "maximum_concurrent_ships": {
+          "value": 3,
+          "units": "ships",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        }
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs.",
+      "variants": [
+        "orbital-station cabin evacuation",
+        "space escape-pod recovery"
+      ],
+      "original_surface_endpoint_mapping": "Main orbital station in original endpoint system; preserve required passenger IDs/quantities; no landing or ground operation."
+    },
+    {
+      "mission_id": "G24",
+      "profile_id": "PROJECT-SPACE-G24-1",
+      "objective_family": "Anti-xeno space combat",
+      "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+      "difficulty_values": [
+        1,
+        2,
+        3
+      ],
+      "offer_location": "origin main orbital station",
+      "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+      "requirements": "Working weapon; common-project classical anti-xeno variant, without unstated ED AX-modules/pips/Interceptors mechanics.",
+      "count_by_difficulty": {
+        "value": [
+          1,
+          2,
+          3
+        ],
+        "units": "mission-specific units",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "sequence": [
+        "locate mission-tagged alien warships in destination system",
+        "destroy assigned quota",
+        "report to issuer station"
+      ],
+      "success_predicate": "Player-attributed unique kills of designated Thargoid warship instances reach quota, then report.",
+      "failure": [
+        "expiry",
+        "abandonment"
+      ],
+      "deadline": {
+        "value": [
+          172800,
+          172800,
+          259200
+        ],
+        "units": "persistent game-clock seconds from acceptance",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_base_by_difficulty": {
+        "value": [
+          4000,
+          7000,
+          10000
+        ],
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_per_required_route_hop": {
+        "value": 300,
+        "units": "credits",
+        "status": "estimated project parameter",
+        "reason": "Original generator/server distribution is not established for this common project profile.",
+        "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+        "confidence": "provisional balance",
+        "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+      },
+      "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+      "encounter": {
+        "hull_profile": "O08 thargoid NPC dictionary with native robot-fighter dependency",
+        "alien_id": "AL10",
+        "spawn_position": "destination space signal at route fraction0.5",
+        "maximum_concurrent_warships": {
+          "value": 1,
+          "units": "ship",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "wave_interval_seconds": {
+          "value": 10,
+          "units": "seconds after previous warship resolved",
+          "status": "estimated project parameter",
+          "reason": "Original generator/server distribution is not established for this common project profile.",
+          "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+          "confidence": "provisional balance",
+          "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+        },
+        "behaviour": "project Thargoid warship/robot-fighter policy explicitly bound to O08 source stats; no ED interceptor heart/shield model assumed"
+      },
+      "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+      "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+      "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs."
+    }
+  ],
+  "common_parameters": {
+    "mission_signal_route_fraction": {
+      "value": 0.5,
+      "units": "fraction of witchpoint-to-main-station route",
+      "status": "estimated project parameter",
+      "reason": "Common space encounter adapter requires an explicit placement/trigger bound; no exact original distribution established.",
+      "confidence": "provisional balance",
+      "validation": "Boundary, persistence and gameplay checks."
+    },
+    "mission_signal_activation_range": {
+      "value": 20000,
+      "units": "project distance units",
+      "status": "estimated project parameter",
+      "reason": "Common space encounter adapter requires an explicit placement/trigger bound; no exact original distribution established.",
+      "confidence": "provisional balance",
+      "validation": "Boundary, persistence and gameplay checks."
+    },
+    "salvage_scatter_radius": {
+      "value": 2000,
+      "units": "project distance units",
+      "status": "estimated project parameter",
+      "reason": "Common space encounter adapter requires an explicit placement/trigger bound; no exact original distribution established.",
+      "confidence": "provisional balance",
+      "validation": "Boundary, persistence and gameplay checks."
+    },
+    "blocked_assassin_escape_retry_seconds": {
+      "value": 5,
+      "units": "simulation seconds",
+      "status": "estimated project parameter",
+      "reason": "Common space encounter adapter requires an explicit placement/trigger bound; no exact original distribution established.",
+      "confidence": "provisional balance",
+      "validation": "Boundary, persistence and gameplay checks."
+    },
+    "maximum_route_hops": {
+      "value": 3,
+      "units": "hyperspace hops",
+      "status": "estimated project parameter",
+      "reason": "Common space encounter adapter requires an explicit placement/trigger bound; no exact original distribution established.",
+      "confidence": "provisional balance",
+      "validation": "Boundary, persistence and gameplay checks."
+    },
+    "common_passenger_berth_tonnes": {
+      "value": 5,
+      "units": "tonnes per berth",
+      "status": "borrowed source rule",
+      "source": "O08 passenger berth equipment, adopted common project shipyard profile"
+    }
+  }
+}

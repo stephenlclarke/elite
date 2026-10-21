@@ -1,0 +1,2926 @@
+{
+  "access_date": "2026-10-13",
+  "sources": [
+    {
+      "source_id": "S34",
+      "repository": "markmoxon/elite-source-code-commodore-64",
+      "commit": "4dab4c0b752cadefe027fb0ef9cf2c8611046f50",
+      "status": "Files retrieved for inspection. Only facts explicitly analysed in the Markdown supplements are verified by this research.",
+      "files": [
+        {
+          "path": "1-source-files/main-sources/elite-build-options.asm",
+          "sha256": "7ac2f01ae272e588384a0a4f825471b8db715a8f4cc87b48a83bc0cd1d60acac",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-build-options.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-checksum.asm",
+          "sha256": "363ec83e47dbcbfaf54acdbd5646d32b8a412d2f24a6fe0239cc7c7cf65ecab0",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-checksum.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-data.asm",
+          "sha256": "5d2f615805310ebd94ae969dad9e06c37642231f92ba9728be5282cf94e40154",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-data.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-firebird.asm",
+          "sha256": "aa83cca4ade95fe0faf20a670b2e63608db18cc3a0cbd6167b17a4a81856ecf5",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-firebird.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-gma1.asm",
+          "sha256": "43c29aad4a7e77f483b374893789931bc60fa76c5cda1d500ee5411d3b22e301",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-gma1.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-gma2.asm",
+          "sha256": "cec056b0bd8cc3e22402714d2aab77b3ced0b9d12b6917e4217cb46e3977b5bc",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-gma2.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-gma3.asm",
+          "sha256": "f98f4a0414fa69ecdbc148d09e17979f3caeeff34b9aea6d1703f2f9e2d85f23",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-gma3.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-loader.asm",
+          "sha256": "978faf50fca2efd6c50dadcc4d3710b69bf4f2d754c023c11f35bc1748f4a91c",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-loader.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-readme.asm",
+          "sha256": "d64e9da9588807bb75f57b89100fc5aabf208fd02d2e309afcdd0d0038a57caa",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-readme.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-send.asm",
+          "sha256": "23bdec8a560898113a4ced56a4d2bc96beeab692492cdb17550b6e05df8bbed8",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-send.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source.asm",
+          "sha256": "c57d512e46773909fae996af43ac231dfd15d6253ef058a757b7d687d00b8a98",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-source.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-sprites.asm",
+          "sha256": "2b7fe6bcf4c995b6dcb209a8f1343b7bf64f8bb28bd845ca77f0b1687a11d7d5",
+          "source_url": "https://github.com/markmoxon/elite-source-code-commodore-64/blob/4dab4c0b752cadefe027fb0ef9cf2c8611046f50/1-source-files/main-sources/elite-sprites.asm"
+        }
+      ]
+    },
+    {
+      "source_id": "S35",
+      "repository": "markmoxon/elite-source-code-nes",
+      "commit": "cf425046d9682eef31a8f85ab795c98b146fa0ee",
+      "status": "Files retrieved for inspection. Only facts explicitly analysed in the Markdown supplements are verified by this research.",
+      "files": [
+        {
+          "path": "1-source-files/main-sources/elite-build-options.asm",
+          "sha256": "545c2d4e26760b2e385b2e3eaa212f91001bb1c9ae4b7867af31d7bab2ee8ca8",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-build-options.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-bank-0.asm",
+          "sha256": "91d373c8810c160a87162c50bce7bf8ea053f7506a053a05c37cf81bb1153e5c",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-bank-0.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-bank-1.asm",
+          "sha256": "4872f5cbc5a378127ceac996b57462ba94fa2fddc13c1f38b639c5fc2cc153e9",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-bank-1.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-bank-2.asm",
+          "sha256": "e9baaa22faf00bd295cefd732105119fac6685711eb07dae1f0d138a4ce58516",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-bank-2.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-bank-3.asm",
+          "sha256": "398556bdb507fec5eafacb237057db3245809c5a214e934e05f355b22d9c71d6",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-bank-3.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-bank-4.asm",
+          "sha256": "188e414e0a89abbb84244fd1080f33822fc2ecaab0a7637d0acab083ab7a1bb7",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-bank-4.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-bank-5.asm",
+          "sha256": "34989acb58922a48856e081307bd205d60606719a6583e113605672a2447897d",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-bank-5.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-bank-6.asm",
+          "sha256": "da283734b47201339544ed0e5f18956c3b7f47e5f43cadb0999120cd5204dcd5",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-bank-6.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-bank-7.asm",
+          "sha256": "ee9e808048f1ebb378e757f330c1e6a8d71ff3ed004aa452127650e48a6bd0c1",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-bank-7.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-common.asm",
+          "sha256": "d193faedde5b5f0e5ca794c2a29cf8f910a2c8a97582351017bc196eb886141b",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-common.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-header.asm",
+          "sha256": "a4d06df00036b5fd4fcec0b7728f6a3df2d05947d78210561705c6adef4d2b99",
+          "source_url": "https://github.com/markmoxon/elite-source-code-nes/blob/cf425046d9682eef31a8f85ab795c98b146fa0ee/1-source-files/main-sources/elite-source-header.asm"
+        }
+      ]
+    },
+    {
+      "source_id": "S36",
+      "repository": "ataribaby42/elite-source-code-atarist",
+      "commit": "1ca30d3fd19ceaaeec5335da4b13248d6cda65a6",
+      "status": "Files retrieved for inspection. Only facts explicitly analysed in the Markdown supplements are verified by this research.",
+      "files": [
+        {
+          "path": "src_orig/README.md",
+          "sha256": "acdf0be2c2ee6b12e8050939a9fa5ad264b1a546406014b8191a3576de8b02ec",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/README.md"
+        },
+        {
+          "path": "src_orig/asm/action.m68",
+          "sha256": "a27eff8ef210b77814d0f219cff8ddcceecfb2b509da5bb1f642d4e94f52f423",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/action.m68"
+        },
+        {
+          "path": "src_orig/asm/attract.m68",
+          "sha256": "125bb741105253f26b9f43a8e8dc5ef8f84d849b840ef18c6f52d681cc5226cf",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/attract.m68"
+        },
+        {
+          "path": "src_orig/asm/auto.m68",
+          "sha256": "10de3e81bdc3a87657354c6798cb994a48573dde5c21ef1b76910ee0e6b18ffd",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/auto.m68"
+        },
+        {
+          "path": "src_orig/asm/bios.m68",
+          "sha256": "f3494b81e373caa437366745f839b3fdc218b6d1e4421be93e49507b69db0579",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/bios.m68"
+        },
+        {
+          "path": "src_orig/asm/bitlist.m68",
+          "sha256": "df3632125c47f5659f262bc88aa954c75b076ac6ed04a2509396099866913cfe",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/bitlist.m68"
+        },
+        {
+          "path": "src_orig/asm/boot.s",
+          "sha256": "ff6dc48feb13703f5cc4bc546744e37e55f67e74920dd005f2dd1fed43b5a018",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/boot.s"
+        },
+        {
+          "path": "src_orig/asm/cargo.m68",
+          "sha256": "69c0d58f51fbc537d912b17a6377ae9d39704846c8602948033abf1ddbfddb4f",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/cargo.m68"
+        },
+        {
+          "path": "src_orig/asm/checksum.m68",
+          "sha256": "8e1d9ef0b3df41f173aa4fabacfe6de6116de1fc0a841222b4c74c1181616e14",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/checksum.m68"
+        },
+        {
+          "path": "src_orig/asm/chkend.m68",
+          "sha256": "152b2d88e99551578d5e5f3e4315e87c0b5ed4490e616c3c66e13ce817916dee",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/chkend.m68"
+        },
+        {
+          "path": "src_orig/asm/chkstart.m68",
+          "sha256": "4486c9d0ad4cf5f645a547cd28bf27bbe8e56306d4b9957abc63860477a8bee0",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/chkstart.m68"
+        },
+        {
+          "path": "src_orig/asm/cockpit.m68",
+          "sha256": "d7e356b983cd7cbc8eb1d3b6e9af54fbe509f73b111f23d5349db43ffe58030d",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/cockpit.m68"
+        },
+        {
+          "path": "src_orig/asm/combat.m68",
+          "sha256": "f4395e15431969fe13bba24de58a2dfffef343a3f8cdc41647622b8d695600e2",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/combat.m68"
+        },
+        {
+          "path": "src_orig/asm/common.def",
+          "sha256": "2c3f686181a24485e24ae59760cf258185de3ceaa4c0f44a8803207e5ec5e792",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/common.def"
+        },
+        {
+          "path": "src_orig/asm/data.m68",
+          "sha256": "e381e568fe667f8a2d3dff3bd2e1dc26eec4eeef3135026d70b0f8a4c79ab3a7",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/data.m68"
+        },
+        {
+          "path": "src_orig/asm/debug.m68",
+          "sha256": "b8d5f951d0f4d9841f3f9e2a16f3573d169fe3d0457716902859058ffde67635",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/debug.m68"
+        },
+        {
+          "path": "src_orig/asm/disk.m68",
+          "sha256": "6f059e0eadbb6b775bdc4d1138a29e63825324dac36213b6831b9d24c2bcc202",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/disk.m68"
+        },
+        {
+          "path": "src_orig/asm/dust.m68",
+          "sha256": "922405ae61472d9f0dd218088792e7bae3ff6c2115de2d8c5861e8b30d7bb59f",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/dust.m68"
+        },
+        {
+          "path": "src_orig/asm/effects.m68",
+          "sha256": "39ba66726344cdcf7a9fe5b29924b70457dafe15fe739813ba0660d526ea9b8f",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/effects.m68"
+        },
+        {
+          "path": "src_orig/asm/elite.m68",
+          "sha256": "1069f440a3d3c374b5f5583181b8c61b2bde1696f1ff713600080abb06adc243",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/elite.m68"
+        },
+        {
+          "path": "src_orig/asm/elitechr.m68",
+          "sha256": "a05d878a0479c48fbca437a17b9472bf960683e58985832972c3a342568ad59d",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/elitechr.m68"
+        },
+        {
+          "path": "src_orig/asm/equip.m68",
+          "sha256": "53b7c870b4e39010f2ece02059a80adebde4c8fae31009dc0ca1937d7399f6e4",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/equip.m68"
+        },
+        {
+          "path": "src_orig/asm/except.m68",
+          "sha256": "6c91b9fb2677e526c765053256f73f888a3baf51da57ea8979879fecf1bdcdb4",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/except.m68"
+        },
+        {
+          "path": "src_orig/asm/flight.m68",
+          "sha256": "eb0cc4b7767610d5e296c7a7b6825e869a43f7efe149d2c8544260b41daeb6b5",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/flight.m68"
+        },
+        {
+          "path": "src_orig/asm/funny.m68",
+          "sha256": "675868221c5f75d07709d6622425092d3e80611e4809c52e749abdcfee415dde",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/funny.m68"
+        },
+        {
+          "path": "src_orig/asm/galaxy.m68",
+          "sha256": "7584238cf71d5fe4550664ec2724546dc6bf764e418f747c26228fffbb7b782a",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/galaxy.m68"
+        },
+        {
+          "path": "src_orig/asm/graphics.m68",
+          "sha256": "ceea04115ea6246f6cb4ccf191efeca64e5395fcbdf67edb1e6470c59d0e1b4a",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/graphics.m68"
+        },
+        {
+          "path": "src_orig/asm/icons.m68",
+          "sha256": "c1716f1173091141edeb35203a4fae390c563251c8292eef7c81939740f5c7c7",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/icons.m68"
+        },
+        {
+          "path": "src_orig/asm/init.m68",
+          "sha256": "90e09fc833a218a160a6a4dcb4f218dd4022d23dd678a1e57b3169b105509aec",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/init.m68"
+        },
+        {
+          "path": "src_orig/asm/loader.m68",
+          "sha256": "948af5c6f185e4d9037b0c8c3f2a3c36a9eb2b6f4d22c4ebeaf7c8c5e4de8e6b",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/loader.m68"
+        },
+        {
+          "path": "src_orig/asm/logic.m68",
+          "sha256": "7b8347723ef5a598e3b05f1a67670b3911eb4a85f9c499570bd45ae17ba21747",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/logic.m68"
+        },
+        {
+          "path": "src_orig/asm/macros.m68",
+          "sha256": "7d2581dc6fa67209616d68b2ddfa0587ff2bda5af769c9b54aad027f96d15da9",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/macros.m68"
+        },
+        {
+          "path": "src_orig/asm/main.m68",
+          "sha256": "02dc93a92e040a8066b17056e8027e4964c42fb638fd1a51f0fc7830004b7948",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/main.m68"
+        },
+        {
+          "path": "src_orig/asm/maths.m68",
+          "sha256": "68c3f17ec5343b94c920e8fe8a3768fba751ba7e0ac9b63fdefa71b9f4093661",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/maths.m68"
+        },
+        {
+          "path": "src_orig/asm/missions.m68",
+          "sha256": "2c186d1d8afafa6f13aeb414a1ab0c71043b0cc751a26754b60cf6930335532f",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/missions.m68"
+        },
+        {
+          "path": "src_orig/asm/music.m68",
+          "sha256": "51b7b4bdc970b88ee190feb3e5e4430461c55522fd5f2b85de5af3596792db69",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/music.m68"
+        },
+        {
+          "path": "src_orig/asm/notes.m68",
+          "sha256": "e8f9783bbfc2d027b4640b85511bb2e847893e861943d4636ba514691d0cfcec",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/notes.m68"
+        },
+        {
+          "path": "src_orig/asm/novella.m68",
+          "sha256": "9c7b62b37dd14e99d3381fa6623143dde8567d4e9bcad51e0c5817cf7ae4ac33",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/novella.m68"
+        },
+        {
+          "path": "src_orig/asm/objects.dat",
+          "sha256": "47ae9710f6d4f7c241ba277417f7837c7b3d6391d0b25faba0674ae9602d20f6",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/objects.dat"
+        },
+        {
+          "path": "src_orig/asm/objects.m68",
+          "sha256": "b7f733bad60a000a4eb3dd40dcd48b53db53da3b4c33f1afcb92920310b6a062",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/objects.m68"
+        },
+        {
+          "path": "src_orig/asm/options.m68",
+          "sha256": "2325387e5635e8d6b9e6747469e9e90d6617e2bf60eb1b519ef4891d362d6f38",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/options.m68"
+        },
+        {
+          "path": "src_orig/asm/orbit.m68",
+          "sha256": "102e68a09dad364703b318418dcfcf66582fce22ac2b39f55e93e2155ed07c34",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/orbit.m68"
+        },
+        {
+          "path": "src_orig/asm/pdata.m68",
+          "sha256": "6d5237c1cdc3d762f343c56bbf7ac2d670bcce8ef0edec8f43980ce5f1658fad",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/pdata.m68"
+        },
+        {
+          "path": "src_orig/asm/radar.m68",
+          "sha256": "7f0001dc0e57a131d4a8970e99c125912de44fc353f06d453baccc402dbb26fe",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/radar.m68"
+        },
+        {
+          "path": "src_orig/asm/rotate.m68",
+          "sha256": "8556c4b2b9ce6e1241757a0ee1b8db00f931737768be7ba589dc714c5936dd66",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/rotate.m68"
+        },
+        {
+          "path": "src_orig/asm/sounds.m68",
+          "sha256": "b67c0b182e4d9aafb5b9690153d40952b5a24947d5f4aee92cd011ab96d5ccd6",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/sounds.m68"
+        },
+        {
+          "path": "src_orig/asm/special.m68",
+          "sha256": "adf65b699caa9d67baace0bdf48c0437bf0e273f8eadbd96d9c3a903aef1990d",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/special.m68"
+        },
+        {
+          "path": "src_orig/asm/sprites.m68",
+          "sha256": "4ae7a58a29c507ddc6a1f556333af4abfca8f6b426db820435761ee7aa2837f4",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/sprites.m68"
+        },
+        {
+          "path": "src_orig/asm/tweak.m68",
+          "sha256": "a13ac06abef70090a784d5024977fcba2ffbdf8a2bc8ecbd0924bbe80a94359a",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/tweak.m68"
+        },
+        {
+          "path": "src_orig/asm/vector.m68",
+          "sha256": "5f300a4fae332de76363a53b6fd69b4a93831a9f68d445b756bfa24d8776901f",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/vector.m68"
+        },
+        {
+          "path": "src_orig/asm/workspace.m68",
+          "sha256": "e70c189281dece98db252863910eae47e2bb12b2c8208a51017ed2febe87515c",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/asm/workspace.m68"
+        },
+        {
+          "path": "src_orig/assets/BITMAPS.IMG",
+          "sha256": "22fa176def8ab5a4415389c7580c629b22f163f64d41aa5a5f983cdbf5a88c3f",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/assets/BITMAPS.IMG"
+        },
+        {
+          "path": "src_orig/assets/COCKPIT.PC1",
+          "sha256": "e908ffc2efd9de7668bf384d93dbc7a745ab24a1b92435b01d13498757f13f7c",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/assets/COCKPIT.PC1"
+        },
+        {
+          "path": "src_orig/assets/DCOS.DAT",
+          "sha256": "36f518219556811bb4ba3fbd61ff9d14a48da8adf6110454ff741825a4c29860",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/assets/DCOS.DAT"
+        },
+        {
+          "path": "src_orig/assets/DSIN.DAT",
+          "sha256": "5bb57f109d8661f9d729166be4cca63db1eef3766b646327b6a2807563d66f23",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/assets/DSIN.DAT"
+        },
+        {
+          "path": "src_orig/assets/LOGO.PC1",
+          "sha256": "83adbb6cb5a5b66abf40fb887ffbe3b8874b75a164b332788fb05fb6a5929147",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/assets/LOGO.PC1"
+        },
+        {
+          "path": "src_orig/assets/TEXTSCR.PC1",
+          "sha256": "11ec52df282e719c6ac9335998828b1127249fcc5ed1b4d851a8d8caa8d67917",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/assets/TEXTSCR.PC1"
+        },
+        {
+          "path": "src_orig/assets/TEXTURE.PC1",
+          "sha256": "8abb4b0996d81628b421f7bbbfd2088f32726dd595d83b2b0f9849341e5a4e0a",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/assets/TEXTURE.PC1"
+        },
+        {
+          "path": "src_orig/assets/TITLE.PC1",
+          "sha256": "00edd7944d6d93b3c6e7f82d7e94b1d3c336b94e967c84f5702889240621ee79",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/assets/TITLE.PC1"
+        },
+        {
+          "path": "src_orig/build.bat",
+          "sha256": "88e17d8496656a8e991460df03f2d18102783712a1e65f8d0fad3729b66b8043",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/build.bat"
+        },
+        {
+          "path": "src_orig/build.ps1",
+          "sha256": "d704635daa3f1dc4570066536cf85f4561fc8a0b025afbe0b483e0136fde3b6f",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/build.ps1"
+        },
+        {
+          "path": "src_orig/build.py",
+          "sha256": "a819820eb2d9351b5461cd05ddb3d76d52bd5f05cbd169d357d0fee111c3253a",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/build.py"
+        },
+        {
+          "path": "src_orig/elite.ld",
+          "sha256": "8ceb1aff91eb57bebd1c84a2ea2975a83083aa43acac62306b6d415ebd0052b1",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/elite.ld"
+        },
+        {
+          "path": "src_orig/modules.txt",
+          "sha256": "f782b68ac6dd2d8f5c2b4196bea203a1856e0c8782eabe8c521ade803922ad4c",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/modules.txt"
+        },
+        {
+          "path": "src_orig/original-archive.json",
+          "sha256": "23b545289466fc5bd0bcca698d04d81ab11aadafcba38ad3494a2da4e6b712a5",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/original-archive.json"
+        },
+        {
+          "path": "src_orig/original-sha256.json",
+          "sha256": "eca1e94c3b798845082fdb173af79c27aa3072fca18ca8ef8adf9cda2f33ca5d",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/original-sha256.json"
+        },
+        {
+          "path": "src_orig/tests/test_disk.py",
+          "sha256": "66119b5fad128808905127b5922b1f0578c9bf7a06245d13d9d61f7bec3af779",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/tests/test_disk.py"
+        },
+        {
+          "path": "src_orig/tests/test_original.py",
+          "sha256": "cbf0646c92ea07edbdea8fc9ccff026757af03e1cb1b34c624b4969ebbad1189",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/tests/test_original.py"
+        },
+        {
+          "path": "src_orig/tests/test_port.py",
+          "sha256": "ddc6d6172177b6bd76416657bd5b4c941156be3ac3656e9db35c61bb82213d15",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/tests/test_port.py"
+        },
+        {
+          "path": "src_orig/tools/convert_quelo.py",
+          "sha256": "5bacff7e381b1239989c7b77f5c6c57dbf287fdb3c3d35269f9cb3d7a509cdbd",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/tools/convert_quelo.py"
+        },
+        {
+          "path": "src_orig/tools/make_disk.py",
+          "sha256": "eb1ac99a305fdfb91dd21a38dd0f22b48b8dd0b9f6bfc8534f60911a38c2868d",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/tools/make_disk.py"
+        },
+        {
+          "path": "src_orig/tools/verify_original.py",
+          "sha256": "2db6d9c0e5a039952aa89a7b82cfbe4ad96275f4e2b3017d5451e398940903af",
+          "source_url": "https://github.com/ataribaby42/elite-source-code-atarist/blob/1ca30d3fd19ceaaeec5335da4b13248d6cda65a6/src_orig/tools/verify_original.py"
+        }
+      ]
+    },
+    {
+      "source_id": "S37",
+      "repository": "neozeed/newkindgba-1.7.1",
+      "commit": "2107c8af516d66bd6686369b38492c415813296f",
+      "status": "Files retrieved for inspection. Only facts explicitly analysed in the Markdown supplements are verified by this research.",
+      "files": [
+        {
+          "path": "agbprint.c",
+          "sha256": "959b5d3cce2301b598a7242e4b79f2b1fabc195b02ab1ab14b1d8e426ccd076c",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/agbprint.c"
+        },
+        {
+          "path": "agbprint.h",
+          "sha256": "1ce78f92bc55fd630bd63e739fd7a9f071d6e4d1ba130f055a2b5ff4f9416de5",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/agbprint.h"
+        },
+        {
+          "path": "bugs.txt",
+          "sha256": "b058800179724cd260e514a9361de82e233192465b49e3078e2e3b864acdf635",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/bugs.txt"
+        },
+        {
+          "path": "dma.h",
+          "sha256": "97890a06bc2a46c40a551a6d244c91890bebc219fce49951d811e97173025c41",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/dma.h"
+        },
+        {
+          "path": "docked.c",
+          "sha256": "151e6975d4b2710569d6d640562e99cc838a22e5d14945a7f0fc67d520a84e5c",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/docked.c"
+        },
+        {
+          "path": "docked.h",
+          "sha256": "71fc5bb73970f542b907265ca4a29c3c25353952a1ea53fd301ae2c50719af10",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/docked.h"
+        },
+        {
+          "path": "elite.c",
+          "sha256": "fa3339456175fb73c021bba3406e2b3fd8e0107e78f9b6ee84e9de8b961adc36",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/elite.c"
+        },
+        {
+          "path": "elite.h",
+          "sha256": "99b8a040a09610a04bbe985c498d6f1dbf68932b5262f2e17df8a5903e033edf",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/elite.h"
+        },
+        {
+          "path": "elite_sprites.c",
+          "sha256": "3de29e8b13f018f37c0e33b9a84da53bc3d9e0c56b07f86bbc749d7509d48271",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/elite_sprites.c"
+        },
+        {
+          "path": "elite_sprites.h",
+          "sha256": "19c403e369c78133e791dc40ef4fbc4d0425b9dfa5472bd87f311196e6813b4f",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/elite_sprites.h"
+        },
+        {
+          "path": "elite_sprites.txt",
+          "sha256": "d815c133ed5ea1888493c1fc291f40e53c6a51db90ca6d145446d14e51ea5ce3",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/elite_sprites.txt"
+        },
+        {
+          "path": "file.c",
+          "sha256": "f6915f14a3df3b2e663f418305fd8c2f1793a516231e35c5a4e5e43ee1e99e67",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/file.c"
+        },
+        {
+          "path": "file.h",
+          "sha256": "0112e6ca4badca3bca21ce6c04d5d41545a90add170ce015fd099070897cbb3e",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/file.h"
+        },
+        {
+          "path": "gbalib_asm.h",
+          "sha256": "7c705816736cbc342c6d6782b6b98bfbb62394ce9c43b02d48e99e1ffdea32e9",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/gbalib_asm.h"
+        },
+        {
+          "path": "gfx.c",
+          "sha256": "3918608a1c339d334d4f36b99ae07aae4613eba7624664a5f39adf2acf5debf8",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/gfx.c"
+        },
+        {
+          "path": "gfx.h",
+          "sha256": "17feb6d96bb08b65aac63d6aa2024b20e7ef3687caa06c505dc206160215c891",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/gfx.h"
+        },
+        {
+          "path": "history.txt",
+          "sha256": "97cfd7601d3ff7083a347d32d5a189f87ce3dd5e4624f96f198ad0917377a9cf",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/history.txt"
+        },
+        {
+          "path": "interrupt.arm.c",
+          "sha256": "3b2bedf078c55559b268395298a55002370fe447a4f1b3fa8b5764d13ac73d95",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/interrupt.arm.c"
+        },
+        {
+          "path": "intro.c",
+          "sha256": "a9e711b9a564fe3b4c9054b7486c65b35fbbc1cd348f79635ef15fa99142e7d9",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/intro.c"
+        },
+        {
+          "path": "intro.h",
+          "sha256": "99c915a7af5d4eb8332fbc7fe265986c4d9afe400603bd6d382d4a7efd79ddef",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/intro.h"
+        },
+        {
+          "path": "keypad.c",
+          "sha256": "5dbc9309b9528dd4f605f15171da44155c4482f5e1acd3f3024643248d575147",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/keypad.c"
+        },
+        {
+          "path": "keypad.h",
+          "sha256": "7623c656b6119628926425822ae03ae7490722022b04db86c14e81da418c5165",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/keypad.h"
+        },
+        {
+          "path": "main.c",
+          "sha256": "bd9000f59e570f8c7323dd31a0a5cb097736f39840b71b3b878c12afe2646515",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/main.c"
+        },
+        {
+          "path": "main.h",
+          "sha256": "13bf44393fcbdadb3aa841a8d0aca2559f37ab351ca2ca4c86c77a513db219d3",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/main.h"
+        },
+        {
+          "path": "menu.c",
+          "sha256": "02dec571ce1785e8d57e3bec29bd098ce4b31db00e3a1075ca9f7538756816cc",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/menu.c"
+        },
+        {
+          "path": "menu.h",
+          "sha256": "d50729cbad6547a5aa135ecf8842a2a3008c75402c73682eeb2bd8b5b3f31389",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/menu.h"
+        },
+        {
+          "path": "missions.c",
+          "sha256": "8c1bb93c1f8e17e8119d362dc7b11172b2df692cb3ba0b8090cf1ba0f6c30e9c",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/missions.c"
+        },
+        {
+          "path": "missions.h",
+          "sha256": "be3b1d98948ef8dfc4364bca69f993f45c40c1b5b7db9e84fdff638493aadb24",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/missions.h"
+        },
+        {
+          "path": "options.c",
+          "sha256": "9e59da1cf378206964527158facc554b3b6f53be982a784d039096bc6a300aa5",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/options.c"
+        },
+        {
+          "path": "options.h",
+          "sha256": "9f4b64cdef1f7984ab3d0246dbee22bbf1ecee59a07b1a6c99eb066398b17838",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/options.h"
+        },
+        {
+          "path": "pilot.c",
+          "sha256": "4da1b95830bbc885870f9740d5e8008f8c2f965c9359858dec12e7d1216f0889",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/pilot.c"
+        },
+        {
+          "path": "pilot.h",
+          "sha256": "772a461f1907246f8c39dba656d1491c87d499189d4776373838b8aa6baf9780",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/pilot.h"
+        },
+        {
+          "path": "planet.c",
+          "sha256": "1faec83b87690b3a2e1cf94f008147f72d0dcd8237c38298cd22e9df842f2084",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/planet.c"
+        },
+        {
+          "path": "planet.h",
+          "sha256": "a1b497b4a943203968b4cbb10bde0e9667792959a82050d3ab7ae0365637427a",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/planet.h"
+        },
+        {
+          "path": "random.c",
+          "sha256": "114dc2946466458e4f2d8ac60d3eeee0d8499dabe719af5882db414d6c40cb3f",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/random.c"
+        },
+        {
+          "path": "random.h",
+          "sha256": "0342326c4709d583abe0c38f719488ed89dcd77072fc2e8004b541d26ac82712",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/random.h"
+        },
+        {
+          "path": "readme.txt",
+          "sha256": "8e672ce14d3927025637f5f43bde1df0187fdbc85e8f68c8fbd5a1273bb96f34",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/readme.txt"
+        },
+        {
+          "path": "registers.h",
+          "sha256": "88f32e7dd36e9008bce60eb05c2cd1c0eb4ef23dad2393a1bcd570db258b8fae",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/registers.h"
+        },
+        {
+          "path": "reset.c",
+          "sha256": "d36c8ed9c56519b8a44f4bf818ed5e1be139be0b2b15da59938180db4c988764",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/reset.c"
+        },
+        {
+          "path": "reset.h",
+          "sha256": "9538ac9660bd45dea1a71e813ca4c743e08b7f6d271114adae8c24cbce940e90",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/reset.h"
+        },
+        {
+          "path": "saving.c",
+          "sha256": "39424271c7727cf8b3676d5cdcfe66e448bab2d5ed2d855a073ee3dab5900ede",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/saving.c"
+        },
+        {
+          "path": "saving.h",
+          "sha256": "de058cab018100604042cd9822ada542415d5a7f9d367f486801d6e7bb6bd247",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/saving.h"
+        },
+        {
+          "path": "scanner.c",
+          "sha256": "7b7158c5b7574b65655bab8d7699b2be993fcf8a0d8b23d01e64ea8b557f3044",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/scanner.c"
+        },
+        {
+          "path": "scanner.h",
+          "sha256": "cefa4daf5a0015d0afa1232530e94d4dad59117d39755f748dab149c91613da7",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/scanner.h"
+        },
+        {
+          "path": "shipdata.c",
+          "sha256": "abe2d102a2f423222c64b5b3e41b60f7f4571ceb257b33756a6bd0897eec0c76",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/shipdata.c"
+        },
+        {
+          "path": "shipdata.h",
+          "sha256": "fddb2b7193b194579df928c2b4d2499fafdf3a7f19af1d641db8d7fb52c4b529",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/shipdata.h"
+        },
+        {
+          "path": "sleep.c",
+          "sha256": "d756af47eae1c3b4a10a2500469a4a8b65352b13c2603ad5b760c94b34eedff7",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/sleep.c"
+        },
+        {
+          "path": "sleep.h",
+          "sha256": "162e9289ef3c7faa61fb2eeda52225d0c3039af8eca529526f562fca9b0394fb",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/sleep.h"
+        },
+        {
+          "path": "snd/modules.h",
+          "sha256": "43d7b4098aef69240ea1443438f6a68764508bfeea1edac3a5d3e97ac0046593",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/snd/modules.h"
+        },
+        {
+          "path": "snd/samples.h",
+          "sha256": "cfe4f76f9f55c3c466887503b1ba5d077fe3aee04f0a60a859b09d519dce2929",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/snd/samples.h"
+        },
+        {
+          "path": "snd/sndcredits.txt",
+          "sha256": "6df7e6bf7b146092ec3f68f97d499d530931962a46db2de3ed5d075b482223ff",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/snd/sndcredits.txt"
+        },
+        {
+          "path": "sound.c",
+          "sha256": "10f61db330bfac38725ad0a999c5878ca5c063e39dcf22035d71810fefc159b6",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/sound.c"
+        },
+        {
+          "path": "sound.h",
+          "sha256": "99fde60965fe1aa9e2dde10bb5b5d2321976c169ba6ba9e5ad9be5dd862dab85",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/sound.h"
+        },
+        {
+          "path": "space.c",
+          "sha256": "8e70bd8b8076b5abd2e8aee7747fe818524880f7868fe3fafe60f0507ff75213",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/space.c"
+        },
+        {
+          "path": "space.h",
+          "sha256": "ac9c80d80f349fb6834e1209f1331e5c40fd4548fd50ec4f2bd88f0be533fb1d",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/space.h"
+        },
+        {
+          "path": "sprite.h",
+          "sha256": "a7b3d154d5cbb643b22f3f7fe116106ceeb174ed93db92379ac1abf70f4d1919",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/sprite.h"
+        },
+        {
+          "path": "stars.c",
+          "sha256": "8f4773fe166ad7aac2d980f45afbe2802b4720c84566b5cd9bb2c071f80fa985",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/stars.c"
+        },
+        {
+          "path": "stars.h",
+          "sha256": "489c0cb95b76eeede224a82414c69d9b31d9b65f178c40c497c96ef3dcc8594f",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/stars.h"
+        },
+        {
+          "path": "swat.c",
+          "sha256": "ce959775f9cd22f84f30c04188f545082a839415901db5a231e03a73b653c501",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/swat.c"
+        },
+        {
+          "path": "swat.h",
+          "sha256": "6cfbb741bc0451137c481f2f8034e1cbdd4dd1c7c852e66996bc60856bae9c08",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/swat.h"
+        },
+        {
+          "path": "threed.c",
+          "sha256": "ae5d083c7831fb74c5fef1c9fa87b9c7d1c45e7ad901c9d80e5e06286bc49155",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/threed.c"
+        },
+        {
+          "path": "threed.h",
+          "sha256": "df7fa3b8560aaa7b4f8f2f65c631c0ff04ad9faf65e2b38915090d2092f4d6f6",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/threed.h"
+        },
+        {
+          "path": "trade.c",
+          "sha256": "1eb90de44b770a873204a68d401e028ac766f0a4dc16403869613dbc72aad170",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/trade.c"
+        },
+        {
+          "path": "trade.h",
+          "sha256": "d051c0ad06cc9bf85a791d96486d99185a9c9b1d472cfee69a96fa1575fe6842",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/trade.h"
+        },
+        {
+          "path": "unpacklz77.c",
+          "sha256": "ef5fb5b06140e3cec769bfa945ca4477dcd5773eaf9525ca07cd04499bb8072e",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/unpacklz77.c"
+        },
+        {
+          "path": "unpacklz77.h",
+          "sha256": "316303db24157ca0ccc0fc1345b00fba244eeec30cefc757d90dc318411819cd",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/unpacklz77.h"
+        },
+        {
+          "path": "vector.c",
+          "sha256": "a4603debdd943e3d773e57905ed30a369c2cdba6ad9983c3dfe03742053e74f2",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/vector.c"
+        },
+        {
+          "path": "vector.h",
+          "sha256": "94e1463b77a1a10ee93300e1c2517177184d1351b7948c040ab92ffd60122be7",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/vector.h"
+        },
+        {
+          "path": "version.c",
+          "sha256": "6b11ec97ed6d3d7f70ad0ae031931ad1271175e664a967ff21f7be2985793a5c",
+          "source_url": "https://github.com/neozeed/newkindgba-1.7.1/blob/2107c8af516d66bd6686369b38492c415813296f/version.c"
+        }
+      ]
+    },
+    {
+      "source_id": "S38",
+      "repository": "Oric-Software-Development-Kit/Oric-Software",
+      "commit": "c81612082482d1f497638ada14ad4640c5e4f1ec",
+      "status": "Files retrieved for inspection. Only facts explicitly analysed in the Markdown supplements are verified by this research.",
+      "files": [
+        {
+          "path": "users/chema/1337/TINE/cockpit.h",
+          "sha256": "38f96ea734e5890f514a897450177ab2edf3662f58e553d3a3820fa416fee826",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/cockpit.h"
+        },
+        {
+          "path": "users/chema/1337/TINE/cockpit.s",
+          "sha256": "a729d9fb8eed8ec65e8864970c7c2b409380031c8aab374cbeca3a2752e08d7c",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/cockpit.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/data.s",
+          "sha256": "7f87d29c3d65a6f9fb23071cc3719b5ecffdf65b15dc598382d0b908098283c3",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/data.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/dict.s",
+          "sha256": "0b95479bbccb372783f6d4f97ef35f31831f862388b303685bf76aa54d3651de",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/dict.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/disk.s",
+          "sha256": "0c1872a7772d50ddf895aac62f9fe59daedb0ddbe8aa9f92cffcdac03b4c5773",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/disk.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/framerate.txt",
+          "sha256": "c938bbe4365f3f8f42679c1e75a07573e9113d0005ec3449fef26b7c7f1e0b94",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/framerate.txt"
+        },
+        {
+          "path": "users/chema/1337/TINE/galaxy.s",
+          "sha256": "5b8a70bd6d0a9174f58f0f57e4f5ee0b739d38a15c49f19dcd51230772f6e4c1",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/galaxy.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/graphics.s",
+          "sha256": "c71327b7407674408d235fbcc57b511ecd4bb3b7dacae453eb01cfce524bbfd5",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/graphics.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/keyboard.s",
+          "sha256": "22dac48acbc03fb6c83b98337a37d8060a970e2a9f2c9761d208f12ca885e419",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/keyboard.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/main.h",
+          "sha256": "b03cd6555899e7e99fb36998e05116a7a03b7a0616fdf0532182c7b549cfe069",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/main.h"
+        },
+        {
+          "path": "users/chema/1337/TINE/main.s",
+          "sha256": "89063a72ecfba949425db1e93c3bb9af70b0b03995ce4c3819a61f93712b238c",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/main.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission0.s",
+          "sha256": "48d219a06ccd2b0701e22031cf0c094545d239dff6ec4453650832bd370a0178",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission0.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission1.s",
+          "sha256": "f1742ffdd6302305dd130c7fb4bf113f742c0ac6f08c5cbfc5790abe0a133b09",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission1.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission10.s",
+          "sha256": "5318bb6fbd56badeb88c60dc2c159870b1b271a7b96a19cbc4b0512a494b19f7",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission10.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission11.s",
+          "sha256": "304b44c655019669563567af4a4a5fcf98b9657e66370b04017d95a016886a0e",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission11.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission2.s",
+          "sha256": "4c3019862ab6f7bbdb99ad54220f5183563f9e3de54db53a1718d1e689796744",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission2.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission3.s",
+          "sha256": "1184a99dd7e4604ca8808e3ba532deda45fdf4aedd029adb55ad430c46dcf7b2",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission3.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission4.s",
+          "sha256": "db910bdb22a50b9e0331d5de3f56603e838ea59aaf56b9678c709b202324d753",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission4.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission5.s",
+          "sha256": "1e8f674959d4edbd39abb79dd4792d1058829b84c9dd354857a2e8edc3893439",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission5.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission6.s",
+          "sha256": "2d8dd36c86a9872d619faf8c6bd5fe1dba7876666d4361d24acdbc1c4e1b1f86",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission6.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission7.s",
+          "sha256": "831e89921ebdc0886da1a11c45b82dbdc6034fbeebf9343a50a96f7b7a4aeabb",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission7.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission8.s",
+          "sha256": "8ed39628a6b1ae378ea77bc9d9ccf62cfe4fa4e29d44bcae5b7ab77e479d5a32",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission8.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/mission9.s",
+          "sha256": "bd719ce6497d2db0462d8a320a0fb68173f3207857d9485794a9b12019cf7878",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/mission9.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/tutorial0.s",
+          "sha256": "b4d8ad0e91bc6353b54fa2314cab7bda06a15f4f2d88c59c0290be38b315ea2f",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/tutorial0.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/tutorial1.s",
+          "sha256": "340ab56f56eaeb2d36876de5c61db521c06d006f17d641cb597c736688436895",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/tutorial1.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/tutorial2.s",
+          "sha256": "80d66ee2ea2b865bf0e0851a93b7ce450b208065181ee7906c3126f687efad8b",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/tutorial2.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions/tutorial3.s",
+          "sha256": "40ce058508b00aca14caa22d96979b8a5fde82afbf65a25cb52de6093e4f7086",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions/tutorial3.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/missions.s",
+          "sha256": "9bd629f0df3cafc943ae1febac00200b68eb083f338326528ac679c73082ed03",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/missions.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/models.s",
+          "sha256": "e8f3c5bd0caeb78ce7475f8f76ab841412f94d81277c4187f68795cd188bd713",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/models.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/music.s",
+          "sha256": "819c24839c1dc29efd3c09cafb1baa6cc01fb09fd2cb33ad92a23aa7911718c0",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/music.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/LineDraw.s",
+          "sha256": "1b6fb7011d215b5ed20f8fcbb6b711a7a3d005379a91a0e8ad88731b6307e99b",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/LineDraw.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/circle.s",
+          "sha256": "f9a136495e371c1a4a972559fb4fe1e2604cda4269a91e2577bf249001b16e5b",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/circle.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/clip.s",
+          "sha256": "8750aa4d055fab1b277611a27eb1f07a3ab87d2a70b2338a904d910e01b97a54",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/clip.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/filler.s",
+          "sha256": "8a744f5101410bdcff2d2735309074122e836f16938a8d7ef007706bc3736760",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/filler.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/lib3d.s",
+          "sha256": "4951f38e226856cf76aaab96ee13a80d1caec0ec01f9f8fb856ac7a8893f4804",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/lib3d.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/lib3dtab.s",
+          "sha256": "1b8d8c8a67516c17532d4771f28c5e6111fa8707b6d91f4ceb9d2cc002ebaf70",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/lib3dtab.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/mextra.s",
+          "sha256": "384577f7b8c423bc20ecef1843a29346a3950f312cf6e4776d44bc29a250efa1",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/mextra.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/obj3d.h",
+          "sha256": "23da48c8a3da44c6a2ff3a5dc1d9cf6177b016f6ee26c593f7137a7333b4ad63",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/obj3d.h"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/obj3d.s",
+          "sha256": "e86048154e0575c37caf8472f68838d22796cbf5d61e28f93a58a5679d08a3eb",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/obj3d.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/overlay.s",
+          "sha256": "8a51581ef724b0be55aa5732aa3f2617a71b0fdab15bbbdaae265939b024ad48",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/overlay.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/oobj3d/params.h",
+          "sha256": "72511b9ebbc2404c2ff9c8f38ed05d6816182fa386f89c14442848d2cae5a868",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/oobj3d/params.h"
+        },
+        {
+          "path": "users/chema/1337/TINE/radar.s",
+          "sha256": "02834b353e5767c2a9bdf993e9330b8ea8d160833853f1efd47e6f767cddfc7a",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/radar.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/random.s",
+          "sha256": "d0c39b060e74cfd354b7923ed8e1a860ba98ceaee975dd7529b2fcb5074ff572",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/random.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/ships.h",
+          "sha256": "3c7fb8a8f338b6f9acaa77367cec933da488ef245834c4298ce259c99c6da38b",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/ships.h"
+        },
+        {
+          "path": "users/chema/1337/TINE/ships.s",
+          "sha256": "dc0a717f227b8948e4df3903f5d2ef78d6b0dd60db5ba3dd9708c04d5fa67c98",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/ships.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/sound.s",
+          "sha256": "e48eab4b39a5e5c2af020c080f752a0d5883e2f6b26f190c715263f1e463e521",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/sound.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/stars.s",
+          "sha256": "46fe2a0b31c11329d2dfb174e1dfceee26d27a04c58143774ebf202bf2102f8a",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/stars.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/tactics.s",
+          "sha256": "c9fc05cfccf1c3ce64165526196976a704b2d361b956bb6d795005530c2301a6",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/tactics.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/tail.s",
+          "sha256": "6955ee1f9a2ed9956f3077a00d3f926062168a48a6dc16daf921db372beee2ba",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/tail.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/text.s",
+          "sha256": "7a8d57bcbfef44ff529db8639d34324fd7f137945fbfa5e5f835953826985167",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/text.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/tine.h",
+          "sha256": "275e0ba1ac447484c86ffd01a83aea7a1b92efc3600c555446130c33fc2a8232",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/tine.h"
+        },
+        {
+          "path": "users/chema/1337/TINE/tinefuncs.s",
+          "sha256": "187a3e073c82d993bf4eba3b3be5c49900aae360489aed4615f4dc0eb5d95c7b",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/tinefuncs.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/tineinc.s",
+          "sha256": "cd937e23b6ecfa456227bc4a9352da49586e6f2256bdd0d3504eaf5c38efb554",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/tineinc.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/tineloop.s",
+          "sha256": "377e3a19d97c7faf3fb6f8045899fe40651242a5fb640644e1b8a1763c12b706",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/tineloop.s"
+        },
+        {
+          "path": "users/chema/1337/TINE/todolist.txt",
+          "sha256": "2375c6517eb859a064aa882ba4fb3fbde17c26f9094e34e055381198401b84cb",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/todolist.txt"
+        },
+        {
+          "path": "users/chema/1337/TINE/universe.s",
+          "sha256": "634c125273d29e97389efa41eefe19a48ed9eecf1b3c3bff870588c3846879ff",
+          "source_url": "https://github.com/Oric-Software-Development-Kit/Oric-Software/blob/c81612082482d1f497638ada14ad4640c5e4f1ec/users/chema/1337/TINE/universe.s"
+        }
+      ]
+    },
+    {
+      "source_id": "S39",
+      "repository": "videogamepreservation/jjffe",
+      "commit": "7e540341d4e09aa3c92877b87d49e7f2c143ad8d",
+      "status": "Files retrieved for inspection. Only facts explicitly analysed in the Markdown supplements are verified by this research.",
+      "files": [
+        {
+          "path": "ffe.asm",
+          "sha256": "d4f1b76aa78895d3634b182428e14f36ac57b304e56fedb67a89ee39b5f6873a",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/ffe.asm"
+        },
+        {
+          "path": "ffebmp.asm",
+          "sha256": "6f9732f6f881f038a9780460e287437d4d0b6b4b6df739d8a24e19a80e687a33",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/ffebmp.asm"
+        },
+        {
+          "path": "ffedat.asm",
+          "sha256": "34219c91c5d019440ebf4fc707711a32c5080123ede05cf4d10a27d41f770850",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/ffedat.asm"
+        },
+        {
+          "path": "ffelnxsdl.mak",
+          "sha256": "dcaad68beb0f583bc5873af522e40fb62da475f6026465b9872e38d5d70efa5b",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/ffelnxsdl.mak"
+        },
+        {
+          "path": "jjffe28.txt",
+          "sha256": "8052e17a0d6856dd5c092182c64e11fc3076e771dd7375753d08673da76abab8",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/jjffe28.txt"
+        },
+        {
+          "path": "srctools/cagent.txt",
+          "sha256": "e64b48c504b7e2c4f9853e880120bfda1ccce2a0c56e3fabfcb67c95622302c4",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/srctools/cagent.txt"
+        },
+        {
+          "path": "srctools/cbbs.txt",
+          "sha256": "02d4137f5ed4fdf1efa1ffb24087b894b853137d41d470d504971b844b66b9b8",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/srctools/cbbs.txt"
+        },
+        {
+          "path": "srctools/convdata.cpp",
+          "sha256": "8e058a53155f48454e0673a345290a27c1c2648190c643239d85591c663a5191",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/srctools/convdata.cpp"
+        },
+        {
+          "path": "srctools/plstate.txt",
+          "sha256": "c43afcf10f1e95b3a4321313ffaba25285c36e9bdce676fb4ab630d2297ae8ab",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/srctools/plstate.txt"
+        },
+        {
+          "path": "srctools/gmstruct.txt",
+          "sha256": "08b1fd2c3a437a423c08ddd3e2575c4ef41d9c97f349384710b5e1797da3c614",
+          "source_url": "https://github.com/videogamepreservation/jjffe/blob/7e540341d4e09aa3c92877b87d49e7f2c143ad8d/srctools/gmstruct.txt"
+        }
+      ]
+    },
+    {
+      "source_id": "D18",
+      "repository": "canonn-science/GR-RuinsComboMap",
+      "commit": "24c7a8bc4ff981287d4917c034300856fb29db0b",
+      "status": "Files retrieved for inspection. Only facts explicitly analysed in the Markdown supplements are verified by this research.",
+      "files": [
+        {
+          "path": "Source/data/grcodexdata.json",
+          "sha256": "574d9fcbf7c7a885cb55a8bcebdcdbfbfe960d2f334f91d5feff4eff51357265",
+          "source_url": "https://github.com/canonn-science/GR-RuinsComboMap/blob/24c7a8bc4ff981287d4917c034300856fb29db0b/Source/data/grcodexdata.json"
+        },
+        {
+          "path": "Source/data/grobelisks.json",
+          "sha256": "7b9a7c57f4cb4b443beeedb3e2201d4ad5af7133722814b6cdda453776e757f4",
+          "source_url": "https://github.com/canonn-science/GR-RuinsComboMap/blob/24c7a8bc4ff981287d4917c034300856fb29db0b/Source/data/grobelisks.json"
+        },
+        {
+          "path": "Source/data/grsites.json",
+          "sha256": "28000cc9f6eef92bb344c89597c43ffc9df5fffe500ae6a47fa7477949f2174e",
+          "source_url": "https://github.com/canonn-science/GR-RuinsComboMap/blob/24c7a8bc4ff981287d4917c034300856fb29db0b/Source/data/grsites.json"
+        },
+        {
+          "path": "Source/data/gscodexdata.json",
+          "sha256": "ae613150be3cd955a1b79c33335fafdb0e8bf0ca5cb9897a47039f039669f4aa",
+          "source_url": "https://github.com/canonn-science/GR-RuinsComboMap/blob/24c7a8bc4ff981287d4917c034300856fb29db0b/Source/data/gscodexdata.json"
+        },
+        {
+          "path": "Source/data/gsobelisks.json",
+          "sha256": "19cb3742d8f676d7f01be0733ae9e44ef9fe390245fb6f7800f30c3a0f759f92",
+          "source_url": "https://github.com/canonn-science/GR-RuinsComboMap/blob/24c7a8bc4ff981287d4917c034300856fb29db0b/Source/data/gsobelisks.json"
+        },
+        {
+          "path": "Source/data/gssites.json",
+          "sha256": "471a17f13ad03897007d43c0f72590fb81fedf1b6752ae40e42195a1aa55e2be",
+          "source_url": "https://github.com/canonn-science/GR-RuinsComboMap/blob/24c7a8bc4ff981287d4917c034300856fb29db0b/Source/data/gssites.json"
+        },
+        {
+          "path": "Source/data/siteids/11.json",
+          "sha256": "2172fb880ea32bdbde8bfa76a522742e7ee409dba15ce0522303d3583085594f",
+          "source_url": "https://github.com/canonn-science/GR-RuinsComboMap/blob/24c7a8bc4ff981287d4917c034300856fb29db0b/Source/data/siteids/11.json"
+        },
+        {
+          "path": "Source/index.html",
+          "sha256": "105e554f767a7a1b912ae39575a34d9b1b8d541dba3d9a2ba50a227e0d4d4b13",
+          "source_url": "https://github.com/canonn-science/GR-RuinsComboMap/blob/24c7a8bc4ff981287d4917c034300856fb29db0b/Source/index.html"
+        }
+      ]
+    },
+    {
+      "source_id": "O08",
+      "repository": "OoliteProject/oolite",
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "access_date": "2026-10-13",
+      "status": "Engine API evidence for analysed expansion quirks; not a claim that this development revision matches each historical Oolite release.",
+      "files": [
+        {
+          "path": "src/Core/Universe.m",
+          "sha256": "062c2282d8ebc5214a34233a0828e041b704214370fdc16526e75d4d6ca56f2a",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Universe.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSClock.m",
+          "sha256": "3a0ad29caad0cbef7686e660d69492f28fbadee9a3805a7b429fa8140f13ac58",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSClock.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSShip.m",
+          "sha256": "a889adc46459f0954bc6834d4e3086486cb615ce5e2811fbb288746380f55a02",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSShip.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSVector.m",
+          "sha256": "85dba092d0b11885c02ee4f74b79004ab426926e906284702b87a7b15fca402e",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSVector.m"
+        },
+        {
+          "path": "src/Core/Entities/ShipEntity.m",
+          "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/ShipEntity.m"
+        },
+        {
+          "path": "src/Core/Entities/ShipEntityScriptMethods.m",
+          "sha256": "6b03193df0b616811ae908676c504e175c8af8eb56034591cef94514609ec00d",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/ShipEntityScriptMethods.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSSystem.m",
+          "sha256": "5f28425750218b48c46c4e37fb50a383976c729f5e837864db1a8e2d562073de",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSSystem.m"
+        },
+        {
+          "path": "src/Core/OOShipRegistry.m",
+          "sha256": "1005316bb00b864b299dd1f87421d06f511eb4a4d7eb4de73e3023296bab057b",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/OOShipRegistry.m"
+        },
+        {
+          "path": "Resources/Config/equipment.plist",
+          "sha256": "486a3776a8c37ed95801d3dd17db49f3781f7935587d1f71e474947c8207d67a",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Config/equipment.plist"
+        },
+        {
+          "path": "Resources/Config/shipdata-overrides.plist",
+          "sha256": "8d0baba2360ebe1e47deae4b751ad4aadab58e4451cfca8130e69cafe7b84673",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Config/shipdata-overrides.plist"
+        },
+        {
+          "path": "Resources/Config/shipdata.plist",
+          "sha256": "f4910d79b88cc803f7bd785fd2fa7d34597c0c891925659c23748313052ac166",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Config/shipdata.plist"
+        },
+        {
+          "path": "Resources/Config/shipyard.plist",
+          "sha256": "944d7ab51943eda3d403b81430fbb3f8ef4f107db8ade61561e6b2bbf0b1643d",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Config/shipyard.plist"
+        },
+        {
+          "path": "Resources/Models/alloy.dat",
+          "sha256": "6aca7fee3b7734d88e73da6d245d630ba714dc7dc59dda38921ca2e770a4ed04",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/alloy.dat"
+        },
+        {
+          "path": "Resources/Models/arcdetail.dat",
+          "sha256": "a154a86065471f0e7ea7572d71cd75c86f2e9a2724aa3d60e920b119f7016e9f",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/arcdetail.dat"
+        },
+        {
+          "path": "Resources/Models/dock-flat.dat",
+          "sha256": "0de8d486b36fba14bf425ae95b70764f9408648b77c08196cf26e04e56402424",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/dock-flat.dat"
+        },
+        {
+          "path": "Resources/Models/dock.dat",
+          "sha256": "b48370472603b0501843a9f6741ff151906fa6a5a54bf57ad516fe4705fae940",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/dock.dat"
+        },
+        {
+          "path": "Resources/Models/oolite-ball-turret.dat",
+          "sha256": "91901a604e8ad15d3b45e3f368afc32c7a470fc7b71f71ed3d2f98e3a2ce0adc",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite-ball-turret.dat"
+        },
+        {
+          "path": "Resources/Models/oolite-unknown-ship.dat",
+          "sha256": "c4fb61389e0dee2afa675545bf5da9b36d599fe2dc066c82c30b0b9359ca1187",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite-unknown-ship.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_adder.dat",
+          "sha256": "6d3cd62b9d0e4a796a0340bb4197af82820d5cd6b40683e18276c98df2a57ff7",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_adder.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_alloy.dat",
+          "sha256": "d18414a4227c6ffcfd49ec272fd329e84860f5a2f80464c01309106fba06e257",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_alloy.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_alt_asteroid.dat",
+          "sha256": "10fd3ef41603ba9fd1e64a6805d9556a32a378f8acea75ed204a3becb6b5f3bd",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_alt_asteroid.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_alt_boulder.dat",
+          "sha256": "ed181728f18c2956fc0f8d7cf7b84888fc396ab2eba24cb2b53ae9f4423e20c4",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_alt_boulder.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_alt_splinter.dat",
+          "sha256": "86673d26125207dd9a44fec701cf679824ed9a985e33b337c0fbb254a9689102",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_alt_splinter.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_anaconda.dat",
+          "sha256": "01dc3c6093e8a94e67688fd234f76060b4b2f24fba3155f2551feeedff7836fa",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_anaconda.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_asp.dat",
+          "sha256": "577a6ff0b71c18ab81ced67d37c27651ae24bc0592551845c47bb7b954afea08",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_asp.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_asteroid.dat",
+          "sha256": "22a862e574fc560e01966d033dfa9aafadb4be6bad56213a79ae17444402410e",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_asteroid.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_barrel.dat",
+          "sha256": "bce675e16ef220502906ed88e20813f5092870f038e1d6114b33b284ef918533",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_barrel.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_barrel2.dat",
+          "sha256": "ba08630354e9ec377d30a1a5fde039f9262b2431b7ac70a820d02b114678e7af",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_barrel2.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_boa-mk2.dat",
+          "sha256": "ee1c6af80c581952a44edd660aa849ea1c8ea186ae66a80e82a91d7725da0e53",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_boa-mk2.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_boa.dat",
+          "sha256": "382d37c33cc44a4e62b56ec99a0c7b0744b42c14a03a3fc88509de18e2725467",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_boa.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_boulder.dat",
+          "sha256": "42e11be0cedf63a28322594fd89d912e0e82e0f118b6f5440a96c5fb4b9cdc7d",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_boulder.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_buoy.dat",
+          "sha256": "9c826f1a90dcf499ec34f195282ce0810284b3fbadf4ef7846872a2c734edf46",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_buoy.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_buoy_subents.dat",
+          "sha256": "03505a973791866b5dfdd97b26ad43daee6d1bb466d9841ed6fd319091d7d368",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_buoy_subents.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_cobra3.dat",
+          "sha256": "36ea4eecd4febd7b106ebdd23e17de7e3337400b9ebff5d84f5a74204058388a",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_cobra3.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_cobramk1.dat",
+          "sha256": "b2adfde0fc8ff17642f7f06cd8c9f37fc9d835b90b1b32ea0b2f55eef5cc42bf",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_cobramk1.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_constrictor.dat",
+          "sha256": "880a9b0d3c490f80b17398f27abf60ec46ae71803aa01a627c35f38839cc3651",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_constrictor.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_coriolis.dat",
+          "sha256": "872bc52eea4cef3898d94c7c2c40c85365d04e3ab43ce2d4fac77a485a01f6d4",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_coriolis.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_coriolis_dock.dat",
+          "sha256": "6c3c165179285b747bfe01a6df08c472e7b1685be6718911281f2899dacdab27",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_coriolis_dock.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_coriolis_faceplate.dat",
+          "sha256": "278c376c13e14ef9d5948f93dff7e53023c11d8b07ad26d2d45276203885cfe3",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_coriolis_faceplate.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_coriolis_tris.dat",
+          "sha256": "74023390bdcd6945f41f5d867b6151f61d09b0dc1ac7855e4ec395a3916363aa",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_coriolis_tris.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_dodo.dat",
+          "sha256": "28dee6b2fe44ef76c5f13023544f7feee8ca701a8545abbc50710fb4a6b36dba",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_dodo.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_dodo_dock.dat",
+          "sha256": "23dcd20d168e3c53e1973d43bc713272f83445f213431547d14e021a4e8b12e1",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_dodo_dock.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_dodo_faceplate.dat",
+          "sha256": "53d5689f55d1054f4cde0c3e5c52a5e0dede3793a2a37cf0fc9f3f398f1ba54c",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_dodo_faceplate.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_escape_capsule.dat",
+          "sha256": "56c6b70c868aed4a0e0490b085555645c69e1ca76acbffa9d928b562d5552a61",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_escape_capsule.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_ferdelance.dat",
+          "sha256": "a70d4891a931a21710c0ff10d9f6fd5616d16abc9c11f500549247e8b979c0cf",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_ferdelance.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_gecko.dat",
+          "sha256": "4f7ca7b726f871848e702de6f6639831eb52e1839a73f72edb3518d3a44c538c",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_gecko.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_ico.dat",
+          "sha256": "9b1c492acda6bbb038629fe1ff1e923f72a690c2106ed0e4c4eddf381bacbe7e",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_ico.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_ico_dock.dat",
+          "sha256": "a8a7a3b1b86b48f4324b746e79fd2e8dbf5f3954f43af420879ce16d5a34c4b3",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_ico_dock.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_ico_hull.dat",
+          "sha256": "768519f41bb8494b2bafb8081cc9e637b065cf8737054eb2140175ed154cfbb8",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_ico_hull.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_krait.dat",
+          "sha256": "45eb3cbd2af4038249a6c2af59ccf304bf0a927d327c643b73888dfbba39e473",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_krait.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_mamba.dat",
+          "sha256": "15ca183aac8c5a6b513e176842b8749fc8a4455841808040449b057b0477c586",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_mamba.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_missile.dat",
+          "sha256": "7fc15d62e4f7fc2e90eb78e46768d9fffe8bb1c7e020732123ed8066061644c0",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_missile.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_missile_hardhead.dat",
+          "sha256": "e0a492a6ed37143d573963bc3cb3ba4ce7ec92e7e8d39bb2f4ea3abe340f953e",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_missile_hardhead.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_moray.dat",
+          "sha256": "d04d6858179d8c297367f0bfc62e6133d747d5e3fab70551274c96607dc2a45c",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_moray.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_python.dat",
+          "sha256": "338ff21161c54dd7a7d67404a7903ed2a1935e2d4c1434318b34abfd628f0d8d",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_python.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_python_trader.dat",
+          "sha256": "fb91a65afd0ffb4d69b37dc9e9d25cf8339fcd4473e4adb52625a9c2258cc1e7",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_python_trader.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_rock_hermit.dat",
+          "sha256": "7625ec0f3274f78b31daf3bb88465f9f568284b9d7591fbbb1dfb33c63bc8258",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_rock_hermit.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_rock_hermit_dock.dat",
+          "sha256": "bce414fe0ccfef2ad457289bbad282a9c294fdcbfe5d258454a863a2cb99594c",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_rock_hermit_dock.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_rock_hermit_pipes.dat",
+          "sha256": "50249ac9f9fd02c3c63c6e7f9729ed2a8c4251a9553213f8715d946029faeb1c",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_rock_hermit_pipes.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_rock_hermit_rock.dat",
+          "sha256": "1199e9eb1c2d796494cc50d48abbab95d9c501533c3843eee5b018987356ad43",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_rock_hermit_rock.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_rock_hermit_tunnel_extras.dat",
+          "sha256": "731dd28ac23581e2037978944ec0a5cc9f0765b0bc102134654af90bc4efc20a",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_rock_hermit_tunnel_extras.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_shuttle.dat",
+          "sha256": "e9b2b568e968e21c370ce8880d87bf9efc83aaa81946df4b4d0d197184e94225",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_shuttle.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_sidewinder.dat",
+          "sha256": "bcb14720430bb8b638951e771ae45c6f5982725bb947d1cb09bfa069a4af973b",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_sidewinder.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_sidewinder_escort.dat",
+          "sha256": "d91dc49aaf95b0a23461e9e0098996acde3fea78c2ff52815c63fe28caa7354e",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_sidewinder_escort.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_splinter.dat",
+          "sha256": "1114850a80c92490486f47b240f94d36e7e0dcfc4126560f6e722bf997eae9ae",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_splinter.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_thargoid.dat",
+          "sha256": "e24e3e476052a674444f64ebabd93e87b971ffe10493f6680a4739b20c60da2c",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_thargoid.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_thargon.dat",
+          "sha256": "07483459182eb204511ac0b6a7b5b18bc44bd62bada625efd9d0859953cd4eb0",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_thargon.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_transporter.dat",
+          "sha256": "4f795989f296694b2979f0737c52b65660aa6f2141af00aefeba40aa27162ae4",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_transporter.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_viper.dat",
+          "sha256": "11892066baf8f60fa1f4ff9a0479559a9ec8f52db522f061fd669e6cef10914e",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_viper.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_viper_interceptor.dat",
+          "sha256": "620b10946bca5171b17726f0ad27e5b5151a5e347c9c498b43d4f60fe5a9501b",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_viper_interceptor.dat"
+        },
+        {
+          "path": "Resources/Models/oolite_worm.dat",
+          "sha256": "ddb74fa8e4683ee14ce7df4cde40f07b85fee6b396c92b797dbef095336f5969",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/oolite_worm.dat"
+        },
+        {
+          "path": "Resources/Models/qbomb.dat",
+          "sha256": "7fa0e5130d149b9fd7b0f0a718e21e76f8a2929fc1825cfa6c8883c6a3021540",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/qbomb.dat"
+        },
+        {
+          "path": "Resources/Models/rock-box.dat",
+          "sha256": "7d9e6ad5b0113add23f3b84db62ec10523798efb4b20da0871be428044dc1397",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/rock-box.dat"
+        },
+        {
+          "path": "Resources/Models/rock-dock.dat",
+          "sha256": "645131e73227554c547d61ce7b8b7c791ba99241c08bbe12afcf25c427691c75",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/rock-dock.dat"
+        },
+        {
+          "path": "Resources/Models/strut.dat",
+          "sha256": "86a0c778a53dc46152e2d853b11e33779fe41d26e0bb6b34e5b7256dae0dc2f8",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/strut.dat"
+        },
+        {
+          "path": "Resources/Models/wreck1.dat",
+          "sha256": "2051c293b323a378cde1f08fb40be27c7cf83e899dd8d1915d9dab28cdf2d2bb",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/wreck1.dat"
+        },
+        {
+          "path": "Resources/Models/wreck2.dat",
+          "sha256": "971b6639934fa79ba623a2d073ca586d81fb52ed276b67c630c08f6e02e3ced1",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/wreck2.dat"
+        },
+        {
+          "path": "Resources/Models/wreck3.dat",
+          "sha256": "80b1d3a356d7a5df061351b903df14d61dcbc482666ce1fc0b720f73703e477a",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/wreck3.dat"
+        },
+        {
+          "path": "Resources/Models/wreck4.dat",
+          "sha256": "6ec8bef9509b280381c707967f0371a2a6de666ae6df2ce9033a37b416b24ffa",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/wreck4.dat"
+        },
+        {
+          "path": "Resources/Models/wreck5.dat",
+          "sha256": "1cb3e9c89c984aca41a12e0ec63c89ea21d12f36a586e485d4c5db03afc44818",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models/wreck5.dat"
+        },
+        {
+          "path": "Resources/Scripts/oolite-cloaking-device-equipment.js",
+          "sha256": "bd636c7d541f2e3f2e852a566a927fbfdfcbf9d5e1cf567d7b8792795f844f39",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Scripts/oolite-cloaking-device-equipment.js"
+        },
+        {
+          "path": "Resources/Scripts/oolite-equipment-control.js",
+          "sha256": "bdcdc114a75d5150a89ba29923f1673696cd3915e8445964e2669e1e6eb46212",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Scripts/oolite-equipment-control.js"
+        },
+        {
+          "path": "Resources/Scripts/oolite-primable-equipment-manager.js",
+          "sha256": "4499fc2eed2ee41d92194d2c38807b3948141ba04ef5bdd84e2860bcd7eeb249",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Scripts/oolite-primable-equipment-manager.js"
+        },
+        {
+          "path": "Resources/Scripts/oolite-tutorial-equipment.js",
+          "sha256": "89fed8b7a71bb462ab64eac108db046738ebc13b3e557f71f8162e763b8151e9",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Scripts/oolite-tutorial-equipment.js"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntity.h",
+          "sha256": "32b6fa53642b4648cae5933cc4b3765cae43d1e0dfb7f4767963bcd962a42557",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntity.h"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntity.m",
+          "sha256": "f63b5aa15e36ca9e075152cb2a53b48b602ef358fd48daa1f31bcc624c14fe93",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntity.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityContracts.m",
+          "sha256": "4bfd589ac747347e65229b1eec348ceb420259da12f55d1eb5770fed2c9db8e1",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityContracts.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityControls.m",
+          "sha256": "3465d3235f3df22e637b4415a3ee3ec19fdaf81b105a19934af81edd6dff1f4a",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityControls.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityKeyMapper.m",
+          "sha256": "7d13df250dcd1f600ff16c03e896c456c7db5955b21d9b268858ad1660b6cf0b",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityKeyMapper.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityLegacyScriptEngine.m",
+          "sha256": "2fff90a42b394c4070d3734a7e9dfd07c878d4be988294a17b5d98fdc88313f2",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityLegacyScriptEngine.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityLoadSave.m",
+          "sha256": "5af780d5d116ee2f4e928a5ce0e6a1c9b2d0d0b252f0963202bb00572fa45384",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityLoadSave.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityScriptMethods.m",
+          "sha256": "ac7b46bc46c904b8e8385eb663bf6fd80290be38f91abc881ec8abf971af4123",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityScriptMethods.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntitySound.m",
+          "sha256": "1f5c02ed95cfcd8e08d1f39f69ede8be658c9e0bcd7dbd3fcf13e5551b31770b",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntitySound.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityStickMapper.m",
+          "sha256": "b64f27bbcd1429cb18c11e078bac415faaa847e9bde206eee7762b5f36eaac08",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityStickMapper.m"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityStickProfile.m",
+          "sha256": "f5052ded0f7e1fe36d49340a7c9b34692295879dd4133de0786851a50a5fbf69",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityStickProfile.m"
+        },
+        {
+          "path": "src/Core/Entities/ProxyPlayerEntity.m",
+          "sha256": "5e0d7684dec1ca2d2ce9c4ffe5c4440b06a154036ed9b464fbf4c2726685146d",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/ProxyPlayerEntity.m"
+        },
+        {
+          "path": "src/Core/Entities/ShipEntity.h",
+          "sha256": "b68f852bad5f87aca74767ad57090437aa57e6c80780d205807da99daf2a4a8b",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/ShipEntity.h"
+        },
+        {
+          "path": "src/Core/OOConstToString.h",
+          "sha256": "b4b57088598511f9b92988877d8978a68df4fa4b47ad49f46f21440cda36e7a5",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/OOConstToString.h"
+        },
+        {
+          "path": "src/Core/OOConstToString.m",
+          "sha256": "f5c57968946f064952d4dd554c17390495db5ab97b9ba50db170f0794d9b520b",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/OOConstToString.m"
+        },
+        {
+          "path": "src/Core/OOEquipmentType.h",
+          "sha256": "fb2ed70958ef5b540ebcbcef7c428a04d60efee2a6188e09bbd69db9465c2b73",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/OOEquipmentType.h"
+        },
+        {
+          "path": "src/Core/OOEquipmentType.m",
+          "sha256": "434b32a43ed8a4b59d4663e91aeecfe659f29a4876b9f7b6b326c67bb41f0f97",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/OOEquipmentType.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSMissionVariables.h",
+          "sha256": "8b41f83c307337817ac5f5587679df007914d06a4e844c4de429363cc2b5bbec",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSMissionVariables.h"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSMissionVariables.m",
+          "sha256": "afa55aeaa671e89336779a144e0e5bd345603ac3c20ff0fa7d0e52e262df62e7",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSMissionVariables.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSPlayerShip.m",
+          "sha256": "d2814afe0c565533dff1f87967f9ac50f2f2f7f4c5456aa1115a8a919bc65c28",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSPlayerShip.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJavaScriptEngine.m",
+          "sha256": "94cdb340f970663171e452f9bccac1080b8fb0189b5e6ae3ac54a409d26e4e12",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJavaScriptEngine.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJavaScriptEngine.h",
+          "sha256": "7e3694eefdb5201e71a0095fdc790d882dcaeaa18967c10e7fd48c3c0f3f2274",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJavaScriptEngine.h"
+        },
+        {
+          "path": "src/Core/Entities/PlayerEntityContracts.h",
+          "sha256": "e782f77fbdf511dd2e7c94a16c2cdf5b1608537db9a610ce8ce8926b440a73ce",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/PlayerEntityContracts.h"
+        },
+        {
+          "path": "src/Core/OOTypes.h",
+          "sha256": "586e295734a0c6b56542920efe3a66dd203bd302af65ea8c03f9f26c8755580f",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/OOTypes.h"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSScript.m",
+          "sha256": "ca56aa834af410d889846672eafaa3bece2fc696e5ad7f306db209e88a89ae75",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSScript.m"
+        },
+        {
+          "path": "src/Core/Scripting/OOJSScript.h",
+          "sha256": "68853dca85661d9b268ee306e77f2acd163b9ea90898f6b4ad30ed46e01b0767",
+          "source_url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSScript.h"
+        }
+      ]
+    },
+    {
+      "source_id": "S41",
+      "repository": "ricbit/elite",
+      "commit": "6bfa450047c54979b0588f317eda63c8ddabede1",
+      "access_date": "2026-10-13",
+      "status": "Identified reconstructed source for this disk/tape profile only; every mission claim must be tied to the inspected routines, not transferred to all MSX/ZX editions.",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "0554764171599525ae564e49d6f760292a592c273f2726d14fcd494855062034",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/README.md"
+        },
+        {
+          "path": "boot.asm",
+          "sha256": "57bc98318355d17cbd14c59772525a76fb66795819aa8ebb40deb1000aa1b864",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/boot.asm"
+        },
+        {
+          "path": "cockpit.asm",
+          "sha256": "00b4f6bd7fec140f5e2f9fea0ef1098b531d277ab60f7cace39f4db2da9a1aa1",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/cockpit.asm"
+        },
+        {
+          "path": "code.asm",
+          "sha256": "08135d204512d43be9cf6dbede7d510374671aadb39549d4e42f17321c49caab",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/code.asm"
+        },
+        {
+          "path": "dloader.asm",
+          "sha256": "4a8aca3dfdf8fce1a92883f2a49efdf839bec3db3b1f151c87e158e6ef7fe522",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/dloader.asm"
+        },
+        {
+          "path": "ewrite.asm",
+          "sha256": "8a1d5fa607f923e7b203280090901cf3a0543522b36682fa85122f2fad1ddae9",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/ewrite.asm"
+        },
+        {
+          "path": "matrix.asm",
+          "sha256": "cbf10f4150b9a0046abe2b12008e126babf2e007324e0f0a4af87ac1bf55ae3c",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/matrix.asm"
+        },
+        {
+          "path": "reset.asm",
+          "sha256": "fae20f4a8830f1cab0d66df0f030034d068c2f09e077f87137f4ac1f60da8451",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/reset.asm"
+        },
+        {
+          "path": "shapes.asm",
+          "sha256": "f298828f406f09d5598822ce373b4662ad9a8db05e3f94307397bc683a9c73f2",
+          "source_url": "https://github.com/ricbit/elite/blob/6bfa450047c54979b0588f317eda63c8ddabede1/shapes.asm"
+        }
+      ]
+    },
+    {
+      "source_id": "S42",
+      "repository": "ataribaby42/zx-elite",
+      "commit": "2a06565273bd3898f7f03d81776aedb80bbfd26d",
+      "access_date": "2026-10-13",
+      "status": "Identified reconstructed source for this disk/tape profile only; every mission claim must be tied to the inspected routines, not transferred to all MSX/ZX editions.",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "6c18afeb9e10b45bdfa53ed16b9897a9060ce1ae59a9c705d4b334306eeddc3b",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/README.md"
+        },
+        {
+          "path": "docs/ADDRESSING-AUDIT.md",
+          "sha256": "9e20a7a3613f1eb22337f7eeb2bdcba37030dd9af69a061679a8d048d99b422e",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/ADDRESSING-AUDIT.md"
+        },
+        {
+          "path": "docs/BOUNTY-HUNTERS.md",
+          "sha256": "21fc3633e030e80fd32bc68b562e23401dbd5c8857ad5548e3ce1a947b100f8f",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/BOUNTY-HUNTERS.md"
+        },
+        {
+          "path": "docs/BUILD-VARIANTS.md",
+          "sha256": "888967cd1c0ba3ba37d4d3bc1109e7a06783286db6bc6c2e59501a44e6503aca",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/BUILD-VARIANTS.md"
+        },
+        {
+          "path": "docs/CODE-NAMES.md",
+          "sha256": "0b9b2e22a2b6708c54d5f0bf8ba401bb82d611550026100d19611fca5921ff88",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/CODE-NAMES.md"
+        },
+        {
+          "path": "docs/COMMANDER-STATE.md",
+          "sha256": "7534db33a11a0fef31ea22e8044763ddfd2f4b6d740ccb737dd8f6fe4fb78048",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/COMMANDER-STATE.md"
+        },
+        {
+          "path": "docs/GRAPHICS.md",
+          "sha256": "3705579c6de483b1a75384fb495cc8db4692fcee997618ff3d6c02f4f4c316d1",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/GRAPHICS.md"
+        },
+        {
+          "path": "docs/RUNTIME-MAP.md",
+          "sha256": "9277184d535c0b93a5bf390af624e8eebea866331199d96f12823c8eaca499bf",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/RUNTIME-MAP.md"
+        },
+        {
+          "path": "docs/SHIP-COMPARISON.md",
+          "sha256": "91b3f7aa50c00078cc53308c6e6c4054eb638a40d9c5fac2067f4ceed0f9fe59",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/SHIP-COMPARISON.md"
+        },
+        {
+          "path": "docs/SHIPS.md",
+          "sha256": "d7040d40e6e9c7a5d9b2adae43c8c013f74e11a8377dc9befcb44c75ff81445a",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/SHIPS.md"
+        },
+        {
+          "path": "docs/evidence/README.md",
+          "sha256": "189229f696acdbc4115772bdd6c1767ec003306bd861c68483307839083b9a3c",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/evidence/README.md"
+        },
+        {
+          "path": "docs/info/ELIT128P_laser_mod-readme.txt",
+          "sha256": "ebe91a17a0c34abf4a01acdbcdf53b7bf3c9235e26660ca865b394b45702cbd3",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/ELIT128P_laser_mod-readme.txt"
+        },
+        {
+          "path": "docs/info/Elite 128k fixes pokes.txt",
+          "sha256": "7bb98ae40150430cabfac9d45429d4a2ec024686350d426bd63b9d177e8ffcc1",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/Elite%20128k%20fixes%20pokes.txt"
+        },
+        {
+          "path": "docs/info/Elite 48k fixes pokes.txt",
+          "sha256": "6d10070b64cf22c674599a2354097e307355af5b291cd6603272676b3ddb006d",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/Elite%2048k%20fixes%20pokes.txt"
+        },
+        {
+          "path": "docs/info/Elite.txt",
+          "sha256": "2666ae51c4fae2736ee22941d430896bdee8d19f946377641400e56a88ad3b24",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/Elite.txt"
+        },
+        {
+          "path": "docs/info/Elite128Kpirates_pokes.txt",
+          "sha256": "246676d032d5c33ccfd700e2a6351314cc22a66f758d8e244bb1ee696a318539",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/Elite128Kpirates_pokes.txt"
+        },
+        {
+          "path": "docs/info/Elite48Kpokes.txt",
+          "sha256": "6d10070b64cf22c674599a2354097e307355af5b291cd6603272676b3ddb006d",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/Elite48Kpokes.txt"
+        },
+        {
+          "path": "docs/info/Elite_pokes.txt",
+          "sha256": "098133b8d2455f6417042d08c30bcad03e3be4c601b5f79c50ab7c4b5a089bcb",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/Elite_pokes.txt"
+        },
+        {
+          "path": "docs/info/ZX Elite Save Game Format.txt",
+          "sha256": "19bac055a9c4194e5e864471835b8ca599776715e666610898e6eb8763e27056",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/ZX%20Elite%20Save%20Game%20Format.txt"
+        },
+        {
+          "path": "docs/info/ZX Elite mission triggers.txt",
+          "sha256": "e9b935f21f29bda6c69d4b400eae7380b7e6402303cb41863ecf0cd62d7600c9",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/ZX%20Elite%20mission%20triggers.txt"
+        },
+        {
+          "path": "docs/info/ZX Spectrum Elite Missions.txt",
+          "sha256": "31db2e589e82d70569a8375384fbe8102503d3d6634faa1622f42033fc535c6f",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/ZX%20Spectrum%20Elite%20Missions.txt"
+        },
+        {
+          "path": "docs/info/ZX Spectrum Elite Save Format.txt",
+          "sha256": "0715b51a453bc811254179eb15edbf10a6da7bf7caba603cadd3554604a40567",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/ZX%20Spectrum%20Elite%20Save%20Format.txt"
+        },
+        {
+          "path": "docs/info/elite128kkeyswap.txt",
+          "sha256": "9f21254df9d0cc1ae7a5dc2e8694e0c7eadcaa64d23f3c20c2e1aeeb7a9ca455",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/elite128kkeyswap.txt"
+        },
+        {
+          "path": "docs/info/elite48kcrack.txt",
+          "sha256": "cfcc919692a3a3aadd9b489d00cef68472ca17c40591b202b227188987ec6f6b",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/elite48kcrack.txt"
+        },
+        {
+          "path": "docs/info/pirates.txt",
+          "sha256": "4dec62c0e558aad5ef7e3a0f2da585725586d602d604c9d3b9c893e2abd1c5da",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/pirates.txt"
+        },
+        {
+          "path": "docs/info/pokes.txt",
+          "sha256": "4705e21cac58554fca7fdb6ca08f6740333d17a9c523e3a39fe81e7fc81765aa",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/docs/info/pokes.txt"
+        },
+        {
+          "path": "src/adder-startup.asm",
+          "sha256": "756ba6298b9be46baec60acc3e699e45339861c2eb017aaac42e079b4072aeed",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/adder-startup.asm"
+        },
+        {
+          "path": "src/basic.asm",
+          "sha256": "b29c3b21894225c1ec038f1c665f49651496579afba28b9c312794d2c1c4d95a",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/basic.asm"
+        },
+        {
+          "path": "src/data/active-commander-initial.asm",
+          "sha256": "25cfe5b6d27361bc4b0b0cf54926377dcd1973a539c14e6ae56df69a47934f48",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/active-commander-initial.asm"
+        },
+        {
+          "path": "src/data/adder-original.asm",
+          "sha256": "a340e27d6a0e1f173f2aef884e684eeaf9cc0b4b462b19f55a9b21d6b4d5807a",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/adder-original.asm"
+        },
+        {
+          "path": "src/data/adder.asm",
+          "sha256": "0d9674158a845821a2ab455f0e9793e1eb8406c121a6d9a42262f3003637806b",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/adder.asm"
+        },
+        {
+          "path": "src/data/cockpit-attributes.asm",
+          "sha256": "29ef3979098eda1505800270e80a7713a81a3156362eb5657ac41266269b29a8",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/cockpit-attributes.asm"
+        },
+        {
+          "path": "src/data/cockpit-bitmap.asm",
+          "sha256": "df75c148880b8d83a24a8a0c5813914d8904113ae5dccc0c5399caaabf9aed64",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/cockpit-bitmap.asm"
+        },
+        {
+          "path": "src/data/default-commander.asm",
+          "sha256": "075ce0b9e30d2ac5222586e04335f9e7f47fd23ff5287181d255c56458e5acf4",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/default-commander.asm"
+        },
+        {
+          "path": "src/data/encoded-text.asm",
+          "sha256": "4cf6e8890ec849521077c368780d25fae43b1a710411d09dbf1af70007299b6a",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/encoded-text.asm"
+        },
+        {
+          "path": "src/data/font-128fix.asm",
+          "sha256": "adb1882f3617a67c8f0e070f62da37f7c59dfcbb9016e13d408630392a889bb3",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/font-128fix.asm"
+        },
+        {
+          "path": "src/data/font-128fix_ecm_s.asm",
+          "sha256": "4c827d84711054854de376e4f9a1eeb211ad1685aa101474da51cd514ae78253",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/font-128fix_ecm_s.asm"
+        },
+        {
+          "path": "src/data/font-48.asm",
+          "sha256": "492cec22e3533a8aa7a75c22719c7eb9de7ea1c6489a5a773c7a21ec90316eaf",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/font-48.asm"
+        },
+        {
+          "path": "src/data/font.asm",
+          "sha256": "ba947162dcc389d091da8818f5abd38e3fcf3f098248e4e3b6bb8e60070ccda5",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/font.asm"
+        },
+        {
+          "path": "src/data/initial-runtime-state.asm",
+          "sha256": "c0745e3e9e4f69277207fd0d58276417d8b11f3e91d154b21c6d6515fd9ad196",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/initial-runtime-state.asm"
+        },
+        {
+          "path": "src/data/ship-blueprints-and-tables.asm",
+          "sha256": "0beb043bba05a91427c633f120b6fce749e3b845f052c3ab7cd022b58f9ccf85",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/ship-blueprints-and-tables.asm"
+        },
+        {
+          "path": "src/data/square-tables.asm",
+          "sha256": "0c5e5e34eb1261e3b331e9c884e682ded19adccaf8dc214b4bd14f252a81a97d",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/square-tables.asm"
+        },
+        {
+          "path": "src/data/text-dispatch-first.asm",
+          "sha256": "51c4f69c257b4ae59bb5aea04bda1fcbee0822e119962eb4aa142c5f2dbd7ebc",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/text-dispatch-first.asm"
+        },
+        {
+          "path": "src/data/text-dispatch-second.asm",
+          "sha256": "bd528e1f4edf07bc99e45b112d8a575453907779d267492ab2261db2625bf808",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/text-dispatch-second.asm"
+        },
+        {
+          "path": "src/data/text-token-dictionary.asm",
+          "sha256": "4f0bbff3be4d307dbac2e3700df8353c6b82068b3fa6ac076d206d44d2503b4b",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/data/text-token-dictionary.asm"
+        },
+        {
+          "path": "src/game.asm",
+          "sha256": "f93e4410aaded0babe5bccd89e3a1d67c1fbbb48d7f39ddca42791bb0a74ffa4",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/game.asm"
+        },
+        {
+          "path": "src/options.asm",
+          "sha256": "e3f48bbcf5b44d70633813c646cef37adb52103fed0e9e139553ada676b69dfd",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/options.asm"
+        },
+        {
+          "path": "src/scanner-pixel-fix.asm",
+          "sha256": "27302cb1fefc551b5b42e6d6a749fa5b35b43dce02de3c654e3c18b86e25907c",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/scanner-pixel-fix.asm"
+        },
+        {
+          "path": "src/screen.asm",
+          "sha256": "5a94597660147f916609c77cf947dfa695233eadc82238b3d8a817238155a8da",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/screen.asm"
+        },
+        {
+          "path": "src/single-laser.asm",
+          "sha256": "8c6e8c6365c3ad4e7e90a4f8fa848064e95ecc96ed6d6e7cf4d6e3018a98ad4a",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/single-laser.asm"
+        },
+        {
+          "path": "src/station-random-launch-fix.asm",
+          "sha256": "29332753d78bd6b57874e2b1b74d2b6e59609548969c049fd512a267e5b256b6",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/src/station-random-launch-fix.asm"
+        },
+        {
+          "path": "assets/Elite - 128k.tap",
+          "size_bytes": 47918,
+          "sha256": "d9013872555f448308e0b8a69b624600335384cd38911165bde74a9d11de84d6",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/assets/Elite%20-%20128k.tap"
+        },
+        {
+          "path": "assets/Elite+48K+fixed+A+-+Krait.tap",
+          "size_bytes": 49207,
+          "sha256": "e92464ee291bbc61d21d1241e98325c4064f253c628f563207487e191014f504",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/assets/Elite%2B48K%2Bfixed%2BA%2B-%2BKrait.tap"
+        },
+        {
+          "path": "assets/Elite+48K+fixed+B+-+Adder.tap",
+          "size_bytes": 49207,
+          "sha256": "5f7f213b1bb333543f05abc125ea601f433cc80b445fd0d6c007ff7edd028239",
+          "source_url": "https://github.com/ataribaby42/zx-elite/blob/2a06565273bd3898f7f03d81776aedb80bbfd26d/assets/Elite%2B48K%2Bfixed%2BB%2B-%2BAdder.tap"
+        }
+      ]
+    },
+    {
+      "source_id": "S44",
+      "repository": "binaryfrog/ffesge",
+      "commit": "ea528e4abaf8ae48d70a540e69cbaf360aa8f350",
+      "status": "Save compression and iterative-XOR algorithms inspected. Primary unmangle C utility compiled with signed wrapping and independently agreed with all five decoded blocks of six S43 saves. No game executable was run.",
+      "files": [
+        {
+          "path": "unmangle.c",
+          "sha256": "830a7ed166345c95e8de851f59732f4af40d8ceb926a5d0d2b23349439a31599",
+          "source_url": "https://github.com/binaryfrog/ffesge/blob/ea528e4abaf8ae48d70a540e69cbaf360aa8f350/unmangle.c"
+        },
+        {
+          "path": "mangle.c",
+          "sha256": "eb4fc3cc53f622de61d1f27a4746234b08fbe5c14f7743b557471c74405d17f3",
+          "source_url": "https://github.com/binaryfrog/ffesge/blob/ea528e4abaf8ae48d70a540e69cbaf360aa8f350/mangle.c"
+        },
+        {
+          "path": "common.h",
+          "sha256": "a93a64005c2dfdc7b666d8b27b1890eba9eaf06ee7e0d79f61c394e1ab218b72",
+          "source_url": "https://github.com/binaryfrog/ffesge/blob/ea528e4abaf8ae48d70a540e69cbaf360aa8f350/common.h"
+        },
+        {
+          "path": "README.txt",
+          "sha256": "8e858caf9306c08a2c42a19ca8216d63c810bcd2faf5f214194cf53d6836feec",
+          "source_url": "https://github.com/binaryfrog/ffesge/blob/ea528e4abaf8ae48d70a540e69cbaf360aa8f350/README.txt"
+        },
+        {
+          "path": "HACKING.txt",
+          "sha256": "b69ee63fe7767db5e14f909a7c793d34c34895133d4e6661e47f747455e85152",
+          "source_url": "https://github.com/binaryfrog/ffesge/blob/ea528e4abaf8ae48d70a540e69cbaf360aa8f350/HACKING.txt"
+        }
+      ]
+    },
+    {
+      "source_id": "S45",
+      "repository": "markmoxon/elite-a-source-code-bbc-micro",
+      "commit": "75433e92e4914f970b14132fce6c8da68da5692f",
+      "status": "Selected source files retrieved. Player capability tables and named buying/damage readers inspected; no original executable parity claim.",
+      "files": [
+        {
+          "path": "1-source-files/main-sources/README.md",
+          "sha256": "2268a083b4b5de1a9c1fcaf273730f20666578a3f826a442312c0c1adfe9ce36",
+          "source_url": "https://github.com/markmoxon/elite-a-source-code-bbc-micro/blob/75433e92e4914f970b14132fce6c8da68da5692f/1-source-files/main-sources/README.md"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-build-options.asm",
+          "sha256": "45f7bc570ab9fc2a7155c3ddb47206323b66bfcb51c143c1cc0f7cf7a98a8497",
+          "source_url": "https://github.com/markmoxon/elite-a-source-code-bbc-micro/blob/75433e92e4914f970b14132fce6c8da68da5692f/1-source-files/main-sources/elite-build-options.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-docked.asm",
+          "sha256": "262faefb378d6013ab879021b3c9fd830a9d81511d27d4ecdafb1701d33cf191",
+          "source_url": "https://github.com/markmoxon/elite-a-source-code-bbc-micro/blob/75433e92e4914f970b14132fce6c8da68da5692f/1-source-files/main-sources/elite-source-docked.asm"
+        },
+        {
+          "path": "1-source-files/main-sources/elite-source-flight.asm",
+          "sha256": "955cfaed1897181ac25a3a079be34b4e5e6090c9b6c72c4ae1eb8669de9c60ee",
+          "source_url": "https://github.com/markmoxon/elite-a-source-code-bbc-micro/blob/75433e92e4914f970b14132fce6c8da68da5692f/1-source-files/main-sources/elite-source-flight.asm"
+        }
+      ]
+    },
+    {
+      "source_id": "D23",
+      "repository": "EDCD/coriolis-data",
+      "commit": "0db9234b5b9ce8c939ea84133d7ce336eea88e27",
+      "files": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "3bb419f1597523a602de683c75b858421914569a941562cb7115828f7055feac",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/LICENSE.md"
+        },
+        {
+          "path": "README.md",
+          "sha256": "6326e49bda395fe2fd2f5caffb7bb222dc45e8e858df19c0d54941ddfc98faed",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/README.md"
+        },
+        {
+          "path": "generate_distribution.js",
+          "sha256": "c19306cb9a3f77ec797d0c9650c60c54c4e3994b64d2e3ca514680c2098b8dd6",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/generate_distribution.js"
+        },
+        {
+          "path": "modules/hardpoints/abrasion_blaster.json",
+          "sha256": "d45637d8ee3af34df4841dbcca24b93cdd96f650c93bd1d09c4ad780ea0f3d27",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/abrasion_blaster.json"
+        },
+        {
+          "path": "modules/hardpoints/ax_missile_rack.json",
+          "sha256": "e732013943cc01509d564f408708aa2c3f7996029f8fd1ed20b76a394e5f93db",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/ax_missile_rack.json"
+        },
+        {
+          "path": "modules/hardpoints/ax_missile_rack_enhanced.json",
+          "sha256": "2133d789a92f3fd13880b05c5d92e6b17be6343c4f6d44f8a606d01e49e548d6",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/ax_missile_rack_enhanced.json"
+        },
+        {
+          "path": "modules/hardpoints/ax_multi_cannon.json",
+          "sha256": "0104e592db1cfacf8c928a0ce04fa842f13c517a5fa7f2f05d0a5bf80824b92c",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/ax_multi_cannon.json"
+        },
+        {
+          "path": "modules/hardpoints/ax_multi_cannon_enhanced.json",
+          "sha256": "1d39d127dec292b200886acd6688b60f1bbd18886dd9c2675e3c591d2522d76d",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/ax_multi_cannon_enhanced.json"
+        },
+        {
+          "path": "modules/hardpoints/beam_laser.json",
+          "sha256": "12b3a5d9bb21e154b8ed80add426830cb042eadad48aacdca3cb8b01eaac4109",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/beam_laser.json"
+        },
+        {
+          "path": "modules/hardpoints/burst_laser.json",
+          "sha256": "08ce6d2c955e71d588be571f4203d67b798a5640a32da42bbe773acafd52678d",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/burst_laser.json"
+        },
+        {
+          "path": "modules/hardpoints/cannon.json",
+          "sha256": "8653b4e878c7fbd8d2f86dd8b09b2a1ed0f417fe2387c4c07e8445eca330b9c7",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/cannon.json"
+        },
+        {
+          "path": "modules/hardpoints/cargo_scanner.json",
+          "sha256": "5447fafa465da87259cf17cb77c14fa6eff7b5a44d93a07885f45ce68f3f002d",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/cargo_scanner.json"
+        },
+        {
+          "path": "modules/hardpoints/caustic_sink_launcher.json",
+          "sha256": "07ca15d4314e23d56a044f1e9af047420fd1fbe5becf4fcd42cae029687c7df5",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/caustic_sink_launcher.json"
+        },
+        {
+          "path": "modules/hardpoints/chaff_launcher.json",
+          "sha256": "19642b7a52d7d8b0f41d1eec5a8e135422f9c719f8b0ee77d99f04cbddaa8854",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/chaff_launcher.json"
+        },
+        {
+          "path": "modules/hardpoints/electronic_countermeasure.json",
+          "sha256": "631d2d4b399327df14d301a52fab87b53964ede33ceea57a8cbe0c70356efe53",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/electronic_countermeasure.json"
+        },
+        {
+          "path": "modules/hardpoints/enzyme_missile_rack.json",
+          "sha256": "57954972be2211cc8fd5237412d271249d1198b19b30e1eea310bd1da46b90f4",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/enzyme_missile_rack.json"
+        },
+        {
+          "path": "modules/hardpoints/fragment_cannon.json",
+          "sha256": "90a21682c4f22e642396ff9e5f1b19a0d552c31dcd0af706121cb230eadcb558",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/fragment_cannon.json"
+        },
+        {
+          "path": "modules/hardpoints/frame_shift_wake_scanner.json",
+          "sha256": "2da8006041f349e574513b31d9bb77eb96027d6519332a75300a842e1d8cd444",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/frame_shift_wake_scanner.json"
+        },
+        {
+          "path": "modules/hardpoints/guardian_gauss_cannon.json",
+          "sha256": "c09e69cbcc182c5ec0302daebc26e93f8baf608071d714d5a86f300a6e688a00",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/guardian_gauss_cannon.json"
+        },
+        {
+          "path": "modules/hardpoints/guardian_plasma_charger.json",
+          "sha256": "dcee80c388f704d7ee2e75b4dc350fd0252ee0b9df5e14934f4255a431c6b7df",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/guardian_plasma_charger.json"
+        },
+        {
+          "path": "modules/hardpoints/guardian_shard_cannon.json",
+          "sha256": "a32d6a98874a6e5def5d5f373a32df4d4d426c01d8fe2fc6a99671fda70d1ceb",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/guardian_shard_cannon.json"
+        },
+        {
+          "path": "modules/hardpoints/heat_sink_launcher.json",
+          "sha256": "6825e0006a6557f2250c67981a4fbb0bf5de914ba8d205a16aa918bbfabb64ca",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/heat_sink_launcher.json"
+        },
+        {
+          "path": "modules/hardpoints/kill_warrant_scanner.json",
+          "sha256": "68b13dd3092b5655c883e4d730d9dc61fb73d2e5745672d95aa4b7ae0fbabcee",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/kill_warrant_scanner.json"
+        },
+        {
+          "path": "modules/hardpoints/mine_launcher.json",
+          "sha256": "7e3622e1591b695bc7a266819d6dc101d4c4dd3cb97d1f38f51ab8a4e5fb584d",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/mine_launcher.json"
+        },
+        {
+          "path": "modules/hardpoints/mining_laser.json",
+          "sha256": "5b4e14ad39a63bfd3d7acf87260a1334f7b5124d1909f6560da0bfed5f138b36",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/mining_laser.json"
+        },
+        {
+          "path": "modules/hardpoints/mining_volley_repeater.json",
+          "sha256": "7c318b820592dd3b1693c0b8f3b62639fc750a587be80afc81f21d2fb5b5fbdf",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/mining_volley_repeater.json"
+        },
+        {
+          "path": "modules/hardpoints/missile_rack.json",
+          "sha256": "65085548bff6c4891dc192539bd0f94b4692f42414da1d9c01c5db7855441fae",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/missile_rack.json"
+        },
+        {
+          "path": "modules/hardpoints/missile_rack_advanced.json",
+          "sha256": "bb09a84bfafa37777a48ce19fd97e5405ef63a457e78a202fd23d40b171ac2a3",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/missile_rack_advanced.json"
+        },
+        {
+          "path": "modules/hardpoints/missing_hardpoint.json",
+          "sha256": "d128b61350cdbacbb07a4ed615731fd5b3282770132b3b457a39d3f0e0486fdf",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/missing_hardpoint.json"
+        },
+        {
+          "path": "modules/hardpoints/multi_cannon.json",
+          "sha256": "42251ac491b44f0b8acfbb120fe821539962c9a1eedf0a67f6ca5b12da64b436",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/multi_cannon.json"
+        },
+        {
+          "path": "modules/hardpoints/multi_cannon_advanced.json",
+          "sha256": "74783341ed3559991d5f4c10a7b05a6a7c3b4e8d9319fd2a9712c1bcc000a7c5",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/multi_cannon_advanced.json"
+        },
+        {
+          "path": "modules/hardpoints/nanite_torpedo_pylon.json",
+          "sha256": "252eda9ec1a3ba55e78534eb8a9715bba582291d157c3af0b58da1c586b6da52",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/nanite_torpedo_pylon.json"
+        },
+        {
+          "path": "modules/hardpoints/plasma_accelerator.json",
+          "sha256": "4e99fd4ad2f028c80815d4943d599bd417b86e583f35fe77cdf53a0743ef518d",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/plasma_accelerator.json"
+        },
+        {
+          "path": "modules/hardpoints/point_defence.json",
+          "sha256": "15fba305134b25884f7f5aba138f82a04fba2447a14f4bd35bb7d47dba1fe0cd",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/point_defence.json"
+        },
+        {
+          "path": "modules/hardpoints/pulse_laser.json",
+          "sha256": "440c57269305e5e3587c4eb5443b7d6a3d2287309648a1358daadc4d83a348d6",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/pulse_laser.json"
+        },
+        {
+          "path": "modules/hardpoints/pulse_wave_analyser.json",
+          "sha256": "c6a0d67f2e4ba78fb64014c3f51e807c72315dada134342a9f86723ab8c233d6",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/pulse_wave_analyser.json"
+        },
+        {
+          "path": "modules/hardpoints/rail_gun.json",
+          "sha256": "6a5136973eee0c88c47e3fac33360581cf6e59df76efecef37a5380af8a74b49",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/rail_gun.json"
+        },
+        {
+          "path": "modules/hardpoints/remote_release_flak_launcher.json",
+          "sha256": "ca45b52875640441b649b62c0e41e5a1c90aeb892d4aefab45a31a69ad4f3902",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/remote_release_flak_launcher.json"
+        },
+        {
+          "path": "modules/hardpoints/remote_release_flechette_launcher.json",
+          "sha256": "29bcbcbb87830d9b40a0319267d047ef53817293448cb28322f3f5f204809703",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/remote_release_flechette_launcher.json"
+        },
+        {
+          "path": "modules/hardpoints/seismic_charge_launcher.json",
+          "sha256": "af9f9639965887874338ec57a4a9097f3ad3fe334aab34c8fa1e7b8ab7147048",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/seismic_charge_launcher.json"
+        },
+        {
+          "path": "modules/hardpoints/shield_booster.json",
+          "sha256": "5e159a3868ed4a4d1fa3cfa0db3e99f355b55dad70b0cddd0b153f2a934636f7",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/shield_booster.json"
+        },
+        {
+          "path": "modules/hardpoints/shock_cannon.json",
+          "sha256": "514e9485fda1357697a2e0a39203313ee9ff2fd07213ce215f09e4ad063bc86e",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/shock_cannon.json"
+        },
+        {
+          "path": "modules/hardpoints/shutdown_field_neutraliser.json",
+          "sha256": "44ba14e9df2cc2bc37ba27d46de5982d4afeea36432413018d598e80d25dcc99",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/shutdown_field_neutraliser.json"
+        },
+        {
+          "path": "modules/hardpoints/sub_surface_displacement_missile.json",
+          "sha256": "fbe0064fd0003e7d441dd31cb479ca1d953361fd28d3245ad3da428c8917e46f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/sub_surface_displacement_missile.json"
+        },
+        {
+          "path": "modules/hardpoints/torpedo_pylon.json",
+          "sha256": "74b042542988f290789d7021ab0f7811e617dc6d08f421aad9aad3d86da5f6b6",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/torpedo_pylon.json"
+        },
+        {
+          "path": "modules/hardpoints/xeno_scanner.json",
+          "sha256": "53dd6253afb6e78fcf30aa73dc17637f9eecfcc3d3226c5989bc673ca594fb7f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/hardpoints/xeno_scanner.json"
+        },
+        {
+          "path": "modules/index.js",
+          "sha256": "91f6f24bff85ffda63e716ffbc907effe63c53ff0c0241ce9beb541e9521b3db",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/index.js"
+        },
+        {
+          "path": "modules/internal/auto_field_maintenance_unit.json",
+          "sha256": "4b9de2b3140a8fc094d92e0b458a7ad5b4eca93e588aa22b9c28408350799e34",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/auto_field_maintenance_unit.json"
+        },
+        {
+          "path": "modules/internal/bi_weave_shield_generator.json",
+          "sha256": "0f74100ea43f240451a79867ee6e91965a42bc078539a1ded17911e9f7e42533",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/bi_weave_shield_generator.json"
+        },
+        {
+          "path": "modules/internal/business_passenger_cabin.json",
+          "sha256": "2068d4897af8eff959b2e0480e33d9e4f5533394fdc9d221a0c2cda79fd8f624",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/business_passenger_cabin.json"
+        },
+        {
+          "path": "modules/internal/cargo_rack.json",
+          "sha256": "66c5a9ee8f74b28574e220157effdbc711bfdf44909f7bb325306e5db7138c89",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/cargo_rack.json"
+        },
+        {
+          "path": "modules/internal/cargo_rack_large.json",
+          "sha256": "fbc3ca38561704081f6ab8a86b30587c2769dc43447512db72ec2c36068f95e8",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/cargo_rack_large.json"
+        },
+        {
+          "path": "modules/internal/collector_limpet_controllers.json",
+          "sha256": "1dfe1f806cc5d73f11286a6ce10fcfdc19cedef84c53c2db1e610aa86dfcb9aa",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/collector_limpet_controllers.json"
+        },
+        {
+          "path": "modules/internal/decontamination_limpet_controller.json",
+          "sha256": "fccf131800131de60b92693f7f2e0cc105fb5756444462acd656743320ffb8b8",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/decontamination_limpet_controller.json"
+        },
+        {
+          "path": "modules/internal/docking_computer.json",
+          "sha256": "df8a76a768d57443c32a5545a1684b8810f5e8b7e314f66ddf19c0f96b71cd5f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/docking_computer.json"
+        },
+        {
+          "path": "modules/internal/economy_passenger_cabin.json",
+          "sha256": "5f25b66b05dec586d59b2a26c7ea8e65f18e276794a0d2bc34d40cb9956eb0a1",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/economy_passenger_cabin.json"
+        },
+        {
+          "path": "modules/internal/experemental_weapon_stabilizer.json",
+          "sha256": "a8c141f3ab676e159d14d2c278d899b03496681bec6a120d91cd72b9339fc599",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/experemental_weapon_stabilizer.json"
+        },
+        {
+          "path": "modules/internal/fighter_hangar.json",
+          "sha256": "b7e2380aae3a88d6986243069c7e16160490f418d8efe81aadb7d844f1176a7f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/fighter_hangar.json"
+        },
+        {
+          "path": "modules/internal/first_passenger_cabin.json",
+          "sha256": "b2fa99738a871ed53b864c3d54e0ed76f7d373fb21fdf5017808281fa8397c05",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/first_passenger_cabin.json"
+        },
+        {
+          "path": "modules/internal/frame_shift_drive_interdictor.json",
+          "sha256": "7c4549bfe7817d692e79a7d7934e6ff25d36d170fdd4809b457b7e8586c20dc0",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/frame_shift_drive_interdictor.json"
+        },
+        {
+          "path": "modules/internal/fuel_scoop.json",
+          "sha256": "30ab11ac966ce50477babfe91dcd78a6272607b5eb976a1c228ccbb286122a84",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/fuel_scoop.json"
+        },
+        {
+          "path": "modules/internal/fuel_transfer_limpet_controllers.json",
+          "sha256": "91893ec5816d74270738820295b4d9414af58d68212c1dece70f836c1e0dd62d",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/fuel_transfer_limpet_controllers.json"
+        },
+        {
+          "path": "modules/internal/guardian_fsd_booster.json",
+          "sha256": "7128075a6a3d29df7192e8ef0fa4725c104d249b6405c10930e6d94fde5c7af4",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/guardian_fsd_booster.json"
+        },
+        {
+          "path": "modules/internal/guardian_hull_reinforcement_package.json",
+          "sha256": "f86093ada8bab0ab79b36e595708d624cd1e9fd5a42132949b3738174a7e8492",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/guardian_hull_reinforcement_package.json"
+        },
+        {
+          "path": "modules/internal/guardian_module_reinforcement_package.json",
+          "sha256": "1fb02af6d7522822c390c2f6e24051f292daf96ab98347cfd6a44bbe87d2ce19",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/guardian_module_reinforcement_package.json"
+        },
+        {
+          "path": "modules/internal/guardian_shield_reinforcement_package.json",
+          "sha256": "34db733a390b17c04aa54232a8a374b5b293195c035251b4decff36d2bc6a35f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/guardian_shield_reinforcement_package.json"
+        },
+        {
+          "path": "modules/internal/hatch_breaker_limpet_controller.json",
+          "sha256": "222d9c23883f7ff93b420a3ca79df1a51552676e753bbfadd37cf01c707d2bf8",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/hatch_breaker_limpet_controller.json"
+        },
+        {
+          "path": "modules/internal/hull_reinforcement_package.json",
+          "sha256": "c4480e4589585e99dda337f120ecf40ddf756ead5559f60949751284aebdfc0c",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/hull_reinforcement_package.json"
+        },
+        {
+          "path": "modules/internal/internal_fuel_tank.json",
+          "sha256": "53dafe43f0aaf8641f5551302f90aebb51b272ed21e6af29666d5e3dc9a5f9b1",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/internal_fuel_tank.json"
+        },
+        {
+          "path": "modules/internal/luxury_passenger_cabin.json",
+          "sha256": "8c885b2af2ac50db37e11fca91363a5f6a220fe9d255f36859901f0819e19acd",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/luxury_passenger_cabin.json"
+        },
+        {
+          "path": "modules/internal/meta_alloy_hull_reinforcement_package.json",
+          "sha256": "e7950426e6b6dcbae91da4aa9272c11912902ab8e8ce3550275d82ac7d6d3bc6",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/meta_alloy_hull_reinforcement_package.json"
+        },
+        {
+          "path": "modules/internal/missing_module.json",
+          "sha256": "3eb36a334498de2a710d9b5962121448dc6e68b31295d8cc83f451d46c9fa74f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/missing_module.json"
+        },
+        {
+          "path": "modules/internal/module_reinforcement_package.json",
+          "sha256": "83978d08b03f30ff42b9ab1b8186cc00ee8154ce34e9db32d2778c6b656221d9",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/module_reinforcement_package.json"
+        },
+        {
+          "path": "modules/internal/multi_limpet_controllers.json",
+          "sha256": "923f9a4cc35df85e7a93e810ae19dfcaff0ea30c0923de4f062c2a7bd8c0b1aa",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/multi_limpet_controllers.json"
+        },
+        {
+          "path": "modules/internal/planetary_approach_suite.json",
+          "sha256": "8167045fff27f9f933e82f116e554d576faa76d3eabafbe34082ce1565bf2402",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/planetary_approach_suite.json"
+        },
+        {
+          "path": "modules/internal/planetary_vehicle_hanger.json",
+          "sha256": "ef2f5b6f45d1fd7b726cf5bd13bb701bde4272507f5190554a8de2fe25d587d1",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/planetary_vehicle_hanger.json"
+        },
+        {
+          "path": "modules/internal/pristmatic_shield_generator.json",
+          "sha256": "9229ba05b8903aeb50bc02740bb16eb4ab068826fa1606a24685b174f94e5b99",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/pristmatic_shield_generator.json"
+        },
+        {
+          "path": "modules/internal/prospector_limpet_controllers.json",
+          "sha256": "59f24d6f67829f3cbe1117e10a71558f815e86743c3c7b53fde842e947212ddf",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/prospector_limpet_controllers.json"
+        },
+        {
+          "path": "modules/internal/recon_limpet_controllers.json",
+          "sha256": "fb89de497f2ace4a32548c1cb08f0c664684eefdbb5621bb310f88ee42c75f2f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/recon_limpet_controllers.json"
+        },
+        {
+          "path": "modules/internal/refinery.json",
+          "sha256": "deeb5b4d2e67e9de5ca788f1d9a2d902e809977a1fd71f3a0eb67c9bdc38b1d0",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/refinery.json"
+        },
+        {
+          "path": "modules/internal/repair_limpet_controller.json",
+          "sha256": "4f9ce815b3f8d5157ee4a1a7d6ae123d95bb5adb929cc126c715f4b0c359b2ce",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/repair_limpet_controller.json"
+        },
+        {
+          "path": "modules/internal/research_limpet_controller.json",
+          "sha256": "8a9f6f8fe1c4f3c093c88c8f4eed6c612a5689bef8f8113288157a587a199aa2",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/research_limpet_controller.json"
+        },
+        {
+          "path": "modules/internal/shield_cell_bank.json",
+          "sha256": "e80d2abf8d44b9ba7f00aa63b694b23e822c05c87687c4a5e8b9d68deeac62b2",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/shield_cell_bank.json"
+        },
+        {
+          "path": "modules/internal/shield_generator.json",
+          "sha256": "26be41966f03c645997a1b0ee787d2e937efc48aa0a7d70e8f6a3b4aa722ef3b",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/shield_generator.json"
+        },
+        {
+          "path": "modules/internal/supercruise_assist.json",
+          "sha256": "a8d4c3a839063d7220baa29d5cbc2226377e9006e3be60ead0d902a16a8442c1",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/supercruise_assist.json"
+        },
+        {
+          "path": "modules/internal/surface_scanner.json",
+          "sha256": "4a6fc5e91441dc2e9e2f400b7aabe21bc0acbc0ce59b6f7b6e995a7763c880aa",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/internal/surface_scanner.json"
+        },
+        {
+          "path": "modules/mod.py",
+          "sha256": "8b1d39621016fc680b6ba2eb11e3e6a0b0b389e76249a4ffb7a585a368a1c1bc",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/mod.py"
+        },
+        {
+          "path": "modules/standard/frame_shift_drive.json",
+          "sha256": "46c5544c2d0bd09096bb2a0ef8a6c3ec5dc5e6a25e8d8e82178410a354243ee2",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/standard/frame_shift_drive.json"
+        },
+        {
+          "path": "modules/standard/fuel_tank.json",
+          "sha256": "d3603aa8297e53cacb4f9d1a53aacc1527e43c5d07c21d1a60d267c4972e52f8",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/standard/fuel_tank.json"
+        },
+        {
+          "path": "modules/standard/life_support.json",
+          "sha256": "25091bde496dcbd477f5fe9433b976413a8a87eb061c0d2f479d3d0add10b1a9",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/standard/life_support.json"
+        },
+        {
+          "path": "modules/standard/power_distributor.json",
+          "sha256": "39ad85107c1bb279f23a6d0b79c5462671bbb2f542a303adb48cc486efeb4d24",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/standard/power_distributor.json"
+        },
+        {
+          "path": "modules/standard/power_plant.json",
+          "sha256": "4dc2e7f37219c66fbd6c486b4f22f55c30901ac0bbe74fd3c9f4a05d761c9a87",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/standard/power_plant.json"
+        },
+        {
+          "path": "modules/standard/sensors.json",
+          "sha256": "5b9fce9e11ad450ea146e42398541b3595d5c5c6a850626e6a4d54983744a93e",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/standard/sensors.json"
+        },
+        {
+          "path": "modules/standard/thrusters.json",
+          "sha256": "4d3c0dcdd2a2f53fc20eca6302e3a54724f98af1245e8e36bccb38afdad27c39",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/modules/standard/thrusters.json"
+        },
+        {
+          "path": "ships/adder.json",
+          "sha256": "8375a1ca0ecb11d22c5f5369fe1f43dd243a3a04415acb707ac324dfd71202da",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/adder.json"
+        },
+        {
+          "path": "ships/alliance_challenger.json",
+          "sha256": "63b323f32dc076c3f9882e5cc5d021afa7cf798b56a9c69d1a35037443706418",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/alliance_challenger.json"
+        },
+        {
+          "path": "ships/alliance_chieftain.json",
+          "sha256": "c32cac9bff776196211c356ba200aa83e811075388e71927860d498cec118c7d",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/alliance_chieftain.json"
+        },
+        {
+          "path": "ships/alliance_crusader.json",
+          "sha256": "17197a7089db3f5d1ee67cc77a47309899fa6b8fbdfb6b9bee72c3ec5b013ffb",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/alliance_crusader.json"
+        },
+        {
+          "path": "ships/anaconda.json",
+          "sha256": "bf72d73d8d18aab595940ea3a8517063b2f555b8ee62d4c0b227d4fd88a29c14",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/anaconda.json"
+        },
+        {
+          "path": "ships/asp.json",
+          "sha256": "56d634baf6916ac450a1fab40f57d7ab4364643be2636735b1a1c146f823b2b9",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/asp.json"
+        },
+        {
+          "path": "ships/asp_scout.json",
+          "sha256": "9e3eeff200b4e81cd6b3c63fb773eb5e6599b1f228c67e533ab42376475b0ca7",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/asp_scout.json"
+        },
+        {
+          "path": "ships/beluga.json",
+          "sha256": "54abe1e3724aa4dea6844f8789c3bb54c16fefa0672b1cb2e3d78e59e1ab050b",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/beluga.json"
+        },
+        {
+          "path": "ships/cobra_mk_iii.json",
+          "sha256": "1bd5301cfeaadc8c9caf6d4360db28fe007dabe3f8ca230d17af75d0ae5d4e8a",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/cobra_mk_iii.json"
+        },
+        {
+          "path": "ships/cobra_mk_iv.json",
+          "sha256": "4fdeb7b343c91aa4a215155e6323af1fee3827c42a4e5129f29aab7bc6c521dc",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/cobra_mk_iv.json"
+        },
+        {
+          "path": "ships/cobra_mk_v.json",
+          "sha256": "3447e7c5679a0e038d0eead37710aee686bb93009f96272a68d64d1c8a2acddb",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/cobra_mk_v.json"
+        },
+        {
+          "path": "ships/diamondback_explorer.json",
+          "sha256": "e29c3118882cc9966861d07720acce5846ad69a3bfc3abc1d5d6393f1a81a67f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/diamondback_explorer.json"
+        },
+        {
+          "path": "ships/diamondback_scout.json",
+          "sha256": "65faeccf7c9a82cecbac51084050b2dc3b19633a7243b0060020b5dd0ef4ad38",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/diamondback_scout.json"
+        },
+        {
+          "path": "ships/dolphin.json",
+          "sha256": "08ac54c464bbd762d5af7e481fe45788cf3ba74eff69a5229a8cb2fab3160691",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/dolphin.json"
+        },
+        {
+          "path": "ships/eagle.json",
+          "sha256": "e17aebd4f48456b7dbb46ccea309d7dc16c0cf3fe8e0278b40d452cc3a56f8e7",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/eagle.json"
+        },
+        {
+          "path": "ships/explorer_nx.json",
+          "sha256": "d8e7f21f9eb63d6960636bed2e4b5bd399b25b0fbdc33737bb293f1fb37b985d",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/explorer_nx.json"
+        },
+        {
+          "path": "ships/federal_assault_ship.json",
+          "sha256": "2af1927bd8076ff866c8f685fb065d4f70008db034b3879af71aeedb1ddf2a06",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/federal_assault_ship.json"
+        },
+        {
+          "path": "ships/federal_corvette.json",
+          "sha256": "60e714cddf01bcdbd0699cacbb5c4e64ef3932693aa525a976328682661ad940",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/federal_corvette.json"
+        },
+        {
+          "path": "ships/federal_dropship.json",
+          "sha256": "b36013c3ee9927100c26ca27b0c405fd134d119fc8c46e85e3e80d04fd339439",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/federal_dropship.json"
+        },
+        {
+          "path": "ships/federal_gunship.json",
+          "sha256": "d31279d21bcdcf2d684a2985b51eb7011ee2d6d51d4570751ec18a706f4884ee",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/federal_gunship.json"
+        },
+        {
+          "path": "ships/fer_de_lance.json",
+          "sha256": "3be1d080ca7668a8c5af8eb38d68d29bdf4ad33c362185f0bb8defdc05ed2f1b",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/fer_de_lance.json"
+        },
+        {
+          "path": "ships/hauler.json",
+          "sha256": "5b10d7a627f80c532b16d172d72ec5d5086e3595736f245ffed1cf4fc4ac2f05",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/hauler.json"
+        },
+        {
+          "path": "ships/imperial_clipper.json",
+          "sha256": "4e86f15e0c1389259b7d7fa36d020e5779adf079836ffa0b37ea881adcdb3302",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/imperial_clipper.json"
+        },
+        {
+          "path": "ships/imperial_corsair.json",
+          "sha256": "e5995539973774454fbc87af16221d9a4cf210ccc76e44852b2936c4ed52b49a",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/imperial_corsair.json"
+        },
+        {
+          "path": "ships/imperial_courier.json",
+          "sha256": "c3c94eb16edddfa8614a3fb216e68c9a684cc86002e8a0013a5c32f2a7f207e7",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/imperial_courier.json"
+        },
+        {
+          "path": "ships/imperial_cutter.json",
+          "sha256": "5e450fdce78c20079c002f1af94325e3ce59592bf664d2b4ce24b06d48c9cccc",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/imperial_cutter.json"
+        },
+        {
+          "path": "ships/imperial_eagle.json",
+          "sha256": "3acddc9ca1bae3998fd2fa7b3726af18d5059a3d7dae35b7caad00b1dadfe98f",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/imperial_eagle.json"
+        },
+        {
+          "path": "ships/index.js",
+          "sha256": "1f205b7bf438b088b07be32984a32c50ddef02249318bb8bb37a217b2bbebc19",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/index.js"
+        },
+        {
+          "path": "ships/keelback.json",
+          "sha256": "284e79a541b536482e4b65dd32082d9277795067ed232ab1feff6bc7ac75aa53",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/keelback.json"
+        },
+        {
+          "path": "ships/kestrel.json",
+          "sha256": "3e02864c5016bea3b327e41cf3fd93da3c9ef1c1d6b4a801906627038cdd5aa2",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/kestrel.json"
+        },
+        {
+          "path": "ships/krait_mkii.json",
+          "sha256": "50ea844fbf4d05ef4373933b61ad4ce02a7638c956c4eaafc2caeb2551d10601",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/krait_mkii.json"
+        },
+        {
+          "path": "ships/krait_phantom.json",
+          "sha256": "96770655df67acd3ece0879b68d22a31bca5b73a9a98eb9f43ccd9cfa2d012be",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/krait_phantom.json"
+        },
+        {
+          "path": "ships/mamba.json",
+          "sha256": "8c4be7b76485561e7d97b93a1b56679c5912cbd21316fb8d6e291a8a960457ac",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/mamba.json"
+        },
+        {
+          "path": "ships/mandalay.json",
+          "sha256": "bde91d5b96e8b6c57230b0dae664be9683b672c1b5a9d9e7364989963fbfcf24",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/mandalay.json"
+        },
+        {
+          "path": "ships/orca.json",
+          "sha256": "fe6bd76df1a50c6738cf9c6480e2f12e2288426a85899021498b4a84a49b068c",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/orca.json"
+        },
+        {
+          "path": "ships/panther_clipper.json",
+          "sha256": "e4cc540486f4be2f1e1e02d65c36d7717a641fda338852d9ce233d29d84c7088",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/panther_clipper.json"
+        },
+        {
+          "path": "ships/python.json",
+          "sha256": "b7f0c6858a3b49bec83a4bafc7985b92c0b81e661b655e7762b2161136737d2e",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/python.json"
+        },
+        {
+          "path": "ships/python_nx.json",
+          "sha256": "353109a02ac3fe3d972956bc544ffc39d5198a098533d6309a7940d88712cfe9",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/python_nx.json"
+        },
+        {
+          "path": "ships/sidewinder.json",
+          "sha256": "d341dccf556441305b1d9789d3bad879c89e164238a42c9a54a9dc60b2068728",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/sidewinder.json"
+        },
+        {
+          "path": "ships/type_10_defender.json",
+          "sha256": "9b436ac543ed92aeef83f11946d593407b9688f5490c41045cf38331cea43f46",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/type_10_defender.json"
+        },
+        {
+          "path": "ships/type_11_prospector.json",
+          "sha256": "01f673c99427714294822e78c55bdedba34ac9472bcec97cec33e93d0f410206",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/type_11_prospector.json"
+        },
+        {
+          "path": "ships/type_6_transporter.json",
+          "sha256": "376349a542a84c4c21960769f9438102ebbd778f958369ac7ba069a3ce2ca193",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/type_6_transporter.json"
+        },
+        {
+          "path": "ships/type_7_transport.json",
+          "sha256": "42696a735ae8da5c85109057013cf212922463830c696d4772938d991b586507",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/type_7_transport.json"
+        },
+        {
+          "path": "ships/type_8_transport.json",
+          "sha256": "bc6b263d924f2fe8e6bed35d9a0a7deacbe36d6051a4498cd47bf00b32ef6a87",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/type_8_transport.json"
+        },
+        {
+          "path": "ships/type_9_heavy.json",
+          "sha256": "52b03189a322ef48027c3b501fbfd13c570f2d9db2263d15ada45d75e63e86ef",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/type_9_heavy.json"
+        },
+        {
+          "path": "ships/viper.json",
+          "sha256": "dad4474227164bdf31a347342dfd972f0658b9d98d999e2115a7615a47147a9e",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/viper.json"
+        },
+        {
+          "path": "ships/viper_mk_iv.json",
+          "sha256": "965cba5c48e655de24295459874104a4bc3bcd20a0501022fd05953f5e5e5d65",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/viper_mk_iv.json"
+        },
+        {
+          "path": "ships/vulture.json",
+          "sha256": "0070bac3f63f4ea7a7f5b4afad1d5fcd02824e1665388ac4aea41268126377d0",
+          "source_url": "https://github.com/EDCD/coriolis-data/blob/0db9234b5b9ce8c939ea84133d7ce336eea88e27/ships/vulture.json"
+        }
+      ],
+      "status": "Pinned factual ship/module dataset; third-party outfitting data, not recovered server rules."
+    }
+  ],
+  "updated_date": "2026-10-13"
+}

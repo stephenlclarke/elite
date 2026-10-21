@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "importedOn": "2026-10-18",
+  "authority": "Human-approved original-world proposal; verified orchestrator handoff received2026-10-18T18:29:40.605073+00:00",
+  "verifiedHandoff": "l337-orchestrator-handoff-20261018.json",
+  "proposalSHA256": "597869d473d41c8d08839d6ab64a416887014f219bdc6678acd0fe89891c1819",
+  "sourceDirectory": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/l337-content-proposal/original-world-economy",
+  "files": {
+    "catalogue.json": {
+      "sha256": "120543eedc02a705cce0e37d026125bf926ec22651cff9337ca5d943f2ffd99d",
+      "bytes": 1660913
+    },
+    "authoring.toml": {
+      "sha256": "47d83caae5a9b22a4a932f19c55f79c5cb5435b962826a0969ece096b11f80eb",
+      "bytes": 6664
+    }
+  },
+  "preservation": "Copied byte for byte. No world regeneration, name aliases, old Elite coordinate conversion or live runtime selection.",
+  "scope": "2048ordinary worlds,8galaxies,256pergalaxy. EightsecretPLUGHworlds are excluded; coordinates and runtime wiring remain to be supplied/implemented separately.",
+  "statistics": {
+    "worlds": 2048,
+    "uniqueNames": 2048,
+    "ringed": 823,
+    "christmasConvoy": 1,
+    "surfaceCounts": {
+      "mixed": 549,
+      "green-agricultural": 722,
+      "polluted-industrial": 776,
+      "snow-and-evergreen": 1
+    },
+    "climateCounts": {
+      "temperate": 2047,
+      "permanent-winter": 1
+    },
+    "coordinateBoundsByGalaxy": [
+      {
+        "galaxy": 0,
+        "minimumXLY": -0.9091,
+        "maximumXLY": 61.9219,
+        "minimumYLY": -0.9585,
+        "maximumYLY": 55.3045
+      },
+      {
+        "galaxy": 1,
+        "minimumXLY": -1.4223,
+        "maximumXLY": 57.3944,
+        "minimumYLY": 1.6647,
+        "maximumYLY": 61.804
+      },
+      {
+        "galaxy": 2,
+        "minimumXLY": 1.3623,
+        "maximumXLY": 64.0523,
+        "minimumYLY": 1.208,
+        "maximumYLY": 56.2952
+      },
+      {
+        "galaxy": 3,
+        "minimumXLY": -0.268,
+        "maximumXLY": 59.8771,
+        "minimumYLY": -0.6738,
+        "maximumYLY": 59.1927
+      },
+      {
+        "galaxy": 4,
+        "minimumXLY": -0.4475,
+        "maximumXLY": 62.1645,
+        "minimumYLY": -0.4304,
+        "maximumYLY": 55.2404
+      },
+      {
+        "galaxy": 5,
+        "minimumXLY": 0.3663,
+        "maximumXLY": 59.2189,
+        "minimumYLY": -0.2324,
+        "maximumYLY": 62.5081
+      },
+      {
+        "galaxy": 6,
+        "minimumXLY": 1.1649,
+        "maximumXLY": 62.5899,
+        "minimumYLY": -1.1299,
+        "maximumYLY": 55.5091
+      },
+      {
+        "galaxy": 7,
+        "minimumXLY": -0.3555,
+        "maximumXLY": 59.6467,
+        "minimumYLY": 2.8925,
+        "maximumYLY": 60.5429
+      }
+    ]
+  }
+}

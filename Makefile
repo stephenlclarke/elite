@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check package-macos homebrew-cask homebrew-cask-check sonar ci
+.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check package-macos homebrew-cask homebrew-cask-check sonar ci'
+	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -14,7 +14,7 @@ coverage coverage-check:
 threads:
 	swift test --scratch-path .build/tsan --sanitize=thread
 address:
-	ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address
+	ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel
 leaks:
 	swift build
 	mkdir -p reports
@@ -40,6 +40,9 @@ sonar:
 	./script/sonar.sh
 mission-packs-check:
 	swift run Elite --validate-mission-pack docs/mission-packs/courier.toml
+flight-controls-check:
+	PYTHONDONTWRITEBYTECODE=1 python3 Tools/generate-flight-controls.py --repo-root . --check
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/tests -p 'test_flight_controls.py'
 package-macos:
 	python3 Tools/distribution/package_macos.py
 homebrew-cask:
@@ -47,4 +50,4 @@ homebrew-cask:
 homebrew-cask-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/distribution -p 'test_*.py'
 	python3 Tools/distribution/homebrew_cask.py --check
-ci: homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check threads address leaks
+ci: flight-controls-check homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check threads address leaks

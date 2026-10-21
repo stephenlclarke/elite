@@ -1,0 +1,5 @@
+# Compare equipment ownership independently of Set encoding order
+
+The independent actor 024 full gate reported one additional solar-flight assertion failure. The existing fixture compares encoded Commander dictionaries across docking, loading and relaunch. Swift encodes the legacy equipment Set as an array, whose order may change when fitted equipment is mirrored. The original actual array is `Fuel Scoops, Pulse Laser`; the expected array is `Pulse Laser, Fuel Scoops`. All 24 other compared top-level fields are structurally identical, including physical inventory, purchase history, salvage and cargo ledgers, mounts and financial state.
+
+Compare native equipment as a Set, retain explicit typed physical inventory and history equality, then sort only the top-level equipment array for the remaining complete dictionary comparison. Preserve the existing six explicit world-transition exceptions and the docking, celestial, thermal and visit assertions. No production change or general JSON normalization is needed. See the [implementation handoff](PR-solar-save-set-order.md).

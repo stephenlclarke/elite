@@ -1,0 +1,44 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.training"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "owned-equipment-v2", "dialogue-choices-v2", "navigation-trade-training-v2"]
+priority = 100
+source = "Original L337 Navigation and trade practice, translated from the approved original-families design. Original-world endpoint bindings are required; no predecessor-world aliases."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "navigation-trade"
+title = "Navigation and trade practice"
+briefing = "At an original-world training berth, select a reachable destination on the chart and a legal tonne commodity on the market. Reopen Mission Contacts to confirm the real fitting, capacity, stock and route. Buy one actual tonne, fly the selected route, sell that tonne at the selected destination, then return to this training berth for reception. Fuel and market prices are real; a loss is valid. Use single-tonne market controls during this practice."
+destination = "Your selected reachable original-world destination, then the issuing training berth"
+reward = "No tutorial payment. Actual sale revenue and costs only; one first-success journal clue."
+milestones = ["Confirm fitting and selected trade route", "Sell the identified tonne after actual travel", "Confirm actual training reception"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[[dialogs]]
+id = "fit"
+text = "SENN: Review the selected route, actual fitting, free hold space and one tonne of available legal market stock below. Confirm reserves one tonne of actual hold capacity for this practice plan. It does not buy cargo or promise a profitable sale."
+[[dialogs]]
+id = "progress"
+text = "SENN: The practice uses the identified purchased tonne and actual travel and market receipts. Follow the recorded next action below. Cancel releases surviving cargo without refunding or recreating stock."
+choices = [{id="continue", label="Continue practice"}, {id="cancel", label="Cancel practice; retain actual cash and surviving cargo"}]
+[[dialogs]]
+id = "receive"
+text = "RECEPTION: Review the actual buy, sale, fuel and cash difference below. Confirm only at the issuing training berth after the selected destination sale and actual return. The tutorial pays no additional credits."
+choices = [{id="receive", label="Confirm training reception"}, {id="cancel", label="Cancel without a completion clue"}]
+[[dialogs]]
+id = "lost"
+text = "SENN: The identified tonne was lost with the abandoned ship. A replacement commodity is not its trade receipt. Confirm this failed practice; no payment or clue is due. A retry requires a new instance and real stock."

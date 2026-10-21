@@ -1,0 +1,7 @@
+# Route actual missile launches through finite attributed flight
+
+Player missiles currently destroy most targets immediately and only create a moving body when the target has ECM. Native NPC missiles bypass shared admission and can consume ammunition before an old global body limit refuses their spawn. The pure typed ordnance model is tested, but those actual launch paths do not use it, and blanket ECM removal would incorrectly destroy ECM-immune or resistant profiles.
+
+Admit actual player and native NPC missiles through the shared runtime allocator before charging ammunition. Retain original attacker and target identities, record the targeted launch, resolve finite world-space flight against the nearest real mesh/celestial intersection, and end lost, expired, intercepted or culled flights without ship rewards. Preserve original energy-only mission damage and the proximity-before-ECM ordering. One actual ECM activation has one immutable emitter/sequence identity across updates.
+
+Acceptance covers keyboard launch, finite travel, capacity refusal without resource or identity changes, station occlusion, shield absorption, close Constrictor destruction, target ID reuse, removed launcher provenance, finite NPC ammunition, corona admission and actual profile-aware ECM counting. Existing mission, retaliation and automatic ECM scenarios remain required. Source-only work stays separate from the NPC persistence acceptance checkpoint. See the [implementation handoff](PR-typed-ordnance-runtime.md).

@@ -1,0 +1,135 @@
+{
+  "source_id": "S43",
+  "access_date": "2026-10-13",
+  "discovery_page": "https://lotf.co.uk/download",
+  "archives": [
+    {
+      "archive": "firstenc.zip",
+      "source_url": "https://lotf.co.uk/downloads/firstenc.zip",
+      "byte_length": 2462531,
+      "sha256": "0f5c34aa3899e2af518be6ca1d01922fff877a9eb61efc79e02d83dfe4fb4c2f",
+      "inspected_members": [
+        {
+          "path": "firstenc/readme.txt",
+          "byte_length": 11883,
+          "sha256": "25512e241b0a39dcde110112d4a38d5c892157d35f5f2e1b8a1f5fb8853315cc"
+        },
+        {
+          "path": "firstenc/game/MISSION.DAT",
+          "byte_length": 779951,
+          "sha256": "3cf36755c7420f12281ca8a55f11dbc9787bacaeef49edc4584338f77dc94afc"
+        }
+      ]
+    },
+    {
+      "archive": "argent.zip",
+      "source_url": "https://lotf.co.uk/downloads/argent.zip",
+      "byte_length": 42268,
+      "sha256": "826e7a9998021e08633f5341a44443a96727d0d7749813436b62cfa6d2baf7a4",
+      "inspected_members": [
+        {
+          "path": "ARGENT",
+          "byte_length": 56532,
+          "sha256": "1d9ec5913fabda1afc0b65cfd7127ddc8d4846f38f1b7ae563d68c2e673b36d2"
+        },
+        {
+          "path": "Argent.txt",
+          "byte_length": 598,
+          "sha256": "b51ec5cd3697ab99420f69ed9f0f139e2afcea75eefc32e1089452785a25da11"
+        }
+      ]
+    },
+    {
+      "archive": "hikers.zip",
+      "source_url": "https://lotf.co.uk/downloads/hikers.zip",
+      "byte_length": 43334,
+      "sha256": "5210163c46a2a40894b05c0651b705e61c4b242b5112ae3b617d55eeacd31690",
+      "inspected_members": [
+        {
+          "path": "HIKERS",
+          "byte_length": 57322,
+          "sha256": "7a4091e542670ef02e26bbf7663f3d861b2fd99b1cbe269d059fd3e3205358fa"
+        },
+        {
+          "path": "hikers.txt",
+          "byte_length": 712,
+          "sha256": "40ee0640f558d083a2b3b216e2d6b95f88f1c1a2c4ed05d738c6d2a3c031d1ca"
+        }
+      ]
+    },
+    {
+      "archive": "artwork.zip",
+      "source_url": "https://lotf.co.uk/downloads/artwork.zip",
+      "byte_length": 42934,
+      "sha256": "01671659a5b2e3081fb38a1acb66396fc7320a064538cc83dabf3930e92fba98",
+      "inspected_members": [
+        {
+          "path": "ARTWORK",
+          "byte_length": 51256,
+          "sha256": "90d9b0535205c3e0ab47d804314c024e4bf5488d3548099fe074a35a7d14781b"
+        },
+        {
+          "path": "artwork.txt",
+          "byte_length": 416,
+          "sha256": "b5aa74208abc67df58b3e46a2ad044e5ffbc3186f691aa7601ce5c3a518a54ae"
+        }
+      ]
+    },
+    {
+      "archive": "dentra.zip",
+      "source_url": "https://lotf.co.uk/downloads/dentra.zip",
+      "byte_length": 42535,
+      "sha256": "9f02d227642ed2c7c688acf80b08f3ee627fa2f11b7a4f615d06a8549e4fb8a5",
+      "inspected_members": [
+        {
+          "path": "DENTRA",
+          "byte_length": 53568,
+          "sha256": "c4f58b379ca290af0098d9a44deda1736ffde2e5aeaa23052605ecdde77fc89a"
+        },
+        {
+          "path": "Dentra.txt",
+          "byte_length": 449,
+          "sha256": "99973e84550bc43dcd5f90139689fc88bc132fd0702216d95f3bad407d77c6b6"
+        }
+      ]
+    },
+    {
+      "archive": "dentra_2.zip",
+      "source_url": "https://lotf.co.uk/downloads/dentra_2.zip",
+      "byte_length": 43282,
+      "sha256": "6b18ed9946e31a0a7bc4ae0b21a155c43a9bbf98a4e6ef4b61931d8c3c2f3d7b",
+      "inspected_members": [
+        {
+          "path": "dentra_2.txt",
+          "byte_length": 357,
+          "sha256": "f6021956dd83f037b308c764345191820636903cea3a204e74f2aab14750e2a0"
+        },
+        {
+          "path": "DENTRA_2",
+          "byte_length": 57818,
+          "sha256": "dbef1935301ccd1d86163e32f7f2a09c58d6bf16415a5b605251a639781e6887"
+        }
+      ]
+    },
+    {
+      "archive": "scintist.zip",
+      "source_url": "https://lotf.co.uk/downloads/scintist.zip",
+      "byte_length": 41741,
+      "sha256": "03bfe1e96304c76d17c2954793fb0dc5efa9b58898c3f848bdfa4a802fd50268",
+      "inspected_members": [
+        {
+          "path": "SCINTIST",
+          "byte_length": 53746,
+          "sha256": "e6dd7d82ede51e183f29931a027f98dbc43511af189c5b9a105b03506236af31"
+        },
+        {
+          "path": "scintist.txt",
+          "byte_length": 815,
+          "sha256": "f79e134f97b6f2395e3f2c4eb01d751ec5743ebab42d5de884c9e1f141eb357f"
+        }
+      ]
+    }
+  ],
+  "scope": "Only the listed files were used as evidence. Original game files and journal prose remain outside the repository. Scenario readmes are reports; static save checks do not prove successful playthroughs or retail executable revision.",
+  "implementation_scope_status": "ARCHIVED / EXCLUDED by owner13 October2026; not an active mission dataset"
+}

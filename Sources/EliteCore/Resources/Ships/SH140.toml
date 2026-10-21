@@ -10,6 +10,31 @@ modelSource = "Right-On Commander"
 dimensions = [140.0, 38.0, 88.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
+[catalogue]
+schemaVersion = 2
+family = "vulture"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "bountyHunter", "weight" = 4 }, { "role" = "military", "weight" = 1 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "uncommon"
+galaxies = [0, 6, 7]
+regions = ["deepSpace", "tradeLane"]
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project wanted-target interception specialization; Fer-de-Lance/Mamba are explicit human preferences, remaining entries are project balance judgements. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
+primaryRole = "bountyHunter"
+placementStatus = "declared"
+isCapital = false
+primaryType = "bountyHunter"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 10
+
 [game]
 cargo = 8
 speed = 24.0

@@ -10,6 +10,28 @@ modelSource = "Oolite 574ca848"
 dimensions = [7.15892, 7.55275, 6.16592]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 2
+family = "escape-capsule"
+objectKind = "capsule"
+origin = "human"
+roleWeights = []
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = false
+discoveryEligible = false
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "common"
+galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
+regions = ["tradeLane", "deepSpace"]
+basis = "retained source facts + project classification judgement. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
+placementStatus = "declared"
+isCapital = false
+purchasePolicy = "never"
+collectionMilestone = "none"
+damagePolicy = "destructible"
+
 [game]
 cargo = 0
 speed = 4.571
