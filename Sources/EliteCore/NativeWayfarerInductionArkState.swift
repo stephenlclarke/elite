@@ -137,14 +137,23 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
     clearsServiceWait: Bool = false, exits: [NativeArkBerthExit]? = nil,
     reception: NativeInductionSeedReception? = nil
   ) -> NativeInductionArkState {
-    .init(
-      authorization: authorization, fuel: fuel ?? self.fuel,
-      admission: admission ?? self.admission, legs: legs ?? self.legs, loss: loss ?? self.loss,
-      fuelContacts: fuelContacts ?? self.fuelContacts,
-      dockedContact: clearsDock ? nil : (dockedContact ?? self.dockedContact),
-      exitedContacts: exitedContacts ?? self.exitedContacts,
-      serviceWait: clearsServiceWait ? nil : (serviceWait ?? self.serviceWait),
-      exits: exits ?? self.exits, reception: reception ?? self.reception)
+    let resolvedFuel: NativeArkFuelEscrow = fuel ?? self.fuel
+    let resolvedAdmission: NativeArkAdmission? = admission ?? self.admission
+    let resolvedLegs: [NativeArkHopReference] = legs ?? self.legs
+    let resolvedLoss: NativeArkHullLoss? = loss ?? self.loss
+    let resolvedContacts: [NativeArkFuelContact] = fuelContacts ?? self.fuelContacts
+    let resolvedDock: NativeArkFuelContact? =
+      clearsDock ? nil : (dockedContact ?? self.dockedContact)
+    let resolvedExited: [UInt64] = exitedContacts ?? self.exitedContacts
+    let resolvedWait: NativeArkServiceWait? =
+      clearsServiceWait ? nil : (serviceWait ?? self.serviceWait)
+    let resolvedExits: [NativeArkBerthExit] = exits ?? self.exits
+    let resolvedReception: NativeInductionSeedReception? = reception ?? self.reception
+    return NativeInductionArkState(
+      authorization: authorization, fuel: resolvedFuel, admission: resolvedAdmission,
+      legs: resolvedLegs, loss: resolvedLoss, fuelContacts: resolvedContacts,
+      dockedContact: resolvedDock, exitedContacts: resolvedExited,
+      serviceWait: resolvedWait, exits: resolvedExits, reception: resolvedReception)
   }
   var livingCrew: Int { admission != nil && loss == nil ? authorization.crew.count : 0 }
   var intactSeedTonnes: Int {
