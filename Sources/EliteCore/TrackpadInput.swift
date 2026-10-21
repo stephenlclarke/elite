@@ -46,8 +46,12 @@ public struct TrackpadInput: Sendable, Equatable {
     positions: [SIMD2<Double>], spinMode: Bool = false
   ) -> SpinDirection? {
     if self.spinMode != spinMode {
+      // Switching control modes must not re-arm fingers left over from a
+      // rejected system gesture. Only lifting all contacts clears that latch.
+      let requiresLift = waitingForLift
       reset()
       self.spinMode = spinMode
+      waitingForLift = requiresLift
     }
     if positions.isEmpty {
       reset()

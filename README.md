@@ -104,6 +104,8 @@ Place the pointer over the game before touching the trackpad. Touch gently; no c
 
 Two-finger steering uses the midpoint of your fingers relative to the centre of the physical trackpad. Hold off centre to keep turning; return to the centre to stop turning and cruise. A small central dead zone prevents drift. Changing finger count switches modes immediately, so dropping from three fingers to two holds the speed you have reached. One- and three-finger speed changes keep the yoke centred.
 
+Four-or-more contacts or an invalid contact suppress trackpad input until every finger lifts, including when switching Spin Hold mode.
+
 Trackpad flight operates in cockpit views with manual control. Pause, help, docking, the docking computer, other screens, lost focus and cancelled gestures clear its input. Keyboard flight remains available. macOS Mission Control and three-finger dragging may intercept touches; assign system gestures to four fingers or disable three-finger dragging if three-finger acceleration does not register. Physical three-finger delivery depends on those system settings.
 
 ### Spin Hold prototype

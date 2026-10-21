@@ -4,6 +4,8 @@ Updated 21 October 2026. This is the current delivery guide, not a content-compl
 
 ## Player-facing milestone roadmap
 
+**F05 input correction / G1:** Preserve rejected-system-gesture suppression across ordinary/Spin Hold mode changes until all fingers lift. Scope: TrackpadInput, two isolated input-value regressions, fixed GitHub unit selection, README and paired notes. GitHub execution/MBA review remain asynchronous; no integration or app-delivery claim. Running unit jobs now finish instead of being cancelled by every feature push.
+
 **G12 source packet pushed:** `d77fb1dfea26b85a2bf112cdcb1f7f027017a1eb` adds finite twelve-original measured extraction, twelve linked graded products, separate Renas reception/once-only 890 CR and explicit loss/unpaid owner-return. It composes with W04 saves through 57→55→53 / 58→56→54. Five isolated model/codec/pack methods (seven cases) passed locally; GitHub units and MBA code/result review follow asynchronously via queue #23. The earlier full-journey timeout remains UNKNOWN; no playable preview or release is claimed. The next workflow packet supplies maintained unit-only GitHub execution without changing required quality protection or main-only Sonar guards.
 
 **Continuous coding rule:** At each pushed packet boundary, G1 takes ready actionable MBA GitHub findings first; otherwise immediately takes the next ready ledger item. GitHub units, MBA review, main-only Sonar and Root acknowledgement never leave the developer waiting. See the single [workflow authority](DEVELOPMENT-WORKFLOW.md); GitHub queue23 holds live review state.

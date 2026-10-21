@@ -18,7 +18,7 @@ permissions:
   contents: read
 concurrency:
   group: isolated-units-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   isolated-units:
     runs-on: macos-15
