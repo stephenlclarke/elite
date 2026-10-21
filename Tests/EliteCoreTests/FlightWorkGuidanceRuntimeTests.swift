@@ -425,13 +425,15 @@ struct FlightWorkGuidanceRuntimeTests {
 
   @Test func miningAndSalvageNeverInheritEachOthersFittedModule() throws {
     var game = try workRuntimeGame(module: .mining)
-    _ = try addWorkCargo(&game, position: .init(0, -45, 500))
-    game.workTargetFilter = .all
+    let actor = try addWorkCargo(&game, position: .init(0, -45, 500))
+    game.workTargetFilter = .salvage
     game.key("tab")
     #expect(game.workGuidance == nil && game.autoPilot.targetID == nil)
+    #expect(game.workTargetCapabilities.miningModule && !game.workTargetCapabilities.salvageModule)
     let context = try #require(game.gameplayContext())
+    let cargo = try #require(game.bodies.first { $0.physical?.identity == actor })
     let candidate = try #require(
-      game.workTargetCandidate(for: game.bodies[0], context: context, frontVisible: true))
+      game.workTargetCandidate(for: cargo, context: context, frontVisible: true))
     #expect(
       WorkTargetSelection.evaluate(
         candidate, system: context.system, visit: context.visit,
@@ -557,6 +559,15 @@ struct FlightWorkGuidanceRuntimeTests {
     game.workTargetFilter = .mining
     game.key("tab")
     #expect(game.workGuidance?.parent == original.physical?.identity)
+    // Reach genuine hold with the trigger released before the first mining press.
+    for _ in 0..<800 {
+      game.tick(delta: 0.1)
+      if game.workGuidance?.holding == true { break }
+    }
+    try #require(
+      game.workGuidance?.parent == original.physical?.identity
+        && game.workGuidance?.holding == true)
+    try #require(game.selectedFlightTool == .miningLaser && !game.workFireSuspended)
     var controls = Controls()
     controls.fire = true
     for _ in 0..<800 {

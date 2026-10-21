@@ -19,3 +19,11 @@ Use actual native mining output and ledger admission/acknowledgement to test zer
 The first qualification run failed with unsupportedSlot before the spin assertions: all three new requested-spin arguments and the unchanged generated-rock recovery method failed setup, while the exact-mesh capture case passed. The original log is /tmp/elite-native-ore-spin-focused-1204/candidate-1204-attempt-01.log. No spin-behavior PASS or integrated repair follows from that run.
 
 workRuntimeGame inherited the current starter SH025, whose native performance declares no mining work-tool slot. Both methods then grant a Mining Laser at the mining utility slot; native fitting correctly refuses it. Choose the supported initial SH023 and its actual fuel capacity before equipment preparation only when the helper's requested module is Mining. The initial equipment, grants, actual hit/admission/actions and all old test bodies remain unchanged. Default Salvage helper calls retain their previous hull. No slot, catalogue or safety rule is waived.
+
+## Actual1208 exposes two older fixture assumptions
+
+The new requested-spin method passed all three cases, but module isolation failed by evaluating a legitimate docking candidate and ordinary ore recovery failed without any mining incident. The original raw log is /tmp/elite-native-ore-spin-fixture-focused-1208/candidate-1208-attempt-01.log. No generic cohort PASS follows from those results.
+
+The module test discarded addWorkCargo's returned actor, used the all filter and then assumed bodies[0] was cargo. Native actor restoration can put a current station there, and a Military core correctly admits station docking. Keep the actual module-refusal and no-guidance/no-target oracles, but use the real Salvage filter and the cargo actor returned by its native fixture.
+
+The ore test held fire immediately after Tab. Work emission is refused while approaching, and attaining hold interrupts an already held trigger until release/repress. Approach with real neutral ticks and require actual hold, unchanged original parent, selected Mining and an unlatched trigger before its original fresh mining press. Keep every firing, depletion, native payload and automatic collection requirement.
