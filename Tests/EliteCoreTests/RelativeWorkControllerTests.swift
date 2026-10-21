@@ -564,3 +564,96 @@ func relativeWorkTangentApproachNeverBypassesFiniteOrToolRangeGuards(cosine: Dou
   #expect(output.validatedSweep?.purpose != .work)
   #expect(!output.transitions.contains(.selectTool(.miningLaser)))
 }
+
+private func rwFiniteRockApproachHulls() throws -> (target: PreparedHull, player: PreparedHull) {
+  // The retained G12 failure's finite octahedral target dimensions, without a broad plane.
+  let target = try PreparedHull(
+    mesh: Mesh(
+      vertices: [
+        .init(0, 48.85951709870832, 0), .init(-45.805797280039044, 0, 0),
+        .init(0, 0, -45.805797280039044), .init(45.805797280039044, 0, 0),
+        .init(0, 0, 45.805797280039044), .init(0, -40.71626424892359, 0),
+      ],
+      faces: [
+        [0, 2, 1], [0, 3, 2], [0, 4, 3], [0, 1, 4],
+        [5, 1, 2], [5, 2, 3], [5, 3, 4], [5, 4, 1],
+      ], preserveWinding: true))
+  // A closed narrow hull puts its longitudinal support near the enclosing radius.
+  let depth = sqrt(69.0 * 69 - 2)
+  let player = try PreparedHull(
+    mesh: Mesh(
+      vertices: [
+        .init(-1, -1, -depth), .init(1, -1, -depth),
+        .init(1, 1, -depth), .init(-1, 1, -depth),
+        .init(-1, -1, depth), .init(1, -1, depth),
+        .init(1, 1, depth), .init(-1, 1, depth),
+      ],
+      faces: [
+        [0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4],
+        [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7],
+      ], preserveWinding: true))
+  return (target, player)
+}
+
+@Test(arguments: [0.02, 0.05, 0.1])
+func relativeWorkStationaryNearHoldConvergesWithoutCrossingItsWorkPoint(delta: Double) throws {
+  let hulls = try rwFiniteRockApproachHulls()
+  var target = rwTarget(wreck: nil)
+  target.surfacePoint = .init(0, 0, -45.805797280039044)
+  var input = rwInput(target: target)
+  input.playerRadius = 69
+  input.limits = .init(acceleration: 216, speed: 576, pitchRate: 1, yawRate: 1, rollRate: 1)
+  input.delta = delta
+  let workZ = target.surfacePoint.z - 208
+  input.ship.position = .init(0, 0, workZ - 20)
+  var controller = RelativeWorkController(parent: rwActor, category: .rock)
+  var previousError = 20.0
+  var last: RelativeWorkOutput?
+  for _ in 0..<Int((10 / delta).rounded()) {
+    let output = rwTick(&controller, &input) {
+      HullSweepSafety.validate($0, target: hulls.target, player: hulls.player).clearance
+    }
+    try #require(output.motionValidated)
+    #expect(output.requiredClearance == 138)
+    let error = workZ - input.ship.position.z
+    // The old underdamped pair crosses the waypoint even from this unsaturated rest state.
+    #expect(error >= -1e-8 && error <= previousError + 1e-8)
+    #expect(input.velocity.z >= -1e-8)
+    previousError = error
+    last = output
+  }
+  let final = try #require(last)
+  #expect(final.status == .holding && final.relativeSpeed < 0.01)
+  #expect(previousError < 0.01)
+}
+
+@Test func relativeWorkRotatingFiniteRockRetainsClearanceWhileApproachMomentumSettles() throws {
+  let hulls = try rwFiniteRockApproachHulls()
+  var target = rwTarget(wreck: nil)
+  target.surfacePoint = .init(0, 0, -45.805797280039044)
+  target.angularVelocity = .init(0, 0.04, 0)
+  var input = rwInput(target: target)
+  input.playerRadius = 69
+  input.limits = .init(acceleration: 216, speed: 576, pitchRate: 1, yawRate: 1, rollRate: 1)
+  input.delta = 0.05
+  input.ship.position = target.surfacePoint + Vector3(0, 0, -1000)
+  var controller = RelativeWorkController(parent: rwActor, category: .rock)
+  var heldFrames = 0
+  var minimumGap = Double.infinity
+  for _ in 0..<400 {
+    let output = rwTick(&controller, &input) {
+      let result = HullSweepSafety.validate($0, target: hulls.target, player: hulls.player)
+      if let gap = result.minimumSampledClearance { minimumGap = min(minimumGap, gap) }
+      return result.clearance
+    }
+    try #require(output.motionValidated)
+    #expect(output.requiredClearance == 138)
+    #expect(output.velocity.length <= input.limits.speed + 1e-8)
+    #expect(input.target?.angularVelocity == target.angularVelocity)
+    if output.status == .holding { heldFrames += 1 }
+    if heldFrames >= 30 { break }
+  }
+  #expect(controller.status == .holding && heldFrames >= 30)
+  #expect(minimumGap >= 138 && minimumGap.isFinite)
+  #expect((try #require(input.target)).pose.orientation != target.pose.orientation)
+}
