@@ -8,4 +8,4 @@ Use one current workflow document and GitHub queue #23. MBP pushes small coheren
 
 ## Compatibility and validation
 
-This changes documentation and GitHub coordination only, with no game code, save representation, test assertions or branch protections changed. Markdown lint and diff whitespace checks pass. Existing source remains on its development/checkpoint refs. No integration test or application acceptance is claimed. Queue: https://github.com/stephenlclarke/elite/issues/23.
+This changes documentation and GitHub coordination only, with no game code, save representation, test assertions or branch protections changed. Markdown lint and diff whitespace checks pass. Existing source remains on its development/checkpoint refs. No integration test or application acceptance is claimed. Queue: [GitHub review queue #23](https://github.com/stephenlclarke/elite/issues/23).
