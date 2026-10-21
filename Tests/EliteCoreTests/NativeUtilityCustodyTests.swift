@@ -154,7 +154,8 @@ struct NativeUtilityCustodyTests {
       world.ledger.records.first { !NativeUtilityState.isTarget($0.identity) })
     var missing = try #require(
       JSONSerialization.jsonObject(with: JSONEncoder().encode(target)) as? [String: Any])
-    let utility = try #require(missing.removeValue(forKey: "utility"))
+    let removedUtility = missing.removeValue(forKey: "utility")
+    let utility = try #require(removedUtility)
     var foreign = try #require(
       JSONSerialization.jsonObject(with: JSONEncoder().encode(other)) as? [String: Any])
     foreign["utility"] = utility
