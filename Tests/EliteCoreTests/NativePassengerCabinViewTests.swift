@@ -41,6 +41,7 @@ private func cabinShopGame() throws -> Game {
 @Test func cabinFittingIntentRefusesStalePausedWrongStationAndCapacityWithoutCharging() throws {
   var game = try cabinShopGame()
   let id = try game.confirmPassengerBerth(game.passengerBerthQuote)
+  let placeIDs = game.commander.accommodation.ownedBerths.map(\.id)
   let store = try #require(game.equipmentPurchaseContext?.passengerBerthFitting(fitted: false))
   for changed in ["pause", "station", "selection", "epoch"] {
     var candidate = game
@@ -58,14 +59,16 @@ private func cabinShopGame() throws -> Game {
   }
   let cash = game.commander.credits
   #expect(game.performEquipmentMutation(.passengerBerth(store)).applied)
-  #expect(game.commander.accommodation.storedBerths.map(\.id) == [id])
+  #expect(game.commander.accommodation.storedCabins.map(\.id) == [id])
+  #expect(game.commander.accommodation.storedBerths.map(\.id) == placeIDs)
   #expect(!game.performEquipmentMutation(.passengerBerth(store)).applied)
   game.commander.cargo[0] = game.commander.standardCargoCapacity
   let refit = try #require(game.equipmentPurchaseContext?.passengerBerthFitting(fitted: true))
   let full = game.commander
   #expect(game.performEquipmentMutation(.passengerBerth(refit)) == .refused(.fittingUnavailable))
   #expect(game.commander == full && game.commander.credits == cash)
-  #expect(game.commander.accommodation.storedBerths.map(\.id) == [id])
+  #expect(game.commander.accommodation.storedCabins.map(\.id) == [id])
+  #expect(game.commander.accommodation.storedBerths.map(\.id) == placeIDs)
 }
 
 @MainActor
@@ -104,7 +107,11 @@ private struct NativeCabinFixture {
       try await delegate.runtime.load(from: save, persistMigrations: false)
       await delegate.runtime.key("3")
       for _ in EquipmentGroups.itemIndices { await delegate.runtime.key("down") }
+      await delegate.runtime.key("up")
       view.game = await delegate.runtime.snapshot()
+      try #require(
+        Equipment.all[view.game.selection].name == PassengerCabinGrade.stateroomSingle.equipmentName
+      )
       view.pending.removeAll()
       #expect(view.game.passengerBerthSelected)
       return .init(
