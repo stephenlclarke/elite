@@ -441,3 +441,47 @@ extension GameRuntime {
     #expect(game.automaticScoopShapeCompatible(framed, context: context))
   }
 }
+
+extension WayfarerRecordRecoveryAcquisitionTests {
+  @Test func actualAliasReaderKeepsCradleAndOriginalAuthorityAndRejectsUnmarkedOrForgedBodies()
+    async throws
+  {
+    let f = try WayfarerRecordRecoveryFixture()
+    defer { f.files.clean() }
+    let runtime = try await f.runtime()
+    let accepted = try await f.accept(runtime)
+    try await f.celalen(runtime)
+    let game = await runtime.snapshot()
+    let original = try #require(game.bodies.first { $0.missionActorID == f.logical(accepted) })
+    let cradle = try #require(
+      game.bodies.first { $0.missionActorID == f.logical(accepted, alias: "w05-cradle") })
+    let originalAlias = game.recordRecoveryAlias(original)
+    let cradleAlias = game.recordRecoveryAlias(cradle)
+    #expect(originalAlias == "cdr-001")
+    #expect(cradleAlias == "w05-cradle")
+    let spawn = try #require(original.physical?.spawnIdentity)
+    for mode in ["unmarked", "mission", "logical", "spawn", "visit", "retained-id"] {
+      var changed = original
+      switch mode {
+      case "unmarked":
+        changed.missionInstanceID = nil
+        changed.missionActorID = nil
+      case "mission": changed.missionInstanceID = UUID()
+      case "logical": changed.missionActorID = UUID()
+      case "spawn": changed.physical?.spawnIdentity = nil
+      case "visit":
+        changed.physical?.spawnIdentity = .init(
+          system: spawn.system, visit: spawn.visit + 1, sequence: spawn.sequence,
+          member: spawn.member, producer: spawn.producer)
+      default: changed.id += 10000
+      }
+      let rejected = game.recordRecoveryAlias(changed)
+      #expect(rejected == nil, "mode: \(mode)")
+    }
+    var unproved = game
+    unproved.commander.scriptState.savedRecordRecoverySource = nil
+    let revokedOriginal = unproved.recordRecoveryAlias(original)
+    let revokedCradle = unproved.recordRecoveryAlias(cradle)
+    #expect(revokedOriginal == nil && revokedCradle == nil)
+  }
+}
