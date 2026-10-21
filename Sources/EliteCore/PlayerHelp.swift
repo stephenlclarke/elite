@@ -24,10 +24,10 @@ public enum PlayerHelp {
           title: game.docked ? "STATION SCREENS" : "SCREENS IN SPACE",
           rows: [
             game.docked ? "0 - LAUNCH" : "0 / 1 / 2 / 3 - FRONT/REAR/LEFT/RIGHT",
-            game.docked ? "1 / 2 / 3 - BUY / SELL / EQUIPMENT" : "4 / 5 - GALACTIC / LOCAL CHART",
+            game.docked ? "3 - EQUIPMENT" : "4 / 5 - GALACTIC / LOCAL CHART",
             game.docked ? "4 / 5 - CHARTS WITH PLANET DATA" : "6 - SYSTEM DATA / PLANET VIEW",
             game.docked ? "6 - SHIP SHOWROOM" : "7 - MARKET PRICES",
-            game.docked ? "7 - MARKET PRICES" : "8 / 9 - STATUS / INVENTORY",
+            game.docked ? "7 - MARKET: BUY / SELL" : "8 / 9 - STATUS / INVENTORY",
             game.docked ? "8 / 9 - STATUS / INVENTORY" : "ESC - PREVIOUS SCREEN / COCKPIT",
             "ARROWS - MOVE; RETURN - CHOOSE",
             "ESC - BACK ONE LEVEL; K - HELP",
@@ -37,7 +37,8 @@ public enum PlayerHelp {
         .init(
           title: "MORE ACTIONS",
           rows: [
-            "GAME MENU: MISSIONS / CONTACTS / RUMOURS",
+            "GAME: MISSIONS / CONTACTS / CONTRACTS",
+            "GAME MENU: MISSION LIBRARY",
             "L - MISSION GALLERY",
             "B (DOCKED) - MISSION CONTACTS",
             "U (DOCKED) - STATION RUMOURS",
@@ -46,6 +47,10 @@ public enum PlayerHelp {
             "COMMAND-P - PAUSE / RESUME",
             "COMMAND-S / COMMAND-O - SAVE / RELOAD",
             "COMMAND-SHIFT-S / O - SAVE AS / OPEN",
+            "FIRST SAVE REMEMBERS ITS LOCATION",
+            "FITTING AFTER LAUNCH AUTOSAVES",
+            "RRS / CONTRACT ACTIONS AUTOSAVE",
+            "FAILED SAVING REFUSES THE CHANGE",
             "X Y Z Z Y - CLARKE / SECRET OPTIONS",
             "COMMAND-Q - QUIT",
           ]))
@@ -64,15 +69,57 @@ public enum PlayerHelp {
           "RETURN ALSO CLOSES THIS GUIDE",
           "NO FUNCTION OR KEYPAD KEYS REQUIRED",
         ]))
-    return pages
+    return pages.flatMap(paginate)
   }
 
   private static func paginate(_ context: HelpPage) -> [HelpPage] {
-    stride(from: 0, to: context.rows.count, by: 16).map { offset in
+    let rows = context.rows.flatMap { ScriptLibraryText.wrap($0, width: 40) }
+    return stride(from: 0, to: rows.count, by: 16).map { offset in
       HelpPage(
         title: context.title,
-        rows: Array(context.rows[offset..<min(offset + 16, context.rows.count)]))
+        rows: Array(rows[offset..<min(offset + 16, rows.count)]))
     }
+  }
+
+  private static func galleryRows(_ game: Game) -> [String] {
+    var rows: [String]
+    if game.gallery.campaignReview != nil {
+      rows = [
+        "ARROWS - CHOOSE START / BACK",
+        "RETURN / CLICK - SELECT; BACK IS DEFAULT",
+        "ESC - BACK WITHOUT STARTING A TRIAL",
+        "START CREATES A PRIVATE CAMPAIGN TRIAL",
+      ]
+    } else if game.gallery.detail && game.gallery.campaignLinks {
+      rows = [
+        "UP / DOWN - SELECT CAMPAIGN LINK",
+        "RETURN / CLICK - FOLLOW SELECTED LINK",
+        "PAGE-UP/DOWN - MOVE EIGHT LINKS",
+        "TAB - RETURN TO DETAILS",
+        "ESC - PREVIOUS CAMPAIGN PAGE",
+      ]
+    } else {
+      rows = [
+        "UP / DOWN - SELECT MISSION OR SCROLL",
+        "RETURN / CLICK - DETAILS OR CAMPAIGN LINKS",
+        "TAB - SWITCH LIST / DETAILS",
+        "OPTION-UP/DOWN - PAGE DETAILS",
+        "ESC - PREVIOUS PAGE, LIST, THEN EXIT",
+      ]
+    }
+    if game.gallery.campaignReview == nil {
+      if MissionUIAction.trial.isEnabled(in: game) {
+        rows.append(
+          game.selectedGalleryMissionIsOwnedAssignment
+            ? "T - REVIEW PRIVATE CAMPAIGN TRIAL" : "T - START PRIVATE MISSION TRIAL")
+      }
+      if MissionUIAction.retry.isEnabled(in: game) { rows.append("R - RETRY SELECTED MISSION") }
+    }
+    if game.isMissionTrial {
+      rows += ["GAME MENU - RESTART TRIAL / RETURN TO COMMANDER"]
+    }
+    rows += ["READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"]
+    return rows
   }
 
   private static func context(for screen: Screen, game: Game) -> HelpPage {
@@ -83,8 +130,12 @@ public enum PlayerHelp {
         rows: [
           "ARROWS - PITCH / ROLL",
           "SPACE - ACCELERATE; DELETE - BRAKE",
-          "RETURN - FIRE LASER (HOLD)",
-          "TAB - NEXT TARGET / STATION AUTO DOCK",
+          "RETURN - USE SELECTED TOOL (HOLD)",
+          "W - COMBAT / MINING / CUTTER / EMP",
+          "TAB - NEXT TARGET / AUTO GUIDANCE",
+          "F - SHIPS / MINING / SALVAGE / ALL",
+          "WORK HOLD NEEDS ITS FITTED MODULE",
+          "SMALL ITEMS: AUTO SCOOP; LARGE: HOLD",
           "Q - CANCEL AUTOMATIC GUIDANCE",
           "4 / 5 - CHART; H - HYPERSPACE",
           "SUN / PLANET BEARINGS - FLIGHT HUD",
@@ -103,14 +154,54 @@ public enum PlayerHelp {
       .init(
         title: "SYSTEM DATA",
         rows: ["UP / DOWN / SCROLL - LONG PLANET DATA", "ESC - PREVIOUS SCREEN", "K - HELP"])
-    case .buy, .sell:
+    case .market where !game.docked:
       .init(
-        title: screen == .buy ? "BUY CARGO" : "SELL CARGO",
+        title: "MARKET PRICES",
+        rows: [
+          "UP / DOWN / SCROLL - BROWSE PRICES",
+          "DOCK TO BUY OR SELL IN MARKET (7)",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .status:
+      .init(
+        title: "COMMANDER STATUS",
+        rows: [
+          "LOCATION, CASH, CONDITION AND LEGALITY",
+          "FITTED SHIELD, NAVIGATION AND ENERGY",
+          "CORE AND SEPARATE SPECIALTY MODULES",
+          "9 - INVENTORY: CARGO AND FULL FITTINGS",
+          game.informationWindow.hint == nil
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .inventory:
+      .init(
+        title: "INVENTORY",
+        rows: [
+          "CARGO, MISSION PROPERTY AND FITTINGS",
+          "ACTUAL FITTED AND HELD EQUIPMENT",
+          "GRADE AND ACQUISITION SOURCE",
+          "TAB - SELECT VISIBLE FIT / STORE ACTION",
+          "RETURN - APPLY THE SELECTED ACTION",
+          "LEFT / RIGHT - RECOVERED UPGRADE CHOICE",
+          "RECOVERED: BEFORE / AFTER AND NEXT GRADE",
+          "RECOVERED DEVICES: FIT NOW IN SPACE",
+          "MINING / SALVAGE MODULES REQUIRE A CORE",
+          game.informationWindow.hint == nil
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
+          "OPTION-UP/DOWN - PAGE LONG LISTS",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .buy, .sell, .market:
+      .init(
+        title: "MARKET: BUY / SELL",
         rows: [
           "UP / DOWN / SCROLL - SELECT PRODUCT",
-          screen == .buy ? "RETURN - BUY ONE UNIT" : "RETURN - SELL ONE UNIT",
+          screen == .sell ? "RETURN - SELL ONE UNIT" : "RETURN - BUY ONE UNIT",
           "COLOUR: CATEGORY; ACTION: AVAILABILITY",
-          "1 / 2 - SWITCH BUY / SELL",
+          "TAB / CLICK BUY OR SELL - MODE",
+          "CLICK TRADE BUTTON - ONE UNIT",
+          "LEFT - SELL ONE; RIGHT - BUY ONE",
           "ESC - PREVIOUS SCREEN",
         ])
     case .equipment:
@@ -119,12 +210,14 @@ public enum PlayerHelp {
         rows: [
           "UP / DOWN / SCROLL - SELECT ITEM",
           "RETURN - PURCHASE / REFUEL",
-          "LEFT / RIGHT - SELECT LASER MOUNT",
+          "LEFT / RIGHT - SELECT COMBAT MOUNT",
           "CLICK FRONT/LEFT/RIGHT/REAR - MOUNT",
           "CLICK AN ITEM TO SELECT IT",
-          "REWARD ITEMS ARE NOT FOR SALE",
+          "INVENTORY (9) - FITTED / HELD DETAILS",
           "ESC - PREVIOUS SCREEN",
-        ])
+        ]
+          + (game.passengerBerthSelected
+            ? ["S - STORE EMPTY PASSENGER CABIN", "R - REFIT STORED PASSENGER CABIN"] : []))
     case .chart, .shortChart:
       .init(
         title: "CHARTS AND PLANET DATA",
@@ -197,28 +290,49 @@ public enum PlayerHelp {
           "CLICK SORT: A-Z / POWER (STRONGEST)",
           "POWER: ENERGY + SHIELDS + WEAPONS",
         ])
-    case .gallery:
+    case .contracts:
       .init(
-        title: "MISSION GALLERY",
+        title: "STATION CONTRACTS",
         rows: [
-          "UP / DOWN - SELECT MISSION",
-          "RETURN / CLICK - READ DETAILS",
-          "TAB - SWITCH LIST / DETAILS",
-          "ARROWS / SCROLL IN DETAILS - READ MORE",
-          "OPTION-UP/DOWN - PAGE DETAILS",
-          "ESC - LIST, THEN PREVIOUS SCREEN",
+          "UP / DOWN - SELECT OFFER", "RETURN / CLICK - READ BRIEFING",
+          "LEFT / RIGHT - ACCEPT / DECLINE / BACK", "RETURN - CHOOSE; BACK IS THE DEFAULT",
+          "ESC - BACK TO BOARD, THEN STATION", "SCROLL - READ LONG BRIEFINGS",
+          "READING DOES NOT START A DEADLINE", "ACTIVE WORK REMAINS IN MISSION GALLERY",
+          "FINANCE: REVIEW BEFORE BORROW / REPAY",
+          "SHORT PAYMENTS CARRY REMAINING DEBT",
+          "RETURN TO THE ORIGINAL MAIN STATION",
+        ])
+    case .library:
+      .init(
+        title: "MISSION LIBRARY",
+        rows: [
+          "UP / DOWN - SELECT OR SCROLL",
+          "RETURN / CLICK - OPEN BOOK OR CHAPTER",
+          "LEFT / RIGHT - PREVIOUS / NEXT CHAPTER",
+          "TAB - CONTENTS / READING",
+          "I - BOOK SOURCE / LICENCE",
+          "OPTION-UP/DOWN - PAGE TEXT",
+          "ESC - CONTENTS, BOOKS, PREVIOUS SCREEN",
           "READ ONLY; FLIGHT IS PAUSED",
         ])
+    case .gallery:
+      .init(title: "MISSION GALLERY", rows: galleryRows(game))
     case .handoff:
       .init(
         title: "MISSION DIALOG",
-        rows: [
-          "ARROWS - CHOOSE CONFIRM / BACK",
-          "RETURN / CLICK - SELECT",
-          "ESC - BACK WITHOUT TRANSFER",
-          "GAME MENU: MISSION CONTACTS TO REOPEN",
-          "B (DOCKED) ALSO REOPENS A CONTACT",
-        ] + (game.packDialogWindow.last > 0 ? ["OPTION-UP/DOWN - READ MESSAGE"] : []))
+        rows: (game.offeredScriptChoices.isEmpty
+          ? ["ARROWS - CHOOSE CONFIRM / BACK"]
+          : [
+            "UP / DOWN - BROWSE CHOICES",
+            "LEFT / RIGHT - CHOOSE CONFIRM / BACK",
+            game.offeredScriptChoices.allSatisfy { $0.group == nil }
+              ? "READING / BACK DOES NOT ANSWER" : "READING / BACK DOES NOT CHOOSE A BRANCH",
+          ]) + [
+            "RETURN / CLICK - SELECT",
+            "ESC - BACK WITHOUT TRANSFER",
+            "GAME MENU: MISSION CONTACTS TO REOPEN",
+            "B (DOCKED) ALSO REOPENS A CONTACT",
+          ] + (game.packDialogWindow.last > 0 ? ["OPTION-UP/DOWN - READ MESSAGE"] : []))
     case .mission:
       .init(
         title: "MISSION MESSAGE",
@@ -296,13 +410,31 @@ public enum PlayerHelp {
         "T / U / M - ARM / DISARM / MISSILE",
         "E - ECM; G - GALACTIC HYPERDRIVE",
         "J - IN-SYSTEM JUMP",
-        "R ALSO SELECTS TARGET / STATION AUTO",
+        "TAB SELECTS TARGET / STATION AUTO",
         "P / Q - CANCEL AUTOMATIC GUIDANCE",
         "I - TARGET CAMERA DETAILS / HIDE",
+        "OPTION-UP/DOWN - PAGE TARGET DETAILS",
         "COMMAND-SHIFT-E - LAUNCH ESCAPE POD",
         "FLIGHT MENU: DETONATE ENERGY BOMB",
         "SCOOPS: PASS CARGO BELOW YOUR NOSE",
         "WEAPONS / DRIVES REQUIRE EQUIPMENT",
+      ]),
+    .init(
+      title: "EMP PIRATE BLASTER",
+      rows: [
+        "W SELECTS EMP; RETURN FIRES FORWARD",
+        "3000 CR AT TL9; RANGE 3000",
+        "USES 8 ENERGY / 18 HEAT; 1.5S RECHARGE",
+        "DISABLES DRIVES AND WEAPONS; DRIFT REMAINS",
+        "UNLAWFUL EMP COUNTS AS AGGRESSION",
+        "CREW EJECT INTO PROTECTED OCCUPIED PODS",
+        "CREW STAY ABOARD UNTIL SAFE SPACE EXISTS",
+        "ONLY UNOCCUPIED HULLS ALLOW CUTTING",
+        "SALVAGE MODULE, CUTTER AND SCOOPS NEEDED",
+        "32 HULL / 256 PERSON CUSTODY LIMIT",
+        "EMP SHIPS TURN ORANGE WITH CREW ABOARD",
+        "RED: ACTIVE HOSTILE; ORANGE: DISABLED / WORK",
+        "COLOUR DOES NOT MEAN A HULL IS EMPTY",
       ]),
     .init(
       title: "OPTIONAL SPIN HOLD",

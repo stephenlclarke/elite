@@ -41,7 +41,8 @@ public struct BlackjackMission: Sendable, Codable, Equatable {
 extension Commander {
   public var markedFirearms: Int { blackjack.carriesFirearm ? 1 : 0 }
   public func sellableCargo(_ index: Int) -> Int {
-    max(0, cargo[index] - (index == 10 ? markedFirearms : 0))
+    max(
+      0, cargo[index] - (index == 10 ? markedFirearms : 0) - (index == 3 ? nativeCaptiveCount : 0))
   }
   public func canCarryMissionCargo(capacity: Int) -> Bool {
     capacity >= markedFirearms && cargoTonnes <= capacity

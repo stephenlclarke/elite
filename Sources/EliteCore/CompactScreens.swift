@@ -11,7 +11,9 @@ extension Display {
     case .status, .inventory: information(game, width: width, height: height)
     case .chart, .shortChart: map(game, width: width, height: height)
     case .navigation: navigation(game, width: width, height: height)
+    case .library: referenceLibrary(game, width: width, height: height)
     case .gallery: gallery(game, width: width, height: height)
+    case .contracts: contractBoard(game, width: width, height: height)
     case .handoff: blackjackHandoff(game, width: width, height: height)
     case .demo, .title: startupScreen(game, width: width, height: height)
     case .help: helpScreen(game, width: width, height: height)
@@ -110,6 +112,20 @@ extension Display {
       ("Gross productivity: \(star.productivity) MCR", .white),
       ("Average radius: \(star.radius) km", .white),
     ]
+    let belt = AsteroidBeltDefinition.isPresent(system: star, galaxy: game.inspectedGalaxy)
+    rows.append(("Asteroid belt: " + (belt ? "sparse star-centred ring" : "none"), .cyan))
+    if belt {
+      rows += [
+        (
+          "Ring radius: 2x planet-star distance. Chunks: 1, 5, 10, ... 50 native commodity units.",
+          .white
+        ),
+        (
+          "Ore surfaces: minerals grey/white; alloys blue; gold gold; platinum cyan. Mineable cues: orange.",
+          .white
+        ),
+      ]
+    }
     if star.isPlugh {
       rows += [
         (

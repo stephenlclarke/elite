@@ -9,19 +9,28 @@ public enum EquipmentRow: Sendable, Equatable {
 public enum EquipmentGroups {
   public static let sections: [EquipmentSection] = {
     let groups: [(String, [String])] = [
-      ("Fuel & Storage", ["Fuel", FuelStorage.equipmentName]),
+      ("Fuel Storage", ["Fuel", FuelStorage.equipmentName]),
       (
         "Lasers",
         ["Pulse Laser", "Mining Laser", "Beam Laser", "Military Laser", Equipment.navalLaser]
       ),
-      ("Shield Boosters", ShieldBooster.allCases.map(\.equipmentName)),
-      ("Targeting Computers", TargetingTier.allCases.map(\.equipmentName)),
+      ("Shield Modules", ShieldBooster.allCases.map(\.equipmentName)),
+      (
+        "Targeting Computers",
+        TargetingTier.allCases.map(\.equipmentName)
+          + ["Targeting: Mining Module", "Targeting: Salvage Module"]
+      ),
       ("Navigation Computers", NavigationTier.allCases.map(\.equipmentName)),
-      ("Energy Systems", ["Extra Energy Unit", Equipment.navalEnergyUnit]),
+      (
+        "Energy Systems",
+        ["Extra Energy Unit", Equipment.navalEnergyUnit, Equipment.eliteEnergyUnit]
+      ),
       ("Defence & Ordnance", ["Missile", "E.C.M. System", "Energy Bomb"]),
-      ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops"]),
+      ("Electronic Weapons", [Equipment.empPirateBlaster]),
+      ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops", "Salvage Cutter"]),
       ("Travel", ["Galactic Hyperdrive"]),
       ("Emergency Equipment", ["Escape Pod"]),
+      ("Passenger Facilities", [PassengerCabin.equipmentName]),
     ]
     let catalogue = Dictionary(
       uniqueKeysWithValues: Equipment.all.enumerated().map { ($0.element.name, $0.offset) })

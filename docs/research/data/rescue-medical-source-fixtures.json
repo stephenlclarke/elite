@@ -1,0 +1,655 @@
+{
+  "package_id": "P30",
+  "source_version": "1.5.4",
+  "profile": "RESEARCH-OPEN-P30-MEDICAL-6A",
+  "scope": "Selected actual medical6a, mining-base, ambience and optional-news callbacks in mocked Oolite lexical scope. Source quirks/defects are retained as evidence, not adopted project outcomes. Native special-cargo capacity/cleanup independently read from pinned Objective-C source, not executed by these mocks. No native AI/physics/cargo/route integration parity claim.",
+  "runtime": "v26.9.0",
+  "total": 92,
+  "passed": 92,
+  "cases": [
+    {
+      "name": "6a availability 39,0,0",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.22279199999999832,
+      "passed": true
+    },
+    {
+      "name": "6a availability 40,50,0.3",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.07333400000000267,
+      "passed": true
+    },
+    {
+      "name": "6a availability 40,51,0",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.01099999999999568,
+      "passed": true
+    },
+    {
+      "name": "6a availability 40,0,0.300001",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.01391599999999471,
+      "passed": true
+    },
+    {
+      "name": "6a unavailable empty targetSystems1",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.020750000000006708,
+      "passed": true
+    },
+    {
+      "name": "6a unavailable empty targetSystems2",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.008957999999992694,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate valid",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.025415999999992778,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate same-origin",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.008915999999999258,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate disease",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.014291999999997529,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate case-sensitive",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.01937499999999659,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate nova",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.010583999999994376,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate tech10",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.008916999999996733,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate economy2",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007541000000003351,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate straight15plus",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.006874999999993747,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate route15plus",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007874999999998522,
+      "passed": true
+    },
+    {
+      "name": "6a pickup predicate nilroute",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.008457999999990307,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate valid",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.02904200000000401,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate origin",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.0072079999999914435,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate nova",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.006708000000003267,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate no-disease",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.006874999999993747,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate capital-D",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.006540999999998576,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate straight7",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.006708000000003267,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate straight7plus",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.009917000000001508,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate straight30",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007000000000005002,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate route30plus",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007834000000002561,
+      "passed": true
+    },
+    {
+      "name": "6a disease destination predicate nilroute",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.008459000000001993,
+      "passed": true
+    },
+    {
+      "name": "6a source independently chosen legs/time/quote/danger/disease",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.10124999999999318,
+      "passed": true
+    },
+    {
+      "name": "6a source null pickup-to-hospital route crashes despite independent eligible sets",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.209541999999999,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 2,199.9,1,true,false",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.026541999999992072,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 2,200,1,true,false",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007915999999994483,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 2,201,1,false,false",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.01012500000000216,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 2,199,2,true,false",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007625000000004434,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 100,199.9,2,false,true",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007457999999999743,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 100,200,2,false,true",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.0072499999999990905,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 90,199,2,false,true",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.006833999999997786,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 100,199,1,false,true",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.006541999999996051,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 1000,201,2,false,true",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007791999999994914,
+      "passed": true
+    },
+    {
+      "name": "6a source physical docking/terminal resurrection 1002,199,2,false,true",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.008416999999994346,
+      "passed": true
+    },
+    {
+      "name": "6a pickup screen triggers special whole-hold cargo/marker transition",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.12241600000000119,
+      "passed": true
+    },
+    {
+      "name": "6a full reward/+15 and broad cargo removal request",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.033999999999991815,
+      "passed": true
+    },
+    {
+      "name": "6a late no-pay/-5-minus-whole-days 0",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.5487919999999917,
+      "passed": true
+    },
+    {
+      "name": "6a late no-pay/-5-minus-whole-days 86399.9",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.03433300000000372,
+      "passed": true
+    },
+    {
+      "name": "6a late no-pay/-5-minus-whole-days 86400",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.19720800000000338,
+      "passed": true
+    },
+    {
+      "name": "6a late no-pay/-5-minus-whole-days 777600",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.023875000000003865,
+      "passed": true
+    },
+    {
+      "name": "6a late no-pay/-5-minus-whole-days 864000",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.02375000000000682,
+      "passed": true
+    },
+    {
+      "name": "6a late no-pay/-5-minus-whole-days 950400",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.015625,
+      "passed": true
+    },
+    {
+      "name": "6a missed pickup net-15 and90percent bad-news request",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.04812499999999886,
+      "passed": true
+    },
+    {
+      "name": "6a other fail-10/cargo-removal stage guard 2",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.0319160000000096,
+      "passed": true
+    },
+    {
+      "name": "6a other fail-10/cargo-removal stage guard 90",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.010666000000000508,
+      "passed": true
+    },
+    {
+      "name": "6a other fail-10/cargo-removal stage guard 100",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.012291000000004715,
+      "passed": true
+    },
+    {
+      "name": "6a other fail-10/cargo-removal stage guard 1000",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.019333000000003153,
+      "passed": true
+    },
+    {
+      "name": "6a source offer NO",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.060374999999993406,
+      "passed": true
+    },
+    {
+      "name": "6a source offer YES",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.008625000000009209,
+      "passed": true
+    },
+    {
+      "name": "6a source offer null",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.013958000000002357,
+      "passed": true
+    },
+    {
+      "name": "6a MAP SWAP source valid original-system0 truthiness loss",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.035291999999998325,
+      "passed": true
+    },
+    {
+      "name": "6a mine/scatter/asteroid/miner/pirate source counts 0",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.1472919999999931,
+      "passed": true
+    },
+    {
+      "name": "6a mine/scatter/asteroid/miner/pirate source counts 0.999999",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.03133400000000108,
+      "passed": true
+    },
+    {
+      "name": "6a source D+1 periodic bursts not D 2",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.08204200000000128,
+      "passed": true
+    },
+    {
+      "name": "6a source D+1 periodic bursts not D 3",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.021042000000008443,
+      "passed": true
+    },
+    {
+      "name": "6a source D+1 periodic bursts not D 7",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.0347500000000025,
+      "passed": true
+    },
+    {
+      "name": "6a docked callbacks do not spend burst and reschedule true,0,0",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.02370899999999665,
+      "passed": true
+    },
+    {
+      "name": "6a docked callbacks do not spend burst and reschedule true,7,0.99999",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.011207999999996332,
+      "passed": true
+    },
+    {
+      "name": "6a docked callbacks do not spend burst and reschedule false,0,0",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.010167000000009807,
+      "passed": true
+    },
+    {
+      "name": "6a docked callbacks do not spend burst and reschedule false,7,0.99999",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.010791999999995028,
+      "passed": true
+    },
+    {
+      "name": "6a docked callbacks do not spend burst and reschedule false,-1,0",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.014334000000005176,
+      "passed": true
+    },
+    {
+      "name": "6a docked callbacks do not spend burst and reschedule false,-1,0.99999",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.010666999999997984,
+      "passed": true
+    },
+    {
+      "name": "6a entry source stage>=100 includes terminal and forces off-season warning 2",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.04066699999999912,
+      "passed": true
+    },
+    {
+      "name": "6a entry source stage>=100 includes terminal and forces off-season warning 90",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.008209000000007904,
+      "passed": true
+    },
+    {
+      "name": "6a entry source stage>=100 includes terminal and forces off-season warning 100",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.012792000000004577,
+      "passed": true
+    },
+    {
+      "name": "6a entry source stage>=100 includes terminal and forces off-season warning 1000",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.007499999999993179,
+      "passed": true
+    },
+    {
+      "name": "6a entry source stage>=100 includes terminal and forces off-season warning 1002",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.011624999999995111,
+      "passed": true
+    },
+    {
+      "name": "6a cleanup stops timer but retains disease key",
+      "source": "Scripts/rescue_scenario_6a.js",
+      "source_sha256": "7a8b49c4593667a37632b4186ab252c0ff54f360ac180497a4ae3bb6f177acb0",
+      "duration_ms": 0.0327920000000006,
+      "passed": true
+    },
+    {
+      "name": "6a mining-base death unconditionally calls central failure without attempt guard",
+      "source": "Scripts/rescue_scenario_6a_miningbase.js",
+      "source_sha256": "2d3cd3988848536ca975cf510b7fc62c8bfa705bf31cb572146e40970bf73506",
+      "duration_ms": 0.024499999999989086,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries disease,8,20,19",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.025959000000000287,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries disease,8,20,20",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.007374999999996135,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries disease,8,20,84",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.005583000000001448,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries disease,8,20,85",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.0050829999999990605,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries healthy,8,20,20",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.004709000000005403,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries Disease,8,20,20",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.004374999999996021,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries disease,16,20,20",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.007542000000000826,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries disease,17,20,20",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.00549999999999784,
+      "passed": true
+    },
+    {
+      "name": "6a native ambience disease/window inclusive boundaries disease,8,20,404",
+      "source": "Scripts/rescue_ambience.js",
+      "source_sha256": "7593c7881484c3e2e0bf426846963d13a16114b01cd50f6d0389b00b39d73bd7",
+      "duration_ms": 0.005707999999998492,
+      "passed": true
+    },
+    {
+      "name": "6a optional news inclusive chance false,0,0.9",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.027874999999994543,
+      "passed": true
+    },
+    {
+      "name": "6a optional news inclusive chance true,0.9,0.9",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.019417000000004236,
+      "passed": true
+    },
+    {
+      "name": "6a optional news inclusive chance true,0.900001,0.9",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.0027079999999983784,
+      "passed": true
+    },
+    {
+      "name": "6a optional news inclusive chance true,0.5,0.5",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.004415999999991982,
+      "passed": true
+    },
+    {
+      "name": "6a optional news inclusive chance true,0.500001,0.5",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.002290999999999599,
+      "passed": true
+    },
+    {
+      "name": "6a RRS escort source player kill-10 independently player",
+      "source": "Scripts/rrs_escort.js",
+      "source_sha256": "e1d3cfabff57734d2d9160216087618573a25908f19c2cd6ef09c4e72fe05164",
+      "duration_ms": 0.02600000000001046,
+      "passed": true
+    },
+    {
+      "name": "6a RRS escort source player kill-10 independently npc",
+      "source": "Scripts/rrs_escort.js",
+      "source_sha256": "e1d3cfabff57734d2d9160216087618573a25908f19c2cd6ef09c4e72fe05164",
+      "duration_ms": 0.003374999999991246,
+      "passed": true
+    },
+    {
+      "name": "6a hiring-waystation source death does not fail an away delivery",
+      "source": "Scripts/rescue-station.js",
+      "source_sha256": "12f8f4ff6f9ad85bcd4ce38d711cbcc7a2f0ff2e978d6d3ca68fc6f97673b051",
+      "duration_ms": 0.01216599999999346,
+      "passed": true
+    },
+    {
+      "name": "medical replacement needs actual eligible base6 slot false",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.07829100000000722,
+      "passed": true
+    },
+    {
+      "name": "medical replacement needs actual eligible base6 slot true",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.04233299999999929,
+      "passed": true
+    }
+  ]
+}

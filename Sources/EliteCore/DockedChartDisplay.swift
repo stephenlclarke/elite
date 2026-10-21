@@ -29,12 +29,12 @@ extension Display {
     if planetSize >= 32 {
       let planetX = layout.wide ? x + (284 - planetSize) / 2 : layout.width - 16 - planetSize
       let planetY = layout.wide ? bottom - planetSize - 26 : y
-      frame.graphics.append(
-        .planet(
-          .init(
-            galaxy: game.inspectedGalaxy, system: game.inspectedSystem,
-            bounds: .init(x: planetX, y: planetY, width: planetSize, height: planetSize),
-            time: game.time)))
+      planetPreview(
+        .init(
+          galaxy: game.inspectedGalaxy, system: game.inspectedSystem,
+          bounds: .init(x: planetX, y: planetY, width: planetSize, height: planetSize),
+          time: game.time),
+        style: game.commander.shipDisplayStyle, into: &frame)
     }
   }
 

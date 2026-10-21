@@ -1,0 +1,9 @@
+# Align full-suite fixtures with their actual boundaries
+
+The help test checks its complete message across wrapped rows. The TOML-loader test retains explicit counts of 171 designs and 162 playable refits, independently counted from the maintained ship files. The new-commander scene test prepares canonical stock equipment before asserting complete commander equality after loading.
+
+The invalid-binding frame test captures the actual actor-published state after constructor initialization and requires its whole commander, bodies, clocks, allocator, revision, energy and cooldown to remain unchanged on refused advancement. It also requires the constructor's real calendar and unchanged initial bodies and time. Retained projectile construction and legacy-impact verification run in separate functions; their original setup and all attribution, damage, event, no-bounty and replay assertions remain intact.
+
+Source formatting and whitespace checks pass. The exact original failing binary and diagnostic stop are retained under `/tmp/elite-debug-crash-141`. Targeted execution and full CI remain pending; no skipped tests, synthetic hits, relaxed guards or stack flags are introduced. Motivation: [issue](ISSUE-full-suite-compatibility-fixtures.md).
+
+A subsequent normal run exposed three further setup requirements. The new commander fixture now mirrors its prepared physical equipment before comparing full state after load. The classic-immunity fixture retains its real main-station anchor until its new encounter has been admitted, then uses the same original restricted collision scene. The projectile-capacity fixture retains all 32 requests and uses 200-unit spacing, with a measured native-missile clearance precondition, so admission can reach the intended capacity boundary instead of refusing overlapping hulls. These follow-ups remain unexecuted.

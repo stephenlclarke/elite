@@ -1,0 +1,1050 @@
+{
+  "profile_id": "PROJECT-P19-SHIPMENT-v1",
+  "scope": "Selected actual recovered JS library callbacks/configuration/default formation plus three minimal main/actor source patches, under stated native API spies. Per-actor patch guard is illustrative; selected native save contract requires durable per-identity receipts. AI table overlay/aliases are individually labelled project repairs, checked in action order. Does not execute full original engine, group physics, combat, NPC travel, rendering, persistence or native implementation.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-transport.js",
+      "sha256": "102f282518434a91926f5a7fe348862616f560f9293c034c322f13c48dffd588"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Scripts/oolite-priorityai.js",
+      "sha256": "fc3fe2a7b30f2133a8e5cfd345b55f3ccb4587e3b7bc431ee7b081864a83dcfd"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/oolite-escortAI.js",
+      "sha256": "dc24382d3aa2d17a7cc85d596b7123cf9013580445700bb51698456c2acddda6"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Scripts/oolite-global-prefix.js",
+      "sha256": "feeb4fae69ac8fe261b988df7476f96451a27126312b06627bc7b86f6201529a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-pirateAI.plist",
+      "sha256": "ae0552a9d7abda8cfa269c1b2b745ce04e02ca0786d3219fa7186cb85dfc4743"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/pirateAI.plist",
+      "sha256": "6ca47cecbda4e49104644b9fa1609367888822503ded48f03e259d244d8bd4a8"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/WormholeEntity.m",
+      "sha256": "60fa9ea697f526358d14cefb2494d76d8fa92bbb046e06710f0af1f54eb651f5"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJSShip.m",
+      "sha256": "a889adc46459f0954bc6834d4e3086486cb615ce5e2811fbb288746380f55a02"
+    }
+  ],
+  "total": 37,
+  "passed": 37,
+  "cases": [
+    {
+      "name": "Actual purchase patch: cash boundary 999999.9",
+      "passed": true,
+      "duration_ms": 2.395042,
+      "result": {
+        "count": 0,
+        "credits": 999999.9,
+        "phase": "SET"
+      }
+    },
+    {
+      "name": "Actual purchase patch: cash boundary 1000000",
+      "passed": true,
+      "duration_ms": 0.785541,
+      "result": {
+        "count": 1,
+        "credits": 0,
+        "phase": "COMPLETED"
+      }
+    },
+    {
+      "name": "Actual purchase patch: cash boundary 1000000.1",
+      "passed": true,
+      "duration_ms": 0.528875,
+      "result": {
+        "count": 1,
+        "credits": 0.1,
+        "phase": "COMPLETED"
+      }
+    },
+    {
+      "name": "Actual accepted-help patch: second enquiry cannot charge again 0",
+      "passed": true,
+      "duration_ms": 0.650291,
+      "result": {
+        "credits": 0,
+        "status": 2
+      }
+    },
+    {
+      "name": "Actual accepted-help patch: second enquiry cannot charge again 1",
+      "passed": true,
+      "duration_ms": 0.411667,
+      "result": {
+        "credits": 0,
+        "status": 2
+      }
+    },
+    {
+      "name": "Actual accepted-help patch: second enquiry cannot charge again 250000",
+      "passed": true,
+      "duration_ms": 0.467667,
+      "result": {
+        "credits": 0,
+        "status": 2
+      }
+    },
+    {
+      "name": "Actual accepted-help patch: second enquiry cannot charge again 1000000",
+      "passed": true,
+      "duration_ms": 0.410875,
+      "result": {
+        "credits": 750000,
+        "status": 2
+      }
+    },
+    {
+      "name": "Actual prior-state and per-actor removal patch ENROUTE",
+      "passed": true,
+      "duration_ms": 0.672584,
+      "result": {
+        "count": 4,
+        "method": "YOKOHAMA_AMBUSH"
+      }
+    },
+    {
+      "name": "Actual prior-state and per-actor removal patch AMBUSH",
+      "passed": true,
+      "duration_ms": 0.417,
+      "result": {
+        "count": 4,
+        "method": null
+      }
+    },
+    {
+      "name": "Actual escort losing-combat energy boundary 52.49",
+      "passed": true,
+      "duration_ms": 0.141459,
+      "result": true
+    },
+    {
+      "name": "Actual escort losing-combat energy boundary 52.5",
+      "passed": true,
+      "duration_ms": 0.009958,
+      "result": false
+    },
+    {
+      "name": "Actual escort losing-combat energy boundary 52.51",
+      "passed": true,
+      "duration_ms": 0.004917,
+      "result": false
+    },
+    {
+      "name": "Actual escort losing-combat energy boundary 104.99",
+      "passed": true,
+      "duration_ms": 0.003583,
+      "result": false
+    },
+    {
+      "name": "Actual escort losing-combat energy boundary 105",
+      "passed": true,
+      "duration_ms": 0.002542,
+      "result": false
+    },
+    {
+      "name": "Actual escort under half energy with bad odds flees",
+      "passed": true,
+      "duration_ms": 0.0115,
+      "result": true
+    },
+    {
+      "name": "Actual escort targeted missile triggers flee and target",
+      "passed": true,
+      "duration_ms": 0.016667,
+      "result": "m"
+    },
+    {
+      "name": "Actual escort cascade inside scanner triggers flee",
+      "passed": true,
+      "duration_ms": 0.009833,
+      "result": true
+    },
+    {
+      "name": "Actual escort mothership combat scanner boundary 25599",
+      "passed": true,
+      "duration_ms": 0.035,
+      "result": true
+    },
+    {
+      "name": "Actual escort mothership combat scanner boundary 25600",
+      "passed": true,
+      "duration_ms": 0.009125,
+      "result": true
+    },
+    {
+      "name": "Actual escort mothership combat scanner boundary 25601",
+      "passed": true,
+      "duration_ms": 0.003916,
+      "result": false
+    },
+    {
+      "name": "Actual escort formation requires leader escort membership",
+      "passed": true,
+      "duration_ms": 0.028375,
+      "result": true
+    },
+    {
+      "name": "Actual expired leader wormhole leaves escort group",
+      "passed": true,
+      "duration_ms": 0.019375,
+      "result": true
+    },
+    {
+      "name": "Actual requested-wormhole expiry boundary 99",
+      "passed": true,
+      "duration_ms": 0.0815,
+      "result": {
+        "flies": false,
+        "requested": false
+      }
+    },
+    {
+      "name": "Actual requested-wormhole expiry boundary 100",
+      "passed": true,
+      "duration_ms": 0.007375,
+      "result": {
+        "flies": true,
+        "requested": true
+      }
+    },
+    {
+      "name": "Actual requested-wormhole expiry boundary 101",
+      "passed": true,
+      "duration_ms": 0.002417,
+      "result": {
+        "flies": true,
+        "requested": true
+      }
+    },
+    {
+      "name": "Actual wormhole suggestion clears combat targets and flies at max speed",
+      "passed": true,
+      "duration_ms": 0.023708,
+      "result": true
+    },
+    {
+      "name": "Actual defensive escort target chooses mothership aggressor",
+      "passed": true,
+      "duration_ms": 0.028375,
+      "result": "enemy"
+    },
+    {
+      "name": "Actual offensive escort target rejects cloaked ship",
+      "passed": true,
+      "duration_ms": 0.021791,
+      "result": true
+    },
+    {
+      "name": "Actual formation behaviour performs escort rather than teleport",
+      "passed": true,
+      "duration_ms": 0.023042,
+      "result": [
+        "communicate",
+        "escort"
+      ]
+    },
+    {
+      "name": "Actual escort priority table: reconsider timings and override parameters",
+      "passed": true,
+      "duration_ms": 0.956042,
+      "result": {
+        "top_level_priorities": 10,
+        "combat_branch": 3,
+        "comms": "escort"
+      }
+    },
+    {
+      "name": "Actual default escort formation slot 0",
+      "passed": true,
+      "duration_ms": 0.037917,
+      "result": [
+        -600,
+        0,
+        -300
+      ]
+    },
+    {
+      "name": "Actual default escort formation slot 1",
+      "passed": true,
+      "duration_ms": 0.005167,
+      "result": [
+        600,
+        0,
+        -300
+      ]
+    },
+    {
+      "name": "Actual default escort formation slot 2",
+      "passed": true,
+      "duration_ms": 0.002166,
+      "result": [
+        -900,
+        0,
+        -900
+      ]
+    },
+    {
+      "name": "Actual default escort formation slot 3",
+      "passed": true,
+      "duration_ms": 0.002375,
+      "result": [
+        900,
+        0,
+        -900
+      ]
+    },
+    {
+      "name": "Actual default escort formation slot 4",
+      "passed": true,
+      "duration_ms": 0.001416,
+      "result": [
+        -1200,
+        0,
+        -600
+      ]
+    },
+    {
+      "name": "Actual default escort formation slot 5",
+      "passed": true,
+      "duration_ms": 0.00125,
+      "result": [
+        1200,
+        0,
+        -600
+      ]
+    },
+    {
+      "name": "Selected pirate state repair preserves IR overrides and closes direct transitions",
+      "passed": true,
+      "duration_ms": 12.508,
+      "result": {
+        "states": 20,
+        "checkedTransitions": 114,
+        "aliases": {
+          "HEAD_FOR_PLANET": "LOOK_FOR_TARGETS",
+          "ATTACK_TARGET": "ATTACK_SHIP"
+        }
+      }
+    }
+  ],
+  "selected_legacy_pirate_repair": {
+    "basis": "Core pirate whole states overlaid by whole IR states; two explicit name aliases; no claim of original author intent.",
+    "aliases": {
+      "HEAD_FOR_PLANET": "LOOK_FOR_TARGETS",
+      "ATTACK_TARGET": "ATTACK_SHIP"
+    },
+    "states": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: HEAD_FOR_WITCHPOINT"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "CHECK_CARGO": {
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle",
+          "checkForFullHold"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "NO_CARGO_BAY": [
+          "setStateTo: CONSIDER_DOCKING"
+        ],
+        "HOLD_NOT_FULL": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "HOLD_FULL": [
+          "setStateTo: CONSIDER_LEAVING"
+        ]
+      },
+      "FLEE_FOR_CLOAKED": {
+        "UPDATE": [
+          "recallStoredTarget",
+          "pauseAI: 2.0"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENERGY_FULL": [
+          "setStateTo: LURK"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setDestinationToJinkPosition"
+        ],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "ENTER": [
+          "storeTarget",
+          "setDestinationToJinkPosition",
+          "setDesiredRangeTo: 25600",
+          "performFlyToRangeFromDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: RECOVER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "DOCK_WITH_STATION": {
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "NOTHING_FOUND": [
+          "setAITo: route1traderAI.plist"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "checkForMotherStation"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "STATION_FOUND": [
+          "dockEscorts",
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "CONSIDER_LEAVING": {
+        "UPDATE": [
+          "checkForMotherStation"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: EXIT_SYSTEM",
+          "pauseAI: 5.0"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "STATION_FOUND": [
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "ENTER_WORMHOLE": {
+        "ENTER": [
+          "setDestinationToTarget",
+          "setDesiredRangeTo: 1.0",
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "PLAYER WITCHSPACE": [
+          "enterTargetWormhole",
+          "wormholeEscorts"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: LURK"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LURK"
+        ]
+      },
+      "COLLECT_LOOT": {
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: LOOT"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: GLOBAL"
+        ],
+        "UPDATE": [
+          "scanForLoot",
+          "pauseAI: 5.0"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle"
+        ],
+        "HOLD_FULL": [
+          "setStateTo: EXIT_SYSTEM"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "EXIT_SYSTEM": {
+        "WITCHSPACE OKAY": [
+          "wormholeEscorts",
+          "wormholeGroup"
+        ],
+        "UPDATE": [
+          "performHyperSpaceExit",
+          "pauseAI: 5.0"
+        ],
+        "WITCHSPACE BLOCKED": [
+          "setTargetToFoundTarget",
+          "setDestinationWithinTarget",
+          "setDesiredRangeTo: 10000.0",
+          "performFlyToRangeFromDestination",
+          "setSpeedToCruiseSpeed"
+        ],
+        "WITCHSPACE UNAVAILABLE": [
+          "setStateTo: DOCK_WITH_STATION"
+        ]
+      },
+      "LOOT": {
+        "TARGET_LOST": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CARGO_SCOOPED": [
+          "checkForFullHold",
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ENTER": [
+          "performCollect"
+        ],
+        "HOLD_FULL": [
+          "setStateTo: CONSIDER_DOCKING"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "DESIRED_RANGE_ACHIEVED": [
+          "performIdle",
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "REACHED_SAFETY": [
+          "setSpeedTo: 0.0",
+          "performIdle",
+          "pauseAI: 10.0"
+        ],
+        "ENERGY_FULL": [
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "TARGET_LOST": [
+          "performIdle",
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ]
+      },
+      "SCAN_FOR_LOOT": {
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: LOOT"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: LURK"
+        ],
+        "UPDATE": [
+          "scanForLoot",
+          "pauseAI: 7.0"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ]
+      },
+      "TRAVEL_TO_LURK_AREA": {
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "RESTARTED": [
+          "setStateTo: LURK"
+        ],
+        "ENTER": [
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 3500.0",
+          "checkCourseToDestination"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CARGO_SCOOPED": [
+          "setStateTo: CHECK_CARGO"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: LURK"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LURK"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "checkGroupOddsVersusTarget"
+        ],
+        "ODDS_GOOD": [
+          "groupAttackTarget"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "UPDATE": [
+          "scanForRandomMerchantman",
+          "pauseAI: 10.0"
+        ]
+      },
+      "LURK": {
+        "UPDATE": [
+          "scanForRandomMerchantman",
+          "pauseAI: 5.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "ODDS_LEVEL": [
+          "groupAttackTarget"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_TO_LURK_AREA",
+          "pauseAI: 0.5"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CARGO_SCOOPED": [
+          "setStateTo: CHECK_CARGO"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ODDS_GOOD": [
+          "groupAttackTarget"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "checkGroupOddsVersusTarget"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: SCAN_FOR_LOOT"
+        ]
+      },
+      "CONSIDER_DOCKING": {
+        "UPDATE": [
+          "checkForMotherStation"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_TO_LURK_AREA"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "CARGO_SCOOPED": [
+          "setStateTo: CHECK_CARGO"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "STATION_FOUND": [
+          "dockEscorts",
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_TO_START_POSITION": {
+        "LAUNCHED OKAY": [
+          "setStateTo: CLEAR_STATION"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "ENTER": [
+          "setDestinationToCurrentLocation",
+          "setDesiredRangeTo: 1500.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "EXITED WITCHSPACE": [
+          "switchAITo: enteringPirateAI.plist"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LURK"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: LURK"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ]
+      },
+      "CLEAR_STATION": {
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setDestinationToCurrentLocation",
+          "setDesiredRangeTo: 2000.0",
+          "setSpeedFactorTo: 0.75",
+          "performFlyToRangeFromDestination"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_TO_LURK_AREA"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "scanForRandomMerchantman"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "groupAttackTarget"
+        ]
+      },
+      "RECOVER": {
+        "UPDATE": [
+          "checkEnergy",
+          "pauseAI: 10.0"
+        ],
+        "ENERGY_FULL": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ENERGY_HIGH": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle",
+          "pauseAI: 5.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "LOOK_FOR_TARGETS": {
+        "UPDATE": [
+          "scanForNearestShipHavingRole: IR-transport-alternate",
+          "pauseAI: 1.0"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: HEAD_FOR_WITCHPOINT"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "scanForNearestShipHavingRole: IR-transport-alternate",
+          "pauseAI: 1.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "HEAD_FOR_WITCHPOINT": {
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "UPDATE": [
+          "setCourseToWitchpoint",
+          "checkCourseToDestination",
+          "scanForNearestShipHavingRole: IR-transport-alternate",
+          "pauseAI: 10.0"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 0.8",
+          "performFlyToRangeFromDestination"
+        ],
+        "ACCEPT_DISTRESS_CALL": [
+          "setTargetToFoundTarget",
+          "deployEscorts",
+          "groupAttackTarget"
+        ],
+        "ENTER": [
+          "setCourseToWitchpoint",
+          "checkCourseToDestination"
+        ],
+        "DOCKING_REQUESTED": [
+          "setAITo: receiveDockingAI.plist"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP",
+          "groupAttackTarget"
+        ]
+      }
+    },
+    "checked_direct_state_requests": 114
+  },
+  "later_required_dependency_pool_correction": {
+    "evidence": "iron-raven-dependency-pirate-correction.json",
+    "scope": "Original37callback/library/configuration/formation cases retain their actual historical core-only selection scope. The selected default pirate pool is now12/weight5.5 including requiredAdderIII-E; do not call the prior11core-only extraction the full required-dependency installation."
+  }
+}

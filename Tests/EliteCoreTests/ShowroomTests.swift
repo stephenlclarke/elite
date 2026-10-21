@@ -7,15 +7,15 @@ private func showroomGame() -> Game {
   var game = Game(executive: false)
   game.screen = .equipment
   game.selection = Equipment.all.count - 1
-  game.key("w")
+  game.key("6")
   return game
 }
 
 @Test func showroomCataloguePreservesEveryCanonicalShipRefitAndSourceUnit() throws {
-  #expect(ShipCatalogue.all.count == 168)
-  #expect(Set(ShipCatalogue.all.map(\.id)).count == 168)
-  #expect(ShipCatalogue.all.filter(\.refit).count == 159)
-  #expect(ShipCatalogue.modelCount == 168)
+  #expect(ShipCatalogue.all.count == 171)
+  #expect(Set(ShipCatalogue.all.map(\.id)).count == 171)
+  #expect(ShipCatalogue.all.filter(\.refit).count == 162)
+  #expect(ShipCatalogue.modelCount == 171)
   #expect(ShipCatalogue.all.contains { $0.name == "Eagle Mk I" && $0.appearances.contains("FE2") })
   #expect(
     ShipCatalogue.all.contains { $0.id == "SH165" && $0.modelSource?.contains("Vector") == true })
@@ -48,14 +48,14 @@ private func showroomGame() -> Game {
   var game = Game(executive: false)
   game.launch()
   let commander = game.commander
-  game.key("w")
+  game.key("showroom-open")
   #expect(game.screen == .front && game.message == "DOCK TO VISIT THE SHIP SHOWROOM")
   #expect(game.commander == commander)
   game.dock()
   game.screen = .equipment
   game.selection = 12
   game.equipmentMount = .rear
-  game.key("w")
+  game.key("6")
   #expect(game.screen == .showroom)
   game.key("return")
   #expect(game.showroom.detail)
@@ -64,7 +64,7 @@ private func showroomGame() -> Game {
   game.key("k")
   #expect(game.screen == .help && game.helpReturn == .showroom)
   game.key("k")
-  game.key("w")
+  game.key("escape")
   #expect(game.screen == .equipment && game.selection == 12 && game.equipmentMount == .rear)
   for screen in [Screen.secret, .mission, .handoff, .gallery, .help, .demo, .title, .gameOver] {
     game.screen = screen
@@ -201,7 +201,8 @@ private func showroomGame() -> Game {
     game.showroom.compare = false
     game.showroom.detail = true
     let frame = Display.presentation(game, width: 1512, height: 982)
-    #expect(!frame.shipPanels.isEmpty, "\(ship.name)")
+    #expect(frame.flightClip == frame.canvas)
+    #expect(frame.hasShipSurfaces, "\(ship.name)")
     #expect(frame.shipLines.isEmpty)
   }
   game.showroom.selection = "SH002"
@@ -224,6 +225,12 @@ private func showroomGame() -> Game {
 @Test func showroomActorSavingAndConcurrentBrowsingKeepCommanderUnchanged() async throws {
   let game = showroomGame()
   let runtime = GameRuntime(game: game)
+  let ready = await runtime.snapshot()
+  #expect(ready.commander.valid && ready.commander.equipmentInventory != nil)
+  #expect(ready.commander.credits == game.commander.credits)
+  #expect(
+    ready.commander.cargo == game.commander.cargo && ready.commander.shipID == game.commander.shipID
+  )
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   await withTaskGroup(of: Void.self) { tasks in
@@ -231,7 +238,8 @@ private func showroomGame() -> Game {
   }
   try await runtime.save(to: url)
   let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
-  #expect(saved == game.commander)
+  #expect(saved == ready.commander)
+  #expect(await runtime.snapshot().commander == ready.commander)
   #expect(await runtime.snapshot().time == game.time)
   try await runtime.load(from: url)
   #expect(await runtime.snapshot().screen == .status)
@@ -271,7 +279,10 @@ private func showroomGame() -> Game {
       #expect(cells.allSatisfy { $0.scale == GameTypography.scale && $0.bounds.maxX <= width - 16 })
       if width >= 1800, let label = cells.first(where: { $0.text == "Required crew" }) {
         let field = try #require(game.showroomComparison.first { $0.label == "Required crew" })
-        let expected = field.selected + (field.difference.isEmpty ? "" : " / " + field.difference)
+        let suffix =
+          game.showroom.sourceProfiles
+          ? (field.difference.isEmpty ? "" : " / " + field.difference) : " " + field.rating.rawValue
+        let expected = field.selected + suffix
         #expect(
           cells.contains { $0.x == outer.selectedModelX && $0.y == label.y && $0.text == expected })
       }
@@ -384,26 +395,26 @@ private func showroomGame() -> Game {
     let frame = Display.presentation(game, width: width, height: 768)
     #expect(
       frame.labels.contains {
-        $0.text.contains("FILTER ACTIVE: 1/168 ships") && $0.text.contains("You own: Cobra Mk III")
+        $0.text.contains("FILTER ACTIVE: 1/171 ships") && $0.text.contains("You own: Cobra Mk III")
       })
     #expect(frame.labels.contains { $0.text == "Clear filter" })
   }
   game.key("x")
-  #expect(game.showroomShips.count == 168)
+  #expect(game.showroomShips.count == 171)
   game.key("/")
   for key in "SH063" { game.key(String(key)) }
   game.key("delete")
-  #expect(game.showroom.query.isEmpty && game.showroomShips.count == 168)
+  #expect(game.showroom.query.isEmpty && game.showroomShips.count == 171)
   game.showroom.query = "SH063"
   game.showroom.selection = "SH063"
   game.viewportWidth = 1512
   game.viewportHeight = 982
   let layout = ShowroomLayout(width: 1512, height: 982, detail: false)
   game.showroomClick(x: layout.clearSearch.x + 5, y: layout.clearSearch.y + 5)
-  #expect(game.showroomShips.count == 168 && game.showroom.selection == "SH063")
+  #expect(game.showroomShips.count == 171 && game.showroom.selection == "SH063")
   game.showroom.query = "SH063"
-  game.key("w")
-  game.key("w")
+  game.key("escape")
+  game.key("6")
   #expect(game.showroom.query.isEmpty && game.showroom.selection == "SH023")
   let frame = Display.presentation(game, width: 1512, height: 982)
   #expect(frame.labels.contains { $0.text == "CURRENT SHIP" })
