@@ -5,10 +5,19 @@ import Testing
 
 @Test func fourMountsStartWithOnlyFrontPulseAndPurchasesReplaceOnlyChosenMount() throws {
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   #expect(game.commander.laser(on: .front) == .pulse)
   #expect([LaserMount.left, .right, .rear].allSatisfy { game.commander.laser(on: $0) == nil })
   game.screen = .equipment
-  game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
+  let beam = try #require(Equipment.all.first { $0.name == "Beam Laser" })
+  let mining = try #require(Equipment.all.first { $0.name == "Mining Laser" })
+  let requiredLevel = max(beam.requiredTechnologyLevel, mining.requiredTechnologyLevel)
+  game.commander.system = try #require(
+    game.systems.first { !$0.isPlugh && $0.technology >= requiredLevel }?.id)
   game.commander.credits = 100_000
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Beam Laser" })
   game.key("right")
@@ -231,7 +240,8 @@ import Testing
   game.commander.credits = 0
   #expect(game.marketAvailability(0) == "NO CASH")
   game.commander.credits = 10
-  game.commander.cargo[0] = 20
+  game.commander.cargo[0] += game.commander.tradeCargoCapacity - game.commander.cargoTonnes
+  #expect(game.commander.cargoTonnes == game.commander.tradeCargoCapacity)
   #expect(game.marketAvailability(0) == "HOLD FULL")
   game.commander.unlimitedCargo = true
   #expect(game.marketAvailability(0) == "BUY")

@@ -147,7 +147,10 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
 }
 @Test func targetingUpgradesUseLaserRelatedPricesAndPersistOneEffectiveTier() async throws {
   var game = Game(executive: false)
-  game.commander.system = try #require(game.systems.firstIndex { $0.technology >= 10 })
+  let computers = Equipment.all.filter { TargetingTier.from($0.name) != nil }
+  let requiredLevel = try #require(computers.map(\.requiredTechnologyLevel).max())
+  game.commander.system = try #require(
+    game.systems.first { !$0.isPlugh && $0.technology >= requiredLevel }?.id)
   game.commander.credits = 1_000_000
   for tier in TargetingTier.allCases {
     game.selection = try #require(Equipment.all.firstIndex { $0.name == tier.equipmentName })

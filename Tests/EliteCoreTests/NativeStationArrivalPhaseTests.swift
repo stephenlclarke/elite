@@ -5,8 +5,15 @@ import Testing
 
 @Test func nativeArrivalTickKeepsRotatingStationsOnPhysicalClockAndPublishes() throws {
   var game = Game(executive: false)
+  game.commander.galaxy = 3
+  game.systems = Universe.systemsIncludingPlugh(number: game.commander.galaxy)
+  let destination = 149  // Original Lolodor has both genuine source station kinds.
+  let identity = SystemIdentity(galaxy: game.commander.galaxy, system: destination)
+  try #require(
+    NativeStationSource.bindings.contains { $0.system == identity && $0.kind == .waystation })
+  try #require(
+    NativeStationSource.bindings.contains { $0.system == identity && $0.kind == .headquarters })
   try game.commander.prepareEquipment()
-  let destination = 237  // Existing source fixture has both a rotating waystation and headquarters.
   let target = game.systems[destination]
   let reach = game.commander.maximumJumpDistance
   let origin = try #require(
