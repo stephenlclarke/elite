@@ -28,6 +28,7 @@ missiles = 8
 facings = 15
 cargoExpansion = 15
 price = 415000
+workTools = ["miningLaser", "salvageCutter"]
 
 [design]
 vertices = [

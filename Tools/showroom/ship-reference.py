@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import re
 from pathlib import Path
 import subprocess
 
@@ -25,6 +26,9 @@ def shared_hash(root=Path('.')):
     paths=sorted((root/'Sources/EliteCore').glob('*.swift'))
     paths += [root/'Sources/EliteMac'/p for p in ['NativeGraphics.swift','ShipMedia.swift']]
     paths += [root/'Package.resolved']
+    textures=root/'Sources/EliteCore/Resources/ShipTextures'
+    if textures.is_dir():
+        paths += sorted(path for path in textures.rglob('*') if path.is_file())
     h=hashlib.sha256(SETTINGS)
     for path in paths:
         h.update(str(path.relative_to(root)).encode());h.update(path.read_bytes())
@@ -44,7 +48,8 @@ def needs_render(path, shared, previous, gif):
 
 def escape(text):
     """Keep source facts inside portable Markdown table cells."""
-    return str(text).replace('|','\\|').replace('\n',' ').strip() or '(empty)'
+    escaped = str(text).replace('|','\\|').replace('\n',' ').strip() or '(empty)'
+    return re.sub(r'(?<![<(])https?://[^\s<>]*[^\s<>.,;)]', r'<\g<0>>', escaped)
 
 
 def spec_text(key, number):

@@ -1,0 +1,147 @@
+{
+  "profile_id": "SH128-TRANSPORTER-CARGO-CORRECTION-v1",
+  "date": "2026-10-14",
+  "research_ready": true,
+  "native_implementation_verified": false,
+  "delivery": "Confirmed message to Elite Coder01a131fd-24b4-79a1-aff2-a2c1618d2698 on2026-10-14; native implementation pending.",
+  "canonical_ship_id": "SH128",
+  "source": {
+    "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Config/shipdata.plist",
+    "path": "/tmp/elite-gap-research/oolite-engine/Resources/Config/shipdata.plist",
+    "sha256": "f4910d79b88cc803f7bd785fd2fa7d34597c0c891925659c23748313052ac166",
+    "definition": "oolite_template_transporter",
+    "field": "max_cargo",
+    "value": 12
+  },
+  "prior_player_field": {
+    "value": 0,
+    "status": "estimated",
+    "basis": "O08 model envelope",
+    "method": "floor(20 * ship_box_volume / O08_CobraIII_box_volume); hold 25%, box fill 35%"
+  },
+  "selected_player_field": {
+    "value": 12,
+    "status": "borrowed native NPC capacity for player adaptation",
+    "basis": "Pinned O08 oolite_template_transporter max_cargo12; replaces prior volume-based zero estimate, not a claim that Transporter was originally a flyable Oolite ship."
+  },
+  "selection_reason": "Verified native NPC capacity is a better explicit player adaptation than a generic volume zero. Prior zero was estimated, not known historical player-zero; original NPCs remain unchanged.",
+  "unchanged": {
+    "crew_including_commander": 3,
+    "intrinsic_operating_crew_quarters": 3,
+    "equipment_budget_units": 8,
+    "initial_charter_berths": 0,
+    "cargo_expansion_tonnes": 0,
+    "player_initial_missiles": 1,
+    "native_NPC_missiles": 0,
+    "source_edition_crew_fact_count": 173,
+    "canonical_catalogue_count": 170,
+    "filled_refits_count": 161
+  },
+  "new_empty_fit_berth_ceiling": 2,
+  "cases": [
+    {
+      "name": "Empty hold with no fitted cabin cannot transport a passenger",
+      "hold": 12,
+      "equipment_budget": 8,
+      "freight": 0,
+      "fitted_berths": 0,
+      "other_gear_units": 0,
+      "already_aboard": 0,
+      "new_party": 1,
+      "admitted": false,
+      "passed": true
+    },
+    {
+      "name": "Two fitted berths leave2t freight capacity",
+      "hold": 12,
+      "equipment_budget": 8,
+      "freight": 2,
+      "fitted_berths": 2,
+      "other_gear_units": 0,
+      "already_aboard": 0,
+      "new_party": 2,
+      "admitted": true,
+      "passed": true
+    },
+    {
+      "name": "Three fitted berths exceed12t",
+      "hold": 12,
+      "equipment_budget": 8,
+      "freight": 0,
+      "fitted_berths": 3,
+      "other_gear_units": 0,
+      "already_aboard": 0,
+      "new_party": 3,
+      "admitted": false,
+      "passed": true
+    },
+    {
+      "name": "One fitted berth plus7t freight fits one",
+      "hold": 12,
+      "equipment_budget": 8,
+      "freight": 7,
+      "fitted_berths": 1,
+      "other_gear_units": 0,
+      "already_aboard": 0,
+      "new_party": 1,
+      "admitted": true,
+      "passed": true
+    },
+    {
+      "name": "One fitted berth plus8t freight fails hold",
+      "hold": 12,
+      "equipment_budget": 8,
+      "freight": 8,
+      "fitted_berths": 1,
+      "other_gear_units": 0,
+      "already_aboard": 0,
+      "new_party": 1,
+      "admitted": false,
+      "passed": true
+    },
+    {
+      "name": "Seven transferred equipment units leave room for only one cabin",
+      "hold": 12,
+      "equipment_budget": 8,
+      "freight": 0,
+      "fitted_berths": 2,
+      "other_gear_units": 7,
+      "already_aboard": 0,
+      "new_party": 2,
+      "admitted": false,
+      "passed": true
+    },
+    {
+      "name": "One occupied of two cabins leaves one place",
+      "hold": 12,
+      "equipment_budget": 8,
+      "freight": 0,
+      "fitted_berths": 2,
+      "other_gear_units": 0,
+      "already_aboard": 1,
+      "new_party": 2,
+      "admitted": false,
+      "passed": true
+    },
+    {
+      "name": "Three intrinsic operating crew do not consume charter berths",
+      "hold": 12,
+      "equipment_budget": 8,
+      "freight": 0,
+      "fitted_berths": 2,
+      "other_gear_units": 0,
+      "already_aboard": 0,
+      "new_party": 2,
+      "admitted": true,
+      "passed": true
+    }
+  ],
+  "case_count": 8,
+  "scope": "Research refit/fit accounting correction only; native Transporter12t/0missile source unchanged. Player laser/docking/drive/one missile baseline retained. Each charter berth consumes5t/1equipment unit; no passenger or initial free cabin grant. Not an additional mission count.",
+  "current_native_reference": {
+    "path": "Sources/EliteCore/Resources/Ships/SH128.toml",
+    "inspected_commit": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56",
+    "game_cargo": 0,
+    "intent": "Explicit reviewed game cargo0->12 correction plus source/showroom/fit integration, not bulk overwriting calibrated flight/economics values or automatic repricing. Actual current native data remains authoritative until that implementation."
+  }
+}

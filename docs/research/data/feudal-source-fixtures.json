@@ -1,0 +1,282 @@
+{
+  "package_id": "P11",
+  "version": "1.16.3",
+  "method": "Original callbacks, O08 object-scope approximation and mocked API. PlanetFall role mocked for source checks; project uses orbital station handoff. Tournament generators/narrative helpers omitted from boundary-only tests.",
+  "case_count": 34,
+  "cases": [
+    {
+      "event": "court-debrief-twice",
+      "stage": "DELIVERY_RUNNING",
+      "cash": 1000,
+      "score": 2
+    },
+    {
+      "event": "court-debrief-twice",
+      "stage": "TRIBUTE_COLLECTED",
+      "cash": 1000,
+      "score": 1
+    },
+    {
+      "event": "court-debrief-twice",
+      "stage": "RANSOM_SUCCESS",
+      "cash": 1000,
+      "score": 20
+    },
+    {
+      "event": "court-debrief-twice",
+      "stage": "RANSOM_FAIL",
+      "cash": 0,
+      "score": -15
+    },
+    {
+      "event": "court-debrief-twice",
+      "stage": "EXECUTION_SUCCESS",
+      "cash": 1000,
+      "score": 20
+    },
+    {
+      "event": "court-debrief-twice",
+      "stage": "EXECUTION_PARTIALSUCCESS",
+      "cash": 400,
+      "score": 10
+    },
+    {
+      "event": "court-debrief-twice",
+      "stage": "ESCORT_SUCCESS",
+      "cash": 1000,
+      "score": 20
+    },
+    {
+      "event": "raid-source-tier",
+      "count": 0,
+      "cash": 0,
+      "score": 3,
+      "after": "NONE_SET"
+    },
+    {
+      "event": "raid-source-tier",
+      "count": 1,
+      "cash": 0,
+      "score": 3,
+      "after": "NONE_SET"
+    },
+    {
+      "event": "raid-source-tier",
+      "count": 6,
+      "cash": 0,
+      "score": 3,
+      "after": "NONE_SET"
+    },
+    {
+      "event": "raid-source-tier",
+      "count": 7,
+      "cash": 800,
+      "score": 5,
+      "after": "NONE_SET"
+    },
+    {
+      "event": "raid-source-tier",
+      "count": 17,
+      "cash": 800,
+      "score": 5,
+      "after": "NONE_SET"
+    },
+    {
+      "event": "raid-source-tier",
+      "count": 18,
+      "cash": 1000,
+      "score": 10,
+      "after": "NONE_SET"
+    },
+    {
+      "event": "raid-source-tier",
+      "count": 19,
+      "cash": 0,
+      "score": 0,
+      "after": "RAID_SUCCESS"
+    },
+    {
+      "event": "escort-salvage-source-tier",
+      "count": 0,
+      "cash": 0,
+      "score": -10
+    },
+    {
+      "event": "escort-salvage-source-tier",
+      "count": 5,
+      "cash": 0,
+      "score": -10
+    },
+    {
+      "event": "escort-salvage-source-tier",
+      "count": 6,
+      "cash": 500,
+      "score": 5
+    },
+    {
+      "event": "escort-salvage-source-tier",
+      "count": 11,
+      "cash": 500,
+      "score": 5
+    },
+    {
+      "event": "escort-salvage-source-tier",
+      "count": 12,
+      "cash": 750,
+      "score": 10
+    },
+    {
+      "event": "escort-salvage-source-tier",
+      "count": 18,
+      "cash": 750,
+      "score": 10
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 1,
+      "field": "kills",
+      "n": 7,
+      "pass": false,
+      "after": null,
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 1,
+      "field": "kills",
+      "n": 8,
+      "pass": true,
+      "after": "EVENT2",
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 2,
+      "field": "kills",
+      "n": 3,
+      "pass": false,
+      "after": null,
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 2,
+      "field": "kills",
+      "n": 4,
+      "pass": true,
+      "after": "EVENT3",
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 3,
+      "field": "scoops",
+      "n": 0,
+      "pass": false,
+      "after": null,
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 3,
+      "field": "scoops",
+      "n": 1,
+      "pass": true,
+      "after": "EVENT4",
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 4,
+      "field": "scoops",
+      "n": 7,
+      "pass": false,
+      "after": null,
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 4,
+      "field": "scoops",
+      "n": 8,
+      "pass": true,
+      "after": "EVENT5",
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 5,
+      "field": "ships",
+      "n": 3,
+      "pass": false,
+      "after": null,
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 5,
+      "field": "ships",
+      "n": 2,
+      "pass": true,
+      "after": "EVENT6",
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 6,
+      "field": "kills",
+      "n": 0,
+      "pass": false,
+      "after": null,
+      "cash": 0,
+      "score": 0
+    },
+    {
+      "event": "tournament-boundary",
+      "stage": 6,
+      "field": "kills",
+      "n": 1,
+      "pass": true,
+      "after": null,
+      "cash": 100000,
+      "score": 100
+    },
+    {
+      "event": "execution-death",
+      "killer": "player",
+      "after": "EXECUTION_SUCCESS",
+      "note": "NPC path uses PARTIAL while debrief expects PARTIALSUCCESS; explicit project repair required."
+    },
+    {
+      "event": "execution-death",
+      "killer": "npc",
+      "after": "EXECUTION_PARTIAL",
+      "note": "NPC path uses PARTIAL while debrief expects PARTIALSUCCESS; explicit project repair required."
+    }
+  ],
+  "sources": [
+    {
+      "path": "Scripts/feudal-mission.js",
+      "sha256": "1a4d6ea68552296b41ad86c5e9b3a99e94598114037712d143a4e4d0cb732127"
+    },
+    {
+      "path": "Scripts/feudal-tournament.js",
+      "sha256": "919cc0392daaa5f661d8546ccb2263659b822a247d4728defed6353770b1cafe"
+    },
+    {
+      "path": "Scripts/feudal-target.js",
+      "sha256": "8ab0e74ccb9a693099d0bf86e947f18fc4beed18fc5c6c15fe3dac467dadbad6"
+    }
+  ],
+  "pass": true
+}

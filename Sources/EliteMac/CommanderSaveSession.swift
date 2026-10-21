@@ -20,6 +20,12 @@ final class CommanderSaveSession {
     if preferences.string(forKey: key) != nil { return activeURL }
     return FileManager.default.fileExists(atPath: defaultURL.path) ? defaultURL : nil
   }
+  func newCommanderDestination(afterFailedRestore: Bool) -> URL {
+    if !afterFailedRestore, startupURL == nil { return defaultURL }
+    return defaultURL.deletingLastPathComponent()
+      .appendingPathComponent("new-commander-" + UUID().uuidString, isDirectory: true)
+      .appendingPathComponent("commander.json")
+  }
   func didSave(to url: URL) {
     activeURL = url
     preferences.set(url.path, forKey: key)

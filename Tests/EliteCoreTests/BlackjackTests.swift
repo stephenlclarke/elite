@@ -171,7 +171,9 @@ private func afterRobbery() throws -> Game {
   game.commander.credits = 100000
   game.autoTrade()
   #expect(game.commander.cargo[10] >= 1 && game.commander.markedFirearms == 1)
-  game.commander.equipment.insert("Escape Pod")
+  try game.commander.grantEquipment(
+    "Escape Pod", at: .utility(.escapePod), provenance: .grant("blackjack escape fixture"))
+  #expect(game.commander.fittedEquipment(at: .utility(.escapePod)) != nil)
   game.launch()
   game.escapePod()
   #expect(game.commander.cargo[10] == 1 && game.commander.valid)
@@ -242,6 +244,8 @@ private func afterRobbery() throws -> Game {
   game.docked = false
   game.arrive()
   let index = try #require(game.bodies.firstIndex { $0.blackjackRole == .bolts })
+  game.ensurePhysicalActors()
+  game.bodies[index].physical?.npc?.resources?.laserHeat = 37
   game.bodies[index].energy = 123
   game.bodies[index].missiles = 1
   game.bodies[index].blackjackLaserCooldown = 0.2
@@ -261,6 +265,14 @@ private func afterRobbery() throws -> Game {
   #expect(
     body.blackjackIdentity == id && body.energy == 123 && body.missiles == 1
       && body.blackjackLaserCooldown == 0.2)
+  #expect(body.physical?.npc?.resources?.laserHeat == 37)
+  #expect(body.physical?.npc?.resources?.fuel == nil)
+  #expect(body.physical?.npc?.resources?.frontCapacity == 0)
+  #expect(body.physical?.identity.visit == restored.commander.flightSimulation.visit)
+  var playable = restored
+  let actor = try #require(body.physical?.identity)
+  let rebound = playable.makeAttackOrigin(owner: actor)
+  #expect(rebound?.owner == actor)
   let station = try #require(restored.bodies.first { $0.hull == .station })
   #expect((body.position - station.position - saved.body.position).length < 0.0001)
   #expect(body.orientation == saved.body.orientation)
@@ -401,7 +413,13 @@ private func afterRobbery() throws -> Game {
   visit(&game, 233)
   game.key("return")
   game.key("b")
-  game.commander.installLaser(.military, on: .rear)
+  try game.commander.grantEquipment(
+    "Military Laser", at: .laser(.rear), provenance: .grant("blackjack reload fixture"))
+  #expect(game.commander.fittedEquipment(at: .laser(.rear))?.node.key == "Military Laser")
+  let round = try #require(game.commander.fittedEquipment(at: .missilePylon(2)))
+  let revision = try #require(game.commander.equipmentInventory?.revision)
+  try game.commander.storeEquipment(round, expectedRevision: revision)
+  #expect(game.commander.missiles == 2)
   game.commander.missiles = 2
   let equipment = game.commander.equipment
   let mounts = game.commander.laserMounts

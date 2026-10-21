@@ -15,6 +15,10 @@ extension Display {
 
   /// A common painter order lets nearer planets occlude more distant ships.
   static func flightObjects(_ game: Game, projection: FlightProjection, into frame: inout Frame) {
+    let cueContext = game.gameplayContext()
+    let occlusion =
+      game.bodies.contains(where: { game.targetColourCue(for: $0, context: cueContext).ink != nil })
+      ? GameplayRaycast.prepareOcclusionScene(game, projection: projection) : nil
     let objects = game.bodies.map(FlightObject.ship) + game.celestials.map(FlightObject.celestial)
     let visible = objects.compactMap { object -> (FlightObject, Double)? in
       let depth = game.viewPosition(object.position).z
@@ -22,7 +26,13 @@ extension Display {
     }
     for (object, _) in visible.sorted(by: { $0.1 > $1.1 }) {
       switch object {
-      case .ship(let body): draw(body, game: game, into: &frame, projection: projection)
+      case .ship(let body):
+        if let occlusion {
+          targetWorldGlow(
+            body, game: game, projection: projection, scene: occlusion,
+            context: cueContext, into: &frame)
+        }
+        draw(body, game: game, into: &frame, projection: projection)
       case .celestial(let body): celestial(body, game: game, projection: projection, into: &frame)
       }
     }
@@ -78,6 +88,13 @@ extension Display {
     let nearestX = min(max(center.x, clip.x), clip.maxX)
     let nearestY = min(max(center.y, clip.y), clip.maxY)
     guard hypot(center.x - nearestX, center.y - nearestY) <= visibleRadius else { return }
+    if game.commander.shipDisplayStyle != .shadedPanels {
+      let ink: Ink =
+        game.commander.shipDisplayStyle == .whiteWireframe
+        ? .white : (body.kind == .sun ? .gold : .blue)
+      celestialOutline(center: center, radius: radius, ink: ink, into: &frame)
+      return
+    }
     switch body.kind {
     case .planet:
       frame.graphics.append(
@@ -96,6 +113,20 @@ extension Display {
       frame.graphics.append(.point(center: center, radius: radius * 1.06, opacity: 0.3, ink: .gold))
       frame.graphics.append(.point(center: center, radius: radius, opacity: 1, ink: .gold))
       frame.graphics.append(.point(center: center, radius: radius * 0.86, opacity: 1, ink: .yellow))
+    }
+  }
+
+  /// Bounded limb segments use the same flight clip as ship edges in both wire modes.
+  private static func celestialOutline(
+    center: ScreenPoint, radius: Double, ink: Ink, into frame: inout Frame
+  ) {
+    let segments = min(512, max(32, Int(ceil(sqrt(radius) * 8))))
+    var previous = ScreenPoint(center.x + radius, center.y)
+    for index in 1...segments {
+      let angle = Double(index) * 2 * .pi / Double(segments)
+      let next = ScreenPoint(center.x + radius * cos(angle), center.y + radius * sin(angle))
+      frame.wire(previous.x, previous.y, next.x, next.y, ink)
+      previous = next
     }
   }
 

@@ -9,9 +9,35 @@ enum PlanetRenderer {
     let diameter: Int
     let phase: Int
   }
+  // CPU fallback and accelerated frames share one explicit colour interpretation.
+  private static let colourSpace =
+    CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
   private static var terrains: [(PlanetIdentity, PlanetTerrain)] = []
-  private static var lastKey: ImageKey?
-  private static var lastImage: CGImage?
+  private static var referenceKey: ImageKey?
+  private static var referenceImageCache: CGImage?
+  private static var imageKey: ImageKey?
+  private static var imageCache: CGImage?
+  private static var gpuPreparation: Task<Void, Never>?
+  private static var gpuShader: PlanetGPUShader?
+
+  private static func startGPUPreparation() {
+    guard gpuPreparation == nil else { return }
+    gpuPreparation = Task {
+      if let pipeline = await PlanetGPUShader.compile() {
+        gpuShader = PlanetGPUShader(pipeline: pipeline)
+        // A CPU fallback cached during preparation must not hide the ready GPU.
+        imageKey = nil
+        imageCache = nil
+      }
+    }
+  }
+
+  /// Await the same one-time preparation used by ordinary drawing.
+  static func prepareGPU() async -> String? {
+    startGPUPreparation()
+    await gpuPreparation?.value
+    return gpuShader?.deviceName
+  }
 
   static func draw(_ preview: PlanetPreview, context: CGContext) {
     let scale = hypot(context.ctm.a, context.ctm.c)
@@ -27,18 +53,43 @@ enum PlanetRenderer {
   }
 
   static func image(for preview: PlanetPreview, diameter: Int) -> CGImage? {
-    guard (32...768).contains(diameter) else { return nil }
+    guard (32...768).contains(diameter), preview.angle.isFinite else { return nil }
+    startGPUPreparation()
     let phase = Int(preview.angle.truncatingRemainder(dividingBy: 2 * .pi) / 0.006)
     let key = ImageKey(identity: preview.identity, diameter: diameter, phase: phase)
-    if lastKey == key { return lastImage }
-    let terrain: PlanetTerrain
-    if let cached = terrains.first(where: { $0.0 == preview.identity }) {
-      terrain = cached.1
-    } else {
-      terrain = PlanetTerrain(identity: preview.identity)
-      terrains.append((preview.identity, terrain))
-      if terrains.count > 8 { terrains.removeFirst() }
+    if imageKey == key { return imageCache }
+    var accelerated: CGImage?
+    if let shader = gpuShader {
+      accelerated = shader.image(
+        identity: preview.identity, terrain: cachedTerrain(for: preview.identity),
+        palette: PlanetPalette(identity: preview.identity),
+        angle: Double(phase) * 0.006, diameter: diameter)
+      // Persistent command/device failures must not stall every subsequent frame.
+      if accelerated == nil { gpuShader = nil }
     }
+    guard let result = accelerated ?? referenceImage(for: preview, diameter: diameter) else {
+      return nil
+    }
+    imageKey = key
+    imageCache = result
+    return result
+  }
+
+  private static func cachedTerrain(for identity: PlanetIdentity) -> PlanetTerrain {
+    if let cached = terrains.first(where: { $0.0 == identity }) { return cached.1 }
+    let terrain = PlanetTerrain(identity: identity)
+    terrains.append((identity, terrain))
+    if terrains.count > 8 { terrains.removeFirst() }
+    return terrain
+  }
+
+  /// Deterministic CPU fallback and visual reference for the accelerated renderer.
+  static func referenceImage(for preview: PlanetPreview, diameter: Int) -> CGImage? {
+    guard (32...768).contains(diameter), preview.angle.isFinite else { return nil }
+    let phase = Int(preview.angle.truncatingRemainder(dividingBy: 2 * .pi) / 0.006)
+    let key = ImageKey(identity: preview.identity, diameter: diameter, phase: phase)
+    if referenceKey == key { return referenceImageCache }
+    let terrain = cachedTerrain(for: preview.identity)
     let palette = PlanetPalette(identity: preview.identity)
     let angle = Double(phase) * 0.006
     var bytes = [UInt8](repeating: 0, count: diameter * diameter * 4)
@@ -62,11 +113,11 @@ enum PlanetRenderer {
     guard let provider = CGDataProvider(data: data) else { return nil }
     let result = CGImage(
       width: diameter, height: diameter, bitsPerComponent: 8,
-      bitsPerPixel: 32, bytesPerRow: diameter * 4, space: CGColorSpaceCreateDeviceRGB(),
+      bitsPerPixel: 32, bytesPerRow: diameter * 4, space: colourSpace,
       bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
       provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
-    lastKey = key
-    lastImage = result
+    referenceKey = key
+    referenceImageCache = result
     return result
   }
 

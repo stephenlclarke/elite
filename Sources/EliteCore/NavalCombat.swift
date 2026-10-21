@@ -2,7 +2,8 @@ extension Game {
   /// TACTICS recharges one unit, then considers ordnance below half energy.
   mutating func navalTactics() {
     let candidates = bodies.filter {
-      $0.hostile && $0.energy > 0 && ($0.hull.navalEnergy != nil || $0.blackjackRole != nil)
+      $0.hostile && $0.energy > 0 && !isEMPDisabled($0) && $0.missionInstanceID == nil
+        && ($0.hull.navalEnergy != nil || $0.blackjackRole != nil)
     }
     .map(\.id)
     for id in candidates {
@@ -17,24 +18,23 @@ extension Game {
       guard bodies[index].energy <= maximum / 2, remaining > 0,
         randomByte() & 31 < remaining, ecmFrames == 0
       else { continue }
-      bodies[index].missiles -= 1
-      guard bodies.count < (commander.executive ? 18 : 10) else { continue }
       let position = bodies[index].position
       if bodies[index].hull == .thargoid {
+        guard bodies.count < (commander.executive ? 18 : 10) else { continue }
+        bodies[index].missiles -= 1
         addNavalShip(.thargon, position: position)
-      } else {
-        var missile = SpaceBody(id: nextBodyID, hull: .missile, position: position, hostile: true)
-        missile.enemyMissile = true
-        missile.missileSourceID = id
-        bodies.append(missile)
-        nextBodyID += 1
+      } else if launchGameplayNPCMissile(bodyID: id) {
         notify("INCOMING MISSILE", voiced: false)
       }
     }
   }
 
   mutating func advanceNavalMissiles(delta: Double) {
-    let ids = bodies.filter { $0.playerMissileTarget != nil || $0.enemyMissile }.map(\.id)
+    advanceGameplayOrdnance()
+    let ids = bodies.filter {
+      ($0.playerMissileTarget != nil || $0.enemyMissile) && $0.physical?.ordnance == nil
+        && $0.scriptShot == nil
+    }.map(\.id)
     for id in ids {
       guard let index = bodies.firstIndex(where: { $0.id == id }), bodies[index].energy > 0 else {
         continue
@@ -65,8 +65,10 @@ extension Game {
     let vector = bodies[target].position - bodies[index].position
     let step = 44 * 18 * delta
     if vector.length <= step + 64 {
-      bodies[target].energy = 0
-      bodies[target].destroyedByPlayer = true
+      if bodies[target].physical?.empCrewPod == nil {
+        bodies[target].energy = 0
+        bodies[target].destroyedByPlayer = true
+      }
       bodies[index].energy = 0
     } else if bodies[target].ecmEnabled && randomByte() < 16 {
       // Missile TACTICS tests proximity first, then a 16/256 ECM chance.
