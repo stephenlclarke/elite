@@ -4286,10 +4286,14 @@
       "github_run": 39688676918,
       "new_methods": 6,
       "selection_methods": 109,
-      "unit_status": "in_progress",
-      "source_review": "MBA assigned",
+      "unit_status": "MBA verified exact-head hosted PASS",
+      "source_review": "MBA completed; sole finding37 corrected and closed",
       "next_assigned": "M10.P01.C08.refuel",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verified_methods": 109,
+      "verified_expanded_cases": 141,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328328399",
+      "evidence_scope": "Pure policy/shape/pack codec methods; not native journey or writer-refusal execution"
     },
     {
       "event": "MBA found misplaced Make recipe boundary; G1 assigned narrow correction",
