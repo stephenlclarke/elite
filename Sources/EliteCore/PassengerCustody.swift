@@ -168,9 +168,15 @@ extension Commander {
       ? capacity : standardCargoCapacity
   }
   var requiresContractFit: Bool {
-    scriptState.instances.values.contains {
-      $0.contract != nil && ($0.outcome == .active || $0.payloads.values.contains { $0 > 0 })
+    for state in scriptState.instances.values {
+      if state.contract != nil
+        && (state.outcome == .active || state.payloads.values.contains { $0 > 0 })
+      {
+        if fieldReliefInstallationNeedsNoHold(state) { continue }
+        return true
+      }
     }
+    return false
   }
   public var passengerFit: AccommodationFit? {
     guard let hull = ShipCatalogue.ship(shipID),

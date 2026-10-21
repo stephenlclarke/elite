@@ -151,6 +151,10 @@ struct ScriptClueTrustCatalog: Sendable {
       definition: OriginalConsentedFreightSupply.stateID,
       version: "1.0.0", digest: OriginalConsentedFreightSupply.digest,
       terminalEvents: ["dialogue.confirmed"]),
+    .init(
+      sourceID: WayfarerFieldRelief.stateID, definition: WayfarerFieldRelief.stateID,
+      version: "1.0.0", digest: WayfarerFieldRelief.digest,
+      terminalEvents: ["dialogue.confirmed"]),
     ScriptNavigationTradeContent.cluePin,
     OriginalMutualContribution.cluePin,
     .init(

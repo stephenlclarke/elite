@@ -8,6 +8,11 @@ extension Game {
     guard let fields = command.object, let op = fields["op"]?.string else {
       throw MissionPackError("Invalid script command.")
     }
+    if pack.manifest.fieldRelief != nil || WayfarerFieldRelief.marked(state) {
+      guard op == "journal.append" else {
+        throw MissionPackError("Use the original native utility and current engineer reception.")
+      }
+    }
     if pack.manifest.repairLoop != nil || state.savedWayfarerRepairLoop != nil
       || state.definition == WayfarerRepairLoopDefinition.stateID
     {

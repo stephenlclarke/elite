@@ -417,6 +417,14 @@ This original project mission follows **Cedamar → Celalen → Cedamar**. Its f
 4. Return in the same collecting ship to Cedamar’s archive. Confirm **SENN / return original depot property** on Station Contracts for **650 CR once** and the record-recovery clue. Identification and pickup pay nothing.
 5. To cancel, Confirm **SENN / return held property and cancel** at the owner. Held property returns unpaid, the reserved hold tonne is released, and the finite original is never replenished.
 
+## Remote utility relief (development source, validation pending)
+
+The W04 adapter is prepared in development source; compilation, focused native qualification and independent review are pending. It uses the existing Avenor main-station source and actual RRS headquarters in galaxy 1/system 237. Two finite batches each contain four original tonnes, with no passenger berths, deposit, hazard premium or deadline.
+
+Use Station Contracts to review and Confirm collection, carry those originals to the headquarters, Confirm installation, then separately Confirm the current resident engineer's inspection. Only that verified reception pays the frozen **610 CR + 110 CR per quoted reachable route leg**, once, and retains the existing field-relief clue. Installation alone pays nothing. Later route legs assume refuelling; advanced, hazardous and timed variants remain unavailable. Returned or lost originals never replenish; installed station property and successful clue history survive later player ship or target loss as applicable.
+
+The prepared tests use controlled source/target scenes with actual native docking and receipt generation. They do not establish flight of the quoted route, a complete manual app journey or release acceptance. See [adapter scope and validation](docs/PR-wayfarer-field-relief.md).
+
 ## Mission Gallery
 
 Choose **Game > Mission Gallery** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show the list and details side by side; narrow windows open a detail page. Use arrows and Return, click a mission, and scroll with the trackpad or Option-Up/Option-Down. Tab switches between list and details; Escape returns to the list, then to the previous screen.

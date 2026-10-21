@@ -239,7 +239,7 @@ extension Display {
         var preferredSummary: String? =
           row.reason
           ?? (row.utility == nil
-            ? nil : "Field relief prerequisite / original 4t / no payment or clue")
+            ? nil : "Field relief / original 4t / payment at verified reception")
           ?? (row.repairLoop == nil ? nil : "Repair loop / 2t / 610 CR on owner return")
         if preferredSummary == nil {
           preferredSummary =
