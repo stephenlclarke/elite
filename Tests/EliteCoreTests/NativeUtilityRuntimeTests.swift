@@ -15,6 +15,7 @@ struct NativeUtilityRuntimeFixture {
   }
   private func launched(from before: consuming Game, system: Int) throws -> Game {
     var game = before
+    if game.commander.system != system { try game.departOrdinarySimulation() }
     game.commander.nativeStations?.ledger.depart()
     game.commander.nativeStations?.currentMainDock = nil
     game.invalidateNativeStationAuthority()
@@ -58,11 +59,53 @@ struct NativeUtilityRuntimeFixture {
   func reloaded(_ runtime: GameRuntime) async throws -> GameRuntime {
     let before = await runtime.snapshot().commander
     try await runtime.save(to: save)
-    let expected = await runtime.snapshot().commander
+    let saved = await runtime.snapshot()
+    var expected = saved.commander
     #expect(expected.nativeUtility == before.nativeUtility)
+    // Predict only documented live RRS scene-address replacement, before reading the save.
+    // All logical property, original material, receipt and ordinary actor state stays exact.
+    let stations = saved.bodies.indices.filter { saved.bodies[$0].nativeStationIdentity != nil }
+    var expectedBodies = saved.bodies
+    if !stations.isEmpty {
+      var flight = expected.flightSimulation
+      var world = try #require(expected.nativeStations)
+      let allocatedSpawn = flight.allocateSpawn()
+      let sequence = try #require(allocatedSpawn)
+      for (member, index) in stations.enumerated() {
+        var body = saved.bodies[index]
+        let station = try #require(body.nativeStationIdentity)
+        let physical = try #require(body.physical)
+        let allocatedActor = flight.allocateActor()
+        let actor = try #require(allocatedActor)
+        body.id = saved.nextBodyID + member
+        body.physical = .init(
+          identity: actor, population: physical.population, npc: physical.npc,
+          velocity: physical.velocity, laserCooldown: physical.laserCooldown,
+          rock: physical.rock, payload: physical.payload, attackOrigin: physical.attackOrigin,
+          emissionPosition: physical.emissionPosition, deathOrigin: physical.deathOrigin,
+          deathIncidentID: physical.deathIncidentID, ordnance: physical.ordnance,
+          spawnIdentity: .init(
+            system: saved.systemIdentity, visit: flight.visit,
+            sequence: sequence, member: UInt16(member), producer: .mission),
+          blocksNavalEncounter: physical.blocksNavalEncounter,
+          catalogueShipID: physical.catalogueShipID, angularVelocity: physical.angularVelocity,
+          canonicalSpin: physical.canonicalSpin, salvage: physical.salvage,
+          empSource: physical.empSource, empCrewPod: physical.empCrewPod,
+          suspendedNPCIntention: physical.suspendedNPCIntention)
+        expectedBodies[index] = body
+        try world.ledger.rebind(station, to: .init(actor: actor, bodyID: body.id))
+      }
+      expected.flightSimulation = flight
+      expected.nativeStations = world
+    }
     let loaded = GameRuntime()
     try await loaded.load(from: save, persistMigrations: false)
-    #expect(await loaded.snapshot().commander == expected)
+    let restored = await loaded.snapshot()
+    #expect(restored.commander == expected)
+    if !stations.isEmpty {
+      #expect(restored.bodies == expectedBodies)
+      #expect(restored.nextBodyID == saved.nextBodyID + stations.count)
+    }
     return loaded
   }
   func recharge(_ input: consuming Game, expected: Double) throws {
