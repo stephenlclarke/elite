@@ -4198,6 +4198,13 @@
       "next_assigned": "M10.P01.C08",
       "next_queued": "M10.P02.C08",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Root resolved exact seed-ark hull calibration and finite manifest; owning physical prerequisite assigned",
+      "ledger_parent": "M04.H061.units / M10.P01.C08",
+      "owner": "G1",
+      "decision_scope": "SH061 existing approved geometry20metres/authoredunit,40t custodian seed stores,6crew; retain flight stats and real transit/receiving",
+      "usable_build_delivered": false
     }
   ]
 }
