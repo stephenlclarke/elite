@@ -146,6 +146,13 @@ private func moveFractureObserver(_ game: inout Game, to position: Vector3) {
 
 private func nativeFractureGame() throws -> (Game, MiningRock, Int) {
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try #require(
+    game.commander.valid && game.commander.performance.workTools?.contains(.miningLaser) == true)
   try game.commander.prepareEquipment(legacy: false)
   try game.commander.grantEquipment(
     LaserKind.mining.equipmentName, at: .utility(.miningLaser),
