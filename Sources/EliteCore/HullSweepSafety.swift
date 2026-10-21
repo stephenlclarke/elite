@@ -114,6 +114,7 @@ public struct PreparedHull: Sendable {
   fileprivate let nodes: [SweepNode]
   fileprivate let components: [SweepComponent]
   fileprivate let hasUnresolvedSupport: Bool
+  fileprivate let nativeGeometryID = UUID()
 
   public init(mesh: Mesh, maximumTriangles: Int = 20_000) throws {
     guard maximumTriangles > 0, maximumTriangles <= 100_000,
@@ -419,6 +420,16 @@ public enum HullSweepSafety {
       let point = ship.shipPoint(target.systemPoint(component.representative))
       if try contains(point, hull: player, work: &work) { throw HullSweepFailure.insideHull }
     }
+    return try surfaceMeshDistance(
+      player, pose: ship, obstacle: obstacle, pose: target, work: &work)
+  }
+
+  /// Native continuous queries have already proved a clear starting configuration.
+  /// All original triangles remain barriers; this never manufactures an open component's volume.
+  private static func surfaceMeshDistance(
+    _ player: PreparedHull, pose ship: ShipPose, obstacle: PreparedHull, pose target: ShipPose,
+    work: inout SweepWork
+  ) throws -> Double {
     if player.nodes[0].children != nil {
       return try dualMeshDistance(player, pose: ship, obstacle: obstacle, pose: target, work: &work)
     }
@@ -1642,11 +1653,61 @@ private func sweepFindEar(
 /// A continuous proof covers every interval before this bracket. It contains a
 /// certified native intersection, sampled directly or enclosed by a conditioned
 /// material-vertex/face crossing. A sphere overlap is never a contact certificate.
+/// A frontier is minted only after the initial volume check and chronological clear prefix.
+/// It is immutable geometric evidence, not decoded authority; the one mutable bit is lock-owned.
+private final class NativeContactFrontier: @unchecked Sendable {
+  let sourceGeometry: UUID
+  let targetGeometry: UUID
+  let source: ShipPose
+  let target: ShipPose
+  private let lock = NSLock()
+  private var consumed = false
+  init(sourceHull: PreparedHull, targetHull: PreparedHull, source: ShipPose, target: ShipPose) {
+    sourceGeometry = sourceHull.nativeGeometryID
+    targetGeometry = targetHull.nativeGeometryID
+    self.source = source
+    self.target = target
+  }
+  func poses(sourceHull: PreparedHull, targetHull: PreparedHull) -> (
+    source: ShipPose, target: ShipPose
+  )? {
+    lock.lock()
+    defer { lock.unlock() }
+    guard !consumed, sourceGeometry == sourceHull.nativeGeometryID,
+      targetGeometry == targetHull.nativeGeometryID
+    else { return nil }
+    return (source, target)
+  }
+  func take(
+    sourceMotion: HullSceneMotion, sourceHull: PreparedHull,
+    targetMotion: HullSceneMotion, targetHull: PreparedHull
+  ) -> Bool {
+    lock.lock()
+    defer { lock.unlock() }
+    guard !consumed, sourceGeometry == sourceHull.nativeGeometryID,
+      targetGeometry == targetHull.nativeGeometryID,
+      sourceMotion.start == source, targetMotion.start == target
+    else { return false }
+    consumed = true
+    return true
+  }
+}
 struct NativeHullContact: Sendable {
   let lowerTime: Double
   let upperTime: Double
   let point: Vector3
   let normal: Vector3
+  fileprivate let frontier: NativeContactFrontier?
+  fileprivate init(
+    lowerTime: Double, upperTime: Double, point: Vector3, normal: Vector3,
+    frontier: NativeContactFrontier? = nil
+  ) {
+    self.lowerTime = lowerTime
+    self.upperTime = upperTime
+    self.point = point
+    self.normal = normal
+    self.frontier = frontier
+  }
 }
 
 enum NativeHullContactResult: Sendable {
@@ -1663,6 +1724,38 @@ extension HullSweepSafety {
     source: HullSceneMotion, hull: PreparedHull, target: HullSceneMotion,
     targetHull: PreparedHull, budget: HullSweepBudget = .standard
   ) -> NativeHullContactResult {
+    nativeContactQuery(
+      source: source, hull: hull, target: target, targetHull: targetHull,
+      frontier: nil, budget: budget)
+  }
+
+  static func nativeFrontierPoses(
+    _ contact: NativeHullContact, sourceHull: PreparedHull,
+    targetHull: PreparedHull
+  ) -> (source: ShipPose, target: ShipPose)? {
+    contact.frontier?.poses(sourceHull: sourceHull, targetHull: targetHull)
+  }
+
+  /// Only the exact immutable pair/lower poses can spend this single-use native proof.
+  static func continueNativeContact(
+    _ contact: NativeHullContact, source: HullSceneMotion,
+    hull: PreparedHull, target: HullSceneMotion, targetHull: PreparedHull,
+    budget: HullSweepBudget = .standard
+  ) -> NativeHullContactResult {
+    guard let frontier = contact.frontier,
+      frontier.take(
+        sourceMotion: source, sourceHull: hull, targetMotion: target, targetHull: targetHull)
+    else { return .refused(.invalidMotion) }
+    return nativeContactQuery(
+      source: source, hull: hull, target: target, targetHull: targetHull,
+      frontier: frontier, budget: budget)
+  }
+
+  private static func nativeContactQuery(
+    source: HullSceneMotion, hull: PreparedHull,
+    target: HullSceneMotion, targetHull: PreparedHull, frontier: NativeContactFrontier?,
+    budget: HullSweepBudget
+  ) -> NativeHullContactResult {
     var work = SweepWork(budget: budget)
     do {
       try validateMotion(source, player: hull, budget: budget)
@@ -1671,13 +1764,29 @@ extension HullSweepSafety {
         target.requiredClearance == 0
       else { throw HullSweepFailure.invalidMotion }
       try work.query()
-      let initial = try meshDistance(
-        hull, pose: source.start, obstacle: targetHull,
-        pose: target.start, work: &work)
+      let initial: Double
+      if frontier != nil {
+        initial = try surfaceMeshDistance(
+          hull, pose: source.start, obstacle: targetHull,
+          pose: target.start, work: &work)
+      } else {
+        initial = try meshDistance(
+          hull, pose: source.start, obstacle: targetHull,
+          pose: target.start, work: &work)
+      }
       guard initial > 1e-9 else { throw HullSweepFailure.unproven }
-      return try contactInterval(
+      let result = try contactInterval(
         source, hull: hull, target: target, targetHull: targetHull,
         start: 0, end: source.duration, depth: 0, known: nil, work: &work)
+      guard case .contact(let contact) = result else { return result }
+      let proof = NativeContactFrontier(
+        sourceHull: hull, targetHull: targetHull,
+        source: shipPose(source, at: contact.lowerTime),
+        target: shipPose(target, at: contact.lowerTime))
+      return .contact(
+        .init(
+          lowerTime: contact.lowerTime, upperTime: contact.upperTime,
+          point: contact.point, normal: contact.normal, frontier: proof))
     } catch let failure as HullSweepFailure {
       return .refused(failure)
     } catch {
@@ -1703,7 +1812,8 @@ extension HullSweepSafety {
     let b = shipPose(target, at: middle)
     let separation: Double
     do {
-      separation = try meshDistance(hull, pose: a, obstacle: targetHull, pose: b, work: &work)
+      separation = try surfaceMeshDistance(
+        hull, pose: a, obstacle: targetHull, pose: b, work: &work)
     } catch HullSweepFailure.insideHull {
       // Containment is an overlap, but only the witness below authorizes an effect.
       separation = 0
@@ -1733,6 +1843,13 @@ extension HullSweepSafety {
     // A bounded time bracket is allowed only when it contains a proved intersection.
     // Otherwise a tiny/thin/ill-conditioned crossing refuses movement; it is not a miss.
     if depth >= work.budget.subdivisionDepth {
+      if try translatedTrianglesClear(
+        source, hull: hull, target: target,
+        targetHull: targetHull, start: start, end: end, work: &work)
+      {
+        guard witness == nil || witness!.upperTime > end else { throw HullSweepFailure.unproven }
+        return .clear
+      }
       if let axial = try axialVertexInterval(
         source, hull: hull, target: target, targetHull: targetHull,
         start: start, end: end, work: &work)
@@ -1784,6 +1901,119 @@ extension HullSweepSafety {
         start: middle, end: end, depth: depth + 1, known: rightWitness, work: &work)
     case .contact, .refused: return left
     }
+  }
+
+  /// Fixed orientations admit a direct interval certificate for every actual triangle pair.
+  /// An axis is only a hint: outward projections, including coplanar in-plane axes, grant clearance.
+  private static func translatedTrianglesClear(
+    _ source: HullSceneMotion, hull: PreparedHull,
+    target: HullSceneMotion, targetHull: PreparedHull, start: Double, end: Double,
+    work: inout SweepWork
+  ) throws -> Bool {
+    guard source.worldAngularVelocity == .init(0, 0, 0),
+      target.worldAngularVelocity == .init(0, 0, 0), source.acceleration == target.acceleration
+    else { return false }
+    try work.query()
+    let time = SweepInterval(lower: start, upper: end)
+    let relative =
+      SweepIntervalVector(target.start.position) - SweepIntervalVector(source.start.position)
+      + (SweepIntervalVector(target.initialVelocity) - SweepIntervalVector(source.initialVelocity))
+      * time
+    let middle = (start + end) * 0.5
+    let numerical =
+      64 * Double.ulpOfOne
+      * max(
+        1,
+        hull.radius + targetHull.radius
+          + shipPose(source, at: middle).position.length
+          + shipPose(target, at: middle).position.length
+          + (source.initialVelocity.length + target.initialVelocity.length) * (end - start)
+          + (source.acceleration.length + target.acceleration.length) * (end - start)
+          * (end - start))
+    guard numerical.isFinite else { return false }
+    func point(_ local: Vector3, orientation: Basis3) -> SweepIntervalVector {
+      SweepIntervalVector(orientation.x) * SweepInterval(local.x)
+        + SweepIntervalVector(orientation.y) * SweepInterval(local.y)
+        + SweepIntervalVector(orientation.z) * SweepInterval(local.z)
+    }
+    func bounds(_ box: SweepBounds, orientation: Basis3, offset: SweepIntervalVector) -> SweepBounds
+    {
+      let local = SweepIntervalVector(
+        x: .init(lower: box.lower.x, upper: box.upper.x),
+        y: .init(lower: box.lower.y, upper: box.upper.y),
+        z: .init(lower: box.lower.z, upper: box.upper.z))
+      let world =
+        SweepIntervalVector(orientation.x) * local.x
+        + SweepIntervalVector(orientation.y) * local.y + SweepIntervalVector(orientation.z)
+        * local.z + offset
+      return .init(
+        lower: .init(world.x.lower, world.y.lower, world.z.lower),
+        upper: .init(world.x.upper, world.y.upper, world.z.upper))
+    }
+    let zero = SweepIntervalVector(.init(0, 0, 0))
+    var pending = [(0, 0)]
+    while let (leftIndex, rightIndex) = pending.popLast() {
+      try work.node()
+      try work.node()
+      let left = hull.nodes[leftIndex]
+      let right = targetHull.nodes[rightIndex]
+      let aBounds = bounds(left.bounds, orientation: source.start.orientation, offset: zero)
+      let bBounds = bounds(right.bounds, orientation: target.start.orientation, offset: relative)
+      guard aBounds.finite, bBounds.finite else { return false }
+      let lower = aBounds.certifiedLowerSquared(to: bBounds)
+      let upper = SweepInterval(numerical).square.upper
+      if lower.isFinite, upper.isFinite, lower > upper { continue }
+      if let children = left.children {
+        pending += [(children.0, rightIndex), (children.1, rightIndex)]
+      } else if let children = right.children {
+        pending += [(leftIndex, children.0), (leftIndex, children.1)]
+      } else {
+        for aIndex in left.triangles {
+          let a = hull.triangles[aIndex]
+          for bIndex in right.triangles {
+            try work.triangle()
+            let b = targetHull.triangles[bIndex]
+            guard !a.unresolvedSupport, !b.unresolvedSupport else { return false }
+            let av = (0..<3).map { point(a.vertex(at: $0), orientation: source.start.orientation) }
+            let bv = (0..<3).map {
+              point(b.vertex(at: $0), orientation: target.start.orientation) + relative
+            }
+            let ae = (0..<3).map {
+              source.start.orientation.apply(a.edge(at: $0).1 - a.edge(at: $0).0)
+            }
+            let be = (0..<3).map {
+              target.start.orientation.apply(b.edge(at: $0).1 - b.edge(at: $0).0)
+            }
+            let an = ae[0].cross(ae[1])
+            let bn = be[0].cross(be[1])
+            var axes = [an, bn]
+            axes += ae.flatMap { first in be.map { first.cross($0) } }
+            axes += ae.map { an.cross($0) } + be.map { bn.cross($0) }
+            var separated = false
+            for candidate in axes {
+              let length = candidate.length
+              guard candidate.finite, length.isFinite, length > 0 else { continue }
+              let axis = SweepIntervalVector(candidate * (1 / length))
+              let ap = av.map { $0.dot(axis) }
+              let bp = bv.map { $0.dot(axis) }
+              let aLow = ap.map(\.lower).min() ?? -.infinity
+              let aHigh = ap.map(\.upper).max() ?? .infinity
+              let bLow = bp.map(\.lower).min() ?? -.infinity
+              let bHigh = bp.map(\.upper).max() ?? .infinity
+              let gap = max(
+                (SweepInterval(bLow) - SweepInterval(aHigh)).lower,
+                (SweepInterval(aLow) - SweepInterval(bHigh)).lower)
+              if gap.isFinite, gap > numerical {
+                separated = true
+                break
+              }
+            }
+            guard separated else { return false }
+          }
+        }
+      }
+    }
+    return true
   }
 
   /// Projects every native vertex onto an actual contact axis. The translational
