@@ -282,10 +282,14 @@ extension Display {
     for (index, line) in lines.prefix(2).enumerated() {
       frame.label(line, bounds.x, bounds.y + Double(index) * 14, scale: font, ink: .yellow)
     }
-    guard let mesh = ship.previewMesh
+    let physicalSource =
+      game.showroom.sourceProfiles
+      && game.showroomProfile?.group == "original-physical-metres"
+    guard let mesh = physicalSource ? ship.physicalSourcePreview : ship.previewMesh
     else {
       frame.label(
-        "Model unavailable", bounds.x + 4, bounds.y + bounds.height / 2,
+        physicalSource ? "Physical model unavailable" : "Model unavailable", bounds.x + 4,
+        bounds.y + bounds.height / 2,
         scale: font, ink: .orange)
       return
     }
@@ -314,7 +318,8 @@ extension Display {
       draw(body, game: preview, into: &frame, projection: projection, mesh: mesh)
     }
     frame.flightClip = clip
-    let caption = mode.caption.map { $0 + " / " + ship.name } ?? ship.name
+    let modelName = physicalSource ? ship.originalDefinition?.name ?? ship.name : ship.name
+    let caption = mode.caption.map { $0 + " / " + modelName } ?? modelName
     for (index, line) in ShowroomText.wrap(caption, width: columns).prefix(2).enumerated() {
       frame.label(line, bounds.x, bounds.maxY - 28 + Double(index) * 14, scale: font, ink: .cyan)
     }

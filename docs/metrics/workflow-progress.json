@@ -2910,6 +2910,16 @@
       "github_run": 39660461481,
       "unit_status": "pending",
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-21T19:30:57Z",
+      "event": "Comparison-rating correction source pushed; MBA review assigned",
+      "ledger_parent": "M04.P01.rating",
+      "head": "a139ae9051e308b03076464d6234d75c188eab4a",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6324722915",
+      "github_run": 39662206102,
+      "unit_status": "pending",
+      "usable_build_delivered": false
     }
   ]
 }
