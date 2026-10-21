@@ -22,6 +22,12 @@ Initial snapshot,21 October16:36:52UTC: two game-code packets pushed (one fix an
 
 Do not infer a speedup from this short early sample or extrapolate it to a daily rate. Review the first comparable24-hour window and at least five reviewed product packets with unit outcomes before judging direction; keep observations visible before then. If packet sizes change, compare parent-capability advancement too. Do not claim a billed-credit saving without project-scoped billing evidence.
 
+## Latest observed checkpoint
+
+At21 October18:39:27UTC, the cohort has11 product source packets (six feature, five fix), including two inherited packets and two corrective rework packets. Ten have independent source review and relevant maintained GitHub units verified. The latest exact-head fleet-discovery run passed48methods/70expandedcases; these are component results, not whole-game acceptance. CI setup, shared-binding refactoring and warning maintenance are excluded from product throughput.
+
+No new usable build or published release has been delivered in this cohort. Automated review returned a generic service error and remains unresolved; it does not stop the developer. The current developer assignment is the ledger’s Glass Meridian opening, with later campaign stages still outstanding. This short window does not establish a causal speedup.
+
 ## Lightweight maintenance
 
 Batch JSON updates at natural packet boundaries, meaningful delivery changes and the existing daily hygiene review, deduplicated by SHA, review URL or run ID. Use the single PR handoff, review/finding issues, Actions results and ledger transitions; issue23 records are historical. Do not create a separate commit or dossier for every review or CI transition. No builds, tests, new worker or extra developer form is needed for measurement. Keep the prior snapshot; report changes since the last snapshot and window-to-window comparisons when asked or a meaningful milestone changes.
