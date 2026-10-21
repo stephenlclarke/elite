@@ -59,11 +59,16 @@ extension Game {
     guard var state = commander.scriptState.instances[id], let leaf = state.savedFieldRelief,
       leaf.owner == utility.owner, leaf.job.id == job.id
     else { throw SaveError.invalidCommander }
-    // A surviving held batch can be retired after its target-loss failure. Its terminal
-    // receipt and first clue history are immutable; the native ledger records the later return.
+    // Later native custody changes do not rewrite the original mission failure or clue history.
     if state.outcome != .active {
-      guard action == .returnMaterials, state.outcome == .failed,
-        leaf.terminalReason == "targetDestroyed", job.phase == .returned
+      let targetVisit = commander.nativeStations?.ledger.records.first {
+        $0.identity == utility.target
+      }?.tombstone?.destroyedBinding.actor.visit
+      guard previous.consignments.last == leaf.job,
+        WayfarerFieldReliefRetirement.permits(
+          state, native: job, action: action, targetVisit: targetVisit,
+          currentVisit: commander.flightSimulation.visit,
+          physicalTime: commander.flightSimulation.physicalTime)
       else { throw SaveError.invalidCommander }
       return
     }
@@ -76,7 +81,9 @@ extension Game {
       state.milestones.insert(1)
       state.revision = try fieldReliefRevision(state.revision)
       state.acknowledge(try fieldReliefSequence())
-      state.journal.append("The original materials are installed. Ask the current engineer to inspect them; installation alone pays nothing.")
+      state.journal.append(
+        "The original materials are installed. Ask the current engineer to inspect them; installation alone pays nothing."
+      )
       commander.scriptState.instances[id] = state
       return
     }
@@ -91,7 +98,9 @@ extension Game {
     } else if action == nil, job.phase == .lost, let loss = job.loss {
       outcome = .failed
       reason = loss.cause.rawValue
-    } else { throw SaveError.invalidCommander }
+    } else {
+      throw SaveError.invalidCommander
+    }
     try finishFieldRelief(state, job: job, outcome: outcome, reason: reason)
   }
 
@@ -165,7 +174,8 @@ extension GameRuntime {
   func commitFieldReliefTargetLoss() {
     guard let utility = game.commander.nativeUtility,
       utility.consignments.contains(where: {
-        game.commander.scriptState.instances[WayfarerFieldRelief.instance($0.id)]?.outcome == .active
+        game.commander.scriptState.instances[WayfarerFieldRelief.instance($0.id)]?.outcome
+          == .active
       }),
       game.commander.nativeStations?.ledger.records.contains(where: {
         $0.identity == utility.target && $0.tombstone != nil

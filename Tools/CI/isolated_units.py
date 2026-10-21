@@ -13,6 +13,12 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "WayfarerFieldReliefRetirementUnitTests": (
+        "laterRealLossRetiresHeldOriginalsWithoutChangingTheFailedMission",
+        "lostCargoRequiresActualCauseEnergyAndBoundedNativeTimeAndVisit",
+        "custodyJoinRejectsReplacementBatchesAndPreviouslyInstalledMaterials",
+        "laterUnpaidReturnAndLossRoundTripKeepTheOriginalReceiptAndClosedSchema",
+    ),
     "NativeWayfarerInductionUnitTests": (
         "inductionRequiresAnOwnedRecordedSaleOrActualCompletedDeliveryAndNeverAGenericFlag",
         "clinicPickupNeedsFreeHoldAndTheExactLaterRenasSourceAndCannotReissueTheOriginal",

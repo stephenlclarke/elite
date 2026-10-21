@@ -4069,6 +4069,39 @@
       "ready_findings": 1,
       "fix_sha": null,
       "evidence_scope": "source-proven terminal/native custody join; no new runtime execution"
+    },
+    {
+      "at": "2026-10-21T20:37:07Z",
+      "event": "Wayfarer induction and timed clinic pickup pushed; MBA review assigned; primary developer moves to issue34",
+      "ledger_parent": "C08.P01",
+      "head": "84c733dea8c5d3da8d5a50ae6b5779b53e69b46b",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326000742",
+      "github_run": 39671764452,
+      "unit_status": "failed compilation before any units; issue35",
+      "source_review": "MBA completed exact delta and necessary callers; no additional actionable defect; hosted units pending",
+      "product_packets_pushed": 18,
+      "feature_packets": 11,
+      "fix_packets": 7,
+      "ready_findings": 2,
+      "usable_build_delivered": false,
+      "scope": "Opening stages1\u20132 only; stages3\u201314, accreditation, final reward and clue remain outstanding"
+    },
+    {
+      "observed_at": "2026-10-21T20:41:55.468660+00:00",
+      "event": "C08 hosted compilation failed; bounded issue-only helper assigned while G1 retains34",
+      "issue": "https://github.com/stephenlclarke/elite/issues/35",
+      "severity": "P1",
+      "head": "84c733dea8c5d3da8d5a50ae6b5779b53e69b46b",
+      "github_run": 39671764452,
+      "ledger_parent": "C08.P01.I35",
+      "executed_units": 0,
+      "ready_findings": 1,
+      "fix_sha": "28e2c30ed0779a2ebf56cf58f0e2aaf2c4bea22a",
+      "fix_pr": "https://github.com/stephenlclarke/elite/pull/36",
+      "verification_status": "awaiting MBA; no actual compile/unit pass yet",
+      "owner_status": "helper pushed; G1 composition pending",
+      "source_review": "MBA exact three-path delta reviewed; no actionable finding",
+      "github_fix_run": 39672677427
     }
   ]
 }

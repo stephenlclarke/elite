@@ -91,10 +91,10 @@ enum WayfarerFieldReliefSave {
       board.revision == 0, board.seed == 0, board.clock == .local, board.period == 3600,
       board.offers.count == jobs.count, board.valid
     else { return false }
-    let targetDead =
-      commander.nativeStations?.ledger.records.first(where: {
-        $0.identity == utility.target
-      })?.tombstone != nil
+    let targetVisit = commander.nativeStations?.ledger.records.first {
+      $0.identity == utility.target
+    }?.tombstone?.destroyedBinding.actor.visit
+    let targetDead = targetVisit != nil
     for job in jobs {
       guard let state = engine.instances[WayfarerFieldRelief.instance(job.id)],
         let leaf = state.savedFieldRelief,
@@ -124,7 +124,10 @@ enum WayfarerFieldReliefSave {
           accepted.status = .accepted(state.id)
           return $0 == accepted
         }),
-        joinedJob(leaf, native: job, targetDead: targetDead),
+        WayfarerFieldReliefRetirement.joins(
+          leaf, native: job, targetVisit: targetVisit,
+          currentVisit: commander.flightSimulation.visit,
+          physicalTime: commander.flightSimulation.physicalTime),
         stateValid(
           state, job: job, targetDead: targetDead, engine: engine,
           requireRecordedLoss: requireRecordedLoss)
@@ -133,23 +136,7 @@ enum WayfarerFieldReliefSave {
     return true
   }
 
-  private static func joinedJob(
-    _ leaf: WayfarerFieldReliefCustody, native: NativeUtilityConsignment, targetDead: Bool
-  ) -> Bool {
-    if leaf.job == native { return true }
-    // Only an already failed, still-held original may subsequently return unpaid.
-    guard leaf.terminalReason == "targetDestroyed", targetDead,
-      leaf.job.phase == .held, native.phase == .returned, native.returned != nil
-    else {
-      return false
-    }
-    var historical = native
-    historical.phase = .held
-    historical.returned = nil
-    return historical == leaf.job
-  }
-
-  private static func stateValid(
+  static func stateValid(
     _ state: borrowing ScriptInstance, job: NativeUtilityConsignment, targetDead: Bool,
     engine: borrowing ScriptEngineState, requireRecordedLoss: Bool
   ) -> Bool {
@@ -198,8 +185,9 @@ enum WayfarerFieldReliefSave {
         && contract.settlementAmount == 0 && state.milestones == [0]
         && receipt.causeKind == "mission.receipted"
     case "targetDestroyed":
-      return state.outcome == .failed && targetDead && job.reception == nil && job.loss == nil
-        && [.held, .installed, .returned].contains(job.phase)
+      return state.outcome == .failed && targetDead && job.reception == nil
+        && [.held, .installed].contains(leaf.job.phase)
+        && [.held, .installed, .returned, .lost].contains(job.phase)
         && contract.settlementAmount == 0 && state.milestones == milestones
         && receipt.causeKind == "mission.receipted"
     default: return false
