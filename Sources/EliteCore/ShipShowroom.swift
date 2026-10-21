@@ -52,7 +52,7 @@ extension Game {
   }
   var showroomProfiles: [ShipProfile] {
     if !showroom.sourceProfiles { return selectedGameProfile.map { [$0] } ?? [] }
-    return showroomShip?.profiles ?? []
+    return showroomShip?.sourceProfilesIncludingOriginal ?? []
   }
   public var showroomBaseline: CatalogueShip? {
     ShipCatalogue.ship(showroom.baselineUsesCurrent ? commander.shipID : showroom.baseline)
@@ -67,7 +67,9 @@ extension Game {
       guard let ship = showroomBaseline, ship.game != nil else { return nil }
       return commander.projectedGameShipProfile(to: ship.id)
     }
-    return showroomBaseline?.profiles.first { $0.group == showroomProfile?.group }
+    return showroomBaseline?.sourceProfilesIncludingOriginal.first {
+      $0.group == showroomProfile?.group
+    }
   }
   public var showroomComparison: [ShipComparisonRow] {
     let selected = showroomProfile

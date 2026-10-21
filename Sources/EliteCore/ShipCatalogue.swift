@@ -35,9 +35,19 @@ public struct CatalogueShip: Codable, Sendable, Equatable, Identifiable {
   public let nativeHull: Hull?
   public let nativeDesign: ShipDesign?
   public let nativeCombat: NativeCombat?
+  public var originalDefinition: OriginalFleetDefinition? {
+    ShipCatalogue.originalDefinition(for: id)
+  }
+  var sourceProfilesIncludingOriginal: [ShipProfile] {
+    guard let original = ShipCatalogue.originalSourceProfile(for: id) else { return profiles }
+    return profiles + [original]
+  }
   public var searchText: String {
-    ([id, name, shipClass, appearances, evidence] + (catalogue.aliases ?? [])).joined(
-      separator: " ")
+    var terms = [id, name, shipClass, appearances, evidence] + (catalogue.aliases ?? [])
+    if let original = originalDefinition {
+      terms += [original.name, original.family, original.role, original.purchasePolicy]
+    }
+    return terms.joined(separator: " ")
   }
   public var previewMesh: Mesh? { ShipCatalogue.meshes[id] }
   public var availability: String {
@@ -155,6 +165,14 @@ public enum ShipCatalogue {
   private static let byID = Dictionary(uniqueKeysWithValues: all.map { ($0.id, $0) })
   public static func ship(_ id: String) -> CatalogueShip? { byID[id] }
   static func containsShip(_ id: String) -> Bool { byID.index(forKey: id) != nil }
+  /// The authored source join never falls back to the current native performance table.
+  public static func originalDefinition(for id: String) -> OriginalFleetDefinition? {
+    OriginalFleetDefinitionData.definition(for: id)
+  }
+  private static let originalSourceProfiles = Dictionary(
+    uniqueKeysWithValues:
+      OriginalFleetDefinitionData.staged.map { ($0.id, $0.sourceProfile) })
+  static func originalSourceProfile(for id: String) -> ShipProfile? { originalSourceProfiles[id] }
   public static var modelCount: Int { all.count }
   private static let resources: Bundle =
     Bundle.main.resourceURL.flatMap {
