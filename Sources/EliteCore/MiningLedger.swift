@@ -623,9 +623,19 @@ public struct MiningLedger: Equatable, Codable, Sendable {
 
   private func yield(for rock: MiningRock) -> [TypedCargoPayload] {
     if let chunk = AsteroidBeltDefinition.chunk(for: rock.identity) {
+      let radius = Mesh.hull(.cargo).vertices.map(\.length).max() ?? 0
+      let spacing = 2 * radius + 16
+      let columns = min(5, chunk.units)
+      let rows = chunk.units / columns
+      // Expand symmetrically about the original birth centroid, preserving every velocity.
+      let center = Vector3(Double(columns - 1) * 6, Double(rows - 1) * 6, 10)
       return (0..<chunk.units).map { (index: Int) -> TypedCargoPayload in
         let amount = CommodityAmount(commodity: chunk.content.commodity, quantity: 1)
-        let offset = Vector3(Double(index % 5) * 12, Double(index / 5) * 12, 10)
+        let offset =
+          center
+          + Vector3(
+            (Double(index % columns) - Double(columns - 1) / 2) * spacing,
+            (Double(index / columns) - Double(rows - 1) / 2) * spacing, 0)
         let position: Vector3 = rock.position + offset
         let velocity = Vector3(Double(index % 5), 2, 3)
         return TypedCargoPayload(

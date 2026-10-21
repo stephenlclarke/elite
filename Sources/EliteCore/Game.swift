@@ -762,6 +762,7 @@ public struct Game: Sendable {
   var workGuidance: FlightWorkGuidance?
   var workBraking: FlightWorkBraking?
   var workRecoveryRock: RockIdentity?
+  var workRecoveryAdmissionDeadline: Double?
   var approvedWorkMotion: HullSceneMotion?
   var lastAppliedWorkMotion: HullSceneMotion?
   var plannedLegacyWorkMotion: [Int: HullSweepObstacle] = [:]

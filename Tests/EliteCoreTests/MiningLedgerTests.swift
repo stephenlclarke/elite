@@ -314,3 +314,71 @@ struct MiningLedgerTests {
   }
 
 }
+
+extension MiningLedgerTests {
+  @Test(arguments: Array(0..<AsteroidBeltDefinition.chunkUnits.count))
+  func nativeChunkBirthLayoutPreservesIssuedMassCentroidAndMomentum(index: Int) throws {
+    let identity = RockIdentity(
+      system: system, field: index == 4 ? 5 : 4, rock: index == 4 ? 0 : UInt16(index))
+    let chunk = try #require(AsteroidBeltDefinition.chunk(for: identity))
+    let source = MiningRock(
+      identity: identity, position: .init(10000.25, -20000.5, 30000.75),
+      radius: chunk.radius, energy: chunk.energy)
+    var ledger = MiningLedger(seed: 42)
+    guard
+      case .extracted(let pods) = ledger.hit(
+        rock: source, incident: incident(1), damage: chunk.energy)
+    else {
+      Issue.record("Actual native chunk did not release its full output")
+      return
+    }
+    let radius = try #require(Mesh.hull(.cargo).vertices.map(\.length).max())
+    #expect(pods.count == chunk.units && Set(pods.map(\.identity)).count == chunk.units)
+    var positionSum = Vector3(0, 0, 0)
+    var oldPositionSum = Vector3(0, 0, 0)
+    var momentum = Vector3(0, 0, 0)
+    var oldMomentum = Vector3(0, 0, 0)
+    var angular = Vector3(0, 0, 0)
+    var oldAngular = Vector3(0, 0, 0)
+    for (i, pod) in pods.enumerated() {
+      let velocity = Vector3(Double(i % 5), 2, 3)
+      let oldOffset = Vector3(Double(i % 5) * 12, Double(i / 5) * 12, 10)
+      #expect(pod.identity == .ore(identity, fragment: UInt16(i)))
+      #expect(pod.amount == .init(commodity: chunk.content.commodity, quantity: 1))
+      #expect(pod.velocity == velocity && pod.position.finite)
+      positionSum = positionSum + (pod.position - source.position)
+      oldPositionSum = oldPositionSum + oldOffset
+      momentum = momentum + pod.velocity
+      oldMomentum = oldMomentum + velocity
+      angular = angular + (pod.position - source.position).cross(pod.velocity)
+      oldAngular = oldAngular + oldOffset.cross(velocity)
+      for other in pods.dropFirst(i + 1) {
+        #expect((pod.position - other.position).length > 2 * radius + 8)
+      }
+    }
+    #expect((positionSum - oldPositionSum).length < 1e-7)
+    #expect(momentum == oldMomentum && (angular - oldAngular).length < 1e-6)
+    if chunk.units == 20 {
+      #expect(chunk.content.commodity == .minerals)
+      #expect(pods.reduce(0) { $0 + $1.amount.quantity } == 20)
+      #expect(pods.reduce(0) { $0 + $1.amount.tonnes } == 20)
+    }
+    let saved = try JSONEncoder().encode(ledger)
+    let cold = try JSONDecoder().decode(MiningLedger.self, from: saved)
+    #expect(cold.pendingPayloads == ledger.pendingPayloads)
+    let retained = ledger.pendingPayloads
+    let nextIdentity = RockIdentity(system: system, field: 6, rock: UInt16(index))
+    let nextChunk = try #require(AsteroidBeltDefinition.chunk(for: nextIdentity))
+    let nextRock = MiningRock(
+      identity: nextIdentity, position: .init(50000, 60000, 70000),
+      radius: nextChunk.radius, energy: nextChunk.energy)
+    guard
+      case .extracted = ledger.hit(
+        rock: nextRock, incident: incident(2), damage: nextChunk.energy)
+    else {
+      Issue.record("Second genuine chunk was not extracted")
+      return
+    }
+    for pod in retained { #expect(ledger.pendingPayloads.contains(pod)) }
+  }
+}
