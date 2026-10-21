@@ -63,10 +63,7 @@ public struct ChartLayout: Sendable {
       height: min(320, height - (local ? 80 : 132)))
   }
   public var searchRows: Int { max(1, Int((searchRect.height - 36) / 22)) }
-  public init(
-    width: Double, height: Double, local: Bool, fuel: Int = 70, docked: Bool = false,
-    plotOverride: CanvasRect? = nil
-  ) {
+  public init(width: Double, height: Double, local: Bool, fuel: Int = 70, docked: Bool = false) {
     self.width = width
     self.height = height
     self.local = local
@@ -77,11 +74,9 @@ public struct ChartLayout: Sendable {
     let flightNarrowFooter = local ? 320.0 : 270.0
     let dockedNarrowFooter = local ? 440.0 : 380.0
     let narrowFooter = docked ? dockedNarrowFooter : flightNarrowFooter
-    plot =
-      plotOverride
-      ?? .init(
-        x: 16, y: local ? 58 : 96, width: width - (wide ? 336 : 32),
-        height: max(80, height - (wide ? wideFooter : narrowFooter) - (local ? 0 : 38)))
+    plot = .init(
+      x: 16, y: local ? 58 : 96, width: width - (wide ? 336 : 32),
+      height: max(80, height - (wide ? wideFooter : narrowFooter) - (local ? 0 : 38)))
     scale =
       local
       ? min(
@@ -160,10 +155,6 @@ extension Game {
     }
   }
   public mutating func mapClick(x: Double, y: Double) {
-    if screen == .navigation {
-      navigationClick(x: x, y: y)
-      return
-    }
     guard screen == .chart || screen == .shortChart else { return }
     let layout = ChartLayout(
       width: viewportWidth, height: viewportHeight, local: screen == .shortChart,
@@ -273,9 +264,6 @@ extension Display {
         frame.stroke(point.x, point.y + radius + 3, point.x, point.y + radius + 9, .white)
       }
     }
-    if game.mapIsCurrentGalaxy, let plan = game.commander.navigationPlan {
-      routePath(plan, game: game, layout: layout, style: 0, ink: .cyan, into: &frame)
-    }
     frame.worldGraphics = frame.graphics
     frame.graphics = []
     var occupied: [CanvasRect] = []
@@ -307,30 +295,8 @@ extension Display {
     if game.messageTime > 0 {
       frame.label(game.message, 16, height - 40, scale: layout.font, ink: .orange)
     }
-    activeRouteBanner(game, layout: layout, into: &frame)
     if game.mapSearch.active { searchDropdown(game, layout: layout, into: &frame) }
     return frame
-  }
-  private static func activeRouteBanner(_ game: Game, layout: ChartLayout, into frame: inout Frame)
-  {
-    guard game.mapIsCurrentGalaxy, let plan = game.commander.navigationPlan, plan.valid else {
-      return
-    }
-    let rect = CanvasRect(
-      x: layout.plot.x, y: layout.plot.y, width: layout.plot.width, height: 20)
-    frame.labels.removeAll { $0.bounds.overlaps(rect) }
-    frame.graphics.append(
-      .panel(
-        .init(
-          vertices: [
-            .init(rect.x, rect.y), .init(rect.maxX, rect.y),
-            .init(rect.maxX, rect.maxY), .init(rect.x, rect.maxY),
-          ], colour: Ink.black.rawValue)))
-    let next = plan.nextSystem.map { " / NEXT: " + game.systems[$0].name } ?? " / ARRIVED"
-    let text = "ACTIVE ROUTE: " + game.systems[plan.destination].name + next
-    frame.label(
-      String(text.prefix(Int((rect.width - 16) / (6 * layout.font)))),
-      rect.x + 8, rect.y + 5, scale: layout.font, ink: .cyan)
   }
   private static func chartLabel(
     _ system: StarSystem, game: Game, layout: ChartLayout, markerBoxes: [CanvasRect],

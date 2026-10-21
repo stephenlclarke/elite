@@ -4,6 +4,7 @@ import Testing
 
 @Test func cockpitKeepsLabelsReadableWithinWindowAndUsesFullWidth() {
   var game = Game(executive: false)
+  game.commander.shipDisplayStyle = .whiteWireframe
   game.launch()
   game.bodies[1].position = .init(0, 0, 500)
   for width in [512.0, 768, 1024, 1512, 2560] {

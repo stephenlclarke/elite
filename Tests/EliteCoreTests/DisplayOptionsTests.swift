@@ -5,7 +5,7 @@ import Testing
 
 @Test func xyzzyFitsClarkeAndCyclesDisplayWhilePreservingProgress() async throws {
   var game = Game(executive: false)
-  #expect(game.commander.name == "JAMESON" && game.commander.shipDisplayStyle == .whiteWireframe)
+  #expect(game.commander.name == "JAMESON" && game.commander.shipDisplayStyle == .shadedPanels)
   game.key("return")
   game.launch()
   game.commander.credits = 1234
@@ -43,7 +43,7 @@ import Testing
 @Test func displayStyleDecodingAcceptsOldSavesAndRejectsUnknownStyles() throws {
   let legacy = try JSONEncoder().encode(Commander())
   let old = try JSONDecoder().decode(Commander.self, from: legacy)
-  #expect(old.shipDisplayStyle == .whiteWireframe && old == Commander())
+  #expect(old.shipDisplayStyle == .shadedPanels && old == Commander())
   var object = try #require(JSONSerialization.jsonObject(with: legacy) as? [String: Any])
   object["displayStyle"] = "unsupported"
   let invalid = try JSONSerialization.data(withJSONObject: object)

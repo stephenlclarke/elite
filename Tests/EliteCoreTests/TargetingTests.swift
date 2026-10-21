@@ -99,7 +99,9 @@ private func computerGame(_ tier: TargetingTier) -> Game {
     #expect((info?.fields.contains { $0.label == "Missiles" } ?? false) == (tier == .military))
     if tier == .military {
       #expect(info?.fields.first { $0.label == "Missiles" }?.value == "2")
-      #expect(info?.fields.first { $0.label == "Shields" }?.value == "Unavailable")
+      #expect(info?.fields.first { $0.label == "Front shield" }?.value == "Unknown")
+      #expect(info?.fields.first { $0.label == "Rear shield" }?.value == "Unknown")
+      #expect(info?.fields.first { $0.label == "Fuel" }?.value == "Unknown")
       game.ecmFrames = 20
       game.enemyECMSource = 17
       #expect(game.targetInformation?.fields.first { $0.label == "ECM active" }?.value == "Yes")
@@ -113,6 +115,7 @@ private func computerGame(_ tier: TargetingTier) -> Game {
 }
 @Test func targetCameraIsLiveBoundedAndIndependentOfPlayerViewAndSimulation() {
   var game = computerGame(.military)
+  game.commander.shipDisplayStyle = .whiteWireframe
   game.bodies = [.init(id: 1, hull: .cobra, position: .init(0, 0, 1000))]
   game.key("r")
   game.screen = .rear

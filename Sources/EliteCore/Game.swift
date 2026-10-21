@@ -8,6 +8,27 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  private var savedFlightSimulation: FlightSimulationState?
+  public var flightSimulation: FlightSimulationState {
+    get { savedFlightSimulation ?? FlightSimulationState() }
+    set { savedFlightSimulation = newValue }
+  }
+  private var savedCrimeLedger: CrimeLedger?
+  public var crimeLedger: CrimeLedger {
+    get { savedCrimeLedger ?? CrimeLedger() }
+    set { savedCrimeLedger = newValue }
+  }
+  private var savedStationSecurity: StationSecurity?
+  public var stationSecurity: StationSecurity {
+    get { savedStationSecurity ?? StationSecurity() }
+    set { savedStationSecurity = newValue }
+  }
+  public var encounterDirector: EncounterDirector?
+  private var savedMiningLedger: MiningLedger?
+  public var miningLedger: MiningLedger {
+    get { savedMiningLedger ?? MiningLedger() }
+    set { savedMiningLedger = newValue }
+  }
   private var savedMissionProgress: [String: MissionProgress]?
   public var missionProgress: [String: MissionProgress] {
     get { savedMissionProgress ?? [:] }
@@ -112,7 +133,7 @@ public struct Commander: Sendable, Equatable, Codable {
     set { navalMission = newValue }
   }
   public var shipDisplayStyle: ShipDisplayStyle {
-    get { displayStyle ?? .whiteWireframe }
+    get { displayStyle ?? .shadedPanels }
     set { displayStyle = newValue }
   }
   mutating func migrateLegacyXYZzyMounts() {
@@ -151,6 +172,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
+      && (savedFlightSimulation?.valid ?? true)
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -251,6 +273,8 @@ public struct Game: Sendable {
   public var chartInformationScroll = 0
   public var market = MarketItem.generate(economy: 5, fluctuation: 0)
   public var bodies: [SpaceBody] = []
+  public var miningFields: [MiningField] = []
+  var gameplayRevision: UInt64 = 0
   public var starfield = Starfield()
   public var speed = 0.0
   public var pitch = 0.0
@@ -261,6 +285,7 @@ public struct Game: Sendable {
   public var viewportWidth = 768.0
   public var viewportHeight = 768.0
   public var targetPanelExpanded: Bool?
+  public var targetPanelScroll = 0
   public var weaponsTargetID: Int?
   public var secretScroll = 0
   public var energy = 256.0
@@ -296,8 +321,7 @@ public struct Game: Sendable {
   public var missionPage = 0
   public var missionClue: String?
   public var missionElapsed = 0.0
-  private var fireCooldown = 0.0
-  private var spawnClock = 0.0
+  var fireCooldown = 0.0
   var missionLoopCounter: UInt8 = 0
   var missionSpawnDelay = 0
   var ecmFrames = 0
@@ -377,6 +401,9 @@ public struct Game: Sendable {
       switch key {
       case "r", "tab":
         cycleAutoTarget()
+        return
+      case "pageup", "pagedown":
+        pageTargetDetails(key == "pageup" ? -1 : 1)
         return
       case "i":
         targetPanelExpanded = !(targetPanelExpanded ?? (viewportWidth >= 1100))
@@ -600,7 +627,11 @@ public struct Game: Sendable {
           stage: commander.missionStage, galaxy: inspectedGalaxy,
           system: inspectedSystem.id, variation: variation) : nil
     }
-    navigatePrimary(to: destination)
+    if docked && [.buy, .sell].contains(screen) && [.buy, .sell].contains(destination) {
+      screen = destination
+    } else {
+      navigatePrimary(to: destination)
+    }
   }
   public mutating func selectNeighbour(direction: Int) {
     let known = knownSystems
@@ -824,6 +855,7 @@ public struct Game: Sendable {
     ]
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
     resetCelestialFlight()
+    beginGameplayVisit(arriving: false)
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
@@ -915,6 +947,7 @@ public struct Game: Sendable {
         hostile: currentSystem.government < 4),
     ]
     resetCelestialFlight()
+    beginGameplayVisit(arriving: true)
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
@@ -940,6 +973,8 @@ public struct Game: Sendable {
     }
     for index in bodies.indices { bodies[index].position.z -= 3000 }
     for index in celestials.indices { celestials[index].position.z -= 3000 }
+    commander.flightSimulation.pose.advanceView(
+      pitch: 0, roll: 0, yaw: 0, translation: .init(0, 0, 3000))
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
     guard !docked, missileArmed, missileCooldown == 0,
@@ -982,10 +1017,7 @@ public struct Game: Sendable {
   }
   public mutating func energyBomb() {
     guard !docked, commander.equipment.remove("Energy Bomb") != nil else { return }
-    for index in bodies.indices where !bodies[index].hull.bombImmune {
-      bodies[index].energy = 0
-      bodies[index].destroyedByPlayer = true
-    }
+    applyAttributedEnergyBomb()
     notify("ENERGY BOMB")
   }
   public mutating func escapePod() {
@@ -1028,7 +1060,12 @@ public struct Game: Sendable {
     if commander.unlimitedFuel { commander.fuel = commander.fuelCapacity }
     messageTime = max(0, messageTime - dt)
     laserFlash = max(0, laserFlash - dt)
-    guard !docked, screen != .gameOver, screen != .secret, screen != .help else { return }
+    guard !docked, ![Screen.gameOver, .secret, .help, .title, .demo].contains(screen) else {
+      return
+    }
+    commander.flightSimulation.advancePhysicalTime(dt)
+    gameplayRevision &+= 1
+    ensurePhysicalActors()
     let craft = commander.performance
     speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
     pitch = controls.pitch * craft.pitch
@@ -1050,6 +1087,7 @@ public struct Game: Sendable {
       jumpCountdown = remaining - dt
       if remaining <= dt { arrive() }
     }
+    advanceGameplayEncounters(delta: dt)
     moveBodies(dt: dt)
     if docked {
       reconcileEliteReward()
@@ -1076,11 +1114,6 @@ public struct Game: Sendable {
     reconcileEliteReward()
     missionLoopCounter &-= 1
     if missionLoopCounter == 0 { spawnNavalEncounter() }
-    spawnClock += dt
-    if spawnClock > 18 && bodies.count < (commander.executive ? 18 : 10) {
-      spawnClock = 0
-      spawn()
-    }
     if energy <= 0 {
       spin.stop(immediate: true)
       screen = .gameOver
@@ -1089,24 +1122,6 @@ public struct Game: Sendable {
       notify("ENERGY LOW,SIR")
     }
     if screen != .gameOver { advanceMissionClock(dt) }
-  }
-  private mutating func fireLaser() {
-    guard fireCooldown <= 0, laserHeat < 240, energy > 1 else { return }
-    guard let mount = LaserMount.from(screen), let laser = commander.laser(on: mount) else {
-      return
-    }
-    fireCooldown = laser.firingInterval
-    laserHeat += 10
-    energy -= 1
-    laserFlash = 0.08
-    if let index = bodies.firstIndex(where: {
-      let p = viewPosition($0.position)
-      return $0.hull != .station && p.z > 0 && abs(p.x / p.z) < 0.06 && abs(p.y / p.z) < 0.06
-    }) {
-      bodies[index].energy -= commander.laserDamage(against: bodies[index].hull, mount: mount)
-      bodies[index].hostile = true
-      if bodies[index].energy <= 0 { bodies[index].destroyedByPlayer = true }
-    }
   }
   public func viewPosition(_ p: Vector3) -> Vector3 {
     switch screen {
@@ -1118,6 +1133,9 @@ public struct Game: Sendable {
   }
   private mutating func moveBodies(dt: Double) {
     autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+    commander.flightSimulation.pose.advanceView(
+      pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt,
+      translation: autoPilot.velocity * dt + Vector3(0, 0, speed * dt * 18))
     moveCelestials(delta: dt)
     for index in bodies.indices {
       bodies[index].position = bodies[index].position.rotated(
@@ -1126,7 +1144,18 @@ public struct Game: Sendable {
       bodies[index].position = bodies[index].position - autoPilot.velocity * dt
       bodies[index].position.z -= speed * dt * 18
       bodies[index].rotation += dt * bodies[index].rotationRate
-      if bodies[index].hostile && bodies[index].energy > 0 { enemyAction(index: index, dt: dt) }
+      if let physical = bodies[index].physical, physical.spawnIdentity != nil,
+        physical.ordnance == nil
+      {
+        bodies[index].position =
+          bodies[index].position
+          + commander.flightSimulation.pose.shipVector(physical.velocity) * dt
+      }
+      if bodies[index].hostile && bodies[index].energy > 0,
+        bodies[index].physical?.spawnIdentity == nil
+      {
+        enemyAction(index: index, dt: dt)
+      }
     }
     if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
       if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
@@ -1137,13 +1166,14 @@ public struct Game: Sendable {
       if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
     persistBlackjackTargets()
-    let departing = bodies.filter { $0.leavesLocalBubble }
+    let departing = bodies.filter { $0.leavesLocalBubble && $0.id != 0 }
     for body in departing {
+      if let actor = body.physical?.identity { commander.miningLedger.cull(actor: actor) }
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
     }
-    bodies.removeAll { $0.leavesLocalBubble }
+    bodies.removeAll { $0.leavesLocalBubble && $0.id != 0 }
   }
   private mutating func enemyAction(index: Int, dt: Double) {
     if bodies[index].blackjackRole != nil {
@@ -1163,27 +1193,17 @@ public struct Game: Sendable {
     }
     if bodies[index].position.length < 1500 {
       let damage = dt * (bodies[index].hull.navalLaserDamage ?? 6) * 2
-      applyDamage(damage, front: bodies[index].position.z >= 0, energyMultiplier: 2)
+      emitLegacyNPCBeam(bodyID: bodies[index].id, damage: damage, energyMultiplier: 2)
     }
   }
   mutating func resolveDestroyed() {
     let destroyed = bodies.filter { $0.energy <= 0 }
-    for body in destroyed
-    where body.destroyedByPlayer == true && body.hull != .cargo && body.hull != .asteroid
-      && body.playerMissileTarget == nil
-      && !body.enemyMissile
-    {
-      let previousRank = commander.rank
-      commander.kills = (commander.kills + 1) & 0xffff
-      if commander.rank != previousRank { notify("RIGHT ON, COMMANDER") }
-      commander.credits =
-        (commander.credits
-          + (body.blackjackRole.map { $0.bountyCredits * 10 } ?? body.hull.navalBounty
-            ?? (body.hostile ? 50 : 0)))
-        & 0xffff_ffff
-      if !body.hostile { commander.legal += 8 }
-    }
+    if !destroyed.isEmpty { ensurePhysicalActors() }
+    for body in destroyed { settleLegacyCombatDeath(body) }
     for body in destroyed {
+      if let payload = body.physical?.payload {
+        _ = commander.miningLedger.destroy(payload: payload)
+      }
       missionTargetRemoved(body)
       clearRemovedTarget(body)
       blackjackTargetDestroyed(body)
@@ -1196,17 +1216,7 @@ public struct Game: Sendable {
       }
     }
   }
-  private mutating func spawn() {
-    let hostile = randomByte() & 7 > currentSystem.government
-    let peacefulKind: Hull = nextBodyID % 4 == 0 ? .cargo : .cobra
-    let kind: Hull = hostile ? .sidewinder : peacefulKind
-    bodies.append(
-      SpaceBody(
-        id: nextBodyID, hull: kind,
-        position: .init(Double(randomByte() - 128) * 4, Double(randomByte() - 128) * 2, 5000),
-        hostile: hostile))
-    nextBodyID += 1
-  }
+
 }
 
 public enum SaveError: Error { case invalidCommander }
@@ -1236,6 +1246,7 @@ public actor GameRuntime {
   public func blackjackHandoffClick(x: Double, y: Double) { game.blackjackHandoffClick(x: x, y: y) }
   public func secretClick(x: Double, y: Double) { game.secretClick(x: x, y: y) }
   public func showroomClick(x: Double, y: Double) { game.showroomClick(x: x, y: y) }
+  public func marketClick(x: Double, y: Double) { game.marketClick(x: x, y: y) }
   public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
   public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }

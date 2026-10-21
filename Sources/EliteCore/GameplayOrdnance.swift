@@ -1,0 +1,335 @@
+import Foundation
+
+public enum OrdnanceProfile: String, Codable, Sendable, CaseIterable {
+  case standardMissile, plasma, alienSeeker
+
+  public var speed: Double {
+    switch self {
+    case .standardMissile: 792
+    case .plasma: 600
+    case .alienSeeker: 990
+    }
+  }
+  public var damage: Double {
+    switch self {
+    case .standardMissile: 250
+    case .plasma: 40
+    case .alienSeeker: 160
+    }
+  }
+  public var energyCost: Double { self == .plasma ? 12 : 0 }
+  public var heat: Double { self == .plasma ? 8 : 0 }
+  public var firingInterval: Double { 1 }
+  // Finite flight bounds are project constraints, separate from native missile speed.
+  public var range: Double { self == .plasma ? 1200 : 6000 }
+  public var lifetime: Double { self == .plasma ? 2 : 24 }
+  public var attackKind: AttackKind { self == .plasma ? .plasma : .missile }
+}
+
+/// The caller supplies identities only while their actual ECM fields are active/in range.
+public struct ECMActivationIdentity: Hashable, Codable, Sendable {
+  public let emitter: ActorIdentity
+  public let sequence: UInt64
+  public init(emitter: ActorIdentity, sequence: UInt64) {
+    self.emitter = emitter
+    self.sequence = sequence
+  }
+}
+
+public enum OrdnanceEnd: String, Codable, Sendable {
+  case impact, rangeExpired, lifetimeExpired, targetLost, culled, ecm, destroyed, invalidState
+}
+
+private struct OrdnanceMotion {
+  let start: Vector3
+  let end: Vector3
+  let elapsed: Double
+}
+
+/// All motion is in canonical system space. Camera motion never changes this state.
+public struct OrdnanceState: Equatable, Codable, Sendable {
+  public let profile: OrdnanceProfile
+  public let origin: AttackOrigin
+  public let target: ActorIdentity?
+  public let emissionPosition: Vector3
+  public let inheritedVelocity: Vector3
+  public private(set) var position: Vector3
+  public private(set) var direction: Vector3
+  public private(set) var propulsionTravel = 0.0
+  public private(set) var lastUpdatedAt: Double
+  public private(set) var muzzleCleared = false
+  public private(set) var resistedECM: ECMActivationIdentity?
+  public private(set) var termination: OrdnanceEnd?
+
+  public init?(
+    profile: OrdnanceProfile, origin: AttackOrigin, target: ActorIdentity? = nil,
+    position: Vector3, direction: Vector3, launcherVelocity: Vector3 = .init(0, 0, 0),
+    emissionPosition: Vector3? = nil
+  ) {
+    guard position.finite, emissionPosition?.finite ?? true, launcherVelocity.finite,
+      let direction = Self.normalized(direction),
+      origin.emissionID > 0, origin.emittedAt.isFinite, origin.emittedAt >= 0,
+      let ordnance = origin.ordnance, ordnance != origin.owner,
+      ordnance.system == origin.owner.system, ordnance.visit == origin.owner.visit,
+      target != origin.owner, target != ordnance,
+      profile == .plasma || target != nil
+    else { return nil }
+    if let target,
+      target.system != origin.owner.system || target.visit != origin.owner.visit
+    {
+      return nil
+    }
+    self.profile = profile
+    self.origin = origin
+    self.target = target
+    self.emissionPosition = emissionPosition ?? position
+    self.position = position
+    self.direction = direction
+    self.inheritedVelocity = profile == .plasma ? launcherVelocity : .init(0, 0, 0)
+    self.lastUpdatedAt = origin.emittedAt
+  }
+
+  public var velocity: Vector3 { direction * profile.speed + inheritedVelocity }
+  public var valid: Bool {
+    position.finite && emissionPosition.finite && inheritedVelocity.finite && direction.finite
+      && abs(direction.length - 1) < 1e-6 && propulsionTravel.isFinite && propulsionTravel >= 0
+      && propulsionTravel <= profile.range + 1e-6 && lastUpdatedAt.isFinite
+      && origin.emittedAt.isFinite && origin.emittedAt >= 0 && lastUpdatedAt >= origin.emittedAt
+      && lastUpdatedAt <= origin.emittedAt + profile.lifetime + 1e-6
+      && origin.emissionID > 0
+      && origin.ordnance.map {
+        $0 != origin.owner && $0.system == origin.owner.system && $0.visit == origin.owner.visit
+      } == true
+      && (profile == .plasma || target != nil) && target != origin.owner
+      && target != origin.ordnance
+      && (target.map { $0.system == origin.owner.system && $0.visit == origin.owner.visit } ?? true)
+  }
+
+  /// One resisted activation is enough history: a different activation terminates the seeker.
+  fileprivate mutating func receiveECM(_ pulses: [ECMActivationIdentity]) -> Bool {
+    guard termination == nil, profile != .plasma else { return false }
+    let ordered = pulses.filter {
+      $0.emitter.system == origin.owner.system && $0.emitter.visit == origin.owner.visit
+    }.sorted {
+      $0.sequence == $1.sequence ? $0.emitter.entity < $1.emitter.entity : $0.sequence < $1.sequence
+    }
+    var resisted = false
+    for pulse in ordered {
+      if resistedECM == pulse { continue }
+      if profile == .alienSeeker && resistedECM == nil {
+        resistedECM = pulse
+        resisted = true
+      } else {
+        termination = .ecm
+        break
+      }
+    }
+    return resisted
+  }
+
+  fileprivate mutating func clearMuzzle() { muzzleCleared = true }
+
+  fileprivate mutating func finish(_ reason: OrdnanceEnd) {
+    if termination == nil { termination = reason }
+  }
+
+  fileprivate mutating func move(context: EncounterContext) -> OrdnanceMotion? {
+    guard termination == nil, context.physicalTime - lastUpdatedAt > 1e-10 else { return nil }
+    let remainingRange = max(0, profile.range - propulsionTravel) / profile.speed
+    let remainingLife = max(0, origin.emittedAt + profile.lifetime - lastUpdatedAt)
+    let guidanceStep = profile == .alienSeeker ? 1.0 / 120 : context.physicalTime - lastUpdatedAt
+    let delta = min(
+      context.physicalTime - lastUpdatedAt, guidanceStep, remainingRange, remainingLife)
+    guard delta > 1e-10 else {
+      finish(propulsionTravel >= profile.range - 1e-6 ? .rangeExpired : .lifetimeExpired)
+      return nil
+    }
+    if profile != .plasma {
+      guard let actor = target.flatMap({ Self.actor($0, context: context) }), actor.energy > 0
+      else {
+        finish(.targetLost)
+        return nil
+      }
+      if let desired = Self.normalized(actor.position - position) {
+        direction =
+          profile == .alienSeeker
+          ? Self.turned(direction, toward: desired, maximumAngle: 3 * delta) : desired
+      }
+    }
+    let start = position
+    position = position + velocity * delta
+    guard position.finite else {
+      position = start
+      finish(.invalidState)
+      return nil
+    }
+    propulsionTravel = min(profile.range, propulsionTravel + profile.speed * delta)
+    lastUpdatedAt += delta
+    return .init(start: start, end: position, elapsed: delta)
+  }
+
+  fileprivate mutating func impact(_ world: Vector3, fraction: Double, motion: OrdnanceMotion) {
+    position = world
+    propulsionTravel = max(0, propulsionTravel - profile.speed * motion.elapsed * (1 - fraction))
+    lastUpdatedAt = max(origin.emittedAt, lastUpdatedAt - motion.elapsed * (1 - fraction))
+    finish(.impact)
+  }
+
+  fileprivate mutating func enforceBounds() {
+    if propulsionTravel >= profile.range - 1e-6 {
+      finish(.rangeExpired)
+    } else if lastUpdatedAt >= origin.emittedAt + profile.lifetime - 1e-8 {
+      finish(.lifetimeExpired)
+    }
+  }
+
+  private static func actor(_ identity: ActorIdentity, context: EncounterContext) -> ActorSnapshot?
+  {
+    identity == context.player.identity
+      ? context.player : context.actors.first { $0.identity == identity }
+  }
+
+  private static func normalized(_ vector: Vector3) -> Vector3? {
+    guard vector.finite else { return nil }
+    let scale = max(abs(vector.x), max(abs(vector.y), abs(vector.z)))
+    guard scale > 0 else { return nil }
+    let scaled = Vector3(vector.x / scale, vector.y / scale, vector.z / scale)
+    return scaled * (1 / hypot(hypot(scaled.x, scaled.y), scaled.z))
+  }
+
+  private static func turned(_ from: Vector3, toward to: Vector3, maximumAngle: Double) -> Vector3 {
+    let angle = acos(max(-1, min(1, from.dot(to))))
+    guard angle > maximumAngle else { return to }
+    let cardinals = [Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)]
+    let cardinal = cardinals.min { abs(from.dot($0)) < abs(from.dot($1)) } ?? cardinals[0]
+    let axis = normalized(from.cross(to)) ?? normalized(from.cross(cardinal)) ?? cardinal
+    let result = from * cos(maximumAngle) + axis.cross(from) * sin(maximumAngle)
+    return normalized(result) ?? from
+  }
+}
+
+public struct OrdnanceUpdate: Equatable, Sendable {
+  public let bodyID: Int
+  public let position: Vector3
+  public let velocity: Vector3
+  public let termination: OrdnanceEnd?
+  public let hit: GameplayHit?
+  public let incident: CombatIncident?
+  public let resistedECM: Bool
+  public let endedNow: Bool
+}
+
+extension Game {
+  @discardableResult
+  mutating func advanceOrdnance(
+    bodyID: Int, state: inout OrdnanceState, context: EncounterContext,
+    activeECM: [ECMActivationIdentity] = []
+  ) -> OrdnanceUpdate {
+    guard state.valid, context.physicalTime.isFinite,
+      context.system == state.origin.owner.system, context.visit == state.origin.owner.visit,
+      context.physicalTime >= state.lastUpdatedAt,
+      context.system == commander.flightSimulation.system,
+      context.visit == commander.flightSimulation.visit,
+      abs(context.physicalTime - commander.flightSimulation.physicalTime) < 1e-8
+    else { return endOrdnance(bodyID: bodyID, state: &state, reason: .invalidState) }
+    guard
+      let index = bodies.firstIndex(where: {
+        $0.id == bodyID && $0.physical?.identity == state.origin.ordnance
+      })
+    else { return endOrdnance(bodyID: bodyID, state: &state, reason: .culled) }
+    guard bodies[index].energy > 0 else {
+      return endOrdnance(bodyID: bodyID, state: &state, reason: .destroyed)
+    }
+    let wasActive = state.termination == nil
+    let resisted = state.receiveECM(activeECM)
+    var hit: GameplayHit?
+    var incident: CombatIncident?
+    while let motion = state.move(context: context) {
+      updateMuzzleClearance(state: &state, position: motion.start, context: context)
+      if let collision = ordnanceCollision(
+        bodyID: bodyID, state: state, motion: motion, context: context)
+      {
+        hit = collision
+        incident = applyCombatHit(
+          collision, origin: state.origin, kind: state.profile.attackKind,
+          damage: state.profile.damage,
+          emissionPosition: state.emissionPosition)
+        let length = (motion.end - motion.start).length
+        let fraction = length > 0 ? max(0, min(1, collision.distance / length)) : 0
+        state.impact(
+          commander.flightSimulation.pose.systemPoint(collision.point), fraction: fraction,
+          motion: motion)
+        break
+      }
+      updateMuzzleClearance(state: &state, position: motion.end, context: context)
+      state.enforceBounds()
+    }
+    bodies[index].position = commander.flightSimulation.pose.shipPoint(state.position)
+    bodies[index].physical?.velocity = state.velocity
+    if state.termination != nil {
+      bodies[index].energy = 0
+      commander.crimeLedger.finishEmission(state.origin.emissionID)
+    }
+    return .init(
+      bodyID: bodyID, position: state.position, velocity: state.velocity,
+      termination: state.termination, hit: hit, incident: incident, resistedECM: resisted,
+      endedNow: wasActive && state.termination != nil)
+  }
+
+  @discardableResult
+  mutating func endOrdnance(bodyID: Int, state: inout OrdnanceState, reason: OrdnanceEnd)
+    -> OrdnanceUpdate
+  {
+    let wasActive = state.termination == nil
+    state.finish(reason)
+    if let index = bodies.firstIndex(where: {
+      $0.id == bodyID && $0.physical?.identity == state.origin.ordnance
+    }) {
+      bodies[index].energy = 0
+    }
+    commander.crimeLedger.finishEmission(state.origin.emissionID)
+    return .init(
+      bodyID: bodyID, position: state.position, velocity: state.velocity,
+      termination: state.termination, hit: nil, incident: nil, resistedECM: false,
+      endedNow: wasActive)
+  }
+
+  private func updateMuzzleClearance(
+    state: inout OrdnanceState, position: Vector3, context: EncounterContext
+  ) {
+    guard !state.muzzleCleared else { return }
+    let center: Vector3
+    let mesh: Mesh
+    if state.origin.owner == context.player.identity {
+      center = context.player.position
+      mesh = commander.playerMesh
+    } else if let body = bodies.first(where: {
+      $0.physical?.identity == state.origin.owner && $0.energy > 0
+    }) {
+      center = commander.flightSimulation.pose.systemPoint(body.position)
+      mesh = .hull(body.hull)
+    } else {
+      state.clearMuzzle()
+      return
+    }
+    let radius = mesh.vertices.map(\.length).max() ?? 0
+    if (position - center).length > radius + 1e-6 { state.clearMuzzle() }
+  }
+
+  private func ordnanceCollision(
+    bodyID: Int, state: OrdnanceState, motion: OrdnanceMotion, context: EncounterContext
+  ) -> GameplayHit? {
+    var ignored: Set<Int> = [bodyID]
+    if !state.muzzleCleared,
+      let owner = bodies.first(where: { $0.physical?.identity == state.origin.owner })
+    {
+      ignored.insert(owner.id)
+    }
+    let player = state.muzzleCleared || state.origin.owner != context.player.identity
+    let pose = commander.flightSimulation.pose
+    return GameplayRaycast.segment(
+      from: pose.shipPoint(motion.start), to: pose.shipPoint(motion.end),
+      bodies: bodies.filter { $0.energy > 0 }, ignoring: ignored,
+      playerMesh: player && energy > 0 ? commander.playerMesh : nil, celestials: celestials)
+  }
+}

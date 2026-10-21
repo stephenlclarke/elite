@@ -315,7 +315,7 @@ public enum Display {
     }
     let center = game.viewPosition(body.position)
     guard center.z > 10 else { return }
-    let mesh = mesh ?? Mesh.hull(body.hull)
+    let mesh = mesh ?? game.gameplayMesh(for: body)
     let vertices = mesh.vertices.map { vertex -> Vector3 in
       let rotated = game.viewPosition(body.modelVector(vertex))
       return rotated + center

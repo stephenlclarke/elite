@@ -291,6 +291,7 @@ private func finishMessage(_ game: inout Game) {
 
 @Test func navalMessagesPageSafelyAndPauseWorksWithoutEndKey() {
   var game = navalGame()
+  game.commander.shipDisplayStyle = .whiteWireframe
   game.dock()
   #expect(game.screen == .mission)
   game.key("return")

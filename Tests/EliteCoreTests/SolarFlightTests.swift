@@ -115,7 +115,20 @@ private func solarGame(distance: Double = 2970) -> Game {
   #expect(loaded)
   #expect(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
   game.launch()
-  #expect(game.celestials == scene && game.commander == commander)
+  #expect(game.celestials == scene)
+  #expect(game.commander.flightSimulation.visit == commander.flightSimulation.visit + 1)
+  var actual = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander)) as? [String: Any])
+  var expected = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(commander)) as? [String: Any])
+  for key in [
+    "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity", "savedMiningLedger",
+    "encounterDirector",
+  ] {
+    actual.removeValue(forKey: key)
+    expected.removeValue(forKey: key)
+  }
+  #expect(NSDictionary(dictionary: actual).isEqual(to: expected))
 }
 
 @Test func solarHUDReportsActualScoopAndThermalDanger() {

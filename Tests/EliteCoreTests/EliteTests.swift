@@ -262,6 +262,7 @@ import Testing
   var game = Game(executive: false)
   game.launch()
   game.speed = 0
+  game.commander.flightSimulation.pose.position = .init(0, 0, -3000)
   game.bodies = [SpaceBody(id: 1, hull: .sidewinder, position: .init(0, 0, 500), hostile: true)]
   game.commander.equipment.insert("Military Laser")
   var controls = Controls()
@@ -275,7 +276,7 @@ import Testing
   game.key("m")
   #expect(game.commander.missiles == 2 && !game.missileArmed)
   game.tick(delta: 0.02)
-  #expect(game.commander.kills == 2 && game.commander.legal == 8)
+  #expect(game.commander.kills == 2 && game.commander.legal == 40)
   game.commander.unlimitedMissiles = true
   game.bodies = [SpaceBody(id: 3, hull: .cobra, position: .init(0, 0, 1000))]
   game.key("t")

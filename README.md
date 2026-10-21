@@ -22,7 +22,7 @@
 <br clear="left" />
 <!-- markdownlint-enable MD033 -->
 
-A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, white wireframe ships by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke in a fully fitted Cobra Mk III with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
+A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, shaded ship panels by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke in a fully fitted Cobra Mk III with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
 
 ![Elite gameplay](docs/elite.png)
 
@@ -55,10 +55,11 @@ Start with **numbers, arrows, Return, Escape and K**. Numbers open game areas, a
 | Keys | At a station | In space |
 | --- | --- | --- |
 | 0 | Launch | Front view |
-| 1 / 2 / 3 | Buy / sell / equipment | Rear / left / right view |
+| 3 | Equipment | Right view |
+| 1 / 2 | Use Market (7) | Rear / left view |
 | 4 / 5 | Charts with full planet information | Galactic / short range chart |
 | 6 | Ship showroom | System data and planet view |
-| 7 / 8 / 9 | Prices / commander / cargo | Prices / commander / cargo |
+| 7 / 8 / 9 | Market / status summary / inventory | Prices / status summary / inventory |
 
 For keyboard flight, **arrows steer**, **Space accelerates**, **Delete brakes**, **Return fires**, and **Tab selects a target**. Selecting the station engages automatic docking with a suitable targeting computer; Q returns to manual control. The trackpad controls are below.
 
@@ -139,7 +140,7 @@ Auto-trade immediately sells and restocks when activation happens while docked, 
 | L | Reset legal status to Clean (saved with your commander) |
 | F | Fit fuel scoops |
 
-Normal games default to white wireframes; XYZZY activation defaults to shaded panels. Coloured wireframes identify hulls by colour; shaded panels draw opaque faces with flat directional lighting. The chosen display is saved with the commander. Old saves without a display choice load with white wireframes. Key 4 controls fuel replenishment. Jump distance always obeys fuel cells, current fuel and the navigation computer; the paused-game @ shortcut has been removed.
+Normal games, XYZZY activation and saves without a display choice default to shaded panels. Explicit saved white or coloured wireframe choices are preserved. White wireframe draws the flight scene, including planet and sun outlines, in monochrome; coloured wireframe uses the same outline geometry with hull and celestial colours. Shaded panels draw opaque faces with directional lighting, textured planets and a filled sun/corona. Planet data previews follow the selected mode; chart and cockpit information colours stay legible. The chosen display is saved with the commander. Key 4 controls fuel replenishment. Jump distance always obeys fuel cells, current fuel and the navigation computer; the paused-game @ shortcut has been removed.
 
 Press K, use Command-K, or choose **Help → Player Key Guide** for the controls relevant to your current activity. The guide covers flight, station screens, trading, equipment, charts, pause, the title/demo and XYZZY. Arrow keys change pages; Escape or K closes it. The simulation pauses while the guide is open and resumes on the same screen.
 
@@ -165,6 +166,8 @@ Each galaxy has a hidden **PLUGH** port. Ask for station rumours with U while do
 
 ## Targeting computers and target information
 
+See the [targeting-computer player guide](docs/TARGETING-COMPUTERS.md) for core prices, tech requirements, controls and ECM rules, plus clearly marked pending Mining/Salvage add-ons and worked examples.
+
 Upgrades are cumulative, with one effective installed tier. Prices are in credits; Basic and Military use twice their matching laser prices, with graduated intermediate prices following the requested laser-related scale. Equipment rows use a compact font and a right-aligned credit column inside a centred table capped at 680 points, keeping names and prices close in full screen.
 
 | Computer | Price (CR) | Added capability |
@@ -176,13 +179,15 @@ Upgrades are cumulative, with one effective installed tier. Prices are in credit
 | Pirate | 10,000 | Cargo, origin and destination information |
 | Military | 12,000 | Shields, laser heat, fuel, missiles, ECM and ECM-confirmed retaliation |
 
-The upper-right target panel is expanded by default in full screen and compact in a window; I changes it. Its live ship rendering copies the actual target pose without moving the flight camera. Lower tiers receive only a minimal target identifier. Ship missile counts and ECM equipment/activity come from simulation state. NPC cargo, routes, shield banks, fuel and laser heat are not currently modelled, so the panel explicitly shows Unknown or Unavailable rather than player readings or invented data. Stations show entrance, rotation and range information instead of ship armament.
+The upper-right target panel is expanded by default in full screen and compact in a window; I changes it. Its live ship rendering copies the actual target pose without moving the flight camera. Lower tiers receive only a minimal target identifier. Ship missile counts and ECM equipment/activity come from simulation state. Pirate and Military tiers disclose recorded NPC cargo and routes, plus the selected craft's tracked front/rear shields, fuel and laser heat. Unrecorded legacy facts remain Unknown; generated and inferred routes are labelled. Long readings wrap and Option-Up/Down pages the panel. Legacy mission craft retain their original energy-only combat profile. Stations show entrance, rotation and range information instead of ship armament.
 
 Military identifies the actual craft that launched a player-targeted missile and establishes a weapons lock without taking over steering or Spin Hold. After that missile is confirmed destroyed by the player's ECM, it can fire one retaliatory missile per attacker per activation. It waits for the ECM field and the one-second missile cooldown, consumes normal ammunition unless unlimited, and requires a living source and forward missile lock. Missing ammunition, invalid source/lock or disabled equipment cannot produce a success announcement. Pending return fire expires after three game seconds. U clears pending return fire and disarms; XYZZY B toggles it. Automatic ECM still requires its existing XYZZY switch and fitted equipment; manual ECM can also confirm retaliation.
 
 ## Trading colours
 
-Buy Cargo, Sell Cargo and Market Prices use consistent category colours: green Agricultural, cyan Consumer, yellow Industrial, blue Materials and orange Restricted cargo. A labelled legend explains the colours. Slaves, narcotics and firearms are the restricted goods in the implemented launch-legal-status rules. Category colours do not predict profit or imply that other goods are buyable. Separate Action text states BUY, SELL, NO STOCK, NO CASH, HOLD FULL, NONE HELD, RESERVED or DOCK TO TRADE, alongside price, stock and hold counts. Arrows or scrolling browse every commodity; category colours also appear in Inventory.
+The unified Market (7) shows prices, stock and holdings together. Click Buy/Sell or press Tab to choose a mode, then Return or Buy one/Sell one trades a unit. Left sells one and Right buys one. Keys 1/2 remain mode aliases, rather than separate destinations in the docked Screens menu. Commander Status (8) summarises readiness, location, cash and legal standing; Inventory (9) contains cargo, mission property and the full equipment/laser list.
+
+The Market uses consistent category colours: green Agricultural, cyan Consumer, yellow Industrial, blue Materials and orange Restricted cargo. A labelled legend explains the colours. Slaves, narcotics and firearms are the restricted goods in the implemented launch-legal-status rules. Category colours do not predict profit or imply that other goods are buyable. Separate Action text states BUY, SELL, NO STOCK, NO CASH, HOLD FULL, NONE HELD, RESERVED or DOCK TO TRADE, alongside price, stock and hold counts. Arrows or scrolling browse every commodity; category colours also appear in Inventory.
 
 ## Navigation, fuel storage and charts
 
@@ -207,13 +212,7 @@ The short-range chart distinguishes dotted green search range, dashed yellow max
 
 Press N on a chart to compare Fewest Jumps, Safest and Trade Opportunities routes. A Best Cargo Sale detour is offered when its estimated return exceeds direct destination sales. Identical paths combine labels; all paths use legal hops, current fuel for the first leg, and station refuelling to installed capacity thereafter. Risk reflects government, and trade/cargo figures are conservative market estimates rather than guaranteed profits or guaranteed affordable refuelling. An empty tank must be refuelled before planning.
 
-The route panel previews each candidate graphically on the chart you opened, both galactic and short-range. Up/Down or clicking a candidate changes only the preview; Return or **Set route** commits that candidate. **Back** or Escape cancels the preview and preserves the active plan. The local chart clips legs to its viewport and marks offscreen continuation; 4/5 switches the preview between galaxy and local scales. Setting a route does not launch, jump or dock. A successfully validated Set route cancels an existing jump countdown before selecting the new next hop, with an explicit status message. Dock at each stop; launching preloads the next system and announces it, and H starts each jump manually. N inspects the stored route. C clears it in the route panel; an explicit new travel destination, off-route arrival or galactic jump clears it too. Pure galactic-map preview browsing retains the route. Route progress survives save/load, and auto-trade evaluates the next planned leg without replacing it. Route browsing pauses flight.
-
-The following previews are generated by the game renderer with `make readme-media`, using the real Lave-to-Tibedied route alternatives and an ordinary seven-LY fuel tank.
-
-![Alternative routes on the galaxy chart](docs/images/route-alternatives-galaxy.png)
-
-![Local route preview with offscreen continuation](docs/images/route-alternatives-local.png)
+Return sets a route without launching, jumping or docking. Dock at each stop; launching preloads the next system and announces it, and H starts each jump manually. N inspects the stored route. C clears it in the route panel; an explicit new travel destination, off-route arrival or galactic jump clears it too. Pure galactic-map preview browsing retains the route. Route progress survives save/load, and auto-trade evaluates the next planned leg without replacing it. Route browsing pauses flight.
 
 ## Shields, Naval lasers and voice
 
@@ -246,50 +245,11 @@ Mission dialogs use **Confirm / Back**: arrows choose, Return selects, Escape ba
 
 This is an Oolite expansion adaptation with documented custody, wanted-level and witness-callback repairs. Its S.T.E targets currently use the native Cobra mesh and simplified combat. See the [pinned source profile and fidelity limits](docs/BLACKJACK-BULLION.md). [The implementation queue](docs/MISSION-IMPLEMENTATION.md) distinguishes research packets from playable campaigns.
 
-## Install on macOS
+## Download for macOS
 
-The signed, Apple-notarized universal app supports **Apple silicon and Intel Macs running macOS 14 or later**. Choose Homebrew or download the app directly; neither method requires Xcode or Swift.
+The [signed universal app](releases/macos/Elite-1.3.1-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.3.1-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.3.1-universal.json).
 
-### Install with Homebrew
-
-With [Homebrew](https://brew.sh/) installed:
-
-```sh
-brew install --cask stephenlclarke/tap/elite
-open -a Elite
-```
-
-To update, quit Elite and run:
-
-```sh
-brew update
-brew upgrade --cask stephenlclarke/tap/elite
-```
-
-To uninstall:
-
-```sh
-brew uninstall --cask stephenlclarke/tap/elite
-```
-
-The tap currently provides version 1.3.1; the GitHub release below provides 1.4.0. The tap update follows verification of its published release asset.
-
-Uninstalling preserves saved commanders and mission packs in `~/.xyzzy/elite/`. See [Homebrew distribution](docs/HOMEBREW.md) for the maintained cask, checksums and release synchronization.
-
-### Download from GitHub Releases
-
-1. Open the [latest GitHub Release](https://github.com/stephenlclarke/elite/releases/latest).
-2. Under **Assets**, download `Elite-<version>-universal.zip`. The same app supports Apple silicon and Intel.
-3. Extract the ZIP and move **Elite.app** into **Applications**.
-4. Open **Elite** from Applications.
-
-To update a manually installed copy, quit Elite and replace it in Applications with the app from the latest release. Saved commanders and mission packs remain in `~/.xyzzy/elite/`.
-
-Each release includes a matching `.sha256` checksum, build/signing `.json` manifest and notarization report. The manifest identifies the binary's source commit and verification results. See [macOS distribution](docs/MACOS-DISTRIBUTION.md) for package verification and signing details.
-
-For development builds, use the separate [Build and run](#build-and-run) instructions.
-
-Version 1.4.0 adds graphical route alternatives on both charts, with explicit preview, Set route and Back controls. Its signed, notarized app identifies binary source checkpoint `36fa5cfef1e781f68dcb1fdbf7dae1e1e1f76224`; the release tag also includes the later archive and documentation commit. See the [packaging verification](docs/MACOS-DISTRIBUTION.md).
+This distribution uses Developer ID signing and the hardened runtime. Version 1.3.1 is **notarized by Apple**, includes a validated stapled ticket and passes Gatekeeper assessment. The [Apple submission log](releases/macos/Elite-1.3.1-universal-notarization.json) covers both architectures. This build includes the detailed hulls, Liberator, startup/profit fixes and celestial/station flight changes. Its manifest and title identify source checkpoint `7d008650a7842e7e6dbd3ad84b8f38770f55c285`; the later artifact commit does not relabel the executable. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
 
 ## Add mission packs
 
@@ -342,8 +302,6 @@ Automatic analysis is disabled, including on the legacy duplicate `stephenlclark
 The README screenshot and animated tape are generated from deterministic scenes using the same drawing commands as the live game, following the Pacman and Defender README media convention. Regenerate both with `make readme-media`.
 
 ## Fidelity and references
-
-The [design index](docs/DESIGN-INDEX.json) records the current gameplay, equipment, salvage and graphics implementation contracts. Those designs and dated audits describe remaining work; they are not claims that every feature is in this release.
 
 The independently maintained local `docs/research/` reference contains separate deduplicated mission, ship and alien catalogues, version mappings, source provenance and mission replication specifications. It distinguishes documented historical behaviour from implementation recommendations and explicitly lists unresolved fidelity requirements.
 

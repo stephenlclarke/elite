@@ -12,7 +12,7 @@ extension Game {
     case 4: .chart
     case 5: .shortChart
     case 6: docked ? .showroom : .system
-    case 7: .market
+    case 7: docked ? .buy : .market
     case 8: .status
     case 9: .inventory
     default: nil
@@ -22,13 +22,13 @@ extension Game {
   public static func screenTitle(_ number: Int, docked: Bool) -> String {
     switch number {
     case 0: docked ? "Launch" : "Front View"
-    case 1: docked ? "Buy Cargo" : "Rear View"
-    case 2: docked ? "Sell Cargo" : "Left View"
+    case 1: docked ? "Market (Buy)" : "Rear View"
+    case 2: docked ? "Market (Sell)" : "Left View"
     case 3: docked ? "Equipment" : "Right View"
     case 4: "Galactic Chart"
     case 5: "Short Range Chart"
     case 6: docked ? "Ship Showroom" : "System Data"
-    case 7: "Market Prices"
+    case 7: docked ? "Market" : "Market Prices"
     case 8: "Commander Status"
     case 9: "Inventory"
     default: ""
@@ -139,10 +139,6 @@ extension Game {
       if key == "l" { openGallery() }
       return true
     }
-    if screen == .navigation && ["4", "5"].contains(key) {
-      navigationReturn = key == "5" ? .shortChart : .chart
-      return true
-    }
     if key.count == 1, let number = Int(key), (0...9).contains(number),
       [Screen.showroom, .gallery, .rumour, .navigation].contains(screen)
     {
@@ -173,6 +169,7 @@ extension Game {
       return true
     default: break
     }
+    if marketKey(key) { return true }
     if key == "escape" {
       backFromPrimary()
       return true

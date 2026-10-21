@@ -7,13 +7,13 @@ The main pattern is the same everywhere: **numbers open areas, arrows move, Retu
 | Key | Docked | In flight |
 | --- | --- | --- |
 | 0 | Launch | Front view |
-| 1 | Buy cargo | Rear view |
-| 2 | Sell cargo | Left view |
+| 1 | Market, buy mode (alias) | Rear view |
+| 2 | Market, sell mode (alias) | Left view |
 | 3 | Equipment | Right view |
 | 4 | Galactic chart, planet facts and globe | Galactic chart |
 | 5 | Short range chart, planet facts and globe | Short range chart |
 | 6 | Ship showroom | System data and globe |
-| 7 | Market prices | Market prices |
+| 7 | Market: buy and sell | Market prices |
 | 8 | Commander status | Commander status |
 | 9 | Inventory | Inventory |
 
@@ -52,7 +52,7 @@ Every action in this table is visible in the **Flight** menu. Equipment requirem
 | Detonate energy bomb | Flight > Detonate Energy Bomb |
 | Launch escape pod | Command-Shift-E, or Flight > Launch Escape Pod |
 
-Escape is reserved for Back. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Pass scoopable cargo below your nose with Fuel Scoops fitted.
+Escape is reserved for Back. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Option-Up/Down pages its wrapped cargo, route and resource readings. Pass scoopable cargo below your nose with Fuel Scoops fitted.
 
 Flight HUD bearings point to the actual moving planet and sun, including astern and off-screen directions. Fuel Scoops collect solar fuel automatically when cruising nose-first in the outer corona; no extra key is needed. Stay near the corona edge, watch Cabin temp, and turn away to cool before it reaches the limit. Sun and planet surfaces are fatal, and overheating destroys the ship even with unlimited XYZZY fuel. Saves retain the existing commander-only behaviour: loading docks at the saved system, and launching creates a fresh local flight scene.
 
@@ -60,7 +60,9 @@ Optional Spin Hold is in the Game menu. V toggles it, B stops smoothly, brackets
 
 ## Station tasks and mission dialogs
 
-Buy with 1, sell with 2, equip with 3. Up/Down or scrolling selects an item; Return trades one unit or purchases/refuels. Equipment headings are skipped. Left/Right or the visible Front/Left/Right/Rear controls choose a laser mount. Status and inventory use Up/Down or scrolling for more rows. Option-Up/Down moves a page. Market 7 shows prices; use 1/2 to trade.
+Open Market with 7. Prices, stock and your holdings stay in one table. Up/Down, scrolling or clicking selects a commodity. Tab or the visible Buy/Sell controls changes mode without changing the selected item; Return or Buy one/Sell one trades one unit. Left sells one and Right buys one. Repeat trades for multiple units. Keys 1/2 remain buy/sell mode aliases; the docked Screens menu exposes the single Market entry. In flight, 7 remains read-only prices and 1/2 remain rear/left views.
+
+Equipment remains on 3. Up/Down selects an item and Return purchases/refuels; Left/Right or the visible mount controls chooses its laser mount. Commander Status (8) is a readiness/location/finance/legal summary. Inventory (9) owns the cargo manifest, reserved mission property and complete laser/equipment list. Up/Down or scrolling reads additional rows; Option-Up/Down pages. Escape returns to the previous area, not through each Market mode.
 
 **Game > Mission Contacts** opens an eligible station contact. Mission dialogs use arrows to choose Confirm or Back, Return or a click to select, and Escape to return without a transfer. They return to the station screen that opened them. Initial enrolment and automatic naval orders/rewards retain their campaign rules.
 
@@ -84,20 +86,14 @@ Left/Right or clicking selects a planet. Docked charts 4/5 include all planet fa
 | Local-chart range | Z |
 | Open routes with fitted navigation computer | N |
 | Toggle automatic top-five profit scan | P on either chart or the navigation screen |
-| Preview route candidate | Up/Down, or click a candidate |
-| Commit previewed route | Return, or click Set route |
-| Switch route-preview map scale | 4: galaxy / 5: local |
+| Choose route | Up/Down then Return |
 | Read route details | Option-Up/Down |
 | Clear route | C |
-| Cancel route preview, preserving active plan | Escape, or click Back |
+| Return from routes | Escape |
 
 Profit scan starts enabled by XYZZY and its switch is saved with the commander. It recomputes up to five positive-profit destinations within the current fuel and jump limit. Gold rings and numbers 1-5 highlight them on the current galaxy charts; navigation details list credit estimates or explain that none qualify. Estimates compare sellable carried cargo with selling here, then add affordable exports using available hold space and current stock, at conservative destination prices. They exclude fuel costs and danger; no cargo is bought, route selected or jump started by scanning.
 
-N opens route alternatives with a graphical preview on either the galactic or short-range chart. Up/Down or clicking a candidate previews it without replacing the active plan. Return or **Set route** commits it; **Back** or Escape cancels the preview and preserves the active plan. Short-range legs clip to the local map, with an offscreen-continuation cue. 4/5 switches map scale while keeping the same candidates and preview.
-
-Alternatives compare Fewest Jumps, Safest and Trade Opportunities, with a Best Cargo Sale detour when it improves estimated sale return. Identical paths combine their labels. Basic searches within installed fuel capacity in LY plus 7 LY; Advanced adds 14 LY; Military searches the whole current galaxy. Legal hops respect the fitted computer cap: the first leg uses actual remaining fuel, and later legs assume station refuelling to installed capacity. Risk and conservative trade/cargo estimates remain summaries, not guaranteed profits or affordable refuelling.
-
-Setting a route does not jump. Successful Set route cancels any pending jump countdown before choosing the new next hop and reports that cancellation; stale candidates and Back preserve the countdown. Dock at each stop, launch, and use H for the next jump. Foreign-galaxy browsing cannot initiate actual travel or route planning.
+Choosing a route does not jump. Dock at each stop, launch, and use H for the next jump. Foreign-galaxy browsing cannot initiate actual travel or route planning.
 
 ## Ship showroom
 

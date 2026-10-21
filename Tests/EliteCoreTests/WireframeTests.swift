@@ -129,6 +129,7 @@ private func hasCompleteSourceBoundary(_ body: SpaceBody, in frame: Frame) -> Bo
 
 @Test func rotatingHullsKeepEverySilhouetteSegment() {
   var game = Game(executive: false)
+  game.commander.shipDisplayStyle = .whiteWireframe
   game.screen = .front
   for hull in Hull.allCases {
     // Five rolls and two pitch turns cover the complete combined rotation.
