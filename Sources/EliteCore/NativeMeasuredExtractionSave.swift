@@ -289,6 +289,8 @@ enum NativeMeasuredExtractionSave {
     state: borrowing NativeMeasuredExtractionState, commander: borrowing Commander
   ) -> Bool {
     let originalID = intake.original
+    let payloadIdentity = intake.payload.identity
+    let payloadAmount = intake.payload.amount
     guard let extraction = state.extraction, intake.extraction == extraction.operation,
       intake.permission == state.permission.operation, intake.carrier == state.permission.carrier,
       intake.operation
@@ -296,7 +298,12 @@ enum NativeMeasuredExtractionSave {
           "measured-intake-v1:\(state.permission.operation):\(intake.original)"),
       intake.authority == (try? NativeMeasuredExtraction.intakeAuthority(intake)),
       let original = source.originals.first(where: { $0.id == originalID }),
-      original.payload == intake.payload.identity, extraction.emitted.contains(intake.payload),
+      original.payload == intake.payload.identity,
+      extraction.emitted.contains(where: {
+        $0.identity == payloadIdentity && $0.amount == payloadAmount
+      }),
+      intake.payload.position.finite, intake.payload.velocity.finite,
+      intake.payload.position.length.isFinite, intake.payload.velocity.length.isFinite,
       intake.body.count == 1, let body = intake.body.first, body.hull == .cargo,
       body.energy.isFinite, body.energy > 0, body.physical?.payload == original.payload,
       body.physical?.spawnIdentity?.producer == .mining,
