@@ -4349,7 +4349,10 @@
       "usable_build_delivered": false,
       "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328761703",
       "finding": "https://github.com/stephenlclarke/elite/issues/38",
-      "correction_owner": "G1 at natural packet boundary"
+      "correction_owner": "G1 at natural packet boundary",
+      "correction_sha": "442ba0f36fccab209d25e013d2d3c0df7bc85749",
+      "correction_run": 39693528460,
+      "correction_review": "MBA assigned; actual hosted evidence pending"
     }
   ]
 }
