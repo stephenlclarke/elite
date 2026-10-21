@@ -4230,6 +4230,14 @@
       "verified_methods": 95,
       "verified_expanded_cases": 126,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326974138"
+    },
+    {
+      "event": "Root resolved finite custodian intermediate fuel escrow to unblock real ark route",
+      "ledger_parent": "M10.P01.C08.fuel",
+      "owner": "G1",
+      "custodian_initial_escrow_cr": 1000,
+      "scope": "real reachable hops and docked paid fuel service; retained9LYdrive13LYtank; separate player cash/reward",
+      "usable_build_delivered": false
     }
   ]
 }
