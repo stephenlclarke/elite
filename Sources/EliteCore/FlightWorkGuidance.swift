@@ -271,8 +271,15 @@ extension Game {
     let pose = commander.flightSimulation.pose
     let targetPose = modelPose(of: body)
     let validate: (RelativeWorkSweep) -> RelativeWorkClearance = {
-      HullSweepSafety.validate($0, target: targetHull, player: playerHull, obstacles: obstacles)
-        .clearance
+      let result = HullSweepSafety.validate(
+        $0, target: targetHull, player: playerHull, obstacles: obstacles)
+      switch result.clearance {
+      case .clear: return .clear
+      case .blocked(let reason):
+        return .blocked(
+          "\(reason); obstacle=\(String(describing: result.obstacle)); minimumSampledClearance=\(String(describing: result.minimumSampledClearance)); requiredClearance=\($0.requiredClearance); purpose=\($0.purpose); target=\($0.target.identity)"
+        )
+      }
     }
     let previousStatus = state.status
     switch state.mode {
