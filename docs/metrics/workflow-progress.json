@@ -4297,10 +4297,13 @@
       "issue": "https://github.com/stephenlclarke/elite/issues/37",
       "severity": "P2",
       "reviewed_head": "0c80386daac7606f920118fef36cfb41443ce5f0",
-      "ready_findings": 1,
-      "fix_sha": null,
+      "ready_findings": 0,
+      "fix_sha": "5c70245ea67a6776581ff97cb750f3e01967fdc3",
       "evidence_scope": "source-proven Make recipe scope; no target execution needed",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verification_status": "MBA verified exact recipe-only source correction and closed issue; no target execution",
+      "verification_url": "https://github.com/stephenlclarke/elite/issues/37#issuecomment-6328276618",
+      "closed_at": "2026-10-21T22:49:22Z"
     }
   ]
 }
