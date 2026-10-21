@@ -319,7 +319,8 @@ extension Game {
     _ frame: AsteroidContactFrame?, delta: Double
   ) -> AsteroidContactStepResult {
     guard let frame else {
-      return synchronizeNativeStationInertia(at: commander.flightSimulation.physicalTime)
+      let time = withReadOnlyCommander { $0.flightSimulation.physicalTime }
+      return synchronizeNativeStationInertia(at: time)
         ? .advanced(nil) : .refused("STATION COAST UNPROVEN")
     }
     guard frame.system == systemIdentity, frame.visit == commander.flightSimulation.visit,
