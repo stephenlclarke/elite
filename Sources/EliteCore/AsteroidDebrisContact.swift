@@ -646,11 +646,10 @@ extension Game {
     var pairs = initialPairs
     var contact = first
     var offset = 0.0
-    var previousUpper = 0.0
     var impacts: [DebrisPlannedImpact] = []
     while true {
       let absoluteLower = offset + contact.lowerTime
-      guard impacts.isEmpty || (contact.lowerTime > 0 && absoluteLower >= previousUpper),
+      guard impacts.isEmpty || (contact.lowerTime > 0 && absoluteLower > offset),
         let frontier = HullSweepSafety.nativeFrontierPoses(
           contact,
           sourceHull: trajectories[source].hull, targetHull: trajectories[target].hull),
@@ -671,7 +670,6 @@ extension Game {
           player: playerPose,
           source: debrisPose(trajectories[source].motion, at: contact.upperTime),
           target: debrisPose(trajectories[target].motion, at: contact.upperTime)))
-      previousUpper = offset + contact.upperTime
       let advance = contact.lowerTime
       offset = absoluteLower
       let remainder = delta - offset

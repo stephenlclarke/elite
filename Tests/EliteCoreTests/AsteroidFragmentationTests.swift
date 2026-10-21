@@ -1314,7 +1314,8 @@ extension AsteroidFragmentationTests {
       identity: .init(
         system: context.system, visit: context.visit,
         sequence: sequence, member: 0, producer: .ambient), population: .cargo, hull: .cargo,
-      position: cargoPose.position, orientation: .init(), velocity: .init(0, 0, 0),
+      position: context.player.position + Vector3(0, 0, 1500),
+      orientation: .init(), velocity: .init(0, 0, 0),
       npc: nil, rock: nil, payload: nil, priority: .ordinary)
     let receipts = game.admitEncounterPlan(
       .init(
@@ -1323,6 +1324,9 @@ extension AsteroidFragmentationTests {
       ))
     let actor = try #require(receipts.first?.actor)
     let cargo = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
+    // Admission retains its ordinary stand-off. The live native contact frame
+    // begins only after this already admitted body's independent relocation.
+    game.bodies[cargo].position = game.commander.flightSimulation.pose.shipPoint(cargoPose.position)
     game.bodies[cargo].rotation = 0
     game.bodies[cargo].orientation = .init()
     game.commander.flightSimulation.advancePhysicalTime(0.1)
