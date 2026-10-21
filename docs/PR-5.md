@@ -1,5 +1,7 @@
 # feat: add docked ship showroom and secret galaxy ports
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 Laser mount labels now sit directly above their actual fitted weapons in shared responsive click cells. Every native screen uses the same compact bitmap glyph scale, independent of window/full-screen size and Retina backing. Native ship/map/scanner geometry remains responsive.
 
 The docked W/Command-Shift-W showroom retains 167 ship identities, 158 explicitly labelled comparison refits and 74 corresponding licensed source models. It supports search, model pause, pinned/current-fit comparisons and edition profiles, while freezing simulation and leaving hull/equipment/cargo/mission state untouched. Unknown models remain unavailable; defensible missing specification estimates retain their basis/confidence, while actual fitted statistics remain authoritative; engine-specific units cannot generate misleading differences. Source provenance, SHA256s, adaptation/license notices and app resource packaging are included. Full hull purchase and shipyard transfer/cabin/storage workflows remain future work.

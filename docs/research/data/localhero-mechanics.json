@@ -1,0 +1,3740 @@
+{
+  "package_id": "P22",
+  "source_version": "1.05",
+  "source_url": "https://wiki.alioth.net/img_auth.php/3/36/Localhero_1_05.zip",
+  "provenance": "legacy-source-recovery.json",
+  "ai_definitions": {
+    "harkov01AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "TRAVEL_HARKOV_Ab": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.7",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      },
+      "TRAVEL_HARKOV_Aa": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.8",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ab"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      }
+    },
+    "harkov02AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_HARKOV_Ba"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "TRAVEL_HARKOV_Bb": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.75",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Ba"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Ba"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Ba"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Ba"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Ba"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ba"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      },
+      "TRAVEL_HARKOV_Ba": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.83",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Bb"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      }
+    },
+    "harkov03AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_HARKOV_Ca"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Ca"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Ca"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_Cb": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.69",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Ca"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Ca"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Ca"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ca"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      },
+      "TRAVEL_HARKOV_Ca": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.8",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Cb"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      }
+    },
+    "harkov04AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_HARKOV_Da"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "TRAVEL_HARKOV_Da": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.83",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Db"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Da"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Da"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_Db": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.77",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Da"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Da"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Da"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Da"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      }
+    },
+    "harkov05AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_HARKOV_Ea"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "TRAVEL_HARKOV_Ea": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.8",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Eb"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Ea"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Ea"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Ea"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Ea"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Ea"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ea"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      },
+      "TRAVEL_HARKOV_Eb": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.6",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      }
+    },
+    "harkov06AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_HARKOV_Fa"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Fa"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Fa"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_Fa": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.8",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Fb"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Fa"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Fa"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Fa"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Fa"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      },
+      "TRAVEL_HARKOV_Fb": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.65",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "UPDATE": [
+          "pauseAI: 3.0",
+          "rollD: 3"
+        ]
+      }
+    },
+    "harkovRoll1AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_ROLL_1"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_ROLL_1"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_ROLL_1"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_ROLL_1"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      },
+      "TRAVEL_ROLL_1": {
+        "EXIT": [],
+        "ROLL_6": [
+          "setAITo: harkov06AI.plist"
+        ],
+        "RESTARTED": [
+          "rollD: 6"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "rollD: 6"
+        ],
+        "ROLL_5": [
+          "setAITo: harkov05AI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_4": [
+          "setAITo: harkov04AI.plist"
+        ],
+        "ROLL_3": [
+          "setAITo: harkov03AI.plist"
+        ],
+        "ROLL_2": [
+          "setAITo: harkov02AI.plist"
+        ],
+        "ROLL_1": [
+          "setAITo: harkov01AI.plist"
+        ],
+        "UPDATE": []
+      }
+    },
+    "harkovRoll2AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_ROLL_2"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_ROLL_2"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_ROLL_2"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_ROLL_2": {
+        "ROLL_3": [
+          "setAITo: harkov03AI.plist"
+        ],
+        "ROLL_4": [
+          "setAITo: harkov04AI.plist"
+        ],
+        "ROLL_1": [
+          "setAITo: harkov01AI.plist"
+        ],
+        "ROLL_2": [
+          "setAITo: harkov02AI.plist"
+        ],
+        "UPDATE": [],
+        "RESTARTED": [
+          "rollD: 4"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "rollD: 4"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_ROLL_2"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      }
+    },
+    "harkovescort2AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "LEADED": {
+        "EXIT": [],
+        "RESTARTED": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "ESCORTING": [
+          "setDesiredRangeTo: 0.0",
+          "performEscort"
+        ],
+        "MOTHER_LOST": [
+          "switchAITo: harkovRoll2AI.plist"
+        ],
+        "ENTER": [
+          "performEscort"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "NOT_ESCORTING": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "messageMother: INCOMING_MISSILE"
+        ],
+        "ATTACKED": [
+          "messageMother: ATTACKED"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "TARGET_FOUND": [
+          "performAttack"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "MOTHER_LOST": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "REACHED_SAFETY": [
+          "pauseAI: 10.0",
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ]
+      },
+      "SEARCH_LEADER": {
+        "UPDATE": [],
+        "NO_TARGET": [
+          "switchAITo: harkovRoll2AI.plist"
+        ],
+        "NOTHING_FOUND": [
+          "switchAITo: harkovRoll2AI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "suggestEscort",
+          "setStateTo: LEADED"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "scanForFormationLeader"
+        ],
+        "MOTHER_LOST": [
+          "switchAITo: harkovRoll2AI.plist"
+        ]
+      }
+    },
+    "harkovescortAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "LEADED": {
+        "EXIT": [],
+        "RESTARTED": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "ESCORTING": [
+          "setDesiredRangeTo: 0.0",
+          "performEscort"
+        ],
+        "MOTHER_LOST": [
+          "switchAITo: harkovRoll1AI.plist"
+        ],
+        "ENTER": [
+          "performEscort"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "NOT_ESCORTING": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "messageMother: INCOMING_MISSILE"
+        ],
+        "ATTACKED": [
+          "messageMother: ATTACKED"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "TARGET_FOUND": [
+          "performAttack"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "MOTHER_LOST": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "REACHED_SAFETY": [
+          "pauseAI: 10.0",
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: SEARCH_LEADER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ]
+      },
+      "SEARCH_LEADER": {
+        "UPDATE": [],
+        "NO_TARGET": [
+          "switchAITo: harkovRoll1AI.plist"
+        ],
+        "NOTHING_FOUND": [
+          "switchAITo: harkovRoll1AI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "suggestEscort",
+          "setStateTo: LEADED"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "scanForFormationLeader"
+        ],
+        "MOTHER_LOST": [
+          "switchAITo: harkovRoll1AI.plist"
+        ]
+      }
+    },
+    "harkovhoneypod2AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "switchLightsOff",
+          "performHold",
+          "setStateTo: CHECK_FOR_SHIP"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "HARKOV_COUNT2": {
+        "ENTER": [],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: HARKOV_BOOM"
+        ]
+      },
+      "CHECK_FOR_SHIP": {
+        "ENTER": [],
+        "EXIT": [],
+        "NOTHING_FOUND": [
+          "switchLightsOff"
+        ],
+        "UPDATE": [
+          "setDesiredRangeTo: 800",
+          "scanForNonThargoid"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "switchLightsOn",
+          "setStateTo: HARKOV_COUNT1"
+        ]
+      },
+      "HARKOV_BOOM": {
+        "ENTER": [],
+        "EXIT": [],
+        "NOTHING_FOUND": [
+          "switchLightsOff",
+          "setStateTo: CHECK_FOR_SHIP"
+        ],
+        "UPDATE": [
+          "setDesiredRangeTo: 800",
+          "scanForNonThargoid"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setDesiredRangeTo: 1000",
+          "dealEnergyDamageWithinDesiredRange",
+          "becomeExplosion"
+        ]
+      },
+      "HARKOV_COUNT1": {
+        "ENTER": [],
+        "EXIT": [],
+        "NOTHING_FOUND": [
+          "setStateTo: HARKOV_COUNT2"
+        ],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "scanForNearestShipWithRole: harkov_transporter"
+        ],
+        "TARGET_FOUND": [
+          "switchLightsOff",
+          "setStateTo: CHECK_FOR_SHIP"
+        ]
+      }
+    },
+    "harkovhoneypodAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "switchLightsOff",
+          "performHold",
+          "setStateTo: CHECK_FOR_SHIP"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "CHECK_FOR_SHIP": {
+        "ENTER": [],
+        "EXIT": [],
+        "NOTHING_FOUND": [
+          "switchLightsOff"
+        ],
+        "UPDATE": [
+          "setDesiredRangeTo: 800",
+          "scanForNonThargoid"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "switchLightsOn"
+        ]
+      }
+    },
+    "harkovleaveAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "landOnPlanet",
+          "setStateTo: HARKOV_LEAVE"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "HARKOV_LEAVE": {
+        "ENTER": [
+          "landOnPlanet"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "landOnPlanet"
+        ],
+        "WITCHSPACE BLOCKED": [
+          "setCoordinates: spu 0 0 0.0",
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 4000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WITCHSPACE UNAVAILABLE": [
+          "setCoordinates: spu 0 0 0.0",
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 4000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlyToRangeFromDestination"
+        ]
+      }
+    },
+    "harkovnormal2AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setUpEscorts",
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "TRAVEL_HARKOV_Ab": {
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "rollD: 3"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 4000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.4",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ]
+      },
+      "TRAVEL_HARKOV_Aa": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.8",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 4000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ab"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "rollD: 3"
+        ]
+      }
+    },
+    "harkovnormalAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setUpEscorts",
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "TRAVEL_HARKOV_Ab": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.6",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "rollD: 3"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "performAttack"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Aa"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ]
+      },
+      "TRAVEL_HARKOV_Aa": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.8",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 300.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setSpeedTo: 300.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ab"
+        ],
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "rollD: 3"
+        ]
+      }
+    },
+    "harkovpod1AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: HARKOVS_POD"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "HARKOVS_POD": {
+        "ENTER": [],
+        "EXIT": [],
+        "UPDATE": []
+      }
+    },
+    "harkovpodAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: HARKOVS_LAST_WILL1"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "HARKOVS_LAST_WILL2": {
+        "ENTER": [
+          "sendScriptMessage: harkovWill1"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 10.0",
+          "setStateTo: HARKOVS_LAST_WILL3"
+        ]
+      },
+      "HARKOVS_LAST_WILL": {
+        "ENTER": [
+          "setDesiredRangeTo: 5000",
+          "becomeEnergyBlast"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "HARKOVS_LAST_WILL3": {
+        "ENTER": [
+          "sendScriptMessage: harkovWill2"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 10.0",
+          "setStateTo: HARKOVS_LAST_WILL4"
+        ]
+      },
+      "HARKOVS_LAST_WILL4": {
+        "ENTER": [
+          "sendScriptMessage: harkovWill3"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 10.0",
+          "setStateTo: HARKOVS_LAST_WILL"
+        ]
+      },
+      "HARKOVS_LAST_WILL1": {
+        "ENTER": [],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 10.0",
+          "setStateTo: HARKOVS_LAST_WILL2"
+        ]
+      }
+    },
+    "harkovraidgAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setSpeedTo: 400.0",
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "UPDATE": [],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "fireMissile",
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: CHECK_POSITION"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_G": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "setDesiredRangeTo: 12500.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "EXIT": [],
+        "UPDATE": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ]
+      },
+      "TRAVEL_HARKOV_Ga": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performIntercept",
+          "setDesiredRangeTo: 5000.0",
+          "setSpeedFactorTo: 0.9"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: SCAN1"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedFactorTo: 0.1",
+          "setStateTo: TRAVEL_HARKOV_Gb"
+        ]
+      },
+      "FLEE": {
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "performFlee",
+          "setSpeedFactorTo: 5.0",
+          "setDesiredRangeTo: 12000.0"
+        ],
+        "TARGET_LOST": [
+          "scanForHostiles"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "scanForHostiles"
+        ],
+        "REACHED_SAFETY": [
+          "scanForHostiles"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: CHECK_POSITION"
+        ]
+      },
+      "SCAN2": {
+        "ROLL_1": [
+          "scanForNearestShipWithRole: harkov_shuttle2"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_HARKOV_Gb"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "ENTER": [
+          "rollD: 2"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_Gb": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performFlee",
+          "setDesiredRangeTo: 12000.0",
+          "setSpeedFactorTo: 0.9"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: SCAN2"
+        ],
+        "REACHED_SAFETY": [
+          "setSpeedFactorTo: 0.1",
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ]
+      },
+      "CHECK_POSITION": {
+        "UPDATE": [
+          "abortDocking"
+        ],
+        "NO_STATION_FOUND": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "APPROACH": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "BACK_OFF": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Gb"
+        ],
+        "ENTER": [
+          "requestDockingCoordinates"
+        ],
+        "APPROACH_COORDINATES": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ],
+        "EXIT": [],
+        "TRY_AGAIN_LATER": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ]
+      },
+      "SCAN1": {
+        "ROLL_1": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: harkov_shuttle2"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "ENTER": [
+          "rollD: 2"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    },
+    "harkovraidpAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setSpeedTo: 400.0",
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "UPDATE": [],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: CHECK_POSITION"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_G": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "setDesiredRangeTo: 12500.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "EXIT": [],
+        "UPDATE": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ]
+      },
+      "TRAVEL_HARKOV_Ga": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performIntercept",
+          "setDesiredRangeTo: 5000.0",
+          "setSpeedFactorTo: 0.9"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: SCAN1"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedFactorTo: 0.1",
+          "setStateTo: TRAVEL_HARKOV_Gb"
+        ]
+      },
+      "FLEE": {
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "performFlee",
+          "setSpeedFactorTo: 5.0",
+          "setDesiredRangeTo: 12000.0"
+        ],
+        "TARGET_LOST": [
+          "scanForHostiles"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "scanForHostiles"
+        ],
+        "REACHED_SAFETY": [
+          "scanForHostiles"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: CHECK_POSITION"
+        ]
+      },
+      "SCAN2": {
+        "ROLL_3": [
+          "scanForNearestShipWithRole: interceptor"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_HARKOV_Gb"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: escort"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "ENTER": [
+          "rollD: 3"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_Gb": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performFlee",
+          "setDesiredRangeTo: 12000.0",
+          "setSpeedFactorTo: 0.9"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: SCAN2"
+        ],
+        "REACHED_SAFETY": [
+          "setSpeedFactorTo: 0.1",
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ]
+      },
+      "CHECK_POSITION": {
+        "UPDATE": [
+          "abortDocking"
+        ],
+        "NO_STATION_FOUND": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "APPROACH": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_G"
+        ],
+        "BACK_OFF": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Gb"
+        ],
+        "ENTER": [
+          "requestDockingCoordinates"
+        ],
+        "APPROACH_COORDINATES": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ],
+        "EXIT": [],
+        "TRY_AGAIN_LATER": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ]
+      },
+      "SCAN1": {
+        "ROLL_3": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_HARKOV_Ga"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: police"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: defense_ship"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "ENTER": [
+          "rollD: 3"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    },
+    "harkovraidsAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setSpeedTo: 400.0",
+          "setStateTo: TRAVEL_HARKOV_H"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "LOOT": {
+        "UPDATE": [],
+        "CARGO_SCOOPED": [
+          "performIdle",
+          "setStateTo: TRAVEL_HARKOV_Hb"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "performCollect"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "TARGET_LOST": [
+          "performIdle",
+          "setStateTo: TRAVEL_HARKOV_Hb"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "UPDATE": [],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "setStateTo: TRAVEL_HARKOV_H"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: TRAVEL_HARKOV_Ha"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_Ha": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performIntercept",
+          "setDesiredRangeTo: 5000.0",
+          "setSpeedFactorTo: 0.9"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: SCAN1"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedFactorTo: 0.1",
+          "setStateTo: TRAVEL_HARKOV_Hb"
+        ]
+      },
+      "FLEE": {
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "performFlee",
+          "setSpeedFactorTo: 5.0",
+          "setDesiredRangeTo: 12000.0"
+        ],
+        "TARGET_LOST": [
+          "scanForHostiles"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "setStateTo: TRAVEL_HARKOV_H"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "scanForHostiles"
+        ],
+        "REACHED_SAFETY": [
+          "scanForHostiles"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: CHECK_POSITION"
+        ]
+      },
+      "SCAN2": {
+        "UPDATE": [],
+        "NO_TARGET": [
+          "setStateTo: TRAVEL_HARKOV_Hb"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_HARKOV_Hb"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: LOOT"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "checkForFullHold",
+          "scanForLoot"
+        ],
+        "HOLD_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Hb"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "CHECK_POSITION": {
+        "UPDATE": [
+          "abortDocking"
+        ],
+        "NO_STATION_FOUND": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_H"
+        ],
+        "APPROACH": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ha"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_H"
+        ],
+        "BACK_OFF": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Hb"
+        ],
+        "ENTER": [
+          "requestDockingCoordinates"
+        ],
+        "APPROACH_COORDINATES": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ha"
+        ],
+        "EXIT": [],
+        "TRY_AGAIN_LATER": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ha"
+        ]
+      },
+      "TRAVEL_HARKOV_Hb": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performFlee",
+          "setDesiredRangeTo: 12000.0",
+          "setSpeedFactorTo: 0.9"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: SCAN2"
+        ],
+        "REACHED_SAFETY": [
+          "setSpeedFactorTo: 0.1",
+          "setStateTo: TRAVEL_HARKOV_Ha"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ]
+      },
+      "SCAN1": {
+        "ROLL_3": [
+          "scanForNearestShipWithRole: harkov_shuttle2"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_HARKOV_Ha"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: harkov_shuttle1"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "ENTER": [
+          "rollD: 3"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_H": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "setDesiredRangeTo: 12500.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "EXIT": [],
+        "UPDATE": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ha"
+        ]
+      }
+    },
+    "harkovraidtAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setSpeedTo: 400.0",
+          "setStateTo: TRAVEL_HARKOV_J"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "ATTACK_SHIP": {
+        "UPDATE": [],
+        "TARGET_LOST": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "setStateTo: TRAVEL_HARKOV_J"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "commsMessage: [PROJECT_TEXT_REQUIRED]",
+          "setStateTo: CHECK_POSITION"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: CHECK_POSITION"
+        ],
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "performFlee",
+          "setSpeedFactorTo: 5.0",
+          "setDesiredRangeTo: 12000.0"
+        ],
+        "TARGET_LOST": [
+          "scanForHostiles"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "setStateTo: TRAVEL_HARKOV_J"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "scanForHostiles"
+        ],
+        "REACHED_SAFETY": [
+          "scanForHostiles"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: CHECK_POSITION"
+        ]
+      },
+      "TRAVEL_HARKOV_J": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "setDesiredRangeTo: 12500.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "EXIT": [],
+        "UPDATE": [],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Ja"
+        ]
+      },
+      "CHECK_POSITION": {
+        "UPDATE": [
+          "abortDocking"
+        ],
+        "NO_STATION_FOUND": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_J"
+        ],
+        "APPROACH": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ja"
+        ],
+        "AEGIS_LEAVING_DOCKING_RANGE": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_J"
+        ],
+        "BACK_OFF": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Jb"
+        ],
+        "ENTER": [
+          "requestDockingCoordinates"
+        ],
+        "APPROACH_COORDINATES": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ja"
+        ],
+        "EXIT": [],
+        "TRY_AGAIN_LATER": [
+          "abortDocking",
+          "setStateTo: TRAVEL_HARKOV_Ja"
+        ]
+      },
+      "SCAN2": {
+        "ROLL_3": [
+          "scanForNearestShipWithRole: scavenger"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_HARKOV_Jb"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: harkov_shuttle2"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: player"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "ENTER": [
+          "rollD: 3"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_HARKOV_Ja": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performIntercept",
+          "setDesiredRangeTo: 5000.0",
+          "setSpeedFactorTo: 0.9"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: SCAN1"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedFactorTo: 0.1",
+          "setStateTo: TRAVEL_HARKOV_Jb"
+        ]
+      },
+      "TRAVEL_HARKOV_Jb": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performFlee",
+          "setDesiredRangeTo: 12000.0",
+          "setSpeedFactorTo: 0.9"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "pauseAI: 1.0",
+          "setStateTo: SCAN2"
+        ],
+        "REACHED_SAFETY": [
+          "setSpeedFactorTo: 0.1",
+          "setStateTo: TRAVEL_HARKOV_Ja"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ]
+      },
+      "SCAN1": {
+        "ROLL_3": [
+          "scanForNearestShipWithRole: escort"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_HARKOV_Ja"
+        ],
+        "ROLL_1": [
+          "scanForNearestShipWithRole: trader"
+        ],
+        "ROLL_2": [
+          "scanForNearestShipWithRole: harkov_shuttle1"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "ENTER": [
+          "rollD: 3"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    },
+    "harkovshuttleAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: HEAD_FOR_PLANET"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "GO_TO_COORDS": {
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "FACING_DESTINATION": [
+          "recallDockingInstructions",
+          "performFlyToRangeFromDestination"
+        ],
+        "DOCKING_ABORTED": [
+          "setStateTo: ABORT"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "RESTART_DOCKING": [
+          "setStateTo: DO_STATION"
+        ],
+        "ENTER": [
+          "performFaceDestination"
+        ],
+        "FRUSTRATED": [
+          "setSpeedFactorTo: 0.0",
+          "performFaceDestination"
+        ],
+        "COLLISION": [
+          "setStateTo: ABORT"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ]
+      },
+      "GO_TO_STATION": {
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "fightOrFleeHostiles"
+        ],
+        "UPDATE": [
+          "scanForHostiles",
+          "pauseAI: 2.0"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "AEGIS_IN_DOCKING_RANGE": [
+          "setTargetToSystemStation",
+          "setStateTo: DO_STATION"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDesiredRangeTo: 5000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setTargetToSystemStation",
+          "setStateTo: DO_STATION"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "abortDocking",
+          "broadcastDistressMessage",
+          "setTargetToPrimaryAggressor",
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "performTumble",
+          "setStateTo: CHECKAEGIS"
+        ],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "TARGET_LOST": [
+          "performTumble",
+          "setStateTo: CHECKAEGIS"
+        ]
+      },
+      "HEAD_FOR_PLANET": {
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "AEGIS_CLOSE_TO_PLANET": [
+          "setStateTo: GO_TO_STATION"
+        ],
+        "TARGET_FOUND": [
+          "fightOrFleeHostiles"
+        ],
+        "UPDATE": [
+          "setCourseToPlanet",
+          "setDesiredRangeTo: 30000.0",
+          "checkCourseToDestination",
+          "scanForHostiles",
+          "pauseAI: 10.0"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "AEGIS_IN_DOCKING_RANGE": [
+          "setStateTo: GO_TO_STATION"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setCourseToPlanet",
+          "setDesiredRangeTo: 30000.0",
+          "setSpeedFactorTo: 1.0",
+          "checkCourseToDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: GO_TO_STATION"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "AWAIT_COORDS": {
+        "EXIT": [],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "UPDATE": [],
+        "ENTER": [],
+        "DOCKING_ABORTED": [
+          "setStateTo: ABORT"
+        ],
+        "APPROACH_COORDINATES": [
+          "setStateTo: GO_TO_COORDS"
+        ],
+        "BACK_OFF": [
+          "setStateTo: RETREAT"
+        ],
+        "RESTART_DOCKING": [
+          "setStateTo: DO_STATION"
+        ],
+        "HOLD_POSITION": [
+          "setStateTo: STATIONKEEPING"
+        ],
+        "APPROACH": [
+          "setStateTo: APPROACH"
+        ],
+        "TRY_AGAIN_LATER": [
+          "pauseAI: 20.0",
+          "setStateTo: STATIONKEEPING"
+        ],
+        "COLLISION": [
+          "setStateTo: ABORT"
+        ]
+      },
+      "FLEE": {
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "fightOrFleeMissile",
+          "fightOrFleeHostiles"
+        ],
+        "UPDATE": [],
+        "FIGHTING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: CHECKAEGIS"
+        ],
+        "FLEEING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "abortDocking",
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_DESTROYED": [
+          "performTumble",
+          "setStateTo: CHECKAEGIS"
+        ],
+        "TARGET_LOST": [
+          "performTumble",
+          "setStateTo: CHECKAEGIS"
+        ],
+        "ATTACKED": [
+          "fightOrFleeHostiles"
+        ]
+      },
+      "CHECKAEGIS": {
+        "UPDATE": [],
+        "FACING_DESTINATION": [
+          "setDesiredRangeTo: 5000.0",
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "GONE_BEYOND_RANGE": [
+          "setSpeedFactorTo: 0.0",
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "performStop",
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performFaceDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedFactorTo: 0.0",
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "APPROACH": {
+        "DESIRED_RANGE_ACHIEVED": [
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "UPDATE": [],
+        "DOCKING_ABORTED": [
+          "setStateTo: ABORT"
+        ],
+        "EXIT": [],
+        "RESTART_DOCKING": [
+          "setStateTo: DO_STATION"
+        ],
+        "ENTER": [
+          "recallDockingInstructions",
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "COLLISION": [
+          "setStateTo: ABORT"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "STATIONKEEPING": {
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "performIdle",
+          "setSpeedFactorTo: 0.0",
+          "pauseAI: 10.0"
+        ],
+        "EXIT": [],
+        "UPDATE": [
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ]
+      },
+      "DO_STATION": {
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setSpeedFactorTo: 0.0",
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "EXIT": [],
+        "UPDATE": [],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ]
+      },
+      "ABORT": {
+        "UPDATE": [],
+        "FACING_DESTINATION": [
+          "setSpeedFactorTo: 1.0",
+          "setDesiredRangeTo: 500.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: CHECKAEGIS"
+        ],
+        "EXIT": [],
+        "RESTART_DOCKING": [
+          "setStateTo: CHECKAEGIS"
+        ],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "abortDocking",
+          "setSpeedFactorTo: 0.0",
+          "setDestinationToDockingAbort",
+          "setDesiredRangeTo: 500.0",
+          "performFaceDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: CHECKAEGIS"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "RETREAT": {
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "FACING_DESTINATION": [
+          "setSpeedFactorTo: 1.0",
+          "setDesiredRangeTo: 500.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DOCKING_ABORTED": [
+          "setStateTo: ABORT"
+        ],
+        "UPDATE": [],
+        "EXIT": [],
+        "RESTART_DOCKING": [
+          "setStateTo: DO_STATION"
+        ],
+        "ENTER": [
+          "recallDockingInstructions",
+          "setSpeedFactorTo: 0.0",
+          "setDestinationToDockingAbort",
+          "performFaceDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "setStateTo: FLEE"
+        ],
+        "COLLISION": [
+          "setStateTo: ABORT"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedFactorTo: 0.0",
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ]
+      }
+    },
+    "harkovtransportAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: TRAVEL_HARKOV_Za"
+        ],
+        "EXIT": [],
+        "UPDATE": []
+      },
+      "TRAVEL_HARKOV_Za": {
+        "WAYPOINT_SET": [
+          "setSpeedTo: 380.0",
+          "setDesiredRangeTo: 50.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "UPDATE": [],
+        "COURSE_OK": [
+          "setDesiredRangeTo: 10000.0",
+          "setSpeedTo: 380.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setCoordinates: wpu 0 0 0.8",
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: HARKOV_CHECKPLAYER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "HARKOV_CHECKPLAYER": {
+        "ENTER": [],
+        "EXIT": [],
+        "NOTHING_FOUND": [
+          "setStateTo: HARKOV_DROP"
+        ],
+        "UPDATE": [
+          "pauseAI: 3",
+          "scanForNearestShipWithRole: player"
+        ],
+        "TARGET_FOUND": [
+          "performIdle"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Za"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: TRAVEL_HARKOV_Za"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_HARKOV_Za"
+        ],
+        "UPDATE": [],
+        "ENERGY_FULL": [
+          "setStateTo: TRAVEL_HARKOV_Za"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: TRAVEL_HARKOV_Za"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDesiredRangeTo: 15000.0",
+          "setSpeedFactorTo: 5.0",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: TRAVEL_HARKOV_Za"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ]
+      },
+      "HARKOV_DROP": {
+        "ROLL_5": [
+          "performHyperSpaceExit"
+        ],
+        "ROLL_3": [
+          "performTumble",
+          "sendScriptMessage: localheroTranspA"
+        ],
+        "FACING_DESTINATION": [
+          "performTumble",
+          "setSpeedTo: 30.0",
+          "pauseAI: 5.0"
+        ],
+        "ROLL_1": [
+          "performTumble",
+          "sendScriptMessage: localheroTranspA"
+        ],
+        "ROLL_4": [
+          "performTumble",
+          "sendScriptMessage: localheroTranspA"
+        ],
+        "ROLL_2": [
+          "performTumble",
+          "sendScriptMessage: localheroTranspA"
+        ],
+        "HARKOV_LEAVEZONE": [
+          "landOnPlanet"
+        ],
+        "UPDATE": [
+          "pauseAI: 5.0",
+          "rollD: 5"
+        ],
+        "HARKOV_NEXTDROP": [
+          "setSpeedTo: 30.0"
+        ],
+        "ENTER": [
+          "setTargetToSystemStation",
+          "setDestinationToTarget",
+          "performFaceDestination"
+        ],
+        "EXIT": []
+      }
+    }
+  },
+  "source_missing_ai_references": [],
+  "ai_sha256": {
+    "harkovleaveAI.plist": "e3f14778c978a353228437dad6ee75f1e1e3e700d57d74eaa46aa47f1a6b43e5",
+    "harkov06AI.plist": "4f70a65446e04c926e109c24ac6adf63d198e0a05a837670790db8e9429811fb",
+    "harkovpodAI.plist": "77556c6205d7f933d862117c9244d9e4135799c3d18c228d6d9561bb6dbc97f7",
+    "harkov05AI.plist": "5cf836f82bae1f965d54d0ebd5331ca43080b55ea4b2023175ed2cfcdfb6fc74",
+    "harkovtransportAI.plist": "10072196db5d8b6abc856f5cac83537bcd9ae7060188d494aec75611313e9e63",
+    "harkovraidtAI.plist": "db297d89ffebcff337d95be41d942403bccd2410b789349dcb8457cb4a375173",
+    "harkovnormal2AI.plist": "e4054bdc6e262d8113c29bf2e8f94aef4642aa331c7aa25aa86c00b01cb00ae3",
+    "harkov04AI.plist": "e17ed2dc178243cc01952b12add4884e062a4897073d60483c67ba1d0bbe88f9",
+    "harkov01AI.plist": "bd9d5b023b6998b6b7610c4635ec9a86881b9c6545e7a7bd30a468a0009c7f4e",
+    "harkovraidpAI.plist": "1b00b899ac25bf6e412ae836ef7f49eed988fa8e6a374c303e9ca978ba093144",
+    "harkovhoneypod2AI.plist": "c2d73a74efa9dff11526556b7727c1d4c7af761325943d898a1f6c5b2f25debc",
+    "harkovnormalAI.plist": "1db18ae97f4842326cededd5a1c7103130eea535932d97e89a497e2a30382b7d",
+    "harkovhoneypodAI.plist": "ffb7b6c1136f882fc5ed10ce742c50b7b6703d7223a5827e74d7490ffe156b42",
+    "harkovRoll2AI.plist": "e165751fb3c3fcf27eb0b3efc19e3415ea53d2a51e7dfbc13cc95542da8bc781",
+    "harkovraidsAI.plist": "62cf24b665ba3fb99ee947dcdd6f13d97d743b3e193ac9b02f3c5ef77e6a3774",
+    "harkovpod1AI.plist": "c6cf7511f279d2fb97f06a664b244beaf70150ef393c449d39ed8af20d74e142",
+    "harkovshuttleAI.plist": "a19b2cb4020ad4d09bff6bb0fc225148562b99daa5fd9086a202fb10230086c4",
+    "harkovescortAI.plist": "7f1b480ccfca6da12b6a57c26313db477a057f9d10ee3ac5c095194d8f10b88d",
+    "harkov02AI.plist": "c25c16fbf7108ef492b02f489bf98b04cdcea6d3e64d7f3d8f47b4d608aa17a8",
+    "harkovescort2AI.plist": "f7f80123f4a34ca4ecc7944fef68a8098d401c856d0768aa90172f6e5c624814",
+    "harkovRoll1AI.plist": "507a41a1a7a9b5b189174a4bb65b8d07f40f6d35ccffa787b874a26cb84e3bec",
+    "harkov03AI.plist": "568a30499a3b0d96eb0601f10bbb97b68733c9785a514fb8036a42a5ce3c16ee",
+    "harkovraidgAI.plist": "73e9c4ac1959aeb30390504be1866c6048c4d23e5c2609fc072a4b9d50e3e773"
+  },
+  "ship_resources": "legacy-expansion-resources.json; package P22,38 definitions; not38 unique hulls",
+  "repair_profile": "localhero-mission-specifications.md",
+  "limits": [
+    "Factual source command/state tables only; original models/audio/dialogue are not copied.",
+    "Old API/missing AI/typed-variable repairs are explicit project adaptations; native Oolite1.71 parity unverified."
+  ],
+  "engine_references": [
+    {
+      "path": "src/Core/Entities/OOQuiriumCascadeEntity.m",
+      "url": "https://raw.githubusercontent.com/OoliteProject/oolite/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/OOQuiriumCascadeEntity.m",
+      "sha256": "ebc355e3518c3aec0d0eaca60b421b2ced4e96ebc773232645cd2fc4668e0e8a",
+      "selected_rules": {
+        "duration_seconds": 20,
+        "collision_delay_seconds": 0.05,
+        "expansion_speed": "min(240+10/(t/20)^2,1000), t>0",
+        "damage_per_update": "dt*(100000-90000*t/20)",
+        "removal": "t>20",
+        "attribution": "source owner; EQ_QC_MINE"
+      }
+    }
+  ],
+  "engine_profile_note": "Current pinned O08 engine semantics, explicitly borrowed for project compatibility, not proof of Oolite1.71 timing.",
+  "model_envelopes": [
+    {
+      "file": "harkovshuttle.dat",
+      "sha256": "b91a620f5901d38a7837f20ef9bb35de6b9edef7412e790de11c3c76be5c1e7f",
+      "vertex_count": 254,
+      "minimum_xyz": [
+        -19.66126,
+        -1.48121,
+        -33.42234
+      ],
+      "maximum_xyz": [
+        19.66126,
+        21.95505,
+        33.42234
+      ],
+      "dimensions_xyz": [
+        39.32252,
+        23.43626,
+        66.84468
+      ],
+      "units": "source model units; hull bounding box, not usable cargo volume"
+    },
+    {
+      "file": "harkovgl.dat",
+      "sha256": "dcc2d9904082dd8581e2c901fdf75de3d0cec7156494745b812300a7c2f99f73",
+      "vertex_count": 55,
+      "minimum_xyz": [
+        -30.95343,
+        -8.17295,
+        -62.59553
+      ],
+      "maximum_xyz": [
+        30.95343,
+        29.57385,
+        62.59553
+      ],
+      "dimensions_xyz": [
+        61.90686,
+        37.7468,
+        125.19106
+      ],
+      "units": "source model units; hull bounding box, not usable cargo volume"
+    },
+    {
+      "file": "harkovgm.dat",
+      "sha256": "933beaad5d5be3912e806dcc2fb4b17330e813f09cc4368b547962e5eec7dc46",
+      "vertex_count": 78,
+      "minimum_xyz": [
+        -24.94273,
+        -1.44708,
+        -22.48173
+      ],
+      "maximum_xyz": [
+        24.59744,
+        11.84611,
+        16.43128
+      ],
+      "dimensions_xyz": [
+        49.54017,
+        13.29319,
+        38.91301
+      ],
+      "units": "source model units; hull bounding box, not usable cargo volume"
+    },
+    {
+      "file": "harkov.dat",
+      "sha256": "2716169d5e1fb759bb9465f4a3787015811e4e212b1607c62860b5a641fe5c6d",
+      "vertex_count": 52,
+      "minimum_xyz": [
+        -33.24257,
+        -4.65381,
+        -43.29805
+      ],
+      "maximum_xyz": [
+        33.23827,
+        20.85487,
+        50.30195
+      ],
+      "dimensions_xyz": [
+        66.48084,
+        25.50868,
+        93.6
+      ],
+      "units": "source model units; hull bounding box, not usable cargo volume"
+    }
+  ],
+  "omitted_narrative_commands": [
+    {
+      "ai": "harkov01AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkov02AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkov03AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkov04AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkov05AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkov06AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkovRoll1AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkovRoll2AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkovnormal2AI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkovnormalAI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkovraidgAI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkovraidpAI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkovraidsAI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    },
+    {
+      "ai": "harkovraidtAI.plist",
+      "state": "ATTACK_SHIP",
+      "event": "TARGET_DESTROYED",
+      "command_index": 0,
+      "sha256": "8c5d648d3c87375ca5de4035be55a7358fcb03f9e41e1165edaee54c38dcf66d"
+    }
+  ]
+}

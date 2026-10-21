@@ -1,0 +1,194 @@
+{
+  "package_id": "P10",
+  "package_version": "1.7.2",
+  "script_version": "1.7.1",
+  "method": "Original callback bodies with O08-based object-scope approximation and explicit mocked APIs; not native physics/AI parity.",
+  "case_count": 30,
+  "cases": [
+    {
+      "event": "offer-probability",
+      "reputation": -10,
+      "rng": 0.199,
+      "offered": true
+    },
+    {
+      "event": "offer-probability",
+      "reputation": -10,
+      "rng": 0.2,
+      "offered": false
+    },
+    {
+      "event": "offer-probability",
+      "reputation": 0,
+      "rng": 0.399,
+      "offered": true
+    },
+    {
+      "event": "offer-probability",
+      "reputation": 0,
+      "rng": 0.4,
+      "offered": false
+    },
+    {
+      "event": "offer-probability",
+      "reputation": 20,
+      "rng": 0.799,
+      "offered": true
+    },
+    {
+      "event": "offer-probability",
+      "reputation": 20,
+      "rng": 0.8,
+      "offered": false
+    },
+    {
+      "event": "government-filter",
+      "government": 0,
+      "offers": 1
+    },
+    {
+      "event": "government-filter",
+      "government": 1,
+      "offers": 1
+    },
+    {
+      "event": "government-filter",
+      "government": 2,
+      "offers": 1
+    },
+    {
+      "event": "government-filter",
+      "government": 3,
+      "offers": 1
+    },
+    {
+      "event": "government-filter",
+      "government": 4,
+      "offers": 1
+    },
+    {
+      "event": "government-filter",
+      "government": 5,
+      "offers": 1
+    },
+    {
+      "event": "government-filter",
+      "government": 6,
+      "offers": 0
+    },
+    {
+      "event": "government-filter",
+      "government": 7,
+      "offers": 0
+    },
+    {
+      "event": "launch-deadline",
+      "now_minutes": 279.99,
+      "expires": 280,
+      "active": true,
+      "rep": 0
+    },
+    {
+      "event": "launch-deadline",
+      "now_minutes": 280,
+      "expires": 280,
+      "active": false,
+      "rep": -1
+    },
+    {
+      "event": "launch-deadline",
+      "now_minutes": 281,
+      "expires": 280,
+      "active": false,
+      "rep": -1
+    },
+    {
+      "event": "aegis",
+      "hostile": false,
+      "status": "success"
+    },
+    {
+      "event": "aegis",
+      "hostile": true,
+      "status": true
+    },
+    {
+      "event": "success-debrief-twice",
+      "credits": 320,
+      "rep": 20
+    },
+    {
+      "event": "player-damage",
+      "damage": 100,
+      "warnings": 1,
+      "active": true,
+      "rep": 0
+    },
+    {
+      "event": "player-damage",
+      "damage": 201,
+      "warnings": 3,
+      "active": true,
+      "rep": 0
+    },
+    {
+      "event": "player-damage",
+      "damage": 301,
+      "warnings": 5,
+      "active": false,
+      "rep": -2
+    },
+    {
+      "event": "torus-sync",
+      "distance": 500,
+      "heading_dot": 1,
+      "synced": false
+    },
+    {
+      "event": "torus-sync",
+      "distance": 500.1,
+      "heading_dot": 1,
+      "synced": true
+    },
+    {
+      "event": "torus-sync",
+      "distance": 2500,
+      "heading_dot": 1,
+      "synced": true
+    },
+    {
+      "event": "torus-sync",
+      "distance": 2500.1,
+      "heading_dot": 1,
+      "synced": false
+    },
+    {
+      "event": "torus-sync",
+      "distance": 1000,
+      "heading_dot": 0.98,
+      "synced": false
+    },
+    {
+      "event": "torus-sync",
+      "distance": 1000,
+      "heading_dot": 0.981,
+      "synced": true
+    },
+    {
+      "event": "follow-timer",
+      "mother_mass": 200000,
+      "seconds": 100
+    }
+  ],
+  "pass": true,
+  "sources": [
+    {
+      "path": "Scripts/Escort_Contracts.js",
+      "sha256": "d96b22e95f12645592eaf8b0c142d6b9a7ee3f3ed8341d93fef667f56b2b18ac"
+    },
+    {
+      "path": "Scripts/ec_mother.js",
+      "sha256": "93f6e8c5fe3b497b4c9e3d1e49e77577e2d24622061e9297133e11865b87a61a"
+    }
+  ]
+}

@@ -1,0 +1,951 @@
+{
+  "source": "https://canonn.science/codex/ram-tah-mission-route/",
+  "source_sha256": "38ea9d597edea11858632abcf91f58bcf2b3abb27fad330a70e363fcbb8f915d",
+  "sites": [
+    {
+      "site": "GR11",
+      "location_as_published": "SYNUEFE TP-F B44-0 / CD 1, POI: Ancient Ruins (1) (Alpha) @ 54.10, 141.15 (4.0/Live) or 31.86, -100.03 (3.8/Legacy); 734 LY, 1186 LS, 17/101"
+    },
+    {
+      "site": "GR25",
+      "location_as_published": "HIP 39768 / A 14 F, POI: Ancient Ruins (2) (Beta) @ 49.46, -85.72 (4.0/Live) or -0.01, -149.47 (3.8/Legacy); 84 LY, 6861 LS, 29/101"
+    },
+    {
+      "site": "GR89",
+      "location_as_published": "SYNUEFE ZL-J D10-109 / E 3, POI: Ancient Ruins (2) (Beta) @ 37.44, 84.86 (4.0/Live) or -26.65, -148.43 (3.8/Legacy); 71 LY, 92424 LS, 40/101"
+    },
+    {
+      "site": "GS67",
+      "location_as_published": "COL 173 SECTOR OE-P D6-11 / B 3, POI: Ancient Ruins (3) (Beta) @ -35.28, -130.54 (4.0/Live) or 2.00, -10.67 (3.8/Legacy); 170 LY, 34463 LS, 48/101"
+    },
+    {
+      "site": "GR35",
+      "location_as_published": "COL 173 SECTOR LY-Q D5-59 / 8 B @, POI: Ancient Ruins (1) (Alpha) -6.34, 130.67; 101 LY, 1169 LS, 56/101"
+    },
+    {
+      "site": "GR28",
+      "location_as_published": "COL 173 SECTOR XG-J C10-17 / A 2, POI: Ancient Ruins (1) (Beta) @ (4.0/Live) or -17.00, 44.24 (3.8/Legacy); 46 LY, 290 LS, 59/101"
+    },
+    {
+      "site": "GR159",
+      "location_as_published": "COL 173 SECTOR UU-O D6-20 / 6 D, POI: Ancient Ruins (1) (Alpha) @ -17.39, -104.85; 138 LY, 796 LS, 66/101"
+    },
+    {
+      "site": "GR123",
+      "location_as_published": "COL 173 SECTOR UU-O D6-30 / 4 D, POI: Ancient Ruins (2) (Gamma) @ 24.73, -133.21; 29 LY, 920 LS, 84/101"
+    },
+    {
+      "site": "GR132",
+      "location_as_published": "COL 173 SECTOR YG-A C15-20 / A 1, POI: Ancient Ruins (1) (Beta) @ 27.03, -85.83 (4.0/Live) or -71.00, 169.85 (3.8/Legacy); 0 LY, 249 LS, 86/101"
+    },
+    {
+      "site": "GR131",
+      "location_as_published": "COL 173 SECTOR YG-A C15-20 / A 1, POI: Ancient Ruins (2) (Gamma) @ 40.77, -21.05 (4.0/Live) or 69.19, -63.96 (3.8/Legacy); 160 LY, 249 LS, 94/101"
+    },
+    {
+      "site": "GR119",
+      "location_as_published": "COL 173 SECTOR OC-C B29-1 / A 4, POI: Ancient Ruins (1) (Gamma) @ 21.11, 54.58; 111 LY, 96 LS, 101/101"
+    }
+  ],
+  "scans": [
+    {
+      "site": "GR11",
+      "obelisk": "C1",
+      "items": [
+        "To",
+        "Ur"
+      ],
+      "log": "C4"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "C6",
+      "items": [
+        "To",
+        "Ta"
+      ],
+      "log": "C5"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "D1",
+      "items": [
+        "To",
+        "Or"
+      ],
+      "log": "C6"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "G2",
+      "items": [
+        "Ca",
+        "Ur"
+      ],
+      "log": "H3"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "G3",
+      "items": [
+        "Ca",
+        "Or"
+      ],
+      "log": "H5"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "J1",
+      "items": [
+        "Ca"
+      ],
+      "log": "H1"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "J5",
+      "items": [
+        "Ca",
+        "Ta"
+      ],
+      "log": "H4"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "M5",
+      "items": [
+        "Ta",
+        "Or"
+      ],
+      "log": "L5"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "M10",
+      "items": [
+        "Ta",
+        "Ta"
+      ],
+      "log": "L2"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "M19",
+      "items": [
+        "Ta",
+        "Ca"
+      ],
+      "log": "L3"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "M20",
+      "items": [
+        "Ta",
+        "Ur"
+      ],
+      "log": "L4"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "N5",
+      "items": [
+        "Ca",
+        "To"
+      ],
+      "log": "H6"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "O7",
+      "items": [
+        "Or"
+      ],
+      "log": "T1"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "O15",
+      "items": [
+        "Or",
+        "Or"
+      ],
+      "log": "T2"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "O19",
+      "items": [
+        "Or",
+        "Ta"
+      ],
+      "log": "T5"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "P7",
+      "items": [
+        "Or",
+        "Ca"
+      ],
+      "log": "T3"
+    },
+    {
+      "site": "GR11",
+      "obelisk": "P9",
+      "items": [
+        "Or",
+        "Ur"
+      ],
+      "log": "T4"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "C10",
+      "items": [
+        "Ta",
+        "Ca"
+      ],
+      "log": "L10"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "C20",
+      "items": [
+        "Ta",
+        "Ta"
+      ],
+      "log": "L9"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "E3",
+      "items": [
+        "Or",
+        "Ca"
+      ],
+      "log": "T9"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "H5",
+      "items": [
+        "Or",
+        "Ta"
+      ],
+      "log": "T11"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "I5",
+      "items": [
+        "To",
+        "Ca"
+      ],
+      "log": "C9"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "M2",
+      "items": [
+        "Or"
+      ],
+      "log": "T7"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "N8",
+      "items": [
+        "Ta",
+        "Or"
+      ],
+      "log": "L12"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "P2",
+      "items": [
+        "To",
+        "Re"
+      ],
+      "log": "C13"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "P23",
+      "items": [
+        "To",
+        "Ur"
+      ],
+      "log": "C10"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "U12",
+      "items": [
+        "Ur",
+        "Ur"
+      ],
+      "log": "B8"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "U15",
+      "items": [
+        "Ur",
+        "Re"
+      ],
+      "log": "B7"
+    },
+    {
+      "site": "GR25",
+      "obelisk": "U47",
+      "items": [
+        "Ur",
+        "Ca"
+      ],
+      "log": "B9"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "A9",
+      "items": [
+        "Ca",
+        "Ur"
+      ],
+      "log": "H10"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "G13",
+      "items": [
+        "Ca",
+        "Or"
+      ],
+      "log": "H12"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "G18",
+      "items": [
+        "Ca"
+      ],
+      "log": "H8"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "K21",
+      "items": [
+        "To",
+        "Or"
+      ],
+      "log": "C12"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "K26",
+      "items": [
+        "To"
+      ],
+      "log": "C7"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "O3",
+      "items": [
+        "Or",
+        "Re"
+      ],
+      "log": "T12"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "T13",
+      "items": [
+        "Ca",
+        "Re"
+      ],
+      "log": "H16"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "T18",
+      "items": [
+        "Ca",
+        "Ta"
+      ],
+      "log": "H11"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "U4",
+      "items": [
+        "Ur",
+        "Or"
+      ],
+      "log": "B11"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "U22",
+      "items": [
+        "Ur",
+        "To"
+      ],
+      "log": "B12"
+    },
+    {
+      "site": "GR89",
+      "obelisk": "U37",
+      "items": [
+        "Or",
+        "Ur"
+      ],
+      "log": "T10"
+    },
+    {
+      "site": "GS67",
+      "obelisk": "D6",
+      "items": [
+        "Ca",
+        "Ca"
+      ],
+      "log": "H9"
+    },
+    {
+      "site": "GS67",
+      "obelisk": "E22",
+      "items": [
+        "Ta",
+        "Ur"
+      ],
+      "log": "L11"
+    },
+    {
+      "site": "GS67",
+      "obelisk": "G4",
+      "items": [
+        "Ca",
+        "Re"
+      ],
+      "log": "H14"
+    },
+    {
+      "site": "GS67",
+      "obelisk": "L6",
+      "items": [
+        "Or",
+        "Re"
+      ],
+      "log": "T13"
+    },
+    {
+      "site": "GS67",
+      "obelisk": "N2",
+      "items": [
+        "Ta",
+        "Re"
+      ],
+      "log": "L14"
+    },
+    {
+      "site": "GS67",
+      "obelisk": "N24",
+      "items": [
+        "Ta",
+        "To"
+      ],
+      "log": "L13"
+    },
+    {
+      "site": "GS67",
+      "obelisk": "T4",
+      "items": [
+        "Ca",
+        "To"
+      ],
+      "log": "H13"
+    },
+    {
+      "site": "GS67",
+      "obelisk": "T14",
+      "items": [
+        "Ca",
+        "To"
+      ],
+      "log": "H15"
+    },
+    {
+      "site": "GR35",
+      "obelisk": "C3",
+      "items": [
+        "To",
+        "Ca"
+      ],
+      "log": "C3"
+    },
+    {
+      "site": "GR35",
+      "obelisk": "C8",
+      "items": [
+        "To",
+        "To"
+      ],
+      "log": "C2"
+    },
+    {
+      "site": "GR35",
+      "obelisk": "I6",
+      "items": [
+        "Ur",
+        "Ca"
+      ],
+      "log": "B3"
+    },
+    {
+      "site": "GR35",
+      "obelisk": "I10",
+      "items": [
+        "Ur",
+        "Ta"
+      ],
+      "log": "B4"
+    },
+    {
+      "site": "GR35",
+      "obelisk": "M1",
+      "items": [
+        "Ta"
+      ],
+      "log": "L1"
+    },
+    {
+      "site": "GR35",
+      "obelisk": "M14",
+      "items": [
+        "Ta",
+        "Ta"
+      ],
+      "log": "L6"
+    },
+    {
+      "site": "GR35",
+      "obelisk": "M24",
+      "items": [
+        "Ta",
+        "Re"
+      ],
+      "log": "L7"
+    },
+    {
+      "site": "GR35",
+      "obelisk": "O12",
+      "items": [
+        "Or",
+        "To"
+      ],
+      "log": "T6"
+    },
+    {
+      "site": "GR28",
+      "obelisk": "C17",
+      "items": [
+        "Ta"
+      ],
+      "log": "L8"
+    },
+    {
+      "site": "GR28",
+      "obelisk": "H9",
+      "items": [
+        "Or",
+        "Or"
+      ],
+      "log": "T8"
+    },
+    {
+      "site": "GR28",
+      "obelisk": "K4",
+      "items": [
+        "To",
+        "Ta"
+      ],
+      "log": "C11"
+    },
+    {
+      "site": "GR159",
+      "obelisk": "A6",
+      "items": [
+        "Ur",
+        "Ur"
+      ],
+      "log": "B2"
+    },
+    {
+      "site": "GR159",
+      "obelisk": "A14",
+      "items": [
+        "Ca",
+        "Ca"
+      ],
+      "log": "H2"
+    },
+    {
+      "site": "GR159",
+      "obelisk": "B6",
+      "items": [
+        "To",
+        "Re"
+      ],
+      "log": "C1"
+    },
+    {
+      "site": "GR159",
+      "obelisk": "F19",
+      "items": [
+        "Ur",
+        "Or"
+      ],
+      "log": "B5"
+    },
+    {
+      "site": "GR159",
+      "obelisk": "F21",
+      "items": [
+        "Ur",
+        "To"
+      ],
+      "log": "B6"
+    },
+    {
+      "site": "GR159",
+      "obelisk": "I1",
+      "items": [
+        "Ur",
+        "Re"
+      ],
+      "log": "B1"
+    },
+    {
+      "site": "GR159",
+      "obelisk": "L4",
+      "items": [
+        "Ca",
+        "Re"
+      ],
+      "log": "H7"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "B16",
+      "items": [
+        "Ur",
+        "Ca"
+      ],
+      "log": "B15"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "B24",
+      "items": [
+        "Ur",
+        "Ta"
+      ],
+      "log": "B16"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "C4",
+      "items": [
+        "To",
+        "Ur"
+      ],
+      "log": "C17"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "C5",
+      "items": [
+        "To"
+      ],
+      "log": "C14"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "D12",
+      "items": [
+        "Ta",
+        "To"
+      ],
+      "log": "L20"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "E4",
+      "items": [
+        "Ca",
+        "Ur"
+      ],
+      "log": "H19"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "F7",
+      "items": [
+        "Or",
+        "Ur"
+      ],
+      "log": "T17"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "F9",
+      "items": [
+        "Or",
+        "Or"
+      ],
+      "log": "T15"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "G4",
+      "items": [
+        "Or",
+        "To"
+      ],
+      "log": "T19"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "H4",
+      "items": [
+        "Ta",
+        "Ca"
+      ],
+      "log": "L17"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "H5",
+      "items": [
+        "Ta",
+        "Ur"
+      ],
+      "log": "L18"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "H32",
+      "items": [
+        "Ta",
+        "Re"
+      ],
+      "log": "L21"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "I14",
+      "items": [
+        "Ur",
+        "Re"
+      ],
+      "log": "B19"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "K7",
+      "items": [
+        "Or",
+        "Ca"
+      ],
+      "log": "T16"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "K9",
+      "items": [
+        "Or"
+      ],
+      "log": "T14"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "L5",
+      "items": [
+        "Or",
+        "Re"
+      ],
+      "log": "T20"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "O3",
+      "items": [
+        "Ca",
+        "To"
+      ],
+      "log": "H17"
+    },
+    {
+      "site": "GR123",
+      "obelisk": "R16",
+      "items": [
+        "To",
+        "Re"
+      ],
+      "log": "C20"
+    },
+    {
+      "site": "GR132",
+      "obelisk": "R14",
+      "items": [
+        "Ur",
+        "Ta"
+      ],
+      "log": "B10"
+    },
+    {
+      "site": "GR132",
+      "obelisk": "R18",
+      "items": [
+        "To",
+        "To"
+      ],
+      "log": "C8"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "A9",
+      "items": [
+        "Ur"
+      ],
+      "log": "B13"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "C2",
+      "items": [
+        "To",
+        "Or"
+      ],
+      "log": "C19"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "C15",
+      "items": [
+        "To",
+        "Ca"
+      ],
+      "log": "C16"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "D1",
+      "items": [
+        "Ca",
+        "Or"
+      ],
+      "log": "H21"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "F6",
+      "items": [
+        "Or",
+        "Ta"
+      ],
+      "log": "T18"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "H22",
+      "items": [
+        "Ta",
+        "Ta"
+      ],
+      "log": "L16"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "H43",
+      "items": [
+        "Ta",
+        "Or"
+      ],
+      "log": "L19"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "I7",
+      "items": [
+        "Ur",
+        "Ur"
+      ],
+      "log": "B14"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "I16",
+      "items": [
+        "Ur",
+        "Or"
+      ],
+      "log": "B17"
+    },
+    {
+      "site": "GR131",
+      "obelisk": "R11",
+      "items": [
+        "To",
+        "To"
+      ],
+      "log": "C15"
+    },
+    {
+      "site": "GR119",
+      "obelisk": "C7",
+      "items": [
+        "To",
+        "Ta"
+      ],
+      "log": "C18"
+    },
+    {
+      "site": "GR119",
+      "obelisk": "H2",
+      "items": [
+        "Ta"
+      ],
+      "log": "L15"
+    },
+    {
+      "site": "GR119",
+      "obelisk": "I11",
+      "items": [
+        "Ur",
+        "To"
+      ],
+      "log": "B18"
+    },
+    {
+      "site": "GR119",
+      "obelisk": "J4",
+      "items": [
+        "Ca",
+        "Ca"
+      ],
+      "log": "H18"
+    },
+    {
+      "site": "GR119",
+      "obelisk": "O2",
+      "items": [
+        "Ca",
+        "Ta"
+      ],
+      "log": "H20"
+    }
+  ],
+  "implementation_scope_status": "ARCHIVED / EXCLUDED by owner13 October2026; not an active mission dataset"
+}

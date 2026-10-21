@@ -3,7 +3,7 @@ import Foundation
 enum PackValidation {
   private static let equipmentFlags: Set<String> = [
     "E.C.M. System", "Fuel Scoops", "Escape Pod", "Energy Bomb", "Extra Energy Unit",
-    Equipment.navalEnergyUnit, "Galactic Hyperdrive",
+    Equipment.navalEnergyUnit, Equipment.eliteEnergyUnit, "Galactic Hyperdrive",
   ]
   static func identifier(_ value: String) -> Bool {
     value.range(of: "^[a-z][a-z0-9.-]{0,79}$", options: .regularExpression) != nil

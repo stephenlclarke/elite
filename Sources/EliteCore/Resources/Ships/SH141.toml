@@ -9,6 +9,29 @@ model = "ROC-SH141"
 modelSource = "Right-On Commander"
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
+[catalogue]
+schemaVersion = 2
+family = "wheel-station"
+objectKind = "station"
+origin = "human"
+roleWeights = []
+access = "normal"
+playerFlyable = false
+normalPurchaseEligible = false
+discoveryEligible = true
+encounterMode = "authored"
+mechanicsStatus = "pending"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
+placementStatus = "pending"
+isCapital = true
+purchasePolicy = "never"
+collectionMilestone = "docking"
+damagePolicy = "activeStationIndestructible"
+capitalSubtype = "station"
+
 [design]
 vertices = [
   [46.36364, -4.09091, 0.0],

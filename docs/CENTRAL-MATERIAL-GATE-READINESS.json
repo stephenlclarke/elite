@@ -1,0 +1,86 @@
+{
+  "source": "d896f02ea2f2bff73df3170ff1af4ec05572c19f",
+  "validatedRuntimeTests": "238f7458475bd54805522166d716a3c3e3fd0efe",
+  "status": "Renderer outputs regenerated; full canonical make ci not yet executed",
+  "lease": "elite-validation-015",
+  "rendererRuns": [
+    {
+      "source": "d896f02ea2f2bff73df3170ff1af4ec05572c19f",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-015",
+        "state": "active",
+        "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+        "candidate": "d896f02ea2f2bff73df3170ff1af4ec05572c19f",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "previousLeaseId": "elite-validation-014",
+        "purpose": "Existingvalidatedcentral238 runtime d896docs requiredships+READMErendererregen; commitapprovedgenerated/docfreeze thenONEmakeci branchaswritten(cask/ships/showroom/packs/coverage/TSan/serialASan/leaks). No Station/weapon/Missionruntime/testedits; independentcentralnotMissioncomposition; stopnewfailure/no retryrepair."
+      },
+      "command": [
+        "make",
+        "ships"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 47.76045895903371,
+      "changedTrackedInputs": [
+        "docs/ships/manifest.json"
+      ],
+      "protectedInputChanges": [],
+      "productionSaveUnchanged": true,
+      "nativeArchives": [],
+      "stageStarts": [],
+      "rawLogSha256": "36e1364eaf469ee5c2ac9dce41b0929cbbf87e21c08f8502f7576b5563c5c49b",
+      "summaries": [
+        "Rendered 168 ships; reused 0 ; reference: 168 ships"
+      ]
+    },
+    {
+      "source": "d896f02ea2f2bff73df3170ff1af4ec05572c19f",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-015",
+        "state": "active",
+        "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+        "candidate": "d896f02ea2f2bff73df3170ff1af4ec05572c19f",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "previousLeaseId": "elite-validation-014",
+        "purpose": "Existingvalidatedcentral238 runtime d896docs requiredships+READMErendererregen; commitapprovedgenerated/docfreeze thenONEmakeci branchaswritten(cask/ships/showroom/packs/coverage/TSan/serialASan/leaks). No Station/weapon/Missionruntime/testedits; independentcentralnotMissioncomposition; stopnewfailure/no retryrepair."
+      },
+      "command": [
+        "make",
+        "readme-media"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 9.511946832994,
+      "changedTrackedInputs": [
+        "docs/elite.png",
+        "docs/images/route-alternatives-galaxy.png",
+        "docs/images/route-alternatives-local.png",
+        "docs/start-sequence.gif"
+      ],
+      "protectedInputChanges": [],
+      "productionSaveUnchanged": true,
+      "nativeArchives": [],
+      "stageStarts": [],
+      "rawLogSha256": "2b3a118c3e74a29431c7a46dff6b80a807fa835215197c68ac644ce920473bdd",
+      "summaries": []
+    }
+  ],
+  "trackedOutputs": {
+    "docs/elite.png": "9dce868e824d2023c249b99be5154873881e479c9706b0935420528cd423c996",
+    "docs/images/route-alternatives-galaxy.png": "d0986c0f0de97c0c97b2c1f439e12a2ccdf56d2fdce82517caa7f6153dd4766d",
+    "docs/images/route-alternatives-local.png": "6c957e48504256d45f043aafe942c802b9148cdd34bd4d9614feb2e00083d3d1",
+    "docs/ships/manifest.json": "3ffd13499f68cc3fa5f5bfc66219c0989eb6ac900dde44b398bdc5719a07af3c",
+    "docs/start-sequence.gif": "687fc2f15c5aca7a0275a8110228d07b93cf007073dac201afe326cda20019e8",
+    "docs/images/elite-icon.png": "84e0991bc18408651d83087b9243260a5ebb1fc4195f054015624416908f0f3c",
+    "Resources/Elite.icns": "995b851b1d2d56c89cd3249bb1b42117f813c25389cc4608aa721b40fde908bb"
+  },
+  "protectedBaselineSha256": "de592b3dd8d7c649faf37571be90f176588deda20cf393a5c808a28302ed1f3e",
+  "scope": [
+    "All168ships rendered; only ship manifest input fingerprints changed, every rotating GIF output remained byte-identical.",
+    "README main screenshot/start sequence/route screenshots regenerated with actual game renderer. Icon renderer and iconutil also ran; existing icon pixels/ICNS remained byte-identical.",
+    "Only5tracked generated output paths changed; maintained Source/Tests/tools/configuration and production save were unchanged.",
+    "Original main screenshot and route screenshot inspected for current rendered scene and text; no generated pixels were hand-edited."
+  ],
+  "next": "Commit this generated/doc freeze, update only active015 candidate, then run exactly one make ci as maintained. Stop the first new failure without repair/retry; no main Sonar/publication or Mission composition claim."
+}

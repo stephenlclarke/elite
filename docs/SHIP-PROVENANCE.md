@@ -11019,7 +11019,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 0 t | estimated; O08 model envelope |
+| Cargo | 12 t | borrowed native NPC capacity for player adaptation; Pinned O08 oolite_template_transporter max_cargo12; replaces prior volume-based zero estimate, not a claim that Transporter was originally a flyable Oolite ship. |
 | Speed | 100.0 project units/s | borrowed; O08 transporter NPC adapted for player |
 | Hull energy | 150.0 project units | borrowed; O08 transporter NPC adapted for player |
 | Energy recharge | 3.0 project units/s | borrowed; O08 transporter NPC adapted for player |
@@ -11049,7 +11049,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
 | Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
 | Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Usable cargo after fit | 12 t | borrowed native NPC capacity for player adaptation; Pinned O08 oolite_template_transporter max_cargo12; replaces prior volume-based zero estimate, not a claim that Transporter was originally a flyable Oolite ship. Unladen common fit has no fitted cabin deduction. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13863,6 +13863,795 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
+
+<a id="sh168"></a>
+
+## SH168 - Convict Miner Minnow
+
+**Design:** Commies 2.20 / Dr. Nil and contributors; see attribution profile; CC-BY-NC-SA-3.0.
+
+Source model units, same selected O08-scale envelope; not internal volume or collision/docking proof.
+
+**Appearances:** OOLITE-OXP Commies 2.20; **evidence:** PROJECT-COMMIES-SELECTED-SHIPS-v1; selected source models, native variants and explicitly labelled player adaptation.
+
+Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.
+
+### Common project refit
+
+Reference conversion before fitted equipment. Source outfits, cabins, equipment-unit budgets, crew and multi-emitter behavior are inspectable source facts; these profiles do not install modules or implement those mechanics. Native exchange carries the existing fit without free stock.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Cargo | 0 t | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Speed | 240 project units/s | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Hull energy | 25 project units | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Energy recharge | 1 project units/s | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Roll | 1 rad/s | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Pitch | 0.5 rad/s | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Yaw | 0.5 rad/s | borrowed engine default; Pinned O08 missing yaw defaults to source pitch |
+| Acceleration | 60.0 project units/s2 | borrowed engine conversion; Source thrust12.0 times pinned O08 factor5 |
+| Front shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Front recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump range | 7 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump spool | 15 s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Fuel capacity | 70 0.1 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Laser facings | 1 bit mask | project conversion choice; One observed forward mount selected for converted Minnow; missing NPC mask default15 is not a player four-weapon grant |
+| Forward laser | Mining Laser | source NPC laser adopted for conversion; Existing forward mining laser retained; native legacy weapon_energy1 does not replace current mining weapon damage |
+| Missile capacity | 1 pylons | user minimum / project conversion; NPC0 remains0; one converted player pylon per owner minimum |
+| Initial missiles | 1 missiles | user minimum / project conversion; One first-acquisition player round; no changes to original NPC |
+| Equipment capacity | 8 project slots | estimated; Common project8+floor(standard hold/5), minimum8; intrinsic operating quarters/dock/drive reserved outside these budgets |
+| Docking computer | Yes | user required; Intrinsic baseline |
+| Hyperspace drive | Yes | user required; Intrinsic baseline |
+| Cargo expansion | 0 t | project fit policy; No source player expansion offer; no guessed extra hold on zero-hold Minnow or Sunray yard without cargo-bay option |
+| Required crew | 1 people | estimated; CREW-ESTIMATE-v1: max(1,1+floor(.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200))); numeric complement absent in selected source |
+| Reserved crew quarters | 1 people | project allocation; Operating quarters outside published usable hold; never subtract again or treat as free passenger berth |
+| First fitted passenger berths | 0 berths | project choice; No source-standard passenger module; crew quarters do not create charter places |
+| Player scanner range | 25600 project units | borrowed native player default; Pinned PlayerEntity player setup sets scanner toSCANNER_MAX_RANGE; NPC Minnow/RRS60000 remains native NPC data |
+| Source weapon mount mode | single | borrowed native default; Pinned multiply fires every listed muzzle; one controller per facing remains one owned equipment identity |
+| Source forward emitters | 1 emitters | borrowed native default; One forward source/default emitter |
+| Source first outfit | EQ_DOCK_COMP | source reference / not an installed native outfit; Native player yard extras preserved with uniquely owned first-acquisition receipts; required dock/drive added intrinsically, no NPC police/bounty/prisoner/AI authority. Sunray has real source berth; common berth cost5tonnes+1unit. NPC flags do not grant extra unlisted player equipment. Converted Minnow first fit has only required baseline/mining forward laser/one missile. |
+| Source first missile type | Missile | borrowed native player setup; Pinned PlayerEntity player setup initializes standard EQ_MISSILE; NPC Ray/Sunray EQ_HARDENED_MISSILE field is not free hardened player stock |
+
+### Source variant: comminer
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0 -2.5 5.5 | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 25 Oolite units | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Mining Laser | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 0 missiles | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | comminerAI.plist | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 0.5 rad/s | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"comminer.png":{"diffuse_map":"comminer.png","gloss":"0.7","shininess":"35","specular":["1.0","1.0","1.0","1.0"],"specular_map":{"extract_channel":"a","name":"comminer.png"}}} | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 240 Oolite units/s | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 1 Oolite units/s | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 12 Oolite raw | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Scanner range | 60000 Oolite units | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Convict Miner Minnow | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Accuracy | 8 | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 1.3 -13.5 0.25 1.1 0.0"] | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | comminer | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 0 t | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 1 rad/s | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Laser color | yellowColor | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_comminer.dat | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon energy | 1 | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_SLAVES | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 12.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 0.5 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: comminer-escapee
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0 -2.5 5.5 | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 25 Oolite units | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 200 | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Mining Laser | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 0 missiles | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | comminer-escapeeAI.plist | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 0.5 rad/s | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"comminer.png":{"diffuse_map":"comminer.png","gloss":"0.7","shininess":"35","specular":["1.0","1.0","1.0","1.0"],"specular_map":{"extract_channel":"a","name":"comminer.png"}}} | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 270 Oolite units/s | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 1 Oolite units/s | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 12 Oolite raw | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Scanner range | 60000 Oolite units | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Convict Miner Minnow (Escaping) | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Accuracy | 8 | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 1.3 -13.5 0.25 1.1 0.0"] | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | comminer(0.2) commineescapee | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 0 t | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 1 rad/s | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Laser color | yellowColor | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_comminer.dat | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon energy | 1 | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_SLAVES | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 12.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 0.5 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: rrs_astrominer_commies
+
+P30; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0 -2.5 5.5 | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 25 Oolite units | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 30 | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Mining Laser | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 0 missiles | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | rescue_scenario_4b_astrominerAI.plist | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 0.5 rad/s | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"comminer.png":{"diffuse_map":"comminer.png","gloss":"0.7","shininess":"35","specular":["1.0","1.0","1.0","1.0"],"specular_map":{"extract_channel":"a","name":"comminer.png"}}} | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 240 Oolite units/s | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 1 Oolite units/s | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 12 Oolite raw | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Scanner range | 60000 Oolite units | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Convict Miner Minnow | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Accuracy | 8 | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 1.3 -13.5 0.25 1.1 0.0"] | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | rrs_astrominer(1000) rrs-flightcomp-supported | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 0 t | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 1 rad/s | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Laser color | yellowColor | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_comminer.dat | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon energy | 1 | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_SLAVES | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Script | rescue_scenario_4b_astrominer.js | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Is external dependency | 1 | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Hyperspace motor | 0 | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 12.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 0.5 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | No | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Crew and source first-fit accounting
+
+Crew is an estimate including commander, not installed passenger cabins. Source first-fit numbers require a native cabin/outfit adapter; the current carried-fit exchange does not grant them.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Source first fitted berths | 0 berths | project choice; No source-standard passenger module |
+| Source first-fit remaining hold | 0 t | reference fit accounting; Standard hold less five tonnes per actually fitted source berth; not native automatic fitting |
+| Reference berth hold cost | 5 t | common project rule; CREW07 source berth conversion; requires native module support |
+| Reference berth equipment cost | 1 unit | common project rule; Common project budget; not a native equipment-unit counter |
+
+### Model attribution and adaptation
+
+Original package notices are embedded verbatim in design.custody. Geometry terms remain separate from the project-authored palette and reference-only textures.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
+
+<a id="sh169"></a>
+
+## SH169 - Ray Mk I
+
+**Design:** Commies 2.20 / Dr. Nil and contributors; see attribution profile; CC-BY-NC-SA-3.0.
+
+Source model units, same selected O08-scale envelope; not internal volume or collision/docking proof.
+
+**Appearances:** OOLITE-OXP Commies 2.20; **evidence:** PROJECT-COMMIES-SELECTED-SHIPS-v1; selected source models, native variants and explicitly labelled player adaptation.
+
+Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.
+
+### Common project refit
+
+Reference conversion before fitted equipment. Source outfits, cabins, equipment-unit budgets, crew and multi-emitter behavior are inspectable source facts; these profiles do not install modules or implement those mechanics. Native exchange carries the existing fit without free stock.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Cargo | 10 t | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Speed | 390 project units/s | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Hull energy | 300 project units | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Energy recharge | 3.5 project units/s | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Roll | 2.8 rad/s | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Pitch | 2.1 rad/s | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Yaw | 2.1 rad/s | borrowed engine default; Pinned O08 missing yaw defaults to source pitch |
+| Acceleration | 250.0 project units/s2 | borrowed engine conversion; Source thrust50.0 times pinned O08 factor5 |
+| Front shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Front recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump range | 7 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump spool | 15 s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Fuel capacity | 70 0.1 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Laser facings | 1 bit mask | source value adopted; Explicit native player forward-only mask1 |
+| Forward laser | Beam Laser | source value adopted; Native Sunray player beam |
+| Missile capacity | 1 pylons | borrowed native default; Missing max_missiles defaults source stock1/3; no capacity versus current-stock conflation |
+| Initial missiles | 1 missiles | source value adopted; Native player stock on first acquisition only |
+| Equipment capacity | 10 project slots | estimated; Common project8+floor(standard hold/5), minimum8; intrinsic operating quarters/dock/drive reserved outside these budgets |
+| Docking computer | Yes | user required; Intrinsic baseline |
+| Hyperspace drive | Yes | user required; Intrinsic baseline |
+| Cargo expansion | 0 t | project fit policy; No source player expansion offer; no guessed extra hold on zero-hold Minnow or Sunray yard without cargo-bay option |
+| Required crew | 1 people | estimated; CREW-ESTIMATE-v1: max(1,1+floor(.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200))); numeric complement absent in selected source |
+| Reserved crew quarters | 1 people | project allocation; Operating quarters outside published usable hold; never subtract again or treat as free passenger berth |
+| First fitted passenger berths | 1 berths | source-standard fitted accommodation adopted; Sunray player yard explicitly supplies one actual5tonne/1equipmentunit owned berth on first acquisition; this is the named source-specific exception to default0 |
+| Player scanner range | 25600 project units | borrowed native player default; Pinned PlayerEntity player setup sets scanner toSCANNER_MAX_RANGE; NPC Minnow/RRS60000 remains native NPC data |
+| Source weapon mount mode | single | borrowed native default; Pinned multiply fires every listed muzzle; one controller per facing remains one owned equipment identity |
+| Source forward emitters | 1 emitters | borrowed native default; One forward source/default emitter |
+| Source first outfit | EQ_HEAT_SHIELD, EQ_FUEL_SCOOPS, EQ_PASSENGER_BERTH, EQ_DOCK_COMP | source reference / not an installed native outfit; Native player yard extras preserved with uniquely owned first-acquisition receipts; required dock/drive added intrinsically, no NPC police/bounty/prisoner/AI authority. Sunray has real source berth; common berth cost5tonnes+1unit. NPC flags do not grant extra unlisted player equipment. Converted Minnow first fit has only required baseline/mining forward laser/one missile. |
+| Source first missile type | Missile | borrowed native player setup; Pinned PlayerEntity player setup initializes standard EQ_MISSILE; NPC Ray/Sunray EQ_HARDENED_MISSILE field is not free hardened player stock |
+
+### Source variant: comviper
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | route1patrolAI.plist | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 400 Oolite units/s | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray.png"}}} | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 4 Oolite units/s | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Name | People's Police Ray | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | police(5.0) comfactory_defender interceptor(5.0) wingman(5.0) | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 4 t | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 4 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: astromine-defender
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | policeInterceptAI.plist | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 400 Oolite units/s | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray.png"}}} | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 4 Oolite units/s | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Astromine Defender Ray | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | astromine-defender | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 4 t | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 4 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: comminer2
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 150 Oolite units | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | None | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 0 missiles | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | comminer2AI.plist | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 250 Oolite units/s | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray_miner.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray_miner.png"}}} | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_NEUTRAL | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 1 Oolite units/s | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 0 | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Minerals | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Convict Miner Ray | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | astromine-scavenger comminer2 scavenger | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 16 t | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | no source predicate | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Scanner range | 60000 Oolite units | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 16 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: politicop
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | politicopAI.plist | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 400 Oolite units/s | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray_thoughtpol.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray_thoughtpol.png"}}} | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 4 Oolite units/s | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Thought Police Ray | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | viper(0.5) politicop comfactory_defender(0.2) | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 4 t | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 4 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: sunray
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 10 | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | pirateAI.plist | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 390 Oolite units/s | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray_sun.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray_sun.png"}}} | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_NEUTRAL | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 3.5 Oolite units/s | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Sunray | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | sunskim-trader | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 10 t | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Auto ai | no | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 10 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: sunray-player
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 10 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | pirateAI.plist | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 390 Oolite units/s | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray_sun.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray_sun.png"}}} | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_NEUTRAL | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 3.5 Oolite units/s | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Sunray | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | player | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 10 t | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Auto ai | no | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position starboard | 0 5.0 12.0 | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position aft | 0.0 2.0 -20.0 | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position port | 0 5.0 12.0 | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position forward | 0.0 3.0 15.0 | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Custom views | [{"view_description":"Rear View","view_orientation":"1.0 0.0 0.0 0.0","view_position":"0.0 20.0 -141.42","weapon_facing":"FORWARD"},{"view_description":"Rear Right View","view_orientation":"0.9239 0.0 0.3827 0.0","view_position":"100.0 20.0 -100.0","weapon_facing":"FORWARD"},{"view_description":"Right View","view_orientation":"0.7071 0.0 0.7071 0.0","view_position":"141.42 20.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Front Right View","view_orientation":"0.3827 0.0 0.9239 0.0","view_position":"100.0 20.0 100.0","weapon_facing":"FORWARD"},{"view_description":"Front View","view_orientation":"0.0 0.0 1.0 0.0","view_position":"0.0 20.0 141.42","weapon_facing":"FORWARD"},{"view_description":"Front Left View","view_orientation":"0.3827 0.0 -0.9239 0.0","view_position":"-100.0 20.0 100.0","weapon_facing":"FORWARD"},{"view_description":"Left View","view_orientation":"0.7071 0.0 -0.7071 0.0","view_position":"-141.42 20.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Rear Left View","view_orientation":"0.9239 0.0 -0.3827 0.0","view_position":"-100.0 20.0 -100.0","weapon_facing":"FORWARD"},{"view_description":"Top View","view_orientation":"-0.7071 0.7071 0.0 0.0","view_position":"0.0 150.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Bottom View","view_orientation":"0.0 0.0 0.7071 0.7071","view_position":"0.0 -150.0 0.0","weapon_facing":"FORWARD"}] | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 10 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: rrs_astroguard_commies
+
+P30; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | planetPatrolAI.plist | source explicit; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 400 Oolite units/s | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray.png"}}} | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 4 Oolite units/s | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Astromine Defender Ray | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | rrs_astroguard(1000) | source explicit; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 4 t | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Is external dependency | 1 | source explicit; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Accuracy | -5 | source explicit; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 4 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source player shipyard offer
+
+Historical source offer and first acquisition template only. Native game prices and carried-fit exchanges use [game]; no repeated grant on selection or load.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Techlevel | 7 | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Standard equipment | {"extras": ["EQ_HEAT_SHIELD", "EQ_FUEL_SCOOPS", "EQ_PASSENGER_BERTH"], "forward_weapon_type": "EQ_WEAPON_BEAM_LASER", "missiles": "1"} | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Weapon facings | 1 | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Optional equipment | ["EQ_ADVANCED_COMPASS", "EQ_ECM", "EQ_ENERGY_UNIT", "EQ_NAVAL_ENERGY_UNIT", "EQ_DOCK_COMP", "EQ_WEAPON_BEAM_LASER", "EQ_WEAPON_MILITARY_LASER", "EQ_FUEL_INJECTION", "EQ_SCANNER_SHOW_MISSILE_TARGET", "EQ_CLOAKING_DEVICE", "EQ_SHIELD_BOOSTER"] | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Price | 300000 | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Chance | 0.01 | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+
+### Crew and source first-fit accounting
+
+Crew is an estimate including commander, not installed passenger cabins. Source first-fit numbers require a native cabin/outfit adapter; the current carried-fit exchange does not grant them.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Source first fitted berths | 1 berths | source-standard module; CREW07 sunray-player standard EQ_PASSENGER_BERTH |
+| Source first-fit remaining hold | 5 t | reference fit accounting; Standard hold less five tonnes per actually fitted source berth; not native automatic fitting |
+| Reference berth hold cost | 5 t | common project rule; CREW07 source berth conversion; requires native module support |
+| Reference berth equipment cost | 1 unit | common project rule; Common project budget; not a native equipment-unit counter |
+
+### Model attribution and adaptation
+
+Original package notices are embedded verbatim in design.custody. Geometry terms remain separate from the project-authored palette and reference-only textures.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
+
+<a id="sh170"></a>
+
+## SH170 - Military Stingray (Ray Mk II)
+
+**Design:** Commies 2.20 / Dr. Nil and contributors; see attribution profile; CC-BY-NC-SA-3.0.
+
+Source model units, same selected O08-scale envelope; not internal volume or collision/docking proof.
+
+**Appearances:** OOLITE-OXP Commies 2.20; **evidence:** PROJECT-COMMIES-SELECTED-SHIPS-v1; selected source models, native variants and explicitly labelled player adaptation.
+
+Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.
+
+### Common project refit
+
+Reference conversion before fitted equipment. Source outfits, cabins, equipment-unit budgets, crew and multi-emitter behavior are inspectable source facts; these profiles do not install modules or implement those mechanics. Native exchange carries the existing fit without free stock.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Cargo | 15 t | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Speed | 430 project units/s | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Hull energy | 275 project units | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Energy recharge | 6 project units/s | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Roll | 2.8 rad/s | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Pitch | 2.1 rad/s | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Yaw | 2.1 rad/s | borrowed engine default; Pinned O08 missing yaw defaults to source pitch |
+| Acceleration | 75.0 project units/s2 | borrowed engine conversion; Source thrust missing -> native default15 times pinned O08 factor5 |
+| Front shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Front recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump range | 7 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump spool | 15 s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Fuel capacity | 70 0.1 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Laser facings | 1 bit mask | source value adopted; Explicit native player forward-only mask1 |
+| Forward laser | Beam Laser | source value adopted; Native player yard beam overrides military NPC weapon |
+| Missile capacity | 3 pylons | borrowed native default; Missing max_missiles defaults source stock1/3; no capacity versus current-stock conflation |
+| Initial missiles | 3 missiles | source value adopted; Native player stock on first acquisition only |
+| Equipment capacity | 11 project slots | estimated; Common project8+floor(standard hold/5), minimum8; intrinsic operating quarters/dock/drive reserved outside these budgets |
+| Docking computer | Yes | user required; Intrinsic baseline |
+| Hyperspace drive | Yes | user required; Intrinsic baseline |
+| Cargo expansion | 15 t | borrowed engine default; Stingray player yard explicitly offers EQ_CARGO_BAY; source missing extra_cargo -> default15 |
+| Required crew | 1 people | estimated; CREW-ESTIMATE-v1: max(1,1+floor(.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200))); numeric complement absent in selected source |
+| Reserved crew quarters | 1 people | project allocation; Operating quarters outside published usable hold; never subtract again or treat as free passenger berth |
+| First fitted passenger berths | 0 berths | project choice; No source-standard passenger module; crew quarters do not create charter places |
+| Player scanner range | 25600 project units | borrowed native player default; Pinned PlayerEntity player setup sets scanner toSCANNER_MAX_RANGE; NPC Minnow/RRS60000 remains native NPC data |
+| Source weapon mount mode | multiply | source value adopted; Pinned multiply fires every listed muzzle; one controller per facing remains one owned equipment identity |
+| Source forward emitters | 2 emitters | source value adopted; Stingray source has two parallel forward positions |
+| Source first outfit | EQ_ECM, EQ_FUEL_SCOOPS, EQ_DOCK_COMP | source reference / not an installed native outfit; Native player yard extras preserved with uniquely owned first-acquisition receipts; required dock/drive added intrinsically, no NPC police/bounty/prisoner/AI authority. Sunray has real source berth; common berth cost5tonnes+1unit. NPC flags do not grant extra unlisted player equipment. Converted Minnow first fit has only required baseline/mining forward laser/one missile. |
+| Source first missile type | Missile | borrowed native player setup; Pinned PlayerEntity player setup initializes standard EQ_MISSILE; NPC Ray/Sunray EQ_HARDENED_MISSILE field is not free hardened player stock |
+
+### Source variant: commilray
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | ["7.7 0.05 21.3","-7.7 0.05 21.3"] | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 275 Oolite units | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | commilInterceptAI.plist | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Military Laser | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 3 missiles | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -3.0 -25.0 | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comrayii.png":{"diffuse_map":"comrayii.png","gloss":"0.8","normal_map":"comrayii_normal.png","shininess":"10","specular":["1","1","1","0.5"],"specular_map":{"extract_channel":"a","name":"comrayii.png"}}} | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 430 Oolite units/s | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Initial NPC fuel | 160 0.1 LY | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 6 Oolite units/s | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon mount mode | multiply | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Military Stingray | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -36 7.0 0.25 0.0"] | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | comgrc-defender | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -3.0 24.0 | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 15 t | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -3.0 30 | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_rayii.dat | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 15.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 160 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 3 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 15 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: commilray-player
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | ["7.7 0.05 21.3","-7.7 0.05 21.3"] | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 275 Oolite units | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | commilInterceptAI.plist | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Military Laser | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 3 missiles | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -3.0 -25.0 | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comrayii.png":{"diffuse_map":"comrayii.png","gloss":"0.8","normal_map":"comrayii_normal.png","shininess":"10","specular":["1","1","1","0.5"],"specular_map":{"extract_channel":"a","name":"comrayii.png"}}} | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 430 Oolite units/s | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Initial NPC fuel | 160 0.1 LY | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 6 Oolite units/s | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon mount mode | multiply | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Military Stingray | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -36 7.0 0.25 0.0"] | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | player | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -3.0 24.0 | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 15 t | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -3.0 30 | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_rayii.dat | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position starboard | 0 5.0 12.0 | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position aft | 0.0 2.0 -20.0 | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position port | 0 5.0 12.0 | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position forward | 0.0 3.0 15.0 | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Custom views | [{"view_description":"Rear View","view_orientation":"1.0 0.0 0.0 0.0","view_position":"0.0 20.0 -141.42","weapon_facing":"FORWARD"},{"view_description":"Rear Right View","view_orientation":"0.9239 0.0 0.3827 0.0","view_position":"100.0 20.0 -100.0","weapon_facing":"FORWARD"},{"view_description":"Right View","view_orientation":"0.7071 0.0 0.7071 0.0","view_position":"141.42 20.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Front Right View","view_orientation":"0.3827 0.0 0.9239 0.0","view_position":"100.0 20.0 100.0","weapon_facing":"FORWARD"},{"view_description":"Front View","view_orientation":"0.0 0.0 1.0 0.0","view_position":"0.0 20.0 141.42","weapon_facing":"FORWARD"},{"view_description":"Front Left View","view_orientation":"0.3827 0.0 -0.9239 0.0","view_position":"-100.0 20.0 100.0","weapon_facing":"FORWARD"},{"view_description":"Left View","view_orientation":"0.7071 0.0 -0.7071 0.0","view_position":"-141.42 20.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Rear Left View","view_orientation":"0.9239 0.0 -0.3827 0.0","view_position":"-100.0 20.0 -100.0","weapon_facing":"FORWARD"},{"view_description":"Top View","view_orientation":"-0.7071 0.7071 0.0 0.0","view_position":"0.0 150.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Bottom View","view_orientation":"0.0 0.0 0.7071 0.7071","view_position":"0.0 -150.0 0.0","weapon_facing":"FORWARD"}] | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 15.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 160 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 3 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 15 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: slapu-defender
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | ["7.7 0.05 21.3","-7.7 0.05 21.3"] | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 275 Oolite units | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | policeInterceptAI.plist | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Military Laser | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 2 missiles | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -3.0 -25.0 | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comrayii.png":{"diffuse_map":"comrayii.png","gloss":"0.8","normal_map":"comrayii_normal.png","shininess":"10","specular":["1","1","1","0.5"],"specular_map":{"extract_channel":"a","name":"comrayii.png"}}} | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 430 Oolite units/s | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Initial NPC fuel | 160 0.1 LY | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_MILITARY | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 6 Oolite units/s | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon mount mode | multiply | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Military Stingray | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -36 7.0 0.25 0.0"] | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | slapu_defender | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -3.0 24.0 | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 0 t | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -3.0 30 | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_rayii.dat | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 15.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 160 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 2 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source player shipyard offer
+
+Historical source offer and first acquisition template only. Native game prices and carried-fit exchanges use [game]; no repeated grant on selection or load.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Techlevel | 7 | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Standard equipment | {"extras": ["EQ_ECM", "EQ_FUEL_SCOOPS"], "forward_weapon_type": "EQ_WEAPON_BEAM_LASER", "missiles": "3"} | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Weapon facings | 1 | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Optional equipment | ["EQ_ADVANCED_COMPASS", "EQ_HEAT_SHIELD", "EQ_ENERGY_UNIT", "EQ_NAVAL_ENERGY_UNIT", "EQ_DOCK_COMP", "EQ_WEAPON_PULSE_LASER", "EQ_WEAPON_BEAM_LASER", "EQ_WEAPON_MINING_LASER", "EQ_WEAPON_MILITARY_LASER", "EQ_FUEL_INJECTION", "EQ_SCANNER_SHOW_MISSILE_TARGET", "EQ_MULTI_TARGET", "EQ_GAL_DRIVE", "EQ_CLOAKING_DEVICE", "EQ_SHIELD_BOOSTER", "EQ_CARGO_BAY"] | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Price | 450000 | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Chance | 0.1 | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+
+### Crew and source first-fit accounting
+
+Crew is an estimate including commander, not installed passenger cabins. Source first-fit numbers require a native cabin/outfit adapter; the current carried-fit exchange does not grant them.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Source first fitted berths | 0 berths | project choice; No source-standard passenger module |
+| Source first-fit remaining hold | 15 t | reference fit accounting; Standard hold less five tonnes per actually fitted source berth; not native automatic fitting |
+| Reference berth hold cost | 5 t | common project rule; CREW07 source berth conversion; requires native module support |
+| Reference berth equipment cost | 1 unit | common project rule; Common project budget; not a native equipment-unit counter |
+
+### Model attribution and adaptation
+
+Original package notices are embedded verbatim in design.custody. Geometry terms remain separate from the project-authored palette and reference-only textures.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
 
 <a id="sh171"></a>
 
