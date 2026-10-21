@@ -345,7 +345,6 @@ extension Game {
     } else {
       enteringClearanceFailure = true
     }
-    var capturedActualFailure = false
     let validate: (RelativeWorkSweep) -> RelativeWorkClearance = {
       let result = HullSweepSafety.validate(
         $0, target: targetHull, player: playerHull, obstacles: obstacles)
@@ -353,10 +352,9 @@ extension Game {
       case .clear: return .clear
       case .blocked(let reason):
         let packet: String
-        if captureG12, enteringClearanceFailure, !capturedActualFailure,
+        if captureG12, enteringClearanceFailure,
           $0.purpose == .work, $0.start == pose
         {
-          capturedActualFailure = true
           packet =
             "; firstActualFailedSweep="
             + measuredExtractionFailedSweepPacket(
