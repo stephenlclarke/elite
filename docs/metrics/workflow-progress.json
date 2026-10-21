@@ -4058,6 +4058,33 @@
       "github_run": 39665879682,
       "unit_status": "pending",
       "usable_build_delivered": false
+    },
+    {
+      "observed_at": "2026-10-21T20:34:05.198653+00:00",
+      "event": "Independent full-PR source review found ready W04 correctness issue; queued primary developer at next packet boundary",
+      "issue": "https://github.com/stephenlclarke/elite/issues/34",
+      "severity": "P2",
+      "reviewed_head": "9b71b1c96c0346ba53c843ae61b0e5532ec2fccc",
+      "ledger_parent": "M01.I34 / W04",
+      "ready_findings": 1,
+      "fix_sha": null,
+      "evidence_scope": "source-proven terminal/native custody join; no new runtime execution"
+    },
+    {
+      "at": "2026-10-21T20:37:07Z",
+      "event": "Wayfarer induction and timed clinic pickup pushed; MBA review assigned; primary developer moves to issue34",
+      "ledger_parent": "C08.P01",
+      "head": "84c733dea8c5d3da8d5a50ae6b5779b53e69b46b",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326000742",
+      "github_run": 39671764452,
+      "unit_status": "in_progress",
+      "source_review": "pending",
+      "product_packets_pushed": 18,
+      "feature_packets": 11,
+      "fix_packets": 7,
+      "ready_findings": 1,
+      "usable_build_delivered": false,
+      "scope": "Opening stages1\u20132 only; stages3\u201314, accreditation, final reward and clue remain outstanding"
     }
   ]
 }
