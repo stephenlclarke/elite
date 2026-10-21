@@ -165,9 +165,22 @@ private func assistedGame() -> Game {
 
 @Test func stationAutoUsesTiltedEntrancePoseAndSwitchesAwayWithoutResidualTranslation() throws {
   var game = assistedGame()
-  var station = SpaceBody(id: 0, hull: .station, position: .init(1200, 700, 1600))
-  station.orientation.rotate(pitch: 0.6, roll: 0.4, yaw: 0.8)
+  let anchor = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  let position = Vector3(1200, 700, 1600)
+  var orientation = Basis3()
+  orientation.rotate(pitch: 0.6, roll: 0.4, yaw: 0.8)
+  let camera = anchor.orientation.composed(with: orientation.transposed)
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(position: anchor.position - camera.apply(position), orientation: camera))
+  var station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
   station.rotationRate = -0.3
+  try #require(station.physical?.identity == anchor.identity)
+  #expect((station.position - position).length < 1e-8)
+  for axis in [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)] {
+    #expect((station.orientation.apply(axis) - orientation.apply(axis)).length < 1e-8)
+  }
   game.bodies = [station]
   game.key("tab")
   let selected = try #require(game.autoTargetBody)
@@ -180,6 +193,7 @@ private func assistedGame() -> Game {
   #expect(game.docked)
   game.launch()
   game.speed = 0
+  station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
   game.bodies = [station, .init(id: 2, hull: .cobra, position: .init(0, 0, 500))]
   game.key("tab")
   #expect(game.autoPilot.targetID == 2 && game.autoPilot.velocity.length == 0)
