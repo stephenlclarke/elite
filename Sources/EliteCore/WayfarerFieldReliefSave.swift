@@ -4,11 +4,11 @@ enum WayfarerFieldReliefSave {
   static let version = 57
   static let alienVersion = 58
   static func contains(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
-  // G1 composition point: if G12 is included, map 57/58 to its 55/56 first.
+  // Validate the highest envelope before lowering through measured extraction.
   static func lowerSchema(_ schema: Int?) -> Int? {
     guard contains(schema) else { return schema }
     return schema == alienVersion
-      ? WayfarerRecordRecoverySave.alienVersion : WayfarerRecordRecoverySave.version
+      ? NativeMeasuredExtractionSave.alienVersion : NativeMeasuredExtractionSave.version
   }
   static func validateDeclaration(_ manifest: ScriptManifest) throws {
     guard manifest.fieldRelief != nil || manifest.stateID == WayfarerFieldRelief.stateID else {
@@ -21,7 +21,8 @@ enum WayfarerFieldReliefSave {
       manifest.coldChain == nil, manifest.repairLoop == nil, manifest.courier == nil,
       manifest.freight == nil, manifest.procurement == nil, manifest.providerContract == nil,
       manifest.pledge == nil, manifest.stationJourney == nil, manifest.orbitalOutlook == nil,
-      manifest.originalSurvey == nil, manifest.recordRecovery == nil,
+      manifest.originalSurvey == nil, manifest.measuredExtraction == nil,
+      manifest.recordRecovery == nil,
       manifest.identifiedSalvage == nil, manifest.originalRescue == nil,
       manifest.orbitalEvacuation == nil, manifest.trial == nil,
       (manifest.equipment ?? []).isEmpty, (manifest.encounters ?? []).isEmpty,
@@ -90,9 +91,10 @@ enum WayfarerFieldReliefSave {
       board.revision == 0, board.seed == 0, board.clock == .local, board.period == 3600,
       board.offers.count == jobs.count, board.valid
     else { return false }
-    let targetDead = commander.nativeStations?.ledger.records.first(where: {
-      $0.identity == utility.target
-    })?.tombstone != nil
+    let targetDead =
+      commander.nativeStations?.ledger.records.first(where: {
+        $0.identity == utility.target
+      })?.tombstone != nil
     for job in jobs {
       guard let state = engine.instances[WayfarerFieldRelief.instance(job.id)],
         let leaf = state.savedFieldRelief,
@@ -123,8 +125,9 @@ enum WayfarerFieldReliefSave {
           return $0 == accepted
         }),
         joinedJob(leaf, native: job, targetDead: targetDead),
-        stateValid(state, job: job, targetDead: targetDead, engine: engine,
-                   requireRecordedLoss: requireRecordedLoss)
+        stateValid(
+          state, job: job, targetDead: targetDead, engine: engine,
+          requireRecordedLoss: requireRecordedLoss)
       else { return false }
     }
     return true
@@ -136,7 +139,8 @@ enum WayfarerFieldReliefSave {
     if leaf.job == native { return true }
     // Only an already failed, still-held original may subsequently return unpaid.
     guard leaf.terminalReason == "targetDestroyed", targetDead,
-      leaf.job.phase == .held, native.phase == .returned, native.returned != nil else {
+      leaf.job.phase == .held, native.phase == .returned, native.returned != nil
+    else {
       return false
     }
     var historical = native
@@ -218,7 +222,9 @@ extension WayfarerFieldReliefSave {
         values = Array(map.values)
       } else if let pairs = raw as? [Any], pairs.count % 2 == 0, pairs.count <= 256 {
         values = stride(from: 1, to: pairs.count, by: 2).map { pairs[$0] }
-      } else { throw SaveError.invalidCommander }
+      } else {
+        throw SaveError.invalidCommander
+      }
       return try values.map {
         guard let object = $0 as? [String: Any] else { throw SaveError.invalidCommander }
         return object
@@ -249,8 +255,9 @@ extension WayfarerFieldReliefSave {
           else { throw SaveError.invalidCommander }
           let data = try JSONSerialization.data(withJSONObject: leaf)
           let decoded = try JSONDecoder().decode(WayfarerFieldReliefCustody.self, from: data)
-          guard (leaf as NSDictionary).isEqual(
-            try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))
+          guard
+            (leaf as NSDictionary).isEqual(
+              try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))
           else { throw SaveError.invalidCommander }
         }
       }
@@ -264,7 +271,7 @@ extension WayfarerFieldReliefSave {
         if board["group"] as? String == WayfarerFieldRelief.stateID
           || board["digest"] as? String == WayfarerFieldRelief.digest
           || (board["provider"] as? String == "l337.wayfarer-service"
-              && board["id"] as? String == WayfarerFieldRelief.boardID)
+            && board["id"] as? String == WayfarerFieldRelief.boardID)
         {
           guard contains(schema), !embedded else { throw SaveError.invalidCommander }
         }

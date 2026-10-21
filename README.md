@@ -427,6 +427,8 @@ Use Station Contracts to review and Confirm collection, carry those originals to
 
 The focused tests use controlled source/target scenes with actual native docking and receipt generation. They do not establish flight of the quoted route, a complete manual app journey or release acceptance. See [adapter scope and validation](docs/PR-wayfarer-field-relief.md).
 
+Development source also includes **measured extraction** at Avenor's mining office. Reserve twelve hold tonnes, extract the finite field-five mineral source with Mining targeting and a mining work tool, and recover all twelve protected originals using Fuel Scoops. At Renas, Confirm processing into twelve linked graded products, then separately Confirm reception for **890 CR** and the family clue, once. Processing pays nothing. Lost originals cannot be replaced with ordinary minerals; surviving failed property returns unpaid to its Avenor owner. Model, save-envelope and pack-parser units pass; the full twelve-original flight journey remains unverified. This source is not yet included in the linked development preview.
+
 ## Mission Gallery
 
 Choose **Game > Mission Gallery** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show the list and details side by side; narrow windows open a detail page. Use arrows and Return, click a mission, and scroll with the trackpad or Option-Up/Option-Down. Tab switches between list and details; Escape returns to the list, then to the previous screen.

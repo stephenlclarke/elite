@@ -785,3 +785,53 @@ extension MiningLedger {
     bindings[payload] = actor
   }
 }
+
+extension MiningLedger {
+  /// Read only: prior work, hidden offers and old bindings cannot become a fresh consent source.
+  func measuredSourceIsPristine(_ rock: MiningRock) -> Bool {
+    guard rock.identity == NativeMeasuredExtraction.root, valid,
+      let chunk = AsteroidBeltDefinition.chunk(for: rock.identity),
+      chunk.content.commodity == .minerals, chunk.units == 20,
+      rock.energy == chunk.energy, rock.radius == chunk.radius,
+      !isDepleted(rock.identity), partial[rock.identity] == nil, breakups[rock.identity] == nil
+    else { return false }
+    for payload in Array(pending.keys) + Array(offers.values) + Array(bindings.keys) {
+      if case .ore(let root, _) = payload, root == rock.identity { return false }
+    }
+    return true
+  }
+
+  func appliedMeasuredExtraction(rock: RockIdentity, incident: UInt64, emitted: [TypedCargoPayload])
+    -> Bool
+  {
+    guard rock == NativeMeasuredExtraction.root, lastIncident == incident, isDepleted(rock),
+      breakups[rock] == nil, emitted.count == 20
+    else { return false }
+    for (index, item) in emitted.enumerated() {
+      guard item.identity == .ore(rock, fragment: UInt16(index)),
+        item.amount == CommodityAmount(commodity: .minerals, quantity: 1),
+        pending[item.identity] == item
+      else { return false }
+    }
+    return true
+  }
+
+  /// Only the real native intake producer can construct this permit. No commodity credit,
+  /// caller free-tonnes allowance or mutable binding escapes this bounded adapter.
+  mutating func takeMeasuredOriginal(_ permit: MeasuredProtectedIntakePermit) -> TypedCargoPayload?
+  {
+    let receipt = permit.receipt
+    guard case .ore(let root, let fragment) = receipt.payload.identity,
+      root == NativeMeasuredExtraction.root, fragment < 12, !isRubble(receipt.payload.identity),
+      let actor = receipt.body.first?.physical?.identity,
+      bindings[receipt.payload.identity] == actor,
+      let item = pending[receipt.payload.identity], item.identity == receipt.payload.identity,
+      item.amount == .init(commodity: .minerals, quantity: 1)
+    else { return nil }
+    pending.removeValue(forKey: item.identity)
+    regularPayloadTimes.removeValue(forKey: item.identity)
+    bindings.removeValue(forKey: item.identity)
+    offers = offers.filter { $0.value != item.identity }
+    return item
+  }
+}

@@ -23,6 +23,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
   public let nativePod: NativePodSelectionFacts?
   public let nativeCrewCapture: Bool
   public let originalRescue: NativeOriginalRescueSelectionFacts?
+  public let measuredExtraction: NativeMeasuredExtractionSelectionFacts?
   public let recordRecovery: WayfarerRecordRecoverySelectionFacts?
   public let identifiedSalvage: NativeIdentifiedSalvageSelectionFacts?
 
@@ -31,6 +32,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
     frontVisible: Bool, distance: Double, singleScoopCompatible: Bool,
     nativePod: NativePodSelectionFacts? = nil, nativeCrewCapture: Bool = false,
     originalRescue: NativeOriginalRescueSelectionFacts? = nil,
+    measuredExtraction: NativeMeasuredExtractionSelectionFacts? = nil,
     recordRecovery: WayfarerRecordRecoverySelectionFacts? = nil,
     identifiedSalvage: NativeIdentifiedSalvageSelectionFacts? = nil
   ) {
@@ -43,6 +45,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
     self.nativePod = nativePod
     self.nativeCrewCapture = nativeCrewCapture
     self.originalRescue = originalRescue
+    self.measuredExtraction = measuredExtraction
     self.recordRecovery = recordRecovery
     self.identifiedSalvage = identifiedSalvage
   }
@@ -112,6 +115,13 @@ public enum WorkTargetSelection {
       return .refused(.invalidDistance)
     }
     guard let core = capabilities.core else { return .refused(.missingCore) }
+    if let original = candidate.measuredExtraction {
+      guard capabilities.miningModule else { return .refused(.missingModule(.mining)) }
+      guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
+      guard candidate.singleScoopCompatible else { return .refused(.notScoopCompatible) }
+      guard original.fits else { return .refused(.protectedTarget) }
+      return .eligible(.autoScoop(.mining))
+    }
     if let original = candidate.recordRecovery {
       guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
       guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }

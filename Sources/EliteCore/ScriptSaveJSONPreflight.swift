@@ -54,8 +54,10 @@ extension ScriptSaveJSONPreflight {
   ) throws {
     try WayfarerFieldReliefSave.validateFields(data, part: part, schema: schema)
     let fieldReliefSchema = WayfarerFieldReliefSave.lowerSchema(schema)
-    try WayfarerRecordRecoverySave.validateFields(data, part: part, schema: fieldReliefSchema)
-    let salvageSchema = WayfarerRecordRecoverySave.lowerSchema(fieldReliefSchema)
+    try NativeMeasuredExtractionSave.validateFields(data, part: part, schema: fieldReliefSchema)
+    let recordSchema = NativeMeasuredExtractionSave.lowerSchema(fieldReliefSchema)
+    try WayfarerRecordRecoverySave.validateFields(data, part: part, schema: recordSchema)
+    let salvageSchema = WayfarerRecordRecoverySave.lowerSchema(recordSchema)
     try NativeIdentifiedSalvageSave.validateFields(data, part: part, schema: salvageSchema)
     let surveySchema = NativeIdentifiedSalvageSave.lowerSchema(salvageSchema)
     try NativeOriginalSurveySave.validateFields(data, part: part, schema: surveySchema)
