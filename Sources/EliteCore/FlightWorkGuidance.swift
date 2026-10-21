@@ -27,6 +27,68 @@ struct FlightWorkBraking: Sendable {
   var angularVelocity: Vector3
 }
 
+private func measuredExtractionFailedSweepPacket(
+  _ result: HullSweepResult, sweep: RelativeWorkSweep,
+  targetMesh: Mesh, playerMesh: Mesh, targetRadius: Double, playerRadius: Double
+) -> String {
+  func vector(_ value: Vector3) -> [Double] { [value.x, value.y, value.z] }
+  func pose(_ value: ShipPose) -> [String: Any] {
+    [
+      "position": vector(value.position),
+      "orientation": [
+        vector(value.orientation.x), vector(value.orientation.y), vector(value.orientation.z),
+      ],
+    ]
+  }
+  func actor(_ value: ActorIdentity?) -> Any {
+    guard let value else { return NSNull() }
+    return [
+      "galaxy": value.system.galaxy, "system": value.system.system,
+      "visit": value.visit, "entity": value.entity,
+    ] as [String: Any]
+  }
+  let gap: Any
+  if let value = result.minimumSampledClearance { gap = value } else { gap = NSNull() }
+  let measured: [String: Any] = [
+    "failure": String(describing: result.failure), "obstacle": actor(result.obstacle),
+    "minimumSampledClearance": gap, "distanceQueries": result.distanceQueries,
+    "triangleTests": result.triangleTests, "nodeVisits": result.nodeVisits,
+  ]
+  let motion: [String: Any] = [
+    "purpose": String(describing: sweep.purpose), "start": pose(sweep.start),
+    "end": pose(sweep.end),
+    "initialVelocity": vector(sweep.initialVelocity), "acceleration": vector(sweep.acceleration),
+    "angularVelocity": vector(sweep.angularVelocity), "target": actor(sweep.target.identity),
+    "targetPose": pose(sweep.target.pose), "targetEnd": pose(sweep.targetEnd),
+    "targetVelocity": vector(sweep.target.velocity),
+    "targetAngularVelocity": vector(sweep.target.angularVelocity),
+    "surfacePosition": vector(sweep.surfacePosition), "workPosition": vector(sweep.workPosition),
+    "playerRadius": sweep.playerRadius, "requiredClearance": sweep.requiredClearance,
+    "duration": sweep.duration,
+  ]
+  let target: [String: Any] = [
+    "vertices": targetMesh.vertices.map(vector), "faces": targetMesh.faces,
+    "preparedRadius": targetRadius,
+  ]
+  let player: [String: Any] = [
+    "vertices": playerMesh.vertices.map(vector), "faces": playerMesh.faces,
+    "preparedRadius": playerRadius,
+  ]
+  do {
+    let bytes = try JSONSerialization.data(
+      withJSONObject: [
+        "result": measured, "sweep": motion, "targetMesh": target, "playerMesh": player,
+      ],
+      options: [.sortedKeys])
+    guard bytes.count <= 256 * 1024 else {
+      return "PACKET_REFUSED_OVERSIZE bytes=\(bytes.count) limit=262144; no partial packet"
+    }
+    return String(decoding: bytes, as: UTF8.self)
+  } catch {
+    return "PACKET_REFUSED_ENCODING \(error); no partial packet"
+  }
+}
+
 extension Game {
   var flightWorldVelocity: Vector3 { Self.currentFlightWorldVelocity(self) }
 
@@ -260,7 +322,8 @@ extension Game {
       workSurfaceStillAuthorized(state, body: body, context: context),
       let targetMesh = recordRecoveryCompatibleMesh(body, context: context),
       let targetHull = preparedWorkHull(mesh: targetMesh, key: "target:\(body.id)"),
-      let playerHull = preparedWorkHull(mesh: commander.playerMesh, key: "player"),
+      case let playerMesh = commander.playerMesh,
+      let playerHull = preparedWorkHull(mesh: playerMesh, key: "player"),
       let obstacles = workObstacles(excluding: state.parent, delta: delta)
     else {
       cancelAutoTarget()
@@ -270,9 +333,40 @@ extension Game {
     }
     let pose = commander.flightSimulation.pose
     let targetPose = modelPose(of: body)
+    let captureG12: Bool
+    if physical.rock == NativeMeasuredExtraction.root {
+      captureG12 = withReadOnlyScriptState { $0.savedMeasuredExtractionSource != nil }
+    } else {
+      captureG12 = false
+    }
+    let enteringClearanceFailure: Bool
+    if case .blocked(.clearance(_)) = state.controller.status {
+      enteringClearanceFailure = false
+    } else {
+      enteringClearanceFailure = true
+    }
     let validate: (RelativeWorkSweep) -> RelativeWorkClearance = {
-      HullSweepSafety.validate($0, target: targetHull, player: playerHull, obstacles: obstacles)
-        .clearance
+      let result = HullSweepSafety.validate(
+        $0, target: targetHull, player: playerHull, obstacles: obstacles)
+      switch result.clearance {
+      case .clear: return .clear
+      case .blocked(let reason):
+        let packet: String
+        if captureG12, enteringClearanceFailure,
+          $0.purpose == .work, $0.start == pose
+        {
+          packet =
+            "; firstActualFailedSweep="
+            + measuredExtractionFailedSweepPacket(
+              result, sweep: $0, targetMesh: targetMesh, playerMesh: playerMesh,
+              targetRadius: targetHull.radius, playerRadius: playerHull.radius)
+        } else {
+          packet = ""
+        }
+        return .blocked(
+          "\(reason); obstacle=\(String(describing: result.obstacle)); minimumSampledClearance=\(String(describing: result.minimumSampledClearance)); requiredClearance=\($0.requiredClearance); purpose=\($0.purpose); target=\($0.target.identity)\(packet)"
+        )
+      }
     }
     let previousStatus = state.status
     switch state.mode {
@@ -325,6 +419,13 @@ extension Game {
   func workSurfaceStillAuthorized(
     _ state: FlightWorkGuidance, body: SpaceBody, context: EncounterContext
   ) -> Bool {
+    if let payload = body.physical?.payload, measuredPayloadIsAllocated(payload) {
+      return state.mode == .autoScoop(.mining) && commander.targetingTier != nil
+        && commander.fittedEquipment(at: .targetingMining) != nil
+        && commander.fittedEquipment(at: .utility(.fuelScoops)) != nil
+        && measuredExtractionFacts(body, context: context)?.fits == true
+        && automaticScoopShapeCompatible(body, context: context)
+    }
     if WayfarerRecordRecovery.marker(body, commander: commander) {
       guard state.mode == .autoScoop(.salvage), hasRecordRecoveryTools,
         recordRecoveryFacts(body, context: context)?.fits == true,
