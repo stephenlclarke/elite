@@ -44,6 +44,13 @@ struct NativeMeasuredExtractionAcquisitionTests {
 
   @Test(arguments: ["extraction", "intake"])
   func refusedWriterRetainsActualNativeAttemptAndRetryConsumesItOnce(stage: String) async throws {
+    struct ClockEnvelope: Decodable {
+      let regularPayloadTimes: [PayloadIdentity: Double]
+    }
+    func clocks(_ ledger: MiningLedger) throws -> [PayloadIdentity: Double] {
+      try JSONDecoder().decode(ClockEnvelope.self, from: JSONEncoder().encode(ledger))
+        .regularPayloadTimes
+    }
     let f = try NativeMeasuredExtractionFixture()
     defer { f.files.clean() }
     let runtime = try await f.runtime()
@@ -94,15 +101,55 @@ struct NativeMeasuredExtractionAcquisitionTests {
     } else {
       #expect(failed.nativeMeasuredExtractionPending?.intakes.isEmpty == false)
     }
+    #expect(failed.commander.miningLedger.valid)
+    let failedClocks = try clocks(failed.commander.miningLedger)
+    #expect(
+      Set(failedClocks.keys) == Set(failed.commander.miningLedger.pendingPayloads.map(\.identity)))
     try f.files.restoreWrites(blocked, files: files)
     try await runtime.save(to: f.save)
     let retried = await runtime.snapshot()
     #expect(retried.nativeMeasuredExtractionPending == nil)
     #expect(retried.measuredExtractionState?.extraction != nil)
-    if stage == "intake" { #expect(retried.measuredExtractionState?.captures.isEmpty == false) }
+    #expect(retried.commander.miningLedger.valid && retried.commander.valid)
+    let retriedClocks = try clocks(retried.commander.miningLedger)
+    if stage == "intake" {
+      #expect(retried.measuredExtractionState?.captures.isEmpty == false)
+      let captures = try #require(retried.measuredExtractionState?.captures)
+      try #require(captures.count == 1)
+      let consumed = captures[0].payload.identity
+      #expect(failedClocks[consumed] != nil)
+      #expect(retriedClocks == failedClocks.filter { $0.key != consumed })
+      #expect(retried.commander.miningLedger.boundActor(for: consumed) == nil)
+      let remaining = failed.commander.miningLedger.pendingPayloads.filter {
+        $0.identity != consumed
+      }
+      #expect(retried.commander.miningLedger.pendingPayloads == remaining)
+      for sibling in remaining {
+        #expect(
+          retried.commander.miningLedger.boundActor(for: sibling.identity)
+            == failed.commander.miningLedger.boundActor(for: sibling.identity))
+      }
+    } else {
+      #expect(retriedClocks == failedClocks)
+      #expect(
+        retried.commander.miningLedger.pendingPayloads
+          == failed.commander.miningLedger.pendingPayloads)
+    }
     let receipts = retried.measuredExtractionState?.captures
     try await runtime.save(to: f.save)
-    #expect(await runtime.snapshot().measuredExtractionState?.captures == receipts)
+    let repeated = await runtime.snapshot()
+    #expect(repeated.measuredExtractionState?.captures == receipts)
+    #expect(repeated.commander.miningLedger == retried.commander.miningLedger)
+    let savedFiles = try ScriptFinanceTestFixture.files(f.save.deletingLastPathComponent())
+    let loaded = GameRuntime()
+    try await loaded.load(from: f.save, persistMigrations: false)
+    let cold = await loaded.snapshot()
+    #expect(cold.commander.valid && cold.commander.miningLedger.valid)
+    #expect(cold.measuredExtractionState?.captures == receipts)
+    #expect(try clocks(cold.commander.miningLedger) == retriedClocks)
+    #expect(
+      cold.commander.miningLedger.pendingPayloads == retried.commander.miningLedger.pendingPayloads)
+    #expect(try ScriptFinanceTestFixture.files(f.save.deletingLastPathComponent()) == savedFiles)
   }
 
   @Test(arguments: ["hull", "escape"])

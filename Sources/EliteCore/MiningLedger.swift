@@ -829,6 +829,7 @@ extension MiningLedger {
       item.amount == .init(commodity: .minerals, quantity: 1)
     else { return nil }
     pending.removeValue(forKey: item.identity)
+    regularPayloadTimes.removeValue(forKey: item.identity)
     bindings.removeValue(forKey: item.identity)
     offers = offers.filter { $0.value != item.identity }
     return item
