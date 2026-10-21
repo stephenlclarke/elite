@@ -4174,14 +4174,17 @@
       "base": "56681af4469c0dcce0920a8ab6e734c5e42324f3",
       "ledger_parent": "C08.P03.A",
       "new_methods": 4,
-      "unit_status": "pending",
+      "unit_status": "MBA verified exact-head hosted PASS",
       "source_review": "MBA exact delta/necessary callers reviewed; no actionable defect",
       "next_assigned": "C08.P03.B",
       "usable_build_delivered": false,
       "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326525234",
       "github_run": 39675764624,
       "selection_methods": 88,
-      "new_cases": 5
+      "new_cases": 5,
+      "verified_methods": 88,
+      "verified_expanded_cases": 117,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326764618"
     },
     {
       "event": "Consented vault-key loan pushed; exact missing ark provider and receiving dependencies assigned",
@@ -4193,11 +4196,13 @@
       "new_methods": 4,
       "new_cases": 6,
       "selection_methods": 92,
-      "unit_status": "pending",
+      "unit_status": "exact-head39676452424 cancelled before execution; unchanged cases await existing descendant39677429396",
       "source_review": "MBA exact delta/native callers/four methods six cases reviewed; no actionable defect",
       "next_assigned": "M10.P01.C08",
       "next_queued": "M10.P02.C08",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "executed_in_original_run": 0,
+      "descendant_run": 39677429396
     },
     {
       "event": "Root resolved exact seed-ark hull calibration and finite manifest; owning physical prerequisite assigned",
@@ -4205,6 +4210,20 @@
       "owner": "G1",
       "decision_scope": "SH061 existing approved geometry20metres/authoredunit,40t custodian seed stores,6crew; retain flight stats and real transit/receiving",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Haflinger physical-source prerequisite pushed; actual ark adapter continues",
+      "head": "b0bb67949557327014026225ff1e1b0abd35d588",
+      "base": "d498fed7be17a7d6598df83c3ee4039e5aa52f61",
+      "ledger_parent": "M04.H061.units",
+      "new_methods": 3,
+      "unit_status": "pending",
+      "source_review": "MBA exact delta/necessary callers reviewed; no actionable defect",
+      "next_assigned": "M10.P01.C08",
+      "usable_build_delivered": false,
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326746645",
+      "github_run": 39677429396,
+      "selection_methods": 95
     }
   ]
 }
