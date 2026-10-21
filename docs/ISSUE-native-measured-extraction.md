@@ -113,3 +113,7 @@ Require the exact issued payload identity and complete CommodityAmount while che
 The moving-original native regression passed in both runs, but the full twelve-original journey still failed the existing collection count requirement. The reports print not evaluated, so neither the actual count nor a particular refusing guard is established. The spin source correction also does not establish a full G12 repair from those outcomes.
 
 Keep the same collection actions,100x0.01 loop and captures>=requested oracle. On failure only, report existing requested/actual counts, the last attempted payload and retained actor/motion, native pending/binding amount, current guidance and pending-intake state, relative-motion scalars and a bounded message. Do not add a physics or authority query, new diagnostic framework, mesh packet, state mutation or extra native execution. This evidence is needed before attributing the remaining multi-original failure.
+
+## Actual1206 assertion-comment compiler correction
+
+The matching compile stopped before tests because Swift Testing does not implicitly convert the bounded context String variable to Testing.Comment. Use an interpolated comment literal containing that same context. The count oracle, failure-only context, byte cap, snapshots, actions and simulation bounds remain unchanged. No1207/1208 native outcomes exist at this checkpoint.
