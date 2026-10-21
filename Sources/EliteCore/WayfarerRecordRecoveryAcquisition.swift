@@ -50,9 +50,28 @@ extension Game {
   /// This closed query binds the actual native actor to the depot allocation and its retained fit.
   @inline(never)
   func recordRecoveryAlias(_ body: borrowing SpaceBody) -> String? {
+    guard body.missionInstanceID != nil, body.missionActorID != nil,
+      body.hull == .cobra, body.position.finite, body.orientation.validRotation
+    else { return nil }
+    let currentBody = copy body
+    let retained = withReadOnlyScriptState { ($0.savedRecordRecoverySource, $0.instances) }
+    let currentSystem = systemIdentity
+    return withReadOnlyCommander { commander in
+      Self.recordRecoveryAlias(
+        currentBody, source: retained.0, instances: retained.1, system: currentSystem,
+        commander: commander)
+    }
+  }
+
+  @inline(never)
+  private static func recordRecoveryAlias(
+    _ body: borrowing SpaceBody, source: WayfarerRecordRecoverySource?,
+    instances: borrowing [UUID: ScriptInstance], system: SystemIdentity,
+    commander: borrowing Commander
+  ) -> String? {
     guard let bodyMission = body.missionInstanceID, let logical = body.missionActorID,
       body.hull == .cobra, body.position.finite, body.orientation.validRotation,
-      let source = commander.scriptState.savedRecordRecoverySource,
+      let source = source,
       source.batch == WayfarerRecordRecovery.batch, source.owner.valid,
       source.owner.world == commander.equipmentOwnerID,
       source.owner.system == SystemIdentity(galaxy: 0, system: 85),
@@ -61,7 +80,7 @@ extension Game {
       commander.nativeStations?.mainStations.contains(source.owner) == true,
       source.id == WayfarerRecordRecovery.sourceIdentity(source.owner),
       WayfarerRecordRecovery.originalIdentitiesValid(source),
-      let mission = commander.scriptState.instances[source.allocatedMission],
+      let mission = instances[source.allocatedMission],
       mission.definition == WayfarerRecordRecovery.stateID,
       mission.digest == WayfarerRecordRecovery.digest,
       let state = mission.savedRecordRecovery, state.source == source.id, state.definition.valid,
@@ -73,7 +92,7 @@ extension Game {
       state.permission.source == source.id, state.permission.mission == mission.id,
       bodyMission == mission.id,
       let actor = body.physical?.identity, actor.system == SystemIdentity(galaxy: 0, system: 241),
-      actor.system == systemIdentity, actor.entity > 1,
+      actor.system == system, actor.entity > 1,
       actor.entity < commander.flightSimulation.nextActor,
       actor.visit == commander.flightSimulation.visit,
       body.physical?.population == .mission, body.physical?.npc?.role == .mission,
