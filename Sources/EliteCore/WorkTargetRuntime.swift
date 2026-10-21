@@ -61,6 +61,7 @@ extension Game {
       nativeCrewCapture: nativeCrewCaptureAvailable(body, context: context)
         && freeNativePeopleTonnes > 0,
       originalRescue: originalRescueFacts(body, context: context),
+      measuredExtraction: measuredExtractionFacts(body, context: context),
       recordRecovery: recordRecoveryFacts(body, context: context),
       identifiedSalvage: identifiedSalvageFacts(body, context: context))
   }
@@ -90,6 +91,16 @@ extension Game {
   func recoverableMetadata(for body: SpaceBody, context: EncounterContext) -> SalvageTargetMetadata?
   {
     guard let physical = body.physical else { return nil }
+    if let payload = physical.payload, measuredPayloadIsAllocated(payload),
+      commander.miningLedger.boundActor(for: payload) == physical.identity
+    {
+      return .init(
+        category: .cargo, ownership: .missionProtected, claimant: nil,
+        wreck: nil, section: nil, lot: nil,
+        bounds: .init(
+          center: .init(0, 0, 0), radius: gameplayMesh(for: body).vertices.map(\.length).max() ?? 0),
+        workSurfaces: [])
+    }
     if let original = recordRecoveryMetadata(body, context: context) { return original }
     if let original = identifiedSalvageMetadata(body, context: context) { return original }
     if let original = originalRescueMetadata(body, context: context) { return original }

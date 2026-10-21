@@ -106,6 +106,20 @@ private struct BundledScriptFixture {
 }
 
 struct BundledScriptPackTests {
+  @Test func bundledMeasuredExtractionDeclaresActualTwentyTonneSourceAndClosedTwelveTonneRecipe()
+    throws
+  {
+    let pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledMeasuredExtractionDirectory)
+    #expect(pack.digest == NativeMeasuredExtraction.digest)
+    #expect(pack.manifest.measuredExtraction?.valid == true && pack.missingCapabilities.isEmpty)
+    #expect(pack.manifest.mission.milestones.count == 5)
+    #expect((pack.manifest.npcs ?? []).isEmpty && (pack.manifest.encounters ?? []).isEmpty)
+    #expect(
+      ScriptBaseClueCatalog.sources.first { $0.sourceID == NativeMeasuredExtraction.stateID }?
+        .clueID == "measured-extraction-family-trace")
+    try ScriptPackLibrary.validateMeasuredExtraction(pack.manifest)
+  }
+
   @Test func bundledCourierRetainsApprovedResourceBytesAndContentIdentity() throws {
     let folder = ScriptPackLibrary.bundledCourierDirectory
     let docs = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
@@ -143,7 +157,7 @@ struct BundledScriptPackTests {
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
           bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
           NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
-          WayfarerRecordRecovery.digest,
+          WayfarerRecordRecovery.digest, NativeMeasuredExtraction.digest,
         ])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
@@ -244,7 +258,7 @@ struct BundledScriptPackTests {
     #expect(discovered.commander.contracts.boards.isEmpty)
     await runtime.key("contracts-open")
     let contracts = await runtime.snapshot()
-    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 22)
+    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 23)
     let repairRows = contracts.contractBoard.rows.filter {
       $0.repairLoop?.digest == bundledRepairLoopDigest
     }
@@ -295,7 +309,7 @@ struct BundledScriptPackTests {
     #expect(trial.contractBoard.rows.filter { $0.people == .outlook(.request) }.count == 1)
     #expect(contracts.contractBoard.rows.filter { $0.people == .outlook(.request) }.count == 1)
     #expect(contracts.contractBoard.rows.filter { $0.people == .journey(.request) }.count == 1)
-    #expect(trial.contractBoard.rows.count == 22 && trial.contractBoard.action == .back)
+    #expect(trial.contractBoard.rows.count == 23 && trial.contractBoard.action == .back)
     #expect(
       trial.contractBoard.rows.filter { $0.coldChain?.digest == bundledColdChainDigest }.count == 1)
     #expect(
