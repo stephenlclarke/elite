@@ -1,0 +1,90 @@
+{
+  "package_id": "P30",
+  "version": "1.5.4",
+  "archive_sha256": "c3d6ba5b46e7d09865f57ec96d6741c4b53477cbdf641f9aaf44e601f3dea70c",
+  "source_url": "https://wiki.alioth.net/img_auth.php/0/05/Rescue_stations_1.5.4.oxz",
+  "access_date": "2026-10-13",
+  "use": "Additional numeric mesh-envelope/mass-estimate research. Source model assets cached outside repository, never copied into game.",
+  "files": [
+    {
+      "path": "Models/rrs-autopilot-screen.dat",
+      "bytes": 856,
+      "sha256": "3bfd7d68f79d5f1250a9adf3a362ba6423f580d4968880440afd91178f9313e2"
+    },
+    {
+      "path": "Models/rrs_blackbox.dat",
+      "bytes": 18835,
+      "sha256": "2eadd6c7190b434631b57ad5194b19f7b740b3b037e2eebb0211b23639a62110"
+    },
+    {
+      "path": "Models/rrs_evaprobe.dat",
+      "bytes": 4348,
+      "sha256": "9fabd1e483fe54f8b5b0d398a5c2ff97b03d568f0f879d39b4991b6a593278a6"
+    },
+    {
+      "path": "Models/rrs_headquarters_asteroid.dat",
+      "bytes": 27890,
+      "sha256": "605b6ce10a665a202a0548b2b057ed19f7625c3146868b4ce5c6dd1a015b67dd"
+    },
+    {
+      "path": "Models/rrs_headquarters_bay.dat",
+      "bytes": 1781,
+      "sha256": "ed4b32964325af313550ab8945334668de5cd979c05778cbbdebc80e55a4dcfe"
+    },
+    {
+      "path": "Models/rrs_headquarters_bay_ff.dat",
+      "bytes": 909,
+      "sha256": "059a169ca2bebdb09733bb7eec4ebd75fb600527d5edcba5592b44fdf39013d7"
+    },
+    {
+      "path": "Models/rrs_headquarters_construction.dat",
+      "bytes": 23767,
+      "sha256": "60c0d9c1545e6e26e46e9a6f1d4c5d2433b74664db7eaccdfd39f87062c106a8"
+    },
+    {
+      "path": "Models/rrs_solarprobe.dat",
+      "bytes": 9675,
+      "sha256": "90ed3bacc1f4063162500d39fbd035866d0e054175ffd51a6316bd4158535546"
+    },
+    {
+      "path": "Models/rrs_waystation.dat",
+      "bytes": 35181,
+      "sha256": "b02afa82363c41f74ddc4c21eab76cbf33ca3dbc084ef3d91045a2aa35da8f36"
+    },
+    {
+      "path": "Models/rrs_waystation_dock.dat",
+      "bytes": 2587,
+      "sha256": "16c7f1a47c549e8d4bca9e206ca59434d1e8708ac49b5976374fcf8449bfa9f5"
+    },
+    {
+      "path": "Models/rrsfl_adck_hermitbase.dat",
+      "bytes": 316608,
+      "sha256": "b9960b74c0d87eea6b3914e283459beafa44a799881b8feb6e2d56d113f9b043"
+    },
+    {
+      "path": "Models/rrsfl_adck_hermitdock.dat",
+      "bytes": 1782,
+      "sha256": "ac1569cbbe02a31a0236e9873796a283502f087f8e4b4820cdf3181432d83b0b"
+    },
+    {
+      "path": "Models/rrsfl_arafura.dat",
+      "bytes": 182904,
+      "sha256": "1c17fbcc5c1e6e24851a0b98aef3b79248cc4bbea72670f754198a8e8b2bd5c1"
+    },
+    {
+      "path": "Models/rrsfl_asteroid_sidewinder_e.dat",
+      "bytes": 37455,
+      "sha256": "314da06c610a5c0fae1a8f638f26e547b01c93bee078c6c06c815e95b2ffeea9"
+    },
+    {
+      "path": "Models/rrsfl_asteroid_sidewinder_hull.dat",
+      "bytes": 26128,
+      "sha256": "ac004f86d3eefb906f5f76d79ba623abfdc71a99af0711f6a2a7d94ef9a970ad"
+    },
+    {
+      "path": "Models/rrsfl_asteroid_sidewinder_shaders.dat",
+      "bytes": 165431,
+      "sha256": "793cb0a4e22c7391145ca893461a57ced3386faab72aa601ec05ec0079f34f7e"
+    }
+  ]
+}

@@ -27,6 +27,66 @@ def dat(normal='0,0,1', texture='hull.png 2 4 0 0 2 0 0 4'):
 
 
 class SourceAppearanceTests(unittest.TestCase):
+    def test_numeric_names_resolution_preserves_archival_tokens_and_uvs(self):
+        mesh = dat(texture='0 2 4 0 0 2 0 0 4')
+        before = repr(mesh)
+        self.assertEqual(appearance.resolved_texture_names(
+            ['NAMES 2', 'comray.png', 'commies_details.png', '', 'NORMALS'],
+            ['0', '1', 'hull.png']), ['comray.png', 'commies_details.png', 'hull.png'])
+        self.assertEqual(repr(mesh), before)
+        self.assertEqual(mesh['sourceTextures'][0]['name'], '0')
+        self.assertEqual(mesh['sourceFaceTextures'][0]['uv'], [[0, 1], [1, 0], [0, 0]])
+        self.assertEqual(appearance.resolved_texture_names([], ['hull.png']), ['hull.png'])
+
+    def test_invalid_names_counts_and_indices_fail_closed(self):
+        cases = [([], ['0']), (['NAMES 1', 'hull.png', 'END'], ['1']),
+                 (['NAMES 1', 'hull.png', 'END'], ['-1']),
+                 (['NAMES 2', 'hull.png', 'END'], ['0']),
+                 (['NAMES 1', 'hull.png', 'extra.png', 'END'], ['0']),
+                 (['NAMES -1', 'END'], ['0']), (['NAMES 4097'], ['0']),
+                 (['NAMES 1', 'hull.png', 'NAMES 1', 'other.png'], ['0'])]
+        for lines, tokens in cases:
+            with self.subTest(lines=lines, tokens=tokens), self.assertRaises(AssertionError):
+                appearance.resolved_texture_names(lines, tokens)
+
+    def test_selected_commies_diffuse_overrides_and_inheritance(self):
+        # Config/shipdata.plist from Commies 2.20: actual selected player chains.
+        definitions = {
+            'comviper': {'materials': {'comray.png': {'diffuse_map': 'comray.png'}}},
+            'sunray': {'like_ship': 'comviper', 'materials': {
+                'comray.png': {'diffuse_map': 'comray_sun.png'},
+                'commies_details.png': {'diffuse_map': 'commies_details.png'}}},
+            'sunray-player': {'like_ship': 'sunray'},
+            'commilray': {'materials': {'comrayii.png': {'diffuse_map': 'comrayii.png'}}},
+            'commilray-player': {'like_ship': 'commilray'}}
+        before = repr(definitions)
+        self.assertEqual(appearance.resolved_diffuse_map(definitions, 'sunray-player', 'comray.png'), 'comray_sun.png')
+        self.assertEqual(appearance.resolved_diffuse_map(definitions, 'sunray-player', 'commies_details.png'), 'commies_details.png')
+        self.assertEqual(appearance.resolved_diffuse_map(definitions, 'commilray-player', 'comrayii.png'), 'comrayii.png')
+        self.assertEqual(repr(definitions), before)
+
+    def test_child_material_map_replaces_parent_and_dictionary_diffuse_is_supported(self):
+        definitions = {'base': {'materials': {'parent.png': {'diffuse_map': 'overridden.png'}}},
+                       'child': {'like_ship': 'base', 'materials': {
+                           'child.png': {'diffuse_map': {'name': 'resolved.png', 'repeat_s': True}}}}}
+        self.assertEqual(appearance.resolved_diffuse_map(definitions, 'child', 'parent.png'), 'parent.png')
+        self.assertEqual(appearance.resolved_diffuse_map(definitions, 'child', 'child.png'), 'resolved.png')
+
+    def test_invalid_inheritance_and_diffuse_values_fail_closed(self):
+        cases = [({'a': {'like_ship': 'a'}}, 'a'),
+                 ({'a': {'like_ship': 'b'}, 'b': {'like_ship': 'a'}}, 'a'),
+                 ({'a': {'like_ship': 'missing'}}, 'a'),
+                 ({'a': {'like_ship': 1}}, 'a'),
+                 ({'a': {'materials': []}}, 'a'),
+                 ({'a': {'materials': {'hull.png': {'diffuse_map': {}}}}}, 'a'),
+                 ({'a': {'materials': {'hull.png': {'diffuse_map': ''}}}}, 'a')]
+        chain = {str(i): {'like_ship': str(i + 1)} for i in range(128)}
+        chain['128'] = {}
+        cases.append((chain, '0'))
+        for definitions, key in cases:
+            with self.subTest(definitions=definitions), self.assertRaises(AssertionError):
+                appearance.resolved_diffuse_map(definitions, key, 'hull.png')
+
     def test_z_reflection_reverses_uv_with_face_and_preserves_placeholder_rgb(self):
         mesh = dat()
         self.assertEqual(mesh['faces'], [[2, 1, 0]])

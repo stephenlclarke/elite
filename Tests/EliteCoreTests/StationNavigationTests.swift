@@ -125,7 +125,10 @@ private func stationLabels(_ navigation: StationNavigation, layout: CockpitLayou
 
 @Test func stationCueAvoidsTargetCameraAndFlightOverlaysAtTheSmallestWindow() throws {
   var game = stationNavigationGame(.init(30_000, 40_000, -50_000))
-  game.commander.installTargetingComputer(.military)
+  try game.commander.grantEquipment(
+    TargetingTier.military.equipmentName, at: .targetingCore,
+    provenance: .grant("station cue targeting fixture"))
+  #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
   let target = SpaceBody(id: 7, hull: .cobra, position: .init(100, 0, 1000))
   game.bodies.append(target)
   game.autoPilot.cycle([target], frontIDs: [7], signature: "station-navigation")

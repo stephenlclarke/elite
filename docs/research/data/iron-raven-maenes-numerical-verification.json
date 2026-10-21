@@ -1,0 +1,3525 @@
+{
+  "profile_id": "P19-MAENES-NUMERICAL-v1",
+  "scope": "Independent compiled C and Python transcriptions of selected actual source expressions plus individually labelled NPCcrew/model bounds. No original nativeengine, fullclockupdate loop, collision, physicaldamage, RNGstream, spawn, custody/save or new worldjob repair proof. Sourceinputs are pinned; actual admission/stock/legal receipts and game acceptance separate.",
+  "case_count": 249,
+  "passed": 249,
+  "cases": [
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0,
+        0
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 13750,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0,
+        0
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2250,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0,
+        0
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 917,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0,
+        1e-06
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 792,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0.8,
+        0
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2750,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0.8,
+        0.799999
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 750,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0.8,
+        0.8
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 666,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0.8,
+        0.8000010000000001
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 583,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0.99,
+        0
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 709,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0.99,
+        0.989999
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 583,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0.99,
+        0.99
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        0.99,
+        0.990001
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        1,
+        0
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        1,
+        0.999999
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        1,
+        1
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "name": "sourcefloat32fuzzythreshold; one-timeRNGdraw even0/1",
+      "kind": 0,
+      "inputs": [
+        1,
+        0.999999
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 666,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        20000,
+        3,
+        0,
+        0,
+        0
+      ],
+      "C_value": 20000.0,
+      "Python_value": 20000.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2042,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        20000,
+        3,
+        0,
+        0,
+        1
+      ],
+      "C_value": 3.0,
+      "Python_value": 3.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1208,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        20000,
+        3,
+        0,
+        1,
+        0
+      ],
+      "C_value": 20256.0,
+      "Python_value": 20256.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2250,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        20000,
+        3,
+        0,
+        1,
+        1
+      ],
+      "C_value": 4.5,
+      "Python_value": 4.5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2250,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        20000,
+        3,
+        1,
+        0,
+        0
+      ],
+      "C_value": 20256.0,
+      "Python_value": 20256.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1292,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        20000,
+        3,
+        1,
+        0,
+        1
+      ],
+      "C_value": 3.0,
+      "Python_value": 3.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1125,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        20000,
+        3,
+        1,
+        1,
+        0
+      ],
+      "C_value": 20512.0,
+      "Python_value": 20512.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1917,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        20000,
+        3,
+        1,
+        1,
+        1
+      ],
+      "C_value": 4.5,
+      "Python_value": 4.5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1500,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        5000,
+        4,
+        0,
+        0,
+        0
+      ],
+      "C_value": 5000.0,
+      "Python_value": 5000.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 3125,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        5000,
+        4,
+        0,
+        0,
+        1
+      ],
+      "C_value": 4.0,
+      "Python_value": 4.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 875,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        5000,
+        4,
+        0,
+        1,
+        0
+      ],
+      "C_value": 5256.0,
+      "Python_value": 5256.0,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 1375,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        5000,
+        4,
+        0,
+        1,
+        1
+      ],
+      "C_value": 6.0,
+      "Python_value": 6.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1209,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        5000,
+        4,
+        1,
+        0,
+        0
+      ],
+      "C_value": 5256.0,
+      "Python_value": 5256.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1000,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        5000,
+        4,
+        1,
+        0,
+        1
+      ],
+      "C_value": 4.0,
+      "Python_value": 4.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 834,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        5000,
+        4,
+        1,
+        1,
+        0
+      ],
+      "C_value": 5512.0,
+      "Python_value": 5512.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1333,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        5000,
+        4,
+        1,
+        1,
+        1
+      ],
+      "C_value": 6.0,
+      "Python_value": 6.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1375,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        800,
+        3,
+        0,
+        0,
+        0
+      ],
+      "C_value": 800.0,
+      "Python_value": 800.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 750,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        800,
+        3,
+        0,
+        0,
+        1
+      ],
+      "C_value": 3.0,
+      "Python_value": 3.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 750,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        800,
+        3,
+        0,
+        1,
+        0
+      ],
+      "C_value": 1056.0,
+      "Python_value": 1056.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1208,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        800,
+        3,
+        0,
+        1,
+        1
+      ],
+      "C_value": 4.5,
+      "Python_value": 4.5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1125,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        800,
+        3,
+        1,
+        0,
+        0
+      ],
+      "C_value": 1056.0,
+      "Python_value": 1056.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 917,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        800,
+        3,
+        1,
+        0,
+        1
+      ],
+      "C_value": 3.0,
+      "Python_value": 3.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 916,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        800,
+        3,
+        1,
+        1,
+        0
+      ],
+      "C_value": 1312.0,
+      "Python_value": 1312.0,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 1292,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        800,
+        3,
+        1,
+        1,
+        1
+      ],
+      "C_value": 4.5,
+      "Python_value": 4.5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1334,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        1000,
+        2.5,
+        0,
+        0,
+        0
+      ],
+      "C_value": 1000.0,
+      "Python_value": 1000.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 791,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        1000,
+        2.5,
+        0,
+        0,
+        1
+      ],
+      "C_value": 2.5,
+      "Python_value": 2.5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 750,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        1000,
+        2.5,
+        0,
+        1,
+        0
+      ],
+      "C_value": 1256.0,
+      "Python_value": 1256.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1208,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        1000,
+        2.5,
+        0,
+        1,
+        1
+      ],
+      "C_value": 3.75,
+      "Python_value": 3.75,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1167,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        1000,
+        2.5,
+        1,
+        0,
+        0
+      ],
+      "C_value": 1256.0,
+      "Python_value": 1256.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 958,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        1000,
+        2.5,
+        1,
+        0,
+        1
+      ],
+      "C_value": 2.5,
+      "Python_value": 2.5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 917,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        1000,
+        2.5,
+        1,
+        1,
+        0
+      ],
+      "C_value": 1512.0,
+      "Python_value": 1512.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1333,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        1000,
+        2.5,
+        1,
+        1,
+        1
+      ],
+      "C_value": 3.75,
+      "Python_value": 3.75,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 1333,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        400,
+        4,
+        0,
+        0,
+        0
+      ],
+      "C_value": 400.0,
+      "Python_value": 400.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 709,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        400,
+        4,
+        0,
+        0,
+        1
+      ],
+      "C_value": 4.0,
+      "Python_value": 4.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 750,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        400,
+        4,
+        0,
+        1,
+        0
+      ],
+      "C_value": 656.0,
+      "Python_value": 656.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1208,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        400,
+        4,
+        0,
+        1,
+        1
+      ],
+      "C_value": 6.0,
+      "Python_value": 6.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1167,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        400,
+        4,
+        1,
+        0,
+        0
+      ],
+      "C_value": 656.0,
+      "Python_value": 656.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 917,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        400,
+        4,
+        1,
+        0,
+        1
+      ],
+      "C_value": 4.0,
+      "Python_value": 4.0,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 916,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        400,
+        4,
+        1,
+        1,
+        0
+      ],
+      "C_value": 912.0,
+      "Python_value": 912.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1333,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        400,
+        4,
+        1,
+        1,
+        1
+      ],
+      "C_value": 6.0,
+      "Python_value": 6.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1333,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        180,
+        4,
+        0,
+        0,
+        0
+      ],
+      "C_value": 180.0,
+      "Python_value": 180.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        180,
+        4,
+        0,
+        0,
+        1
+      ],
+      "C_value": 4.0,
+      "Python_value": 4.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 709,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        180,
+        4,
+        0,
+        1,
+        0
+      ],
+      "C_value": 436.0,
+      "Python_value": 436.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1167,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        180,
+        4,
+        0,
+        1,
+        1
+      ],
+      "C_value": 6.0,
+      "Python_value": 6.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1166,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        180,
+        4,
+        1,
+        0,
+        0
+      ],
+      "C_value": 436.0,
+      "Python_value": 436.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 875,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        180,
+        4,
+        1,
+        0,
+        1
+      ],
+      "C_value": 4.0,
+      "Python_value": 4.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 834,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        180,
+        4,
+        1,
+        1,
+        0
+      ],
+      "C_value": 692.0,
+      "Python_value": 692.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1292,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        180,
+        4,
+        1,
+        1,
+        1
+      ],
+      "C_value": 6.0,
+      "Python_value": 6.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1334,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        280,
+        6,
+        0,
+        0,
+        0
+      ],
+      "C_value": 280.0,
+      "Python_value": 280.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 709,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        280,
+        6,
+        0,
+        0,
+        1
+      ],
+      "C_value": 6.0,
+      "Python_value": 6.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        280,
+        6,
+        0,
+        1,
+        0
+      ],
+      "C_value": 536.0,
+      "Python_value": 536.0,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 1167,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        280,
+        6,
+        0,
+        1,
+        1
+      ],
+      "C_value": 9.0,
+      "Python_value": 9.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1167,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        280,
+        6,
+        1,
+        0,
+        0
+      ],
+      "C_value": 536.0,
+      "Python_value": 536.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 917,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        280,
+        6,
+        1,
+        0,
+        1
+      ],
+      "C_value": 6.0,
+      "Python_value": 6.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 833,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        280,
+        6,
+        1,
+        1,
+        0
+      ],
+      "C_value": 792.0,
+      "Python_value": 792.0,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 1333,
+      "passed": true
+    },
+    {
+      "name": "independent sourcebooster/enhancer arithmetic, not outcome probability or NPC/player shield identity",
+      "kind": 1,
+      "inputs": [
+        280,
+        6,
+        1,
+        1,
+        1
+      ],
+      "C_value": 9.0,
+      "Python_value": 9.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        0
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        1
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        2
+      ],
+      "C_value": 3.0,
+      "Python_value": 3,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 541,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        3
+      ],
+      "C_value": 3.0,
+      "Python_value": 3,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        4
+      ],
+      "C_value": 5.0,
+      "Python_value": 5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        5
+      ],
+      "C_value": 5.0,
+      "Python_value": 5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        6
+      ],
+      "C_value": 7.0,
+      "Python_value": 7,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        7
+      ],
+      "C_value": 7.0,
+      "Python_value": 7,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        8
+      ],
+      "C_value": 9.0,
+      "Python_value": 9,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        9
+      ],
+      "C_value": 9.0,
+      "Python_value": 9,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        10
+      ],
+      "C_value": 11.0,
+      "Python_value": 11,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        11
+      ],
+      "C_value": 11.0,
+      "Python_value": 11,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        12
+      ],
+      "C_value": 13.0,
+      "Python_value": 13,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        13
+      ],
+      "C_value": 13.0,
+      "Python_value": 13,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        14
+      ],
+      "C_value": 15.0,
+      "Python_value": 15,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        0,
+        15
+      ],
+      "C_value": 15.0,
+      "Python_value": 15,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        0
+      ],
+      "C_value": 51.0,
+      "Python_value": 51,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 459,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        1
+      ],
+      "C_value": 51.0,
+      "Python_value": 51,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        2
+      ],
+      "C_value": 51.0,
+      "Python_value": 51,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        3
+      ],
+      "C_value": 51.0,
+      "Python_value": 51,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        4
+      ],
+      "C_value": 55.0,
+      "Python_value": 55,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        5
+      ],
+      "C_value": 55.0,
+      "Python_value": 55,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        6
+      ],
+      "C_value": 55.0,
+      "Python_value": 55,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 250,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        7
+      ],
+      "C_value": 55.0,
+      "Python_value": 55,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        8
+      ],
+      "C_value": 59.0,
+      "Python_value": 59,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        9
+      ],
+      "C_value": 59.0,
+      "Python_value": 59,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        10
+      ],
+      "C_value": 59.0,
+      "Python_value": 59,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 250,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        11
+      ],
+      "C_value": 59.0,
+      "Python_value": 59,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        12
+      ],
+      "C_value": 63.0,
+      "Python_value": 63,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        13
+      ],
+      "C_value": 63.0,
+      "Python_value": 63,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        14
+      ],
+      "C_value": 63.0,
+      "Python_value": 63,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        50,
+        15
+      ],
+      "C_value": 63.0,
+      "Python_value": 63,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        0
+      ],
+      "C_value": 101.0,
+      "Python_value": 101,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        1
+      ],
+      "C_value": 101.0,
+      "Python_value": 101,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        2
+      ],
+      "C_value": 103.0,
+      "Python_value": 103,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        3
+      ],
+      "C_value": 103.0,
+      "Python_value": 103,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 250,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        4
+      ],
+      "C_value": 101.0,
+      "Python_value": 101,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        5
+      ],
+      "C_value": 101.0,
+      "Python_value": 101,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        6
+      ],
+      "C_value": 103.0,
+      "Python_value": 103,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        7
+      ],
+      "C_value": 103.0,
+      "Python_value": 103,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        8
+      ],
+      "C_value": 109.0,
+      "Python_value": 109,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 458,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        9
+      ],
+      "C_value": 109.0,
+      "Python_value": 109,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        10
+      ],
+      "C_value": 111.0,
+      "Python_value": 111,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        11
+      ],
+      "C_value": 111.0,
+      "Python_value": 111,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        12
+      ],
+      "C_value": 109.0,
+      "Python_value": 109,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        13
+      ],
+      "C_value": 109.0,
+      "Python_value": 109,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 250,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        14
+      ],
+      "C_value": 111.0,
+      "Python_value": 111,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nativeescortmarkAsOffender bitwiseOR odd1..15, not addition",
+      "kind": 2,
+      "inputs": [
+        100,
+        15
+      ],
+      "C_value": 111.0,
+      "Python_value": 111,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        0,
+        6
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 792,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        1,
+        6
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        2,
+        6
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 417,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        3,
+        6
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 416,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        0,
+        9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        1,
+        9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        2,
+        9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 334,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        3,
+        9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        0,
+        10
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        1,
+        10
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 334,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        2,
+        10
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 334,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        3,
+        10
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        0,
+        11
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        1,
+        11
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        2,
+        11
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        3,
+        11
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        0,
+        12
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        1,
+        12
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        2,
+        12
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        3,
+        12
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        0,
+        13
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        1,
+        13
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        2,
+        13
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 334,
+      "passed": true
+    },
+    {
+      "name": "actualstationpolice role selection strictTL threshold",
+      "kind": 3,
+      "inputs": [
+        3,
+        13
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "analytic sourcefloat32modelscale product; exactnativepervertex rounding not proved",
+      "kind": 4,
+      "inputs": [
+        30.2282,
+        1.6
+      ],
+      "C_value": 48.36512072069645,
+      "Python_value": 48.36512072069645,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1125,
+      "passed": true
+    },
+    {
+      "name": "analytic sourcefloat32modelscale product; exactnativepervertex rounding not proved",
+      "kind": 4,
+      "inputs": [
+        11.8393,
+        1.6
+      ],
+      "C_value": 18.94288028227091,
+      "Python_value": 18.94288028227091,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 791,
+      "passed": true
+    },
+    {
+      "name": "analytic sourcefloat32modelscale product; exactnativepervertex rounding not proved",
+      "kind": 4,
+      "inputs": [
+        43.287,
+        1.6
+      ],
+      "C_value": 69.2592010320425,
+      "Python_value": 69.2592010320425,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 584,
+      "passed": true
+    },
+    {
+      "name": "analytic sourcefloat32modelscale product; exactnativepervertex rounding not proved",
+      "kind": 4,
+      "inputs": [
+        -3.57123,
+        1.6
+      ],
+      "C_value": -5.713968085144758,
+      "Python_value": -5.713968085144758,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 459,
+      "passed": true
+    },
+    {
+      "name": "analytic sourcefloat32modelscale product; exactnativepervertex rounding not proved",
+      "kind": 4,
+      "inputs": [
+        20.76385,
+        1.6
+      ],
+      "C_value": 33.22216049504876,
+      "Python_value": 33.22216049504876,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 417,
+      "passed": true
+    },
+    {
+      "name": "turret own2.5scale, parent1 leaves ownscale",
+      "kind": 4,
+      "inputs": [
+        5,
+        2.5
+      ],
+      "C_value": 12.5,
+      "Python_value": 12.5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 833,
+      "passed": true
+    },
+    {
+      "name": "turret own2.5scale, parent1 leaves ownscale",
+      "kind": 4,
+      "inputs": [
+        10,
+        2.5
+      ],
+      "C_value": 25.0,
+      "Python_value": 25.0,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "turret own2.5scale, parent1 leaves ownscale",
+      "kind": 4,
+      "inputs": [
+        25,
+        2.5
+      ],
+      "C_value": 62.5,
+      "Python_value": 62.5,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 500,
+      "passed": true
+    },
+    {
+      "name": "turret own2.5scale, parent1 leaves ownscale",
+      "kind": 4,
+      "inputs": [
+        40,
+        2.5
+      ],
+      "C_value": 100.0,
+      "Python_value": 100.0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 500,
+      "passed": true
+    },
+    {
+      "name": "necessary labelled Imperatorcrew estimate using sourceassembly volume/complexity12/hold40",
+      "kind": 5,
+      "inputs": [
+        82087989.31752883,
+        12,
+        40
+      ],
+      "C_value": 8.0,
+      "Python_value": 8,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 8125,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2667,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2125,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        0,
+        0.2,
+        1,
+        1
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1459,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        0,
+        1,
+        1,
+        1
+      ],
+      "C_value": 2.0,
+      "Python_value": 2,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 958,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        0,
+        10,
+        1,
+        1
+      ],
+      "C_value": 11.0,
+      "Python_value": 11,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        2,
+        10.2,
+        1,
+        1
+      ],
+      "C_value": 11.0,
+      "Python_value": 11,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        285,
+        300,
+        1,
+        1
+      ],
+      "C_value": 301.0,
+      "Python_value": 301,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1292,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        1000000,
+        1000000.001,
+        1,
+        1
+      ],
+      "C_value": 1000001.0,
+      "Python_value": 1000001,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 917,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "C_value": 2.0,
+      "Python_value": 2,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 500,
+      "passed": true
+    },
+    {
+      "name": "pinned ScriptTimer nextdue ceil/skipped missedcallbacks; not elapsedtick catchup",
+      "kind": 6,
+      "inputs": [
+        0,
+        10,
+        1,
+        0
+      ],
+      "C_value": 10.0,
+      "Python_value": 10,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        0,
+        0,
+        99.9
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 834,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        0,
+        0,
+        100
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 583,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        0,
+        0,
+        100.1
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 500,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        0,
+        1,
+        99.9
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 334,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        0,
+        1,
+        100
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        0,
+        1,
+        100.1
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        1,
+        0,
+        99.9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 416,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        1,
+        0,
+        100
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        1,
+        0,
+        100.1
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        1,
+        1,
+        99.9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        1,
+        1,
+        100
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        0,
+        100,
+        1,
+        1,
+        100.1
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        0,
+        0,
+        99.9
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        0,
+        0,
+        100
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 500,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        0,
+        0,
+        100.1
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 541,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        0,
+        1,
+        99.9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 416,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        0,
+        1,
+        100
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        0,
+        1,
+        100.1
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        1,
+        0,
+        99.9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 250,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        1,
+        0,
+        100
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        1,
+        0,
+        100.1
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        1,
+        1,
+        99.9
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        1,
+        1,
+        100
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "name": "pinned StationEntity normal damage delegation/fatal mainprotection/friendly/cascade guards",
+      "kind": 7,
+      "inputs": [
+        1,
+        100,
+        1,
+        1,
+        100.1
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        0,
+        64
+      ],
+      "C_value": 64.0,
+      "Python_value": 64,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 833,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        0,
+        96
+      ],
+      "C_value": 96.0,
+      "Python_value": 96,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 750,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        50,
+        64
+      ],
+      "C_value": 114.0,
+      "Python_value": 114,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 583,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        50,
+        96
+      ],
+      "C_value": 114.0,
+      "Python_value": 114,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 541,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        64,
+        64
+      ],
+      "C_value": 96.0,
+      "Python_value": 96,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 792,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        64,
+        96
+      ],
+      "C_value": 96.0,
+      "Python_value": 96,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 500,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        100,
+        64
+      ],
+      "C_value": 100.0,
+      "Python_value": 100,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 833,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        100,
+        96
+      ],
+      "C_value": 244.0,
+      "Python_value": 244,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 709,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        144,
+        64
+      ],
+      "C_value": 240.0,
+      "Python_value": 240,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "mainstation offence threshold50percent unsigned boost then bitwiseOR, ordinarylaw distinct",
+      "kind": 8,
+      "inputs": [
+        144,
+        96
+      ],
+      "C_value": 144.0,
+      "Python_value": 144,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 500,
+      "passed": true
+    },
+    {
+      "name": "actualAIaddFuel integer*10/setterclamp70; motorfalse remainsfalse",
+      "kind": 9,
+      "inputs": [
+        0,
+        1
+      ],
+      "C_value": 10.0,
+      "Python_value": 10,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 958,
+      "passed": true
+    },
+    {
+      "name": "actualAIaddFuel integer*10/setterclamp70; motorfalse remainsfalse",
+      "kind": 9,
+      "inputs": [
+        0,
+        2
+      ],
+      "C_value": 20.0,
+      "Python_value": 20,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 750,
+      "passed": true
+    },
+    {
+      "name": "actualAIaddFuel integer*10/setterclamp70; motorfalse remainsfalse",
+      "kind": 9,
+      "inputs": [
+        10,
+        1
+      ],
+      "C_value": 20.0,
+      "Python_value": 20,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 541,
+      "passed": true
+    },
+    {
+      "name": "actualAIaddFuel integer*10/setterclamp70; motorfalse remainsfalse",
+      "kind": 9,
+      "inputs": [
+        10,
+        2
+      ],
+      "C_value": 30.0,
+      "Python_value": 30,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 458,
+      "passed": true
+    },
+    {
+      "name": "actualAIaddFuel integer*10/setterclamp70; motorfalse remainsfalse",
+      "kind": 9,
+      "inputs": [
+        65,
+        1
+      ],
+      "C_value": 70.0,
+      "Python_value": 70,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 458,
+      "passed": true
+    },
+    {
+      "name": "actualAIaddFuel integer*10/setterclamp70; motorfalse remainsfalse",
+      "kind": 9,
+      "inputs": [
+        65,
+        2
+      ],
+      "C_value": 70.0,
+      "Python_value": 70,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 417,
+      "passed": true
+    },
+    {
+      "name": "actualAIaddFuel integer*10/setterclamp70; motorfalse remainsfalse",
+      "kind": 9,
+      "inputs": [
+        70,
+        1
+      ],
+      "C_value": 70.0,
+      "Python_value": 70,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 458,
+      "passed": true
+    },
+    {
+      "name": "actualAIaddFuel integer*10/setterclamp70; motorfalse remainsfalse",
+      "kind": 9,
+      "inputs": [
+        70,
+        2
+      ],
+      "C_value": 70.0,
+      "Python_value": 70,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 417,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        10
+      ],
+      "C_value": 9.0,
+      "Python_value": 9,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 459,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        20
+      ],
+      "C_value": 19.0,
+      "Python_value": 19,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 417,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        30
+      ],
+      "C_value": 29.0,
+      "Python_value": 29,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        40
+      ],
+      "C_value": 39.0,
+      "Python_value": 39,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 334,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        50
+      ],
+      "C_value": 49.0,
+      "Python_value": 49,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        80
+      ],
+      "C_value": 79.0,
+      "Python_value": 79,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        90
+      ],
+      "C_value": 89.0,
+      "Python_value": 89,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        105
+      ],
+      "C_value": 104.0,
+      "Python_value": 104,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        115
+      ],
+      "C_value": 114.0,
+      "Python_value": 114,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        125
+      ],
+      "C_value": 124.0,
+      "Python_value": 124,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 542,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        135
+      ],
+      "C_value": 134.0,
+      "Python_value": 134,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        255
+      ],
+      "C_value": 254.0,
+      "Python_value": 254,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 292,
+      "passed": true
+    },
+    {
+      "name": "nominal sourceopeningcallback time offset firstdue0; lateness makes actualtime later",
+      "kind": 10,
+      "inputs": [
+        285
+      ],
+      "C_value": 284.0,
+      "Python_value": 284,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 458,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        25600,
+        0
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 834,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        25600,
+        2000
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        25600,
+        2000.01
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        38400,
+        0
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 459,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        38400,
+        2000
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 458,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        38400,
+        2000.01
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 417,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        38400.01,
+        0
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 500,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        38400.01,
+        2000
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        38400.01,
+        2000.01
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        51200,
+        0
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 417,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        51200,
+        2000
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        51200,
+        2000.01
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        51201,
+        0
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        51201,
+        2000
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "name": "selectedsame sourceFARthreshold without rawteleport; NEAR precedence separate",
+      "kind": 11,
+      "inputs": [
+        51201,
+        2000.01
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27,
+        6000
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1125,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27,
+        6060
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 917,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27,
+        6060.001
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27000001072883606,
+        6000
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1041,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27000001072883606,
+        6060
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27000001072883606,
+        6060.001
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27001,
+        6000
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27001,
+        6060
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 584,
+      "passed": true
+    },
+    {
+      "name": "sourceballturret cooldownfloat32 and firingrange tolerance",
+      "kind": 12,
+      "inputs": [
+        0.27001,
+        6060.001
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "sourceplasma strict collisionactivation .05f",
+      "kind": 13,
+      "inputs": [
+        0.05
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    },
+    {
+      "name": "sourceplasma strict collisionactivation .05f",
+      "kind": 13,
+      "inputs": [
+        0.05000000074505806
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 666,
+      "passed": true
+    },
+    {
+      "name": "sourceplasma strict collisionactivation .05f",
+      "kind": 13,
+      "inputs": [
+        0.050001
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    },
+    {
+      "name": "sourceplasma strict expiry>3/noattenuation",
+      "kind": 14,
+      "inputs": [
+        2.9999
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2625,
+      "passed": true
+    },
+    {
+      "name": "sourceplasma strict expiry>3/noattenuation",
+      "kind": 14,
+      "inputs": [
+        3
+      ],
+      "C_value": 0.0,
+      "Python_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 666,
+      "passed": true
+    },
+    {
+      "name": "sourceplasma strict expiry>3/noattenuation",
+      "kind": 14,
+      "inputs": [
+        3.0001
+      ],
+      "C_value": 1.0,
+      "Python_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 625,
+      "passed": true
+    }
+  ],
+  "inputs": [
+    {
+      "path": "/tmp/elite-gap-research/iron-raven-maenes-numerical.c",
+      "sha256": "18ede75bb60c27140fcb86ca73c87389a05ed3f0adae16b19ec87c2f2be6018f"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntity.m",
+      "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntityAI.m",
+      "sha256": "b761b8312703dac9c40c47d598551d37ec09be1a5cf2b1d81ff4e4b31ca7445e"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/StationEntity.m",
+      "sha256": "98453362e1794419fafbace128b2232746bb0401ea5dac3d055f18efb3c8bead"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/OOCollectionExtractors.m",
+      "sha256": "4a62a82e015d72be4ec8c8e057375b6858d3deb953e883298cb337a7372c5079"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/OOPlasmaShotEntity.m",
+      "sha256": "c378673e933d8b2b069de0983e180e94b78f563f7e4f35ca89e46d54ebc906f7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJSTimer.m",
+      "sha256": "03895ee8b9c707cd7dbd8ec2cf8241dcbe32e2be33001e7b48021e2b9b7ef6e5"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOScriptTimer.m",
+      "sha256": "813bd18c0aaacc6e2ab4008b886073bcd936e0a584a9a92057b4ae7286c42acb"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    }
+  ]
+}

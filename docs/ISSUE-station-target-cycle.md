@@ -1,0 +1,5 @@
+# A new visit inherits an old station's target-cycle history
+
+The actual second-sortie trace identifies a living current-visit station with valid geometry, eligible docking capability and an included filter. Nevertheless, the original bounded R sequence selects ships 20, 18, 19, 17, 20, 18, 19 and never station zero. Target cycling retains visited scene numbers across visits, so the old station's zero remains marked visited when zero now identifies a different visit actor.
+
+Scope cycle history to the actual flight origin while preserving same-visit membership and viewport reconciliation. Loading another commander must also clear the transient controller because two genuine commanders can have identical system/visit/player tuples. Preserve all original selection and flight budgets. The separate patrol approach ended in game over after 10.5 physical seconds, so investigate its actual law, attack and collision facts before changing approach physics. See [implementation status](PR-station-target-cycle.md).

@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-13",
+  "scope": "Five challenge endpoint identities independently agree between C-compiled recovered S37 GBA generator functions and current project Universe; not full challenge runtime parity.",
+  "bindings": [
+    {
+      "galaxy_zero_based": 4,
+      "system_id": 33,
+      "name": "CEERED",
+      "x": 3,
+      "y": 135
+    },
+    {
+      "galaxy_zero_based": 4,
+      "system_id": 96,
+      "name": "RIANIN",
+      "x": 114,
+      "y": 106
+    },
+    {
+      "galaxy_zero_based": 5,
+      "system_id": 222,
+      "name": "ADIEN",
+      "x": 21,
+      "y": 232
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 15,
+      "name": "ONTEISED",
+      "x": 1,
+      "y": 251
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_id": 162,
+      "name": "ORESRATI",
+      "x": 16,
+      "y": 255
+    }
+  ],
+  "comparison_passed": true,
+  "source_c_reference_sha256": "2064ce3f63cc835dce9fc5ce4ffc04db2997c1bafec6e09e2a5fef2d9b8d238f",
+  "project_universe_sha256": "ebb57698aa8db1ddc8fa33bc3fd436419faaa7e883ef70b86d0563ddd4ee4344"
+}

@@ -47,11 +47,11 @@ extension Display {
         scale: GameTypography.scale, ink: row.1)
     }
     if layout.planet.width >= 32 {
-      frame.graphics.append(
-        .planet(
-          .init(
-            galaxy: game.inspectedGalaxy, system: game.inspectedSystem,
-            bounds: layout.planet, time: game.time)))
+      planetPreview(
+        .init(
+          galaxy: game.inspectedGalaxy, system: game.inspectedSystem,
+          bounds: layout.planet, time: game.time),
+        style: game.commander.shipDisplayStyle, into: &frame)
       let caption = "Generated planet view"
       let x = max(
         24,
