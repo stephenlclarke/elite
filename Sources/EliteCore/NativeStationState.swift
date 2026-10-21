@@ -93,9 +93,51 @@ struct NativeStationRecord: Equatable, Codable, Sendable {
   var revision: UInt64
   var binding: NativeStationBinding?
   var tombstone: NativeStationTombstone?
+  var utility: NativeUtilityState? = nil
+
+  private enum CodingKeys: String, CodingKey {
+    case identity, descriptor, revision, binding, tombstone, utility
+  }
+  init(
+    identity: NativeStationIdentity, descriptor: NativeStationDescriptor, revision: UInt64,
+    binding: NativeStationBinding?, tombstone: NativeStationTombstone?,
+    utility: NativeUtilityState? = nil
+  ) {
+    self.identity = identity
+    self.descriptor = descriptor
+    self.revision = revision
+    self.binding = binding
+    self.tombstone = tombstone
+    self.utility = utility
+  }
+  init(from decoder: Decoder) throws {
+    try NativeUtilityCoding.require(
+      decoder, ["identity", "descriptor", "revision"],
+      optional: ["binding", "tombstone", "utility"])
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    identity = try c.decode(NativeStationIdentity.self, forKey: .identity)
+    descriptor = try c.decode(NativeStationDescriptor.self, forKey: .descriptor)
+    revision = try c.decode(UInt64.self, forKey: .revision)
+    binding = try c.decodeIfPresent(NativeStationBinding.self, forKey: .binding)
+    tombstone = try c.decodeIfPresent(NativeStationTombstone.self, forKey: .tombstone)
+    utility = try c.decodeIfPresent(NativeUtilityState.self, forKey: .utility)
+    guard NativeUtilityState.isTarget(identity) || !c.contains(.utility), valid else {
+      throw SaveError.invalidCommander
+    }
+  }
 
   var valid: Bool {
-    identity.valid && descriptor.matches(identity) && revision > 0
+    let utilityValid: Bool
+    if NativeUtilityState.isTarget(identity) {
+      utilityValid =
+        utility?.owner == identity.world && utility?.valid == true
+        && utility?.consignments.allSatisfy({
+          ($0.installation?.contact.lifecycle ?? 1) <= revision
+        }) == true
+    } else {
+      utilityValid = utility == nil
+    }
+    return utilityValid && identity.valid && descriptor.matches(identity) && revision > 0
       && revision < UInt64(Int64.max) && (binding?.valid(for: identity) ?? true)
       && (tombstone.map {
         $0.revision == revision && $0.destroyedBinding.valid(for: identity) && binding == nil
@@ -217,6 +259,19 @@ struct NativeStationLedger: Equatable, Codable, Sendable {
     records[index].tombstone = .init(revision: records[index].revision, destroyedBinding: binding)
     records[index].binding = nil
     if currentDock?.station == identity { currentDock = nil }
+  }
+
+  /// A utility operation never changes a station lifecycle or manufactures docking authority.
+  mutating func replaceUtility(_ state: NativeUtilityState) throws {
+    guard state.owner == world, state.valid,
+      let index = records.firstIndex(where: { $0.identity == state.target }),
+      let previous = records[index].utility, previous.revision < UInt64(Int64.max) - 1,
+      state.revision == previous.revision + 1
+    else { throw NativeStationStateError.invalidState }
+    var candidate = self
+    candidate.records[index].utility = state
+    guard candidate.valid else { throw NativeStationStateError.invalidState }
+    self = candidate
   }
 
   /// G1 supplies actual docked state/system/owner and the current transient runtime epoch.

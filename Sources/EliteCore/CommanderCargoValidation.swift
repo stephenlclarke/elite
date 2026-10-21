@@ -57,6 +57,9 @@ extension Commander {
         total = reserved.partialValue
       }
     }
+    let utility = total.addingReportingOverflow(nativeUtility?.heldTonnes ?? 0)
+    guard !utility.overflow else { return nil }
+    total = utility.partialValue
     let rescue = total.addingReportingOverflow(rescuedPodTonnes)
     guard !rescue.overflow else { return nil }
     total = rescue.partialValue
