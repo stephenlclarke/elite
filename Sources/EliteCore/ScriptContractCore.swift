@@ -336,17 +336,24 @@ extension Game {
       try requireFreightResources(plan)
     }
     if let terms = offer.courier { try requireCourierResources(terms) }
+    let pledge = try pledgePreview(board: key, offer: id)
+    if let pledge {
+      try requirePledgeResources(pledge)
+      guard scriptPledgeAdmission == nil,
+        commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+      else { throw MissionPackError("A pledge confirmation cannot start in this context.") }
+    }
     return .ready(
       try prepareValidatedContractAcceptance(
         key: key, index: index, pack: pack, board: board, offer: offer, id: id,
-        confirmationToken: confirmationToken))
+        pledge: pledge, confirmationToken: confirmationToken))
   }
 
   // These job/admission buffers are needed only after every resource guard has returned.
   @inline(never)
   private mutating func prepareValidatedContractAcceptance(
     key: String, index: Int, pack: ScriptPack, board: ScriptContractBoard,
-    offer: ScriptContractOffer, id: UUID, confirmationToken: UUID
+    offer: ScriptContractOffer, id: UUID, pledge: ScriptPledgePreview?, confirmationToken: UUID
   ) throws -> PreparedContractAcceptance {
     let acceptedAt = commander.scriptState.clock(board.clock)
     let deadline = offer.duration == 0 ? nil : acceptedAt + offer.duration
@@ -361,11 +368,7 @@ extension Game {
     let instanceID = Self.contractJobIdentity(id)
     var pledgeAdmission: ScriptPledgeAdmission? = nil
     var courierAdmission: ScriptCourierAdmission? = nil
-    if let pledge = try pledgePreview(board: key, offer: id) {
-      try requirePledgeResources(pledge)
-      guard scriptPledgeAdmission == nil,
-        commander.scriptState.nextEvent < UInt64(Int64.max) - 1
-      else { throw MissionPackError("A pledge confirmation cannot start in this context.") }
+    if let pledge {
       pledgeAdmission = .init(
         instance: instanceID, board: board, offer: offer,
         preview: pledge, epoch: ecmControl.epoch,
