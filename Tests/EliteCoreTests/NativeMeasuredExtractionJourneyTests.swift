@@ -333,7 +333,7 @@ struct NativeMeasuredExtractionFixture {
       // Even a split UTF-8 scalar adds at most two replacement bytes: below the 2 KiB cap.
       context = String(decoding: context.utf8.prefix(2000), as: UTF8.self)
     }
-    try #require(finalState.captures.count >= count, context)
+    try #require(finalState.captures.count >= count, "\(context)")
   }
   func renas(_ runtime: GameRuntime) async throws {
     try await flight.dock(runtime)
