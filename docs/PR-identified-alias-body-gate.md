@@ -7,3 +7,7 @@ This separates owned preparation from read-only rejection without changing stora
 ## Validation
 
 The source inverse must reconstruct the entire previous recovery file byte-for-byte. Formatting and strict lint cover the touched source; Markdown and diff checks cover the three-path slice. The existing station replacement test contributes two declared conditions; genuine/forged alias authority and the full two-original custody/payment journey contribute one case each. One matching build and these three methods/four cases are required before complete independent three-path review and integration. No new test, diagnostic capture, timeout extension or passing-cohort replay is introduced.
+
+## Actual qualification
+
+Matching pure-public compilation1254 passes on `b60743afb0160d12478f033cdc584eb6b2ba0a60`. Actual1255 passes all three methods/four declared cases in20.680seconds (runner25.641467seconds, supervisor28.266016seconds), with zero issues or unknown outcomes. All sixteen observed owned starts close naturally; source, preferences and2010 artifacts remain exact. Complete independent three-path review is CLEAN (`263358ccbcf7f741c9f202cfec3e065ab097b40c951ddcdaf7f98cfb73c7968d`); exact reviewed files integrate at `55963a053b238c61cb6aa16d655408fdbf2d6f3b`. Hosted crash repair remains unproven until a new-head quality run completes.
