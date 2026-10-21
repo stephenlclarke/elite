@@ -463,8 +463,13 @@ extension Game {
     let eligible = bodies.filter { body in
       guard body.energy > 0, let payload = body.physical?.payload,
         case .ore(let source, _) = payload, source == rock,
+        let item = pending.first(where: { $0.identity == payload }),
         let candidate = workTargetCandidate(for: body, context: context, frontVisible: true)
       else { return false }
+      if !context.protection.protectedPayloads.contains(payload) {
+        let freeTonnes = max(0, commander.capacity - commander.cargoTonnes)
+        guard item.amount.tonnes == 0 || item.amount.tonnes <= freeTonnes else { return false }
+      }
       return WorkTargetSelection.evaluate(
         candidate, system: context.system, visit: context.visit,
         capabilities: workTargetCapabilities
