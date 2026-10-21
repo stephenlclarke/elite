@@ -1204,3 +1204,152 @@ extension FlightWorkGuidanceRuntimeTests {
     }
   }
 }
+
+private func nativeTwentyReleaseGame() throws -> (Game, MiningRock) {
+  var game = try workRuntimeGame(module: .mining)
+  try game.commander.grantEquipment(
+    "Mining Laser", at: .utility(.miningLaser), provenance: .grant("native release fixture"))
+  let anchors = try #require(game.commander.flightSimulation.anchors)
+  let fields = MiningFields.generate(anchors: anchors, seed: game.gameplaySeed)
+  let field = try #require(
+    fields.first { $0.rocks.contains { $0.identity.field == 5 && $0.identity.rock == 0 } })
+  let rock = try #require(field.rocks.first { $0.identity.field == 5 && $0.identity.rock == 0 })
+  try #require(AsteroidBeltDefinition.chunk(for: rock.identity)?.units == 20)
+  game.miningFields = [.init(position: field.position, rocks: [rock])]
+  game.commander.flightSimulation.pose.position = rock.position - .init(0, 0, 1000)
+  game.activateNearbyMiningFields()
+  for _ in 0..<300 {
+    _ = game.fireMiningWorkTool()
+    if game.commander.miningLedger.isDepleted(rock.identity) { break }
+    game.tick(delta: 0.1)
+  }
+  try #require(game.commander.miningLedger.isDepleted(rock.identity))
+  try #require(game.commander.miningLedger.pendingPayloads.count == 20)
+  return (game, rock)
+}
+
+private func fillNativeOreAdmissionCapacity(_ game: inout Game) throws {
+  let context = try #require(game.gameplayContext())
+  let sequence = (game.bodies.compactMap { $0.physical?.spawnIdentity?.sequence }.max() ?? 0) + 1
+  let existing = game.bodies.filter { $0.physical?.population == .cargo }.count
+  let remaining = max(0, PopulationClass.cargo.maximum - existing)
+  let requests = (0..<remaining).map { index in
+    SpawnRequest(
+      identity: .init(
+        system: context.system, visit: context.visit,
+        sequence: sequence + UInt64(index), member: 0),
+      population: .cargo, hull: .cargo,
+      position: context.player.position
+        + Vector3(Double(index % 8) * 250 - 875, Double(index / 8) * 250 - 375, -8000),
+      orientation: Basis3(), velocity: .init(0, 0, 0),
+      npc: nil, rock: nil, payload: nil, priority: .ordinary)
+  }
+  let receipts = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit, revision: context.revision,
+      batches: [.init(requests: requests, atomic: false)], intents: []))
+  try #require(
+    receipts.count == remaining && receipts.allSatisfy { $0.actor != nil && $0.refusal == nil })
+}
+
+extension FlightWorkGuidanceRuntimeTests {
+  @Test func freshTwentyPodOutputUsesNativeSafeAdmission() throws {
+    var (game, _) = try nativeTwentyReleaseGame()
+    let context = try #require(game.gameplayContext())
+    let requests = game.commander.miningLedger.pendingSpawnRequests(
+      context: context, fields: game.miningFields)
+    try #require(requests.count == 20)
+    let original = try #require(requests.first)
+    let unsafe = SpawnRequest(
+      identity: original.identity, population: original.population, hull: original.hull,
+      position: context.player.position, orientation: original.orientation,
+      velocity: original.velocity, npc: original.npc, rock: original.rock,
+      payload: original.payload, priority: original.priority)
+    let refused = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit, revision: context.revision,
+        batches: [.init(requests: [unsafe], atomic: true)], intents: []))
+    #expect(refused.first?.refusal == .unsafePosition && refused.first?.actor == nil)
+    let receipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit, revision: context.revision,
+        batches: [.init(requests: requests, atomic: false)], intents: []))
+    game.commander.miningLedger.acknowledge(receipts: receipts)
+    #expect(receipts.count == 20 && receipts.allSatisfy { $0.actor != nil && $0.refusal == nil })
+    for request in requests {
+      let payload = try #require(request.payload)
+      let actor = try #require(game.commander.miningLedger.boundActor(for: payload))
+      let body = try #require(game.bodies.first { $0.physical?.identity == actor })
+      #expect((game.modelPose(of: body).position - request.position).length < 1e-8)
+      #expect(body.physical?.velocity == request.velocity)
+    }
+  }
+
+  @Test func pendingOreRecoveryWaitsExpiresAndQPreservesMomentum() throws {
+    var (game, rock) = try nativeTwentyReleaseGame()
+    try fillNativeOreAdmissionCapacity(&game)
+    let pending = game.commander.miningLedger.pendingPayloads
+    game.workRecoveryRock = rock.identity  // Initial recovery phase, not a cargo or motion grant.
+    game.selectNextMinedOre()
+    let deadline = try #require(game.workRecoveryAdmissionDeadline)
+    #expect(game.workRecoveryRock == rock.identity)
+    #expect(game.message == "ORE RECOVERY WAITING FOR SAFE ADMISSION")
+    var cancelled = game
+    var controls = Controls()
+    controls.throttle = 1
+    cancelled.tick(delta: 0.1, controls: controls)
+    let momentum = cancelled.flightWorldVelocity
+    try #require(momentum.length > 0 && cancelled.workRecoveryRock == rock.identity)
+    cancelled.key("q")
+    #expect(cancelled.workRecoveryRock == nil && cancelled.workRecoveryAdmissionDeadline == nil)
+    #expect(cancelled.flightWorldVelocity == momentum)
+    #expect(cancelled.commander.miningLedger.pendingPayloads == pending)
+
+    for _ in 0..<610 {
+      game.tick(delta: 0.1)
+      if game.workRecoveryRock == nil { break }
+    }
+    #expect(game.workRecoveryRock == nil && game.workRecoveryAdmissionDeadline == nil)
+    #expect(game.commander.flightSimulation.physicalTime >= deadline)
+    #expect(game.commander.flightSimulation.physicalTime < deadline + 0.11)
+    #expect(game.message == "ORE RECOVERY BLOCKED - SAFE ADMISSION UNAVAILABLE")
+    #expect(game.commander.miningLedger.pendingPayloads == pending)
+    #expect(game.flightWorldVelocity == Vector3(0, 0, 0))
+  }
+
+  @Test func pendingOreRecoveryResumesAndFinishesOnlyWithoutPending() throws {
+    var (game, rock) = try nativeTwentyReleaseGame()
+    game.workRecoveryRock = rock.identity
+    game.selectNextMinedOre()
+    try #require(game.workRecoveryAdmissionDeadline != nil)
+    game.tick(delta: 0.1)
+    #expect(game.workGuidance?.mode == .autoScoop(.mining))
+    #expect(game.workRecoveryAdmissionDeadline == nil && game.workRecoveryRock == rock.identity)
+    let pending = game.commander.miningLedger.pendingPayloads
+    for payload in pending {
+      #expect(game.commander.miningLedger.destroy(payload: payload.identity))
+    }
+    game.key("q")
+    game.workRecoveryRock = rock.identity
+    game.selectNextMinedOre()
+    #expect(game.workRecoveryRock == nil && game.workRecoveryAdmissionDeadline == nil)
+    #expect(game.message == "ORE RECOVERY FINISHED")
+    #expect(game.commander.miningLedger.pendingPayloads.isEmpty)
+  }
+
+  @Test func boundButIneligibleOreRecoveryReportsBlocked() throws {
+    var (game, rock) = try nativeTwentyReleaseGame()
+    game.admitPendingOre()
+    let pending = game.commander.miningLedger.pendingPayloads
+    try #require(pending.count == 20)
+    for payload in pending {
+      try #require(game.commander.miningLedger.boundActor(for: payload.identity) != nil)
+    }
+    game.commander.cargo[0] = game.commander.standardCargoCapacity  // Initial owned full-hold case.
+    game.workRecoveryRock = rock.identity
+    game.selectNextMinedOre()
+    #expect(game.workRecoveryRock == nil && game.workRecoveryAdmissionDeadline == nil)
+    #expect(game.message == "ORE RECOVERY BLOCKED - UNCOLLECTED ORE REMAINS")
+    #expect(game.commander.miningLedger.pendingPayloads == pending)
+  }
+}

@@ -121,6 +121,7 @@ extension Game {
         approachDirection: approachDirection),
       scoop: .init(parent: actor), velocity: velocity, angularVelocity: .init(0, 0, 0))
     selectAcquiredWorkTool(mode)
+    workRecoveryAdmissionDeadline = nil
     workBraking = nil
     manualResidualFlight = false
     approvedWorkMotion = nil
@@ -132,6 +133,9 @@ extension Game {
 
   /// Manual release retains actual world momentum; it never snaps velocity to zero.
   mutating func releaseWorkGuidance() {
+    // An admission wait has no live controller, but Q and scene changes still cancel it.
+    workRecoveryRock = nil
+    workRecoveryAdmissionDeadline = nil
     guard workGuidance != nil || workBraking != nil else { return }
     interruptFlightTool()
     let local = commander.flightSimulation.pose.shipVector(flightWorldVelocity)
@@ -140,7 +144,6 @@ extension Game {
     autoPilot.setApproachVelocity(local)
     workGuidance = nil
     workBraking = nil
-    workRecoveryRock = nil
     approvedWorkMotion = nil
   }
 
@@ -434,6 +437,7 @@ extension Game {
     weaponsTargetID = nil
     approvedWorkMotion = nil
     workRecoveryRock = rock
+    workRecoveryAdmissionDeadline = nil
     workBraking = .init(velocity: velocity, angularVelocity: omega)
     if velocity.length < 1e-9 {
       workBraking = nil
@@ -446,6 +450,16 @@ extension Game {
   mutating func selectNextMinedOre() {
     guard !playerEMPDisabled else { return }
     guard let rock = workRecoveryRock, let context = gameplayContext() else { return }
+    let pending = commander.miningLedger.pendingPayloads.filter { payload in
+      if case .ore(let source, _) = payload.identity { return source == rock }
+      return false
+    }
+    guard !pending.isEmpty else {
+      workRecoveryRock = nil
+      workRecoveryAdmissionDeadline = nil
+      notify("ORE RECOVERY FINISHED")
+      return
+    }
     let eligible = bodies.filter { body in
       guard body.energy > 0, let payload = body.physical?.payload,
         case .ore(let source, _) = payload, source == rock,
@@ -457,10 +471,31 @@ extension Game {
       ).mode == .autoScoop(.mining)
     }
     guard !eligible.isEmpty else {
-      workRecoveryRock = nil
-      notify("ORE RECOVERY FINISHED")
+      var hasUnbound = false
+      for payload in pending {
+        if commander.miningLedger.boundActor(for: payload.identity) == nil {
+          hasUnbound = true
+          break
+        }
+      }
+      guard hasUnbound else {
+        workRecoveryRock = nil
+        workRecoveryAdmissionDeadline = nil
+        notify("ORE RECOVERY BLOCKED - UNCOLLECTED ORE REMAINS")
+        return
+      }
+      let now = commander.flightSimulation.physicalTime
+      if workRecoveryAdmissionDeadline == nil { workRecoveryAdmissionDeadline = now + 60 }
+      if let deadline = workRecoveryAdmissionDeadline, now >= deadline {
+        workRecoveryRock = nil
+        workRecoveryAdmissionDeadline = nil
+        notify("ORE RECOVERY BLOCKED - SAFE ADMISSION UNAVAILABLE")
+      } else if message != "ORE RECOVERY WAITING FOR SAFE ADMISSION" || messageTime <= 0 {
+        notify("ORE RECOVERY WAITING FOR SAFE ADMISSION")
+      }
       return
     }
+    workRecoveryAdmissionDeadline = nil
     let velocity = flightWorldVelocity
     autoPilot.cycle(
       eligible, frontIDs: Set(eligible.map(\.id)), signature: "ore-recovery",
