@@ -229,5 +229,17 @@
       ],
       "qualification": "Three product source packets pushed; first two finish inherited work, third is a new bounded input correction. Two code reviews completed; GitHub isolated units pending. No new usable build/release or established workflow speedup."
     }
+  ],
+  "events": [
+    {
+      "observed_at": "2026-10-21T16:46:20.345030+00:00",
+      "event": "actionable reviewer finding assigned",
+      "packet": "M02.P02.I24",
+      "issue": "https://github.com/stephenlclarke/elite/issues/24",
+      "reviewed_head": "ed0ff7a02657574b3019179ccc884c523805b718",
+      "ready_findings": 1,
+      "fix_sha": null,
+      "verification": null
+    }
   ]
 }

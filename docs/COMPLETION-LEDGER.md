@@ -84,7 +84,15 @@ All milestone statuses below are functional statuses. Prepared source/data, deli
 
 All other already integrated G/W/T family implementations retain the exact delivery/evidence in their existing inventory rows. They are not new rewrite packets. A remaining presentation, provider or correctness defect must be assigned a bounded child linked to that row, rather than reopening an entire family. Review/result follow-up is asynchronous and does not hold the developer.
 
+### Ready reviewer corrections
+
+| Packet | Priority, owner and state | Bounded correction and evidence |
+| --- | --- | --- |
+| M02.P02.I24 / F05 | P1; assigned G1 at next coherent packet boundary, base `ed0ff7a02657574b3019179ccc884c523805b718`, canonical development branch; G2 verifies | [MBA finding24](https://github.com/stephenlclarke/elite/issues/24): `Sources/EliteMac/EliteApp.swift` spin-mode caller still invokes latch-clearing `reset()`, bypassing the model fix. Limit scope to shared trackpad mode-transition policy, that caller, affected isolated unit selection/regression and matching notes. Preserve genuine lifecycle reset behavior. Pushed correction SHA and GitHub affected-unit result pending; no integration execution. One ready root cause, below issue-only helper threshold. |
+
 ### Bounded gameplay and mission infrastructure packets
+
+**M02.P01 assigned / G1 / base `ed0ff7a02657574b3019179ccc884c523805b718`, branch `feature/canonical-mission-composition`:** Tab/F remain duplicated literals outside the generated W/Return/E/Q action authority. Extend the maintained authority/generator to those two existing actions; route their current Game key cases and macOS Flight menu labels/tokens through it, preserving context and target/hold behavior. Scope is config/generator/generated Swift+guide, `FlightControlInput.swift`, the two `Game.keyAfterInterface` cases, `PlayerHelp.swift`, the existing macOS Flight menu, isolated token/generation checks and matching docs. No new flight action or integration testing. M01.P03 preflight found the existing bounded file-read and current title/save-error implementations; no concrete new presentation defect is established. **M02.P02 source credit:** `ed0ff7a0` already implements the rejected-contact lift latch; retain it rather than reimplementing trackpad controls.
 
 Paths in this table are relative to `Sources/EliteCore/` unless another root is stated. Each packet includes only its directly affected isolated unit files, minimal publication/caller joins and matching behavior documentation. New module names are proposed boundaries, not claims those files exist. Unit criteria below name component behavior; they do not prescribe whole-Game flight/dock/save journeys. All rows are **not started as these exact remaining slices**, unless the existing source table says otherwise; reusable current implementations remain credited. A preflight that proves a slice already exists updates the row with that evidence and selects the next actual gap.
 
