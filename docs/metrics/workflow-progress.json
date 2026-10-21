@@ -4276,6 +4276,20 @@
       "station_initial_ark_reserve_fuel_tenths": 1000,
       "scope": "Persistent100LY ark-service reserve per realstation; actualdockedpaid atomictransfer; ordinaryplayerFuelunchanged",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Native ark registration/hop producer pushed; live refuel child assigned",
+      "head": "0c80386daac7606f920118fef36cfb41443ce5f0",
+      "base": "5fa9c568c79ca32153d4491674e50953960b45ce",
+      "ledger_parent": "M10.P01.C08.producer",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328214749",
+      "github_run": 39688676918,
+      "new_methods": 6,
+      "selection_methods": 109,
+      "unit_status": "in_progress",
+      "source_review": "MBA assigned",
+      "next_assigned": "M10.P01.C08.refuel",
+      "usable_build_delivered": false
     }
   ]
 }
