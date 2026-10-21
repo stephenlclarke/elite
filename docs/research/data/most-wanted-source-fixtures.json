@@ -1,0 +1,3015 @@
+{
+  "package_id": "P16",
+  "version": "0.16",
+  "dependency_version": "BountySystem0.19",
+  "scope": "Selected exact JS callbacks in Node mocks; all11 archetypes and eight route tables. No native engine, complete dynamic network, UI or historical dependency parity claim. Source defects asserted, not silently repaired.",
+  "runtime": "v26.9.0",
+  "total": 31,
+  "passed": 31,
+  "cases": [
+    {
+      "name": "generated archetype 1",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.7515000000000001,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 2",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.10591699999999804,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 3",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.0987920000000031,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 11",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.12574999999999648,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 4",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.10995799999999889,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 5",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.08462499999999906,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 6",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.08158399999999943,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 7",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.09120799999999818,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 8",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.08679199999999909,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 9",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.087333000000001,
+      "passed": true
+    },
+    {
+      "name": "generated archetype 10",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.078125,
+      "passed": true
+    },
+    {
+      "name": "routes galaxy1",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.35570900000000094,
+      "passed": true
+    },
+    {
+      "name": "routes galaxy2",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.07508299999999934,
+      "passed": true
+    },
+    {
+      "name": "routes galaxy3",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.0777920000000023,
+      "passed": true
+    },
+    {
+      "name": "routes galaxy4",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.07729200000000347,
+      "passed": true
+    },
+    {
+      "name": "routes galaxy5",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.07750000000000057,
+      "passed": true
+    },
+    {
+      "name": "routes galaxy6",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.10483299999999929,
+      "passed": true
+    },
+    {
+      "name": "routes galaxy7",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.08504199999999784,
+      "passed": true
+    },
+    {
+      "name": "routes galaxy8",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.07845800000000125,
+      "passed": true
+    },
+    {
+      "name": "licence day24 EQ_HUNTER_LICENCE_RENEWAL",
+      "source": "P16/Scripts/bountysystem_licence.js",
+      "source_sha256": "a2af6a77b2adb25507e8867ebbf36c36dfd9b407ea1f1fa128f7c6a08a732e34",
+      "duration_ms": 0.036083999999998895,
+      "passed": true
+    },
+    {
+      "name": "licence day25 EQ_HUNTER_LICENCE_RENEWAL",
+      "source": "P16/Scripts/bountysystem_licence.js",
+      "source_sha256": "a2af6a77b2adb25507e8867ebbf36c36dfd9b407ea1f1fa128f7c6a08a732e34",
+      "duration_ms": 0.005834000000000117,
+      "passed": true
+    },
+    {
+      "name": "licence day40 EQ_HUNTER_LICENCE_RENEWAL",
+      "source": "P16/Scripts/bountysystem_licence.js",
+      "source_sha256": "a2af6a77b2adb25507e8867ebbf36c36dfd9b407ea1f1fa128f7c6a08a732e34",
+      "duration_ms": 0.003167000000001252,
+      "passed": true
+    },
+    {
+      "name": "licence day41 EQ_HUNTER_LICENCE_RENEWAL",
+      "source": "P16/Scripts/bountysystem_licence.js",
+      "source_sha256": "a2af6a77b2adb25507e8867ebbf36c36dfd9b407ea1f1fa128f7c6a08a732e34",
+      "duration_ms": 0.002957999999999572,
+      "passed": true
+    },
+    {
+      "name": "licence day30 EQ_HUNTER_LICENCE",
+      "source": "P16/Scripts/bountysystem_licence.js",
+      "source_sha256": "a2af6a77b2adb25507e8867ebbf36c36dfd9b407ea1f1fa128f7c6a08a732e34",
+      "duration_ms": 0.0029590000000006,
+      "passed": true
+    },
+    {
+      "name": "licence day41 EQ_HUNTER_LICENCE",
+      "source": "P16/Scripts/bountysystem_licence.js",
+      "source_sha256": "a2af6a77b2adb25507e8867ebbf36c36dfd9b407ea1f1fa128f7c6a08a732e34",
+      "duration_ms": 0.0027089999999994063,
+      "passed": true
+    },
+    {
+      "name": "tip reliability source percent defect",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.11374999999999957,
+      "passed": true
+    },
+    {
+      "name": "no-SDC docking undefined chance defect",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.2713339999999995,
+      "passed": true
+    },
+    {
+      "name": "NPC any-killer target removal no bonus receipt",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.10645799999999994,
+      "passed": true
+    },
+    {
+      "name": "escort identity removed permanently",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.0860839999999996,
+      "passed": true
+    },
+    {
+      "name": "hidden bounty scan once",
+      "source": "BountySystem0.19/Scripts/bountysystem_scanner.js",
+      "source_sha256": "d950b5349130c29177211ab6fc690ec34d7890ca5eca750702e609226b84a5ca",
+      "duration_ms": 0.05595899999999787,
+      "passed": true
+    },
+    {
+      "name": "source live ship update weapon guard",
+      "source": "P16/Scripts/bountysystem_mostwanted.js",
+      "source_sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+      "duration_ms": 0.16629100000000108,
+      "passed": true
+    }
+  ],
+  "archetypes": [
+    {
+      "source_type": 1,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_JUMPS",
+        "pending": false,
+        "bounty": 0,
+        "realBounty": 837.9165124598851,
+        "shipDataKey": "fixture_trader",
+        "shipType": "Fixture Hull",
+        "shipAI": "oolite-traderAI.js",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "trader",
+        "accuracy": 6,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_BEAM_LASER,AFT:EQ_WEAPON_BEAM_LASER,EQ_ESCAPE_POD",
+        "escortsRole": "escort",
+        "escorts": 2,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_escort",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 2,
+        "system": 1,
+        "destinationSystem": 0,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.16666666666666666,
+        "lastVisibleSystem": 1,
+        "lastVisibleDestination": 0,
+        "updated": 8078400,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 2,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_JUMPS",
+        "pending": false,
+        "bounty": 0,
+        "realBounty": 1963.7495373796555,
+        "shipDataKey": "fixture_trader-smuggler",
+        "shipType": "Fixture Hull",
+        "shipAI": "oolite-traderAI.js",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "trader-smuggler",
+        "accuracy": 7,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,AFT:EQ_WEAPON_BEAM_LASER,EQ_CLOAKING_DEVICE,EQ_ESCAPE_POD",
+        "escortsRole": "escort-medium",
+        "escorts": 4,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_escort-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 2,
+        "system": 1,
+        "destinationSystem": 0,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.3333333333333333,
+        "lastVisibleSystem": 1,
+        "lastVisibleDestination": 0,
+        "updated": 8078400,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 3,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_JUMPS",
+        "pending": false,
+        "bounty": 0,
+        "realBounty": 5341.248612138967,
+        "shipDataKey": "fixture_trader-smuggler",
+        "shipType": "Fixture Hull",
+        "shipAI": "oolite-traderAI.js",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "trader-smuggler",
+        "accuracy": 8,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,AFT:EQ_WEAPON_MILITARY_LASER,EQ_CLOAKING_DEVICE,EQ_ESCAPE_POD",
+        "escortsRole": "escort-heavy",
+        "escorts": 6,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_escort-heavy",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort-heavy",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort-heavy",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort-heavy",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort-heavy",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_escort-heavy",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 2,
+        "system": 1,
+        "destinationSystem": 0,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.5,
+        "lastVisibleSystem": -1,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 11,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_TIME",
+        "pending": false,
+        "bounty": 0,
+        "realBounty": 6775,
+        "shipDataKey": "fixture_trader-courier",
+        "shipType": "Fixture Hull",
+        "shipAI": "oolite-traderAI.js",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "trader-courier",
+        "accuracy": 8,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,AFT:EQ_WEAPON_MILITARY_LASER,EQ_CLOAKING_DEVICE,EQ_ESCAPE_POD",
+        "escortsRole": "escort",
+        "escorts": 0,
+        "escortData": [],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "system": 0,
+        "destinationSystem": 1,
+        "movement": 4,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.5,
+        "lastVisibleSystem": -1,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 4,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_JUMPS",
+        "pending": false,
+        "bounty": 68,
+        "realBounty": 625,
+        "escortsRole": "pirate-light-fighter",
+        "shipAI": "oolite-pirateFreighterAI.js",
+        "shipDataKey": "fixture_pirate",
+        "shipType": "Fixture Hull",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "pirate",
+        "accuracy": 4,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,EQ_ESCAPE_POD",
+        "escorts": 2,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_pirate-light-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 15,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-light-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 15,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 3,
+        "system": 0,
+        "destinationSystem": 1,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.16666666666666666,
+        "lastVisibleSystem": 0,
+        "lastVisibleDestination": 1,
+        "updated": 8078400,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 5,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_JUMPS",
+        "pending": false,
+        "bounty": 68,
+        "realBounty": 1275,
+        "escortsRole": "pirate-light-fighter",
+        "shipAI": "oolite-pirateFreighterAI.js",
+        "shipDataKey": "fixture_pirate-light-freighter",
+        "shipType": "Fixture Hull",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "pirate-light-freighter",
+        "accuracy": 5,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_BEAM_LASER,AFT:EQ_WEAPON_BEAM_LASER,EQ_CLOAKING_DEVICE,EQ_ESCAPE_POD",
+        "escorts": 4,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_pirate-light-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 17,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-light-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 17,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-light-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 17,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-light-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 17,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 3,
+        "system": 0,
+        "destinationSystem": 1,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.3333333333333333,
+        "lastVisibleSystem": 0,
+        "lastVisibleDestination": 1,
+        "updated": 8078400,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 6,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_JUMPS",
+        "pending": false,
+        "bounty": 68,
+        "realBounty": 3225,
+        "escortsRole": "pirate-medium-fighter",
+        "shipAI": "oolite-pirateFreighterAI.js",
+        "shipDataKey": "fixture_pirate-medium-freighter",
+        "shipType": "Fixture Hull",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "pirate-medium-freighter",
+        "accuracy": 6,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,AFT:EQ_WEAPON_BEAM_LASER,EQ_CLOAKING_DEVICE,EQ_ESCAPE_POD",
+        "escorts": 6,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_pirate-medium-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 20,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-medium-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 20,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-medium-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 20,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-medium-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 20,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-medium-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 20,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-medium-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 20,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 3,
+        "system": 0,
+        "destinationSystem": 1,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.5,
+        "lastVisibleSystem": -1,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 7,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_JUMPS",
+        "pending": false,
+        "bounty": 68,
+        "realBounty": 9075,
+        "escortsRole": "pirate-heavy-fighter",
+        "shipAI": "oolite-pirateFreighterAI.js",
+        "shipDataKey": "fixture_pirate-heavy-freighter",
+        "shipType": "Fixture Hull",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "pirate-heavy-freighter",
+        "accuracy": 7,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,AFT:EQ_WEAPON_MILITARY_LASER,EQ_CLOAKING_DEVICE,EQ_ESCAPE_POD",
+        "escorts": 8,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_pirate-heavy-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 22,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-heavy-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 22,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-heavy-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 22,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-heavy-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 22,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-heavy-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 22,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-heavy-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 22,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-heavy-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 22,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_pirate-heavy-fighter",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 22,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 3,
+        "system": 0,
+        "destinationSystem": 1,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.6666666666666666,
+        "lastVisibleSystem": -1,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 8,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_TIME",
+        "pending": false,
+        "bounty": 0,
+        "realBounty": 1925,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,AFT:EQ_WEAPON_BEAM_LASER,X:EQ_ESCAPE_POD,EQ_ESCAPE_POD,EQ_CLOAKING_DEVICE",
+        "escortsRole": "assassin-light",
+        "shipAI": "oolite-assassinAI.js",
+        "shipDataKey": "fixture_assassin-medium",
+        "shipType": "Fixture Hull",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "assassin-medium",
+        "accuracy": 7,
+        "heatInsulation": 2,
+        "escorts": 4,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_assassin-light",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_assassin-light",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_assassin-light",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_assassin-light",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 3,
+        "system": 1,
+        "destinationSystem": 0,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.5333333333333333,
+        "lastVisibleSystem": -1,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 9,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_TIME",
+        "pending": false,
+        "bounty": 0,
+        "realBounty": 8425,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,AFT:EQ_WEAPON_MILITARY_LASER,X:EQ_ESCAPE_POD,EQ_ESCAPE_POD,EQ_CLOAKING_DEVICE",
+        "escortsRole": "assassin-medium",
+        "shipAI": "oolite-assassinAI.js",
+        "shipDataKey": "fixture_assassin-heavy",
+        "shipType": "Fixture Hull",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "assassin-heavy",
+        "accuracy": 8,
+        "heatInsulation": 2,
+        "escorts": 6,
+        "escortData": [
+          {
+            "escortShipKey": "fixture_assassin-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_assassin-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_assassin-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_assassin-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_assassin-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_assassin-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 3,
+        "system": 1,
+        "destinationSystem": 0,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.6,
+        "lastVisibleSystem": -1,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    },
+    {
+      "source_type": 10,
+      "selected_record": {
+        "index": 1,
+        "routeMode": "OPTIMIZED_BY_TIME",
+        "pending": false,
+        "bounty": 0,
+        "realBounty": 5425,
+        "shipAI": "oolite-bountyHunterLeaderAI.js",
+        "shipDataKey": "fixture_hunter-heavy",
+        "shipType": "Fixture Hull",
+        "shipName": "",
+        "personality": 16383,
+        "primaryRole": "hunter-heavy",
+        "accuracy": 9,
+        "heatInsulation": 2,
+        "equipment": "FORE:EQ_WEAPON_MILITARY_LASER,AFT:EQ_WEAPON_MILITARY_LASER,EQ_ESCAPE_POD,EQ_CLOAKING_DEVICE",
+        "escorts": 7,
+        "escortsRole": "hunter-medium",
+        "escortData": [
+          {
+            "escortShipKey": "fixture_hunter-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_hunter-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_hunter-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_hunter-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_hunter-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_hunter-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          },
+          {
+            "escortShipKey": "fixture_hunter-medium",
+            "escortShipName": "",
+            "escortPersonality": 16384,
+            "escortPilotName": "Fixture Escort",
+            "escortBounty": 0,
+            "escortHiddenBounty": 20
+          }
+        ],
+        "pilotDescription": "Fixture",
+        "pilotName": "Fixture Pilot",
+        "pilotHomeSystem": 0,
+        "pilotSpecies": "Fixture",
+        "arrayIndex": 0,
+        "movement": 3,
+        "system": 1,
+        "destinationSystem": 0,
+        "dockTime": 8625600,
+        "departureTime": 8654400,
+        "updateChance": 0.6,
+        "lastVisibleSystem": -1,
+        "lastVisibleHistory": [
+          2
+        ]
+      }
+    }
+  ],
+  "galaxy_routes": [
+    {
+      "galaxy_index": 0,
+      "spacelanes": [
+        [
+          141,
+          250,
+          111,
+          186,
+          50,
+          73,
+          35,
+          188,
+          250
+        ],
+        [
+          7,
+          129,
+          227,
+          73,
+          89,
+          222,
+          29,
+          93,
+          42,
+          131
+        ],
+        [
+          131,
+          62,
+          150,
+          198,
+          36,
+          28,
+          16,
+          221,
+          99
+        ],
+        [
+          99,
+          241,
+          86,
+          126,
+          18,
+          246
+        ]
+      ],
+      "milk_runs": [
+        {
+          "id1": 99,
+          "id2": 84,
+          "rating": 70
+        },
+        {
+          "id1": 99,
+          "id2": 191,
+          "rating": 72
+        },
+        {
+          "id1": 12,
+          "id2": 116,
+          "rating": 73
+        },
+        {
+          "id1": 163,
+          "id2": 192,
+          "rating": 73
+        },
+        {
+          "id1": 131,
+          "id2": 42,
+          "rating": 73
+        },
+        {
+          "id1": 254,
+          "id2": 187,
+          "rating": 74
+        },
+        {
+          "id1": 158,
+          "id2": 116,
+          "rating": 75
+        },
+        {
+          "id1": 98,
+          "id2": 84,
+          "rating": 75
+        },
+        {
+          "id1": 98,
+          "id2": 191,
+          "rating": 75
+        },
+        {
+          "id1": 195,
+          "id2": 63,
+          "rating": 76
+        },
+        {
+          "id1": 254,
+          "id2": 251,
+          "rating": 76
+        },
+        {
+          "id1": 79,
+          "id2": 174,
+          "rating": 76
+        },
+        {
+          "id1": 49,
+          "id2": 116,
+          "rating": 76
+        },
+        {
+          "id1": 254,
+          "id2": 74,
+          "rating": 77
+        },
+        {
+          "id1": 100,
+          "id2": 42,
+          "rating": 77
+        },
+        {
+          "id1": 207,
+          "id2": 116,
+          "rating": 77
+        },
+        {
+          "id1": 131,
+          "id2": 167,
+          "rating": 78
+        },
+        {
+          "id1": 240,
+          "id2": 187,
+          "rating": 78
+        },
+        {
+          "id1": 79,
+          "id2": 191,
+          "rating": 79
+        },
+        {
+          "id1": 33,
+          "id2": 123,
+          "rating": 81
+        },
+        {
+          "id1": 99,
+          "id2": 185,
+          "rating": 81
+        },
+        {
+          "id1": 82,
+          "id2": 244,
+          "rating": 83
+        },
+        {
+          "id1": 227,
+          "id2": 154,
+          "rating": 83
+        },
+        {
+          "id1": 35,
+          "id2": 186,
+          "rating": 84
+        },
+        {
+          "id1": 221,
+          "id2": 185,
+          "rating": 84
+        },
+        {
+          "id1": 163,
+          "id2": 252,
+          "rating": 86
+        },
+        {
+          "id1": 141,
+          "id2": 101,
+          "rating": 89
+        },
+        {
+          "id1": 250,
+          "id2": 101,
+          "rating": 89
+        },
+        {
+          "id1": 218,
+          "id2": 18,
+          "rating": 90
+        },
+        {
+          "id1": 82,
+          "id2": 154,
+          "rating": 90
+        },
+        {
+          "id1": 246,
+          "id2": 18,
+          "rating": 93
+        }
+      ]
+    },
+    {
+      "galaxy_index": 1,
+      "spacelanes": [
+        [
+          82,
+          23,
+          188,
+          23,
+          54,
+          74,
+          122,
+          57,
+          115,
+          178,
+          45
+        ],
+        [
+          45,
+          144,
+          189,
+          140,
+          65,
+          48,
+          204,
+          193,
+          221,
+          236,
+          66,
+          58,
+          88,
+          127
+        ],
+        [
+          127,
+          109,
+          42,
+          114,
+          202
+        ],
+        [
+          127,
+          207,
+          136,
+          6,
+          24,
+          53,
+          78,
+          48
+        ],
+        [
+          205,
+          59,
+          100,
+          9,
+          156,
+          92,
+          61,
+          41,
+          179,
+          189
+        ],
+        [
+          113,
+          115,
+          57,
+          94,
+          29
+        ]
+      ],
+      "milk_runs": [
+        {
+          "id1": 255,
+          "id2": 37,
+          "rating": 72
+        },
+        {
+          "id1": 191,
+          "id2": 37,
+          "rating": 74
+        },
+        {
+          "id1": 128,
+          "id2": 165,
+          "rating": 74
+        },
+        {
+          "id1": 57,
+          "id2": 94,
+          "rating": 76
+        },
+        {
+          "id1": 24,
+          "id2": 20,
+          "rating": 78
+        },
+        {
+          "id1": 237,
+          "id2": 174,
+          "rating": 79
+        },
+        {
+          "id1": 16,
+          "id2": 157,
+          "rating": 80
+        },
+        {
+          "id1": 81,
+          "id2": 20,
+          "rating": 80
+        },
+        {
+          "id1": 167,
+          "id2": 94,
+          "rating": 81
+        },
+        {
+          "id1": 82,
+          "id2": 174,
+          "rating": 82
+        },
+        {
+          "id1": 40,
+          "id2": 68,
+          "rating": 82
+        },
+        {
+          "id1": 106,
+          "id2": 211,
+          "rating": 83
+        },
+        {
+          "id1": 57,
+          "id2": 19,
+          "rating": 83
+        },
+        {
+          "id1": 57,
+          "id2": 115,
+          "rating": 84
+        },
+        {
+          "id1": 185,
+          "id2": 38,
+          "rating": 84
+        },
+        {
+          "id1": 92,
+          "id2": 211,
+          "rating": 85
+        },
+        {
+          "id1": 191,
+          "id2": 83,
+          "rating": 85
+        },
+        {
+          "id1": 16,
+          "id2": 34,
+          "rating": 87
+        },
+        {
+          "id1": 40,
+          "id2": 179,
+          "rating": 88
+        },
+        {
+          "id1": 209,
+          "id2": 115,
+          "rating": 88
+        },
+        {
+          "id1": 81,
+          "id2": 97,
+          "rating": 90
+        },
+        {
+          "id1": 82,
+          "id2": 86,
+          "rating": 92
+        },
+        {
+          "id1": 167,
+          "id2": 115,
+          "rating": 92
+        },
+        {
+          "id1": 231,
+          "id2": 147,
+          "rating": 94
+        }
+      ]
+    },
+    {
+      "galaxy_index": 2,
+      "spacelanes": [
+        [
+          38,
+          182,
+          246,
+          91,
+          22,
+          140,
+          5,
+          56,
+          177,
+          150,
+          26,
+          75,
+          144,
+          209,
+          17,
+          218
+        ],
+        [
+          50,
+          65,
+          79,
+          154,
+          38,
+          139,
+          189,
+          135,
+          42
+        ],
+        [
+          205,
+          241,
+          101,
+          132,
+          6,
+          180,
+          164,
+          70,
+          10,
+          85,
+          81,
+          225,
+          81,
+          85,
+          10,
+          70,
+          202,
+          53
+        ],
+        [
+          140,
+          58,
+          152,
+          76,
+          77,
+          97,
+          168
+        ],
+        [
+          106,
+          250,
+          245,
+          160,
+          245,
+          22
+        ],
+        [
+          118,
+          161,
+          54,
+          165,
+          129,
+          186
+        ]
+      ],
+      "milk_runs": [
+        {
+          "id1": 205,
+          "id2": 168,
+          "rating": 71
+        },
+        {
+          "id1": 144,
+          "id2": 147,
+          "rating": 73
+        },
+        {
+          "id1": 34,
+          "id2": 57,
+          "rating": 73
+        },
+        {
+          "id1": 64,
+          "id2": 168,
+          "rating": 73
+        },
+        {
+          "id1": 76,
+          "id2": 152,
+          "rating": 76
+        },
+        {
+          "id1": 76,
+          "id2": 66,
+          "rating": 76
+        },
+        {
+          "id1": 205,
+          "id2": 82,
+          "rating": 77
+        },
+        {
+          "id1": 155,
+          "id2": 57,
+          "rating": 77
+        },
+        {
+          "id1": 116,
+          "id2": 152,
+          "rating": 77
+        },
+        {
+          "id1": 17,
+          "id2": 24,
+          "rating": 77
+        },
+        {
+          "id1": 205,
+          "id2": 114,
+          "rating": 79
+        },
+        {
+          "id1": 17,
+          "id2": 41,
+          "rating": 79
+        },
+        {
+          "id1": 17,
+          "id2": 147,
+          "rating": 79
+        },
+        {
+          "id1": 22,
+          "id2": 140,
+          "rating": 79
+        },
+        {
+          "id1": 64,
+          "id2": 215,
+          "rating": 79
+        },
+        {
+          "id1": 58,
+          "id2": 152,
+          "rating": 80
+        },
+        {
+          "id1": 50,
+          "id2": 65,
+          "rating": 82
+        },
+        {
+          "id1": 42,
+          "id2": 163,
+          "rating": 83
+        },
+        {
+          "id1": 58,
+          "id2": 140,
+          "rating": 84
+        },
+        {
+          "id1": 205,
+          "id2": 241,
+          "rating": 84
+        },
+        {
+          "id1": 43,
+          "id2": 98,
+          "rating": 84
+        },
+        {
+          "id1": 22,
+          "id2": 91,
+          "rating": 84
+        },
+        {
+          "id1": 42,
+          "id2": 135,
+          "rating": 85
+        },
+        {
+          "id1": 54,
+          "id2": 118,
+          "rating": 86
+        },
+        {
+          "id1": 18,
+          "id2": 100,
+          "rating": 87
+        },
+        {
+          "id1": 5,
+          "id2": 66,
+          "rating": 87
+        },
+        {
+          "id1": 79,
+          "id2": 65,
+          "rating": 89
+        },
+        {
+          "id1": 10,
+          "id2": 141,
+          "rating": 89
+        },
+        {
+          "id1": 6,
+          "id2": 180,
+          "rating": 89
+        },
+        {
+          "id1": 58,
+          "id2": 66,
+          "rating": 89
+        },
+        {
+          "id1": 10,
+          "id2": 70,
+          "rating": 90
+        },
+        {
+          "id1": 5,
+          "id2": 140,
+          "rating": 90
+        },
+        {
+          "id1": 116,
+          "id2": 122,
+          "rating": 92
+        },
+        {
+          "id1": 10,
+          "id2": 85,
+          "rating": 94
+        }
+      ]
+    },
+    {
+      "galaxy_index": 3,
+      "spacelanes": [
+        [
+          116,
+          230,
+          167,
+          48,
+          210,
+          36,
+          150,
+          84,
+          240,
+          193,
+          223,
+          118,
+          197,
+          135,
+          85,
+          154,
+          213,
+          162,
+          166,
+          213
+        ],
+        [
+          16,
+          42,
+          172,
+          40,
+          80,
+          65,
+          144,
+          105,
+          119,
+          208,
+          189,
+          1,
+          174,
+          146,
+          100,
+          233
+        ],
+        [
+          50,
+          239,
+          103,
+          108,
+          103,
+          177,
+          17,
+          177,
+          103,
+          45,
+          105,
+          137,
+          95,
+          54,
+          77,
+          76,
+          21,
+          2,
+          249,
+          113,
+          141,
+          113,
+          97
+        ],
+        [
+          209,
+          33,
+          62,
+          25,
+          134,
+          58,
+          138,
+          191,
+          78,
+          57,
+          242,
+          234,
+          245,
+          181,
+          82,
+          117,
+          53,
+          74,
+          38
+        ],
+        [
+          71,
+          79,
+          68,
+          110,
+          220,
+          158,
+          215,
+          63,
+          44,
+          66,
+          146,
+          174,
+          1,
+          4,
+          121,
+          145,
+          142,
+          6,
+          142,
+          11,
+          7,
+          161,
+          140
+        ],
+        [
+          7,
+          32,
+          232,
+          216,
+          60
+        ]
+      ],
+      "milk_runs": [
+        {
+          "id1": 38,
+          "id2": 160,
+          "rating": 70
+        },
+        {
+          "id1": 25,
+          "id2": 24,
+          "rating": 72
+        },
+        {
+          "id1": 25,
+          "id2": 62,
+          "rating": 74
+        },
+        {
+          "id1": 220,
+          "id2": 171,
+          "rating": 75
+        },
+        {
+          "id1": 137,
+          "id2": 105,
+          "rating": 76
+        },
+        {
+          "id1": 209,
+          "id2": 33,
+          "rating": 77
+        },
+        {
+          "id1": 29,
+          "id2": 168,
+          "rating": 78
+        },
+        {
+          "id1": 58,
+          "id2": 24,
+          "rating": 78
+        },
+        {
+          "id1": 103,
+          "id2": 107,
+          "rating": 78
+        },
+        {
+          "id1": 65,
+          "id2": 239,
+          "rating": 78
+        },
+        {
+          "id1": 103,
+          "id2": 105,
+          "rating": 79
+        },
+        {
+          "id1": 103,
+          "id2": 177,
+          "rating": 79
+        },
+        {
+          "id1": 38,
+          "id2": 53,
+          "rating": 82
+        },
+        {
+          "id1": 42,
+          "id2": 16,
+          "rating": 83
+        },
+        {
+          "id1": 38,
+          "id2": 74,
+          "rating": 84
+        },
+        {
+          "id1": 103,
+          "id2": 108,
+          "rating": 84
+        },
+        {
+          "id1": 103,
+          "id2": 239,
+          "rating": 84
+        },
+        {
+          "id1": 220,
+          "id2": 68,
+          "rating": 84
+        },
+        {
+          "id1": 58,
+          "id2": 109,
+          "rating": 89
+        },
+        {
+          "id1": 220,
+          "id2": 90,
+          "rating": 90
+        }
+      ]
+    },
+    {
+      "galaxy_index": 4,
+      "spacelanes": [
+        [
+          41,
+          216,
+          112,
+          230,
+          28,
+          102,
+          181,
+          35,
+          180,
+          24,
+          19,
+          156,
+          1,
+          45,
+          79,
+          172,
+          169
+        ],
+        [
+          140,
+          137,
+          173,
+          70,
+          7,
+          253,
+          243,
+          135,
+          193,
+          225,
+          184,
+          150,
+          115,
+          201,
+          189,
+          227,
+          226,
+          221,
+          57,
+          202,
+          135,
+          202,
+          57,
+          221,
+          226,
+          227,
+          189,
+          115,
+          11,
+          54,
+          158,
+          175,
+          85,
+          178,
+          204,
+          12,
+          215,
+          212,
+          158
+        ],
+        [
+          194,
+          8,
+          210,
+          41,
+          222,
+          183,
+          254,
+          149,
+          130,
+          108,
+          82,
+          92,
+          29,
+          121,
+          34,
+          183
+        ],
+        [
+          114,
+          118,
+          2,
+          116,
+          244,
+          248,
+          65,
+          146,
+          153,
+          10,
+          99,
+          91,
+          200,
+          244
+        ],
+        [
+          120,
+          9,
+          233,
+          104,
+          136,
+          129,
+          139,
+          163,
+          61
+        ],
+        [
+          249,
+          16,
+          20,
+          39,
+          93,
+          207,
+          131,
+          74,
+          182,
+          252,
+          188,
+          40,
+          146,
+          153,
+          146,
+          40,
+          188,
+          252,
+          182,
+          166,
+          53,
+          221,
+          220,
+          225
+        ],
+        [
+          30,
+          89,
+          87,
+          89,
+          152,
+          170,
+          88,
+          194,
+          77,
+          246,
+          106,
+          190,
+          208,
+          167
+        ]
+      ],
+      "milk_runs": [
+        {
+          "id1": 34,
+          "id2": 186,
+          "rating": 70
+        },
+        {
+          "id1": 34,
+          "id2": 250,
+          "rating": 70
+        },
+        {
+          "id1": 66,
+          "id2": 58,
+          "rating": 70
+        },
+        {
+          "id1": 2,
+          "id2": 63,
+          "rating": 71
+        },
+        {
+          "id1": 226,
+          "id2": 31,
+          "rating": 71
+        },
+        {
+          "id1": 130,
+          "id2": 250,
+          "rating": 72
+        },
+        {
+          "id1": 162,
+          "id2": 250,
+          "rating": 73
+        },
+        {
+          "id1": 34,
+          "id2": 183,
+          "rating": 74
+        },
+        {
+          "id1": 162,
+          "id2": 183,
+          "rating": 74
+        },
+        {
+          "id1": 137,
+          "id2": 191,
+          "rating": 75
+        },
+        {
+          "id1": 98,
+          "id2": 123,
+          "rating": 75
+        },
+        {
+          "id1": 130,
+          "id2": 108,
+          "rating": 76
+        },
+        {
+          "id1": 12,
+          "id2": 81,
+          "rating": 76
+        },
+        {
+          "id1": 213,
+          "id2": 81,
+          "rating": 77
+        },
+        {
+          "id1": 115,
+          "id2": 150,
+          "rating": 78
+        },
+        {
+          "id1": 162,
+          "id2": 149,
+          "rating": 78
+        },
+        {
+          "id1": 254,
+          "id2": 183,
+          "rating": 79
+        },
+        {
+          "id1": 212,
+          "id2": 46,
+          "rating": 80
+        },
+        {
+          "id1": 198,
+          "id2": 31,
+          "rating": 80
+        },
+        {
+          "id1": 254,
+          "id2": 250,
+          "rating": 82
+        },
+        {
+          "id1": 130,
+          "id2": 149,
+          "rating": 82
+        },
+        {
+          "id1": 194,
+          "id2": 88,
+          "rating": 83
+        },
+        {
+          "id1": 198,
+          "id2": 63,
+          "rating": 84
+        },
+        {
+          "id1": 99,
+          "id2": 91,
+          "rating": 84
+        },
+        {
+          "id1": 254,
+          "id2": 149,
+          "rating": 85
+        },
+        {
+          "id1": 99,
+          "id2": 200,
+          "rating": 85
+        },
+        {
+          "id1": 184,
+          "id2": 150,
+          "rating": 86
+        },
+        {
+          "id1": 89,
+          "id2": 87,
+          "rating": 88
+        },
+        {
+          "id1": 249,
+          "id2": 16,
+          "rating": 90
+        }
+      ]
+    },
+    {
+      "galaxy_index": 5,
+      "spacelanes": [
+        [
+          84,
+          3,
+          8,
+          88,
+          206,
+          136,
+          144,
+          13,
+          92,
+          99,
+          85,
+          133,
+          40,
+          215,
+          115,
+          83,
+          246,
+          39,
+          35,
+          114
+        ],
+        [
+          169,
+          51,
+          80,
+          103,
+          243,
+          98,
+          102,
+          16,
+          109,
+          101,
+          67,
+          142,
+          60,
+          209,
+          233,
+          112,
+          225,
+          131,
+          210,
+          12,
+          150,
+          91
+        ],
+        [
+          104,
+          54,
+          162,
+          148,
+          211,
+          6,
+          181,
+          17,
+          108,
+          28
+        ],
+        [
+          156,
+          113,
+          14,
+          216,
+          82,
+          177,
+          116,
+          154,
+          120,
+          50,
+          232,
+          124,
+          215
+        ],
+        [
+          10,
+          77,
+          159,
+          226,
+          31,
+          203,
+          30,
+          234,
+          240,
+          234,
+          140,
+          159
+        ]
+      ],
+      "milk_runs": [
+        {
+          "id1": 243,
+          "id2": 57,
+          "rating": 70
+        },
+        {
+          "id1": 243,
+          "id2": 228,
+          "rating": 71
+        },
+        {
+          "id1": 182,
+          "id2": 160,
+          "rating": 71
+        },
+        {
+          "id1": 14,
+          "id2": 249,
+          "rating": 73
+        },
+        {
+          "id1": 240,
+          "id2": 30,
+          "rating": 75
+        },
+        {
+          "id1": 20,
+          "id2": 57,
+          "rating": 75
+        },
+        {
+          "id1": 243,
+          "id2": 231,
+          "rating": 75
+        },
+        {
+          "id1": 243,
+          "id2": 101,
+          "rating": 75
+        },
+        {
+          "id1": 243,
+          "id2": 98,
+          "rating": 76
+        },
+        {
+          "id1": 109,
+          "id2": 57,
+          "rating": 76
+        },
+        {
+          "id1": 243,
+          "id2": 103,
+          "rating": 77
+        },
+        {
+          "id1": 34,
+          "id2": 24,
+          "rating": 78
+        },
+        {
+          "id1": 69,
+          "id2": 167,
+          "rating": 78
+        },
+        {
+          "id1": 144,
+          "id2": 61,
+          "rating": 79
+        },
+        {
+          "id1": 109,
+          "id2": 228,
+          "rating": 79
+        },
+        {
+          "id1": 182,
+          "id2": 167,
+          "rating": 79
+        },
+        {
+          "id1": 240,
+          "id2": 234,
+          "rating": 80
+        },
+        {
+          "id1": 144,
+          "id2": 253,
+          "rating": 81
+        },
+        {
+          "id1": 144,
+          "id2": 97,
+          "rating": 81
+        },
+        {
+          "id1": 109,
+          "id2": 98,
+          "rating": 81
+        },
+        {
+          "id1": 20,
+          "id2": 244,
+          "rating": 81
+        },
+        {
+          "id1": 86,
+          "id2": 131,
+          "rating": 81
+        },
+        {
+          "id1": 109,
+          "id2": 101,
+          "rating": 82
+        },
+        {
+          "id1": 28,
+          "id2": 108,
+          "rating": 82
+        },
+        {
+          "id1": 1,
+          "id2": 108,
+          "rating": 82
+        },
+        {
+          "id1": 115,
+          "id2": 215,
+          "rating": 83
+        },
+        {
+          "id1": 109,
+          "id2": 231,
+          "rating": 83
+        },
+        {
+          "id1": 20,
+          "id2": 103,
+          "rating": 84
+        },
+        {
+          "id1": 1,
+          "id2": 181,
+          "rating": 86
+        },
+        {
+          "id1": 240,
+          "id2": 140,
+          "rating": 88
+        },
+        {
+          "id1": 14,
+          "id2": 113,
+          "rating": 88
+        },
+        {
+          "id1": 144,
+          "id2": 13,
+          "rating": 88
+        },
+        {
+          "id1": 102,
+          "id2": 98,
+          "rating": 88
+        },
+        {
+          "id1": 17,
+          "id2": 108,
+          "rating": 91
+        },
+        {
+          "id1": 6,
+          "id2": 181,
+          "rating": 92
+        },
+        {
+          "id1": 40,
+          "id2": 215,
+          "rating": 94
+        },
+        {
+          "id1": 17,
+          "id2": 181,
+          "rating": 96
+        },
+        {
+          "id1": 50,
+          "id2": 232,
+          "rating": 98
+        }
+      ]
+    },
+    {
+      "galaxy_index": 6,
+      "spacelanes": [
+        [
+          103,
+          58,
+          253,
+          65,
+          39,
+          44,
+          236,
+          150,
+          247,
+          193,
+          179,
+          133,
+          215,
+          95,
+          109
+        ],
+        [
+          194,
+          73,
+          146,
+          239,
+          86,
+          74,
+          199,
+          23,
+          138,
+          18,
+          234,
+          244,
+          166,
+          152,
+          162,
+          242,
+          184
+        ],
+        [
+          218,
+          130,
+          125,
+          205,
+          79,
+          191,
+          17,
+          178
+        ],
+        [
+          211,
+          7,
+          163,
+          67,
+          209,
+          250,
+          19,
+          239
+        ],
+        [
+          46,
+          36,
+          212,
+          187,
+          53,
+          107,
+          174
+        ]
+      ],
+      "milk_runs": [
+        {
+          "id1": 170,
+          "id2": 105,
+          "rating": 75
+        },
+        {
+          "id1": 170,
+          "id2": 190,
+          "rating": 75
+        },
+        {
+          "id1": 64,
+          "id2": 160,
+          "rating": 75
+        },
+        {
+          "id1": 13,
+          "id2": 160,
+          "rating": 76
+        },
+        {
+          "id1": 6,
+          "id2": 174,
+          "rating": 77
+        },
+        {
+          "id1": 183,
+          "id2": 164,
+          "rating": 79
+        },
+        {
+          "id1": 28,
+          "id2": 223,
+          "rating": 79
+        },
+        {
+          "id1": 119,
+          "id2": 190,
+          "rating": 79
+        },
+        {
+          "id1": 151,
+          "id2": 180,
+          "rating": 80
+        },
+        {
+          "id1": 64,
+          "id2": 81,
+          "rating": 80
+        },
+        {
+          "id1": 55,
+          "id2": 105,
+          "rating": 80
+        },
+        {
+          "id1": 195,
+          "id2": 159,
+          "rating": 80
+        },
+        {
+          "id1": 55,
+          "id2": 190,
+          "rating": 80
+        },
+        {
+          "id1": 86,
+          "id2": 127,
+          "rating": 80
+        },
+        {
+          "id1": 172,
+          "id2": 160,
+          "rating": 81
+        },
+        {
+          "id1": 199,
+          "id2": 233,
+          "rating": 82
+        },
+        {
+          "id1": 151,
+          "id2": 73,
+          "rating": 82
+        },
+        {
+          "id1": 181,
+          "id2": 95,
+          "rating": 83
+        },
+        {
+          "id1": 103,
+          "id2": 58,
+          "rating": 83
+        },
+        {
+          "id1": 71,
+          "id2": 160,
+          "rating": 83
+        },
+        {
+          "id1": 66,
+          "id2": 190,
+          "rating": 84
+        },
+        {
+          "id1": 135,
+          "id2": 80,
+          "rating": 84
+        },
+        {
+          "id1": 23,
+          "id2": 233,
+          "rating": 84
+        },
+        {
+          "id1": 66,
+          "id2": 105,
+          "rating": 84
+        },
+        {
+          "id1": 215,
+          "id2": 95,
+          "rating": 86
+        },
+        {
+          "id1": 247,
+          "id2": 202,
+          "rating": 86
+        },
+        {
+          "id1": 82,
+          "id2": 105,
+          "rating": 87
+        },
+        {
+          "id1": 82,
+          "id2": 190,
+          "rating": 87
+        },
+        {
+          "id1": 172,
+          "id2": 81,
+          "rating": 88
+        },
+        {
+          "id1": 71,
+          "id2": 81,
+          "rating": 88
+        },
+        {
+          "id1": 67,
+          "id2": 209,
+          "rating": 88
+        },
+        {
+          "id1": 23,
+          "id2": 246,
+          "rating": 89
+        },
+        {
+          "id1": 7,
+          "id2": 209,
+          "rating": 89
+        },
+        {
+          "id1": 215,
+          "id2": 133,
+          "rating": 91
+        },
+        {
+          "id1": 183,
+          "id2": 133,
+          "rating": 92
+        },
+        {
+          "id1": 247,
+          "id2": 133,
+          "rating": 93
+        },
+        {
+          "id1": 151,
+          "id2": 5,
+          "rating": 95
+        }
+      ]
+    },
+    {
+      "galaxy_index": 7,
+      "spacelanes": [
+        [
+          114,
+          12,
+          241,
+          39,
+          23,
+          38,
+          123,
+          130,
+          167,
+          63,
+          136,
+          8,
+          44,
+          91,
+          56,
+          62,
+          186,
+          93,
+          32,
+          61,
+          244,
+          243,
+          116,
+          46,
+          157,
+          230,
+          151,
+          213,
+          198,
+          148,
+          49,
+          76,
+          203,
+          255,
+          161,
+          98,
+          53,
+          1,
+          145,
+          33
+        ],
+        [
+          215,
+          2,
+          211,
+          9,
+          13,
+          147,
+          216,
+          225,
+          21,
+          218,
+          71,
+          206,
+          236,
+          190,
+          18,
+          26,
+          152,
+          51,
+          209,
+          24,
+          174,
+          82,
+          179,
+          173,
+          30,
+          251,
+          233,
+          125,
+          45,
+          41,
+          104,
+          110,
+          73,
+          135,
+          117,
+          55
+        ],
+        [
+          126,
+          6,
+          81,
+          65,
+          169,
+          232,
+          252
+        ],
+        [
+          75,
+          219,
+          248,
+          117
+        ],
+        [
+          10,
+          72,
+          219,
+          248,
+          117
+        ]
+      ],
+      "milk_runs": [
+        {
+          "id1": 56,
+          "id2": 240,
+          "rating": 70
+        },
+        {
+          "id1": 56,
+          "id2": 170,
+          "rating": 72
+        },
+        {
+          "id1": 82,
+          "id2": 100,
+          "rating": 75
+        },
+        {
+          "id1": 31,
+          "id2": 25,
+          "rating": 77
+        },
+        {
+          "id1": 147,
+          "id2": 121,
+          "rating": 77
+        },
+        {
+          "id1": 41,
+          "id2": 35,
+          "rating": 78
+        },
+        {
+          "id1": 244,
+          "id2": 138,
+          "rating": 78
+        },
+        {
+          "id1": 192,
+          "id2": 133,
+          "rating": 78
+        },
+        {
+          "id1": 151,
+          "id2": 230,
+          "rating": 78
+        },
+        {
+          "id1": 137,
+          "id2": 121,
+          "rating": 80
+        },
+        {
+          "id1": 206,
+          "id2": 25,
+          "rating": 80
+        },
+        {
+          "id1": 232,
+          "id2": 86,
+          "rating": 81
+        },
+        {
+          "id1": 93,
+          "id2": 185,
+          "rating": 81
+        },
+        {
+          "id1": 93,
+          "id2": 196,
+          "rating": 81
+        },
+        {
+          "id1": 192,
+          "id2": 35,
+          "rating": 81
+        },
+        {
+          "id1": 161,
+          "id2": 255,
+          "rating": 82
+        },
+        {
+          "id1": 14,
+          "id2": 25,
+          "rating": 83
+        },
+        {
+          "id1": 110,
+          "id2": 172,
+          "rating": 84
+        },
+        {
+          "id1": 82,
+          "id2": 179,
+          "rating": 84
+        },
+        {
+          "id1": 41,
+          "id2": 233,
+          "rating": 85
+        },
+        {
+          "id1": 251,
+          "id2": 30,
+          "rating": 85
+        },
+        {
+          "id1": 218,
+          "id2": 71,
+          "rating": 89
+        },
+        {
+          "id1": 93,
+          "id2": 186,
+          "rating": 90
+        },
+        {
+          "id1": 206,
+          "id2": 71,
+          "rating": 90
+        },
+        {
+          "id1": 251,
+          "id2": 233,
+          "rating": 90
+        },
+        {
+          "id1": 93,
+          "id2": 92,
+          "rating": 92
+        },
+        {
+          "id1": 232,
+          "id2": 81,
+          "rating": 92
+        },
+        {
+          "id1": 110,
+          "id2": 177,
+          "rating": 93
+        },
+        {
+          "id1": 232,
+          "id2": 252,
+          "rating": 93
+        }
+      ]
+    }
+  ]
+}

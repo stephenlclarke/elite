@@ -1,0 +1,84 @@
+{
+  "status": "Clean composed runtime and focusedchecks ready for ONEfreshcompletegate; execution pending",
+  "runtimeAndTestsSource": "a23ffc9fa165a26ee2f00d984517423eed55e2be",
+  "focusedEvidence": "docs/CENTRAL-COMBINED-FOCUSED-VALIDATION-026.json",
+  "freshFocusedMethods": 2,
+  "retainedUnchangedIndividualMethods": 45,
+  "failed025AggregatePreserved": true,
+  "ships": {
+    "source": "48278c28a4f7070f7593ee72238c286c508bb1c2",
+    "lease": {
+      "version": 1,
+      "leaseId": "elite-validation-026",
+      "state": "active",
+      "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+      "candidate": "48278c28a4f7070f7593ee72238c286c508bb1c2",
+      "worktree": "/Users/sclarke/.codex/worktrees/gameplay-ecology/elite",
+      "mayUpdateCandidateWithinApprovedScope": true,
+      "candidateUpdateScope": "After exact2focusedPASS only renderer-generated fingerprint/media+readiness metadata commits before finalfreeze. Source/Tests/Tools/Package/build/missionpacks MUSTremain byteidentical a23 throughout. Root alone changes owner/id/state.",
+      "previousLeaseId": "elite-validation-025",
+      "purpose": "Finish authorized combined validation while immutable-a23 broad review proceeds separately. ONEfresh exact2failedUItest focus; retain45other025passes withsourceproof/no relabelof025failedaggregate. OnPASS make ships+readme-media, inspectoriginals/generatedonlycommit/refreeze, ONEfullmakeci coverage/TSan/serialASan/leaks. No retries/repairs/waivers; stopfirstfailure/preserveinput-saveprefs-logs-per-laneoriginalnativeartifacts/reportrelease-no-process. No auditfinding fixes/Missionbridge/main/Sonar/release/PRmerge scope.",
+      "evidenceDirectory": "/tmp/elite-central-combined-026",
+      "startedAt": "2026-10-16T11:00:44.096422+00:00"
+    },
+    "command": [
+      "make",
+      "ships"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 42.55866450001486,
+    "changedTrackedInputs": [
+      "docs/ships/manifest.json"
+    ],
+    "protectedInputChanges": [],
+    "productionSaveUnchanged": true,
+    "nativeArchives": [],
+    "stageStarts": [],
+    "rawLogSha256": "dd9accc0b4ee1a1a6b235e917f5b6bea8ce16d52b0ebc2d429adab741d89c504",
+    "summaries": [
+      "Rendered 168 ships; reused 0 ; reference: 168 ships"
+    ]
+  },
+  "readme": {
+    "source": "48278c28a4f7070f7593ee72238c286c508bb1c2",
+    "lease": {
+      "version": 1,
+      "leaseId": "elite-validation-026",
+      "state": "active",
+      "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+      "candidate": "48278c28a4f7070f7593ee72238c286c508bb1c2",
+      "worktree": "/Users/sclarke/.codex/worktrees/gameplay-ecology/elite",
+      "mayUpdateCandidateWithinApprovedScope": true,
+      "candidateUpdateScope": "After exact2focusedPASS only renderer-generated fingerprint/media+readiness metadata commits before finalfreeze. Source/Tests/Tools/Package/build/missionpacks MUSTremain byteidentical a23 throughout. Root alone changes owner/id/state.",
+      "previousLeaseId": "elite-validation-025",
+      "purpose": "Finish authorized combined validation while immutable-a23 broad review proceeds separately. ONEfresh exact2failedUItest focus; retain45other025passes withsourceproof/no relabelof025failedaggregate. OnPASS make ships+readme-media, inspectoriginals/generatedonlycommit/refreeze, ONEfullmakeci coverage/TSan/serialASan/leaks. No retries/repairs/waivers; stopfirstfailure/preserveinput-saveprefs-logs-per-laneoriginalnativeartifacts/reportrelease-no-process. No auditfinding fixes/Missionbridge/main/Sonar/release/PRmerge scope.",
+      "evidenceDirectory": "/tmp/elite-central-combined-026",
+      "startedAt": "2026-10-16T11:00:44.096422+00:00"
+    },
+    "command": [
+      "make",
+      "readme-media"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 11.047435333020985,
+    "changedTrackedInputs": [],
+    "protectedInputChanges": [],
+    "productionSaveUnchanged": true,
+    "nativeArchives": [],
+    "stageStarts": [],
+    "rawLogSha256": "8a42e8406113b6d749484bff2a1fd4d0f57fb1aecc7c0901a935a13179472553",
+    "summaries": []
+  },
+  "originalREADMEPNGInspected": {
+    "path": "docs/elite.png",
+    "sha256": "9dce868e824d2023c249b99be5154873881e479c9706b0935420528cd423c996",
+    "observation": "Actualrenderer scene inspected at originalresolution; ship/planet/stars and cockpit visible. ByteidenticalpreviousgeneratedREADME. No physicalhardware/scanoutclaim."
+  },
+  "generatedDelta": "Only168 manifestinputfingerprint entries; allGIFs/README/icon outputbytes unchanged",
+  "protectedInputMap": "/tmp/elite-central-combined-026/protected-freeze.json",
+  "protectedInputMapSHA256": "e219e645802f8f5149a642c4c8570d427bd7b19fdccd3c1ec899046404e5d8e5",
+  "productionPreferencesUnchanged": true,
+  "productionSaveUnchanged": true,
+  "fullGatePassed": false,
+  "userFullCodeReview": "Independent immutablea23audit; findingsnotappliedduringthisfreeze"
+}

@@ -1,0 +1,111 @@
+{
+  "source_path": "/Users/sclarke/github/elite/docs/research/data/generated-space-project-profiles.json",
+  "source_sha256": "35df90a71cdcc7351e6ceb21966a52d6941950ad858602fbbdd3797fa4cd919c",
+  "narrative_path": "/Users/sclarke/github/elite/docs/research/generated-space-project-specifications.md",
+  "narrative_sha256": "de9ade07b46a51c9190b76a8ba6e7aef983ee59f8ed373ebb2decb3680b61b84",
+  "profile": {
+    "mission_id": "G02",
+    "profile_id": "PROJECT-SPACE-G02-1",
+    "objective_family": "Data/package courier",
+    "structure_status": "Borrowed documented family structure; sources S10/S18/D03/D04/O08 and mission-specifications.md. This does not reproduce a particular live-server generator.",
+    "difficulty_values": [
+      1,
+      2,
+      3
+    ],
+    "offer_location": "origin main orbital station",
+    "destination_selection": "Freeze one seeded reachable non-origin system with shortest-hop route <=3 jumps; use its main orbital station. No surface endpoints.",
+    "requirements": "No commodity hold requirement for encrypted-data variant. Physical package variant requires one free tonne and uses a distinct saved variant ID.",
+    "count_by_difficulty": {
+      "value": [
+        1,
+        1,
+        1
+      ],
+      "units": "mission-specific units",
+      "status": "estimated project parameter",
+      "reason": "Original generator/server distribution is not established for this common project profile.",
+      "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+      "confidence": "provisional balance",
+      "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+    },
+    "sequence": [
+      "accept unique sealed payload",
+      "fly to destination orbital station",
+      "confirm contact handoff"
+    ],
+    "success_predicate": "Correct unique payload handed to exact destination contact before deadline.",
+    "failure": [
+      "expiry",
+      "abandonment",
+      "physical-payload destruction"
+    ],
+    "deadline": {
+      "value": [
+        172800,
+        172800,
+        259200
+      ],
+      "units": "persistent game-clock seconds from acceptance",
+      "status": "estimated project parameter",
+      "reason": "Original generator/server distribution is not established for this common project profile.",
+      "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+      "confidence": "provisional balance",
+      "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+    },
+    "reward_base_by_difficulty": {
+      "value": [
+        500,
+        750,
+        1000
+      ],
+      "units": "credits",
+      "status": "estimated project parameter",
+      "reason": "Original generator/server distribution is not established for this common project profile.",
+      "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+      "confidence": "provisional balance",
+      "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+    },
+    "reward_per_required_route_hop": {
+      "value": 300,
+      "units": "credits",
+      "status": "estimated project parameter",
+      "reason": "Original generator/server distribution is not established for this common project profile.",
+      "method": "Bounded deterministic standard project difficulty profile; not original edition/server parity.",
+      "confidence": "provisional balance",
+      "validation": "Boundary/once-only/save tests and project playtesting; replace only by versioned migration."
+    },
+    "reward_rule": "Frozen base[difficulty-1] + 300*requiredRouteHops; only one reward transaction at final handoff. No extra per-kill payment unless engine bounty independently applies.",
+    "encounter": {
+      "spawn": "none beyond ordinary ambient traffic"
+    },
+    "save_contract": "Persist profile/version, accepted seed, origin/destination/route, deadline/clock domain, unique objective/cargo/passenger/entity IDs, progress/outcomes and all reward/transfer IDs. Never reroll an accepted job.",
+    "station_handoff": "Replace original surface endpoint/stage with explicit station-handoff-specifications.md mapping; no ground simulation.",
+    "retry": "Failed/abandoned instance stays terminal. New station offer receives a new identity; no recovery of already granted/consumed reward IDs."
+  },
+  "common": {
+    "profile_set": "PROJECT-SPACE-GENERATORS-1",
+    "estimates_authorized_by_owner": true,
+    "seed_contract": {
+      "algorithm": "xorshift32",
+      "initial_state": "Stored nonzero UInt32; zero input maps to0x6D2B79F5. Use unsigned32-bit wrapping after every operation.",
+      "next": "state ^= state <<13; state ^= state >>17; state ^= state <<5; mask to32 bits after each step.",
+      "unit_interval": "nextUInt32 /4294967296.0",
+      "choice": "floor(unitInterval *candidateCount), from candidates sorted by stable system/entity ID.",
+      "freeze": "Store all choices on offer generation and all accepted parameters; no time-based/reroll draw during completion."
+    },
+    "common_clock": "Persistent project game-clock seconds; paused menus/paused game do not advance deadlines. Flight/witchspace/service simulation advances by the project clock. Deadline success requires confirmation time <=deadline.",
+    "money": "Store integer decicredits. Convert displayed common credit values by*10; round estimated reward formulas once at generation.",
+    "common_acceptance": "Only offer/accept when all stated equipment/cargo/berth requirements can be satisfied and a reachable orbital destination exists. Back changes nothing. Acceptance, custody and completion/payment are atomic once-only GameRuntime transactions.",
+    "common_hull_switch": "Preserve accepted mission IDs/state and unique equipment/items. Store incompatible personal equipment; block hull switch if required mission cargo/passengers cannot fit. No free missile refill.",
+    "common_failure": "Terminal failure releases outstanding station obligations and removes only owned mission encounter markers/unused grants. Already expended ammunition and legitimate engine bounties are not rolled back. No extra cash penalty unless the profile states one."
+  },
+  "maximum_route_hops": {
+    "value": 3,
+    "units": "hyperspace hops",
+    "status": "estimated project parameter",
+    "reason": "Common space encounter adapter requires an explicit placement/trigger bound; no exact original distribution established.",
+    "confidence": "provisional balance",
+    "validation": "Boundary, persistence and gameplay checks."
+  }
+}

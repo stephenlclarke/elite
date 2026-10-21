@@ -17,7 +17,7 @@ func exportShipMedia(ids: [String], directory: URL) throws {
       gif, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: 0]] as CFDictionary)
     for index in 0..<24 {
       let frame = Display.shipPortrait(ship, angle: Double(index) * 2 * .pi / 24)
-      guard !frame.shipPanels.isEmpty, let image = imageFor(frame, pixelSize: 256) else {
+      guard frame.hasShipSurfaces, let image = imageFor(frame, pixelSize: 256) else {
         throw ShipFileError.invalid(id)
       }
       CGImageDestinationAddImage(

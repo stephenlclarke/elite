@@ -1,0 +1,21 @@
+{
+  "source": "3958077a7fa1d066dc586654565b9a9e156a8971",
+  "scope": "Focused equipment migration and Mining work-tool guards",
+  "full_ci_passed": false,
+  "runs": [
+    {
+      "source": "4c5dbca3448908b3008bbfb460ca2b9cef133e21",
+      "exit_code": 1,
+      "duration_seconds": 37.83454966591671,
+      "log": "/tmp/elite-equipment-migration-corrected.log",
+      "raw_log_sha256": "f502614fc86e21aa51d8bcebb2c7352ee1393018b00ff1672436fc2b7774fe9d"
+    },
+    {
+      "source": "3958077a7fa1d066dc586654565b9a9e156a8971",
+      "exit_code": 0,
+      "duration_seconds": 33.87532933312468,
+      "log": "/tmp/elite-equipment-migration-corrected-pass.log",
+      "raw_log_sha256": "38344ac85f315db5bd94f2ef87b7882659cc0e80fbacff1bb3705aee04021980"
+    }
+  ]
+}

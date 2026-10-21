@@ -1,0 +1,5 @@
+# test(save): isolate the historical identity fixture namespace
+
+The schema-11 prepared-NPC fixture explicitly requires that no native docking, RRS contract or mission-calendar authority exists, then omits the current station namespace before building its original 128-body historical scene. It additionally verifies that the saved runtime has neither a station namespace nor native station bodies. The unchanged later schema-11 import, exact random root/component identities, spent condition, capacity retry, forgery refusal and schema-21 resave assertions still exercise historical identity migration. See [the invalid modern/historical mix](ISSUE-historical-identity-namespace.md).
+
+No production guard or loader is changed. The existing genuine current native save downgraded to schema 20 still refuses; this fixture does not grant historical RRS custody. Strict Swift source lint, Markdown lint and whitespace checks pass. Runtime execution is pending in the combined focused batch and final maintained gate.

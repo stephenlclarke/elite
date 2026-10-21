@@ -1,0 +1,7 @@
+# Fix ARC ownership of programmatic native windows
+
+The two directly constructed windows now set `isReleasedWhenClosed = false` immediately after creation, following [Apple's Swift/ARC guidance](https://developer.apple.com/documentation/appkit/nswindow/isreleasedwhenclosed). Their existing strong Swift owners and main-actor boundaries remain in place. AppKit's [close() contract](https://developer.apple.com/documentation/appkit/nswindow/close()) permits deferred release after the current event, so the regressions exercise real close notifications and a subsequent main-run-loop callback.
+
+Two tests in the existing serialized native suite check the policy and retained-owner access after close. The application test also joins the cancelled frame loop and verifies that queued player input is not consumed. Close may append the existing focus-reset command. The fixture keeps its existing file cleanup and rollback coverage. No production timer, global retention, sanitizer flag or test timeout changes.
+
+Validation is source-only: formatting, strict lint and whitespace checks are recorded separately. The tests have not yet compiled or executed; native, sanitizer, leak and full quality gates remain required. The documented ownership defect is concrete, but attribution to the hosted Objective-C crash remains unproven. See [the problem and acceptance contract](ISSUE-native-window-arc-ownership.md).

@@ -1,0 +1,2509 @@
+{
+  "profile_id": "P19-DEFENCES-SOURCE-v1",
+  "scope": "Selected unchanged recovered main/helper/drone/pod/condition callbacks with lexical native-null mission-variable globals and explicit populator/Timer/position/actor/AI API spies. Does not execute native physics, pylon checkout/launch/registration, turret combat, fuel leakage or source Timer scheduling. Repeated-callback fixtures expose missing identity guards, not an assertion of original duplicate engine events. Source graph/bugs are separate from selected project repairs/native readiness.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-defences.js",
+      "sha256": "23ce32e0370ce1ac1ac129805191f4bd536403fca6e0ee7bc38d8cc92a4aa299"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-target-drone.js",
+      "sha256": "a2d53620f8a794ea8fbecfb54c850a6e9a0fb807d266b6872c5aecae98e3e289"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-sabotage-mine.js",
+      "sha256": "27980dd4f8fede0cc1381b9c0fdabf5083680d8201a9e8cac38ea6e3dfc2be2e"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-conditions.js",
+      "sha256": "e212965cac4ad39a506939b6c2d5b0741ac10719a9dc6d8eb3e192ba53729ab0"
+    }
+  ],
+  "total": 55,
+  "passed": 55,
+  "cases": [
+    {
+      "name": "Maenes first inquiry advances q1->2 but misspells saved key",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_MAENES_QUESTIONS",
+          "IR_defences_question_no": 1
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.203084,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 2,
+          "IR_defences_question_key": "defences_question_",
+          "IR_defences_question_string": "[defences_question_string_2]",
+          "IR_Maenes_visit": "TRUE"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_MAENES_defences_answer_1"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "NWE treaty inquiry gate 1",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_defences_question_no": 1,
+          "IR_defences_status_no": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.051875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 3,
+          "IR_defences_status_no": 1
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_NWE_defences_answer_1"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "NWE treaty inquiry gate 2",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_defences_question_no": 2,
+          "IR_defences_status_no": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.009542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 3,
+          "IR_defences_status_no": 1
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_NWE_defences_answer_1"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "NWE treaty inquiry gate 3",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_defences_question_no": 3,
+          "IR_defences_status_no": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.008708,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_defences_question_no": 3,
+          "IR_defences_status_no": 0
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_no_more_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "NWE treaty inquiry gate 4",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_defences_question_no": 4,
+          "IR_defences_status_no": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.00825,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_defences_question_no": 4,
+          "IR_defences_status_no": 0
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_negative_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Jane defences inquiry is information only",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_JANES_QUESTIONS",
+          "IR_defences_question_no": 1
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.058416,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_JANES_QUESTIONS",
+          "IR_defences_question_no": 1
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_JANES_defences_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Actual parent intro preempts q3 demonstration visited=null",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 3,
+          "IR_Maenes_visit": null
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.304209,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 3,
+          "IR_Maenes_visit": null,
+          "IR_offer": "IR_MAENES_QUESTIONS"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_MAENES_intro"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            23
+          ],
+          [
+            "character",
+            "ruiz"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Actual parent intro preempts q3 demonstration visited=TRUE",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 3,
+          "IR_Maenes_visit": "TRUE"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.012625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 3,
+          "IR_Maenes_visit": "TRUE",
+          "IR_offer": "IR_MAENES_QUESTIONS"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_MAENES_intro"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            23
+          ],
+          [
+            "character",
+            "ruiz"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source q3 demonstration branch only reachable when earlier parent intro guard false null",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_question_no": 3,
+          "IR_Maenes_visit": null
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.024917,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 3,
+          "IR_Maenes_visit": null,
+          "IR_defences_quest": "DEMO_1"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_defences_quest_1_alt"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            23
+          ],
+          [
+            "character",
+            "ruiz"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source q3 demonstration branch only reachable when earlier parent intro guard false TRUE",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_question_no": 3,
+          "IR_Maenes_visit": "TRUE"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.019458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_question_no": 3,
+          "IR_defences_quest": "DEMO_1"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_defences_quest_1"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            23
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Maenes populator wrong role guard creates40+10 cannons",
+      "initial": {
+        "system": 23
+      },
+      "passed": true,
+      "duration_ms": 0.443792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-cannon-core",
+            "count": 40,
+            "pos": {
+              "x": 23098,
+              "y": -39901,
+              "z": 102398,
+              "coordinateSystem": "pwm"
+            },
+            "radius": 20000
+          },
+          {
+            "role": "IR-cannon-core",
+            "count": 10,
+            "pos": {
+              "x": 23098,
+              "y": -39901,
+              "z": 102398,
+              "coordinateSystem": "pwm"
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-cannon-core",
+            "count": 40,
+            "pos": {
+              "x": 23098,
+              "y": -39901,
+              "z": 102398,
+              "coordinateSystem": "pwm"
+            },
+            "radius": 20000
+          },
+          {
+            "role": "IR-cannon-core",
+            "count": 10,
+            "pos": {
+              "x": 23098,
+              "y": -39901,
+              "z": 102398,
+              "coordinateSystem": "pwm"
+            },
+            "radius": 10000
+          }
+        ],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Unrelated typo-role prevents source cannon population",
+      "initial": {
+        "system": 23
+      },
+      "passed": true,
+      "duration_ms": 0.026583,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Initial demo launch resets partial kill count 0",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 0,
+          "IR_defences_status_no": 1
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.159708,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 0,
+          "IR_defences_status_no": 2
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_gecko_drones",
+            null,
+            null,
+            "IR_ruiz_key"
+          ]
+        ],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-target-drone",
+            "count": 10,
+            "pos": {
+              "x": 52000,
+              "y": -35898,
+              "z": 84329,
+              "coordinateSystem": "pwm"
+            }
+          }
+        ],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Initial demo launch resets partial kill count 2",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 2,
+          "IR_defences_status_no": 1
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.026959,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 0,
+          "IR_defences_status_no": 2
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_gecko_drones",
+            null,
+            null,
+            "IR_ruiz_key"
+          ]
+        ],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-target-drone",
+            "count": 10,
+            "pos": {
+              "x": 52000,
+              "y": -35898,
+              "z": 84329,
+              "coordinateSystem": "pwm"
+            }
+          }
+        ],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Initial demo launch resets partial kill count 9",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 9,
+          "IR_defences_status_no": 1
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.04675,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 0,
+          "IR_defences_status_no": 2
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_gecko_drones",
+            null,
+            null,
+            "IR_ruiz_key"
+          ]
+        ],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-target-drone",
+            "count": 10,
+            "pos": {
+              "x": 52000,
+              "y": -35898,
+              "z": 84329,
+              "coordinateSystem": "pwm"
+            }
+          }
+        ],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "A surviving same-role drone suppresses fresh initial group",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 3,
+          "IR_defences_status_no": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.031833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 3,
+          "IR_defences_status_no": 2
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Second demonstration source creates10without first-demo counter reset",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_5",
+          "IR_defences_kill_count": 7
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.033042,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_5",
+          "IR_defences_kill_count": 7
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_gecko_drones_2",
+            null,
+            null,
+            "IR_ruiz_key"
+          ]
+        ],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-target-drone",
+            "count": 10,
+            "pos": {
+              "x": 52000,
+              "y": -35898,
+              "z": 84329,
+              "coordinateSystem": "pwm"
+            }
+          }
+        ],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Initial actual drone death count 9",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.406292,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 9
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Initial actual drone death count 10",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.18575,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_2",
+          "IR_defences_kill_count": 10
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_drone_success",
+            null,
+            null,
+            "IR_ruiz_key"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": [
+          {
+            "delay": 2,
+            "interval": 0,
+            "stopped": false,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Repeated same drone callback would incorrectly count10; not an engine duplicate-event claim",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEMO_1",
+          "IR_defences_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.108625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_2",
+          "IR_defences_kill_count": 10
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_drone_success",
+            null,
+            null,
+            "IR_ruiz_key"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": [
+          {
+            "delay": 2,
+            "interval": 0,
+            "stopped": false,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Drone deaths outside DEMO1 do not advance DEMO_5",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEMO_5",
+          "IR_defences_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.095417,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_5",
+          "IR_defences_kill_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Drone deaths outside DEMO1 do not advance DEPLOYED",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED",
+          "IR_defences_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.027167,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED",
+          "IR_defences_kill_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Drone deaths outside DEMO1 do not advance SABOTAGED",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "SABOTAGED",
+          "IR_defences_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.063916,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "SABOTAGED",
+          "IR_defences_kill_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Drone deaths outside DEMO1 do not advance COMPLETED",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "COMPLETED",
+          "IR_defences_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.041875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "COMPLETED",
+          "IR_defences_kill_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Arance initial test report sets strict seven-day work",
+      "initial": {
+        "system": 180,
+        "vars": {
+          "IR_defences_quest": "DEMO_2",
+          "IR_defences_status_no": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.112041,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_3",
+          "IR_defences_status_no": 3,
+          "IR_defences_quest_deadline": 107
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_defences_quest_2a",
+          "IR_defences_quest_2b"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            180
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Seven-day engineering strict greater boundary 106",
+      "initial": {
+        "system": 180,
+        "days": 106,
+        "vars": {
+          "IR_defences_quest": "DEMO_3",
+          "IR_defences_quest_deadline": 107,
+          "IR_defences_status_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.050958,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_3",
+          "IR_defences_quest_deadline": 107,
+          "IR_defences_status_no": 3
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            180
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Seven-day engineering strict greater boundary 107",
+      "initial": {
+        "system": 180,
+        "days": 107,
+        "vars": {
+          "IR_defences_quest": "DEMO_3",
+          "IR_defences_quest_deadline": 107,
+          "IR_defences_status_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.024792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_3",
+          "IR_defences_quest_deadline": 107,
+          "IR_defences_status_no": 3
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            180
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Seven-day engineering strict greater boundary 108",
+      "initial": {
+        "system": 180,
+        "days": 108,
+        "vars": {
+          "IR_defences_quest": "DEMO_3",
+          "IR_defences_quest_deadline": 107,
+          "IR_defences_status_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.025,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_4",
+          "IR_defences_status_no": 4
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_defences_quest_3"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            180
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Wrong main station cannot finish engineering",
+      "initial": {
+        "system": 181,
+        "days": 108,
+        "vars": {
+          "IR_defences_quest": "DEMO_3",
+          "IR_defences_quest_deadline": 107
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.030458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_3",
+          "IR_defences_quest_deadline": 107
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source pod equipment admission 7,180,DEMO_4,purchase",
+      "initial": {
+        "galaxy": 7,
+        "system": 180,
+        "vars": {
+          "IR_defences_quest": "DEMO_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.504709,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_4"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source pod equipment admission 7,180,DEMO_5,purchase",
+      "initial": {
+        "galaxy": 7,
+        "system": 180,
+        "vars": {
+          "IR_defences_quest": "DEMO_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.022709,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_5"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source pod equipment admission 7,179,DEMO_4,purchase",
+      "initial": {
+        "galaxy": 7,
+        "system": 179,
+        "vars": {
+          "IR_defences_quest": "DEMO_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.023959,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_4"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source pod equipment admission 6,180,DEMO_4,purchase",
+      "initial": {
+        "galaxy": 6,
+        "system": 180,
+        "vars": {
+          "IR_defences_quest": "DEMO_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0255,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_4"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source pod equipment admission 6,0,COMPLETED,scripted",
+      "initial": {
+        "galaxy": 6,
+        "system": 0,
+        "vars": {
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.040375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Maenes second demonstration starts even without actual fitted pod",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.061125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_5"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_defences_quest_4"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            23
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source sabotage affects all current-system matching cannons n=0",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.289416,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_5"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source sabotage affects all current-system matching cannons n=1",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.057459,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source sabotage affects all current-system matching cannons n=50",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "DEMO_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.052333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ],
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source sabotage callback lacks galaxy/system/phase provenance guards",
+      "initial": {
+        "galaxy": 1,
+        "system": 0,
+        "vars": {
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.057792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [
+          [
+            "AI",
+            "IR-targetplayerAI.plist"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "DEPLOYED without actual player attack never starts shutdown",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.026458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Any source attack event starts raw15fuel leak and70counter",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.085916,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED",
+          "IR_count": 70
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": false,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Repeated source attack restarts existing timer without resetting70",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.087625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED",
+          "IR_count": 69
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": false,
+            "started": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source emergency callback count 1",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0935,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED",
+          "IR_count": 69
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": false,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source emergency callback count 25",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.060583,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED",
+          "IR_count": 45
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ],
+          [
+            "IR_defences_reply_45",
+            null,
+            null,
+            "IR_ruiz_key"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": false,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source emergency callback count 50",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.055709,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED",
+          "IR_count": 20
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ],
+          [
+            "IR_defences_reply_45",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_20",
+            null,
+            null,
+            "IR_ruiz_key"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": false,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source emergency callback count 60",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.078833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED",
+          "IR_count": 10
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ],
+          [
+            "IR_defences_reply_45",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_20",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 10
+            },
+            null,
+            "IR_maenes_dc"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": false,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source emergency callback count 69",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.068666,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEPLOYED",
+          "IR_count": 1
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ],
+          [
+            "IR_defences_reply_45",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_20",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 10
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 9
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 8
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 7
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 6
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 5
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 4
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 3
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 2
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 1
+            },
+            null,
+            "IR_maenes_dc"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": false,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source emergency callback count 70",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.134334,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "SABOTAGED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ],
+          [
+            "IR_defences_reply_45",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_20",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 10
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 9
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 8
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 7
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 6
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 5
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 4
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 3
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 2
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 1
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 0
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_0",
+            null,
+            null,
+            "IR_maenes_dc"
+          ]
+        ],
+        "actions": [
+          [
+            "AI",
+            "dumbAI.plist"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": true,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source timer shutdown changes current-system cannons, not saved original IDs",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.384833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "SABOTAGED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ],
+          [
+            "IR_defences_reply_45",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_20",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 10
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 9
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 8
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 7
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 6
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 5
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 4
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 3
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 2
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 1
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 0
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_0",
+            null,
+            null,
+            "IR_maenes_dc"
+          ]
+        ],
+        "actions": [
+          [
+            "foreignAI",
+            "dumbAI.plist"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": true,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source countdown shutdown does not clear its assigned leak rate",
+      "initial": {
+        "vars": {
+          "IR_defences_quest": "DEPLOYED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.1775,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "SABOTAGED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_help_attacked"
+          ],
+          [
+            "IR_defences_reply_45",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_20",
+            null,
+            null,
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 10
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 9
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 8
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 7
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 6
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 5
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 4
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 3
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 2
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 1
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_10",
+            {
+              "sec": 0
+            },
+            null,
+            "IR_maenes_dc"
+          ],
+          [
+            "IR_defences_reply_0",
+            null,
+            null,
+            "IR_maenes_dc"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": 15,
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "stopped": true,
+            "started": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Actual Maenes post-shutdown report starts15daystrict wait",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_defences_quest": "SABOTAGED",
+          "IR_defences_status_no": 4
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.105917,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_6",
+          "IR_defences_status_no": 5,
+          "IR_defences_quest_deadline": 115
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_defences_quest_5a",
+          "IR_defences_quest_5b"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            23
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Foreign main station cannot supply Maenes source/personnel files",
+      "initial": {
+        "system": 24,
+        "vars": {
+          "IR_defences_quest": "SABOTAGED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.039833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "SABOTAGED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Fifteen-day intel strict greater boundary 114",
+      "initial": {
+        "days": 114,
+        "vars": {
+          "IR_defences_quest": "DEMO_6",
+          "IR_defences_quest_deadline": 115,
+          "IR_defences_status_no": 5
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.044709,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_6",
+          "IR_defences_quest_deadline": 115,
+          "IR_defences_status_no": 5
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Fifteen-day intel strict greater boundary 115",
+      "initial": {
+        "days": 115,
+        "vars": {
+          "IR_defences_quest": "DEMO_6",
+          "IR_defences_quest_deadline": 115,
+          "IR_defences_status_no": 5
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.024291,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_defences_quest": "DEMO_6",
+          "IR_defences_quest_deadline": 115,
+          "IR_defences_status_no": 5
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    },
+    {
+      "name": "Fifteen-day intel strict greater boundary 116",
+      "initial": {
+        "days": 116,
+        "vars": {
+          "IR_defences_quest": "DEMO_6",
+          "IR_defences_quest_deadline": 115,
+          "IR_defences_status_no": 5
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.097,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 1,
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_defences_quest_6"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "character",
+            "weiss"
+          ]
+        ],
+        "spawn": [],
+        "fuelLeakRate": null,
+        "timers": []
+      }
+    }
+  ]
+}

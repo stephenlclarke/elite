@@ -1,0 +1,17 @@
+# Correct optional-enum and native version26 save expectations
+
+Changes only `reviewedCapitalsAndStationsKeepCollectionSeparateFromPurchase` in ShipCatalogueBlueprintMetadataTests and `finiteXYZzyCashAndUnlimitedCargoKeepTransactionsAndSavesValid` in EliteTests, plus this handoff pair. The isolated branch starts at exact canonical `2f0f6128648a8c629fa12cf950680adea9cfcee5`; all earlier frozen catalogue/hierarchy/capacity refs remain preserved.
+
+The excluded capsule/satellite check now requires each actual metadata record and explicitly compares `ShipCatalogueCollectionMilestone.none`. The expected data remains unchanged, and a missing record cannot masquerade as success.
+
+The save fixture states its source-backed preconditions: docked, no live body poses, no legacy equipment or pending jump, and an already economy-weighted ledger value. It takes an independent copy of the pre-publication snapshot and invokes only `migrateMiningPresence(legacyMissing:false,persistCurrentPolicy:true)` and `ensureScriptCalendar(origin:newCommander)`. This persists the existing economy policy and initializes a missing calendar; ledger contents/calendar time and an already-existing calendar remain unchanged. A second independent Commander copy changes only those two explicitly authorized metadata fields; whole equality against the migration-method result also fences the migration itself against any unrelated property change. The expected commander is never taken from the actual post-save result.
+
+After actual runtime saving, whole-Commander equality against that independently migrated value checks every nonmigration field, including cash, cargo, equipment, flags, identities and all custody. Market equality is checked too. The test decodes the real ScriptSavePointer, asserts schema26/commander scope, and reads complete hash-validated chunks through ScriptSaveStore.read. It retains the existing documented NPC disk-binding normalization on a value copy. Actual GameRuntime.load must then reproduce the complete expected disk Commander and original market. No broad field exclusions, raw Commander decode, manual field deletion or synthetic save writer is used. Temporary cleanup includes the owned versioned generation directory.
+
+All original finite-cash, unlimited-cargo, rejected flag toggle, market/equipment, capacity, overflow and rendering assertions remain. No production, pointer-writer, schema, migration or actual catalogue value changes. Unexpected native preparation changes cause full equality to fail rather than being absorbed into the expectation.
+
+## Evidence and authored validation
+
+The raw actual295 log is `/tmp/elite-composed-catalogue-custody-orbit-295/candidate-295-attempt-01.log`. The enum issue is at old lines105/106; the save case records pre-publication equality failure at719 and raw decoding missing name. Source inspection covers GameRuntime.save/load, writeCommander, migrateMiningPresence, calendar initialization and ScriptSaveStore validation.
+
+Local checks are strict Swift formatting, scoped Markdown lint, whitespace, exact two-method ownership and assertion/source-diff review. No compiler, tests, build, native/GUI or diagnostic jobs ran here. G1 retains the other77 scoped passes and owns affected-only execution after independent source review. `autoTraderUsesEconomyCapitalAndCargo` and `blackjackFullHoldBlocksPickupAndPreservesMissionCargoAcrossTradeAndEscape` remain unchanged and unresolved pending diagnostic296 evidence; no relaxed cash, destination, stage or custody assertion is introduced.
