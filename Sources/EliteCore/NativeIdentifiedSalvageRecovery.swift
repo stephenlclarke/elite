@@ -53,6 +53,11 @@ extension Game {
     guard body.missionInstanceID != nil, body.missionActorID != nil,
       body.hull == .cobra, body.position.finite, body.orientation.validRotation
     else { return nil }
+    return identifiedSalvageAliasForEligibleBody(body)
+  }
+
+  @inline(never)
+  private func identifiedSalvageAliasForEligibleBody(_ body: borrowing SpaceBody) -> String? {
     let currentBody = copy body
     let currentSystem = systemIdentity
     return withReadOnlyCommander { commander in
