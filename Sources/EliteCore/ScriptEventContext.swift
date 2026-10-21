@@ -99,13 +99,12 @@ extension Game {
   ) -> ScriptEventContextScalars {
     let mainStation = game.dockedAtMainStation
     let frameTime = game.time
+    let (galaxy, system) = game.withReadOnlyCommander { ($0.galaxy, $0.system) }
+    let docked = game.docked
+    let atMainStation = game.docked && mainStation
+    let frameSeconds = game.scriptStartupTime ?? frameTime
     return game.withReadOnlyCommander { commander in
-      let galaxy = commander.galaxy
-      let system = commander.system
-      let docked = game.docked
-      let atMainStation = game.docked && mainStation
-      let frameSeconds = game.scriptStartupTime ?? frameTime
-      return commander.withReadOnlyScriptState { state in
+      commander.withReadOnlyScriptState { state in
         .init(
           galaxy: galaxy, system: system, docked: docked,
           mainStation: atMainStation, revision: revision, frameSeconds: frameSeconds,
