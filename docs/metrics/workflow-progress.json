@@ -4290,6 +4290,17 @@
       "source_review": "MBA assigned",
       "next_assigned": "M10.P01.C08.refuel",
       "usable_build_delivered": false
+    },
+    {
+      "event": "MBA found misplaced Make recipe boundary; G1 assigned narrow correction",
+      "ledger_parent": "M10.P01.C08.producer.I37",
+      "issue": "https://github.com/stephenlclarke/elite/issues/37",
+      "severity": "P2",
+      "reviewed_head": "0c80386daac7606f920118fef36cfb41443ce5f0",
+      "ready_findings": 1,
+      "fix_sha": null,
+      "evidence_scope": "source-proven Make recipe scope; no target execution needed",
+      "usable_build_delivered": false
     }
   ]
 }
