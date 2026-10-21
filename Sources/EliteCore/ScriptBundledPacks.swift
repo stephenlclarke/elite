@@ -70,6 +70,10 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-custody-rescue")
   }
+  static var bundledRecordRecoveryDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-record-recovery")
+  }
   static var bundledIdentifiedSalvageDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-identified-salvage")
@@ -225,6 +229,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled identified salvage pack: " + error.localizedDescription)
+    }
+    do {
+      let recorder = try read(bundledRecordRecoveryDirectory)
+      if !library.packs.contains(where: { $0.digest == recorder.digest }) {
+        library.packs.append(recorder)
+      }
+    } catch {
+      library.errors.append("Bundled crew record recovery pack: " + error.localizedDescription)
     }
     return library
   }

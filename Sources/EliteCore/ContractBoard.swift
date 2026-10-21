@@ -17,9 +17,11 @@ public struct ContractBoardRow: Sendable {
   var repairLoop: WayfarerRepairLoopBoardRow? = nil
   var coldChain: WayfarerColdChainBoardRow? = nil
   var survey: NativeOriginalSurveyAction? = nil
+  var recordRecovery: WayfarerRecordRecoveryAction? = nil
   var identifiedSalvage: NativeIdentifiedSalvageAction? = nil
   public var key: String {
-    identifiedSalvage?.key ?? survey?.key ?? repairLoop?.key ?? coldChain?.key ?? provider?.key
+    recordRecovery?.key ?? identifiedSalvage?.key ?? survey?.key ?? repairLoop?.key ?? coldChain?
+      .key ?? provider?.key
       ?? people?.key ?? finance?.key
       ?? rrs?.key
       ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
@@ -44,6 +46,7 @@ private enum ContractBoardReview: Sendable {
   case repairLoop(WayfarerRepairLoopBoardReview)
   case coldChain(WayfarerColdChainBoardReview)
   case survey(NativeOriginalSurveyReview)
+  case recordRecovery(WayfarerRecordRecoveryReview)
   case identifiedSalvage(NativeIdentifiedSalvageReview)
 }
 
@@ -162,6 +165,19 @@ public struct ContractBoardUI: Sendable {
       }
     }
   }
+  var recordRecoveryQuote: WayfarerRecordRecoveryReview? {
+    get {
+      guard case .recordRecovery(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .recordRecovery(newValue)
+      } else if case .recordRecovery(_)? = review {
+        review = nil
+      }
+    }
+  }
   var identifiedSalvageQuote: NativeIdentifiedSalvageReview? {
     get {
       guard case .identifiedSalvage(let quote)? = review else { return nil }
@@ -222,6 +238,7 @@ extension Game {
     candidate.contractBoard.repairLoopQuote = nil
     candidate.contractBoard.coldChainQuote = nil
     candidate.contractBoard.surveyQuote = nil
+    candidate.contractBoard.recordRecoveryQuote = nil
     candidate.contractBoard.identifiedSalvageQuote = nil
     candidate.gallery.providerIntent = nil
     candidate.contractBoard.presentationGeneration = UUID()
@@ -237,6 +254,7 @@ extension Game {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
     var rows =
       rrsCourierRows + financeRows + nativePeopleRows + providerContractRows + originalSurveyRows
+      + recordRecoveryRows
       + identifiedSalvageRows
       + wayfarerColdChainRows(failures: failures)
       + wayfarerRepairLoopRows(failures: failures)
@@ -273,7 +291,8 @@ extension Game {
       if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil
         || contractBoard.peopleQuote != nil || contractBoard.providerQuote != nil
         || contractBoard.coldChainQuote != nil || contractBoard.repairLoopQuote != nil
-        || contractBoard.surveyQuote != nil || contractBoard.identifiedSalvageQuote != nil
+        || contractBoard.surveyQuote != nil || contractBoard.recordRecoveryQuote != nil
+        || contractBoard.identifiedSalvageQuote != nil
       {
         contractBoard.action = .back
       }
@@ -281,10 +300,15 @@ extension Game {
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if let action = contractBoard.selected?.recordRecovery {
+      contractBoard.recordRecoveryQuote = recordRecoveryReview(action)
+      return
+    }
     if let action = contractBoard.selected?.identifiedSalvage {
       contractBoard.identifiedSalvageQuote = identifiedSalvageReview(action)
       return
     }
+    contractBoard.recordRecoveryQuote = nil
     contractBoard.identifiedSalvageQuote = nil
     if let action = contractBoard.selected?.survey {
       contractBoard.surveyQuote = originalSurveyReview(action)
@@ -379,11 +403,22 @@ extension Game {
       contractBoard.repairLoopQuote = nil
       contractBoard.coldChainQuote = nil
       contractBoard.surveyQuote = nil
+      contractBoard.recordRecoveryQuote = nil
       contractBoard.identifiedSalvageQuote = nil
       gallery.providerIntent = nil
       return
     }
     do {
+      if let action = contractBoard.selected?.recordRecovery {
+        guard contractBoard.action == .accept, let quote = contractBoard.recordRecoveryQuote,
+          quote.action == action
+        else { throw MissionPackError("Review the depot operation and choose Confirm or Back.") }
+        try confirmRecordRecovery(quote)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.recordRecoveryQuote = nil
+        return
+      }
       if let action = contractBoard.selected?.identifiedSalvage {
         guard contractBoard.action == .accept, let quote = contractBoard.identifiedSalvageQuote,
           quote.action == action
@@ -391,6 +426,7 @@ extension Game {
         try confirmIdentifiedSalvage(quote)
         refreshContractRows()
         contractBoard.detail = false
+        contractBoard.recordRecoveryQuote = nil
         contractBoard.identifiedSalvageQuote = nil
         return
       }

@@ -255,7 +255,10 @@ final class AsteroidContactFrame {
       let mass = game.asteroidDebrisMassKg(body)
       let mesh: Mesh
       let collisionMass: Double
-      if let original = game.identifiedSalvageCollision(body) {
+      if let recorder = game.recordRecoveryCollision(body) {
+        mesh = recorder.mesh
+        collisionMass = recorder.mass
+      } else if let original = game.identifiedSalvageCollision(body) {
         mesh = original.mesh
         collisionMass = original.mass
       } else {
@@ -304,6 +307,9 @@ extension Game {
     if !requiresFrame {
       requiresFrame = bodies.contains(where: { asteroidDebrisMassKg($0) != nil })
     }
+    if !requiresFrame, commander.scriptState.savedRecordRecoverySource != nil {
+      requiresFrame = bodies.contains(where: { recordRecoveryAlias($0) != nil })
+    }
     if !requiresFrame, commander.scriptState.savedIdentifiedSalvageSource != nil {
       requiresFrame = bodies.contains(where: { identifiedSalvageAlias($0) != nil })
     }
@@ -344,7 +350,9 @@ extension Game {
           body.energy > 0
         else { return refuseDebrisStep(frame, reason: "ACTOR CHANGED") }
         let currentMesh: Mesh
-        if let original = identifiedSalvageCollision(body) {
+        if let recorder = recordRecoveryCollision(body) {
+          currentMesh = recorder.mesh
+        } else if let original = identifiedSalvageCollision(body) {
           currentMesh = original.mesh
         } else {
           currentMesh = gameplayMesh(for: body)

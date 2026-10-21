@@ -1142,3 +1142,5 @@ Current published5b8 source/manifest enters required checks. MC1matching1126comp
 Current MC1cdec helper correction is frozen for20/34 after the attributed1131Commander-copy crash; retain only2/5pure cases. W05retains34/73 but1133sole2-case test fails scoopReady; G3fixturedc2d is queued. Both batches remain isolated and unqualified; published5bquality/review service error and manual journey gaps stay explicit.
 
 Trackpad native-hull fixture: exact b59 three paths integrate after matching1138 build, actual1139 four methods/four cases PASS and complete CLEAN independent review. All original runtime oracles remain unchanged. Commander COW1140 compilation passed; its selected execution and W05 correction qualification remain pending.
+
+W05 recorder recovery: exact31 reviewed paths from5173 integrate with no unqualified MC1 storage/contact changes. Original complete review and five-path correction review are CLEAN; owner aggregate35methods75cases PASS comprises1143 affected3/5 plus retained32/70. Required renderer refresh and final-head hosted checks/review remain pending.
