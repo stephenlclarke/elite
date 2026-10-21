@@ -170,18 +170,21 @@ enum NativeMeasuredExtractionSave {
           reception, source: source, state: state, mission: mission, commander: commander)
       else { return false }
     }
+    let active = mission.outcome == .active
+    let extracted = state.extraction != nil
+    let requirePendingOriginal = requireRecordedLoss && active && extracted
     for original in source.originals {
-      let capture = state.captures.first { $0.original == original.id }
-      let loss = state.losses.first { $0.originals.contains(original.id) }
+      let originalID = original.id
+      let capture = state.captures.first { $0.original == originalID }
+      let loss = state.losses.first { $0.originals.contains(originalID) }
       let returned = state.reception?.returnedRaw.contains(original.id) == true
       switch original.custody {
       case .unfilled:
         guard capture == nil, loss == nil, !returned, state.processing == nil else { return false }
-        if requireRecordedLoss && mission.outcome == .active && state.extraction != nil {
+        if requirePendingOriginal {
+          let payload = original.payload
           guard commander.flightSimulation.system == source.root.system,
-            commander.miningLedger.pendingPayloads.contains(where: {
-              $0.identity == original.payload
-            })
+            commander.miningLedger.pendingPayloads.contains(where: { $0.identity == payload })
           else { return false }
         }
       case .raw(let op):
@@ -199,9 +202,10 @@ enum NativeMeasuredExtractionSave {
       case .lost(let op): guard loss?.operation == op, !returned else { return false }
       }
     }
-    if !NativeMeasuredExtraction.rawHeld(source).isEmpty
-      || state.processing?.products.contains(where: { $0.custody == .held }) == true
-    {
+    let hasRawHeld = !NativeMeasuredExtraction.rawHeld(source).isEmpty
+    let hasProductsHeld =
+      state.processing?.products.contains(where: { $0.custody == .held }) == true
+    if hasRawHeld || hasProductsHeld {
       guard commander.hullInstanceID == permission.carrier else { return false }
     }
     switch mission.outcome {
@@ -284,13 +288,14 @@ enum NativeMeasuredExtractionSave {
     _ intake: borrowing MeasuredIntake, source: borrowing MeasuredSource,
     state: borrowing NativeMeasuredExtractionState, commander: borrowing Commander
   ) -> Bool {
+    let originalID = intake.original
     guard let extraction = state.extraction, intake.extraction == extraction.operation,
       intake.permission == state.permission.operation, intake.carrier == state.permission.carrier,
       intake.operation
         == ScriptIdentity.uuid(
           "measured-intake-v1:\(state.permission.operation):\(intake.original)"),
       intake.authority == (try? NativeMeasuredExtraction.intakeAuthority(intake)),
-      let original = source.originals.first(where: { $0.id == intake.original }),
+      let original = source.originals.first(where: { $0.id == originalID }),
       original.payload == intake.payload.identity, extraction.emitted.contains(intake.payload),
       intake.body.count == 1, let body = intake.body.first, body.hull == .cargo,
       body.energy.isFinite, body.energy > 0, body.physical?.payload == original.payload,
@@ -325,13 +330,12 @@ enum NativeMeasuredExtractionSave {
     _ loss: borrowing MeasuredLoss, source: borrowing MeasuredSource,
     state: borrowing NativeMeasuredExtractionState, commander: borrowing Commander
   ) -> Bool {
-    guard !loss.originals.isEmpty || !loss.products.isEmpty,
+    let hasOriginals = !loss.originals.isEmpty
+    let hasProducts = !loss.products.isEmpty
+    guard hasOriginals || hasProducts,
       loss.originals.count <= 12, loss.products.count <= 12,
       Set(loss.originals).count == loss.originals.count,
       Set(loss.products).count == loss.products.count,
-      loss.originals.allSatisfy({ id in source.originals.contains { $0.id == id } }),
-      loss.products.allSatisfy({ id in state.processing?.products.contains { $0.id == id } == true }
-      ),
       loss.operation
         == ScriptIdentity.uuid(
           "measured-loss-v1:\(state.permission.operation):\(loss.kind.rawValue):\(loss.originals):\(loss.products)"
@@ -342,6 +346,14 @@ enum NativeMeasuredExtractionSave {
       loss.physicalTime.isFinite, loss.physicalTime >= state.permission.physicalTime,
       loss.physicalTime <= commander.flightSimulation.physicalTime
     else { return false }
+    for id in loss.originals {
+      guard source.originals.contains(where: { $0.id == id }) else { return false }
+    }
+    for id in loss.products {
+      guard state.processing?.products.contains(where: { $0.id == id }) == true else {
+        return false
+      }
+    }
     switch loss.kind {
     case .source:
       guard loss.products.isEmpty, loss.bodies.count == 1, loss.payloads.isEmpty,
@@ -352,16 +364,20 @@ enum NativeMeasuredExtractionSave {
     case .destroyed:
       guard loss.products.isEmpty, loss.originals.count == 1, loss.bodies.count == 1,
         loss.bodies[0].energy <= 0, loss.payloads.count == 1,
-        loss.bodies[0].physical?.payload == loss.payloads[0].identity,
-        source.originals.first(where: { $0.id == loss.originals[0] })?.payload
+        loss.bodies[0].physical?.payload == loss.payloads[0].identity
+      else { return false }
+      let originalID = loss.originals[0]
+      guard
+        source.originals.first(where: { $0.id == originalID })?.payload
           == loss.payloads[0].identity,
-        !state.captures.contains(where: { $0.original == loss.originals[0] })
+        !state.captures.contains(where: { $0.original == originalID })
       else { return false }
     case .departed:
       guard loss.products.isEmpty, loss.bodies.isEmpty, loss.payloads.count == loss.originals.count,
         loss.player.system == source.root.system, state.extraction != nil
       else { return false }
-      for (index, id) in loss.originals.enumerated() {
+      for index in loss.originals.indices {
+        let id = loss.originals[index]
         guard
           source.originals.first(where: { $0.id == id })?.payload == loss.payloads[index].identity,
           loss.payloads[index].amount == .init(commodity: .minerals, quantity: 1),
@@ -408,7 +424,8 @@ enum NativeMeasuredExtractionSave {
         product.id
           == ScriptIdentity.uuid("measured-product-v1:\(processing.operation):\(product.input)")
       else { return false }
-      let loss = state.losses.first { $0.products.contains(product.id) }
+      let productID = product.id
+      let loss = state.losses.first { $0.products.contains(productID) }
       switch product.custody {
       case .held: guard loss == nil, state.reception == nil else { return false }
       case .lost(let op): guard loss?.operation == op else { return false }
@@ -452,16 +469,27 @@ enum NativeMeasuredExtractionSave {
         mission.completionReceipt?.committed.nativeMainDock == receipt.dock
       else { return false }
     } else {
-      guard mission.outcome == .failed || mission.outcome == .abandoned,
+      let outcome = mission.outcome
+      guard outcome == .failed || outcome == .abandoned,
         receipt.dock.station == source.owner, receipt.products.isEmpty
       else { return false }
-      let raw = source.originals.filter { item in
-        state.captures.contains(where: { $0.original == item.id }) && state.processing == nil
-          && !state.losses.contains(where: { $0.originals.contains(item.id) })
-      }.map(\.id)
-      let products = (state.processing?.products ?? []).filter { product in
-        !state.losses.contains(where: { $0.products.contains(product.id) })
-      }.map(\.id)
+      var raw: [UUID] = []
+      if state.processing == nil {
+        for original in source.originals {
+          let id = original.id
+          guard state.captures.contains(where: { $0.original == id }) else { continue }
+          guard !state.losses.contains(where: { $0.originals.contains(id) }) else { continue }
+          raw.append(id)
+        }
+      }
+      var products: [UUID] = []
+      if let processing = state.processing {
+        for product in processing.products {
+          let id = product.id
+          guard !state.losses.contains(where: { $0.products.contains(id) }) else { continue }
+          products.append(id)
+        }
+      }
       guard receipt.returnedRaw == raw, receipt.returnedProducts == products else { return false }
     }
     return true
