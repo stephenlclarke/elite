@@ -3272,6 +3272,17 @@
       "github_run": 39662206102,
       "head": "a139ae9051e308b03076464d6234d75c188eab4a",
       "retained_cases_pending_run": 39663159129
+    },
+    {
+      "at": "2026-10-21T19:47:48Z",
+      "event": "Native ordinary first-sale evidence pushed; MBA review assigned",
+      "ledger_parent": "C08.P01.eligibility",
+      "head": "8489f2a3e472c19d1785c030667ebeca44e75dfb",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6325044910",
+      "github_run": 39664642993,
+      "unit_status": "in_progress",
+      "usable_build_delivered": false,
+      "scope": "Ordinary trade prerequisite only; no C08 commission/pickup/accreditation"
     }
   ]
 }
