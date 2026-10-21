@@ -75,6 +75,7 @@ extension Game {
       notify("CABIN OVERHEATED - SHIP DESTROYED")
       return
     }
+    let scoopSpeed = manualResidualFlight ? max(0, autoPilot.velocity.z / 18) : speed
     guard let sun, ratio <= 3 else {
       solarFuelRemainder = 0
       return
@@ -85,13 +86,13 @@ extension Game {
     } else if commander.fuel >= commander.fuelCapacity {
       solarScoopState = .tankFull
       solarFuelRemainder = 0
-    } else if speed <= 0 || sun.position.z / max(1, sun.position.length) < 0.8 {
+    } else if scoopSpeed <= 0 || sun.position.z / max(1, sun.position.length) < 0.8 {
       solarScoopState = .turnTowardSun
       solarFuelRemainder = 0
     } else {
       solarScoopState = .collecting
       // Seven tenths of a light-year per second at launch cruise or faster.
-      solarFuelRemainder += delta * 7 * min(1, speed / 8)
+      solarFuelRemainder += delta * 7 * min(1, scoopSpeed / 8)
       // Avoid losing a whole unit to accumulated binary rounding at an integer boundary.
       let gained = Int(solarFuelRemainder + 1e-9)
       if gained > 0 {

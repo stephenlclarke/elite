@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 REPOSITORY = "https://raw.githubusercontent.com/stephenlclarke/elite"
+RELEASES = "https://github.com/stephenlclarke/elite/releases/download"
 
 
 def committed_file(revision, path):
@@ -41,22 +42,35 @@ def validate_manifest(manifest):
         raise ValueError("Publish a signed, notarized and verified archive first.")
 
 
-def render_cask(manifest, revision):
+def release_url(version):
+    """Use the separately published, versioned GitHub Release asset."""
+    return f"{RELEASES}/v{version}/Elite-{version}-universal.zip"
+
+
+def render_cask(manifest, revision, release_assets=True):
     """Render the maintained cask from the committed release manifest."""
     validate_manifest(manifest)
     if not re.fullmatch(r"[a-f0-9]{40}", revision):
         raise ValueError("Use the exact commit containing the published ZIP.")
+    if release_assets:
+        archive_url = f"{RELEASES}/v#{{version}}/Elite-#{{version}}-universal.zip"
+        provenance = f"  # Artifact commit: {revision}\n"
+        livecheck = '    url :homepage\n    strategy :github_latest'
+    else:
+        archive_url = f"{REPOSITORY}/{revision}/releases/macos/Elite-#{{version}}-universal.zip"
+        provenance = ""
+        livecheck = '    skip "Published archives are pinned to a reviewed repository commit"'
     return f'''cask "elite" do
   version "{manifest["appVersion"]}"
   sha256 "{manifest["sha256"]}"
 
-  url "{REPOSITORY}/{revision}/releases/macos/Elite-#{{version}}-universal.zip"
+{provenance}  url "{archive_url}"
   name "Elite"
   desc "Space trading and combat game inspired by BBC Micro Elite"
   homepage "https://github.com/stephenlclarke/elite"
 
   livecheck do
-    skip "Published archives are pinned to a reviewed repository commit"
+{livecheck}
   end
 
   depends_on macos: :sonoma
@@ -69,7 +83,9 @@ end
 def existing_release(cask):
     """Recover the version and immutable asset commit for a check-only run."""
     version = re.search(r'^  version "([0-9.]+)"$', cask, re.MULTILINE)
-    revision = re.search(re.escape(REPOSITORY) + r"/([a-f0-9]{40})/", cask)
+    revision = re.search(r"^  # Artifact commit: ([a-f0-9]{40})$", cask, re.MULTILINE)
+    if not revision:
+        revision = re.search(re.escape(REPOSITORY) + r"/([a-f0-9]{40})/", cask)
     if not version or not revision:
         raise ValueError("Cannot identify the maintained cask release.")
     return version[1], revision[1]
@@ -100,7 +116,8 @@ def main():
     manifest = json.loads(committed_file(revision, relative + ".json"))
     if manifest["appVersion"] != version:
         raise ValueError("The committed manifest version does not match its path.")
-    expected = render_cask(manifest, revision)
+    legacy = options.check and f'url "{REPOSITORY}/' in cask.read_text()
+    expected = render_cask(manifest, revision, release_assets=not legacy)
     archive = committed_file(revision, relative + ".zip")
     if (
         len(archive) != manifest["archiveBytes"]
@@ -108,10 +125,11 @@ def main():
     ):
         raise ValueError("Committed archive does not match its release manifest.")
     if options.verify_download or not options.check:
-        url = f"{REPOSITORY}/{revision}/{relative}.zip"
+        url = f"{REPOSITORY}/{revision}/{relative}.zip" if legacy else release_url(version)
         with urllib.request.urlopen(url, timeout=60) as response:
             downloaded = response.read()
-        if hashlib.sha256(downloaded).hexdigest() != manifest["sha256"]:
+        if (len(downloaded) != manifest["archiveBytes"]
+                or hashlib.sha256(downloaded).hexdigest() != manifest["sha256"]):
             raise ValueError("The public download does not match the release manifest.")
     paths = [cask]
     if options.tap:

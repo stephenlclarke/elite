@@ -1,0 +1,4489 @@
+{
+  "package_id": "P30",
+  "source_version": "1.5.4",
+  "profile_id": "PROJECT-P30-SLAVER-4A-v1",
+  "source_url": "https://wiki.alioth.net/img_auth.php/0/05/Rescue_stations_1.5.4.oxz",
+  "archive_sha256": "c3d6ba5b46e7d09865f57ec96d6741c4b53477cbdf641f9aaf44e601f3dea70c",
+  "source_files": [
+    {
+      "path": "Scripts/rescue_scenario_4a.js",
+      "sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40"
+    },
+    {
+      "path": "Scripts/rescue_scenario_4a_slaver.js",
+      "sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c"
+    },
+    {
+      "path": "Scripts/rescue_scenario_4a_sbdef.js",
+      "sha256": "e9af9f592a7c71d583ca3b1f47b26eeafa6ec4f237107db14b959e64c93e88b6"
+    },
+    {
+      "path": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e"
+    },
+    {
+      "path": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1"
+    },
+    {
+      "path": "Scripts/rrs_eq_cargo.js",
+      "sha256": "ccc4222f2eb1f69d97e12f6fd05f6b7c90e4dbb614d153aa48d92d97cc858f31"
+    },
+    {
+      "path": "Scripts/rescue_missions.js",
+      "sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f"
+    },
+    {
+      "path": "Scripts/rescue_news.js",
+      "sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365"
+    },
+    {
+      "path": "AIs/rescue_scenario_4a_sbdefAI.plist",
+      "sha256": "c355d4a5bbe0a92979520cc04ed8c4b4b69754b5db70348f777c6666b28f1a56"
+    },
+    {
+      "path": "AIs/rescue_scenario_4a_slaverAI.plist",
+      "sha256": "6ff82830f0348814de5d13176fb13238c6eff5084c931e297ac0318969875759"
+    },
+    {
+      "path": "AIs/rescue_scenario_4a_slaverbaseAI.plist",
+      "sha256": "361331a3577cb4a4b928c9f515098ca8b8e49dda5250fb6fd90c56389363187e"
+    },
+    {
+      "path": "Config/shipdata.plist",
+      "sha256": "489517ba8d056211bb58a789113638476643d540eb05091f19709258fbbc073d"
+    },
+    {
+      "path": "Config/equipment.plist",
+      "sha256": "9ef6e45552d52b5a0ccf83f87e2bcef33e1b4d8c09dcf34a4042cb84c8f1f997"
+    },
+    {
+      "path": "Config/missiontext.plist",
+      "sha256": "7dd04953048531809d2079503fbbb1d06db695ee9aa6dba77490e1868c90ea1a"
+    }
+  ],
+  "engine_references": [
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "src/Core/Universe.m",
+      "sha256": "062c2282d8ebc5214a34233a0828e041b704214370fdc16526e75d4d6ca56f2a",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Universe.m"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "src/Core/OOShipRegistry.m",
+      "sha256": "1005316bb00b864b299dd1f87421d06f511eb4a4d7eb4de73e3023296bab057b",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/OOShipRegistry.m"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "src/Core/Entities/ShipEntity.m",
+      "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/ShipEntity.m"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "src/Core/Entities/ShipEntityAI.m",
+      "sha256": "b761b8312703dac9c40c47d598551d37ec09be1a5cf2b1d81ff4e4b31ca7445e",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/ShipEntityAI.m"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "src/Core/Entities/StationEntity.m",
+      "sha256": "98453362e1794419fafbace128b2232746bb0401ea5dac3d055f18efb3c8bead",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/StationEntity.m"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "src/Core/Entities/DockEntity.m",
+      "sha256": "bea902a9c8b6a9506ef4ebc2b849107e92c8879de209b8ae63687ce9e1a5c782",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/DockEntity.m"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "src/Core/Scripting/OOJSShip.m",
+      "sha256": "a889adc46459f0954bc6834d4e3086486cb615ce5e2811fbb288746380f55a02",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSShip.m"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "src/Core/Scripting/OOJSStation.m",
+      "sha256": "afd83035f2dc0943e622cf9d0a62d5f909d50173a97bbad74c2ece420f9274bc",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Scripting/OOJSStation.m"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/Config/shipdata.plist",
+      "sha256": "f4910d79b88cc803f7bd785fd2fa7d34597c0c891925659c23748313052ac166",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Config/shipdata.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/Config/autoAImap.plist",
+      "sha256": "b03109ab761b8ad59733999bd6da17eefc33fe75954c72a5a740b2b8c78d598b",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Config/autoAImap.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/pirateAI.plist",
+      "sha256": "6ca47cecbda4e49104644b9fa1609367888822503ded48f03e259d244d8bd4a8",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/pirateAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/dockingAI.plist",
+      "sha256": "af9c672a2ccf766e83f814c16a97c66f1ca7b6bc5498144286ca37fbb0fa9030",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/dockingAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/oolite-escortAI.js",
+      "sha256": "dc24382d3aa2d17a7cc85d596b7123cf9013580445700bb51698456c2acddda6",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/oolite-escortAI.js"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/oolite-pirateAI.js",
+      "sha256": "b81a1d21ac610a71dfeae364f2484cefebf043378a322198efd98b032f5283a8",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/oolite-pirateAI.js"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/interceptAI.plist",
+      "cache_path": "/tmp/elite-gap-research/oolite-engine/interceptAI.plist",
+      "sha256": "f649855f351f924d68f061762ba6f3a115c21bb3fc60a638f5803d973a2bdab5",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/interceptAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/Scripts/oolite-priorityai.js",
+      "cache_path": "/tmp/elite-gap-research/oolite-engine/oolite-priorityai.js",
+      "sha256": "fc3fe2a7b30f2133a8e5cfd345b55f3ccb4587e3b7bc431ee7b081864a83dcfd",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Scripts/oolite-priorityai.js"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/fleeQMineAI.plist",
+      "sha256": "2580a71f5c158cf8e4239b4501d76cc52b3eedde2c3e11322ff17eb9c235d0a2",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/fleeQMineAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/enteringPirateAI.plist",
+      "sha256": "502f90bdfbddc512d07187171679aa605bb3c1a3fd2072529c64c26c9d2464f4",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/enteringPirateAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/route1traderAI.plist",
+      "sha256": "0c29bf3cd1905efe5833f5cff28c88093dc2bea1e3d1470e2f2e8009fcc765f8",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/route1traderAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/gotoWaypointAI.plist",
+      "sha256": "ab338701e98bce89377296fece125274a6a813aaa0cf38a47af9a1bee453ff4a",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/gotoWaypointAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/enteringTraderAI.plist",
+      "sha256": "c17a6a7fa5a1662f8685422a8e5c2a78633ed5d2233a90654735e33b9e8a1dc3",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/enteringTraderAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/thargoidAI.plist",
+      "sha256": "52bc8156f326b4f67bd2f002e3ed4e87680185a6d64fe7c74ca2a957c9a38b89",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/thargoidAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/traderInterceptAI.plist",
+      "sha256": "dd13894be6a1af8599601a637072e04ef6f12439f449b51e1b6001b78274d9cc",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/traderInterceptAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/route2sunskimAI.plist",
+      "sha256": "f2e1b8d2482e2838dea84b8a64bc0f542b24971d1798e064455353801eedf232",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/route2sunskimAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/exitingTraderAI.plist",
+      "sha256": "bde09f899df1e925f0357d7fa60b95724157ecbe44ff0fa84882718fb272c13a",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/exitingTraderAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/respondQMineAI.plist",
+      "sha256": "9920a1594030bb1cb0f60e988a3c65f931b0f8343cec22394458fe1ade0d94e8",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/respondQMineAI.plist"
+    },
+    {
+      "commit": "574ca848c91a067178416216523e8d09c1e9282a",
+      "path": "Resources/AIs/nullAI.plist",
+      "sha256": "1c882fabfc2f11f7faa8e492b112ee09570c2191a3c6564662fa52554848ee8a",
+      "url": "https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/AIs/nullAI.plist"
+    }
+  ],
+  "source_definitions": [
+    {
+      "definition_id": "rrsl_python",
+      "own_fields": {
+        "has_escape_pod": "0.6",
+        "roles": "rrs-slavetrader",
+        "is_external_dependency": "yes",
+        "script_info": {
+          "skilled_npc_role": "trader",
+          "randomshipnames": "trader"
+        },
+        "escort_roles": [
+          {
+            "min": "0",
+            "role": "escort",
+            "max": "1"
+          },
+          {
+            "min": "0",
+            "role": "escort-medium",
+            "max": "1"
+          },
+          {
+            "min": "0",
+            "role": "escort-heavy",
+            "max": "1"
+          }
+        ],
+        "like_ship": "python",
+        "script": "rescue_scenario_4a_slaver.js",
+        "cargo_type": "CARGO_SLAVES",
+        "has_fuel_injection": "0",
+        "bounty": "50",
+        "has_ecm": "1",
+        "auto_ai": "no",
+        "ai_type": "rescue_scenario_4a_slaverAI.plist",
+        "aft_weapon_type": "WEAPON_BEAM_LASER"
+      },
+      "resolved_with_pinned_core_fields": {
+        "thrust": "20",
+        "max_cargo": "100",
+        "has_escape_pod": "0.6",
+        "cargo_type": "CARGO_SLAVES",
+        "max_energy": "450",
+        "weapon_facings": "15",
+        "has_shield_booster": "0.75",
+        "missiles": "2",
+        "roles": "rrs-slavetrader",
+        "max_missiles": "2",
+        "name": "Python",
+        "max_flight_speed": "200",
+        "has_scoop": "yes",
+        "model": "oolite_python.dat",
+        "max_flight_pitch": "0.8",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "auto_ai": "no",
+        "likely_cargo": "75",
+        "max_flight_roll": "2",
+        "energy_recharge_rate": "2.5",
+        "is_external_dependency": "yes",
+        "script_info": {
+          "skilled_npc_role": "trader",
+          "randomshipnames": "trader"
+        },
+        "escort_roles": [
+          {
+            "min": "0",
+            "role": "escort",
+            "max": "1"
+          },
+          {
+            "min": "0",
+            "role": "escort-medium",
+            "max": "1"
+          },
+          {
+            "min": "0",
+            "role": "escort-heavy",
+            "max": "1"
+          }
+        ],
+        "script": "rescue_scenario_4a_slaver.js",
+        "has_fuel_injection": "0",
+        "bounty": "50",
+        "has_ecm": "1",
+        "ai_type": "rescue_scenario_4a_slaverAI.plist",
+        "aft_weapon_type": "WEAPON_BEAM_LASER",
+        "fuel": "70"
+      },
+      "remaining_external_base": null
+    },
+    {
+      "definition_id": "rrs_slaver_base_core",
+      "own_fields": {
+        "script": "rescue_scenario_4a_slaverbase.js",
+        "bounty": "100",
+        "roles": "rrs_slaverbase",
+        "is_carrier": "yes",
+        "ai_type": "rescue_scenario_4a_slaverbaseAI.plist",
+        "max_defense_ships": "0",
+        "allegiance": "restricted",
+        "like_ship": "rock-hermit",
+        "name": "Slaver Base"
+      },
+      "resolved_with_pinned_core_fields": {
+        "thrust": "100",
+        "subentities": [
+          {
+            "orientation": "1 0 0 0",
+            "subentity_key": "oolite_rock_hermit_rock",
+            "position": "0 0 0"
+          },
+          {
+            "orientation": "1 0 0 0",
+            "subentity_key": "oolite_rock_hermit_pipes",
+            "position": "0 0 0"
+          },
+          {
+            "orientation": "1 0 0 0",
+            "subentity_key": "oolite_rock_hermit_tunnel_extras",
+            "position": "0 0 0"
+          },
+          {
+            "is_dock": "true",
+            "subentity_key": "oolite_rock_hermit_dock",
+            "position": "0 0 -129.6059",
+            "orientation": "1 0 0 0"
+          }
+        ],
+        "has_escape_pod": "no",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "1000",
+        "weapon_energy": "0",
+        "missiles": "0",
+        "roles": "rrs_slaverbase",
+        "name": "Slaver Base",
+        "max_flight_speed": "0",
+        "has_scoop": "no",
+        "model": "oolite_rock_hermit.dat",
+        "max_flight_pitch": "8",
+        "forward_weapon_type": "WEAPON_NONE",
+        "scan_class": "CLASS_ROCK",
+        "has_ecm": "yes",
+        "is_carrier": "yes",
+        "max_flight_roll": "8",
+        "energy_recharge_rate": "5",
+        "script": "rescue_scenario_4a_slaverbase.js",
+        "bounty": "100",
+        "ai_type": "rescue_scenario_4a_slaverbaseAI.plist",
+        "max_defense_ships": "0",
+        "allegiance": "restricted"
+      },
+      "remaining_external_base": null
+    },
+    {
+      "definition_id": "rrs_slaver_pod",
+      "own_fields": {
+        "like_ship": "barrel",
+        "script": "rescue_scenario_4a_slaverpod.js",
+        "roles": "rrs_slaver_pod",
+        "cargo_type": "CARGO_SCRIPTED_ITEM"
+      },
+      "resolved_with_pinned_core_fields": {
+        "max_energy": "1",
+        "bounty": "1",
+        "forward_weapon_type": "WEAPON_NONE",
+        "missiles": "0",
+        "max_flight_pitch": "0.5",
+        "max_flight_speed": "50",
+        "energy_recharge_rate": "0",
+        "scan_class": "CLASS_CARGO",
+        "thrust": "0",
+        "name": "Cargo container",
+        "roles": "rrs_slaver_pod",
+        "model": "oolite_barrel.dat",
+        "max_flight_roll": "0.5",
+        "weapon_energy": "0",
+        "cargo_type": "CARGO_SCRIPTED_ITEM",
+        "script": "rescue_scenario_4a_slaverpod.js"
+      },
+      "remaining_external_base": null
+    }
+  ],
+  "pinned_core_definitions": [
+    {
+      "definition_id": "adder",
+      "own_fields": {
+        "like_ship": "oolite_template_adder"
+      },
+      "resolved_core_fields": {
+        "thrust": "30",
+        "max_cargo": "5",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "85",
+        "weapon_facings": "1",
+        "missiles": "1",
+        "roles": "trader(0.25) trader-courier(0.5) trader-smuggler pirate-light-fighter(0.25) pirate(0.2) scavenger shuttle hermit-ship",
+        "max_missiles": "1",
+        "name": "Adder",
+        "max_flight_speed": "240",
+        "has_scoop": "yes",
+        "model": "oolite_adder.dat",
+        "max_flight_pitch": "2",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_PULSE_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "2",
+        "has_ecm": "0.01",
+        "max_flight_roll": "2.8",
+        "energy_recharge_rate": "2",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH001"
+    },
+    {
+      "definition_id": "asp",
+      "own_fields": {
+        "like_ship": "oolite_template_asp"
+      },
+      "resolved_core_fields": {
+        "thrust": "50",
+        "max_cargo": "0",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "350",
+        "weapon_facings": "3",
+        "has_shield_booster": "0.5",
+        "missiles": "1",
+        "roles": "trader-courier hunter-medium(0.75) hunter-heavy(0.75) pirate-medium-fighter(0.5) pirate-heavy-fighter(0.5) pirate-interceptor pirate-aegis-raider escort-heavy assassin-heavy asp-pirate",
+        "max_missiles": "1",
+        "name": "Asp Mark II",
+        "max_flight_speed": "400",
+        "has_scoop": "0.99",
+        "model": "oolite_asp.dat",
+        "has_fuel_injection": "0.5",
+        "max_flight_pitch": "1",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "0",
+        "has_ecm": "0.85",
+        "max_flight_roll": "2",
+        "energy_recharge_rate": "4",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH009"
+    },
+    {
+      "definition_id": "barrel",
+      "own_fields": {
+        "like_ship": "oolite_template_barrel"
+      },
+      "resolved_core_fields": {
+        "max_energy": "1",
+        "bounty": "1",
+        "forward_weapon_type": "WEAPON_NONE",
+        "missiles": "0",
+        "max_flight_pitch": "0.5",
+        "max_flight_speed": "50",
+        "energy_recharge_rate": "0",
+        "scan_class": "CLASS_CARGO",
+        "thrust": "0",
+        "name": "Cargo container",
+        "roles": "cargopod 1t-cargopod",
+        "model": "oolite_barrel.dat",
+        "max_flight_roll": "0.5",
+        "weapon_energy": "0",
+        "cargo_type": "CARGO_RANDOM"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": null
+    },
+    {
+      "definition_id": "cobra3-alternate",
+      "own_fields": {
+        "like_ship": "oolite_template_cobra3-alternate"
+      },
+      "resolved_core_fields": {
+        "thrust": "32",
+        "max_cargo": "35",
+        "has_escape_pod": "0.95",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "256",
+        "weapon_facings": "15",
+        "missiles": "3",
+        "max_missiles": "4",
+        "name": "Cobra Mark III",
+        "max_flight_speed": "300",
+        "has_scoop": "0.95",
+        "model": "oolite_cobra3.dat",
+        "max_flight_pitch": "1",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "15",
+        "has_ecm": "0.95",
+        "max_flight_roll": "2",
+        "energy_recharge_rate": "4",
+        "roles": "pirate-light-freighter pirate-medium-freighter(0.2) trader(0.375) hunter-heavy escort-heavy(0.25) hermit-ship sunskim-trader cobra3-alternate assassin-medium",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH023"
+    },
+    {
+      "definition_id": "cobra3-pirate",
+      "own_fields": {
+        "like_ship": "oolite_template_cobra3-pirate"
+      },
+      "resolved_core_fields": {
+        "thrust": "32",
+        "max_cargo": "20",
+        "has_escape_pod": "0.85",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "256",
+        "weapon_facings": "15",
+        "missiles": "1",
+        "max_missiles": "4",
+        "name": "Cobra Mark III",
+        "max_flight_speed": "300",
+        "has_scoop": "yes",
+        "model": "oolite_cobra3.dat",
+        "max_flight_pitch": "1",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_PULSE_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "15",
+        "has_ecm": "0.1",
+        "max_flight_roll": "2",
+        "energy_recharge_rate": "4",
+        "roles": "pirate(0.25) pirate-medium-fighter(0.5)",
+        "has_shield_booster": "0.25",
+        "bounty": "50",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH023"
+    },
+    {
+      "definition_id": "cobramk1",
+      "own_fields": {
+        "like_ship": "oolite_template_cobramk1"
+      },
+      "resolved_core_fields": {
+        "thrust": "25",
+        "max_cargo": "10",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "150",
+        "weapon_facings": "3",
+        "missiles": "1",
+        "roles": "pirate(0.5) pirate-medium-fighter hunter-medium scavenger trader trader-smuggler hermit-ship escort-medium(0.75) escort(0.25) assassin-light",
+        "max_missiles": "1",
+        "name": "Cobra Mark I",
+        "max_flight_speed": "260",
+        "has_scoop": "0.95",
+        "model": "oolite_cobramk1.dat",
+        "max_flight_pitch": "1.2",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_PULSE_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "10",
+        "max_flight_roll": "2",
+        "energy_recharge_rate": "2.5",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH022"
+    },
+    {
+      "definition_id": "cobramk1-alt",
+      "own_fields": {
+        "like_ship": "oolite_template_cobramk1-alt"
+      },
+      "resolved_core_fields": {
+        "thrust": "30",
+        "max_cargo": "10",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "200",
+        "weapon_facings": "3",
+        "missiles": "1",
+        "roles": "pirate(0.25) pirate-light-freighter(0.5) escort-heavy(0.5) escort-medium(0.25)",
+        "max_missiles": "1",
+        "name": "Cobra Mark I",
+        "max_flight_speed": "260",
+        "has_scoop": "0.95",
+        "model": "oolite_cobramk1.dat",
+        "max_flight_pitch": "1.2",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "10",
+        "max_flight_roll": "2",
+        "energy_recharge_rate": "3.75",
+        "has_fuel_injection": "0.25",
+        "has_shield_booster": "0.25",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH022"
+    },
+    {
+      "definition_id": "ferdelance",
+      "own_fields": {
+        "like_ship": "oolite_template_ferdelance"
+      },
+      "resolved_core_fields": {
+        "thrust": "36",
+        "max_cargo": "12",
+        "has_shield_enhancer": "0.5",
+        "has_escape_pod": "0.25",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "150",
+        "weapon_facings": "15",
+        "has_shield_booster": "0.5",
+        "missiles": "2",
+        "roles": "trader(0.25) trader-courier trader-smuggler(0.5) pirate-medium-fighter(0.75) pirate-heavy-fighter(0.75) pirate-interceptor pirate-aegis-raider(0.75) pirate(0.25) hunter-medium(0.75) hunter-heavy assassin-medium",
+        "max_missiles": "2",
+        "name": "Fer-de-Lance",
+        "max_flight_speed": "300",
+        "has_scoop": "yes",
+        "model": "oolite_ferdelance.dat",
+        "has_fuel_injection": "0.75",
+        "max_flight_pitch": "1",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "8",
+        "has_ecm": "yes",
+        "max_flight_roll": "3.6",
+        "energy_recharge_rate": "4.5",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH048"
+    },
+    {
+      "definition_id": "gecko",
+      "own_fields": {
+        "like_ship": "oolite_template_gecko"
+      },
+      "resolved_core_fields": {
+        "max_energy": "250",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "missiles": "1",
+        "max_flight_pitch": "1.5",
+        "max_flight_speed": "300",
+        "hyperspace_motor": "no",
+        "energy_recharge_rate": "4",
+        "has_shield_booster": "0.4",
+        "auto_weapons": "yes",
+        "likely_cargo": "3",
+        "thrust": "45",
+        "name": "Gecko",
+        "roles": "hunter(0.75) pirate-light-fighter(0.5) pirate-medium-fighter(0.75) pirate(0.5) escort(0.25) escort-medium(0.5) escort-heavy",
+        "has_scoop": "yes",
+        "max_cargo": "3",
+        "max_flight_roll": "3",
+        "auto_ai": "yes",
+        "model": "oolite_gecko.dat",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH049"
+    },
+    {
+      "definition_id": "krait",
+      "own_fields": {
+        "like_ship": "oolite_template_krait"
+      },
+      "resolved_core_fields": {
+        "thrust": "35",
+        "hyperspace_motor": "no",
+        "max_cargo": "2",
+        "has_shield_enhancer": "0.25",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "250",
+        "has_shield_booster": "0.5",
+        "weapon_facings": "1",
+        "missiles": "0",
+        "roles": "pirate pirate-light-fighter(0.75) hunter(0.5) escort(0.25) assassin-light",
+        "name": "Krait",
+        "max_flight_speed": "300",
+        "has_scoop": "0.95",
+        "model": "oolite_krait.dat",
+        "has_fuel_injection": "0.65",
+        "max_flight_pitch": "1.5",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "2",
+        "max_flight_roll": "2.75",
+        "energy_recharge_rate": "2.5",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH071"
+    },
+    {
+      "definition_id": "mamba",
+      "own_fields": {
+        "like_ship": "oolite_template_mamba"
+      },
+      "resolved_core_fields": {
+        "max_energy": "240",
+        "forward_weapon_type": "WEAPON_PULSE_LASER",
+        "missiles": "0",
+        "max_flight_pitch": "1.4",
+        "max_flight_speed": "320",
+        "hyperspace_motor": "no",
+        "energy_recharge_rate": "3",
+        "has_shield_booster": "0.25",
+        "auto_weapons": "yes",
+        "likely_cargo": "3",
+        "thrust": "32",
+        "name": "Mamba",
+        "roles": "pirate pirate-light-fighter(0.5) hunter",
+        "has_scoop": "0.95",
+        "max_cargo": "4",
+        "max_flight_roll": "2.1",
+        "auto_ai": "yes",
+        "model": "oolite_mamba.dat",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH082"
+    },
+    {
+      "definition_id": "mamba-escort",
+      "own_fields": {
+        "like_ship": "oolite_template_mamba-escort"
+      },
+      "resolved_core_fields": {
+        "max_energy": "240",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "missiles": "0",
+        "max_flight_pitch": "1.4",
+        "max_flight_speed": "320",
+        "hyperspace_motor": "no",
+        "energy_recharge_rate": "3",
+        "has_shield_booster": "0.25",
+        "auto_weapons": "yes",
+        "likely_cargo": "3",
+        "thrust": "32",
+        "name": "Mamba Escort",
+        "roles": "pirate-light-fighter(0.5) escort escort-medium(0.25)",
+        "has_scoop": "0.95",
+        "max_cargo": "4",
+        "max_flight_roll": "2.1",
+        "auto_ai": "yes",
+        "model": "oolite_mamba.dat",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH082"
+    },
+    {
+      "definition_id": "moray",
+      "own_fields": {
+        "like_ship": "oolite_template_moray"
+      },
+      "resolved_core_fields": {
+        "thrust": "32",
+        "max_cargo": "7",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "240",
+        "weapon_facings": "15",
+        "has_shield_booster": "0.5",
+        "missiles": "2",
+        "roles": "trader(0.5) trader-courier(0.25) trader-smuggler hunter-medium pirate-medium-fighter pirate-interceptor(0.25) pirate(0.5) pirate-light-freighter(0.5) escort-medium(0.25) assassin-light",
+        "max_missiles": "2",
+        "name": "Moray Star Boat",
+        "max_flight_speed": "300",
+        "has_scoop": "yes",
+        "model": "oolite_moray.dat",
+        "max_flight_pitch": "1.5",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_PULSE_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "5",
+        "max_flight_roll": "2.5",
+        "energy_recharge_rate": "3",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH088"
+    },
+    {
+      "definition_id": "oolite_rock_hermit_dock",
+      "own_fields": {
+        "model": "oolite_rock_hermit_dock.dat",
+        "name": "Docking Slit"
+      },
+      "resolved_core_fields": {
+        "model": "oolite_rock_hermit_dock.dat",
+        "name": "Docking Slit"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": null
+    },
+    {
+      "definition_id": "oolite_rock_hermit_pipes",
+      "own_fields": {
+        "model": "oolite_rock_hermit_pipes.dat",
+        "name": "Rock Hermit (pipes)"
+      },
+      "resolved_core_fields": {
+        "model": "oolite_rock_hermit_pipes.dat",
+        "name": "Rock Hermit (pipes)"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": null
+    },
+    {
+      "definition_id": "oolite_rock_hermit_rock",
+      "own_fields": {
+        "model": "oolite_rock_hermit_rock.dat",
+        "name": "Rock Hermit (rock)"
+      },
+      "resolved_core_fields": {
+        "model": "oolite_rock_hermit_rock.dat",
+        "name": "Rock Hermit (rock)"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": null
+    },
+    {
+      "definition_id": "oolite_rock_hermit_tunnel_extras",
+      "own_fields": {
+        "model": "oolite_rock_hermit_tunnel_extras.dat",
+        "name": "Rock Hermit (tunnel)"
+      },
+      "resolved_core_fields": {
+        "model": "oolite_rock_hermit_tunnel_extras.dat",
+        "name": "Rock Hermit (tunnel)"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": null
+    },
+    {
+      "definition_id": "python",
+      "own_fields": {
+        "like_ship": "oolite_template_python"
+      },
+      "resolved_core_fields": {
+        "thrust": "20",
+        "max_cargo": "100",
+        "has_escape_pod": "0.75",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "450",
+        "weapon_facings": "15",
+        "has_shield_booster": "0.75",
+        "missiles": "2",
+        "roles": "trader(0.5) trader-smuggler(0.2) pirate(0.2) pirate-light-freighter(0.2)",
+        "max_missiles": "2",
+        "name": "Python",
+        "max_flight_speed": "200",
+        "has_scoop": "yes",
+        "model": "oolite_python.dat",
+        "max_flight_pitch": "0.8",
+        "auto_weapons": "yes",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "auto_ai": "yes",
+        "likely_cargo": "75",
+        "max_flight_roll": "2",
+        "energy_recharge_rate": "2.5",
+        "fuel": "70"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH099"
+    },
+    {
+      "definition_id": "rock-hermit",
+      "own_fields": {
+        "like_ship": "oolite_template_rock-hermit"
+      },
+      "resolved_core_fields": {
+        "thrust": "100",
+        "subentities": [
+          {
+            "orientation": "1 0 0 0",
+            "subentity_key": "oolite_rock_hermit_rock",
+            "position": "0 0 0"
+          },
+          {
+            "orientation": "1 0 0 0",
+            "subentity_key": "oolite_rock_hermit_pipes",
+            "position": "0 0 0"
+          },
+          {
+            "orientation": "1 0 0 0",
+            "subentity_key": "oolite_rock_hermit_tunnel_extras",
+            "position": "0 0 0"
+          },
+          {
+            "is_dock": "true",
+            "subentity_key": "oolite_rock_hermit_dock",
+            "position": "0 0 -129.6059",
+            "orientation": "1 0 0 0"
+          }
+        ],
+        "has_escape_pod": "no",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "max_energy": "1000",
+        "weapon_energy": "0",
+        "missiles": "0",
+        "roles": "rockhermit station",
+        "name": "Rock Hermit",
+        "max_flight_speed": "0",
+        "has_scoop": "no",
+        "model": "oolite_rock_hermit.dat",
+        "max_flight_pitch": "8",
+        "forward_weapon_type": "WEAPON_NONE",
+        "scan_class": "CLASS_ROCK",
+        "has_ecm": "yes",
+        "is_carrier": "1",
+        "max_flight_roll": "8",
+        "energy_recharge_rate": "5"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": null
+    },
+    {
+      "definition_id": "sidewinder",
+      "own_fields": {
+        "like_ship": "oolite_template_sidewinder"
+      },
+      "resolved_core_fields": {
+        "max_energy": "240",
+        "forward_weapon_type": "WEAPON_PULSE_LASER",
+        "missiles": "0",
+        "max_flight_pitch": "1.6",
+        "max_flight_speed": "370",
+        "hyperspace_motor": "no",
+        "energy_recharge_rate": "2",
+        "auto_weapons": "yes",
+        "thrust": "37",
+        "name": "Sidewinder Scout Ship",
+        "roles": "pirate(0.75) pirate-light-fighter(0.25) hunter",
+        "model": "oolite_sidewinder.dat",
+        "max_flight_roll": "2.8",
+        "auto_ai": "yes",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH107"
+    },
+    {
+      "definition_id": "sidewinder-escort",
+      "own_fields": {
+        "like_ship": "oolite_template_sidewinder-escort"
+      },
+      "resolved_core_fields": {
+        "max_energy": "240",
+        "forward_weapon_type": "WEAPON_BEAM_LASER",
+        "missiles": "0",
+        "max_flight_pitch": "1.8",
+        "max_flight_speed": "370",
+        "hyperspace_motor": "no",
+        "energy_recharge_rate": "2.5",
+        "auto_weapons": "yes",
+        "thrust": "37",
+        "name": "Sidewinder Scout Ship",
+        "roles": "escort escort-medium(0.5)",
+        "model": "oolite_sidewinder_escort.dat",
+        "max_flight_roll": "2.8",
+        "auto_ai": "yes",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO"
+      },
+      "is_shipyard_entry": false,
+      "shipyard": {},
+      "canonical_hull_id": "SH107"
+    }
+  ],
+  "role_pools": {
+    "pirate": [
+      {
+        "definition_id": "adder",
+        "weight": 0.2
+      },
+      {
+        "definition_id": "cobra3-pirate",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "cobramk1",
+        "weight": 0.5
+      },
+      {
+        "definition_id": "cobramk1-alt",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "ferdelance",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "gecko",
+        "weight": 0.5
+      },
+      {
+        "definition_id": "krait",
+        "weight": 1
+      },
+      {
+        "definition_id": "mamba",
+        "weight": 1
+      },
+      {
+        "definition_id": "moray",
+        "weight": 0.5
+      },
+      {
+        "definition_id": "python",
+        "weight": 0.2
+      },
+      {
+        "definition_id": "sidewinder",
+        "weight": 0.75
+      }
+    ],
+    "escort": [
+      {
+        "definition_id": "cobramk1",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "gecko",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "krait",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "mamba-escort",
+        "weight": 1
+      },
+      {
+        "definition_id": "sidewinder-escort",
+        "weight": 1
+      }
+    ],
+    "escort-medium": [
+      {
+        "definition_id": "cobramk1",
+        "weight": 0.75
+      },
+      {
+        "definition_id": "cobramk1-alt",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "gecko",
+        "weight": 0.5
+      },
+      {
+        "definition_id": "mamba-escort",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "moray",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "sidewinder-escort",
+        "weight": 0.5
+      }
+    ],
+    "escort-heavy": [
+      {
+        "definition_id": "asp",
+        "weight": 1
+      },
+      {
+        "definition_id": "cobra3-alternate",
+        "weight": 0.25
+      },
+      {
+        "definition_id": "cobramk1-alt",
+        "weight": 0.5
+      },
+      {
+        "definition_id": "gecko",
+        "weight": 1
+      }
+    ]
+  },
+  "model_envelopes": [
+    {
+      "model": "oolite_adder.dat",
+      "source_path": "Resources/Models/oolite_adder.dat",
+      "sha256": "6d3cd62b9d0e4a796a0340bb4197af82820d5cd6b40683e18276c98df2a57ff7",
+      "vertex_count": 1102,
+      "geometry_envelope": {
+        "minimum": [
+          -14.0093,
+          -5.19068,
+          -22.2328
+        ],
+        "maximum": [
+          14.0093,
+          9.70464,
+          28.9523
+        ],
+        "dimensions_xyz": [
+          28.0186,
+          14.89532,
+          51.185100000000006
+        ],
+        "box_volume": 21361.897407549415,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_asp.dat",
+      "source_path": "Resources/Models/oolite_asp.dat",
+      "sha256": "577a6ff0b71c18ab81ced67d37c27651ae24bc0592551845c47bb7b954afea08",
+      "vertex_count": 1181,
+      "geometry_envelope": {
+        "minimum": [
+          -32.3603,
+          -11.7565,
+          -41.5371
+        ],
+        "maximum": [
+          32.3603,
+          11.7565,
+          42.1456
+        ],
+        "dimensions_xyz": [
+          64.7206,
+          23.513,
+          83.68270000000001
+        ],
+        "box_volume": 127346.27993926709,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_barrel.dat",
+      "source_path": "Resources/Models/oolite_barrel.dat",
+      "sha256": "bce675e16ef220502906ed88e20813f5092870f038e1d6114b33b284ef918533",
+      "vertex_count": 300,
+      "geometry_envelope": {
+        "minimum": [
+          -4.78779,
+          -2.91391,
+          -3.06387
+        ],
+        "maximum": [
+          4.77191,
+          2.91391,
+          3.06387
+        ],
+        "dimensions_xyz": [
+          9.5597,
+          5.82782,
+          6.12774
+        ],
+        "box_volume": 341.38994293849,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_cobra3.dat",
+      "source_path": "Resources/Models/oolite_cobra3.dat",
+      "sha256": "36ea4eecd4febd7b106ebdd23e17de7e3337400b9ebff5d84f5a74204058388a",
+      "vertex_count": 1548,
+      "geometry_envelope": {
+        "minimum": [
+          -65.0,
+          -13.9688,
+          -37.9071
+        ],
+        "maximum": [
+          65.0,
+          20.9961,
+          43.4655
+        ],
+        "dimensions_xyz": [
+          130.0,
+          34.9649,
+          81.3726
+        ],
+        "box_volume": 369874.0268262,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_cobramk1.dat",
+      "source_path": "Resources/Models/oolite_cobramk1.dat",
+      "sha256": "b2adfde0fc8ff17642f7f06cd8c9f37fc9d835b90b1b32ea0b2f55eef5cc42bf",
+      "vertex_count": 1117,
+      "geometry_envelope": {
+        "minimum": [
+          -35.0,
+          -9.37721,
+          -32.0536
+        ],
+        "maximum": [
+          35.0,
+          8.36658,
+          34.8503
+        ],
+        "dimensions_xyz": [
+          70.0,
+          17.74379,
+          66.9039
+        ],
+        "box_volume": 83099.01262467,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_ferdelance.dat",
+      "source_path": "Resources/Models/oolite_ferdelance.dat",
+      "sha256": "a70d4891a931a21710c0ff10d9f6fd5616d16abc9c11f500549247e8b979c0cf",
+      "vertex_count": 921,
+      "geometry_envelope": {
+        "minimum": [
+          -20.232,
+          -7.83057,
+          -47.0948
+        ],
+        "maximum": [
+          20.232,
+          12.5223,
+          47.3988
+        ],
+        "dimensions_xyz": [
+          40.464,
+          20.35287,
+          94.4936
+        ],
+        "box_volume": 77821.01046915725,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_gecko.dat",
+      "source_path": "Resources/Models/oolite_gecko.dat",
+      "sha256": "4f7ca7b726f871848e702de6f6639831eb52e1839a73f72edb3518d3a44c538c",
+      "vertex_count": 1570,
+      "geometry_envelope": {
+        "minimum": [
+          -30.7379,
+          -7.41023,
+          -25.6416
+        ],
+        "maximum": [
+          30.7379,
+          7.22387,
+          25.6416
+        ],
+        "dimensions_xyz": [
+          61.4758,
+          14.6341,
+          51.2832
+        ],
+        "box_volume": 46136.5721427337,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_krait.dat",
+      "source_path": "Resources/Models/oolite_krait.dat",
+      "sha256": "45eb3cbd2af4038249a6c2af59ccf304bf0a927d327c643b73888dfbba39e473",
+      "vertex_count": 1023,
+      "geometry_envelope": {
+        "minimum": [
+          -47.2038,
+          -11.1088,
+          -41.3069
+        ],
+        "maximum": [
+          47.2038,
+          10.6843,
+          41.5081
+        ],
+        "dimensions_xyz": [
+          94.4076,
+          21.793100000000003,
+          82.815
+        ],
+        "box_volume": 170386.4188679814,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_mamba.dat",
+      "source_path": "Resources/Models/oolite_mamba.dat",
+      "sha256": "15ca183aac8c5a6b513e176842b8749fc8a4455841808040449b057b0477c586",
+      "vertex_count": 1112,
+      "geometry_envelope": {
+        "minimum": [
+          -31.7862,
+          -7.7508,
+          -33.5581
+        ],
+        "maximum": [
+          31.7862,
+          7.7508,
+          33.5581
+        ],
+        "dimensions_xyz": [
+          63.5724,
+          15.5016,
+          67.1162
+        ],
+        "box_volume": 66141.26443030061,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_moray.dat",
+      "source_path": "Resources/Models/oolite_moray.dat",
+      "sha256": "d04d6858179d8c297367f0bfc62e6133d747d5e3fab70551274c96607dc2a45c",
+      "vertex_count": 1324,
+      "geometry_envelope": {
+        "minimum": [
+          -29.6783,
+          -14.3547,
+          -34.8507
+        ],
+        "maximum": [
+          29.6783,
+          14.3547,
+          34.8507
+        ],
+        "dimensions_xyz": [
+          59.3566,
+          28.7094,
+          69.7014
+        ],
+        "box_volume": 118777.62406050885,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_python.dat",
+      "source_path": "Resources/Models/oolite_python.dat",
+      "sha256": "338ff21161c54dd7a7d67404a7903ed2a1935e2d4c1434318b34abfd628f0d8d",
+      "vertex_count": 1513,
+      "geometry_envelope": {
+        "minimum": [
+          -36.9809,
+          -20.046,
+          -74.333
+        ],
+        "maximum": [
+          36.9607,
+          20.2591,
+          68.4312
+        ],
+        "dimensions_xyz": [
+          73.9416,
+          40.305099999999996,
+          142.76420000000002
+        ],
+        "box_volume": 425469.2355282066,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_rock_hermit.dat",
+      "source_path": "Resources/Models/oolite_rock_hermit.dat",
+      "sha256": "7625ec0f3274f78b31daf3bb88465f9f568284b9d7591fbbb1dfb33c63bc8258",
+      "vertex_count": 310,
+      "geometry_envelope": {
+        "minimum": [
+          -219.222,
+          -195.399,
+          -125.086
+        ],
+        "maximum": [
+          219.222,
+          195.399,
+          496.194
+        ],
+        "dimensions_xyz": [
+          438.444,
+          390.798,
+          621.28
+        ],
+        "box_volume": 106452002.84247936,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_rock_hermit_dock.dat",
+      "source_path": "Resources/Models/oolite_rock_hermit_dock.dat",
+      "sha256": "bce414fe0ccfef2ad457289bbad282a9c294fdcbfe5d258454a863a2cb99594c",
+      "vertex_count": 136,
+      "geometry_envelope": {
+        "minimum": [
+          -97.344,
+          -54.2834,
+          -253.5
+        ],
+        "maximum": [
+          97.344,
+          54.2834,
+          0.0
+        ],
+        "dimensions_xyz": [
+          194.688,
+          108.5668,
+          253.5
+        ],
+        "box_volume": 5358141.5756544005,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_rock_hermit_pipes.dat",
+      "source_path": "Resources/Models/oolite_rock_hermit_pipes.dat",
+      "sha256": "50249ac9f9fd02c3c63c6e7f9729ed2a8c4251a9553213f8715d946029faeb1c",
+      "vertex_count": 708,
+      "geometry_envelope": {
+        "minimum": [
+          -167.505,
+          -133.722,
+          -124.987
+        ],
+        "maximum": [
+          167.505,
+          163.324,
+          479.988
+        ],
+        "dimensions_xyz": [
+          335.01,
+          297.04600000000005,
+          604.975
+        ],
+        "box_volume": 60203107.34378851,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_rock_hermit_rock.dat",
+      "source_path": "Resources/Models/oolite_rock_hermit_rock.dat",
+      "sha256": "1199e9eb1c2d796494cc50d48abbab95d9c501533c3843eee5b018987356ad43",
+      "vertex_count": 210,
+      "geometry_envelope": {
+        "minimum": [
+          -427.138,
+          -499.252,
+          -437.813
+        ],
+        "maximum": [
+          488.754,
+          505.018,
+          465.056
+        ],
+        "dimensions_xyz": [
+          915.892,
+          1004.27,
+          902.8689999999999
+        ],
+        "box_volume": 830461487.3580118,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_rock_hermit_tunnel_extras.dat",
+      "source_path": "Resources/Models/oolite_rock_hermit_tunnel_extras.dat",
+      "sha256": "731dd28ac23581e2037978944ec0a5cc9f0765b0bc102134654af90bc4efc20a",
+      "vertex_count": 264,
+      "geometry_envelope": {
+        "minimum": [
+          -187.777,
+          -185.086,
+          -129.606
+        ],
+        "maximum": [
+          187.777,
+          163.091,
+          538.216
+        ],
+        "dimensions_xyz": [
+          375.554,
+          348.177,
+          667.822
+        ],
+        "box_volume": 87323913.90956368,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_sidewinder.dat",
+      "source_path": "Resources/Models/oolite_sidewinder.dat",
+      "sha256": "bcb14720430bb8b638951e771ae45c6f5982725bb947d1cb09bfa069a4af973b",
+      "vertex_count": 1294,
+      "geometry_envelope": {
+        "minimum": [
+          -31.6146,
+          -7.21217,
+          -22.2155
+        ],
+        "maximum": [
+          31.6146,
+          7.21217,
+          22.2155
+        ],
+        "dimensions_xyz": [
+          63.2292,
+          14.42434,
+          44.431
+        ],
+        "box_volume": 40522.82607936377,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    },
+    {
+      "model": "oolite_sidewinder_escort.dat",
+      "source_path": "Resources/Models/oolite_sidewinder_escort.dat",
+      "sha256": "d91dc49aaf95b0a23461e9e0098996acde3fea78c2ff52815c63fe28caa7354e",
+      "vertex_count": 1213,
+      "geometry_envelope": {
+        "minimum": [
+          -31.6146,
+          -7.21218,
+          -22.2155
+        ],
+        "maximum": [
+          31.6146,
+          7.21218,
+          22.2155
+        ],
+        "dimensions_xyz": [
+          63.2292,
+          14.42436,
+          44.431
+        ],
+        "box_volume": 40522.88226609547,
+        "units": "source model units; box is an envelope, not measured internal volume"
+      }
+    }
+  ],
+  "station_assembly": {
+    "parts": [
+      {
+        "model": "oolite_rock_hermit.dat",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "orientation_wxyz": [
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "model": "oolite_rock_hermit_rock.dat",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "orientation_wxyz": [
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "model": "oolite_rock_hermit_pipes.dat",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "orientation_wxyz": [
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "model": "oolite_rock_hermit_tunnel_extras.dat",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "orientation_wxyz": [
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "model": "oolite_rock_hermit_dock.dat",
+        "position": [
+          0,
+          0,
+          -129.6059
+        ],
+        "orientation_wxyz": [
+          1,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "minimum_xyz": [
+      -427.138,
+      -499.252,
+      -437.813
+    ],
+    "maximum_xyz": [
+      488.754,
+      505.018,
+      538.216
+    ],
+    "dimensions_xyz": [
+      915.892,
+      1004.27,
+      976.029
+    ],
+    "units": "Source model units; assembled AABB not octree collision/internal volume. Use actual original geometry and native rotated docking checks.",
+    "dock_local_dimensions_xyz": [
+      194.688,
+      108.5668,
+      253.5
+    ],
+    "python_base_dimensions_xyz": [
+      73.9416,
+      40.305099999999996,
+      142.76420000000002
+    ]
+  },
+  "ai_definitions": {
+    "rescue_scenario_4a_sbdefAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: WATCH_OUT"
+        ]
+      },
+      "RETURN_TO_BASE": {
+        "UPDATE": [
+          "pauseAI: 60"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: WATCH_OUT"
+        ],
+        "BASE_FOUND": [
+          "setDestinationFromCoordinates",
+          "setSpeedToCruiseSpeed",
+          "setDesiredRangeTo: 10E3",
+          "performFlyToRangeFromDestination",
+          "pauseAI: 60"
+        ],
+        "NO_BASE": [
+          "switchAITo: pirateAI.plist"
+        ],
+        "RESTARTED": [
+          "sendScriptMessage: baseCoords"
+        ],
+        "ENTER": [
+          "sendScriptMessage: baseCoords"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setAITo: interceptAI.plist"
+        ],
+        "ESCORT_ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setAITo: interceptAI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setAITo: interceptAI.plist"
+        ]
+      },
+      "PATROL_AREA": {
+        "ROLL_2": [
+          "setDesiredRangeTo: 4000",
+          "setStateTo: WATCH_OUT"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: RETURN_TO_BASE"
+        ],
+        "ROLL_1": [
+          "setDesiredRangeTo: 2000",
+          "setStateTo: WATCH_OUT"
+        ],
+        "ROLL_3": [
+          "setDesiredRangeTo: 6000",
+          "setStateTo: WATCH_OUT"
+        ],
+        "TARGET_FOUND": [
+          "setDestinationToTarget",
+          "setSpeedFactorTo: 0.5",
+          "rollD: 5"
+        ],
+        "ROLL_4": [
+          "setDesiredRangeTo: 8000",
+          "setStateTo: WATCH_OUT"
+        ],
+        "RESTARTED": [
+          "scanForNearestShipWithPrimaryRole: rrs_slaverbase",
+          "pauseAI: 20"
+        ],
+        "ROLL_5": [
+          "setDesiredRangeTo: 10000",
+          "setStateTo: WATCH_OUT"
+        ],
+        "EXIT": [
+          "performFlyToRangeFromDestination"
+        ],
+        "ENTER": [
+          "scanForNearestShipWithPrimaryRole: rrs_slaverbase",
+          "pauseAI: 20"
+        ]
+      },
+      "WATCH_OUT": {
+        "UPDATE": [
+          "scanForNearestMerchantman",
+          "pauseAI: 5"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: PATROL_AREA"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "groupAttackTarget",
+          "setAITo: interceptAI.plist"
+        ],
+        "RESTARTED": [
+          "pauseAI: 1"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "pauseAI: 5"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setAITo: interceptAI.plist"
+        ],
+        "ESCORT_ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setAITo: interceptAI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setAITo: interceptAI.plist"
+        ]
+      }
+    },
+    "rescue_scenario_4a_slaverAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: LOOK_INNOCENT"
+        ]
+      },
+      "RUN_AWAY": {
+        "REACHED_SAFETY": [
+          "setStateTo: LOOK_INNOCENT"
+        ],
+        "ENERGY_LOW": [
+          "sendScriptMessage: ejectSlaves"
+        ],
+        "JUMP_AWAY": [
+          "setStateTo: JUMP_OUT"
+        ],
+        "ENTER": [
+          "setTargetToPrimaryAggressor",
+          "deployEscorts",
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LOOK_INNOCENT"
+        ],
+        "ATTACKED": [
+          "sendScriptMessage: checkEnergy",
+          "setTargetToPrimaryAggressor",
+          "deployEscorts",
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ]
+      },
+      "LOOK_INNOCENT": {
+        "ATTACKED": [
+          "sendScriptMessage: checkEnergy",
+          "setStateTo: RUN_AWAY"
+        ],
+        "ENTER": [
+          "setSpeedFactorTo: 1",
+          "setDestinationToStationBeacon",
+          "setDesiredRangeTo: 20000",
+          "performFlyToRangeFromDestination",
+          "pauseAI: 5"
+        ],
+        "ENERGY_LOW": [
+          "sendScriptMessage: ejectSlaves"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setTargetToStation",
+          "setAITo: dockingAI.plist"
+        ],
+        "JUMP_AWAY": [
+          "setStateTo: JUMP_OUT"
+        ]
+      },
+      "JUMP_OUT": {
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "deployEscorts",
+          "performFlee"
+        ],
+        "ENTER": [
+          "setTargetToPrimaryAggressor",
+          "deployEscorts",
+          "setDesiredRangeTo: 25600",
+          "setDestinationToWitchpoint",
+          "performFlyToRangeFromDestination",
+          "pauseAI: 15"
+        ],
+        "UPDATE": [
+          "sendScriptMessage: leaveSystem",
+          "pauseAI: 15"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LOOK_INNOCENT"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: LOOK_INNOCENT"
+        ]
+      }
+    },
+    "rescue_scenario_4a_slaverbaseAI.plist": {
+      "GLOBAL": {
+        "ENTER": [],
+        "ATTACKED": [
+          "sendScriptMessage: underAttack"
+        ]
+      }
+    },
+    "O08 interceptAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "switchLightsOn",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "DEFENSE_TARGET_DESTROYED": [
+          "findNewDefenseTarget"
+        ],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_LOST": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAI"
+        ],
+        "DEFENSE_TARGET_LOST": [
+          "findNewDefenseTarget"
+        ],
+        "ESCORT_ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "TARGET_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "ENTER WORMHOLE": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAIWithMessage: ENTER WORMHOLE"
+        ],
+        "PLAYER WITCHSPACE": [
+          "setStateTo: PLAYER_WITCHSPACE"
+        ],
+        "TARGET_DESTROYED": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAI"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ]
+      },
+      "FLEE": {
+        "ENERGY_FULL": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "addPrimaryAggressorAsDefenseTarget"
+        ],
+        "DEFENSE_TARGET_DESTROYED": [
+          "findNewDefenseTarget"
+        ],
+        "ENTER": [
+          "deployEscorts",
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_LOST": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAI"
+        ],
+        "DEFENSE_TARGET_LOST": [
+          "findNewDefenseTarget"
+        ],
+        "TARGET_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "REACHED_SAFETY": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAI"
+        ],
+        "ENTER WORMHOLE": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAIWithMessage: ENTER WORMHOLE"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "TARGET_DESTROYED": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAI"
+        ],
+        "PLAYER WITCHSPACE": [
+          "setStateTo: PLAYER_WITCHSPACE"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ]
+      },
+      "PLAYER_WITCHSPACE": {
+        "ENTER WORMHOLE": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAI",
+          "enterTargetWormhole"
+        ]
+      },
+      "FLEE_FOR_CLOAKED": {
+        "UPDATE": [
+          "recallStoredTarget",
+          "pauseAI: 2.0"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setDestinationToJinkPosition"
+        ],
+        "RESTARTED": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAI"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ENTER": [
+          "storeTarget",
+          "setDestinationToCurrentLocation",
+          "setDesiredRangeTo: 25600",
+          "performFlyToRangeFromDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "performIdle",
+          "switchLightsOff",
+          "exitAI"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    },
+    "O08 pirateAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setCoordinatesFromPosition",
+          "setStateTo: TRAVEL_TO_START_POSITION"
+        ]
+      },
+      "CHECK_CARGO": {
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle",
+          "checkForFullHold"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "NO_CARGO_BAY": [
+          "setStateTo: CONSIDER_DOCKING"
+        ],
+        "HOLD_NOT_FULL": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "HOLD_FULL": [
+          "setStateTo: CONSIDER_LEAVING"
+        ]
+      },
+      "FLEE_FOR_CLOAKED": {
+        "UPDATE": [
+          "recallStoredTarget",
+          "pauseAI: 2.0"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENERGY_FULL": [
+          "setStateTo: LURK"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setDestinationToJinkPosition"
+        ],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "ENTER": [
+          "storeTarget",
+          "setDestinationToJinkPosition",
+          "setDesiredRangeTo: 25600",
+          "performFlyToRangeFromDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: RECOVER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "DOCK_WITH_STATION": {
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "NOTHING_FOUND": [
+          "setAITo: route1traderAI.plist"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "checkForMotherStation"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "STATION_FOUND": [
+          "dockEscorts",
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "CONSIDER_LEAVING": {
+        "UPDATE": [
+          "checkForMotherStation"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: EXIT_SYSTEM",
+          "pauseAI: 5.0"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "STATION_FOUND": [
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "ENTER_WORMHOLE": {
+        "ENTER": [
+          "setDestinationToTarget",
+          "setDesiredRangeTo: 1.0",
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "PLAYER WITCHSPACE": [
+          "enterTargetWormhole",
+          "wormholeEscorts"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: LURK"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LURK"
+        ]
+      },
+      "COLLECT_LOOT": {
+        "UPDATE": [
+          "scanForLoot",
+          "pauseAI: 5.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: LOOT"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "HOLD_FULL": [
+          "setStateTo: CONSIDER_DOCKING"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: CONSIDER_DOCKING"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "DEFENSE_TARGET_DESTROYED": [
+          "findNewDefenseTarget"
+        ],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ACCEPTED_ESCORT": [
+          "groupAttackTarget"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "CARGO_DUMPED": [
+          "checkForFullHold"
+        ],
+        "DEFENSE_TARGET_LOST": [
+          "findNewDefenseTarget"
+        ],
+        "ESCORT_ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "TARGET_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "PLAYER WITCHSPACE": [
+          "enterTargetWormhole",
+          "wormholeEscorts"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "HOLD_NOT_FULL": [
+          "rollD: 4"
+        ],
+        "ROLL_1": [
+          "setStateTo: COLLECT_LOOT"
+        ]
+      },
+      "EXIT_SYSTEM": {
+        "WITCHSPACE OKAY": [
+          "wormholeEscorts",
+          "wormholeGroup"
+        ],
+        "UPDATE": [
+          "performHyperSpaceExit",
+          "pauseAI: 5.0"
+        ],
+        "WITCHSPACE BLOCKED": [
+          "setTargetToFoundTarget",
+          "setDestinationWithinTarget",
+          "setDesiredRangeTo: 10000.0",
+          "performFlyToRangeFromDestination",
+          "setSpeedToCruiseSpeed"
+        ],
+        "WITCHSPACE UNAVAILABLE": [
+          "setStateTo: DOCK_WITH_STATION"
+        ]
+      },
+      "LOOT": {
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "ENTER": [
+          "performCollect"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: CHECK_CARGO"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CARGO_SCOOPED": [
+          "setStateTo: CHECK_CARGO"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: LOOT"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: CONSIDER_DOCKING"
+        ]
+      },
+      "FLEE": {
+        "ENERGY_FULL": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget",
+          "setStateTo: FLEE"
+        ],
+        "DEFENSE_TARGET_DESTROYED": [
+          "findNewDefenseTarget"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: RECOVER"
+        ],
+        "DEFENSE_TARGET_LOST": [
+          "findNewDefenseTarget"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: RECOVER"
+        ],
+        "REACHED_SAFETY": [
+          "setStateTo: RECOVER"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "TARGET_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ]
+      },
+      "SCAN_FOR_LOOT": {
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: LOOT"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: LURK"
+        ],
+        "UPDATE": [
+          "scanForLoot",
+          "pauseAI: 7.0"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ]
+      },
+      "TRAVEL_TO_LURK_AREA": {
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "RESTARTED": [
+          "setStateTo: LURK"
+        ],
+        "ENTER": [
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 3500.0",
+          "checkCourseToDestination"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CARGO_SCOOPED": [
+          "setStateTo: CHECK_CARGO"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: LURK"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LURK"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "checkGroupOddsVersusTarget"
+        ],
+        "ODDS_GOOD": [
+          "groupAttackTarget"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "UPDATE": [
+          "scanForRandomMerchantman",
+          "pauseAI: 10.0"
+        ]
+      },
+      "LURK": {
+        "UPDATE": [
+          "scanForRandomMerchantman",
+          "pauseAI: 5.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "ODDS_LEVEL": [
+          "groupAttackTarget"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: TRAVEL_TO_LURK_AREA",
+          "pauseAI: 0.5"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CARGO_SCOOPED": [
+          "setStateTo: CHECK_CARGO"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ODDS_GOOD": [
+          "groupAttackTarget"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "checkGroupOddsVersusTarget"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: SCAN_FOR_LOOT"
+        ]
+      },
+      "CONSIDER_DOCKING": {
+        "UPDATE": [
+          "checkForMotherStation"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_TO_LURK_AREA"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "CARGO_SCOOPED": [
+          "setStateTo: CHECK_CARGO"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "STATION_FOUND": [
+          "dockEscorts",
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "TRAVEL_TO_START_POSITION": {
+        "LAUNCHED OKAY": [
+          "setStateTo: CLEAR_STATION"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "RESTARTED": [
+          "setStateTo: RECOVER"
+        ],
+        "ENTER": [
+          "setDestinationToCurrentLocation",
+          "setDesiredRangeTo: 1500.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "EXITED WITCHSPACE": [
+          "switchAITo: enteringPirateAI.plist"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LURK"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "FRUSTRATED": [
+          "setStateTo: LURK"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ]
+      },
+      "CLEAR_STATION": {
+        "GROUP_ATTACK_TARGET": [
+          "setTargetToFoundTarget",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setDestinationToCurrentLocation",
+          "setDesiredRangeTo: 2000.0",
+          "setSpeedFactorTo: 0.75",
+          "performFlyToRangeFromDestination"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: TRAVEL_TO_LURK_AREA"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "scanForRandomMerchantman"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "groupAttackTarget"
+        ]
+      },
+      "RECOVER": {
+        "UPDATE": [
+          "checkEnergy",
+          "pauseAI: 10.0"
+        ],
+        "ENERGY_FULL": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "ENERGY_HIGH": [
+          "setStateTo: COLLECT_LOOT"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performIdle",
+          "pauseAI: 5.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ENTER WORMHOLE": [
+          "setStateTo: ENTER_WORMHOLE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    },
+    "O08 dockingAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "dropMessages: DOCKING_ABORTED,FACING_DESTINATION",
+          "setSpeedTo: 0.0",
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "ENTER": [
+          "abortDocking",
+          "setTargetToFoundTarget",
+          "setAITo: interceptAI.plist"
+        ],
+        "RESTARTED": [
+          "performIdle",
+          "setStateTo: GLOBAL"
+        ]
+      },
+      "APPROACH": {
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "RESTART_DOCKING": [
+          "setStateTo: GLOBAL"
+        ],
+        "DOCKING_ABORTED": [
+          "setStateTo: ABORT"
+        ],
+        "OFFENCE_COMMITTED": [
+          "setTargetToFoundTarget",
+          "markTargetForOffence: 7",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "RESTARTED": [
+          "recallDockingInstructions",
+          "setSpeedFactorTo: 1.0",
+          "checkCourseToDestination"
+        ],
+        "COLLISION": [
+          "setStateTo: ABORT"
+        ],
+        "ENTER": [
+          "recallDockingInstructions",
+          "setSpeedFactorTo: 1.0",
+          "checkCourseToDestination"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "ABORT": {
+        "GROUP_ATTACK_TARGET": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "FACING_DESTINATION": [
+          "setSpeedFactorTo: 1.0",
+          "setDesiredRangeTo: 500.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "OFFENCE_COMMITTED": [
+          "setTargetToFoundTarget",
+          "markTargetForOffence: 7",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "REACHED_SAFETY": [
+          "performIdle",
+          "setStateTo: GLOBAL"
+        ],
+        "ATTACKER_MISSED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "abortDocking",
+          "setSpeedTo: 0.0",
+          "setDestinationToDockingAbort",
+          "setDesiredRangeTo: 500.0",
+          "performFaceDestination"
+        ],
+        "RESTART_DOCKING": [
+          "setStateTo: GLOBAL"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "performIdle",
+          "setStateTo: GLOBAL"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "AWAIT_COORDS": {
+        "COLLISION": [
+          "setStateTo: ABORT"
+        ],
+        "TOO_BIG_TO_DOCK": [
+          "exitAIWithMessage: DOCKING_REFUSED"
+        ],
+        "DOCKING_ABORTED": [
+          "setStateTo: ABORT"
+        ],
+        "APPROACH_COORDINATES": [
+          "setStateTo: GO_TO_COORDS"
+        ],
+        "BACK_OFF": [
+          "setStateTo: RETREAT"
+        ],
+        "RESTART_DOCKING": [
+          "setStateTo: GLOBAL"
+        ],
+        "HOLD_POSITION": [
+          "setStateTo: STATIONKEEPING"
+        ],
+        "APPROACH": [
+          "setStateTo: APPROACH"
+        ],
+        "NO_STATION_FOUND": [
+          "setStateTo: EXIT_SYSTEM"
+        ],
+        "DOCKED": [
+          "setStateTo: EXIT_SYSTEM"
+        ],
+        "TRY_AGAIN_LATER": [
+          "pauseAI: 30.0",
+          "setStateTo: ABORT"
+        ],
+        "UPDATE": [
+          "pauseAI: 2"
+        ]
+      },
+      "GO_TO_COORDS": {
+        "GROUP_ATTACK_TARGET": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "FACING_DESTINATION": [
+          "setSpeedFactorTo: 1.0",
+          "recallDockingInstructions",
+          "performFlyToRangeFromDestination"
+        ],
+        "DOCKING_ABORTED": [
+          "setStateTo: ABORT"
+        ],
+        "OFFENCE_COMMITTED": [
+          "setTargetToFoundTarget",
+          "markTargetForOffence: 7",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "RESTART_DOCKING": [
+          "setStateTo: GLOBAL"
+        ],
+        "DOCKED": [
+          "setStateTo: EXIT_SYSTEM"
+        ],
+        "COLLISION": [
+          "setStateTo: ABORT"
+        ],
+        "ENTER": [
+          "performFaceDestination",
+          "dockEscorts"
+        ],
+        "FRUSTRATED": [
+          "performFaceDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "STATIONKEEPING": {
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "setDestinationToTarget",
+          "performFaceDestination",
+          "setSpeedTo: 0.0",
+          "pauseAI: 10.0"
+        ],
+        "UPDATE": [
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "OFFENCE_COMMITTED": [
+          "setTargetToFoundTarget",
+          "markTargetForOffence: 7",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "EXIT_SYSTEM": {
+        "ENTER": [
+          "exitAI"
+        ]
+      },
+      "RETREAT": {
+        "RESTART_DOCKING": [
+          "setStateTo: GLOBAL"
+        ],
+        "FACING_DESTINATION": [
+          "setSpeedFactorTo: 1.0",
+          "setDesiredRangeTo: 500.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DOCKING_ABORTED": [
+          "setStateTo: ABORT"
+        ],
+        "OFFENCE_COMMITTED": [
+          "setTargetToFoundTarget",
+          "markTargetForOffence: 7",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "COLLISION": [
+          "setStateTo: ABORT"
+        ],
+        "ENTER": [
+          "recallDockingInstructions",
+          "setSpeedTo: 0.0",
+          "setDestinationToDockingAbort",
+          "performFaceDestination"
+        ],
+        "GROUP_ATTACK_TARGET": [
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedTo: 0.0",
+          "requestDockingCoordinates",
+          "setStateTo: AWAIT_COORDS"
+        ],
+        "ATTACKED": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    },
+    "O08 fleeQMineAI.plist": {
+      "GLOBAL": {
+        "UPDATE": [
+          "exitAI"
+        ],
+        "TARGET_LOST": [
+          "setSpeedFactorTo: 10",
+          "performFlyToRangeFromDestination"
+        ],
+        "REACHED_SAFETY": [
+          "exitAI"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setStateTo: GLOBAL"
+        ],
+        "ENTER": [
+          "setTargetToFoundTarget",
+          "addFoundTargetAsDefenseTarget",
+          "setDestinationToTarget",
+          "setDesiredRangeTo: 25600",
+          "performFlee",
+          "pauseAI: 15.0"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "ATTACKED": [
+          "addPrimaryAggressorAsDefenseTarget"
+        ]
+      }
+    },
+    "O08 enteringPirateAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: CHECK_HOLD"
+        ]
+      },
+      "CHECK_HOLD": {
+        "ENTER": [
+          "checkForFullHold"
+        ],
+        "HOLD_FULL": [
+          "switchAITo: enteringTraderAI.plist"
+        ],
+        "NO_CARGO_BAY": [
+          "switchAITo: pirateAI.plist"
+        ],
+        "HOLD_NOT_FULL": [
+          "switchAITo: pirateAI.plist"
+        ],
+        "UPDATE": [
+          "setStateTo: STILL_HUNGRY"
+        ]
+      },
+      "STILL_HUNGRY": {
+        "HOLD_FULL": [
+          "switchAITo: enteringTraderAI.plist"
+        ],
+        "UPDATE": [
+          "switchAITo: pirateAI.plist"
+        ]
+      }
+    },
+    "O08 route1traderAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: CHECK_STATUS"
+        ]
+      },
+      "GO_TO_RANDOM_STATION": {
+        "DOCKING_REFUSED": [
+          "switchAITo: route2sunskimAI.plist"
+        ],
+        "INCOMING_MISSILE": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 1.5"
+        ],
+        "ATTACKED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "ENTER": [
+          "dropMessages: WAYPOINT_SET",
+          "setDesiredRangeTo: 15000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 0.5",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "dockEscorts",
+          "setTargetToNearestStation",
+          "setAITo: dockingAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "ATTACKER_MISSED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "NO_STATION_FOUND": [
+          "switchAITo: exitingTraderAI.plist"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "UPDATE": [
+          "setTargetToLastStation",
+          "setDesiredRangeTo: 15000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination",
+          "scanForHostiles",
+          "pauseAI: 10.0"
+        ]
+      },
+      "HEAD_FOR_PLANET": {
+        "AEGIS_IN_DOCKING_RANGE": [
+          "dockEscorts",
+          "setStateTo: GO_TO_STATION"
+        ],
+        "INCOMING_MISSILE": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.5 2.0"
+        ],
+        "ATTACKED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "CLOSE_TO_SECONDARY_PLANET": [
+          "setStateTo: GO_TO_SUB_STATION"
+        ],
+        "ENTER": [
+          "setCourseToPlanet",
+          "setDesiredRangeTo: 30000.0",
+          "setSpeedFactorTo: 0.35",
+          "checkCourseToDestination"
+        ],
+        "RESTARTED": [
+          "checkAegis"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 0.65",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "AEGIS_CLOSE_TO_MAIN_PLANET": [
+          "setStateTo: GO_TO_STATION"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: GO_TO_STATION"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "UPDATE": [
+          "setCourseToPlanet",
+          "setDesiredRangeTo: 30000.0",
+          "checkCourseToDestination",
+          "scanForHostiles",
+          "pauseAI: 10.0"
+        ]
+      },
+      "GO_TO_SUB_STATION": {
+        "DOCKING_REFUSED": [
+          "switchAITo: route2sunskimAI.plist"
+        ],
+        "AEGIS_IN_DOCKING_RANGE": [
+          "dockEscorts",
+          "setTargetToSystemStation",
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "INCOMING_MISSILE": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 1.5"
+        ],
+        "ENTER": [
+          "dropMessages: WAYPOINT_SET",
+          "setTargetToNearestFriendlyStation",
+          "setDesiredRangeTo: 5000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 0.5",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "dockEscorts",
+          "setTargetToNearestFriendlyStation",
+          "setAITo: dockingAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "NO_STATION_FOUND": [
+          "switchAITo: exitingTraderAI.plist"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "UPDATE": [
+          "setTargetToNearestFriendlyStation",
+          "setDesiredRangeTo: 5000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination",
+          "scanForHostiles",
+          "pauseAI: 10.0"
+        ]
+      },
+      "CHECK_STATUS": {
+        "SELF_THARGOID": [
+          "switchAITo: thargoidAI.plist"
+        ],
+        "NO_STATION_IN_RANGE": [
+          "setStateTo: HEAD_FOR_PLANET"
+        ],
+        "SELF_CLEAN": [
+          "setStateTo: HEAD_FOR_PLANET"
+        ],
+        "ENTER": [
+          "checkOwnLegalStatus",
+          "setDesiredRangeTo: 1000000.0"
+        ],
+        "SELF_OFFENDER": [
+          "rollD: 4"
+        ],
+        "ROLL_4": [
+          "setTargetToRandomStation"
+        ],
+        "STATION_FOUND": [
+          "setStateTo: GO_TO_RANDOM_STATION"
+        ],
+        "ROLL_3": [
+          "setTargetToRandomStation"
+        ],
+        "SELF_FUGITIVE": [
+          "setTargetToRandomStation"
+        ],
+        "ROLL_2": [
+          "setTargetToRandomStation"
+        ],
+        "SELF_MINOR_OFFENDER": [
+          "rollD: 2"
+        ],
+        "ROLL_1": [
+          "setStateTo: HEAD_FOR_PLANET"
+        ]
+      },
+      "GO_TO_STATION": {
+        "DOCKING_REFUSED": [
+          "switchAITo: route2sunskimAI.plist"
+        ],
+        "AEGIS_IN_DOCKING_RANGE": [
+          "dockEscorts",
+          "setTargetToSystemStation",
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "INCOMING_MISSILE": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 1.5"
+        ],
+        "ENTER": [
+          "dropMessages: WAYPOINT_SET",
+          "setTargetToSystemStation",
+          "setDesiredRangeTo: 5000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 0.5",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "dockEscorts",
+          "setTargetToSystemStation",
+          "setAITo: dockingAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "NO_STATION_FOUND": [
+          "switchAITo: exitingTraderAI.plist"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "UPDATE": [
+          "setTargetToSystemStation",
+          "setDesiredRangeTo: 5000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination",
+          "scanForHostiles",
+          "pauseAI: 10.0"
+        ]
+      }
+    },
+    "O08 gotoWaypointAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: NEW_WAYPOINT"
+        ]
+      },
+      "GO_TO_WAYPOINT": {
+        "LAUNCHED OKAY": [
+          "exitAIWithMessage: LAUNCHED OKAY"
+        ],
+        "INCOMING_MISSILE": [
+          "exitAIWithMessage: INCOMING_MISSILE"
+        ],
+        "ATTACKED": [
+          "exitAIWithMessage: ATTACKED"
+        ],
+        "DOCKING_REQUESTED": [
+          "exitAIWithMessage: DOCKING_REQUESTED"
+        ],
+        "ENTER": [
+          "setSpeedFactorTo: 0.75"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setDesiredRangeTo: 1000.0",
+          "exitAI"
+        ],
+        "WAYPOINT_SET": [
+          "setStateTo: NEW_WAYPOINT"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "ATTACKER_MISSED": [
+          "exitAIWithMessage: ATTACKED"
+        ],
+        "AEGIS_CLOSE_TO_MAIN_PLANET": [
+          "exitAIWithMessage: AEGIS_CLOSE_TO_MAIN_PLANET"
+        ],
+        "FRUSTRATED": [
+          "setSpeedFactorTo: 0.1",
+          "setDesiredRangeTo: 1000.0",
+          "exitAI"
+        ],
+        "APPROACHING_SURFACE": [
+          "exitAIWithMessage: APPROACHING_SURFACE"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "exitAIWithMessage: ATTACKED_BY_CLOAKED"
+        ],
+        "UPDATE": [
+          "performFlyToRangeFromDestination",
+          "checkCourseToDestination",
+          "pauseAI: 2.0"
+        ]
+      },
+      "NEW_WAYPOINT": {
+        "LAUNCHED OKAY": [
+          "exitAIWithMessage: LAUNCHED OKAY"
+        ],
+        "INCOMING_MISSILE": [
+          "exitAIWithMessage: INCOMING_MISSILE"
+        ],
+        "ATTACKED": [
+          "exitAIWithMessage: ATTACKED"
+        ],
+        "DOCKING_REQUESTED": [
+          "exitAIWithMessage: DOCKING_REQUESTED"
+        ],
+        "ENTER": [
+          "setSpeedFactorTo: 0.0",
+          "setDesiredRangeForWaypoint",
+          "checkCourseToDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setDesiredRangeTo: 1000.0",
+          "exitAI"
+        ],
+        "WAYPOINT_SET": [
+          "setStateTo: NEW_WAYPOINT"
+        ],
+        "COURSE_OK": [
+          "setStateTo: GO_TO_WAYPOINT"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "ATTACKER_MISSED": [
+          "exitAIWithMessage: ATTACKED"
+        ],
+        "FRUSTRATED": [
+          "setSpeedFactorTo: 0.1",
+          "setDesiredRangeTo: 1000.0",
+          "exitAI"
+        ],
+        "APPROACHING_SURFACE": [
+          "exitAIWithMessage: APPROACHING_SURFACE"
+        ],
+        "AEGIS_CLOSE_TO_MAIN_PLANET": [
+          "exitAIWithMessage: AEGIS_CLOSE_TO_MAIN_PLANET"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "exitAIWithMessage: ATTACKED_BY_CLOAKED"
+        ]
+      }
+    },
+    "O08 enteringTraderAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "performIdle",
+          "checkForNormalSpace"
+        ],
+        "NORMAL_SPACE": [
+          "setStateTo: DECIDE_ROUTE"
+        ],
+        "INTERSTELLAR_SPACE": [
+          "switchAITo: exitingTraderAI.plist"
+        ]
+      },
+      "DECIDE_ROUTE": {
+        "ENTER": [
+          "rollD: 3"
+        ],
+        "ROLL_3": [
+          "checkHeatInsulation"
+        ],
+        "INSULATION_POOR": [
+          "switchAITo: route1traderAI.plist"
+        ],
+        "ROLL_1": [
+          "switchAITo: route1traderAI.plist"
+        ],
+        "INSULATION_OK": [
+          "switchAITo: route2sunskimAI.plist"
+        ],
+        "ROLL_2": [
+          "switchAITo: route1traderAI.plist"
+        ]
+      }
+    },
+    "O08 thargoidAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: LOOK_FOR_TARGETS"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "fireMissile",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "ROLL_4": [
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "DEFENSE_TARGET_LOST": [
+          "findNewDefenseTarget"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: respondQMineAI.plist"
+        ],
+        "ROLL_3": [
+          "pauseAI: 45.0"
+        ],
+        "TARGET_FOUND": [
+          "rollD: 4"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "ROLL_2": [
+          "setTargetToFoundTarget",
+          "fireMissile"
+        ],
+        "ROLL_1": [
+          "setTargetToFoundTarget"
+        ],
+        "UPDATE": [
+          "findNewDefenseTarget",
+          "scanForNonThargoid",
+          "pauseAI: 30.0"
+        ]
+      },
+      "HEAD_FOR_WITCHPOINT": {
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "deployEscorts",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "UPDATE": [
+          "setCourseToWitchpoint",
+          "setDesiredRangeTo: 15000.0",
+          "checkCourseToDestination",
+          "scanForNonThargoid",
+          "pauseAI: 10.0"
+        ],
+        "COURSE_OK": [
+          "setSpeedToCruiseSpeed",
+          "performFlyToRangeFromDestination"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: respondQMineAI.plist"
+        ],
+        "ENTER": [
+          "setCourseToWitchpoint",
+          "setDesiredRangeTo: 15000.0",
+          "checkCourseToDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "deployEscorts",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "HEAD_FOR_PLANET": {
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "deployEscorts",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "INTERSTELLAR_SPACE": [
+          "setStateTo: HEAD_FOR_WITCHPOINT"
+        ],
+        "UPDATE": [
+          "setCourseToPlanet",
+          "setDesiredRangeTo: 80000.0",
+          "checkCourseToDestination",
+          "scanForNonThargoid",
+          "pauseAI: 10.0"
+        ],
+        "RESTARTED": [
+          "setCourseToPlanet",
+          "setDesiredRangeTo: 80000.0",
+          "checkCourseToDestination",
+          "checkForNormalSpace"
+        ],
+        "COURSE_OK": [
+          "setSpeedToCruiseSpeed",
+          "performFlyToRangeFromDestination"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: respondQMineAI.plist"
+        ],
+        "ENTER": [
+          "setCourseToPlanet",
+          "setDesiredRangeTo: 80000.0",
+          "checkCourseToDestination",
+          "checkForNormalSpace"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LOOK_FOR_TARGETS"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "deployEscorts",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "LOOK_FOR_TARGETS": {
+        "UPDATE": [
+          "scanForNonThargoid",
+          "pauseAI: 5.0"
+        ],
+        "NOTHING_FOUND": [
+          "setStateTo: HEAD_FOR_PLANET"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "deployEscorts",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: respondQMineAI.plist"
+        ],
+        "ENTER": [
+          "setSpeedTo: 0.0",
+          "performTumble",
+          "scanForNonThargoid",
+          "pauseAI: 5.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "deployEscorts",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    },
+    "O08 traderInterceptAI.plist": {
+      "GLOBAL": {
+        "FIGHTING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "FLEEING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "DEPLOYING_ESCORTS": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE_WITH_ESCORTS"
+        ],
+        "TARGET_DESTROYED": [
+          "exitAI"
+        ],
+        "INCOMING_MISSILE": [
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 0.75"
+        ],
+        "TARGET_LOST": [
+          "exitAI"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_DESTROYED": [
+          "exitAI"
+        ],
+        "TARGET_LOST": [
+          "exitAI"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "ENERGY_LOW": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "deployEscorts",
+          "setStateTo: FLEE"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "ENTER": [
+          "deployEscorts",
+          "broadcastDistressMessage",
+          "performAttack"
+        ],
+        "INCOMING_MISSILE": [
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 0.75"
+        ],
+        "TARGET_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "ESCORT_ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ]
+      },
+      "FLEE": {
+        "TARGET_LOST": [
+          "performIdle",
+          "exitAI"
+        ],
+        "TARGET_DESTROYED": [
+          "performIdle",
+          "exitAI"
+        ],
+        "INCOMING_MISSILE": [
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 0.75"
+        ],
+        "FIGHTING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "REACHED_SAFETY": [
+          "performIdle",
+          "exitAI"
+        ],
+        "FLEEING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "DEPLOYING_ESCORTS": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE_WITH_ESCORTS"
+        ],
+        "TARGET_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "ATTACKED": [
+          "fightOrFleeHostiles"
+        ]
+      },
+      "FLEE_FOR_MISSILE": {
+        "INCOMING_MISSILE": [
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 0.75"
+        ],
+        "NOTHING_FOUND": [
+          "exitAI"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setStateTo: GLOBAL",
+          "fightOrFleeHostiles"
+        ],
+        "UPDATE": [
+          "fightOrFleeMissile",
+          "pauseAI: 10"
+        ],
+        "REACHED_SAFETY": [
+          "performIdle",
+          "exitAI"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 25600",
+          "broadcastDistressMessage",
+          "performFlee",
+          "pauseAI: 5"
+        ],
+        "TARGET_DESTROYED": [
+          "performIdle",
+          "exitAI"
+        ],
+        "TARGET_LOST": [
+          "scanForHostiles"
+        ],
+        "ATTACKED": [
+          "setStateTo: GLOBAL",
+          "fightOrFleeHostiles"
+        ]
+      },
+      "INCOMING_MISSILE": {
+        "ATTACKED": [
+          "setStateTo: GLOBAL",
+          "fightOrFleeMissile",
+          "fightOrFleeHostiles"
+        ],
+        "UPDATE": [
+          "setTargetToPrimaryAggressor",
+          "fightOrFleeMissile",
+          "setStateTo: FLEE_FOR_MISSILE"
+        ]
+      },
+      "FLEE_FOR_CLOAKED": {
+        "RESTARTED": [
+          "exitAI"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "FLEEING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "storeTarget",
+          "setDestinationToJinkPosition",
+          "setDesiredRangeTo: 25600",
+          "performFlyToRangeFromDestination",
+          "setSpeedFactorTo: 7"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "FIGHTING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "fightOrFleeHostiles"
+        ],
+        "DEPLOYING_ESCORTS": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE_WITH_ESCORTS"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setDestinationToJinkPosition"
+        ],
+        "UPDATE": [
+          "recallStoredTarget",
+          "pauseAI: 2.0"
+        ]
+      },
+      "FLEE_WITH_ESCORTS": {
+        "INCOMING_MISSILE": [
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 0.75"
+        ],
+        "ATTACKED": [
+          "scanForHostiles"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_LOST": [
+          "performIdle",
+          "exitAI"
+        ],
+        "ENERGY_LOW": [
+          "setTargetToPrimaryAggressor",
+          "deployEscorts"
+        ],
+        "ROLL_3": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToPrimaryAggressor",
+          "deployEscorts",
+          "rollD: 3"
+        ],
+        "TARGET_DESTROYED": [
+          "performIdle",
+          "exitAI"
+        ],
+        "ESCORT_ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "groupAttackTarget"
+        ],
+        "ROLL_2": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_CLOAKED": [
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+        ],
+        "REACHED_SAFETY": [
+          "performIdle",
+          "exitAI"
+        ],
+        "ROLL_1": [
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    },
+    "O08 route2sunskimAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: LOOK_FOR_SUN"
+        ]
+      },
+      "LOOK_FOR_SUN": {
+        "ENTER": [
+          "setSunSkimStartCoordinates"
+        ],
+        "WAIT_FOR_SUN": [
+          "setSunSkimStartCoordinates"
+        ],
+        "APPROACH_COORDINATES": [
+          "setStateTo: HEAD_FOR_SUN"
+        ],
+        "EXITED WITCHSPACE": [
+          "switchAITo: route1traderAI.plist"
+        ],
+        "UPDATE": [
+          "pauseAI: 10"
+        ]
+      },
+      "HEAD_FOR_SUN": {
+        "RESTARTED": [
+          "setStateTo: LOOK_FOR_SUN"
+        ],
+        "INCOMING_MISSILE": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.5 2.0"
+        ],
+        "ATTACKED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 50000",
+          "pauseAI: 0"
+        ],
+        "EXITED WITCHSPACE": [
+          "switchAITo: route1traderAI.plist"
+        ],
+        "COURSE_OK": [
+          "setSpeedToCruiseSpeed",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: GO_TO_SKIM"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "UPDATE": [
+          "setDestinationFromCoordinates",
+          "checkCourseToDestination",
+          "pauseAI: 15"
+        ]
+      },
+      "GO_TO_SKIM": {
+        "ENTER": [
+          "setSunSkimStartCoordinates",
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 100",
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: SKIM_SUN"
+        ]
+      },
+      "LEAVE_SUN": {
+        "ENTER": [
+          "setSunSkimExitCoordinates",
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 250",
+          "setSpeedFactorTo: 2.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "addFuel: 70",
+          "setStateTo: EXIT_SYSTEM"
+        ]
+      },
+      "SKIM_SUN": {
+        "ENTER": [
+          "setSunSkimEndCoordinates",
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 50",
+          "setSpeedFactorTo: 2.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: LEAVE_SUN"
+        ]
+      },
+      "EXIT_SYSTEM": {
+        "WITCHSPACE OKAY": [
+          "wormholeEscorts"
+        ],
+        "UPDATE": [
+          "performHyperSpaceExit"
+        ],
+        "WITCHSPACE BLOCKED": [
+          "setTargetToFoundTarget",
+          "setDestinationWithinTarget",
+          "setDesiredRangeTo: 10000.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WITCHSPACE UNAVAILABLE": [
+          "setAITo: route1traderAI.plist"
+        ]
+      }
+    },
+    "O08 exitingTraderAI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "ENERGY_LOW": [
+          "setSpeedFactorTo: 1.0",
+          "pauseAI: 15.0",
+          "setStateTo: EXIT_SYSTEM"
+        ],
+        "RESTARTED": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setSpeedFactorTo: 1.0",
+          "pauseAI: 15.0",
+          "setStateTo: EXIT_SYSTEM"
+        ],
+        "TARGET_LOST": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ]
+      },
+      "EXIT_SYSTEM": {
+        "WITCHSPACE OKAY": [
+          "wormholeEscorts"
+        ],
+        "UPDATE": [
+          "performHyperSpaceExit",
+          "pauseAI: 5.0"
+        ],
+        "WITCHSPACE BLOCKED": [
+          "setTargetToFoundTarget",
+          "setDestinationWithinTarget",
+          "setDesiredRangeTo: 30000.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WITCHSPACE UNAVAILABLE": [
+          "switchAITo: route1traderAI.plist"
+        ]
+      },
+      "FLEE": {
+        "INCOMING_MISSILE": [
+          "setTargetToPrimaryAggressor",
+          "broadcastDistressMessage",
+          "fightOrFleeMissile"
+        ],
+        "FIGHTING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "REACHED_SAFETY": [
+          "performIdle",
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "FLEEING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "RESTARTED": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_DESTROYED": [
+          "performIdle",
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "TARGET_LOST": [
+          "performIdle",
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "ATTACKED": [
+          "fightOrFleeHostiles"
+        ]
+      },
+      "HEAD_AWAY_FROM_PLANET": {
+        "LAUNCHED OKAY": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "FIGHTING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "FLEEING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "EXITED WITCHSPACE": [
+          "switchAITo: enteringTraderAI.plist"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "RESTARTED": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "ENTER": [
+          "getWitchspaceEntryCoordinates",
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 100.0",
+          "setSpeedFactorTo: 0.75",
+          "performFlyToRangeFromDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedFactorTo: 1.0",
+          "pauseAI: 15.0",
+          "setStateTo: EXIT_SYSTEM"
+        ],
+        "ATTACKED": [
+          "fightOrFleeHostiles"
+        ]
+      }
+    },
+    "O08 respondQMineAI.plist": {
+      "GLOBAL": {
+        "REACHED_SAFETY": [
+          "exitAI"
+        ],
+        "ENTER": [
+          "setTargetToFoundTarget",
+          "clearDefenseTargets",
+          "addFoundTargetAsDefenseTarget",
+          "fireMissile",
+          "performAttack",
+          "setDestinationToTarget",
+          "pauseAI: 4.0"
+        ],
+        "UPDATE": [
+          "setSpeedFactorTo: 1",
+          "setDesiredRangeTo: 25600",
+          "performFlyToRangeFromDestination",
+          "exitAI"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setStateTo: GLOBAL"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "exitAI"
+        ],
+        "TARGET_LOST": [
+          "setSpeedFactorTo: 1",
+          "setDesiredRangeTo: 25600",
+          "performFlyToRangeFromDestination"
+        ]
+      }
+    },
+    "O08 nullAI.plist": {
+      "GLOBAL": {
+        "EXIT": [
+          "pauseAI: 1"
+        ],
+        "UPDATE": [
+          "pauseAI: 3600"
+        ]
+      }
+    }
+  },
+  "ai_extraction_repairs": [
+    {
+      "path": "AIs/rescue_scenario_4a_sbdefAI.plist",
+      "repair": "Add missing last-state dictionary member semicolon in memory only",
+      "original_sha256": "c355d4a5bbe0a92979520cc04ed8c4b4b69754b5db70348f777c6666b28f1a56",
+      "original_runtime_parser_tolerance": "Unverified"
+    },
+    {
+      "path": "AIs/rescue_scenario_4a_slaverAI.plist",
+      "repair": "Add missing last-state dictionary member semicolon in memory only",
+      "original_sha256": "6ff82830f0348814de5d13176fb13238c6eff5084c931e297ac0318969875759",
+      "original_runtime_parser_tolerance": "Unverified"
+    }
+  ],
+  "source_escort_count": "Each of3roles min0/max1 uses desired=1-(Ranrot()%11<government+2). Emission covers9of11integer residues atgov0,8of11atgov1 (approximately9/11or8/11 probability; preserve actual integer draw/modulo bias). Three separate draws, not uniform0..3.",
+  "source_pirate_bounty": "Universe.newShipWithRole pirate/auto_ai sets unsigned20+U*50 before scenario adds floor(50U); not unchanged core bounty50.",
+  "source_slaver_fuel": "rrsl_python inherits fuel70 internal from oolite_template_python through python. Custom-role launch does not need a trader-only refuel grant to retain this actual initial fuel. exitSystem can jump using actual motor, remaining fuel and mass/route conditions; no injector is installed and spent fuel is not reset.",
+  "source_beacon": "beaconCode Slaver Base displays first-characterS via ShipEntity.beaconDrawable. Not a native beacon mismatch.",
+  "source_outcomes": {
+    "medical_pilot_found": {
+      "credits": "50n",
+      "reputation_delta": "n",
+      "next": "Return actual pilot home"
+    },
+    "medical_pilot_absent": {
+      "credits": "50n",
+      "net_reputation_delta": "5n-30",
+      "counter": "4a_failed+1"
+    },
+    "home_on_time": {
+      "additional_credits": "Full quote",
+      "additional_reputation_delta": 10,
+      "counter": "4a_complete+1"
+    },
+    "home_late": {
+      "additional_credits": "Full quote",
+      "additional_reputation_delta": 0,
+      "counter": "4a_failed+1"
+    },
+    "other_accepted_failure": {
+      "additional_credits": 0,
+      "additional_reputation_delta": -30,
+      "counter": "4a_failed+1",
+      "prior_legitimate_medical_awards": "Retained, no clawback"
+    }
+  },
+  "project_fields": {
+    "zero_time_target_repair": "Exclude2zero-time/zero-quote static source rows and equivalent live unusable routes; retain2448source candidates,2446project static positive-time candidates",
+    "acceptance_minimum_capacity": {
+      "fitted_reserved_pilot_berths": 1,
+      "berth_hold_tonnes": 5,
+      "berth_equipment_units": 1,
+      "additional_reserved_sealed_pod_hold_tonnes": 1,
+      "maximum_source_pods": 5,
+      "partial_recovery": "Allowed; all currently recovered pods hand over in one medical batch, no invented5cabin gate"
+    },
+    "pilot_identity_repair": "Draw and save one uniform pilot slot among five logical captive IDs before pods can be selected. Any uninformative n-pod subset retains n/5 marginal chance; medical station identifies same captured person without reroll. Early-death salvage chooses saved uniform subset from remaining captives, capped by actual remaining count.",
+    "pod_custody": "One actual sealed person/pod record uses1tonne; own pod life support, no seated cabin while encapsulated; reserve cabin for medical pilot transition, no double counting; other rescuees stay in orbital care.",
+    "life_support": "Common RRS compatibility for generated description is a necessary labelled project estimate as base4; known special needs require actual adapter.",
+    "defender_message_repair": "Send BASE_FOUND instead of FOUND_BASE to match existing AI listener",
+    "forced_ejection_repair": "Capture actual slaver-base docked station before launch; energy10,shields0 and once-only launch remain; send comms through captured valid station; no ground/commando branch",
+    "spawn_and_timer_receipts": "One mission base/defender group/slaver/finite5captives; persist chosen draws/transforms and queues; no generation on load/reentry; stop ejection timer on slaver death/removal; actual failed launch does not falsely set stage30",
+    "cargo_and_medical_receipts": "Validate actual unique pod and free assigned hold before scoop; once-only medical batch releases sealed pod hold, transfers pilot to reserved real berth or handoff directly if already home; no holder equipment workaround or second payment",
+    "loss_resolution": "No new lost captive identity is recreated. Terminalize out-of-leads once no freighter/captive/world/aboard opportunity remains; retained partial rescued pods still receive first legitimate medical outcome. Failed/late callbacks cannot overwrite another mission; later orphan pods are zero-reward care only.",
+    "station_trap": "Docked-only space trap; no commando handler exists in recovered code. Player launch must clear native actual dock/hull geometry.",
+    "space_scope": "No planet landing or on-foot escape; incidental core-AI planet fallback becomes safe orbital authority/docking service under scopev4.",
+    "local_actor_unload_policy": "Labelled persistence choice: save/freeze this mission local base/slaver/defender/escort/pod physics, health and local timer remaining delay while its system is unloaded; restore same IDs/state/timers when revisited. Global mission deadline continues. Do not regenerate/replenish actors or fabricate unseen combat/escape."
+  },
+  "route_bindings": "rescue-slaver-route-bindings.json",
+  "verification": {
+    "discovery_source_cases": 74,
+    "source_fixture": "rescue-slaver-discovery-fixtures.json",
+    "route_source_candidates": 2448,
+    "route_positive_time_project_candidates": 2446,
+    "route_time_ties": 67,
+    "source_model_envelope_count": 18,
+    "native_runtime_status": "Pending implementation; completed source specification and selected checks do not prove native gameplay.",
+    "independently_reparsed_model_envelopes": [
+      {
+        "model": "oolite_adder.dat",
+        "vertices": 1102,
+        "sha256": "6d3cd62b9d0e4a796a0340bb4197af82820d5cd6b40683e18276c98df2a57ff7",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_asp.dat",
+        "vertices": 1181,
+        "sha256": "577a6ff0b71c18ab81ced67d37c27651ae24bc0592551845c47bb7b954afea08",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_barrel.dat",
+        "vertices": 300,
+        "sha256": "bce675e16ef220502906ed88e20813f5092870f038e1d6114b33b284ef918533",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_cobra3.dat",
+        "vertices": 1548,
+        "sha256": "36ea4eecd4febd7b106ebdd23e17de7e3337400b9ebff5d84f5a74204058388a",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_cobramk1.dat",
+        "vertices": 1117,
+        "sha256": "b2adfde0fc8ff17642f7f06cd8c9f37fc9d835b90b1b32ea0b2f55eef5cc42bf",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_ferdelance.dat",
+        "vertices": 921,
+        "sha256": "a70d4891a931a21710c0ff10d9f6fd5616d16abc9c11f500549247e8b979c0cf",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_gecko.dat",
+        "vertices": 1570,
+        "sha256": "4f7ca7b726f871848e702de6f6639831eb52e1839a73f72edb3518d3a44c538c",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_krait.dat",
+        "vertices": 1023,
+        "sha256": "45eb3cbd2af4038249a6c2af59ccf304bf0a927d327c643b73888dfbba39e473",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_mamba.dat",
+        "vertices": 1112,
+        "sha256": "15ca183aac8c5a6b513e176842b8749fc8a4455841808040449b057b0477c586",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_moray.dat",
+        "vertices": 1324,
+        "sha256": "d04d6858179d8c297367f0bfc62e6133d747d5e3fab70551274c96607dc2a45c",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_python.dat",
+        "vertices": 1513,
+        "sha256": "338ff21161c54dd7a7d67404a7903ed2a1935e2d4c1434318b34abfd628f0d8d",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_rock_hermit.dat",
+        "vertices": 310,
+        "sha256": "7625ec0f3274f78b31daf3bb88465f9f568284b9d7591fbbb1dfb33c63bc8258",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_rock_hermit_dock.dat",
+        "vertices": 136,
+        "sha256": "bce414fe0ccfef2ad457289bbad282a9c294fdcbfe5d258454a863a2cb99594c",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_rock_hermit_pipes.dat",
+        "vertices": 708,
+        "sha256": "50249ac9f9fd02c3c63c6e7f9729ed2a8c4251a9553213f8715d946029faeb1c",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_rock_hermit_rock.dat",
+        "vertices": 210,
+        "sha256": "1199e9eb1c2d796494cc50d48abbab95d9c501533c3843eee5b018987356ad43",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_rock_hermit_tunnel_extras.dat",
+        "vertices": 264,
+        "sha256": "731dd28ac23581e2037978944ec0a5cc9f0765b0bc102134654af90bc4efc20a",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_sidewinder.dat",
+        "vertices": 1294,
+        "sha256": "bcb14720430bb8b638951e771ae45c6f5982725bb947d1cb09bfa069a4af973b",
+        "bounds_match": true
+      },
+      {
+        "model": "oolite_sidewinder_escort.dat",
+        "vertices": 1213,
+        "sha256": "d91dc49aaf95b0a23461e9e0098996acde3fea78c2ff52815c63fe28caa7354e",
+        "bounds_match": true
+      }
+    ],
+    "selected_patch_mathematical_cases": 16,
+    "project_fixtures": "rescue-slaver-project-fixtures.json"
+  },
+  "ai_legacy_dependency_closure": {
+    "pinned_core_tables": 13,
+    "all_transition_targets_resolved": true,
+    "tables": [
+      "O08 dockingAI.plist",
+      "O08 enteringPirateAI.plist",
+      "O08 enteringTraderAI.plist",
+      "O08 exitingTraderAI.plist",
+      "O08 fleeQMineAI.plist",
+      "O08 gotoWaypointAI.plist",
+      "O08 interceptAI.plist",
+      "O08 pirateAI.plist",
+      "O08 respondQMineAI.plist",
+      "O08 route1traderAI.plist",
+      "O08 route2sunskimAI.plist",
+      "O08 thargoidAI.plist",
+      "O08 traderInterceptAI.plist"
+    ],
+    "scope_override": "Any incidental planetary AI fallback is replaced by an orbital service under scopev4; not playable ground content."
+  },
+  "source_abandonment": "Very-low-energy equipped slaver crew can escape; engine replaces AI with nullAI, releases group/escorts, CLASS_CARGO, idle, thrust capped5. Same ship script/ejection timer/captives persist. Crew escape is not rescue of captive RRS pilot.",
+  "source_news_gate": "Only with Snoopers installed; chance0.02n, publish when U<=chance (inclusive equality). Native testmode forces1.1/priority1 and must not be live gameplay. Ordinary priority3/agency0, no economy effect.",
+  "inherited_fuel_correction": "See p30-inherited-fuel-corrections.json. Earlier filtered numerical extraction omitted inherited fuel; source-missing defaults cannot be applied to those omissions. Native70internal=7player-interface units; actual source overrides/consumption still apply."
+}

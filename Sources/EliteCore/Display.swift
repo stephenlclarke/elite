@@ -12,6 +12,7 @@ public enum Ink: UInt32, Sendable {
   case gold = 0xffcc_22ff
   case lime = 0xccee_22ff
   case leaf = 0x66ee_44ff
+  case purple = 0xbb77_ffff
   case orange = 0xffaa_44ff
 }
 
@@ -24,6 +25,7 @@ public struct WireLine: Sendable, Equatable {
 }
 
 public struct Frame: Sendable, Equatable {
+  public var inventoryInteraction: InventoryInteraction?
   public var rasterizeGraphics = true
   public var graphics: [Graphic] = []
   public var worldGraphics: [Graphic] = []
@@ -195,7 +197,9 @@ public enum Display {
     case .handoff: return blackjackHandoff(game, width: 768, height: 768)
     case .secret: secret(game, into: &frame)
     case .help: help(game, into: &frame)
+    case .library: return referenceLibrary(game, width: 768, height: 768)
     case .gallery: return gallery(game, width: 768, height: 768)
+    case .contracts: return contractBoard(game, width: 768, height: 768)
     case .navigation: return navigation(game, width: 768, height: 768)
     case .mission: mission(game, into: &frame)
     case .gameOver:
@@ -314,12 +318,17 @@ public enum Display {
       game.commander.shipDisplayStyle = .shadedPanels
     }
     let center = game.viewPosition(body.position)
-    guard center.z > 10 else { return }
-    let mesh = mesh ?? Mesh.hull(body.hull)
+    let mesh = mesh ?? game.scriptNPCMesh(body) ?? game.gameplayMesh(for: body)
+    let oreInk = body.physical?.rock.flatMap { identity in
+      game.miningFields.lazy.flatMap(\.rocks).first { $0.identity == identity }
+    }.flatMap { MiningRockAppearance.ink(for: $0) }
     let vertices = mesh.vertices.map { vertex -> Vector3 in
       let rotated = game.viewPosition(body.modelVector(vertex))
       return rotated + center
     }
+    guard vertices.allSatisfy({ $0.x.isFinite && $0.y.isFinite && $0.z.isFinite }),
+      vertices.contains(where: { $0.z >= 1 })
+    else { return }
     var drawn: Set<String> = []
     var visibleFaces: Set<Int> = []
     let depths = mesh.faces.enumerated().map { index, face -> (index: Int, distance: Double) in
@@ -337,6 +346,23 @@ public enum Display {
       if game.commander.shipDisplayStyle == .shadedPanels {
         let material =
           mesh.faceMaterials.isEmpty ? nil : mesh.materials[mesh.faceMaterials[entry.index]]
+        if mesh.faceTextures.indices.contains(entry.index),
+          let texture = mesh.faceTextures[entry.index],
+          ShipTextureAssets.pixels(for: texture.asset) != nil
+        {
+          let brightness =
+            Double(
+              ShipProjection.shade(
+                0xffff_ffff, normal: normal,
+                emissive: material?.emissive ?? false) >> 24) / 255
+          let triangles = ShipTextureProjection.triangles(
+            vertices: face.map { vertices[$0] }, uv: texture.uv, projection: projection,
+            texture: texture.asset, brightness: brightness, clip: frame.flightClip)
+          if !triangles.isEmpty {
+            for triangle in triangles { frame.textured(triangle) }
+            continue
+          }
+        }
         frame.panel(
           ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
           colour: material.map {
@@ -347,7 +373,7 @@ public enum Display {
       }
       let ink: Ink =
         game.commander.shipDisplayStyle == .whiteWireframe
-        ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+        ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
       for edge in face.indices {
         let i = face[edge]
         let j = face[(edge + 1) % face.count]
@@ -364,7 +390,7 @@ public enum Display {
     if game.commander.shipDisplayStyle != .shadedPanels {
       let ink: Ink =
         game.commander.shipDisplayStyle == .whiteWireframe
-        ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+        ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
       for detail in mesh.details where visibleFaces.contains(detail.face) {
         if let line = project(vertices[detail.start], vertices[detail.end], projection: projection)
         {
@@ -372,11 +398,20 @@ public enum Display {
         }
       }
     }
+    drawScriptBeams(body, game: game, into: &frame, projection: projection)
     if body.hull == .station {
-      let hatch = [
-        Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
-        Vector3(-30, 10, -90),
-      ].map { game.viewPosition(body.modelVector($0)) + center }
+      let aperture: [Vector3]
+      if let identity = body.nativeStationIdentity,
+        let source = NativeStationSource.binding(for: identity)
+      {
+        aperture = source.geometry.docking.aperture.map { source.geometry.docking.center + $0 }
+      } else {
+        aperture = [
+          Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
+          Vector3(-30, 10, -90),
+        ]
+      }
+      let hatch = aperture.map { game.viewPosition(body.modelVector($0)) + center }
       let normal = game.viewPosition(body.entranceNormal)
       guard normal.dot(hatch[0]) < 0 else { return }
       if game.commander.shipDisplayStyle == .shadedPanels {
@@ -385,7 +420,7 @@ public enum Display {
       } else {
         let ink: Ink =
           game.commander.shipDisplayStyle == .whiteWireframe
-          ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+          ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
         for index in hatch.indices {
           if let line = project(
             hatch[index], hatch[(index + 1) % hatch.count], projection: projection)
@@ -483,7 +518,10 @@ public enum Display {
       let fitted =
         game.commander.equipment.contains(item.name)
         || (item.name == "Extra Energy Unit"
-          && game.commander.equipment.contains(Equipment.navalEnergyUnit))
+          && (game.commander.equipment.contains(Equipment.navalEnergyUnit)
+            || game.commander.equipment.contains(Equipment.eliteEnergyUnit)))
+        || (item.name == Equipment.navalEnergyUnit
+          && game.commander.equipment.contains(Equipment.eliteEnergyUnit))
       let price =
         Equipment.isReward(item.name) ? "REWARD" : String(format: "%.1f", Double(item.price) / 10)
       frame.text(fitted ? "FITTED" : price, 194, y)
@@ -509,6 +547,7 @@ public enum Display {
         "RATING: " + game.commander.rank,
         "TARGETING: " + (game.commander.targetingTier?.label ?? "NONE"),
         "NAVIGATION: " + (game.commander.navigationTier?.label ?? "NONE"),
+        "DRIVE: " + (game.commander.fittedEquipment(at: .drive)?.node.key ?? "NONE"),
         "FRONT LASER: " + (game.commander.laser(on: .front)?.equipmentName ?? "EMPTY"),
         "SHIELDS: " + (game.commander.shieldBooster?.label ?? "STANDARD"), "EQUIPMENT:",
       ]
@@ -589,7 +628,7 @@ public enum Display {
       bar(&frame, 24, y, item.1, item.2, 46)
     }
     let right: [(String, Double)] = [
-      ("SP", game.speed / game.commander.performance.speed), ("RL", (game.roll + 1) / 2),
+      ("SP", game.cockpitSpeed / game.commander.performance.speed), ("RL", (game.roll + 1) / 2),
       ("DC", (game.pitch + 1) / 2),
     ]
     for (i, item) in right.enumerated() {
@@ -609,8 +648,9 @@ public enum Display {
       let sx = 128 + Int(max(-44, min(44, body.position.x / 100)))
       let sy = 220 + Int(max(-17, min(17, -body.position.z / 500)))
       let height = Int(max(-15, min(15, body.position.y / 100)))
-      frame.line(sx, sy, sx, sy - height, body.hostile ? .red : .green)
-      frame.line(sx - 1, sy - height, sx + 1, sy - height, body.hostile ? .red : .green)
+      frame.line(sx, sy, sx, sy - height, game.targetColourCue(for: body).ink ?? .green)
+      frame.line(
+        sx - 1, sy - height, sx + 1, sy - height, game.targetColourCue(for: body).ink ?? .green)
     }
     let flightCondition = game.bodies.contains(where: \.hostile) ? "RED" : "GREEN"
     frame.text(game.docked ? "S" : flightCondition, 82, 246, .yellow)

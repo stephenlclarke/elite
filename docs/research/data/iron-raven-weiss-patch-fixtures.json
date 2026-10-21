@@ -1,0 +1,567 @@
+{
+  "profile_id": "P19-WEISS-NARROW-PATCH-v1",
+  "scope": "Actual unchanged actor code after four exact edits plus added admission guard;13 selected callbacks with explicit native-hook/native API spies. Proves narrow phase/entry guard and callback-name repair, not assigned world/wormhole identity, actor admission, native save/persistence/docking or complete orbital evidence integration. Two selected AI dictionaries repair eight missing-state requests and one method case, independently checked for local state closure.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-weiss.js",
+      "sha256": "52cf45e46ed6478718fdaba9e84a2ae9941a733b3d8fb5a75fc0492947d14005"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-weiss1AI.plist",
+      "sha256": "ce5468a226255c6084187fa15c6bfd5b1d86a3d0879f2c67a33b9f3899105469"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-weiss2AI.plist",
+      "sha256": "3c1884b5a4bcc05c2b750efa37d542db0deba736cafddbed96ee82e6296ce537"
+    }
+  ],
+  "patched_actor_sha256": "eed328d0aece3e11bd9a57fab631e2dfe2723931d24eb5de855ea76e01b956c9",
+  "exact_edits": [
+    {
+      "before": "this.shipExitedWitchspace = function () {",
+      "after": "this.shipExitedWormhole = function () {"
+    },
+    {
+      "before": "this.performJump = function () {",
+      "after": "this.performJump = function () {\n if(galaxyNumber != 7 || this.ship.primaryRole != \"IR-quico-transporter\") return;\n if(!((missionVariables.IR_status == \"IR_WEISS_1\" && system.ID == 23) || (missionVariables.IR_status == \"IR_WEISS_2b\" && system.ID == 175))) return;\n this._pendingIRJump = {phase:missionVariables.IR_status, origin:system.ID};"
+    },
+    {
+      "before": "missionVariables.IR_status = \"IR_WEISS_2a\";",
+      "after": "// Phase is committed only by an actual admission callback."
+    },
+    {
+      "before": "missionVariables.IR_status = \"IR_WEISS_3\";",
+      "after": "// Phase is committed only by an actual admission callback."
+    }
+  ],
+  "appended_admission_hook": "\nthis.shipWillEnterWormhole = function(){\n const p=this._pendingIRJump;\n if(!p || galaxyNumber != 7 || this.ship.primaryRole != \"IR-quico-transporter\" || system.ID != p.origin || missionVariables.IR_status != p.phase) return;\n missionVariables.IR_status = p.phase == \"IR_WEISS_1\" ? \"IR_WEISS_2a\" : \"IR_WEISS_3\";\n this._pendingIRJump=null;\n};\n",
+  "selected_AI_states": {
+    "IR-weiss1AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setUpEscorts",
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: WAIT_FOR_PLAYER"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: WAIT_FOR_PLAYER"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "UPDATE": [],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "ENERGY_FULL": [
+          "performIdle",
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "REACHED_SAFETY": [
+          "setSpeedTo: 0.0",
+          "performIdle",
+          "pauseAI: 10.0"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_LOST": [
+          "performIdle",
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ]
+      },
+      "PERFORM_JUMP": {
+        "UPDATE": [
+          "sendScriptMessage: performJump"
+        ],
+        "WITCHSPACE BLOCKED": [
+          "setTargetToFoundTarget",
+          "setDestinationWithinTarget",
+          "setDesiredRangeTo: 10000.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WITCHSPACE OKAY": [
+          "wormholeEscorts"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "sendScriptMessage: preJumpComms",
+          "pauseAI: 5.0",
+          "setSpeedFactorTo: 1.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "WAIT_FOR_PLAYER": {
+        "UPDATE": [
+          "scanForNearestShipWithRole: player",
+          "pauseAI: 1.0"
+        ],
+        "NOTHING_FOUND": [],
+        "TARGET_FOUND": [
+          "setStateTo: PERFORM_JUMP"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setSpeedFactorTo: 1.0",
+          "scanForNearestShipWithRole: player"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "HEAD_AWAY_FROM_PLANET": {
+        "LAUNCHED OKAY": [
+          "setStateTo: HEAD_AWAY_FROM_PLANET"
+        ],
+        "FIGHTING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "FLEEING": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ],
+        "EXITED WITCHSPACE": [
+          "switchAITo: enteringTraderAI.plist"
+        ],
+        "ENTER": [
+          "getWitchspaceEntryCoordinates",
+          "setDestinationFromCoordinates",
+          "setDesiredRangeTo: 100.0",
+          "setSpeedFactorTo: 1.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setSpeedFactorTo: 1.0",
+          "setStateTo: WAIT_FOR_PLAYER"
+        ],
+        "ATTACKED": [
+          "fightOrFleeHostiles"
+        ]
+      }
+    },
+    "IR-weiss2AI.plist": {
+      "GLOBAL": {
+        "ENTER": [
+          "setUpEscorts",
+          "setStateTo: PREPARE_FOR_JUMP"
+        ]
+      },
+      "ATTACK_SHIP": {
+        "TARGET_LOST": [
+          "setStateTo: PREPARE_FOR_JUMP"
+        ],
+        "UPDATE": [],
+        "ENERGY_LOW": [
+          "setStateTo: FLEE"
+        ],
+        "ENTER": [
+          "performAttack"
+        ],
+        "TARGET_DESTROYED": [
+          "setStateTo: PREPARE_FOR_JUMP"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setStateTo: FLEE"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "FLEE": {
+        "UPDATE": [],
+        "DESIRED_RANGE_ACHIEVED": [
+          "setStateTo: PREPARE_FOR_JUMP"
+        ],
+        "ENERGY_FULL": [
+          "performIdle",
+          "setStateTo: PREPARE_FOR_JUMP"
+        ],
+        "REACHED_SAFETY": [
+          "setSpeedTo: 0.0",
+          "performIdle",
+          "pauseAI: 10.0"
+        ],
+        "ENTER": [
+          "setDesiredRangeTo: 25600",
+          "performFlee"
+        ],
+        "TARGET_LOST": [
+          "performIdle",
+          "setStateTo: PREPARE_FOR_JUMP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: FLEE"
+        ]
+      },
+      "PREPARE_FOR_JUMP": {
+        "UPDATE": [
+          "pauseAI: 30.0",
+          "setStateTo: PERFORM_JUMP"
+        ],
+        "PERFORM_JUMP": [
+          "setStateTo: PERFORM_JUMP"
+        ],
+        "COURSE_OK": [
+          "setSpeedToCruiseSpeed",
+          "performFlyToRangeFromDestination"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "setDestinationToStationBeacon",
+          "setDesiredRangeTo: 15000",
+          "checkCourseToDestination",
+          "pauseAI: 30.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      },
+      "PERFORM_JUMP": {
+        "UPDATE": [
+          "sendScriptMessage: performJump"
+        ],
+        "WITCHSPACE BLOCKED": [
+          "setTargetToFoundTarget",
+          "setDestinationWithinTarget",
+          "setDesiredRangeTo: 10000.0",
+          "performFlyToRangeFromDestination"
+        ],
+        "WITCHSPACE OKAY": [
+          "wormholeEscorts"
+        ],
+        "EXIT": [],
+        "ENTER": [
+          "sendScriptMessage: preJumpSystem",
+          "pauseAI: 20.0",
+          "setSpeedFactorTo: 1.0"
+        ],
+        "INCOMING_MISSILE": [
+          "fightOrFleeMissile",
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ],
+        "ATTACKED": [
+          "setTargetToPrimaryAggressor",
+          "setStateTo: ATTACK_SHIP"
+        ]
+      }
+    }
+  },
+  "selected_local_state_requests": 36,
+  "total": 13,
+  "passed": 13,
+  "cases": [
+    {
+      "name": "Blocked request preserves phase IR_WEISS_1",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_WEISS_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.1015,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_1",
+          "IR_quest_count": 0
+        },
+        "actions": [
+          [
+            "exitSystem",
+            175
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Outer YES without admission preserves phase IR_WEISS_1",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_WEISS_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.023292,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_1",
+          "IR_quest_count": 0
+        },
+        "actions": []
+      }
+    },
+    {
+      "name": "Actual synchronous admission commits phase IR_WEISS_1",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_WEISS_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.035083,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_2a",
+          "IR_quest_count": 0
+        },
+        "actions": []
+      }
+    },
+    {
+      "name": "Admission cannot regress changed phase IR_WEISS_1",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_WEISS_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.016458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_4",
+          "IR_quest_count": 0
+        },
+        "actions": [
+          [
+            "exitSystem",
+            175
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Blocked request preserves phase IR_WEISS_2b",
+      "initial": {
+        "system": 175,
+        "vars": {
+          "IR_status": "IR_WEISS_2b"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.010875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_2b",
+          "IR_quest_count": 0
+        },
+        "actions": [
+          [
+            "exitSystem",
+            119
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Outer YES without admission preserves phase IR_WEISS_2b",
+      "initial": {
+        "system": 175,
+        "vars": {
+          "IR_status": "IR_WEISS_2b"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.011334,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_2b",
+          "IR_quest_count": 0
+        },
+        "actions": []
+      }
+    },
+    {
+      "name": "Actual synchronous admission commits phase IR_WEISS_2b",
+      "initial": {
+        "system": 175,
+        "vars": {
+          "IR_status": "IR_WEISS_2b"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.008667,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_3",
+          "IR_quest_count": 0
+        },
+        "actions": []
+      }
+    },
+    {
+      "name": "Admission cannot regress changed phase IR_WEISS_2b",
+      "initial": {
+        "system": 175,
+        "vars": {
+          "IR_status": "IR_WEISS_2b"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.008708,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_4",
+          "IR_quest_count": 0
+        },
+        "actions": [
+          [
+            "exitSystem",
+            119
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Actor request context guard {\"galaxy\":6,\"system\":23}",
+      "initial": {
+        "galaxy": 6,
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_WEISS_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.057084,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_1",
+          "IR_quest_count": 0
+        },
+        "actions": []
+      }
+    },
+    {
+      "name": "Actor request context guard {\"system\":24}",
+      "initial": {
+        "system": 24,
+        "vars": {
+          "IR_status": "IR_WEISS_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.009541,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_1",
+          "IR_quest_count": 0
+        },
+        "actions": []
+      }
+    },
+    {
+      "name": "Actor request context guard {\"role\":\"foreign\",\"system\":23}",
+      "initial": {
+        "role": "foreign",
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_WEISS_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.005875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_1",
+          "IR_quest_count": 0
+        },
+        "actions": []
+      }
+    },
+    {
+      "name": "Unrequested hook does not create jump receipt",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_WEISS_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.013958,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_1",
+          "IR_quest_count": 0
+        },
+        "actions": []
+      }
+    },
+    {
+      "name": "Correct native actor arrival hook selects second AI",
+      "initial": {
+        "system": 175,
+        "vars": {
+          "IR_status": "IR_WEISS_2b"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.294083,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_2b",
+          "IR_quest_count": 0
+        },
+        "actions": [
+          [
+            "AI",
+            "IR-weiss2AI.plist"
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# Add typed module and upgrade outcomes to Thargoid salvage
+
+The actual Thargoid technology selector now uses a project balance pool of 50% legacy artefacts, 25% physical alien modules and 25% matching-axis upgrade parts. Each group of new parts selects the four types uniformly. It reuses the existing technology selection draw; human pools and random draw cadence remain unchanged. The existing alienArtefact bucket and all already retained roll plans remain valid. No missile variant, alien engine, item grant or refill is added.
+
+Eight definitions match AlienModuleDefinition: physical modules retain the full matching axes, nil selected axis and fixed 1,000-basis-point contribution; upgrades retain matching selected axes and quality increments of 500, 1,000 or 1,500 basis points. All have alien provenance, 8 kg mass and half-extents (2,2,2). Explicit project values are 5,000 CR with 500 CR installation service for modules and 2,500 CR with 250 CR service for upgrades, before condition-based sale values. The original artefact definition is unchanged. Generic scalar fitting refuses these IDs so they cannot disappear into ordinary upgrade caps; the authenticated PLUGH attachment transaction is separately owned by Coder 1.
+
+Regression source exercises actual deterministic producer plans, all four module and upgrade types, quality increments, source-contract agreement, preserved artefacts, exclusion from every human source profile, declared values and generic-fit refusal. A retained-plan regression uses the production salvage ledger inspection and reload path for artefact/module/upgrade cases, requiring the central typed validator hook before it can pass. These tests do not establish actual cutting, collection, PLUGH fitting or runtime effects.
+
+## Required integration and validation
+
+Coder 1 must route exact new IDs through the typed alien source validator in SalvageLedger.validPlannedItem before its ordinary scalar branch, including paired shield axes. Existing legal, source, sale-value, identity and retained-plan checks must still apply. It owns actual physical admission, collection, source consumption, scalable attachment persistence, PLUGH authority and runtime effects. The producer regression is intentionally not a standalone full-delivery claim without those hooks.
+
+Only strict Swift source-format lint, scoped Markdown lint and whitespace checks ran. No compile, typecheck, tests, native process, media, CI or publication ran. Source and regressions remain uncompiled and unexecuted. No existing salvage ledger, Game, Commander, actor, shop or save file was edited. See [motivation](ISSUE-alien-module-loot-producer.md).
+
+## Shared planned-source validator follow-up
+
+AlienModuleDefinition.isAttachmentDefinition identifies exactly the eight new IDs, while validatePlanned checks a planned SalvageLootItem directly through the same typed evidence validator used by physical lots. It does not fabricate a positioned lot or assert actual recovery. Physical lots retain additional motion and redundant identity/content checks. The source section, provenance, axes, quality, fixed bonus, dimensions and condition rules are shared. Central SalvageLedger routing should invoke this helper after its existing source/price checks and before ordinary scalar validation. Producer tests call both planned and physical validators, with planned human-provenance and section-64 negative cases.
+
+Central composition routes only the eight exact new attachment/upgrade IDs through the shared typed planned-item validator after existing definition, price, condition, provenance, geometry and legality checks. The retained source must actually include the Thargoid role. Generic scalar rules remain unchanged for all other IDs. This connects authentic plan retention/decoding to the producer; actual physical collection, source consumption, PLUGH fitting, scalable whole-app saving and live effects remain separate central work. Execution is pending.
+
+Composed check 256 reached test-target compilation and stopped before execution on mutating loot inspection inside a Testing macro. All three actual inspect/reinspect/reload calls now run exactly once into locals before their original required/equality assertions. The full retained-plan and revision comparisons remain intact; failed compilation evidence is preserved.

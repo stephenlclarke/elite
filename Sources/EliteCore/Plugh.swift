@@ -62,7 +62,9 @@ extension Game {
   }
   public var atPlugh: Bool { currentSystem.isPlugh }
   public func equipmentAvailable(_ item: Equipment) -> Bool {
-    atPlugh || (item.technology <= currentSystem.technology && !Equipment.isReward(item.name))
+    stationAllowsEquipmentServices
+      && (atPlugh
+        || (item.technology <= currentSystem.technology && !Equipment.isReward(item.name)))
   }
   public func shopPrice(_ item: Equipment) -> Int {
     let price = Plugh.rewardPrices[item.name] ?? item.price
@@ -80,6 +82,9 @@ extension Game {
         .rumour,
       ].contains(screen)
     else { return }
+    wantedDetail = false
+    wantedRumourDetail = false
+    wantedScroll = 0
     rumourReturn = screen
     if commander.system == Plugh.rumourStation { commander.discoverPlugh(in: commander.galaxy) }
     screen = .rumour

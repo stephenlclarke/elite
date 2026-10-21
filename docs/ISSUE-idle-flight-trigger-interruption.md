@@ -1,0 +1,9 @@
+# Idle control changes create a held-fire stop
+
+Actual CI568 observed the original CI566 mounted-shot and procurement-control failures. Both before records had `workFireSuspended=true`, `playerEMPDisabled=false`, a valid commander, a joined wanted pirate with valid resources and lawful defence, a fitted front pulse, zero fire cooldown and exact current mesh contact. The station target was active and the contact was956.5345 units away. The procurement control contact was456.5345, heat246.4, missile stock3, with all preflight readiness gates true and policy requesting fire. The inactive control's after record was not reached; no after-state or completed launch is inferred.
+
+The causal producer is `interruptFlightTool()`: it unconditionally sets the held-trigger safety latch, even for idle launch, Tab/Q or tool-selection calls. `performNativeLaunch()` calls `cancelAutoTarget()`, which interrupts the tool. Station acquisition repeats that through its real control keys. Thus a released trigger can be marked as needing a fresh Return press before any actual trigger was held.
+
+A normal later tick observes released Return and clears that latch, hiding the error in many frame-driven paths. Native station missile publication runs before that tick, however, and the procurement control checks its real guard before submitting keys. Both correctly refuse the poisoned latch. Removing those consumer guards or globally clearing stops would waive real safety semantics rather than repair the producer.
+
+Create a held-trigger latch only when the trigger is actually held, retain every already existing damage/impact stop, and keep pending-press/activity cancellation. Preserve held Return, tool switching, EMP charging, hot-work publication, input rollback and physical momentum semantics. No mission/authentication or fixture correction is justified by these observations alone.

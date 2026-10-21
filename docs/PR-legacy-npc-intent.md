@@ -1,0 +1,15 @@
+# Fix ordinary legacy player pursuit and retaliation targeting
+
+Ordinary legacy pursuit and fire now require a current allocated physical actor whose actual intention is `engage(currentPlayer)`. The guard checks the current player system, the actor's system and visit, and its allocated nonreserved entity range. A stale `hostile` projection cannot authorize movement or emission. The guard runs after the existing separate Blackjack dispatch; the original EMP and occupied-pod checks still precede both drivers.
+
+At the genuine crime retaliation boundary, ordinary target hostility now reflects whether the actual attacker is the player. Nonplayer retaliation clears the old player-hostile projection. Authored mission/script and Blackjack bodies retain their existing dispatch projection, including the existing player-aggression path. Their exemption from projection synchronization adds no ordinary attack permission: ordinary `enemyAction` still requires authenticated player-directed intent. This change does not implement general legacy NPC-versus-NPC steering or alter spawned encounter AI.
+
+`LegacyNPCIntentTests` adds six test methods and eighteen source cases: thirteen invalid-intent/identity cases, genuine adopted player engagement, actual NPC retargeting, actual player retaliation, celestial occlusion and continued Blackjack dispatch after actual NPC retaliation. Assertions retain actual combat attribution, movement, emission counters, resources and state conservation where relevant. Test operations happen outside assertion macros; optional unwraps and assertions only read captured results.
+
+The source-only branch is based on `b615727adade0c5e681e32911df965baffccfd9b`. It changes only `Game.swift`, `GameplayCombat.swift`, the new test file and this issue/PR pair. Scope, formatting, Markdown and whitespace checks precede the frozen handoff. No compiler, discovery, tests, native UI, renderer, SonarQube or remote jobs are authorized in this slice. Independent source review, affected runtime validation and maintained `make ci` remain required before release; the GitHub review/check/approval gates remain unchanged.
+
+Combined compile 381 failed before tests because the nonplayer regression allocated an actor inside `#require`. Swift Testing expanded the mutating call through an immutable macro operand. The minimal test-only correction captures the allocation result first and unwraps that local. All other macro operands in this file were reviewed as read-only state comparisons or captured optional results. Production code, fixture inputs, six methods, eighteen source cases, assertions and budgets are unchanged; no rebuild or test result is claimed for this correction.
+
+The repair is not attributed as the cause of procurement run 380. Its retained scalar pair contains no attacker identity, and a stale unlawful-attack notice is not attribution. Procurement entry preflight and the AUTO input barrier are unchanged. No save schema, equipment, route, health, traffic, timing or gameplay budget changes are included.
+
+[ISSUE-legacy-npc-intent.md](ISSUE-legacy-npc-intent.md).
