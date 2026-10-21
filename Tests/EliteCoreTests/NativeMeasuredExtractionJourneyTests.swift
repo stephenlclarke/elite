@@ -453,3 +453,121 @@ struct NativeMeasuredExtractionJourneyTests {
       NativeMeasuredExtractionSave.validateClaims(returned.commander, requireRecordedLoss: true))
   }
 }
+
+extension NativeMeasuredExtractionJourneyTests {
+  @Test func actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception()
+    async throws
+  {
+    let f = try NativeMeasuredExtractionFixture()
+    defer { f.files.clean() }
+    let runtime = try await f.runtime()
+    let before = await runtime.snapshot().commander
+    try await f.accept(runtime)
+    let allocated = await runtime.snapshot()
+    #expect(allocated.commander.cargoTonnes == before.cargoTonnes + 12)
+    #expect(allocated.commander.cargo == before.cargo)
+    #expect(OriginalServiceReservationPolicy.activeCount(allocated.commander.scriptState) == 1)
+    try await f.extract(runtime)
+    let extracted = await runtime.snapshot()
+    let witness = try #require(extracted.measuredExtractionState?.extraction)
+    #expect(
+      witness.emitted.count == 20 && witness.emitted.reduce(0) { $0 + $1.amount.quantity } == 20)
+    #expect(extracted.commander.miningLedger.breakups[NativeMeasuredExtraction.root] == nil)
+    #expect(extracted.commander.cargo == before.cargo)
+    // The initial mining fixture has already run. Recovery below uses only real elapsed flight.
+    await runtime.setControls(Controls())
+    let expectedOriginals = Set(
+      try #require(allocated.commander.scriptState.savedMeasuredExtractionSource).originals.map(
+        \.id))
+    try #require(expectedOriginals.count == 12)
+    try #require(extracted.measuredExtractionState?.captures.isEmpty == true)
+    var preceding = extracted
+    var observedOperations: Set<UUID> = []
+    var observedOriginals: Set<UUID> = []
+    var observedActors: Set<ActorIdentity> = []
+    for _ in 0..<(12 * 600) {
+      let current = await runtime.advance(delta: 0.1)
+      let currentState = try #require(current.measuredExtractionState)
+      let currentSource = try #require(current.commander.scriptState.savedMeasuredExtractionSource)
+      for intake in currentState.captures where !observedOperations.contains(intake.operation) {
+        let priorWork = try #require(preceding.workGuidance)
+        let body = try #require(intake.body.first)
+        let actor = try #require(body.physical?.identity)
+        let applied = try #require(current.lastAppliedWorkMotion)
+        #expect(priorWork.mode == .autoScoop(.mining) && priorWork.parent == actor)
+        #expect(applied.start == preceding.commander.flightSimulation.pose)
+        #expect(applied.end == current.commander.flightSimulation.pose)
+        #expect(intake.physicalTime > preceding.commander.flightSimulation.physicalTime)
+        #expect(intake.physicalTime <= current.commander.flightSimulation.physicalTime)
+        #expect(intake.relativeSpeed <= ScoopApproachController.maximumRelativeSpeed)
+        #expect(expectedOriginals.contains(intake.original))
+        #expect(observedOperations.insert(intake.operation).inserted)
+        #expect(observedOriginals.insert(intake.original).inserted)
+        #expect(observedActors.insert(actor).inserted)
+        #expect(current.commander.miningLedger.boundActor(for: intake.payload.identity) == nil)
+        #expect(!current.bodies.contains { $0.physical?.identity == actor })
+        #expect(
+          NativeMeasuredExtractionSave.intakeValid(
+            intake, source: currentSource, state: currentState, commander: current.commander))
+      }
+      #expect(current.commander.cargo == before.cargo)
+      #expect(current.commander.cargoTonnes == allocated.commander.cargoTonnes)
+      preceding = current
+      if currentState.captures.count >= 12 { break }
+    }
+    let recovered = try #require(preceding.measuredExtractionState)
+    try #require(
+      recovered.captures.count == 12,
+      "Automatic recovery captured \(recovered.captures.count)/12; mode=\(String(describing: preceding.workGuidance?.mode)); parent=\(String(describing: preceding.workGuidance?.parent)); braking=\(String(describing: preceding.workBraking?.velocity)); message=\(String(preceding.message.prefix(256)))"
+    )
+    #expect(observedOriginals == expectedOriginals && observedActors.count == 12)
+    #expect(
+      NativeMeasuredExtractionSave.validateClaims(preceding.commander, requireRecordedLoss: true))
+    let aboard = await runtime.snapshot()
+    #expect(
+      aboard.commander.cargo == before.cargo
+        && aboard.commander.cargoTonnes == allocated.commander.cargoTonnes)
+    #expect(
+      aboard.commander.miningLedger.pendingPayloads.filter { item in
+        if case .ore(let root, _) = item.identity { return root == NativeMeasuredExtraction.root }
+        return false
+      }.count == 8)
+    try await f.renas(runtime)
+    let raw = await runtime.snapshot()
+    #expect(!raw.measuredExtractionReview(.receive).allowed)
+    let cash = raw.commander.credits
+    try await f.confirm(runtime, .process)
+    let graded = await runtime.snapshot()
+    let state = try #require(graded.measuredExtractionState)
+    let processing = try #require(state.processing)
+    #expect(
+      processing.products.count == 12 && processing.products.reduce(0) { $0 + $1.massKg } == 12000)
+    #expect(Set(processing.products.map(\.input)) == Set(processing.inputs))
+    #expect(
+      graded.commander.credits == cash && graded.commander.cargoTonnes == raw.commander.cargoTonnes)
+    #expect(!graded.measuredExtractionReview(.process).allowed)
+    #expect(graded.commander.scriptState.savedClueJournal == nil)
+    try await f.confirm(runtime, .receive)
+    let received = await runtime.snapshot()
+    let receivedJournal = received.commander.scriptState.savedClueJournal
+    let firstClues = try #require(receivedJournal)
+    #expect(firstClues.awards.count == 1)
+    #expect(
+      firstClues.awards[NativeMeasuredExtraction.stateID]?.clueID
+        == "measured-extraction-family-trace")
+    #expect(received.commander.credits == cash + 8900)
+    #expect(received.commander.cargoTonnes == raw.commander.cargoTonnes - 12)
+    #expect(
+      received.commander.scriptState.instances[state.permission.mission]?.outcome == .complete)
+    #expect(
+      received.commander.scriptState.instances[state.permission.mission]?.milestones == [
+        0, 1, 2, 3, 4,
+      ])
+    #expect(
+      NativeMeasuredExtractionSave.validateClaims(received.commander, requireRecordedLoss: true))
+    await runtime.key("return")
+    #expect(await runtime.snapshot().commander.credits == cash + 8900)
+    let repeatedJournal = await runtime.snapshot().commander.scriptState.savedClueJournal
+    #expect(repeatedJournal == firstClues)
+  }
+}
