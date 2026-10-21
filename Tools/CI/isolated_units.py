@@ -13,6 +13,12 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "EquipmentModuleReadoutUnitTests": (
+        "authoredShieldEnergyAndNavigationOfferValuesUseTheirOwnBasicBaseline",
+        "actualFittedUpgradesAndAsymmetricShieldsRemainVisibleWithoutChangingTheComponent",
+        "absentForeignAndUnsupportedComponentsNeverBorrowAnotherFamiliesPercentages",
+        "percentageFormattingRefusesUnknownNonFiniteOrZeroBaselinesWithoutInventedImprovements",
+    ),
     "SolarFuelCollectionUnitTests": (
         "onlyActualFuelScoopsFittedToTheActiveHullSupplyCollection",
         "fractionalCollectionSurvivesFrameBoundariesAndStopsAtActualCapacity",

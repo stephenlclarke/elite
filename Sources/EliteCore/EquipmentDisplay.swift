@@ -6,10 +6,7 @@ extension Display {
     let cockpit = CockpitLayout(game: game, width: width, height: height)
     let layout = EquipmentLayout(game: game, width: width, height: height)
     let accommodation = game.commander.accommodation
-    let cabinSelected =
-      Equipment.all.indices.contains(game.selection)
-      && PassengerCabinGrade.equipment(Equipment.all[game.selection].name) != nil
-    let extraFooter = cabinSelected ? 2 * layout.row : 0
+    let extraFooter = Double(layout.detailLineCount - 3) * layout.row
     let right = layout.left + layout.contentWidth
     frame.label("EQUIP SHIP", layout.left, 12, scale: layout.font, ink: .yellow)
     func rightLabel(_ text: String, y: Double, ink: Ink) -> BitmapLabel {
@@ -189,9 +186,18 @@ extension Display {
       } else if game.equipmentPurchaseRequirement(item) == nil {
         description += "Return: buy. A weaker purchase is stored."
       }
-      let lines = MissionNotice.wrap(
-        description, width: Int(layout.contentWidth / (6 * layout.font)))
-      for (index, line) in lines.prefix(cabinSelected ? 5 : 3).enumerated() {
+      var moduleLines: [String] = []
+      if let node = EquipmentRuntimeCatalog.node(for: item.name) {
+        let fitted = EquipmentRuntimeCatalog.slot(for: node).flatMap {
+          game.commander.fittedComponent(at: $0)
+        }
+        moduleLines = EquipmentModuleReadout.lines(node: node, fitted: fitted)
+      }
+      let lines =
+        moduleLines.flatMap {
+          MissionNotice.wrap($0, width: Int(layout.contentWidth / (6 * layout.font)))
+        } + MissionNotice.wrap(description, width: Int(layout.contentWidth / (6 * layout.font)))
+      for (index, line) in lines.prefix(layout.detailLineCount).enumerated() {
         frame.label(
           line, layout.left, cockpit.dashboardTop - 62 - extraFooter + Double(index) * layout.row,
           scale: layout.font,
@@ -213,6 +219,7 @@ public struct EquipmentLayout: Sendable {
   public let row: Double
   public let count: Int
   public let start: Int
+  public let detailLineCount: Int
   public init(game: Game, width: Double, height: Double) {
     contentWidth = min(680, width - 48)
     left = (width - contentWidth) / 2
@@ -243,7 +250,12 @@ public struct EquipmentLayout: Sendable {
     let cabinSelected =
       Equipment.all.indices.contains(game.selection)
       && PassengerCabinGrade.equipment(Equipment.all[game.selection].name) != nil
-    let available = top - 82 - (cabinSelected ? 2 * row : 0) - listTop - 7 * font
+    let moduleSelected =
+      Equipment.all.indices.contains(game.selection)
+      && EquipmentRuntimeCatalog.node(for: Equipment.all[game.selection].name).map(
+        EquipmentModuleReadout.supports) == true
+    detailLineCount = cabinSelected || moduleSelected ? 5 : 3
+    let available = top - 82 - Double(detailLineCount - 3) * row - listTop - 7 * font
     count = max(1, Int(floor(available / row)) + 1)
     let selected = EquipmentGroups.rows.firstIndex(of: .item(game.selection)) ?? 1
     var candidate =
