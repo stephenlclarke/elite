@@ -7,6 +7,13 @@ private func ordnanceRequire<T>(_ value: T?) throws -> T { try #require(value) }
 
 private func ordnanceGame() -> Game {
   var game = Game(executive: false)
+  // Declare the classic initial hull and resources used by the physical ordnance oracles.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.credits = 1000
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.docked = false
   game.screen = .front
   game.commander.flightSimulation.enter(game.systemIdentity, arriving: true)
