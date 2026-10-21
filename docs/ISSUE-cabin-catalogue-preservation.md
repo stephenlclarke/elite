@@ -9,3 +9,9 @@ The test must first assert the exact new sentence in the eligible project-profil
 ## Qualification
 
 Pending one maintained showroom-check execution and complete independent three-path review. Existing cabin49/59, ore12/12, rescue5/5 and actual1294 runtime are retained. Required final-head CI and completed clean hosted review remain open; no unchanged-head retry or protection bypass.
+
+## Completed qualification and integration
+
+Ownerdffd9106a235362663fb342c9607a29cb02794df integrates exactly at a5a2bb52137960ec852a0d3f07767690af484388 after actual1295 maintained make showroom-check passes all53 Python methods in21.726seconds (runner22.011341749923304/outer22.864138832781464seconds). All three observed owned starts close naturally; tracked source and preferences remain exact. Raw SHA25651e7f9ee980e9bd65bca8e03035a9974fde8cc2cb509615bbcf10101696e699b. Wrong wording, gameplay cargo and independent numeric-field negative controls all reject their mutations within the named method.
+
+Complete independent three-path bugs/performance/style review is CLEAN, SHA256ed0618ce51dc02addf63ee75cf57d48cd7811f1d10df562fe57184b620463a8c. Original baseline pins, generator, resources and all app source remain unchanged; the entire Python file outside the named method is exact. No Swift/gameplay/renderer/preview replay is performed for this test-only correction. Existing1294 signed preview retains its actual build/public-source metadata and unchanged binary/resources; no new app acceptance or full hosted repair is claimed. The changed final PR head still requires CI and completed clean review.
