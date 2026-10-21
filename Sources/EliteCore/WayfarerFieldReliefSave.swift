@@ -42,9 +42,12 @@ enum WayfarerFieldReliefSave {
   }
 
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
-    commander.nativeUtility?.consignments.isEmpty == false
-      || commander.scriptState.instances.values.contains(where: WayfarerFieldRelief.marked)
-      || commander.contracts.boards.values.contains(where: marked)
+    if commander.nativeUtility?.consignments.isEmpty == false { return true }
+    if commander.scriptState.instances.values.contains(where: WayfarerFieldRelief.marked) {
+      return true
+    }
+    if commander.contracts.boards.values.contains(where: marked) { return true }
+    return false
   }
   private static func marked(_ board: ScriptContractBoard) -> Bool {
     board.group == WayfarerFieldRelief.stateID || board.digest == WayfarerFieldRelief.digest
