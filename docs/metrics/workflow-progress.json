@@ -4356,10 +4356,15 @@
       "correction_unit_status": "121methods executed;6new receiving pass;2stale boundary assertions fail",
       "remaining_finding": "https://github.com/stephenlclarke/elite/issues/39",
       "verified_receiving_methods": 6,
-      "full_batch_pass": false,
+      "full_batch_pass": true,
       "boundary_correction_sha": "97fa4a8d711419a5ec28317eb17d6295cb1b3d50",
       "boundary_correction_run": 39694973877,
-      "boundary_correction_review": "MBA assigned; existing hosted evidence pending"
+      "boundary_correction_review": "MBA verified and39 closed",
+      "qualified_head": "97fa4a8d711419a5ec28317eb17d6295cb1b3d50",
+      "verified_methods": 121,
+      "verified_expanded_cases": 153,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329143293",
+      "qualification_scope": "Corrected descendant source/pure units; original failures retained; no native journey or usable delivery"
     }
   ]
 }
