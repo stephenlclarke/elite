@@ -9,3 +9,5 @@ Use one current workflow document and GitHub queue #23. MBP pushes small coheren
 ## Compatibility and validation
 
 This changes documentation and GitHub coordination only, with no game code, save representation, test assertions or branch protections changed. Markdown lint and diff whitespace checks pass. Existing source remains on its development/checkpoint refs. No integration test or application acceptance is claimed. Queue: [GitHub review queue #23](https://github.com/stephenlclarke/elite/issues/23).
+
+Workflow measurement uses a dated scorecard and JSON extract from existing ledger/GitHub events, including the earlier72-hour audit as an explicitly approximate cost reference. Feature/fix packets, infrastructure, reviews, GitHub-unit success and usable delivery remain separate. No new developer forms, tests or worker are introduced; early carry-over work does not establish a causal speedup.
