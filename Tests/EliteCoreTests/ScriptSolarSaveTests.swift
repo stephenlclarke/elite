@@ -18,7 +18,8 @@ private func savedSolarMission() throws -> Game {
     .init(kind: .sun, position: .init(200, 100, 2500), radius: 1000),
     .init(kind: .planet, position: .init(5000, -2000, 10000), radius: 1500),
   ]
-  game.commander.equipment.insert("Fuel Scoops")
+  try game.commander.grantEquipment(
+    "Fuel Scoops", at: .utility(.fuelScoops), provenance: .grant("solar save fixture"))
   game.commander.fuel = 10
   game.speed = 8
   game.time = 19

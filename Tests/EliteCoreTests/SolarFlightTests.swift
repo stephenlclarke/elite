@@ -45,12 +45,13 @@ private func solarEquipmentComparison(_ encoded: Any?) throws -> [String: Any] {
   return inventory
 }
 
-private func solarGame(distance: Double = 2970) -> Game {
+private func solarGame(distance: Double = 2970) throws -> Game {
   var game = Game(executive: false)
   game.launch()
   game.bodies = []
   game.celestials = [.init(kind: .sun, position: .init(0, 0, distance), radius: 1100)]
-  game.commander.equipment.insert("Fuel Scoops")
+  try game.commander.grantEquipment(
+    "Fuel Scoops", at: .utility(.fuelScoops), provenance: .grant("solar fixture"))
   game.commander.fuel = 0
   game.speed = 8
   return game
@@ -82,8 +83,8 @@ private func solarWorldAfterRelaunch(
   return expected
 }
 
-@Test func solarScoopAccumulatesFractionalFuelAndRespectsTankCapacity() {
-  var game = solarGame()
+@Test func solarScoopAccumulatesFractionalFuelAndRespectsTankCapacity() throws {
+  var game = try solarGame()
   for _ in 0..<10 { game.advanceSolarFlight(delta: 0.1) }
   #expect(game.commander.fuel == 7)
   #expect(game.solarScoopState == .collecting)
@@ -94,13 +95,14 @@ private func solarWorldAfterRelaunch(
   #expect(game.solarScoopState == .tankFull && game.solarFuelRemainder == 0)
 }
 
-@Test func solarScoopRequiresEquipmentRangeNoseFacingAndForwardCruise() {
-  var game = solarGame()
-  game.commander.equipment.remove("Fuel Scoops")
+@Test func solarScoopRequiresEquipmentRangeNoseFacingAndForwardCruise() throws {
+  var game = try solarGame()
+  _ = try game.commander.removeFittedEquipment("Fuel Scoops")
   game.advanceSolarFlight(delta: 1)
   #expect(game.commander.fuel == 0 && game.solarScoopState == .noScoops)
   #expect(game.cabinTemperature > 0)
-  game.commander.equipment.insert("Fuel Scoops")
+  try game.commander.grantEquipment(
+    "Fuel Scoops", at: .utility(.fuelScoops), provenance: .grant("solar fixture"))
   game.speed = 0
   game.advanceSolarFlight(delta: 1)
   #expect(game.commander.fuel == 0 && game.solarScoopState == .turnTowardSun)
@@ -116,8 +118,8 @@ private func solarWorldAfterRelaunch(
   #expect(game.commander.fuel == 0)
 }
 
-@Test func solarCollectionDependsOnNoseInsteadOfSelectedCameraAndScalesWithCruise() {
-  var game = solarGame()
+@Test func solarCollectionDependsOnNoseInsteadOfSelectedCameraAndScalesWithCruise() throws {
+  var game = try solarGame()
   game.screen = .rear
   game.speed = 4
   game.advanceSolarFlight(delta: 1)
@@ -125,36 +127,36 @@ private func solarWorldAfterRelaunch(
   #expect(game.solarScoopState == .collecting)
 }
 
-@Test func thermalExposureCoolsAwayFromSunAndKillsDespiteShieldsOrXYZzyFuel() {
-  var game = solarGame(distance: 1500)
+@Test func thermalExposureCoolsAwayFromSunAndKillsDespiteShieldsOrXYZzyFuel() throws {
+  var game = try solarGame(distance: 1500)
   game.commander.unlimitedFuel = true
   game.commander.fuel = game.commander.fuelCapacity
   for _ in 0..<30 where game.screen != .gameOver { game.advanceSolarFlight(delta: 0.1) }
   #expect(game.screen == .gameOver && game.energy == 0)
   #expect(game.message.contains("OVERHEATED"))
   #expect(game.frontShield > 0)
-  var cooling = solarGame(distance: 10000)
+  var cooling = try solarGame(distance: 10000)
   cooling.cabinTemperature = 0.9
   for _ in 0..<50 { cooling.advanceSolarFlight(delta: 0.1) }
   #expect(cooling.cabinTemperature < 0.5 && cooling.screen == .front)
 }
 
-@Test func celestialSurfaceImpactsAreFatalAndProximityMassLocksJumps() {
-  var game = solarGame(distance: 1000)
+@Test func celestialSurfaceImpactsAreFatalAndProximityMassLocksJumps() throws {
+  var game = try solarGame(distance: 1000)
   #expect(game.massLocked)
   let before = game.celestials
   game.inSystemJump()
   #expect(game.celestials == before && game.message == "MASS LOCKED")
   game.advanceSolarFlight(delta: 0.1)
   #expect(game.screen == .gameOver && game.message == "DESTROYED IN THE SUN")
-  var planet = solarGame()
+  var planet = try solarGame()
   planet.celestials = [.init(kind: .planet, position: .init(0, 0, 900), radius: 1000)]
   planet.advanceSolarFlight(delta: 0.1)
   #expect(planet.screen == .gameOver && planet.message == "PLANET IMPACT")
 }
 
-@Test func flightTickMovesCelestialsExactlyWithShipsAndFreezesForHelp() {
-  var game = solarGame(distance: 12000)
+@Test func flightTickMovesCelestialsExactlyWithShipsAndFreezesForHelp() throws {
+  var game = try solarGame(distance: 12000)
   game.bodies = [.init(id: 100, hull: .cargo, position: .init(0, 0, 12000))]
   game.tick(delta: 0.1, controls: Controls())
   #expect(game.celestials[0].position == game.bodies[0].position)
@@ -169,7 +171,7 @@ private func solarWorldAfterRelaunch(
 }
 
 @Test func dockingLoadingAndArrivalUseExistingDockedSaveSemantics() async throws {
-  var game = solarGame()
+  var game = try solarGame()
   do {
     // The legacy loader has no saved flight world; use a genuinely pre-launch Commander.
     var legacy = Commander()
@@ -186,7 +188,7 @@ private func solarWorldAfterRelaunch(
     #expect(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
     #expect(decoded == legacy && game.commander.valid)
   }
-  game = solarGame()
+  game = try solarGame()
   game.cabinTemperature = 0.9
   game.dock()
   #expect(game.celestials.isEmpty && game.cabinTemperature == 0)
@@ -308,8 +310,8 @@ private func solarWorldAfterRelaunch(
   #expect(NSDictionary(dictionary: actual).isEqual(to: expected))
 }
 
-@Test func solarHUDReportsActualScoopAndThermalDanger() {
-  var game = solarGame()
+@Test func solarHUDReportsActualScoopAndThermalDanger() throws {
+  var game = try solarGame()
   game.advanceSolarFlight(delta: 0.1)
   #expect(game.solarHUDLines.contains { $0.contains("SCOOP ACTIVE") })
   game.cabinTemperature = 0.95
@@ -318,14 +320,14 @@ private func solarWorldAfterRelaunch(
   #expect(game.solarHUDLines[0].contains("ASTERN PORT UP"))
 }
 
-@Test func celestialHUDBearingsFollowTheSelectedCockpitView() {
+@Test func celestialHUDBearingsFollowTheSelectedCockpitView() throws {
   for (screen, position) in [
     (Screen.front, Vector3(0, 0, 1000)),
     (.rear, .init(0, 0, -1000)),
     (.left, .init(-1000, 0, 0)),
     (.right, .init(1000, 0, 0)),
   ] {
-    var game = solarGame()
+    var game = try solarGame()
     game.screen = screen
     game.celestials[0].position = position
     #expect(game.solarHUDLines[0].contains("SUN AHEAD"))
