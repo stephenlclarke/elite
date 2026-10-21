@@ -7,6 +7,7 @@ extension NativeWayfarerInductionAction {
     case .pickup: NativeWayfarerInduction.clinic
     case .receive: NativeWayfarerInduction.receiver
     case .service: NativeWayfarerInduction.clinic
+    case .keyLoan: NativeWayfarerInduction.seedSource
     case .cassette: NativeWayfarerInduction.workshop
     }
   }
@@ -23,6 +24,9 @@ extension NativeWayfarerInductionState {
     if reception != nil && cassette == nil && system == NativeWayfarerInduction.workshop {
       return .cassette
     }
+    if cassetteService != nil && seedKey == nil && system == NativeWayfarerInduction.seedSource {
+      return .keyLoan
+    }
     if cassette != nil && cassetteLoss == nil && cassetteService == nil
       && system == NativeWayfarerInduction.clinic
     {
@@ -38,10 +42,14 @@ extension Game {
       return
         "Review Senn's induction at Avenor after an ordinary delivery or native commodity sale."
     }
-    if state.loss != nil || state.cassetteLoss != nil {
+    if state.loss != nil || state.cassetteLoss != nil || state.seedKeyLoss != nil {
       return "The original consignment was lost. No replacement stock or success is granted."
     }
-    if state.cassetteService != nil { return NativeWayfarerInduction.laterStages }
+    if state.seedKey != nil { return NativeWayfarerInduction.laterStages }
+    if state.cassetteService != nil {
+      return
+        "Review Enlirin's seed-custodian consent and Confirm its original one-tonne vault-key loan."
+    }
     if state.cassette != nil {
       return "Confirm original cassette service and owner return at Renas repair desk."
     }
@@ -59,7 +67,10 @@ extension Game {
 
   var wayfarerInductionDestination: String {
     let state = wayfarerInductionMission?.savedWayfarerInduction
-    if state?.cassetteService != nil { return "Enlirin seed vault / consented loan still locked" }
+    if state?.seedKey != nil {
+      return "Lareria receiving cradle, G01-S091 / actual escort and key return locked"
+    }
+    if state?.cassetteService != nil { return "Enlirin main orbital seed vault, G01-S162" }
     if state?.cassette != nil { return "Renas main orbital repair desk, G01-S185" }
     if state?.reception != nil { return "Enmadan main orbital workshop, G01-S000" }
     if state?.crate != nil { return "Navidor main orbital clinic, G01-S164" }
@@ -86,6 +97,13 @@ extension Game {
       guard state.cassette != nil, state.cassetteLoss == nil, state.cassetteService == nil else {
         return [
           "The same original failed cassette must be aboard and not already serviced or returned."
+        ]
+      }
+    }
+    if action == .keyLoan {
+      guard state.cassetteService != nil, state.seedKey == nil else {
+        return [
+          "Complete the original cassette service/return before borrowing the one original vault key."
         ]
       }
     }
@@ -142,6 +160,13 @@ extension Game {
       mission.journal.append(
         "Renas repaired the original cassette and recorded Enmadan workshop's receipt. The original serial remains in the service history; no second unit, payment, accreditation or clue was created."
       )
+    } else if action == .keyLoan {
+      next = try inductionVaultKeyLoan(
+        state, dock: dock, carrier: carrier, revision: revision,
+        physicalTime: physicalTime, flightSeconds: clock)
+      mission.journal.append(
+        "VEIL: Enlirin's custodians consented to the seed transfer and loaned their original one-tonne vault key for Lareria's receiving cradle. It remains their property; the seed itself travels aboard the registered ark. Actual escort and key-return receiving remain unavailable."
+      )
     } else {
       throw SaveError.invalidCommander
     }
@@ -153,7 +178,8 @@ extension Game {
     switch action {
     case .receive: notify("CLINIC CRATE RECEIVED INTACT - ENMADAN WORKSHOP NEXT")
     case .cassette: notify("ORIGINAL FAILED CASSETTE ABOARD - RENAS REPAIR DESK NEXT")
-    case .service: notify("ORIGINAL CASSETTE SERVICED AND RETURNED - LATER STAGES LOCKED")
+    case .service: notify("ORIGINAL CASSETTE SERVICED AND RETURNED - ENLIRIN CONSENT NEXT")
+    case .keyLoan: notify("CUSTODIAN VAULT KEY ON LOAN - ACTUAL ESCORT STILL LOCKED")
     default: break
     }
   }

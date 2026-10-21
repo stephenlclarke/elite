@@ -1,7 +1,7 @@
 import Foundation
 
 enum NativeWayfarerInductionAction: String, Sendable {
-  case accept, pickup, receive, cassette, service, progress
+  case accept, pickup, receive, cassette, service, keyLoan, progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
     switch self {
@@ -10,6 +10,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .receive: "Navidor clinic / review intact crate reception"
     case .cassette: "Enmadan workshop / review failed cassette collection"
     case .service: "Renas repair desk / review original service and owner return"
+    case .keyLoan: "Enlirin seed vault / review consent and original key loan"
     case .progress: "Senn / current induction records"
     }
   }
@@ -82,7 +83,7 @@ extension Game {
     switch action {
     case .accept: issues += inductionAcceptanceIssues(trade)
     case .pickup: issues += inductionPickupIssues()
-    case .receive, .cassette, .service: issues += inductionContinuationIssues(action)
+    case .receive, .cassette, .service, .keyLoan: issues += inductionContinuationIssues(action)
     case .progress: break
     }
     return issues
@@ -178,7 +179,9 @@ extension Game {
       candidate.commander.scriptState.instances[mission.id] = mission
       candidate.notify("SEALED CLINIC CRATE ABOARD - NAVIDOR / 1800 FLIGHT SECONDS")
     }
-    if quote.action == .receive || quote.action == .cassette || quote.action == .service {
+    if quote.action == .receive || quote.action == .cassette || quote.action == .service
+      || quote.action == .keyLoan
+    {
       try candidate.confirmInductionContinuation(
         quote.action, dock: dock, carrier: carrier, revision: revision)
     }
@@ -200,6 +203,8 @@ extension Game {
       "Confirm intact clinic reception at Navidor before the original cooling deadline, then collect Enmadan's failed workshop cassette for the Renas repair desk.",
       "Reception frees the clinic tonne; cassette collection needs one free tonne and has no deadline.",
       "At Renas repair desk, Confirm service of the same original cassette and its owner's receiving record. This releases its tonne and pays nothing.",
+      "At Enlirin, review the seed custodians' consent before Confirm borrows their unique one-tonne vault key for Lareria's receiving cradle. The key stays their property; the seed travels aboard the ark.",
+      "The loan is untimed, needs one free tonne and cannot be sold, fitted or released as personal equipment. Escort and key-return receiving remain unavailable.",
       "These stages pay nothing and grant no accreditation or clue. "
         + NativeWayfarerInduction.laterStages,
     ]
@@ -210,7 +215,15 @@ extension Game {
             format:
               "Original clinic crate received intact at Navidor with %.1f flight seconds remaining.",
             reception.remaining))
-        if state.cassetteService != nil {
+        if let key = state.seedKey {
+          lines.append(
+            state.seedKeyLoss == nil
+              ? "Original Enlirin vault key aboard on loan; return is restricted to Lareria's seed-ark receiving cradle. Actual escort/key return remains locked."
+              : "The original vault key was lost; its outstanding custodian loan remains recorded. No replacement or return is granted."
+          )
+          lines.append(
+            "Loan source: " + key.source.resource + "; issued original remains custodian property.")
+        } else if state.cassetteService != nil {
           lines.append(
             "Renas serviced the same original cassette and confirmed its owner's receipt. The workshop tonne is released."
           )

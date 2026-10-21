@@ -66,6 +66,7 @@ extension NativeWayfarerInductionState {
     if reception != nil { result.insert(2) }
     if cassette != nil { result.insert(3) }
     if cassetteService != nil { result.insert(4) }
+    if seedKey != nil { result.insert(5) }
     return result
   }
 
@@ -138,5 +139,5 @@ extension NativeWayfarerInduction {
   // Keep the accepted opening pack's bytes/pin stable. This native projection describes the
   // now-supported continuation instead of changing historical acceptance or pickup evidence.
   static let currentBriefing =
-    "SENN: Accept the Avenor induction after an ordinary delivery or recorded native sale. Keep one free tonne. Collect Renas's unique sealed clinic crate, then Confirm intact reception at Navidor before its original 1800 armed-flight-second allowance expires. At Enmadan, collect the original failed workshop cassette. At Renas, Confirm service of that original and its owner's receiving record. These five stages pay nothing and grant no accreditation or clue. Stages 6-14 remain unavailable."
+    "SENN: Accept the Avenor induction after an ordinary delivery or recorded native sale. Keep one free tonne. Collect Renas's unique sealed clinic crate, then Confirm intact reception at Navidor before its original 1800 armed-flight-second allowance expires. At Enmadan, collect the original failed workshop cassette. At Renas, Confirm service of that original and its owner's receiving record. At Enlirin, review the seed custodians' consent and Confirm the original one-tonne vault-key loan for Lareria's receiving cradle. The seed itself stays aboard the ark. These six stages pay nothing and grant no accreditation or clue. Stages 7-14 remain unavailable."
 }

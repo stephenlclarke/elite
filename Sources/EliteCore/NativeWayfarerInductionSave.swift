@@ -1,18 +1,21 @@
 import Foundation
 
 enum NativeWayfarerInductionSave {
-  static let version = 71
-  static let alienVersion = 72
+  static let version = 73
+  static let alienVersion = 74
   static func contains(_ schema: Int?) -> Bool {
     supportsContinuation(schema) || schema == 67 || schema == 68
   }
   static func isAlien(_ schema: Int?) -> Bool {
-    schema == alienVersion || schema == 70 || schema == 68
+    schema == alienVersion || schema == 72 || schema == 70 || schema == 68
   }
   static func supportsContinuation(_ schema: Int?) -> Bool {
     supportsCassetteService(schema) || schema == 69 || schema == 70
   }
   static func supportsCassetteService(_ schema: Int?) -> Bool {
+    supportsVaultKey(schema) || schema == 71 || schema == 72
+  }
+  static func supportsVaultKey(_ schema: Int?) -> Bool {
     schema == version || schema == alienVersion
   }
   static func lowerSchema(_ schema: Int?) -> Int? {
@@ -96,7 +99,15 @@ enum NativeWayfarerInductionSave {
         service.flightSeconds <= commander.scriptState.flightSeconds
       else { return false }
     }
-    for loss in [state.loss, state.cassetteLoss].compactMap({ $0 }) {
+    if let key = state.seedKey {
+      guard world.mainStations.contains(key.dock.station),
+        key.dock.sequence < world.nextMainDockSequence,
+        key.dock.actor.visit <= commander.flightSimulation.visit,
+        key.physicalTime <= commander.flightSimulation.physicalTime,
+        key.flightSeconds <= commander.scriptState.flightSeconds
+      else { return false }
+    }
+    for loss in [state.loss, state.cassetteLoss, state.seedKeyLoss].compactMap({ $0 }) {
       guard loss.physicalTime <= commander.flightSimulation.physicalTime,
         loss.facts.visit <= commander.flightSimulation.visit,
         loss.facts.sequence <= commander.scriptState.nextEvent,
@@ -151,6 +162,10 @@ enum NativeWayfarerInductionSave {
                 && decoded.cassetteLoss == nil)
           else { throw SaveError.invalidCommander }
           guard supportsCassetteService(schema) || decoded.cassetteService == nil else {
+            throw SaveError.invalidCommander
+          }
+          guard supportsVaultKey(schema) || (decoded.seedKey == nil && decoded.seedKeyLoss == nil)
+          else {
             throw SaveError.invalidCommander
           }
           guard decoded.valid,

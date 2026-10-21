@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-private struct InductionCassetteServiceFixture {
+struct InductionCassetteServiceFixture {
   let helpers: InductionContinuationFixture
   let carried: NativeWayfarerInductionState
   init() throws {
@@ -96,7 +96,7 @@ struct NativeWayfarerInductionCassetteServiceUnitTests {
     #expect(f.carried.action(at: NativeWayfarerInduction.clinic) == .service)
     #expect(returned.action(at: NativeWayfarerInduction.clinic) == .progress)
     #expect(NativeWayfarerInduction.repairTarget == "renas-cassette-loop-closed")
-    #expect(NativeWayfarerInduction.laterStages.contains("6-14"))
+    #expect(NativeWayfarerInduction.laterStages.contains("7-14"))
     #expect(throws: (any Error).self) { try returned.servicingCassette(receipt) }
     #expect(throws: (any Error).self) {
       try returned.collectingCassette(try #require(f.carried.cassette), freeTonnes: 100)

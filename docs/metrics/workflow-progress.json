@@ -4164,6 +4164,21 @@
       "usable_build_delivered": false,
       "source_review": "MBA exact delta/necessary callers reviewed; no actionable defect",
       "github_run": 39674916516
+    },
+    {
+      "event": "C08.P03.A original cassette service/return pushed; P03.B key-loan assigned",
+      "head": "e58251030e82dbeb14683f4f382836d9eae26382",
+      "base": "56681af4469c0dcce0920a8ab6e734c5e42324f3",
+      "ledger_parent": "C08.P03.A",
+      "new_methods": 4,
+      "unit_status": "pending",
+      "source_review": "MBA exact delta/necessary callers reviewed; no actionable defect",
+      "next_assigned": "C08.P03.B",
+      "usable_build_delivered": false,
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326525234",
+      "github_run": 39675764624,
+      "selection_methods": 88,
+      "new_cases": 5
     }
   ]
 }

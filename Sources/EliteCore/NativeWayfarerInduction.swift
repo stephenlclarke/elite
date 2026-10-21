@@ -138,11 +138,14 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let cassette: NativeInductionWorkshopCassette?
   let cassetteLoss: NativeInductionCrateLoss?
   let cassetteService: NativeInductionCassetteService?
+  let seedKey: NativeInductionVaultKeyLoan?
+  let seedKeyLoss: NativeInductionCrateLoss?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
     cassette: NativeInductionWorkshopCassette? = nil, cassetteLoss: NativeInductionCrateLoss? = nil,
-    cassetteService: NativeInductionCassetteService? = nil
+    cassetteService: NativeInductionCassetteService? = nil,
+    seedKey: NativeInductionVaultKeyLoan? = nil, seedKeyLoss: NativeInductionCrateLoss? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -151,11 +154,14 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.cassette = cassette
     self.cassetteLoss = cassetteLoss
     self.cassetteService = cassetteService
+    self.seedKey = seedKey
+    self.seedKeyLoss = seedKeyLoss
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
       && lhs.reception == rhs.reception && lhs.cassette == rhs.cassette
       && lhs.cassetteLoss == rhs.cassetteLoss && lhs.cassetteService == rhs.cassetteService
+      && lhs.seedKey == rhs.seedKey && lhs.seedKeyLoss == rhs.seedKeyLoss
   }
   var valid: Bool {
     let p = permission
@@ -181,9 +187,10 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     } else if loss != nil {
       return false
     }
-    return continuationValid
+    return continuationValid && seedKeyValid
   }
   var payloads: [String: Int] {
+    if seedKey != nil && seedKeyLoss == nil { return [NativeWayfarerInduction.keyPayload: 1] }
     if cassette != nil && cassetteLoss == nil && cassetteService == nil {
       return [NativeWayfarerInduction.cassettePayload: 1]
     }
@@ -203,7 +210,11 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   func losing(_ fact: NativeInductionCrateLoss) throws -> Self {
     guard valid, !payloads.isEmpty else { throw SaveError.invalidCommander }
     let next: Self
-    if cassette != nil {
+    if seedKey != nil {
+      next = Self(
+        permission: permission, crate: crate, reception: reception, cassette: cassette,
+        cassetteService: cassetteService, seedKey: seedKey, seedKeyLoss: fact)
+    } else if cassette != nil {
       next = Self(
         permission: permission, crate: crate, reception: reception, cassette: cassette,
         cassetteLoss: fact)
@@ -229,7 +240,7 @@ enum NativeWayfarerInduction {
   static let clinic = SystemIdentity(galaxy: 0, system: 185)
   static let receiver = SystemIdentity(galaxy: 0, system: 164)
   static let laterStages =
-    "Stages 6-14, the consented vault-key loan and accreditation are not yet available."
+    "Stages 7-14, actual seed-ark escort/key return and accreditation are not yet available."
   static func mission(owner: UUID) -> UUID {
     ScriptIdentity.uuid("wayfarer-induction-v1:\(owner)")
   }

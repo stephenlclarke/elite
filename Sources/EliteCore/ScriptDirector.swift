@@ -1319,7 +1319,7 @@ extension Game {
     let reason = scriptGalleryEntryReason(pack, stateID: stateID)
     let openingIssue: String?
     if pack.manifest.stateID == NativeWayfarerInduction.stateID,
-      state?.milestones.contains(4) == true
+      state?.milestones.contains(5) == true
     {
       openingIssue = NativeWayfarerInduction.laterStages
     } else if pack.manifest.stateID == NativeGlassMeridian.stateID,
