@@ -10,6 +10,31 @@ modelSource = "IC / Imperial Courier (Oolite rendition)"
 dimensions = [157.88507003, 44.77227466, 97.44178]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 2
+family = "imperial-courier"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "military", "weight" = 4 }, { "role" = "bountyHunter", "weight" = 1 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "uncommon"
+galaxies = [0, 1, 7]
+regions = ["deepSpace", "tradeLane"]
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
+primaryRole = "military"
+placementStatus = "declared"
+isCapital = false
+primaryType = "military"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 11
+
 [game]
 cargo = 12
 speed = 32.0

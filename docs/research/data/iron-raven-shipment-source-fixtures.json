@@ -1,0 +1,2231 @@
+{
+  "profile_id": "P19-SHIPMENT-DISCOVERY-v1",
+  "scope": "Selected recovered main/actor/helper JS callbacks under lexical VM globals. Missing mission variables returnnull per pinned binding, typed selected values andnativefinitecredit-floor accessor. Spawning/AI/UI/route APIs are spies; no nativephysics/wormhole/group/AI/persistence/binary proof. Repeated-death test demonstrates unguarded callback logic, not claim actual original engine emits death four times.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-transport.js",
+      "sha256": "102f282518434a91926f5a7fe348862616f560f9293c034c322f13c48dffd588"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-shipment.js",
+      "sha256": "fb6facb5eb11f0cbe1fb3c998216fc9c30b4c1ea820560a469271cfa1e2f170a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJSMissionVariables.m",
+      "sha256": "afa55aeaa671e89336779a144e0e5bd345603ac3c20ff0fa7d0e52e262df62e7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJavaScriptEngine.h",
+      "sha256": "7e3694eefdb5201e71a0095fdc790d882dcaeaa18967c10e7fd48c3c0f3f2274"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/PlayerEntityLegacyScriptEngine.m",
+      "sha256": "2fff90a42b394c4070d3734a7e9dfd07c878d4be988294a17b5d98fdc88313f2"
+    }
+  ],
+  "total": 49,
+  "passed": 49,
+  "cases": [
+    {
+      "name": "Initial order inquiry records thirty-day reservation",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 1,
+          "IR_shipment_status_no": 0
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_question_key": "shipment_question_2",
+          "IR_shipment_question_string": "[shipment_question_string_2]",
+          "IR_YOKOHAMA_deadline": 130,
+          "IR_YOKOHAMA_deadline_saved": 130,
+          "IR_shipment_quest": "SET"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_1"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.242791,
+      "passed": true
+    },
+    {
+      "name": "Purchase credit boundary 999999.9",
+      "initial": {
+        "credits": 999999.9,
+        "choices": [
+          "IR_YOKOHAMA_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        },
+        "credits": 999999.9,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2",
+          "IR_YOKOHAMA_shipment_nomoney"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.05525,
+      "passed": true
+    },
+    {
+      "name": "Purchase credit boundary 1000000",
+      "initial": {
+        "credits": 1000000,
+        "choices": [
+          "IR_YOKOHAMA_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 1,
+          "IR_shipment_question_no": 3,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_shipment_quest_method": "PURCHASED",
+          "IR_shipment_question_key": "shipment_question_3",
+          "IR_shipment_question_string": "[shipment_question_string_3]"
+        },
+        "credits": 0,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2",
+          "IR_YOKOHAMA_shipment_agreed"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.037583,
+      "passed": true
+    },
+    {
+      "name": "Purchase credit boundary 1000000.1",
+      "initial": {
+        "credits": 1000000.1,
+        "choices": [
+          "IR_YOKOHAMA_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 1,
+          "IR_shipment_question_no": 3,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_shipment_quest_method": "PURCHASED",
+          "IR_shipment_question_key": "shipment_question_3",
+          "IR_shipment_question_string": "[shipment_question_string_3]"
+        },
+        "credits": 0.1,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2",
+          "IR_YOKOHAMA_shipment_agreed"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.019416,
+      "passed": true
+    },
+    {
+      "name": "Purchased shipment increments parent count twice in source",
+      "initial": {
+        "system": 171,
+        "choices": [
+          "IR_YOKOHAMA_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 2,
+          "IR_shipment_question_no": 3,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_shipment_quest_method": "PURCHASED",
+          "IR_shipment_question_key": "shipment_question_3",
+          "IR_shipment_question_string": "[shipment_question_string_3]",
+          "IR_tipoff_deadline": 110
+        },
+        "credits": 0,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2",
+          "IR_YOKOHAMA_shipment_agreed",
+          "IR_shipment_success"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.334625,
+      "passed": true
+    },
+    {
+      "name": "Purchase reservation strict day boundary 129",
+      "initial": {
+        "days": 129,
+        "choices": [
+          "IR_YOKOHAMA_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 1,
+          "IR_shipment_question_no": 3,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_shipment_quest_method": "PURCHASED",
+          "IR_shipment_question_key": "shipment_question_3",
+          "IR_shipment_question_string": "[shipment_question_string_3]"
+        },
+        "credits": 0,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2",
+          "IR_YOKOHAMA_shipment_agreed"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.031167,
+      "passed": true
+    },
+    {
+      "name": "Purchase reservation strict day boundary 130",
+      "initial": {
+        "days": 130,
+        "choices": [
+          "IR_YOKOHAMA_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_negative_answer",
+          "IR_negative_answer"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.043125,
+      "passed": true
+    },
+    {
+      "name": "Purchase reservation strict day boundary 131",
+      "initial": {
+        "days": 131,
+        "choices": [
+          "IR_YOKOHAMA_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "DISPATCHED",
+          "IR_YOKOHAMA_deadline": 130
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_toolate"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.009708,
+      "passed": true
+    },
+    {
+      "name": "Order response IR_YOKOHAMA_no",
+      "initial": {
+        "choices": [
+          "IR_YOKOHAMA_no"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 3,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "ENROUTE",
+          "IR_YOKOHAMA_deadline": 130,
+          "IR_shipment_question_key": "shipment_question_3",
+          "IR_shipment_question_string": "[shipment_question_string_3]"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2",
+          "IR_YOKOHAMA_shipment_declined"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.020708,
+      "passed": true
+    },
+    {
+      "name": "Order response IR_YOKOHAMA_defer",
+      "initial": {
+        "choices": [
+          "IR_YOKOHAMA_defer"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2",
+          "IR_YOKOHAMA_shipment_defer"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.010709,
+      "passed": true
+    },
+    {
+      "name": "Order response undefined",
+      "initial": {
+        "choices": [
+          null
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.00775,
+      "passed": true
+    },
+    {
+      "name": "Order response INVALID",
+      "initial": {
+        "choices": [
+          "INVALID"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.006333,
+      "passed": true
+    },
+    {
+      "name": "Refusal with pirate met increments shipment status",
+      "initial": {
+        "choices": [
+          "IR_YOKOHAMA_no"
+        ],
+        "vars": {
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_YOKOHAMA_deadline": 130,
+          "IR_alsto": "MET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 3,
+          "IR_shipment_status_no": 2,
+          "IR_shipment_quest": "ENROUTE",
+          "IR_YOKOHAMA_deadline": 130,
+          "IR_alsto": "MET",
+          "IR_shipment_question_key": "shipment_question_3",
+          "IR_shipment_question_string": "[shipment_question_string_3]"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_YOKOHAMA_shipment_answer_2",
+          "IR_YOKOHAMA_shipment_declined"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.0265,
+      "passed": true
+    },
+    {
+      "name": "Pirate fee uses native credit floor 0",
+      "initial": {
+        "credits": 0,
+        "choices": [
+          null,
+          "IR_pirate_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 2,
+          "IR_shipment_quest": "SET",
+          "IR_alsto": "HELP_ACCEPTED"
+        },
+        "credits": 0,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_PIRATE_shipment_answer",
+          "IR_PIRATE_shipment_offer",
+          "IR_PIRATE_shipment_accepted"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.041334,
+      "passed": true
+    },
+    {
+      "name": "Pirate fee uses native credit floor 1",
+      "initial": {
+        "credits": 1,
+        "choices": [
+          null,
+          "IR_pirate_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 2,
+          "IR_shipment_quest": "SET",
+          "IR_alsto": "HELP_ACCEPTED"
+        },
+        "credits": 0,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_PIRATE_shipment_answer",
+          "IR_PIRATE_shipment_offer",
+          "IR_PIRATE_shipment_accepted"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.011334,
+      "passed": true
+    },
+    {
+      "name": "Pirate fee uses native credit floor 249999.9",
+      "initial": {
+        "credits": 249999.9,
+        "choices": [
+          null,
+          "IR_pirate_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 2,
+          "IR_shipment_quest": "SET",
+          "IR_alsto": "HELP_ACCEPTED"
+        },
+        "credits": 0,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_PIRATE_shipment_answer",
+          "IR_PIRATE_shipment_offer",
+          "IR_PIRATE_shipment_accepted"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.0165,
+      "passed": true
+    },
+    {
+      "name": "Pirate fee uses native credit floor 250000",
+      "initial": {
+        "credits": 250000,
+        "choices": [
+          null,
+          "IR_pirate_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 2,
+          "IR_shipment_quest": "SET",
+          "IR_alsto": "HELP_ACCEPTED"
+        },
+        "credits": 0,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_PIRATE_shipment_answer",
+          "IR_PIRATE_shipment_offer",
+          "IR_PIRATE_shipment_accepted"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.009917,
+      "passed": true
+    },
+    {
+      "name": "Pirate fee uses native credit floor 500000",
+      "initial": {
+        "credits": 500000,
+        "choices": [
+          null,
+          "IR_pirate_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 2,
+          "IR_shipment_quest": "SET",
+          "IR_alsto": "HELP_ACCEPTED"
+        },
+        "credits": 250000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_PIRATE_shipment_answer",
+          "IR_PIRATE_shipment_offer",
+          "IR_PIRATE_shipment_accepted"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.011625,
+      "passed": true
+    },
+    {
+      "name": "Accepted assistance re-inquiry charges a second time in source",
+      "initial": {
+        "credits": 1000000,
+        "choices": [
+          null,
+          "IR_pirate_yes",
+          null,
+          "IR_pirate_yes"
+        ],
+        "vars": {
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 3,
+          "IR_shipment_quest": "SET",
+          "IR_alsto": "HELP_ACCEPTED"
+        },
+        "credits": 500000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_PIRATE_shipment_answer",
+          "IR_PIRATE_shipment_offer",
+          "IR_PIRATE_shipment_accepted",
+          "IR_PIRATE_shipment_answer",
+          "IR_PIRATE_shipment_offer",
+          "IR_PIRATE_shipment_accepted"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.037875,
+      "passed": true
+    },
+    {
+      "name": "Pirate refusal still records a truthy clue flag",
+      "initial": {
+        "choices": [
+          null,
+          "IR_pirate_no"
+        ],
+        "vars": {
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 2,
+          "IR_shipment_status_no": 1,
+          "IR_shipment_quest": "SET",
+          "IR_alsto": "HELP_DECLINED"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_PIRATE_shipment_answer",
+          "IR_PIRATE_shipment_offer",
+          "IR_PIRATE_shipment_declined"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.012166,
+      "passed": true
+    },
+    {
+      "name": "Four original transport deaths overwrite ENROUTE before method check",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_transport_kill_count": 0
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_transport_kill_count": 4
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_solo_ambush"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.415875,
+      "passed": true
+    },
+    {
+      "name": "Alternate four-death method null",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ATMALA",
+          "IR_transport_kill_count": 0,
+          "IR_alsto": null
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_alsto": null,
+          "IR_shipment_quest_method": "SOLO_AMBUSH"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ]
+        ],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transports_disabled",
+            {
+              "count": 1
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 2
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 3
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 4
+            }
+          ],
+          [
+            "IR_solo_ambush"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.098333,
+      "passed": true
+    },
+    {
+      "name": "Alternate four-death method MET",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ATMALA",
+          "IR_transport_kill_count": 0,
+          "IR_alsto": "MET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_alsto": "MET",
+          "IR_shipment_quest_method": "SOLO_AMBUSH"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ]
+        ],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transports_disabled",
+            {
+              "count": 1
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 2
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 3
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 4
+            }
+          ],
+          [
+            "IR_solo_ambush"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.084958,
+      "passed": true
+    },
+    {
+      "name": "Alternate four-death method HELP_ACCEPTED",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ATMALA",
+          "IR_transport_kill_count": 0,
+          "IR_alsto": "HELP_ACCEPTED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_alsto": "HELP_ACCEPTED",
+          "IR_shipment_quest_method": "SOLO_AMBUSH"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ]
+        ],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transports_disabled",
+            {
+              "count": 1
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 2
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 3
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 4
+            }
+          ],
+          [
+            "IR_solo_ambush"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.072083,
+      "passed": true
+    },
+    {
+      "name": "Alternate four-death method HELP_DECLINED",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ATMALA",
+          "IR_transport_kill_count": 0,
+          "IR_alsto": "HELP_DECLINED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_alsto": "HELP_DECLINED",
+          "IR_shipment_quest_method": "SOLO_AMBUSH"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ]
+        ],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transports_disabled",
+            {
+              "count": 1
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 2
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 3
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 4
+            }
+          ],
+          [
+            "IR_solo_ambush"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.061958,
+      "passed": true
+    },
+    {
+      "name": "Alternate four-death method INFORMED",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ATMALA",
+          "IR_transport_kill_count": 0,
+          "IR_alsto": "INFORMED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_alsto": "INFORMED",
+          "IR_shipment_quest_method": "PIRATE_AMBUSH"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ]
+        ],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transports_disabled",
+            {
+              "count": 1
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 2
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 3
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 4
+            }
+          ],
+          [
+            "IR_abonlo_report",
+            null,
+            null,
+            "IR_abonlo_name"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.076167,
+      "passed": true
+    },
+    {
+      "name": "Three alternate deaths insufficient",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ATMALA",
+          "IR_transport_kill_count": 0
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ATMALA",
+          "IR_transport_kill_count": 3
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ]
+        ],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transports_disabled",
+            {
+              "count": 1
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 2
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 3
+            }
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.06925,
+      "passed": true
+    },
+    {
+      "name": "Single actor repeated callbacks would count four; engine uniqueness not simulated",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ATMALA",
+          "IR_transport_kill_count": 0
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "SUCCESS",
+          "IR_shipment_quest_method": "SOLO_AMBUSH"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ],
+          [
+            "actor-spawn",
+            "IR-disabled-transport",
+            1
+          ]
+        ],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transports_disabled",
+            {
+              "count": 1
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 2
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 3
+            }
+          ],
+          [
+            "IR_transports_disabled",
+            {
+              "count": 4
+            }
+          ],
+          [
+            "IR_solo_ambush"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.031625,
+      "passed": true
+    },
+    {
+      "name": "Exit helper reports without testing actual jump success",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "HELP_ACCEPTED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "HELP_ACCEPTED",
+          "IR_convoy_exited": "TRUE"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_report_abonlo"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.0395,
+      "passed": true
+    },
+    {
+      "name": "Any G8 main-station report informs hired pirates",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "HELP_ACCEPTED",
+          "IR_convoy_exited": "TRUE",
+          "IR_shipment_status_no": 2
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "INFORMED",
+          "IR_shipment_status_no": 3
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [
+          "IR_shipment_contact_report"
+        ],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.027125,
+      "passed": true
+    },
+    {
+      "name": "Nonmain station cannot send source report",
+      "initial": {
+        "main": false,
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "HELP_ACCEPTED",
+          "IR_convoy_exited": "TRUE"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "HELP_ACCEPTED",
+          "IR_convoy_exited": "TRUE"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.00775,
+      "passed": true
+    },
+    {
+      "name": "Missing native mission variable reads null so first increment is1",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "AMBUSH",
+          "IR_transport_kill_count": 0,
+          "IR_jumpcount": 1
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.085333,
+      "passed": true
+    },
+    {
+      "name": "No pirate clue fails on second G8 entry",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "DISPATCHED",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.01525,
+      "passed": true
+    },
+    {
+      "name": "Truthy pirate flag bypasses source entry limit MET",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "MET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "AMBUSH",
+          "IR_alsto": "MET",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.052667,
+      "passed": true
+    },
+    {
+      "name": "Truthy pirate flag bypasses source entry limit HELP_ACCEPTED",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "HELP_ACCEPTED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "AMBUSH",
+          "IR_alsto": "HELP_ACCEPTED",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.018792,
+      "passed": true
+    },
+    {
+      "name": "Truthy pirate flag bypasses source entry limit HELP_DECLINED",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "HELP_DECLINED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "AMBUSH",
+          "IR_alsto": "HELP_DECLINED",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.016333,
+      "passed": true
+    },
+    {
+      "name": "Truthy pirate flag bypasses source entry limit INFORMED",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_alsto": "INFORMED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "AMBUSH",
+          "IR_alsto": "INFORMED",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.016458,
+      "passed": true
+    },
+    {
+      "name": "Atmala source battle roster informed=false",
+      "initial": {
+        "system": 112,
+        "vars": {
+          "IR_shipment_quest": "AMBUSH",
+          "IR_alsto": "MET"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ATMALA",
+          "IR_alsto": "MET",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [
+          {
+            "role": "IR-transport-alternate",
+            "count": 4,
+            "pos": {
+              "x": 0,
+              "y": 0,
+              "z": 0.1,
+              "source": "wpu"
+            }
+          },
+          {
+            "role": "IR-sdf-asp",
+            "count": 4,
+            "pos": {
+              "x": 0,
+              "y": 0,
+              "z": 0.1,
+              "source": "wpu"
+            }
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            112
+          ]
+        ],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.458833,
+      "passed": true
+    },
+    {
+      "name": "Atmala source battle roster informed=true",
+      "initial": {
+        "system": 112,
+        "vars": {
+          "IR_shipment_quest": "AMBUSH",
+          "IR_alsto": "INFORMED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ATMALA",
+          "IR_alsto": "INFORMED",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [
+          {
+            "role": "IR-transport-alternate",
+            "count": 4,
+            "pos": {
+              "x": 0,
+              "y": 0,
+              "z": 0.1,
+              "source": "wpu"
+            }
+          },
+          {
+            "role": "IR-sdf-asp",
+            "count": 4,
+            "pos": {
+              "x": 0,
+              "y": 0,
+              "z": 0.1,
+              "source": "wpu"
+            }
+          },
+          {
+            "role": "pirate",
+            "count": 40,
+            "pos": {
+              "x": 0,
+              "y": 0,
+              "z": 0.6,
+              "source": "wpu"
+            }
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            112
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ],
+          [
+            "AI",
+            "pirate",
+            "IR-pirateAI.plist"
+          ]
+        ],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_prepare_ambush",
+            null,
+            null,
+            "IR_abonlo_name"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.061375,
+      "passed": true
+    },
+    {
+      "name": "Leaving unfinished Atmala encounter marks dispatched",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ATMALA",
+          "IR_alsto": "INFORMED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "DISPATCHED",
+          "IR_alsto": "INFORMED"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.010667,
+      "passed": true
+    },
+    {
+      "name": "Retaliation strict U<.5 0",
+      "initial": {
+        "draws": [
+          0
+        ],
+        "vars": {
+          "IR_shipment_quest": "COMPLETED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "spawn": [
+          {
+            "role": "IR-sdf-asp",
+            "count": 3,
+            "pos": {
+              "fraction": 0.1
+            }
+          }
+        ],
+        "actions": [
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ],
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ],
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ]
+        ],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.054917,
+      "passed": true
+    },
+    {
+      "name": "Retaliation strict U<.5 0.49999",
+      "initial": {
+        "draws": [
+          0.49999
+        ],
+        "vars": {
+          "IR_shipment_quest": "COMPLETED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "spawn": [
+          {
+            "role": "IR-sdf-asp",
+            "count": 3,
+            "pos": {
+              "fraction": 0.1
+            }
+          }
+        ],
+        "actions": [
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ],
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ],
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ]
+        ],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.008542,
+      "passed": true
+    },
+    {
+      "name": "Retaliation strict U<.5 0.5",
+      "initial": {
+        "draws": [
+          0.5
+        ],
+        "vars": {
+          "IR_shipment_quest": "COMPLETED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.004208,
+      "passed": true
+    },
+    {
+      "name": "Retaliation strict U<.5 0.99999",
+      "initial": {
+        "draws": [
+          0.99999
+        ],
+        "vars": {
+          "IR_shipment_quest": "COMPLETED"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.003958,
+      "passed": true
+    },
+    {
+      "name": "Retaliation still rolls after an unrelated parent phase in source",
+      "initial": {
+        "draws": [
+          0
+        ],
+        "vars": {
+          "IR_status": "IR_epilogue",
+          "IR_shipment_quest": "TIPPEDOFF"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_epilogue",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "TIPPEDOFF"
+        },
+        "credits": 1000000,
+        "spawn": [
+          {
+            "role": "IR-sdf-asp",
+            "count": 3,
+            "pos": {
+              "fraction": 0.1
+            }
+          }
+        ],
+        "actions": [
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ],
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ],
+          [
+            "AI",
+            "IR-sdf-asp",
+            "pirateAI.plist"
+          ]
+        ],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.0255,
+      "passed": true
+    },
+    {
+      "name": "Aletius launch makes four boats plus two inherited escorts each",
+      "initial": {
+        "system": 171,
+        "draws": [
+          0.99999,
+          0.99999,
+          0.99999,
+          0.99999,
+          0.99999,
+          0.99999,
+          0.99999,
+          0.99999
+        ],
+        "vars": {
+          "IR_shipment_quest": "ENROUTE"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ENROUTE",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [
+          {
+            "role": "IR-transport",
+            "count": 4,
+            "pos": {
+              "fraction": 1
+            },
+            "radius": 8000
+          }
+        ],
+        "actions": [],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transport_clear",
+            null,
+            null,
+            "Aletius Control"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.161291,
+      "passed": true
+    },
+    {
+      "name": "Aletius source convoy count reset can overwrite prior progress",
+      "initial": {
+        "system": 171,
+        "vars": {
+          "IR_shipment_quest": "ENROUTE",
+          "IR_transport_kill_count": 2
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ENROUTE",
+          "IR_transport_kill_count": 0
+        },
+        "credits": 1000000,
+        "spawn": [
+          {
+            "role": "IR-transport",
+            "count": 4,
+            "pos": {
+              "fraction": 1
+            },
+            "radius": 8000
+          }
+        ],
+        "actions": [],
+        "messages": [],
+        "mfd": [
+          [
+            "IR_transport_clear",
+            null,
+            null,
+            "Aletius Control"
+          ]
+        ]
+      },
+      "source_callback_duration_ms": 0.025083,
+      "passed": true
+    },
+    {
+      "name": "Actor selects first planned route neighbour but legacy exit separate",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ENROUTE"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "AI",
+            "IR-transport",
+            "IR-transport-exitAI.plist"
+          ]
+        ],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.093084,
+      "passed": true
+    },
+    {
+      "name": "Missing actor route leaves destination unset",
+      "initial": {
+        "vars": {
+          "IR_shipment_quest": "ENROUTE"
+        }
+      },
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "ENROUTE"
+        },
+        "credits": 1000000,
+        "spawn": [],
+        "actions": [
+          [
+            "AI",
+            "IR-transport",
+            "IR-transport-exitAI.plist"
+          ]
+        ],
+        "messages": [],
+        "mfd": []
+      },
+      "source_callback_duration_ms": 0.044458,
+      "passed": true
+    }
+  ]
+}

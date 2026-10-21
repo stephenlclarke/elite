@@ -54,12 +54,79 @@ class RefinedDesignTests(unittest.TestCase):
             Path("Tests/Fixtures/ship-visual-revision-baseline.json").read_text()
         )["ships"]
         ships = {s["id"]: s for s in files.read_ships()}
+        deltas = json.loads(Path("Tests/Fixtures/ship-catalogue-balance-baseline-deltas.json").read_text())["ships"]
+        balance = {row["id"]: row for row in json.loads(Path("docs/research/data/ship-catalogue-balance.json").read_text())["ships"]}
         self.assertTrue(set(baseline).issubset(ships))
         source_count = 0
         for ident, record in baseline.items():
             ship = ships[ident]
+            preserved = copy.deepcopy({k: v for k, v in ship.items() if k != "design"})
+            self.assertEqual(preserved.pop("catalogue"), balance[ident]["catalogue"], ident)
+            # Reverse only the reviewed project balance delta, keeping the original
+            # whole-record and imported geometry pins below fully authoritative.
+            delta = deltas.get(ident, {})
+            if "name" in delta:
+                self.assertEqual(preserved["name"], delta["name"]["after"], ident)
+                preserved["name"] = delta["name"]["before"]
+            if "cargo" in delta:
+                self.assertEqual(preserved["game"]["cargo"], delta["cargo"]["after"], ident)
+                preserved["game"]["cargo"] = delta["cargo"]["before"]
+            for change in delta.get("fields", []):
+                profile = next(p for p in preserved["profiles"] if p["id"] == change["profile"])
+                index = next(i for i, f in enumerate(profile["fields"]) if f["key"] == change["key"])
+                self.assertEqual(digest(profile["fields"][index]), change["afterSHA256"], ident)
+                if change["before"] is None:
+                    profile["fields"].pop(index)
+                else:
+                    profile["fields"][index] = copy.deepcopy(change["before"])
+            if ident == "SH023":
+                # Independent utility fittings were added after this visual baseline.
+                # Check that addition exactly while keeping every original field pinned.
+                self.assertEqual(
+                    preserved["game"].pop("workTools", None),
+                    ["miningLaser", "salvageCutter"],
+                    ident,
+                )
+            if ident == "SH128":
+                # Approved 8ebb582 changes only the player hold and two current
+                # refit fields. Reverse that exact delta to retain the old pin.
+                self.assertEqual(preserved["game"]["cargo"], 12, ident)
+                preserved["game"]["cargo"] = 0
+                profile = next(
+                    p for p in preserved["profiles"] if p["id"] == "PROJECT-PLAYER-SH128"
+                )
+                fields = {f["key"]: f for f in profile["fields"]}
+                borrowed = (
+                    "Pinned O08 oolite_template_transporter max_cargo12; replaces prior "
+                    "volume-based zero estimate, not a claim that Transporter was "
+                    "originally a flyable Oolite ship."
+                )
+                for key, old_status, old_basis in [
+                    ("cargo_tonnes", "estimated", "O08 model envelope"),
+                    (
+                        "usable_cargo_after_fit",
+                        "standard unladen refit",
+                        "Zero fitted charter berths; operating quarters are outside usable "
+                        "cargo. Berths require 5t plus one equipment unit each.",
+                    ),
+                ]:
+                    field = fields[key]
+                    basis = borrowed
+                    if key == "usable_cargo_after_fit":
+                        basis += " Unladen common fit has no fitted cabin deduction."
+                    self.assertEqual(
+                        {k: field[k] for k in ["text", "number", "status", "basis"]},
+                        {
+                            "text": "12 t",
+                            "number": 12,
+                            "status": "borrowed native NPC capacity for player adaptation",
+                            "basis": basis,
+                        },
+                        ident,
+                    )
+                    field.update(text="0 t", number=0, status=old_status, basis=old_basis)
             self.assertEqual(
-                digest({k: v for k, v in ship.items() if k != "design"}),
+                digest(preserved),
                 record["unchangedRecord"],
                 ident,
             )

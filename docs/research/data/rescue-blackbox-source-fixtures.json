@@ -1,0 +1,318 @@
+{
+  "package_id": "P30",
+  "version": "1.5.4",
+  "scope": "Selected actual3/3a callbacks; source40percent guard bypass, unverified cargo award and repeated population recorded as defects, not project accepted behaviour. Mocked engine, no native/binary parity.",
+  "runtime": "v26.9.0",
+  "total": 44,
+  "passed": 44,
+  "cases": [
+    {
+      "name": "base gate -1,0,0.6",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.2647499999999994,
+      "passed": true
+    },
+    {
+      "name": "base gate 0,50,0.6",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.03770800000000207,
+      "passed": true
+    },
+    {
+      "name": "base gate 0,51,0.6",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.010916000000001702,
+      "passed": true
+    },
+    {
+      "name": "base gate 0,0,0.600001",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.010374999999996248,
+      "passed": true
+    },
+    {
+      "name": "source variant40percent bypass -1,0,99,0.3999",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.02850000000000108,
+      "passed": true
+    },
+    {
+      "name": "source variant40percent bypass 20,1,0,0.4",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.01504200000000111,
+      "passed": true
+    },
+    {
+      "name": "source variant40percent bypass 40,10,0,0.3999",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.0066670000000002005,
+      "passed": true
+    },
+    {
+      "name": "source variant40percent bypass 40,10,0,0.5",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.007999999999995566,
+      "passed": true
+    },
+    {
+      "name": "blackbox payoff rescue_scenario_3.js,0",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.07537500000000108,
+      "passed": true
+    },
+    {
+      "name": "blackbox payoff rescue_scenario_3.js,2",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.025791999999995596,
+      "passed": true
+    },
+    {
+      "name": "blackbox payoff rescue_scenario_3a.js,0",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.043084000000000344,
+      "passed": true
+    },
+    {
+      "name": "failure delta rescue_scenario_3.js stage2",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.026166000000003464,
+      "passed": true
+    },
+    {
+      "name": "failure delta rescue_scenario_3.js stage100",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.009792000000004464,
+      "passed": true
+    },
+    {
+      "name": "failure delta rescue_scenario_3.js stage1001",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.007540999999996245,
+      "passed": true
+    },
+    {
+      "name": "failure delta rescue_scenario_3a.js stage2",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.016500000000000625,
+      "passed": true
+    },
+    {
+      "name": "failure delta rescue_scenario_3a.js stage100",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.009958999999994944,
+      "passed": true
+    },
+    {
+      "name": "failure delta rescue_scenario_3a.js stage1001",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.006292000000001963,
+      "passed": true
+    },
+    {
+      "name": "return strict deadline 199.99",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.032125000000000625,
+      "passed": true
+    },
+    {
+      "name": "return strict deadline 200",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.007083000000001505,
+      "passed": true
+    },
+    {
+      "name": "return strict deadline 200.01",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.00679200000000435,
+      "passed": true
+    },
+    {
+      "name": "ping/ambush range 6999.99",
+      "source": "Scripts/rescue_scenario_3_blackbox.js",
+      "source_sha256": "5fb7d0e670d8d9522d33438dbca1795d1a2cb2f914b1cdfc0da3a2ea6bdbd7fe",
+      "duration_ms": 0.04641699999999105,
+      "passed": true
+    },
+    {
+      "name": "ping/ambush range 7000",
+      "source": "Scripts/rescue_scenario_3_blackbox.js",
+      "source_sha256": "5fb7d0e670d8d9522d33438dbca1795d1a2cb2f914b1cdfc0da3a2ea6bdbd7fe",
+      "duration_ms": 0.004374999999996021,
+      "passed": true
+    },
+    {
+      "name": "blackbox scoop playerfalse",
+      "source": "Scripts/rescue_scenario_3_blackbox.js",
+      "source_sha256": "5fb7d0e670d8d9522d33438dbca1795d1a2cb2f914b1cdfc0da3a2ea6bdbd7fe",
+      "duration_ms": 0.047040999999993005,
+      "passed": true
+    },
+    {
+      "name": "blackbox scoop playertrue",
+      "source": "Scripts/rescue_scenario_3_blackbox.js",
+      "source_sha256": "5fb7d0e670d8d9522d33438dbca1795d1a2cb2f914b1cdfc0da3a2ea6bdbd7fe",
+      "duration_ms": 0.008332999999993262,
+      "passed": true
+    },
+    {
+      "name": "source collection sets100 before unverified cargo award",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.30691699999999855,
+      "passed": true
+    },
+    {
+      "name": "recursive board count firsttwo continuation rolls",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.017750000000006594,
+      "passed": true
+    },
+    {
+      "name": "source spawnsreturnassassins on everyqualifying population",
+      "source": "Scripts/rescue_scenario_3a.js",
+      "source_sha256": "d6ab2ec02b107204bb0fb5136d5c20c570b4885d9afd97f3d2957a464f54a3b6",
+      "duration_ms": 0.05408400000000313,
+      "passed": true
+    },
+    {
+      "name": "source board reevaluates availableCount at everyloopguard",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.09100000000000819,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins0 gov0",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.08654099999999687,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins0 gov1",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.014125000000007049,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins0 gov2",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.013083000000008838,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins0 gov3",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.018166999999991162,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins0 gov4",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.013708000000008269,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins0 gov5",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.01229200000000219,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins0 gov6",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.012416999999999234,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins0 gov7",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.01129099999999994,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins1 gov0",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.03462500000000546,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins1 gov1",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.02462500000000034,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins1 gov2",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.017250000000004206,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins1 gov3",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.021540999999999144,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins1 gov4",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.01387499999999875,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins1 gov5",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.012666999999993322,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins1 gov6",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.01141700000000867,
+      "passed": true
+    },
+    {
+      "name": "source quote/timer/ambush init wins1 gov7",
+      "source": "Scripts/rescue_scenario_3.js",
+      "source_sha256": "8494e8a3cae7e0ea425a7da02ceafca0d21a031e60782b91cc657f5cab164e9e",
+      "duration_ms": 0.011167000000000371,
+      "passed": true
+    }
+  ]
+}

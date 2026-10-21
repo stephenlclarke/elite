@@ -1,0 +1,851 @@
+{
+  "source_id": "S41",
+  "profile": "MSX-DISC Firebird/Mr.Micro 1987 disassembly",
+  "commit": "6bfa450047c54979b0588f317eda63c8ddabede1",
+  "file": "shapes.asm",
+  "file_sha256": "f298828f406f09d5598822ce373b4662ad9a8db05e3f94307397bc683a9c73f2",
+  "limitations": [
+    "Raw blueprint fields, not SI physics. IDs 8-11 are title letters; 0 is unused.",
+    "No third-party geometry is bundled. Source-byte/retail-disk equivalence remains untested.",
+    "Some semantic names come from the annotated source; simulation/AI readers remain required."
+  ],
+  "objects": [
+    {
+      "type_id": 1,
+      "source_label": "SHIP_SPACE_STATION",
+      "ship_hull": {
+        "pad": 210,
+        "energy": 255
+      },
+      "ship_draw": {
+        "scale": 0,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 226,
+        "hit": 0,
+        "behav": 24
+      },
+      "ship_ai": {
+        "missile": 128,
+        "loot": 115,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 500
+      }
+    },
+    {
+      "type_id": 2,
+      "source_label": "SHIP_MISSILE",
+      "ship_hull": {
+        "pad": 38,
+        "energy": 1
+      },
+      "ship_draw": {
+        "scale": 56,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 68,
+        "hit": 40,
+        "behav": 24
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 0
+      }
+    },
+    {
+      "type_id": 3,
+      "source_label": "SHIP_CARGO_CANISTER",
+      "ship_hull": {
+        "pad": 28,
+        "energy": 17
+      },
+      "ship_draw": {
+        "scale": 15,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 50,
+        "hit": 0,
+        "behav": 24
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 0
+      }
+    },
+    {
+      "type_id": 4,
+      "source_label": "SHIP_ASTEROID",
+      "ship_hull": {
+        "pad": 79,
+        "energy": 60
+      },
+      "ship_draw": {
+        "scale": 30,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 81,
+        "hit": 0,
+        "behav": 12
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 5,
+        "score": 0
+      }
+    },
+    {
+      "type_id": 5,
+      "source_label": "SHIP_ESCAPE_CAPSULE",
+      "ship_hull": {
+        "pad": 30,
+        "energy": 40
+      },
+      "ship_draw": {
+        "scale": 23,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 38,
+        "hit": 24,
+        "behav": 10
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 50
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 90
+      }
+    },
+    {
+      "type_id": 6,
+      "source_label": "SHIP_THARGON",
+      "ship_hull": {
+        "pad": 35,
+        "energy": 30
+      },
+      "ship_draw": {
+        "scale": 20,
+        "vdist": 6,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 35,
+        "hit": 24,
+        "behav": 62
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 50
+      },
+      "ship_reward": {
+        "bounty": 10,
+        "score": 20
+      }
+    },
+    {
+      "type_id": 7,
+      "source_label": "SHIP_PLATLET",
+      "ship_hull": {
+        "pad": 39,
+        "energy": 0
+      },
+      "ship_draw": {
+        "scale": 20,
+        "vdist": 0,
+        "norm": 0
+      },
+      "ship_combat": {
+        "radius": 47,
+        "hit": 0,
+        "behav": 24
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 0
+      }
+    },
+    {
+      "type_id": 8,
+      "source_label": "SHIP_LETTER_E",
+      "ship_hull": {
+        "pad": 0,
+        "energy": 0
+      },
+      "ship_draw": {
+        "scale": 0,
+        "vdist": 255,
+        "norm": 0
+      },
+      "ship_combat": {
+        "radius": 12,
+        "hit": 0,
+        "behav": 0
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 0
+      }
+    },
+    {
+      "type_id": 9,
+      "source_label": "SHIP_LETTER_L",
+      "ship_hull": {
+        "pad": 0,
+        "energy": 0
+      },
+      "ship_draw": {
+        "scale": 0,
+        "vdist": 255,
+        "norm": 0
+      },
+      "ship_combat": {
+        "radius": 12,
+        "hit": 0,
+        "behav": 0
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 0
+      }
+    },
+    {
+      "type_id": 10,
+      "source_label": "SHIP_LETTER_I",
+      "ship_hull": {
+        "pad": 0,
+        "energy": 0
+      },
+      "ship_draw": {
+        "scale": 0,
+        "vdist": 255,
+        "norm": 0
+      },
+      "ship_combat": {
+        "radius": 12,
+        "hit": 0,
+        "behav": 0
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 0
+      }
+    },
+    {
+      "type_id": 11,
+      "source_label": "SHIP_LETTER_T",
+      "ship_hull": {
+        "pad": 0,
+        "energy": 0
+      },
+      "ship_draw": {
+        "scale": 0,
+        "vdist": 255,
+        "norm": 0
+      },
+      "ship_combat": {
+        "radius": 12,
+        "hit": 0,
+        "behav": 0
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 0
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 0
+      }
+    },
+    {
+      "type_id": 12,
+      "source_label": "SHIP_VIPER",
+      "ship_hull": {
+        "pad": 38,
+        "energy": 120
+      },
+      "ship_draw": {
+        "scale": 30,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 60,
+        "hit": 28,
+        "behav": 82
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 100
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 50
+      }
+    },
+    {
+      "type_id": 13,
+      "source_label": "SHIP_FER_DE_LANCE",
+      "ship_hull": {
+        "pad": 49,
+        "energy": 40
+      },
+      "ship_draw": {
+        "scale": 30,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 55,
+        "hit": 20,
+        "behav": 86
+      },
+      "ship_ai": {
+        "missile": 1,
+        "loot": 0,
+        "aggro": 50
+      },
+      "ship_reward": {
+        "bounty": 70,
+        "score": 100
+      }
+    },
+    {
+      "type_id": 14,
+      "source_label": "SHIP_COBRA_MK3",
+      "ship_hull": {
+        "pad": 77,
+        "energy": 72
+      },
+      "ship_draw": {
+        "scale": 30,
+        "vdist": 21,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 134,
+        "hit": 32,
+        "behav": 2
+      },
+      "ship_ai": {
+        "missile": 131,
+        "loot": 115,
+        "aggro": 100
+      },
+      "ship_reward": {
+        "bounty": 50,
+        "score": 80
+      }
+    },
+    {
+      "type_id": 15,
+      "source_label": "SHIP_PYTHON",
+      "ship_hull": {
+        "pad": 80,
+        "energy": 80
+      },
+      "ship_draw": {
+        "scale": 20,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 100,
+        "hit": 12,
+        "behav": 1
+      },
+      "ship_ai": {
+        "missile": 1,
+        "loot": 179,
+        "aggro": 50
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 40
+      }
+    },
+    {
+      "type_id": 16,
+      "source_label": "SHIP_ANACONDA",
+      "ship_hull": {
+        "pad": 79,
+        "energy": 112
+      },
+      "ship_draw": {
+        "scale": 14,
+        "vdist": 12,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 90,
+        "hit": 12,
+        "behav": 2
+      },
+      "ship_ai": {
+        "missile": 131,
+        "loot": 131,
+        "aggro": 100
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 90
+      }
+    },
+    {
+      "type_id": 17,
+      "source_label": "SHIP_COBRA_MK1",
+      "ship_hull": {
+        "pad": 54,
+        "energy": 72
+      },
+      "ship_draw": {
+        "scale": 26,
+        "vdist": 10,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 67,
+        "hit": 32,
+        "behav": 2
+      },
+      "ship_ai": {
+        "missile": 131,
+        "loot": 0,
+        "aggro": 50
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 60
+      }
+    },
+    {
+      "type_id": 18,
+      "source_label": "SHIP_KRAIT",
+      "ship_hull": {
+        "pad": 61,
+        "energy": 180
+      },
+      "ship_draw": {
+        "scale": 30,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 80,
+        "hit": 32,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 193,
+        "aggro": 100
+      },
+      "ship_reward": {
+        "bounty": 100,
+        "score": 90
+      }
+    },
+    {
+      "type_id": 19,
+      "source_label": "SHIP_THARGOID",
+      "ship_hull": {
+        "pad": 100,
+        "energy": 255
+      },
+      "ship_draw": {
+        "scale": 20,
+        "vdist": 15,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 110,
+        "hit": 32,
+        "behav": 62
+      },
+      "ship_ai": {
+        "missile": 129,
+        "loot": 0,
+        "aggro": 150
+      },
+      "ship_reward": {
+        "bounty": 150,
+        "score": 150
+      }
+    },
+    {
+      "type_id": 20,
+      "source_label": "SHIP_BOA",
+      "ship_hull": {
+        "pad": 80,
+        "energy": 124
+      },
+      "ship_draw": {
+        "scale": 24,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 95,
+        "hit": 16,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 1,
+        "loot": 147,
+        "aggro": 50
+      },
+      "ship_reward": {
+        "bounty": 150,
+        "score": 60
+      }
+    },
+    {
+      "type_id": 21,
+      "source_label": "SHIP_GECKO",
+      "ship_hull": {
+        "pad": 39,
+        "energy": 190
+      },
+      "ship_draw": {
+        "scale": 30,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 66,
+        "hit": 28,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 130,
+        "loot": 66,
+        "aggro": 150
+      },
+      "ship_reward": {
+        "bounty": 150,
+        "score": 90
+      }
+    },
+    {
+      "type_id": 22,
+      "source_label": "SHIP_MORAY",
+      "ship_hull": {
+        "pad": 49,
+        "energy": 96
+      },
+      "ship_draw": {
+        "scale": 25,
+        "vdist": 11,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 67,
+        "hit": 16,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 2,
+        "loot": 129,
+        "aggro": 100
+      },
+      "ship_reward": {
+        "bounty": 70,
+        "score": 50
+      }
+    },
+    {
+      "type_id": 23,
+      "source_label": "SHIP_ADDER",
+      "ship_hull": {
+        "pad": 36,
+        "energy": 112
+      },
+      "ship_draw": {
+        "scale": 24,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 50,
+        "hit": 16,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 1,
+        "loot": 97,
+        "aggro": 100
+      },
+      "ship_reward": {
+        "bounty": 120,
+        "score": 100
+      }
+    },
+    {
+      "type_id": 24,
+      "source_label": "SHIP_MAMBA",
+      "ship_hull": {
+        "pad": 39,
+        "energy": 40
+      },
+      "ship_draw": {
+        "scale": 32,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 72,
+        "hit": 36,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 1,
+        "loot": 161,
+        "aggro": 100
+      },
+      "ship_reward": {
+        "bounty": 150,
+        "score": 60
+      }
+    },
+    {
+      "type_id": 25,
+      "source_label": "SHIP_ASP_MK2",
+      "ship_hull": {
+        "pad": 57,
+        "energy": 200
+      },
+      "ship_draw": {
+        "scale": 40,
+        "vdist": 18,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 70,
+        "hit": 16,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 1,
+        "loot": 49,
+        "aggro": 150
+      },
+      "ship_reward": {
+        "bounty": 120,
+        "score": 110
+      }
+    },
+    {
+      "type_id": 26,
+      "source_label": "SHIP_SIDEWINDER",
+      "ship_hull": {
+        "pad": 42,
+        "energy": 40
+      },
+      "ship_draw": {
+        "scale": 27,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 70,
+        "hit": 36,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 1,
+        "loot": 177,
+        "aggro": 100
+      },
+      "ship_reward": {
+        "bounty": 50,
+        "score": 80
+      }
+    },
+    {
+      "type_id": 27,
+      "source_label": "SHIP_WOLF_MK2",
+      "ship_hull": {
+        "pad": 69,
+        "energy": 255
+      },
+      "ship_draw": {
+        "scale": 40,
+        "vdist": 29,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 120,
+        "hit": 36,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 131,
+        "loot": 145,
+        "aggro": 150
+      },
+      "ship_reward": {
+        "bounty": 115,
+        "score": 150
+      }
+    },
+    {
+      "type_id": 28,
+      "source_label": "SHIP_ORBIT_SHUTTLE",
+      "ship_hull": {
+        "pad": 31,
+        "energy": 112
+      },
+      "ship_draw": {
+        "scale": 8,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 39,
+        "hit": 16,
+        "behav": 9
+      },
+      "ship_ai": {
+        "missile": 1,
+        "loot": 129,
+        "aggro": 50
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 3
+      }
+    },
+    {
+      "type_id": 29,
+      "source_label": "SHIP_TRANSPORTER",
+      "ship_hull": {
+        "pad": 25,
+        "energy": 80
+      },
+      "ship_draw": {
+        "scale": 30,
+        "vdist": 12,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 39,
+        "hit": 16,
+        "behav": 9
+      },
+      "ship_ai": {
+        "missile": 0,
+        "loot": 0,
+        "aggro": 50
+      },
+      "ship_reward": {
+        "bounty": 0,
+        "score": 10
+      }
+    },
+    {
+      "type_id": 30,
+      "source_label": "SHIP_COUGAR",
+      "ship_hull": {
+        "pad": 49,
+        "energy": 255
+      },
+      "ship_draw": {
+        "scale": 40,
+        "vdist": 0,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 67,
+        "hit": 36,
+        "behav": 38
+      },
+      "ship_ai": {
+        "missile": 135,
+        "loot": 255,
+        "aggro": 150
+      },
+      "ship_reward": {
+        "bounty": 5000,
+        "score": 1000
+      }
+    },
+    {
+      "type_id": 31,
+      "source_label": "SHIP_CONSTRICTOR",
+      "ship_hull": {
+        "pad": 50,
+        "energy": 255
+      },
+      "ship_draw": {
+        "scale": 40,
+        "vdist": 17,
+        "norm": 1
+      },
+      "ship_combat": {
+        "radius": 75,
+        "hit": 36,
+        "behav": 62
+      },
+      "ship_ai": {
+        "missile": 255,
+        "loot": 114,
+        "aggro": 150
+      },
+      "ship_reward": {
+        "bounty": 4000,
+        "score": 5000
+      }
+    }
+  ]
+}

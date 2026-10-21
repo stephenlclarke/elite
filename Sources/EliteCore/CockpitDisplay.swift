@@ -32,9 +32,14 @@ public struct CockpitLayout: Sendable {
     leftColumns = sideWidth >= 400 ? 2 : 1
     let textColumns = max(20, Int((width - 24) / (6 * instrumentScale)))
     let weaponLines = game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
-    extraLines = (game.autoHUDLines + game.solarHUDLines + weaponLines + game.spin.hudLines).flatMap {
-      MissionNotice.wrap($0, width: textColumns)
-    }
+    let toolLines = ["TOOL: " + game.selectedFlightTool.label.uppercased() + " / W CHANGE"]
+    extraLines =
+      (game.autoHUDLines + game.electricalHUDLines + toolLines + game.salvageHUDLines
+      + game.solarHUDLines + weaponLines
+      + game.spin.hudLines)
+      .flatMap {
+        MissionNotice.wrap($0, width: textColumns)
+      }
     let rows = max(4, Int(ceil(6 / Double(leftColumns))))
     let scannerHeight = width < 900 ? 80.0 : 108.0
     let panelHeight =
@@ -59,7 +64,8 @@ extension Game {
   public var flightStatus: String {
     if docked { return "Docked" }
     if energy <= 0 { return "Destroyed" }
-    return bodies.contains(where: \.hostile) ? "Hostile" : "Safe"
+    return bodies.contains { $0.hostile && targetColourCue(for: $0) == .hostile }
+      ? "Hostile" : "Safe"
   }
   public var missileIconCount: Int { commander.unlimitedMissiles ? 1 : commander.missiles }
 }
@@ -112,15 +118,16 @@ extension Display {
     let visible = position.z > 1 && layout.flightClip.contains(point)
     let x = max(16, min(layout.width - 16, point.x))
     let y = max(layout.flightClip.y + 12, min(layout.flightClip.maxY - 12, point.y))
+    let cueInk = game.targetColourCue(for: target).ink ?? .cyan
     for sign in [-1.0, 1.0] {
-      frame.stroke(x + sign * 10, y - 8, x + sign * 10, y + 8, .cyan)
-      frame.stroke(x + sign * 10, y - 8, x + sign * 5, y - 8, .cyan)
-      frame.stroke(x + sign * 10, y + 8, x + sign * 5, y + 8, .cyan)
+      frame.stroke(x + sign * 10, y - 8, x + sign * 10, y + 8, cueInk)
+      frame.stroke(x + sign * 10, y - 8, x + sign * 5, y - 8, cueInk)
+      frame.stroke(x + sign * 10, y + 8, x + sign * 5, y + 8, cueInk)
     }
     if !visible {
       frame.label(
         "AUTO TARGET OFFSCREEN", 12, layout.flightClip.maxY - layout.row, scale: layout.font,
-        ink: .cyan)
+        ink: cueInk)
     }
   }
 
@@ -174,7 +181,7 @@ extension Display {
   ) {
     let gauges: [(String, Double, Ink)] = [
       ("Front shield", game.frontShield / game.commander.shieldCapacity, .green),
-      ("Rear shield", game.rearShield / game.commander.shieldCapacity, .green),
+      ("Rear shield", game.rearShield / game.commander.rearShieldCapacity, .green),
       ("Fuel", Double(game.commander.fuel) / Double(game.commander.fuelCapacity), .green),
       ("Cabin temp", game.cabinTemperature, .red), ("Laser heat", game.laserHeat / 255, .red),
       ("Altitude", game.altitude, .yellow),
@@ -196,7 +203,7 @@ extension Display {
     for (index, gauge) in [
       (
         "Speed",
-        (game.autoTargetBody?.hull == .station ? game.autoPilot.velocity.length / 18 : game.speed)
+        game.cockpitSpeed
           / game.commander.performance.speed
       ), ("Roll", game.roll), ("Pitch", game.pitch),
     ]
@@ -209,7 +216,9 @@ extension Display {
         layout: layout, ink: .green, signed: index > 0, into: &frame)
     }
     let y = layout.instrumentsTop + 3 * layout.row
-    frame.label("Energy", x, y, scale: layout.font, ink: .yellow)
+    frame.label(
+      game.commander.savedPlayerElectrical == nil ? "Energy" : "Hull", x, y,
+      scale: layout.font, ink: .yellow)
     let barX = x + min(instrumentWidth * 0.75, 13 * 6 * layout.instrumentScale)
     let barEnd = min(x + instrumentWidth, barX + 160)
     for bank in 0..<4 {
@@ -263,11 +272,12 @@ extension Display {
     frame.ellipse(cx, cy, rx, ry, .green)
     frame.stroke(cx - rx, cy, cx + rx, cy, .green)
     frame.stroke(cx, cy - ry, cx, cy + ry, .green)
+    let cueContext = game.gameplayContext()
     for body in game.bodies {
       let sx = cx + max(-rx + 2, min(rx - 2, body.position.x / 4400 * rx))
       let sy = cy + max(-ry + 2, min(ry - 2, -body.position.z / 8500 * ry))
       let lift = max(-ry / 2, min(ry / 2, body.position.y / 3000 * ry))
-      let ink: Ink = body.hostile ? .red : .green
+      let ink: Ink = game.targetColourCue(for: body, context: cueContext).ink ?? .green
       frame.stroke(sx, sy, sx, sy - lift, ink)
       frame.stroke(sx - 2, sy - lift, sx + 2, sy - lift, ink)
     }

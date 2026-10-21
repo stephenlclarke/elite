@@ -4,6 +4,7 @@ import Testing
 
 @Test func cockpitKeepsLabelsReadableWithinWindowAndUsesFullWidth() {
   var game = Game(executive: false)
+  game.commander.shipDisplayStyle = .whiteWireframe
   game.launch()
   game.bodies[1].position = .init(0, 0, 500)
   for width in [512.0, 768, 1024, 1512, 2560] {
@@ -34,24 +35,48 @@ import Testing
   }
 }
 
-@Test func missileIconsExpressZeroFiniteUnlimitedAndArmedWithoutOnlyColour() {
+@Test func missileIconsExpressZeroFiniteUnlimitedAndArmedWithoutOnlyColour() throws {
   var game = Game(executive: false)
+  game.commander.missiles = 0
   game.launch()
   for count in 0...4 {
-    game.commander.missiles = count
+    if count > 0 {
+      try game.commander.grantEquipment(
+        "Missile", at: .missilePylon(count - 1), provenance: .grant("missile icon fixture"))
+      #expect(
+        game.commander.fittedEquipment(at: .missilePylon(count - 1))?.node
+          == EquipmentRuntimeCatalog.standardMissile)
+    }
+    #expect(game.commander.missiles == count)
     #expect(game.missileIconCount == count)
     let frame = Display.cockpit(game, width: 1024, height: 768)
     #expect(frame.labels.contains { $0.text == "Unarmed" })
     #expect(frame.labels.contains { $0.text == "None" } == (count == 0))
     #expect(!frame.labels.contains { $0.text == "~" })
   }
-  game.commander.missiles = 0
+  for pylon in 0..<4 {
+    let round = try #require(game.commander.fittedEquipment(at: .missilePylon(pylon)))
+    let revision = try #require(game.commander.equipmentInventory?.revision)
+    try game.commander.storeEquipment(round, expectedRevision: revision)
+  }
+  #expect(game.commander.missiles == 0)
   game.commander.unlimitedMissiles = true
   game.key("t")
   #expect(game.missileArmed && game.missileIconCount == 1)
   let frame = Display.cockpit(game, width: 512, height: 518)
   #expect(frame.labels.contains { $0.text == "~" } && frame.labels.contains { $0.text == "Armed" })
-  game.fireMissile()
+  game.commander.flightSimulation.pose.position = .init(0, 0, -3000)
+  game.bodies = [.init(id: 70, hull: .cobra, position: .init(0, 0, 1800))]
+  game.ensurePhysicalActors()
+  let target = try #require(game.bodies[0].physical?.identity)
+  let inventory = try #require(game.commander.equipmentInventory)
+  let launched = game.fireMissile()
+  #expect(launched)
+  let origin = try #require(
+    game.bodies.first { $0.physical?.ordnance != nil }?.physical?.attackOrigin)
+  let flight = try #require(game.bodies.first { $0.physical?.ordnance != nil }?.physical?.ordnance)
+  #expect(origin.playerAmmunition == .virtualUnlimited && flight.target == target)
+  #expect(game.commander.equipmentInventory == inventory)
   #expect(!game.missileArmed && game.commander.missiles == 0)
 }
 
@@ -78,7 +103,7 @@ import Testing
   #expect(!game.commander.unlimitedCargo && !game.commander.unlimitedMissiles)
 }
 
-@Test func xyzzyFuelScoopsAreFittedAndCollectCargoOnlyThroughTheLowerScoop() {
+@Test func xyzzyFuelScoopsAreFittedAndCollectCargoOnlyThroughTheLowerScoop() throws {
   var game = Game(executive: false)
   game.launch()
   game.speed = 0
@@ -105,19 +130,27 @@ import Testing
   game.tick(delta: 0.01)
   #expect(game.commander.cargo[16] == 1 && game.bodies.isEmpty)
   for key in "xyzzy" { game.key(String(key)) }
-  game.commander.equipment.remove("Fuel Scoops")
+  let scoops = try #require(game.commander.fittedEquipment(at: .utility(.fuelScoops)))
+  let revision = try #require(game.commander.equipmentInventory?.revision)
+  try game.commander.storeEquipment(scoops, expectedRevision: revision)
+  #expect(game.commander.fittedEquipment(at: .utility(.fuelScoops)) == nil)
+  #expect(!game.commander.equipment.contains("Fuel Scoops"))
+  let cash = game.commander.credits
   game.key("f")
-  #expect(game.commander.equipment.contains("Fuel Scoops"))
+  #expect(game.commander.fittedEquipment(at: .utility(.fuelScoops))?.id == scoops.id)
+  #expect(game.commander.equipment.contains("Fuel Scoops") && game.commander.credits == cash)
+  #expect(game.commander.valid)
 }
 
 @Test func assistanceHUDKeepsTargetAndFlightWarningsVisibleWithinTheViewport() {
   var game = Game(executive: false)
+  game.commander.installTargetingComputer(.military)
   game.launch()
   game.commander.xyzzyActive = true
   game.commander.autoTarget = true
-  game.commander.installTargetingComputer(.military)
+  #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
   game.bodies = [.init(id: 1, hull: .cobra, position: .init(0, 0, 1000), hostile: true)]
-  game.key("r")
+  game.key("tab")
   game.key("v")
   game.key("]")
   game.tick(delta: 0.1)

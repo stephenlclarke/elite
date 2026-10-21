@@ -1,0 +1,5 @@
+# Retain unlimited distinct alien modules outside ordinary equipment pools
+
+FR-021 and FR-022 require four independently stackable alien module types: energy capacity, energy recharge, shield capacity and shield recharge. FR-024 explicitly removes a gameplay fitting-count limit. Extra identical modules must increase the matching stat and displays must aggregate their actual installed contribution. Acquired upgrade state remains irreversible; storing a physical module preserves it.
+
+The ordinary equipment inventory has a 256-item bound and unique fixed fitting locations. The salvage ledger also has finite storage and settlement pools. Reusing those as the permanent alien attachment owner would silently impose a module cap. Feature sets would deduplicate identical modules, while ordinary component promotion and terminal caps would absorb or reset alien contributions. A separate scalable physical attachment ledger must retain exact owner, item, hull and source identities, including retired sources, without claiming that pure source validation proves actual salvage or PLUGH fitting. See [implementation and integration requirements](PR-alien-attachment-ledger.md).
