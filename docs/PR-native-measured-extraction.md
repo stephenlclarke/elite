@@ -27,3 +27,9 @@ The exact 31-path delta includes only the approved four protected composition hu
 ## Linked work
 
 Implementation base: 0205c3fc8199530dfc1953c032012f7267bb116d, retaining the separate G2 compiler prerequisite. Authority: G12-MEASURED-EXTRACTION-COMPLETE-JOURNEY-DRAFT-20261021.md (SHA-256 532a2b2d5e3bef933b4d0ec2b50eede1fa6714eae210cedbb116d19ffd8317f9) and G12-ROOT-APPROVAL-20261021.json (SHA-256 1b5c1c862ed265e1b1303085525ae1b53023b5aa5c4d24ebdee365cf161abf0a). No external PR has been created.
+
+## Actual compiler result and correction
+
+G1 build 1152 on staged 8c859de3 failed before CLI or units. Raw log: /tmp/elite-G12-build-1152/build.log, SHA-256 b39e633caf813b18cb845ae37b5fc2058535f93ca97909ad23e2f76be5b6c281. The new save helper captured borrowing parameters in short-circuit right-hand sides and nested collection closures; the native compiler also reported a noncopyable-copy compiler bug in the unpaid-return filter. Replace those same-pattern expressions with scalar snapshots, explicit ordered membership checks and bounded loops. Preserve exact membership, ordering, cardinality, loss, carrier, pending-payload, conversion and receiver predicates. No tests, source model, COW representation, whole Commander/Game ownership or other paths change.
+
+The correction is limited to NativeMeasuredExtractionSave.swift and this existing issue/PR pair. Parsing, strict formatting/lint, Markdown lint and diff checks pass for the correction; a matching G1 compile remains required. Actual native CLI digest, all 27 selected methods / 53 cases and the one post-PASS independent review remain unrun. The original 1152 failure remains recorded.

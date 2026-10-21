@@ -17,3 +17,7 @@ Implement the approved G12 complete-journey draft and Root approval of 2026-10-2
 ## Acceptance and links
 
 See [implementation and qualification notes](PR-native-measured-extraction.md). Native compilation, actual CLI identity, focused units and one full independent review are required before integration. Full make ci coverage, sanitizer and leak gates remain release requirements. No external issue or PR has been created.
+
+## Compiler qualification correction
+
+G1 execution 1152 failed in the new save validator before CLI or unit execution. The native Swift compiler rejected borrowed values captured by Boolean right-hand sides and nested collection closures, including a reported noncopyable-copy compiler bug. Preserve every proof and custody predicate while expressing the same checks through scalar identities, ordered guards and explicit bounded loops. This is a source compatibility correction, not a validation waiver.
