@@ -4344,10 +4344,12 @@
       "selection_methods": 121,
       "new_methods": 6,
       "source_review": "MBA completed; no actionable source finding",
-      "unit_status": "existing hosted run active; artifact pending",
+      "unit_status": "MBA verified compile FAIL before any unit execution",
       "next_assigned": "M10.P02.C08.recovery",
       "usable_build_delivered": false,
-      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328761703"
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328761703",
+      "finding": "https://github.com/stephenlclarke/elite/issues/38",
+      "correction_owner": "G1 at natural packet boundary"
     }
   ]
 }
