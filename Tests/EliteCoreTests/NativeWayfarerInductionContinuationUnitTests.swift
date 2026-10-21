@@ -205,7 +205,7 @@ struct NativeWayfarerInductionContinuationUnitTests {
     #expect(NativeWayfarerInduction.receivingTarget == "navidor-clinic-quality-receipt")
     #expect(NativeWayfarerInduction.cassetteTarget == "enmadan-return-cassette")
     #expect(NativeWayfarerInduction.cassetteItem == "return-cassette")
-    #expect(NativeWayfarerInduction.laterStages.contains("7-14"))
+    #expect(NativeWayfarerInduction.laterStages.contains("8-14"))
     #expect(NativeWayfarerInduction.currentBriefing.contains("pay nothing"))
     #expect(NativeWayfarerInduction.currentBriefing.contains("1800"))
   }
