@@ -2586,6 +2586,17 @@
         27
       ],
       "qualification": "Issue closure records independently verified unreleased source, not merged/released usability. Generic review-service failure still blocks PR merge, not unrelated source-finding closure."
+    },
+    {
+      "at": "2026-10-21T19:14:13Z",
+      "event": "Glass Meridian opening source packet pushed; MBA source review assigned",
+      "ledger_parent": "K10.P01 / C01.P01",
+      "head": "e8d58798b5359e5510049a99052308484289a6aa",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6324383938",
+      "github_run": 39659807715,
+      "unit_status": "in_progress",
+      "usable_build_delivered": false,
+      "scope": "Opening stages1\u20132 only; stages3\u20139 remain unavailable"
     }
   ]
 }

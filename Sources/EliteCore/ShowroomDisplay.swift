@@ -291,7 +291,11 @@ extension Display {
     }
     var preview = game
     preview.screen = .front
-    preview.commander.shipDisplayStyle = .shadedPanels
+    let mode = FleetCataloguePreview.mode(
+      ship: ship, owner: game.commander.equipmentOwnerID, ownedShip: game.commander.shipID,
+      discovery: game.commander.scriptState.savedFleetDiscovery)
+    preview.commander.shipDisplayStyle =
+      mode == .recordedWireframe ? .whiteWireframe : .shadedPanels
     var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 400))
     body.orientation.rotate(
       pitch: 0.25 + game.showroom.angle * 0.3,
@@ -304,10 +308,13 @@ extension Display {
       center: .init(
         bounds.x + bounds.width / 2,
         bounds.y + bounds.height / 2), focal: min(bounds.width, bounds.height - 62) * 1.6)
-    draw(body, game: preview, into: &frame, projection: projection, mesh: mesh)
+    if mode == .silhouette {
+      FleetCataloguePreview.drawSilhouette(mesh, body: body, projection: projection, into: &frame)
+    } else {
+      draw(body, game: preview, into: &frame, projection: projection, mesh: mesh)
+    }
     frame.flightClip = clip
-    let caption =
-      ship.name
+    let caption = mode.caption.map { $0 + " / " + ship.name } ?? ship.name
     for (index, line) in ShowroomText.wrap(caption, width: columns).prefix(2).enumerated() {
       frame.label(line, bounds.x, bounds.maxY - 28 + Double(index) * 14, scale: font, ink: .cyan)
     }
