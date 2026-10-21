@@ -232,7 +232,7 @@
     {
       "as_of": "2026-10-21T16:48:10Z",
       "window_start": "2026-10-21T15:53:44Z",
-      "elapsed_hours": 0.9011111111111111,
+      "elapsed_hours": 0.9072222222222223,
       "feature_packets_pushed": 1,
       "fix_packets_pushed": 2,
       "product_packets_pushed": 3,
@@ -489,7 +489,7 @@
     {
       "as_of": "2026-10-21T16:54:38Z",
       "window_start": "2026-10-21T15:53:44Z",
-      "elapsed_hours": 0.9680555555555556,
+      "elapsed_hours": 1.015,
       "feature_packets_pushed": 1,
       "fix_packets_pushed": 3,
       "product_packets_pushed": 4,

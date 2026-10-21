@@ -84,6 +84,8 @@ All milestone statuses below are functional statuses. Prepared source/data, deli
 
 All other already integrated G/W/T family implementations retain the exact delivery/evidence in their existing inventory rows. They are not new rewrite packets. A remaining presentation, provider or correctness defect must be assigned a bounded child linked to that row, rather than reopening an entire family. Review/result follow-up is asynchronous and does not hold the developer.
 
+**Review workflow assignment / G1 and G2:** After each pushed source packet, G1 requests `@codex review` on a PR containing the exact pushed head and continues coding. G2 triages the automated review with its own diff/result review, links actionable root causes as ledger child issues and verifies corrected source/affected units/review before closure. See the [automated PR review loop](DEVELOPMENT-WORKFLOW.md#automated-pr-review-after-each-source-packet). No duplicate same-head request, integration-test authorization or developer wait is introduced.
+
 ### Ready reviewer corrections
 
 | Packet | Priority, owner and state | Bounded correction and evidence |
