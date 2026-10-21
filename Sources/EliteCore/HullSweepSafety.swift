@@ -1417,8 +1417,111 @@ private func sweepTriangleDistance(_ a: SweepTriangle, _ b: SweepTriangle) -> Do
   return distance
 }
 
+private func sweepVertexPointSegment(
+  _ point: Vector3, _ a: Vector3, edge: Vector3, square: Double
+) -> Double {
+  let fraction = square > 0 ? max(0, min(1, (point - a).dot(edge) / square)) : 0
+  return (point - a - edge * fraction).length
+}
+
+private func sweepVertexFastPointTriangle(
+  _ point: Vector3, _ triangle: SweepTriangle,
+  edges: (Vector3, Vector3, Vector3), squares: (Double, Double, Double)
+) -> Double {
+  let normal = triangle.fastNormal
+  let square = triangle.fastNormalSquared
+  let normalOffset = (point - triangle.a).dot(normal)
+  let projected = point - normal * (normalOffset / square)
+  var inside = true
+  if !(edges.0.cross(projected - triangle.a).dot(normal) >= 0) {
+    inside = false
+  } else if !(edges.1.cross(projected - triangle.b).dot(normal) >= 0) {
+    inside = false
+  } else if !(edges.2.cross(projected - triangle.c).dot(normal) >= 0) {
+    inside = false
+  }
+  if inside { return abs(normalOffset) / triangle.fastNormalLength }
+  var distance = sweepVertexPointSegment(point, triangle.a, edge: edges.0, square: squares.0)
+  let second = sweepVertexPointSegment(point, triangle.b, edge: edges.1, square: squares.1)
+  if second < distance { distance = second }
+  let third = sweepVertexPointSegment(point, triangle.c, edge: edges.2, square: squares.2)
+  if third < distance { distance = third }
+  return distance
+}
+
+private func sweepVertexConditionedPointTriangle(
+  _ point: Vector3, _ triangle: SweepTriangle,
+  a: SweepIntervalVector, normal: SweepIntervalVector, length: SweepInterval,
+  normalSquare: SweepInterval,
+  starts: (SweepIntervalVector, SweepIntervalVector, SweepIntervalVector),
+  directions: (SweepIntervalVector, SweepIntervalVector, SweepIntervalVector)
+) -> Double {
+  if triangle.unresolvedSupport { return sweepSupportPointDistance(point, triangle) }
+  guard length.finite, length.lower > 0 else { return sweepSupportPointDistance(point, triangle) }
+  let offset = SweepIntervalVector(point) - a
+  let signedDistance = offset.dot(normal)
+  let plane = (signedDistance / length).magnitude
+  guard plane.finite else { return 0 }
+  let projected = offset - normal * (signedDistance / normalSquare)
+  var definitelyOutside = false
+  if directions.0.cross(projected - starts.0).dot(normal).upper < 0 {
+    definitelyOutside = true
+  }
+  if directions.1.cross(projected - starts.1).dot(normal).upper < 0 {
+    definitelyOutside = true
+  }
+  if directions.2.cross(projected - starts.2).dot(normal).upper < 0 {
+    definitelyOutside = true
+  }
+  guard definitelyOutside else { return max(0, plane.lower) }
+  return (0..<3).map {
+    let edge = triangle.edge(at: $0)
+    return sweepConditionedPointSegment(point, edge.0, edge.1)
+  }.min() ?? 0
+}
+
 private func sweepVertexDistance(_ source: SweepTriangle, to target: SweepTriangle) -> Double {
   let conditioned = source.conditioned || target.conditioned
+  if !conditioned {
+    let edges = (target.b - target.a, target.c - target.b, target.a - target.c)
+    let squares = (edges.0.dot(edges.0), edges.1.dot(edges.1), edges.2.dot(edges.2))
+    var distance = sweepVertexFastPointTriangle(source.a, target, edges: edges, squares: squares)
+    for index in 1..<3 {
+      let candidate = sweepVertexFastPointTriangle(
+        source.vertex(at: index), target, edges: edges, squares: squares)
+      if candidate < distance { distance = candidate }
+    }
+    return distance
+  }
+  // Unresolved support keeps the original fallback before preparing or dividing a normal.
+  if !target.unresolvedSupport {
+    let a = SweepIntervalVector(target.a)
+    let normal = (SweepIntervalVector(target.b) - a).cross(SweepIntervalVector(target.c) - a)
+    let length = normal.length
+    if length.finite, length.lower > 0 {
+      let normalSquare = normal.dot(normal)
+      let starts = (
+        SweepIntervalVector(target.a) - a,
+        SweepIntervalVector(target.b) - a,
+        SweepIntervalVector(target.c) - a
+      )
+      let directions = (
+        SweepIntervalVector(target.b) - SweepIntervalVector(target.a),
+        SweepIntervalVector(target.c) - SweepIntervalVector(target.b),
+        SweepIntervalVector(target.a) - SweepIntervalVector(target.c)
+      )
+      var distance = sweepVertexConditionedPointTriangle(
+        source.a, target, a: a, normal: normal, length: length,
+        normalSquare: normalSquare, starts: starts, directions: directions)
+      for index in 1..<3 {
+        let candidate = sweepVertexConditionedPointTriangle(
+          source.vertex(at: index), target, a: a, normal: normal, length: length,
+          normalSquare: normalSquare, starts: starts, directions: directions)
+        if candidate < distance { distance = candidate }
+      }
+      return distance
+    }
+  }
   var distance = sweepPointTriangle(source.a, target, conditioned: conditioned)
   for index in 1..<3 {
     let candidate = sweepPointTriangle(source.vertex(at: index), target, conditioned: conditioned)
