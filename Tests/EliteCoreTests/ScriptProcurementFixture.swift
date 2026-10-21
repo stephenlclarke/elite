@@ -433,7 +433,7 @@ struct ScriptProcurementFixture {
         return
       }
     }
-    try #require(false, "Defended docking exhausted the original 3000 total advances.")
+    try #require(Bool(false), "Defended docking exhausted the original 3000 total advances.")
   }
   private static func preflight(
     _ runtime: GameRuntime, budget: inout ScriptProcurementPilotBudget,

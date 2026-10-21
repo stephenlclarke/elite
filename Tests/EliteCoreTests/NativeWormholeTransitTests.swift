@@ -132,7 +132,7 @@ struct NativeWormholeTransitTests {
   @Test func spoolPersistsAndCalendarCatchupCannotReplaceObservedDriveActivation() throws {
     let fixture = try NativeWormholeTransitFixture()
     defer { fixture.storage.clean() }
-    var (game, id, context) = try fixture.game()
+    var (game, id, _) = try fixture.game()
     let legID = try fixture.request(&game, instance: id)
     game.advanceNativeNPCTransit(from: nil, publish: fixture.publisher)
     let spool = try #require(game.commander.scriptState.wormholeTransit?.legs[legID])
