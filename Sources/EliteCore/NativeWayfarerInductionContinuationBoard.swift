@@ -6,6 +6,7 @@ extension NativeWayfarerInductionAction {
     case .accept, .progress: NativeWayfarerInduction.source
     case .pickup: NativeWayfarerInduction.clinic
     case .receive: NativeWayfarerInduction.receiver
+    case .service: NativeWayfarerInduction.clinic
     case .cassette: NativeWayfarerInduction.workshop
     }
   }
@@ -22,6 +23,11 @@ extension NativeWayfarerInductionState {
     if reception != nil && cassette == nil && system == NativeWayfarerInduction.workshop {
       return .cassette
     }
+    if cassette != nil && cassetteLoss == nil && cassetteService == nil
+      && system == NativeWayfarerInduction.clinic
+    {
+      return .service
+    }
     return .progress
   }
 }
@@ -35,7 +41,10 @@ extension Game {
     if state.loss != nil || state.cassetteLoss != nil {
       return "The original consignment was lost. No replacement stock or success is granted."
     }
-    if state.cassette != nil { return NativeWayfarerInduction.laterStages }
+    if state.cassetteService != nil { return NativeWayfarerInduction.laterStages }
+    if state.cassette != nil {
+      return "Confirm original cassette service and owner return at Renas repair desk."
+    }
     if state.reception != nil {
       return "Collect Enmadan's original failed workshop cassette for Renas."
     }
@@ -50,7 +59,8 @@ extension Game {
 
   var wayfarerInductionDestination: String {
     let state = wayfarerInductionMission?.savedWayfarerInduction
-    if state?.cassette != nil { return "Renas repair desk / later receiving locked" }
+    if state?.cassetteService != nil { return "Enlirin seed vault / consented loan still locked" }
+    if state?.cassette != nil { return "Renas main orbital repair desk, G01-S185" }
     if state?.reception != nil { return "Enmadan main orbital workshop, G01-S000" }
     if state?.crate != nil { return "Navidor main orbital clinic, G01-S164" }
     return "Renas main orbital clinic, G01-S185"
@@ -70,6 +80,12 @@ extension Game {
       guard state.reception != nil, state.cassette == nil else {
         return [
           "Confirm intact Navidor clinic receiving before this original cassette is released."
+        ]
+      }
+    } else if action == .service {
+      guard state.cassette != nil, state.cassetteLoss == nil, state.cassetteService == nil else {
+        return [
+          "The same original failed cassette must be aboard and not already serviced or returned."
         ]
       }
     }
@@ -117,7 +133,14 @@ extension Game {
       next = try state.collectingCassette(
         cassette, freeTonnes: commander.tradeCargoCapacity - commander.cargoTonnes)
       mission.journal.append(
-        "VEIL: Enmadan released its original failed one-tonne cassette for Renas repair receiving. It remains workshop property; collection pays nothing. Repair receiving and stages 5-14 remain unavailable."
+        "VEIL: Enmadan released its original failed one-tonne cassette for Renas repair receiving. It remains workshop property; collection pays nothing. Review actual service and the owner's receiving record at Renas repair desk."
+      )
+    } else if action == .service {
+      next = try inductionCassetteService(
+        state, dock: dock, carrier: carrier, revision: revision,
+        physicalTime: physicalTime, flightSeconds: clock)
+      mission.journal.append(
+        "Renas repaired the original cassette and recorded Enmadan workshop's receipt. The original serial remains in the service history; no second unit, payment, accreditation or clue was created."
       )
     } else {
       throw SaveError.invalidCommander
@@ -127,9 +150,11 @@ extension Game {
     mission.milestones = next.milestones
     mission.revision += 1
     commander.scriptState.instances[mission.id] = mission
-    notify(
-      action == .receive
-        ? "CLINIC CRATE RECEIVED INTACT - ENMADAN WORKSHOP NEXT"
-        : "ORIGINAL FAILED CASSETTE ABOARD - LATER REPAIR RECEIVING LOCKED")
+    switch action {
+    case .receive: notify("CLINIC CRATE RECEIVED INTACT - ENMADAN WORKSHOP NEXT")
+    case .cassette: notify("ORIGINAL FAILED CASSETTE ABOARD - RENAS REPAIR DESK NEXT")
+    case .service: notify("ORIGINAL CASSETTE SERVICED AND RETURNED - LATER STAGES LOCKED")
+    default: break
+    }
   }
 }

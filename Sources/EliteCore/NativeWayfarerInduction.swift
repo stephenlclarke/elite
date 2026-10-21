@@ -137,10 +137,12 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let reception: NativeInductionClinicReception?
   let cassette: NativeInductionWorkshopCassette?
   let cassetteLoss: NativeInductionCrateLoss?
+  let cassetteService: NativeInductionCassetteService?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
-    cassette: NativeInductionWorkshopCassette? = nil, cassetteLoss: NativeInductionCrateLoss? = nil
+    cassette: NativeInductionWorkshopCassette? = nil, cassetteLoss: NativeInductionCrateLoss? = nil,
+    cassetteService: NativeInductionCassetteService? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -148,11 +150,12 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.reception = reception
     self.cassette = cassette
     self.cassetteLoss = cassetteLoss
+    self.cassetteService = cassetteService
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
       && lhs.reception == rhs.reception && lhs.cassette == rhs.cassette
-      && lhs.cassetteLoss == rhs.cassetteLoss
+      && lhs.cassetteLoss == rhs.cassetteLoss && lhs.cassetteService == rhs.cassetteService
   }
   var valid: Bool {
     let p = permission
@@ -181,7 +184,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     return continuationValid
   }
   var payloads: [String: Int] {
-    if cassette != nil && cassetteLoss == nil {
+    if cassette != nil && cassetteLoss == nil && cassetteService == nil {
       return [NativeWayfarerInduction.cassettePayload: 1]
     }
     return crate != nil && loss == nil && reception == nil
@@ -226,7 +229,7 @@ enum NativeWayfarerInduction {
   static let clinic = SystemIdentity(galaxy: 0, system: 185)
   static let receiver = SystemIdentity(galaxy: 0, system: 164)
   static let laterStages =
-    "Stages 5-14, cassette repair receiving and accreditation are not yet available."
+    "Stages 6-14, the consented vault-key loan and accreditation are not yet available."
   static func mission(owner: UUID) -> UUID {
     ScriptIdentity.uuid("wayfarer-induction-v1:\(owner)")
   }

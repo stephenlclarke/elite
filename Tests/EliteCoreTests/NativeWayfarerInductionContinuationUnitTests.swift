@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-private struct InductionContinuationFixture {
+struct InductionContinuationFixture {
   let helpers = NativeWayfarerInductionUnitTests()
   let held: NativeWayfarerInductionState
   init() throws {
@@ -190,7 +190,7 @@ struct NativeWayfarerInductionContinuationUnitTests {
     }
   }
 
-  @Test func boardRoutingFollowsOriginalStageLocationsAndKeepsRepairAndAccreditationLocked()
+  @Test func boardRoutingFollowsOriginalStageLocationsAndKeepsAccreditationLocked()
     throws
   {
     let f = try InductionContinuationFixture()
@@ -200,12 +200,12 @@ struct NativeWayfarerInductionContinuationUnitTests {
     #expect(received.action(at: NativeWayfarerInduction.workshop) == .cassette)
     #expect(received.action(at: NativeWayfarerInduction.receiver) == .progress)
     let carried = try received.collectingCassette(f.cassette(received), freeTonnes: 1)
-    #expect(carried.action(at: NativeWayfarerInduction.clinic) == .progress)
+    #expect(carried.action(at: NativeWayfarerInduction.clinic) == .service)
     #expect(carried.action(at: NativeWayfarerInduction.workshop) == .progress)
     #expect(NativeWayfarerInduction.receivingTarget == "navidor-clinic-quality-receipt")
     #expect(NativeWayfarerInduction.cassetteTarget == "enmadan-return-cassette")
     #expect(NativeWayfarerInduction.cassetteItem == "return-cassette")
-    #expect(NativeWayfarerInduction.laterStages.contains("5-14"))
+    #expect(NativeWayfarerInduction.laterStages.contains("6-14"))
     #expect(NativeWayfarerInduction.currentBriefing.contains("pay nothing"))
     #expect(NativeWayfarerInduction.currentBriefing.contains("1800"))
   }

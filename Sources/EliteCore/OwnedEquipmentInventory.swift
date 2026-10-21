@@ -1,6 +1,6 @@
 import Foundation
 
-/// Closed current diagnosis of the original W02 transport unit; never a generic damage model.
+/// Closed diagnosis of the original W02 unit and C08 workshop cassette; not a generic damage model.
 public enum NativeRepairLoopCondition: Equatable, Codable, Sendable {
   case failed(sourceUnit: UUID)
   case operational(sourceUnit: UUID, operation: UUID)
@@ -8,6 +8,12 @@ public enum NativeRepairLoopCondition: Equatable, Codable, Sendable {
     switch self {
     case .failed(let unit), .operational(let unit, _): return unit
     }
+  }
+  func serviced(sourceUnit: UUID, operation: UUID) throws -> Self {
+    guard self == .failed(sourceUnit: sourceUnit) else {
+      throw OwnedEquipmentError.incompatibleComponent
+    }
+    return .operational(sourceUnit: sourceUnit, operation: operation)
   }
   var diagnostic: String {
     switch self {
@@ -285,16 +291,18 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
     expected item: OwnedEquipmentItem, operation: UUID, sourceUnit: UUID,
     context: OwnedEquipmentContext
   ) throws {
-    guard item.nativeRepairLoopCondition == .failed(sourceUnit: sourceUnit),
-      item.location == nil
-    else { throw OwnedEquipmentError.incompatibleComponent }
+    guard let currentCondition = item.nativeRepairLoopCondition, item.location == nil else {
+      throw OwnedEquipmentError.incompatibleComponent
+    }
+    let condition = try currentCondition.serviced(
+      sourceUnit: sourceUnit, operation: operation)
     try mutate(expectedRevision: revision, context: context) { items in
       let index = try Self.index(of: item, in: items)
       items[index] = .init(
         id: item.id, node: item.node, provenance: item.provenance, component: item.component,
         location: item.location, boundHull: item.boundHull, preferredSlot: item.preferredSlot,
         retainedLegacyState: item.retainedLegacyState,
-        nativeRepairLoopCondition: .operational(sourceUnit: sourceUnit, operation: operation))
+        nativeRepairLoopCondition: condition)
     }
   }
 

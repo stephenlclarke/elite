@@ -65,6 +65,7 @@ extension NativeWayfarerInductionState {
     if crate != nil { result.insert(1) }
     if reception != nil { result.insert(2) }
     if cassette != nil { result.insert(3) }
+    if cassetteService != nil { result.insert(4) }
     return result
   }
 
@@ -105,8 +106,13 @@ extension NativeWayfarerInductionState {
           cassetteLoss.facts.context.flightSeconds >= cassette.flightSeconds
         else { return false }
       }
-    } else if cassetteLoss != nil {
+    } else if cassetteLoss != nil || cassetteService != nil {
       return false
+    }
+    if let cassetteService {
+      guard let cassette, cassetteLoss == nil,
+        cassetteService.valid(cassette: cassette, owner: permission.owner)
+      else { return false }
     }
     return true
   }
@@ -132,5 +138,5 @@ extension NativeWayfarerInduction {
   // Keep the accepted opening pack's bytes/pin stable. This native projection describes the
   // now-supported continuation instead of changing historical acceptance or pickup evidence.
   static let currentBriefing =
-    "SENN: Accept the Avenor induction after an ordinary delivery or recorded native sale. Keep one free tonne. Collect Renas's unique sealed clinic crate, then Confirm intact reception at Navidor before its original 1800 armed-flight-second allowance expires. At Enmadan, collect the original failed workshop cassette for Renas's repair desk. These four stages pay nothing and grant no accreditation or clue. Stages 5-14 remain unavailable."
+    "SENN: Accept the Avenor induction after an ordinary delivery or recorded native sale. Keep one free tonne. Collect Renas's unique sealed clinic crate, then Confirm intact reception at Navidor before its original 1800 armed-flight-second allowance expires. At Enmadan, collect the original failed workshop cassette. At Renas, Confirm service of that original and its owner's receiving record. These five stages pay nothing and grant no accreditation or clue. Stages 6-14 remain unavailable."
 }

@@ -1,13 +1,18 @@
 import Foundation
 
 enum NativeWayfarerInductionSave {
-  static let version = 69
-  static let alienVersion = 70
+  static let version = 71
+  static let alienVersion = 72
   static func contains(_ schema: Int?) -> Bool {
-    schema == version || schema == alienVersion || schema == 67 || schema == 68
+    supportsContinuation(schema) || schema == 67 || schema == 68
   }
-  static func isAlien(_ schema: Int?) -> Bool { schema == alienVersion || schema == 68 }
+  static func isAlien(_ schema: Int?) -> Bool {
+    schema == alienVersion || schema == 70 || schema == 68
+  }
   static func supportsContinuation(_ schema: Int?) -> Bool {
+    supportsCassetteService(schema) || schema == 69 || schema == 70
+  }
+  static func supportsCassetteService(_ schema: Int?) -> Bool {
     schema == version || schema == alienVersion
   }
   static func lowerSchema(_ schema: Int?) -> Int? {
@@ -83,6 +88,14 @@ enum NativeWayfarerInductionSave {
         cassette.flightSeconds <= commander.scriptState.flightSeconds
       else { return false }
     }
+    if let service = state.cassetteService {
+      guard world.mainStations.contains(service.dock.station),
+        service.dock.sequence < world.nextMainDockSequence,
+        service.dock.actor.visit <= commander.flightSimulation.visit,
+        service.physicalTime <= commander.flightSimulation.physicalTime,
+        service.flightSeconds <= commander.scriptState.flightSeconds
+      else { return false }
+    }
     for loss in [state.loss, state.cassetteLoss].compactMap({ $0 }) {
       guard loss.physicalTime <= commander.flightSimulation.physicalTime,
         loss.facts.visit <= commander.flightSimulation.visit,
@@ -137,6 +150,9 @@ enum NativeWayfarerInductionSave {
               || (decoded.reception == nil && decoded.cassette == nil
                 && decoded.cassetteLoss == nil)
           else { throw SaveError.invalidCommander }
+          guard supportsCassetteService(schema) || decoded.cassetteService == nil else {
+            throw SaveError.invalidCommander
+          }
           guard decoded.valid,
             (leaf as NSDictionary).isEqual(
               try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))

@@ -13,13 +13,19 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeWayfarerInductionCassetteServiceUnitTests": (
+        "sharedNativeRepairTransitionRequiresTheSameFailedSerialAndRejectsASecondService",
+        "serviceNeedsTheOriginalUnitActualRenasNativeConditionAndItsOwnersReceipt",
+        "servicedOriginalReturnsOnceReleasesItsTonneAndKeepsClinicAndWorkshopHistory",
+        "serviceSchemasKeepEarlierEvidenceButRejectServiceInOlderOrAlteredEnvelopes",
+    ),
     "NativeWayfarerInductionContinuationUnitTests": (
         "clinicReceptionNeedsTheExactOriginalCoolingUnitActualNavidorAndPositiveQuality",
         "receptionConsumesOneReservationWithoutDeletingCargoOrResettingThePickupClock",
         "workshopCassetteNeedsPriorReceptionActualEnmadanAndFreeHoldAndCannotReissue",
         "cassetteCarrierLossKeepsClinicHistoryAndNeverCreatesReplacementsOrAReward",
         "continuationSchemasPreserveLegacyOpeningButRefuseNewOrUnknownClaimsInOldEnvelopes",
-        "boardRoutingFollowsOriginalStageLocationsAndKeepsRepairAndAccreditationLocked",
+        "boardRoutingFollowsOriginalStageLocationsAndKeepsAccreditationLocked",
     ),
     "WayfarerFieldReliefRetirementUnitTests": (
         "laterRealLossRetiresHeldOriginalsWithoutChangingTheFailedMission",
