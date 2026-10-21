@@ -134,8 +134,13 @@ struct WayfarerFieldReliefTests {
     }
     if !["null", "stripped"].contains(fault) { instance["savedFieldRelief"] = leaf }
     let root: [String: Any] = ["instances": [state.id.uuidString: instance]]
-    let bytes = try JSONSerialization.data(
-      withJSONObject: fault == "embedded" ? ["savedScriptState": root] : root)
+    let object: [String: Any]
+    if fault == "embedded" {
+      object = ["savedScriptState": root]
+    } else {
+      object = root
+    }
+    let bytes = try JSONSerialization.data(withJSONObject: object)
     #expect(throws: (any Error).self) {
       try WayfarerFieldReliefSave.validateFields(
         bytes, part: fault == "embedded" ? .commander : .missions,
