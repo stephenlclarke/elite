@@ -140,12 +140,14 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let cassetteService: NativeInductionCassetteService?
   let seedKey: NativeInductionVaultKeyLoan?
   let seedKeyLoss: NativeInductionCrateLoss?
+  let ark: NativeInductionArkLink?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
     cassette: NativeInductionWorkshopCassette? = nil, cassetteLoss: NativeInductionCrateLoss? = nil,
     cassetteService: NativeInductionCassetteService? = nil,
-    seedKey: NativeInductionVaultKeyLoan? = nil, seedKeyLoss: NativeInductionCrateLoss? = nil
+    seedKey: NativeInductionVaultKeyLoan? = nil, seedKeyLoss: NativeInductionCrateLoss? = nil,
+    ark: NativeInductionArkLink? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -156,12 +158,13 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.cassetteService = cassetteService
     self.seedKey = seedKey
     self.seedKeyLoss = seedKeyLoss
+    self.ark = ark
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
       && lhs.reception == rhs.reception && lhs.cassette == rhs.cassette
       && lhs.cassetteLoss == rhs.cassetteLoss && lhs.cassetteService == rhs.cassetteService
-      && lhs.seedKey == rhs.seedKey && lhs.seedKeyLoss == rhs.seedKeyLoss
+      && lhs.seedKey == rhs.seedKey && lhs.seedKeyLoss == rhs.seedKeyLoss && lhs.ark == rhs.ark
   }
   var valid: Bool {
     let p = permission
@@ -186,6 +189,14 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       }
     } else if loss != nil {
       return false
+    }
+    if let ark {
+      guard ark.valid, let seedKey,
+        ark.registeredArk
+          == NativeInductionArkSource.actorIdentity(
+            mission: permission.mission, loan: seedKey.operation),
+        ark.loanOperation == seedKey.operation
+      else { return false }
     }
     return continuationValid && seedKeyValid
   }
@@ -213,7 +224,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     if seedKey != nil {
       next = Self(
         permission: permission, crate: crate, reception: reception, cassette: cassette,
-        cassetteService: cassetteService, seedKey: seedKey, seedKeyLoss: fact)
+        cassetteService: cassetteService, seedKey: seedKey, seedKeyLoss: fact, ark: ark)
     } else if cassette != nil {
       next = Self(
         permission: permission, crate: crate, reception: reception, cassette: cassette,

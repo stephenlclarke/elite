@@ -82,11 +82,16 @@ struct NativeInductionArkSource: Sendable {
 
   var models: [String: ShipDesign] { [Self.model: physical.model.nativeDesign] }
 
+  private static let authenticatedModels: Result<[String: String], any Error> = Result {
+    let original = try OriginalHullPhysicalContract.haflinger.get().model.nativeDesign
+    return [model: ScriptPackLibrary.hash(try ScriptPackLibrary.canonicalGeometry(original))]
+  }
+
   func matchesFit(_ fit: ScriptNPCFit) -> Bool {
     guard valid, fit.valid, fit.definition == definition,
-      let bytes = try? ScriptPackLibrary.canonicalGeometry(physical.model.nativeDesign)
+      let expected = try? Self.authenticatedModels.get()
     else { return false }
-    return fit.models == [Self.model: ScriptPackLibrary.hash(bytes)]
+    return fit.models == expected
   }
 
   var valid: Bool {

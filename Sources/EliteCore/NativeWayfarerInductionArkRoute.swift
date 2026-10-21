@@ -1,18 +1,19 @@
 import Foundation
 
 /// A route quote over the actual original catalogue, never departure, refuelling or arrival proof.
-struct NativeArkRoutePlan: Sendable {
+struct NativeArkRoutePlan: Codable, Sendable, Equatable {
   enum Failure: Error { case unavailable }
   let ark: UUID
   let catalogueRevision: String
   let worldKeys: [String]
   let legDistancesLY: [Double]
+  let routingReachLY: Double
   let driveReachLY: Double
   let initialFuelLY: Double
   var totalDistanceLY: Double { legDistancesLY.reduce(0, +) }
   var minimumAdditionalFuelLY: Double { max(0, totalDistanceLY - initialFuelLY) }
 
-  init(source: NativeInductionArkSource) throws {
+  init(source: NativeInductionArkSource, escortReachLY: Double? = nil) throws {
     let catalogue = Universe.originalWorlds
     guard source.valid, let drive = source.definition.drive,
       let origin = catalogue.worlds.first(where: {
@@ -23,7 +24,12 @@ struct NativeArkRoutePlan: Sendable {
       }),
       let revision = OriginalWorldCatalogue.approvedFingerprints["catalogue.json"]
     else { throw Failure.unavailable }
-    let reach = min(drive.rangeLightYears, source.definition.fuel)
+    if let escortReachLY {
+      guard escortReachLY.isFinite, escortReachLY > 0 else { throw Failure.unavailable }
+    }
+    let reach = min(
+      drive.rangeLightYears, source.definition.fuel, escortReachLY ?? drive.rangeLightYears)
+    guard reach.isFinite, reach > 0 else { throw Failure.unavailable }
     let worlds = Set(catalogue.worlds.filter { $0.galaxy == origin.galaxy }.map(\.key))
     let routes = try OriginalWorldNavigation(catalogue: catalogue).alternatives(
       from: origin.key, to: destination.key, visibleWorldKeys: worlds,
@@ -34,6 +40,7 @@ struct NativeArkRoutePlan: Sendable {
     ark = source.actor
     catalogueRevision = revision
     worldKeys = route.worldKeys
+    routingReachLY = reach
     driveReachLY = drive.rangeLightYears
     initialFuelLY = source.definition.fuel
     legDistancesLY = try zip(worldKeys, worldKeys.dropFirst()).map {
@@ -47,6 +54,7 @@ struct NativeArkRoutePlan: Sendable {
       catalogueRevision == OriginalWorldCatalogue.approvedFingerprints["catalogue.json"],
       (2...256).contains(worldKeys.count), Set(worldKeys).count == worldKeys.count,
       legDistancesLY.count == worldKeys.count - 1,
+      routingReachLY.isFinite, routingReachLY > 0, routingReachLY <= driveReachLY,
       driveReachLY == source.definition.drive?.rangeLightYears,
       initialFuelLY == source.definition.fuel
     else { return false }
@@ -60,7 +68,7 @@ struct NativeArkRoutePlan: Sendable {
       guard
         let measured = try? catalogue.distanceLY(
           from: worldKeys[index], to: worldKeys[index + 1]),
-        measured == legDistancesLY[index], measured > 0, measured <= driveReachLY,
+        measured == legDistancesLY[index], measured > 0, measured <= routingReachLY,
         measured <= initialFuelLY,
         (try? catalogue.world(key: worldKeys[index + 1]).galaxy) == first.galaxy
       else { return false }

@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: ci-capture-check help build run test unit-ci coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
+.PHONY: ci-capture-check help build run test unit-ci coverage coverage-check threads address leaks readme-media induction-ark-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test unit-ci ci-capture-check coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
+	@printf '%s\n' 'build run test unit-ci ci-capture-check coverage-check threads address leaks readme-media induction-ark-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -24,6 +24,9 @@ leaks:
 	@tail -8 reports/leaks.txt
 readme-media:
 	swift run Elite --readme-media
+
+induction-ark-model:
+	python3 Tools/export-induction-ark-model.py
 	mkdir -p Resources
 	iconutil -c icns .build/Elite.iconset -o Resources/Elite.icns
 ships showroom-data:

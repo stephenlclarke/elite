@@ -73,7 +73,7 @@ struct NativeWayfarerInductionVaultKeyUnitTests {
     #expect(carried.reception == f.serviced.reception && carried.cassette == f.serviced.cassette)
     #expect(carried.cassetteService == f.serviced.cassetteService)
     #expect(f.serviced.action(at: NativeWayfarerInduction.seedSource) == .keyLoan)
-    #expect(carried.action(at: NativeWayfarerInduction.seedSource) == .progress)
+    #expect(carried.action(at: NativeWayfarerInduction.seedSource) == .launchArk)
     #expect(carried.action(at: NativeWayfarerInduction.seedReceiver) == .progress)
     #expect(throws: (any Error).self) { try carried.borrowingVaultKey(key, freeTonnes: 100) }
     #expect(NativeWayfarerInduction.seedConsentTarget == "enlirin-seed-consent")

@@ -76,6 +76,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedNavigationTrade: ScriptNavigationTradeState?
   var savedOriginalSurvey: NativeOriginalSurveyState?
   var savedGlassMeridian: NativeGlassMeridianState?
+  var savedNativeArk: NativeInductionArkState?
   var savedWayfarerInduction: NativeWayfarerInductionState?
   var savedFlightReception: NativeFlightReceptionState?
   var savedMeasuredExtraction: NativeMeasuredExtractionState?
@@ -210,6 +211,10 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   var savedGlassMeridian: NativeGlassMeridianState? {
     _read { yield storage[0].savedGlassMeridian }
     _modify { yield &storage[0].savedGlassMeridian }
+  }
+  var savedNativeArk: NativeInductionArkState? {
+    _read { yield storage[0].savedNativeArk }
+    _modify { yield &storage[0].savedNativeArk }
   }
   var savedWayfarerInduction: NativeWayfarerInductionState? {
     _read { yield storage[0].savedWayfarerInduction }
@@ -514,6 +519,14 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       guard cargo.valid(state: instance, engine: self) else { return false }
     } else {
       guard instance.contract?.offer.freightPlan == nil else { return false }
+    }
+    if NativeInductionArkPack.marked(instance) {
+      guard instance.definition == NativeInductionArkPack.stateID,
+        instance.digest == NativeInductionArkPack.digest,
+        instance.version == NativeInductionArkPack.version,
+        let ark = instance.savedNativeArk, ark.authorization.job == instance.id,
+        instance.payloads.isEmpty
+      else { return false }
     }
     if instance.definition == NativeWayfarerInduction.stateID {
       guard let opening = instance.savedWayfarerInduction, opening.valid,

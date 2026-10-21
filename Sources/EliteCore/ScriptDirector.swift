@@ -155,6 +155,19 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.stateID == NativeInductionArkPack.stateID
+      || pack.digest == NativeInductionArkPack.digest
+    {
+      guard NativeInductionArkPack.matches(pack) else {
+        return "Restore the registered original seed-ark service."
+      }
+      guard
+        commander.scriptState.instances.values.contains(where: {
+          $0.definition == NativeInductionArkPack.stateID && $0.digest == pack.digest
+            && $0.savedNativeArk != nil
+        })
+      else { return "Use the original custodian launch review at Enlirin." }
+    }
     if pack.manifest.wayfarerInduction != nil
       || pack.manifest.stateID == NativeWayfarerInduction.stateID
     {
@@ -351,6 +364,9 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    guard pack.manifest.stateID != NativeInductionArkPack.stateID,
+      pack.digest != NativeInductionArkPack.digest
+    else { throw MissionPackError("Use the original custodian launch review at Enlirin.") }
     guard pack.manifest.wayfarerInduction == nil,
       pack.manifest.stateID != NativeWayfarerInduction.stateID
     else { throw MissionPackError("Use Senn's actual induction commission review.") }
@@ -1415,6 +1431,11 @@ extension Game {
         $1.manifest.priority, $1.manifest.id, $1.digest
       )
     }) {
+      if pack.manifest.stateID == NativeInductionArkPack.stateID
+        || pack.digest == NativeInductionArkPack.digest
+      {
+        continue
+      }
       let instances = commander.scriptState.instances.compactMap {
         key, state -> (key: UUID, id: UUID)? in
         state.definition == pack.manifest.stateID && state.digest == pack.digest

@@ -7,7 +7,7 @@ extension NativeWayfarerInductionAction {
     case .pickup: NativeWayfarerInduction.clinic
     case .receive: NativeWayfarerInduction.receiver
     case .service: NativeWayfarerInduction.clinic
-    case .keyLoan: NativeWayfarerInduction.seedSource
+    case .keyLoan, .launchArk: NativeWayfarerInduction.seedSource
     case .cassette: NativeWayfarerInduction.workshop
     }
   }
@@ -15,6 +15,11 @@ extension NativeWayfarerInductionAction {
 
 extension NativeWayfarerInductionState {
   func action(at system: SystemIdentity) -> NativeWayfarerInductionAction {
+    if seedKey != nil && seedKeyLoss == nil && ark == nil
+      && system == NativeWayfarerInduction.seedSource
+    {
+      return .launchArk
+    }
     if crate == nil && system == NativeWayfarerInduction.clinic { return .pickup }
     if crate != nil && loss == nil && reception == nil
       && system == NativeWayfarerInduction.receiver
@@ -45,7 +50,10 @@ extension Game {
     if state.loss != nil || state.cassetteLoss != nil || state.seedKeyLoss != nil {
       return "The original consignment was lost. No replacement stock or success is granted."
     }
-    if state.seedKey != nil { return NativeWayfarerInduction.laterStages }
+    if let status = inductionArkStatus { return status }
+    if state.seedKey != nil {
+      return "Confirm the original custodian ark launch at Enlirin main orbital."
+    }
     if state.cassetteService != nil {
       return
         "Review Enlirin's seed-custodian consent and Confirm its original one-tonne vault-key loan."

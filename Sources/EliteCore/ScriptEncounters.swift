@@ -227,7 +227,7 @@ struct MissionActorAdmissionTemplate: Sendable {
   fileprivate init(
     actor: ScriptOwnedActor, canonicalBody: SpaceBody, maximumHullEnergy: Double,
     declaredHostile: Bool, parts: [MissionActorAdmissionPart], minimum: Vector3,
-    maximum: Vector3, radius: Double, nativeUnits: Int
+    maximum: Vector3, radius: Double, nativeUnits: Int, initialNativeCondition: NPCState? = nil
   ) {
     actorID = actor.identity
     alias = actor.alias
@@ -240,7 +240,7 @@ struct MissionActorAdmissionTemplate: Sendable {
     self.maximum = maximum
     self.radius = radius
     self.nativeUnits = nativeUnits
-    retainedNativeCondition = actor.body.physical?.npc
+    retainedNativeCondition = actor.body.physical?.npc ?? initialNativeCondition
     retainedNativeVelocity = actor.body.physical?.velocity
     retainedNativeLaserCooldown = actor.body.physical?.laserCooldown
   }
@@ -700,7 +700,9 @@ extension Game {
       let template = try Self.missionActorAdmissionTemplate(
         actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
         installedModels: pack.models, geometry: geometry,
-        legacy: legacy?.actors[spec.id])
+        legacy: legacy?.actors[spec.id],
+        initialNativeCondition: mode == .prepared
+          ? try NativeInductionArkPack.initialCondition(state: state, actor: actor) : nil)
       if mode == .prepared {
         try Self.validatePreparedMissionActorCondition(
           actor, spec: spec, template: template, legacy: legacy)
@@ -927,13 +929,14 @@ extension Game {
   private static func missionActorAdmissionTemplate(
     _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
     npcDefinitions: [ScriptNPCDefinition], installedModels: [String: ShipDesign],
-    geometry: [String: ShipDesign], legacy: LegacyMissionActorProvenance?
+    geometry: [String: ShipDesign], legacy: LegacyMissionActorProvenance?,
+    initialNativeCondition: NPCState? = nil
   ) throws -> MissionActorAdmissionTemplate {
     let fit = try validateMissionActorAdmissionFit(
       actor, specification: specification, npcDefinitions: npcDefinitions)
     return try constructMissionActorAdmissionTemplate(
       actor, specification: specification, fit: fit, installedModels: installedModels,
-      geometry: geometry, legacy: legacy)
+      geometry: geometry, legacy: legacy, initialNativeCondition: initialNativeCondition)
   }
 
   /// Full structural equality finishes before any mesh, bounds or canonical-body frame starts.
@@ -962,13 +965,14 @@ extension Game {
   private static func constructMissionActorAdmissionTemplate(
     _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
     fit: MissionActorAdmissionFit, installedModels: [String: ShipDesign],
-    geometry: [String: ShipDesign], legacy: LegacyMissionActorProvenance?
+    geometry: [String: ShipDesign], legacy: LegacyMissionActorProvenance?,
+    initialNativeCondition: NPCState? = nil
   ) throws -> MissionActorAdmissionTemplate {
     let constructed = try constructMissionActorAdmissionParts(
       actor, fit: fit, installedModels: installedModels, geometry: geometry, legacy: legacy)
     return try finalizeMissionActorAdmissionTemplate(
       actor, specification: specification, parts: constructed.parts,
-      maximumEnergy: constructed.maximumEnergy)
+      maximumEnergy: constructed.maximumEnergy, initialNativeCondition: initialNativeCondition)
   }
 
   private struct MissionActorAdmissionParts: Sendable {
@@ -1023,7 +1027,7 @@ extension Game {
   @inline(never)
   private static func finalizeMissionActorAdmissionTemplate(
     _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
-    parts: [MissionActorAdmissionPart], maximumEnergy: Double
+    parts: [MissionActorAdmissionPart], maximumEnergy: Double, initialNativeCondition: NPCState?
   ) throws -> MissionActorAdmissionTemplate {
     guard actor.body.energy <= maximumEnergy,
       actor.body.physical?.npc?.resources?.valid ?? true,
@@ -1061,7 +1065,8 @@ extension Game {
     return .init(
       actor: actor, canonicalBody: canonical, maximumHullEnergy: maximumEnergy,
       declaredHostile: specification.hostile, parts: parts, minimum: minimum, maximum: maximum,
-      radius: vertices.map(\.length).max() ?? 0, nativeUnits: solids.count)
+      radius: vertices.map(\.length).max() ?? 0, nativeUnits: solids.count,
+      initialNativeCondition: initialNativeCondition)
   }
 }
 

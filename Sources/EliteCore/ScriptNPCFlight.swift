@@ -66,8 +66,10 @@ extension Game {
       observeNativeTransitSpool(bodies[index])
       guard bodies[index].energy > 0, var npc = bodies[index].scriptNPC else { continue }
       let definition = npc.fit.definition
-      bodies[index].energy = min(
-        definition.energy, bodies[index].energy + definition.recharge * delta)
+      if bodies[index].physical?.npc?.resources?.profile != .nativeHull {
+        bodies[index].energy = min(
+          definition.energy, bodies[index].energy + definition.recharge * delta)
+      }
       var desired = Vector3(0, 0, 0)
       if npc.intent == nil, let goal = nativeTransitExitClearanceGoal(bodies[index]) {
         let offset = goal - bodies[index].position
