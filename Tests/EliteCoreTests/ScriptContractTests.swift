@@ -524,13 +524,15 @@ private struct ContractFixture {
   #expect(before.name == "KEEP" && before.credits == 7654)
   #expect(before.cargo == game.commander.cargo && before.cargoTonnes == 0)
   let bytes = try Data(contentsOf: fixture.save)
+  let expectedTrialCash = NewCommanderDefaults.credits - 100
   let trial = try await live.scriptGalleryTrial(packDigest: fixture.pack.digest, seed: 123)
   let directory = await trial.gallerySaveDirectory()
   let namespace = try #require(directory)
   defer { try? FileManager.default.removeItem(at: namespace) }
   let scene = await trial.snapshot()
   #expect(scene.isMissionTrial && scene.commander.scriptState.instances.count == 1)
-  #expect(scene.commander.credits == 900 && scene.commander.cargoTonnes > 0)
+  #expect(scene.commander.scriptState.instances.values.first?.contract?.offer.deposit == 100)
+  #expect(scene.commander.credits == expectedTrialCash && scene.commander.cargoTonnes > 0)
   let key = try #require(scene.commander.contracts.boards.keys.first)
   let offer = try #require(scene.commander.contracts.boards[key]?.offers.first)
   let foreignQuote = await live.contractAcceptanceQuote(board: key, offer: offer.id)

@@ -52,7 +52,10 @@ import Testing
 func courierEveryFatalRuntimePathReservesPendingLossUntilPublication(mode: String) async throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  let pinned = CourierNativeFixture.rows[1]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, variant: .package, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let id = try fixture.accept(&game, variant: .package)
   game.launch()
   game.speed = 0

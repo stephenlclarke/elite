@@ -452,10 +452,51 @@ private func declaredNPCGunGame(_ fixture: NPCFixture) throws -> (Game, UUID) {
   try await runtime.save(to: fixture.save)
   let saved = await runtime.snapshot()
   #expect(saved.commander.valid && saved.scriptWorldSave.consistent(with: saved.commander))
+  // Predict only the native station's fresh scene addresses before reading the save.
+  var expectedBodies = saved.bodies
+  var expectedFlight = saved.commander.flightSimulation
+  var expectedStations = try #require(saved.commander.nativeStations)
+  let stationIndices = saved.bodies.indices.filter {
+    saved.bodies[$0].nativeStationIdentity != nil
+  }
+  try #require(!stationIndices.isEmpty)
+  let allocatedSpawn = expectedFlight.allocateSpawn()
+  let spawn = try #require(allocatedSpawn)
+  for (member, index) in stationIndices.enumerated() {
+    let original = saved.bodies[index]
+    let station = try #require(original.nativeStationIdentity)
+    let physical = try #require(original.physical)
+    let allocatedActor = expectedFlight.allocateActor()
+    let actor = try #require(allocatedActor)
+    var expected = original
+    expected.id = saved.nextBodyID + member
+    expected.physical = .init(
+      identity: actor, population: physical.population, npc: physical.npc,
+      velocity: physical.velocity, laserCooldown: physical.laserCooldown,
+      rock: physical.rock, payload: physical.payload, attackOrigin: physical.attackOrigin,
+      emissionPosition: physical.emissionPosition, deathOrigin: physical.deathOrigin,
+      deathIncidentID: physical.deathIncidentID, ordnance: physical.ordnance,
+      spawnIdentity: .init(
+        system: saved.systemIdentity, visit: expectedFlight.visit, sequence: spawn,
+        member: UInt16(member), producer: .mission),
+      blocksNavalEncounter: physical.blocksNavalEncounter,
+      catalogueShipID: physical.catalogueShipID, angularVelocity: physical.angularVelocity,
+      canonicalSpin: physical.canonicalSpin, salvage: physical.salvage,
+      empSource: physical.empSource, empCrewPod: physical.empCrewPod,
+      suspendedNPCIntention: physical.suspendedNPCIntention)
+    expectedBodies[index] = expected
+    try expectedStations.ledger.rebind(station, to: .init(actor: actor, bodyID: expected.id))
+  }
   let restored = GameRuntime(game: game)
   try await restored.load(from: fixture.save)
   let loaded = await restored.snapshot()
-  #expect(loaded.bodies == saved.bodies)
+  #expect(loaded.bodies == expectedBodies)
+  #expect(loaded.commander.flightSimulation == expectedFlight)
+  #expect(loaded.commander.nativeStations == expectedStations)
+  #expect(loaded.nextBodyID == saved.nextBodyID + stationIndices.count)
+  for station in loaded.bodies where station.nativeStationIdentity != nil {
+    #expect(loaded.nativeStationBodyIsCurrent(station))
+  }
   #expect(loaded.commander.scriptState == saved.commander.scriptState)
   var docked = loaded
   docked.dock()

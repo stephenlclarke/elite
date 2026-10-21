@@ -19,6 +19,13 @@ struct NativePeopleGalleryTests {
     defer { try? FileManager.default.removeItem(at: namespace) }
     let initial = await runtime.snapshot()
     #expect(initial.isMissionTrial && initial.trialDigest == NativePeopleGallery.digest)
+    #expect(initial.commander.valid && initial.commander.shipID == "SH023")
+    #expect(initial.commander.fuel == initial.commander.fuelCapacity)
+    #expect(initial.commander.nativePerformance.workTools?.contains(.salvageCutter) == true)
+    #expect(initial.commander.fittedEquipment(at: .utility(.salvageCutter)) != nil)
+    #expect(initial.energy == initial.commander.performance.energy)
+    #expect(initial.frontShield == initial.commander.shieldCapacity)
+    #expect(initial.rearShield == initial.commander.rearShieldCapacity)
     #expect(initial.commander.nativePeople == nil && initial.commander.savedEMPState == nil)
     let source = try #require(initial.bodies.first { $0.id == initial.weaponsTargetID })
     #expect(source.physical?.spawnIdentity?.producer == .ambient)

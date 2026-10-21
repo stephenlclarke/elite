@@ -328,6 +328,13 @@ extension Game {
       return synchronizeNativeStationInertia(at: commander.flightSimulation.physicalTime)
         ? .advanced(nil) : .refused("STATION COAST UNPROVEN")
     }
+    return completeCapturedAsteroidContactStep(frame, delta: delta)
+  }
+
+  @inline(never)
+  private mutating func completeCapturedAsteroidContactStep(
+    _ frame: AsteroidContactFrame, delta: Double
+  ) -> AsteroidContactStepResult {
     guard frame.system == systemIdentity, frame.visit == commander.flightSimulation.visit,
       frame.time == commander.flightSimulation.physicalTime, frame.take()
     else { return .refused("STALE STEP") }

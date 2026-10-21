@@ -48,6 +48,8 @@ extension Game {
     trial.commander.system = system.id
     trial.selectedSystem = system.id
     trial.market = MarketItem.at(trial.currentSystem)
+    trial.commander.shipID = "SH023"
+    trial.commander.fuel = trial.commander.fuelCapacity
     trial.commander.credits = 100_000
     try trial.commander.prepareEquipment(legacy: false)
     for (name, slot) in [
@@ -61,6 +63,9 @@ extension Game {
         name, at: slot, provenance: .grant("Original native people Gallery trial"))
     }
     trial.commander.mirrorFittedEquipment()
+    trial.energy = trial.commander.performance.energy
+    trial.frontShield = trial.commander.shieldCapacity
+    trial.rearShield = trial.commander.rearShieldCapacity
     let capacity = trial.commander.standardCargoCapacity
     guard capacity >= 5 else {
       throw MissionPackError("The native crew trial needs five tonnes of free hold.")
