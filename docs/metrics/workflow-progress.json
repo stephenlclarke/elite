@@ -4095,8 +4095,13 @@
       "github_run": 39671764452,
       "ledger_parent": "C08.P01.I35",
       "executed_units": 0,
-      "ready_findings": 2,
-      "fix_sha": null
+      "ready_findings": 1,
+      "fix_sha": "28e2c30ed0779a2ebf56cf58f0e2aaf2c4bea22a",
+      "fix_pr": "https://github.com/stephenlclarke/elite/pull/36",
+      "verification_status": "awaiting MBA; no actual compile/unit pass yet",
+      "owner_status": "helper pushed; G1 composition pending",
+      "source_review": "MBA exact three-path delta reviewed; no actionable finding",
+      "github_fix_run": 39672677427
     }
   ]
 }
