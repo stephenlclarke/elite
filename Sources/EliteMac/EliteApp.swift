@@ -62,16 +62,7 @@ final class GameView: NSView {
   }
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
-  override var wantsUpdateLayer: Bool { true }
-  override func updateLayer() {
-    let scale = (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1
-    guard
-      let image = imageForGame(
-        game, width: Int(bounds.width), height: Int(bounds.height), scale: scale)
-    else { return }
-    layer?.contentsScale = CGFloat(scale)
-    layer?.contents = image
-  }
+  override var isOpaque: Bool { true }
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
@@ -308,6 +299,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       var previousTick = ContinuousClock.now
       while !Task.isCancelled {
         guard let view else { return }
+        let frameStart = ContinuousClock.now
+        let framesPerSecond = max(1, min(60, view.window?.screen?.maximumFramesPerSecond ?? 60))
+        let deadline = frameStart.advanced(by: .seconds(1.0 / Double(framesPerSecond)))
         if let self {
           await self.processFrame(in: view) {
             let now = ContinuousClock.now
@@ -318,7 +312,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         } else {
           return
         }
-        do { try await Task.sleep(for: .milliseconds(16)) } catch { return }
+        // Account for work inside the interval; overdue frames yield without a catch-up burst.
+        if ContinuousClock.now < deadline {
+          do { try await Task.sleep(until: deadline, clock: .continuous) } catch { return }
+        } else {
+          await Task.yield()
+        }
       }
     }
   }
