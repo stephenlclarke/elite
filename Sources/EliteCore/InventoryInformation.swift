@@ -59,6 +59,31 @@ extension Game {
         .cyan)
     }
     append("Equipment - fitted and held", .yellow)
+    if let state = measuredExtractionState,
+      let source = commander.scriptState.savedMeasuredExtractionSource,
+      let mission = commander.scriptState.instances[state.permission.mission]
+    {
+      append("Measured extraction: \(state.captures.count)/12 originals collected", .cyan)
+      append(
+        "Raw held: \(NativeMeasuredExtraction.rawHeld(source).count)t; graded products held: \((state.processing?.products ?? []).filter { $0.custody == .held }.count)t",
+        .cyan)
+      for (index, original) in source.originals.enumerated() {
+        let tonnes = mission.payloads["input-\(index)"] ?? 0
+        let label: String
+        switch original.custody {
+        case .unfilled:
+          label = tonnes > 0 ? "at source; slot reserved" : "uncollected; permission closed"
+        case .raw: label = "protected raw original aboard"
+        case .processed: label = "consumed by linked grading operation"
+        case .returned: label = "returned unpaid to Avenor owner"
+        case .lost: label = "genuinely lost"
+        }
+        append("Original \(index + 1): \(label) / \(tonnes)t", .cyan)
+      }
+      append(
+        "Renas: processing first, separate receiving for 890 CR. Surviving failed property returns unpaid at Avenor.",
+        .cyan)
+    }
     if let state = recordRecoveryState,
       let source = commander.scriptState.savedRecordRecoverySource,
       let mission = commander.scriptState.instances[state.permission.mission]

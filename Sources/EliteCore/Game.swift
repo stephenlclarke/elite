@@ -456,6 +456,7 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
+    guard NativeMeasuredExtractionSave.validateClaims(self) else { return false }
     guard WayfarerRecordRecoverySave.validateClaims(self) else { return false }
     guard NativeIdentifiedSalvageSave.validateClaims(self) else { return false }
     return nativeStationStateValid
@@ -686,6 +687,7 @@ public struct Game: Sendable {
     didSet {
       nativeOrbitalOutlookRuntime = .init()
       nativeOriginalSurveyRuntime = nil
+      nativeMeasuredExtractionPending = nil
       nativeRecordRecoveryPending = nil
       nativeRecordRecoveryIdentificationPending = nil
       nativeIdentifiedSalvagePending = nil
@@ -693,6 +695,7 @@ public struct Game: Sendable {
   }
   var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
   var nativeOriginalSurveyRuntime: NativeOriginalSurveyRuntime?
+  var nativeMeasuredExtractionPending: NativeMeasuredExtractionPending?
   var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending?
   var nativeRecordRecoveryIdentificationPending: WayfarerRecordRecoveryIdentificationPending?
   var nativeIdentifiedSalvagePending: NativeIdentifiedSalvagePending?
@@ -1512,6 +1515,10 @@ public struct Game: Sendable {
       notify("DOCKING DEFERRED: CARGO SETTLEMENT PENDING")
       return
     }
+    do { try prepareMeasuredDock() } catch {
+      notify("DOCKING DEFERRED: EXTRACTION CUSTODY UNAVAILABLE")
+      return
+    }
     guard prepareDockPersistence() else { return }
     persistScriptActors(unloading: true)
     persistBlackjackTargets()
@@ -1854,6 +1861,7 @@ public struct Game: Sendable {
       return
     }
     var candidate = self
+    let measuredPod = candidate.measuredEscapePod()
     let recorderPod = candidate.recordRecoveryEscapePod()
     let originalPod = candidate.identifiedSalvageEscapePod()
     do {
@@ -1876,6 +1884,10 @@ public struct Game: Sendable {
     }
     guard candidate.loseWayfarerRepairLoopOnEscape() else {
       notify("REPAIR UNIT LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
+      return
+    }
+    do { try candidate.loseMeasuredOnEscape(pod: measuredPod) } catch {
+      notify("EXTRACTION LOSS NOT SAVED - ESCAPE NOT COMMITTED")
       return
     }
     do { try candidate.loseRecordRecoveryOnEscape(pod: recorderPod) } catch {
@@ -2241,6 +2253,7 @@ public struct Game: Sendable {
     }
     let destroyed = bodies.filter { $0.energy <= 0 && !deferred.contains($0.id) }
     for body in destroyed {
+      observeMeasuredOreDeath(body)
       if let payload = body.physical?.payload {
         _ = commander.miningLedger.destroy(payload: payload)
         _ = commander.cargoDebrisLedger.destroy(
@@ -2488,6 +2501,7 @@ public actor GameRuntime {
       delta: delta, controls: controls,
       nativeSalvagePublish: scriptPublisher(requireNativeSalvage: true))
     commitNativeSalvageCollections()
+    commitMeasuredExtraction()
     commitRecordRecoveryLoss()
     commitIdentifiedSalvageLoss()
     commitIdentifiedSalvageCapture(startTime: salvageStart, startPlayer: salvagePlayer)
@@ -2566,6 +2580,7 @@ public actor GameRuntime {
     // Acts only on the measured fatal state; retries its durable proposal after writer refusal.
     commitWayfarerColdChainFatalLoss()
     commitWayfarerRepairLoopFatalLoss()
+    commitMeasuredExtraction()
     commitRecordRecoveryLoss()
     commitIdentifiedSalvageLoss()
     game.observeNativeCrimboAttainedMotion(
@@ -2640,6 +2655,8 @@ public actor GameRuntime {
     var stage = ScriptRefusalStage.nativePeople
     do {
       try candidate.recordNativePeopleLossIfNeeded()
+      candidate.stageMeasuredHullLoss()
+      try candidate.applyMeasuredPending()
       _ = try candidate.recordRecoveryLossIfNeeded()
       _ = try candidate.recordIdentifiedSalvageLossIfNeeded()
       try candidate.retryRecordRecoveryIdentification()
@@ -2654,6 +2671,8 @@ public actor GameRuntime {
       candidate.commander.mirrorFittedEquipment()
       stage = .nativeDestruction
       candidate.resolveDestroyed()
+      candidate.stageMeasuredHullLoss()
+      try candidate.applyMeasuredPending()
       _ = try candidate.recordRecoveryLossIfNeeded()
       _ = try candidate.recordIdentifiedSalvageLossIfNeeded()
       return try finishNativeSaveState(
