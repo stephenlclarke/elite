@@ -1,0 +1,931 @@
+{
+  "profile_id": "PROJECT-ED-OPERATIONS-v1",
+  "date": "2026-10-13",
+  "permission": "Owner: Use labelled estimates only where necessary.",
+  "scope": "Seven catalogued scenarios. Source objectives/observations retained; closed numerical and event rules are project adaptations. No new missions inferred from promotional aliases.",
+  "common_rules": {
+    "offer": "Docked services Operations board; choose scenario and Easy/Hard, one instance at a time; no rank/credit gate (estimated project policy).",
+    "participants": "1..4; host-authoritative shared objective IDs, no progress from duplicate deaths/events. Solo supported.",
+    "scaling": {
+      "status": "estimated",
+      "population_multiplier": "ceil(base_count*(1+0.5*(players-1))*difficulty_count_factor)",
+      "easy_count_factor": 1,
+      "hard_count_factor": 1.5,
+      "hard_enemy_energy_factor": 1.25,
+      "hard_enemy_damage_factor": 1.25,
+      "hard_timer_factor": 0.8,
+      "limits": "Apply to hostile counts/energy/damage and positive objective deadlines only. Do not scale relay/regulator/people counts, interaction/download duration or phase ordering."
+    },
+    "world": "Use fixed authored relative layout; Runner at[0,0,0], objective vessel/settlement origin[0,0,200000]. Ground layout is a project grid in metres; no claim to reproduce ED maps.",
+    "foot_layout": {
+      "status": "estimated",
+      "deck_size_xy_metres": [
+        120,
+        120
+      ],
+      "floor_height_metres": 4,
+      "terminal_xy": [
+        0,
+        40
+      ],
+      "regulator_xy": [
+        [
+          -30,
+          30
+        ],
+        [
+          30,
+          30
+        ]
+      ],
+      "aa_turret_xy": [
+        [
+          -50,
+          -50
+        ],
+        [
+          -50,
+          50
+        ],
+        [
+          50,
+          -50
+        ],
+        [
+          50,
+          50
+        ]
+      ],
+      "spawn_rule": "Distribute unique enemy IDs around40-metre ring, project to valid floor/navmesh, never underground. Give later waves fresh IDs."
+    },
+    "deadlines": "Persist monotonic remaining simulation seconds. Failure at elapsed>=duration; exact-equality failure is estimated. Process expiration before success on same tick. Save/pause suspends simulation time.",
+    "objectives": "Only designated instance IDs count. Shared counters monotonic; killed/recovered/unloaded IDs retained. Completed stages do not repopulate on reload.",
+    "passengers": "Unique people occupy passenger berths; load only available seats; count success on unloading at rescue vessel, never simply on pickup. Dead/lost passengers fail the instance; no silent respawn.",
+    "death_retry": "Estimated: respawn at Runner after15 seconds with owned gear restored to pre-death instance condition; instance counters/time persist. Quitting fails instance and clears mission-owned passengers/items, restoring stored personal equipment. No success reward on failure. New retry gets fresh instance UUID/seed.",
+    "extraction": "Spawn Runner after authored delay. Accept only when all connected participating commanders board; allow solo. Disconnected participants are removed from quorum, with their carried quest people safely returned to pickup pool (estimated project policy).",
+    "rewards": "Pay fixed configured common-project credits once per successful instance; no merit/material imitation without separate specification. No extra reward per respawned enemy.",
+    "npc_roles": {
+      "status": "estimated project loadouts; historical ED NPCs not claimed",
+      "fighter": {
+        "project_hull": "PROJECT-PLAYER-SH136",
+        "forward_laser": "EQ_WEAPON_BEAM_LASER",
+        "missiles": 1,
+        "ai": "close to laser range, dogfight player, retreat below10% energy"
+      },
+      "heavy": {
+        "project_hull": "PROJECT-PLAYER-SH099",
+        "forward_laser": "EQ_WEAPON_MILITARY_LASER",
+        "missiles": 2,
+        "ai": "guard objective, attack nearest participant"
+      },
+      "boss": {
+        "project_hull": "PROJECT-PLAYER-SH005",
+        "forward_laser": "EQ_WEAPON_MILITARY_LASER",
+        "missiles": 4,
+        "ai": "stay within15000 of objective and engage; no escape before objective death"
+      },
+      "guard": {
+        "health": 100,
+        "shield": 50,
+        "shield_recharge": 10,
+        "shield_recharge_delay_seconds": 5,
+        "walk_metres_per_second": 3,
+        "weapon_damage": 10,
+        "shot_interval_seconds": 0.2,
+        "magazine": 30,
+        "reload_seconds": 2,
+        "range_metres": 50,
+        "hit_probability": 0.35,
+        "ai": "use navmesh cover within30m, fire on visible participant, approach if no shot"
+      },
+      "researcher": {
+        "health": 100,
+        "shield": 0,
+        "walk_metres_per_second": 3,
+        "ai": "flee toward authored escape point; escaping fails designated-target stage"
+      }
+    },
+    "combat_units": "Ship stats/lasers use the separately labelled common project profiles/O08 weapon units. Ground metres/seconds/health are estimates; do not mix them with raw model scale.",
+    "unknown_source_parameters": "Every numerical map, quota, population, reward, fit and unreported timer is individually marked estimated in stage parameters or common section. Measured/reported figures explicitly identify D19.",
+    "default_hostile_role": "fighter when an authored ship count has no role override; guard for on-foot counts (estimated)",
+    "waves": "Spawn first authored wave on stage entry. Spawn next only after every previous-wave objective ID is dead. After final quota, stop replacement spawns and order surplus foes away. Initial reinforcements occur one full configured interval after entry.",
+    "spawn_geometry": "Estimated: ship waves evenly spaced on a ring at configured radius around objective origin, first angle determined by saved instance seed; face player. Ground enemies use valid-floor40m ring. Capital relays use six equally spaced target positions on a200m ring around vessel local longitudinal axis; these are provisional layout values, not native ED geometry.",
+    "power_puzzle": "Estimated: regulator items have unique IDs; install2 exactly once. Wrong breaker order resets breaker progress only; installed regulators remain.",
+    "heat_termination": "Estimated: heat runs during access/rescue and stops after all passengers are safely unloaded. At threshold100 before quota, fail; vent use is a one-time five-second action per vent.",
+    "capital_damage": "Estimated: mission capital root is not the kill objective and ignores ordinary hull damage. Only unique relay destruction advances progress; final relay triggers retreat. This override belongs only to the mission instance, not the playable hull.",
+    "ground_player": "Estimated common player: health100, shield100, shield recharge10/s after5s without damage, walk3m/s, sprint6m/s. Starting weapon uses guard weapon numeric parameters with player-controlled aim, no random hit-probability gate. Damage drains shields then health; no invented armour resistance.",
+    "ground_ai_sampling": "Estimated: guard fires at configured interval when line-of-sight and range pass; each shot uses saved RNG and hit probability. No shot through solid geometry or floor. Dead unique actor IDs cannot be credited twice."
+  },
+  "profiles": [
+    {
+      "id": "D03",
+      "name": "Terminal Prosecution",
+      "stages": [
+        {
+          "stage_id": "pirates",
+          "kind": "ship_combat",
+          "objective_basis": "D19 reports one then nine opponents in one run; this snapshot adopts that observed count, not an all-difficulty rule",
+          "parameters": {
+            "waves": {
+              "value": [
+                1,
+                9
+              ],
+              "status": "D19 observed1 then9 adopted for Easy solo snapshot; other profiles estimated scaling"
+            },
+            "wave_roles": {
+              "value": [
+                "fighter"
+              ],
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "spawn_radius": {
+              "value": 8000,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all authored wave enemies destroyed",
+          "on_success": "general",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "general",
+          "kind": "ship_combat",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "general_role": {
+              "value": "boss",
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "escorts": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "spawn_radius": {
+              "value": 12000,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "designated general destroyed; surviving escorts retreat",
+          "on_success": "extract",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "extract",
+          "kind": "extraction",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "runner_arrival_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "boarding_range": {
+              "value": 100,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all active participants docked/boarded Runner",
+          "on_success": "success",
+          "on_failure": "fail_instance"
+        }
+      ],
+      "profile_id": "PROJECT-OPERATIONS-D03-v1",
+      "status": "Complete bounded project adaptation with necessary labelled parameters; no claim of Frontier server parity.",
+      "source_ids": [
+        "D19",
+        "D20",
+        "D21",
+        "D22"
+      ],
+      "entry_stage": "pirates",
+      "reward": {
+        "credits": 8000,
+        "status": "estimated; common-project economy, not native ED payout",
+        "once_only_key": "PROJECT-OPERATIONS-D03-v1:instance_uuid:reward"
+      }
+    },
+    {
+      "id": "D04",
+      "name": "Tactical Takedown",
+      "stages": [
+        {
+          "stage_id": "records",
+          "kind": "on_foot_download",
+          "objective_basis": "D19 command-deck download almost five minutes; 300 seconds is a labelled project approximation",
+          "parameters": {
+            "guards": {
+              "value": 8,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "download_seconds": {
+              "value": 300,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "terminal_range_metres": {
+              "value": 3,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "interruption": {
+              "value": "pause while outside range; resume remaining time",
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "ship_attackers": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "flight record download complete",
+          "on_success": "power",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "power",
+          "kind": "on_foot_power",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "regulators": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "guards": {
+              "value": 6,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "interaction_seconds": {
+              "value": 5,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "breaker_order": {
+              "value": [
+                "A",
+                "B"
+              ],
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "both regulators installed and breakers switched A then B",
+          "on_success": "installation",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "installation",
+          "kind": "ship_combat",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "enemies": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "roles": {
+              "value": [
+                "fighter",
+                "fighter",
+                "heavy",
+                "heavy"
+              ],
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "spawn_radius": {
+              "value": 8000,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all installation defenders destroyed",
+          "on_success": "general",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "general",
+          "kind": "ship_combat",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "general_role": {
+              "value": "boss",
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "escorts": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "spawn_radius": {
+              "value": 12000,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "general destroyed",
+          "on_success": "extract",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "extract",
+          "kind": "extraction",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "runner_arrival_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "boarding_range": {
+              "value": 100,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all participants boarded",
+          "on_success": "success",
+          "on_failure": "fail_instance"
+        }
+      ],
+      "profile_id": "PROJECT-OPERATIONS-D04-v1",
+      "status": "Complete bounded project adaptation with necessary labelled parameters; no claim of Frontier server parity.",
+      "source_ids": [
+        "D19",
+        "D20",
+        "D21",
+        "D22"
+      ],
+      "entry_stage": "records",
+      "reward": {
+        "credits": 10000,
+        "status": "estimated; common-project economy, not native ED payout",
+        "once_only_key": "PROJECT-OPERATIONS-D04-v1:instance_uuid:reward"
+      }
+    },
+    {
+      "id": "D05",
+      "name": "Firestorm Rescue",
+      "instance_parameters": {
+        "heat_start": {
+          "value": 10,
+          "status": "estimated"
+        },
+        "heat_failure_threshold": {
+          "value": 100,
+          "status": "estimated"
+        },
+        "heat_per_second": {
+          "value": 0.15,
+          "status": "estimated; runs throughout rescue from stage access entry"
+        },
+        "vent_cooling": {
+          "value": 15,
+          "status": "estimated; each of four vents can be used once; interaction5 seconds"
+        },
+        "passenger_quota": {
+          "value": 10,
+          "status": "estimated; people count credited only after unloading at rescue ship"
+        }
+      },
+      "stages": [
+        {
+          "stage_id": "access",
+          "kind": "ship_hacking",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "clamps": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "recon_limpet_seconds_each": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "ship_attackers": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "both docking clamps opened",
+          "on_success": "rescue",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "rescue",
+          "kind": "passenger_rescue",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "people_total": {
+              "value": 10,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "loading_seconds_per_person": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "unloading_seconds_per_person": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "heat_vents": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "ship_reinforcements_every_seconds": {
+              "value": 90,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "reinforcement_count": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "active_hostile_cap": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all10 people safely unloaded, with heat below100",
+          "on_success": "extract",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "extract",
+          "kind": "extraction",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "runner_arrival_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "boarding_range": {
+              "value": 100,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all participants boarded",
+          "on_success": "success",
+          "on_failure": "fail_instance"
+        }
+      ],
+      "profile_id": "PROJECT-OPERATIONS-D05-v1",
+      "status": "Complete bounded project adaptation with necessary labelled parameters; no claim of Frontier server parity.",
+      "source_ids": [
+        "D19",
+        "D20",
+        "D21",
+        "D22"
+      ],
+      "entry_stage": "access",
+      "reward": {
+        "credits": 8000,
+        "status": "estimated; common-project economy, not native ED payout",
+        "once_only_key": "PROJECT-OPERATIONS-D05-v1:instance_uuid:reward"
+      }
+    },
+    {
+      "id": "D06",
+      "name": "Rapid Response",
+      "instance_parameters": {
+        "deadline_seconds": {
+          "value": 1500,
+          "status": "D19 reported25-minute limit adopted for project; timer origin and equality are project choices"
+        },
+        "timer_start": {
+          "value": "rescue stage entry",
+          "status": "estimated"
+        }
+      },
+      "stages": [
+        {
+          "stage_id": "rescue",
+          "kind": "passenger_rescue",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "people_total": {
+              "value": 20,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "loading_seconds_per_person": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "unloading_seconds_per_person": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "ship_reinforcements_every_seconds": {
+              "value": 120,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "reinforcement_count": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "active_hostile_cap": {
+              "value": 6,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all20 people safely unloaded before deadline",
+          "on_success": "extract",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "extract",
+          "kind": "extraction",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "runner_arrival_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "boarding_range": {
+              "value": 100,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all participants boarded before original deadline",
+          "on_success": "success",
+          "on_failure": "fail_instance"
+        }
+      ],
+      "profile_id": "PROJECT-OPERATIONS-D06-v1",
+      "status": "Complete bounded project adaptation with necessary labelled parameters; no claim of Frontier server parity.",
+      "source_ids": [
+        "D19",
+        "D20",
+        "D21",
+        "D22"
+      ],
+      "entry_stage": "rescue",
+      "reward": {
+        "credits": 7000,
+        "status": "estimated; common-project economy, not native ED payout",
+        "once_only_key": "PROJECT-OPERATIONS-D06-v1:instance_uuid:reward"
+      }
+    },
+    {
+      "id": "D07",
+      "name": "Reclamation Point",
+      "stages": [
+        {
+          "stage_id": "approach",
+          "kind": "ship_combat",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "enemies": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "spawn_radius": {
+              "value": 8000,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "approach ships destroyed",
+          "on_success": "deck1",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "deck1",
+          "kind": "on_foot_clearance",
+          "objective_basis": "D19 reported15-minute decks; quota/replacement reports conflict, project explicitly selects finite quota with replacement until quota",
+          "parameters": {
+            "kill_quota": {
+              "value": 20,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "active_guard_cap": {
+              "value": 5,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "replacement_delay_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "deadline_seconds": {
+              "value": 900,
+              "status": "D19 reported900 seconds adopted; separate timer origin/equality estimated"
+            }
+          },
+          "success_predicate": "20 unique hostile deaths on deck1 before900 seconds",
+          "on_success": "deck2",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "deck2",
+          "kind": "on_foot_clearance",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "kill_quota": {
+              "value": 20,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "active_guard_cap": {
+              "value": 5,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "replacement_delay_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "deadline_seconds": {
+              "value": 900,
+              "status": "D19 reported900 seconds adopted; separate timer origin/equality estimated"
+            }
+          },
+          "success_predicate": "20 unique hostile deaths on deck2 before its separate900-second timer",
+          "on_success": "departure",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "departure",
+          "kind": "ship_combat",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "enemies": {
+              "value": 6,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "spawn_radius": {
+              "value": 10000,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all departure attackers destroyed",
+          "on_success": "extract",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "extract",
+          "kind": "extraction",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "runner_arrival_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "boarding_range": {
+              "value": 100,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all participants boarded",
+          "on_success": "success",
+          "on_failure": "fail_instance"
+        }
+      ],
+      "profile_id": "PROJECT-OPERATIONS-D07-v1",
+      "status": "Complete bounded project adaptation with necessary labelled parameters; no claim of Frontier server parity.",
+      "source_ids": [
+        "D19",
+        "D20",
+        "D21",
+        "D22"
+      ],
+      "entry_stage": "approach",
+      "reward": {
+        "credits": 10000,
+        "status": "estimated; common-project economy, not native ED payout",
+        "once_only_key": "PROJECT-OPERATIONS-D07-v1:instance_uuid:reward"
+      }
+    },
+    {
+      "id": "D08",
+      "name": "Biohazard Takedown",
+      "stages": [
+        {
+          "stage_id": "records",
+          "kind": "on_foot_download",
+          "objective_basis": "D19 reports one-minute download; project adopts60 seconds, interruption/range are estimates",
+          "parameters": {
+            "guards": {
+              "value": 6,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "download_seconds": {
+              "value": 60,
+              "status": "D19 reported60 seconds adopted; exact server duration not independently measured"
+            },
+            "terminal_range_metres": {
+              "value": 3,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "interruption": {
+              "value": "pause out of range; resume",
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "ship_attackers": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "briefing-room download complete",
+          "on_success": "engineering",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "engineering",
+          "kind": "on_foot_targets",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "researchers": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "guards": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "two designated engineering researchers neutralised",
+          "on_success": "habitat",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "habitat",
+          "kind": "on_foot_targets",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "researchers": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "guards": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "two designated habitat researchers neutralised",
+          "on_success": "extract",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "extract",
+          "kind": "hostile_extraction",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "runner_arrival_seconds": {
+              "value": 30,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "ship_attackers": {
+              "value": 2,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "boarding_range": {
+              "value": 100,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all participants launch and board Runner",
+          "on_success": "success",
+          "on_failure": "fail_instance"
+        }
+      ],
+      "profile_id": "PROJECT-OPERATIONS-D08-v1",
+      "status": "Complete bounded project adaptation with necessary labelled parameters; no claim of Frontier server parity.",
+      "source_ids": [
+        "D19",
+        "D20",
+        "D21",
+        "D22"
+      ],
+      "entry_stage": "records",
+      "reward": {
+        "credits": 9000,
+        "status": "estimated; common-project economy, not native ED payout",
+        "once_only_key": "PROJECT-OPERATIONS-D08-v1:instance_uuid:reward"
+      }
+    },
+    {
+      "id": "D09",
+      "name": "Under Siege",
+      "stages": [
+        {
+          "stage_id": "blockade",
+          "kind": "ship_combat",
+          "objective_basis": "D21 official blockade objective; D24 firsthand combined-arms account supports ship combat, ground phase and final heat relays. Order before finale remains an explicit project reconstruction.",
+          "parameters": {
+            "enemies": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "spawn_radius": {
+              "value": 8000,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "blockade attackers destroyed",
+          "on_success": "settlement",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "settlement",
+          "kind": "on_foot_clearance",
+          "objective_basis": "D24 firsthand player reports SRV/Maverick turret disabling then ground combat; precise counts/trigger/ordering estimated",
+          "parameters": {
+            "kill_quota": {
+              "value": 20,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "active_guard_cap": {
+              "value": 5,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "replacement_delay_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "optional_aa_turrets": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "turret_disable_seconds": {
+              "value": 5,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "turret_range": {
+              "value": 1000,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "turret_damage_per_second": {
+              "value": 20,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "20 unique hostile deaths; AA disable is optional",
+          "on_success": "capital",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "capital",
+          "kind": "ship_subsystem_combat",
+          "objective_basis": "D24 firsthand report identifies capital heat-relay finale; capital class and counts are estimates, not observed facts",
+          "parameters": {
+            "capital_ship_id": {
+              "value": "SH043",
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "heat_relays": {
+              "value": 6,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "relay_energy_each": {
+              "value": 150,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "escorts": {
+              "value": 4,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "turret_damage_per_second": {
+              "value": 20,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "turret_range": {
+              "value": 6000,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all six unique heat relays destroyed; capital retreats",
+          "on_success": "extract",
+          "on_failure": "fail_instance"
+        },
+        {
+          "stage_id": "extract",
+          "kind": "extraction",
+          "objective_basis": "D19 observed stage; numerical parameters below estimated unless an individual field says reported",
+          "parameters": {
+            "runner_arrival_seconds": {
+              "value": 15,
+              "status": "estimated project parameter; necessary missing server value"
+            },
+            "boarding_range": {
+              "value": 100,
+              "status": "estimated project parameter; necessary missing server value"
+            }
+          },
+          "success_predicate": "all participants boarded",
+          "on_success": "success",
+          "on_failure": "fail_instance"
+        }
+      ],
+      "profile_id": "PROJECT-OPERATIONS-D09-v1",
+      "status": "Complete bounded project adaptation with necessary labelled parameters; no claim of Frontier server parity.",
+      "source_ids": [
+        "D19",
+        "D20",
+        "D21",
+        "D22",
+        "D24"
+      ],
+      "entry_stage": "blockade",
+      "reward": {
+        "credits": 9000,
+        "status": "estimated; common-project economy, not native ED payout",
+        "once_only_key": "PROJECT-OPERATIONS-D09-v1:instance_uuid:reward"
+      }
+    }
+  ],
+  "acceptance": [
+    "Success and failure for every stage and entire scenario",
+    "Easy/Hard with1/2/4 players",
+    "Exact timer equality and just-before boundary",
+    "Shared kill IDs and repeated death callback",
+    "Passenger pickup versus safe unloading, full cabin, lost ship and reconnect",
+    "Save/reload during download, heat growth, wave replacement, power interaction and extraction",
+    "Reclamation quota caps without infinite replenishment after completion",
+    "Optional AA disabling does not prematurely complete Under Siege",
+    "One reward transaction across reload/reconnect/repeated extraction"
+  ],
+  "implementation_scope_status": "ARCHIVED / EXCLUDED by owner13 October2026; not an active mission dataset"
+}

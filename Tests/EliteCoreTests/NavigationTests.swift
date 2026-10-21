@@ -23,27 +23,40 @@ private func longRoute(_ game: Game) -> [Int] {
   return []
 }
 @Test func navigationTiersUseSpecifiedPricesFuelBasedScopeAndOneInstalledUpgrade() throws {
-  var game = navigationGame()
-  game.commander.equipment = []
+  var game = Game(executive: false)
+  game.screen = .chart
+  game.commander.credits = 500_000
   game.commander.system = try #require(game.systems.firstIndex { $0.technology >= 10 })
-  for (index, tier) in NavigationTier.allCases.enumerated() {
-    #expect(tier.price == [10000, 30000, 90000][index])
-    game.selection = Equipment.all.firstIndex { $0.name == tier.equipmentName }!
-    let cash = game.commander.credits
-    game.purchase()
-    #expect(game.commander.credits == cash - tier.price && game.commander.navigationTier == tier)
-  }
-  game.commander.equipment = [NavigationTier.basic.equipmentName]
+  try game.commander.prepareEquipment(legacy: false)
+  let basic = try #require(game.commander.fittedEquipment(at: .navigation))
+  #expect(basic.provenance == .standard && game.commander.navigationTier == .basic)
+  game.selection = try #require(
+    Equipment.all.firstIndex { $0.name == NavigationTier.basic.equipmentName })
+  let standard = game.commander
+  game.purchase()
+  #expect(
+    game.commander == standard && game.commander.equipmentPurchaseHistory?.paid.isEmpty == true)
+  #expect(game.message == "STANDARD OR ACQUISITION HARDWARE - NOT FOR SALE")
   game.commander.fuel = 20
-  #expect(game.navigationPlanningRadius == 14)
+  #expect(game.navigationPlanningRadius == 14 && game.commander.maximumJumpDistance == 2)
+  #expect(game.commander.fittedComponent(at: .navigation)?.statistics[.jumpReach] == 7)
   #expect(
     game.systems.filter { game.canPlan(to: $0) }.allSatisfy {
       game.currentSystem.distance(to: $0) <= 14
     })
-  game.commander.equipment = [NavigationTier.advanced.equipmentName]
-  #expect(game.navigationPlanningRadius == 21)
-  game.commander.equipment = [NavigationTier.military.equipmentName]
+  for (tier, reach) in [(NavigationTier.advanced, 14.0), (.military, 21.0)] {
+    game.selection = try #require(Equipment.all.firstIndex { $0.name == tier.equipmentName })
+    let cash = game.commander.credits
+    game.purchase()
+    #expect(game.commander.credits == cash - tier.price && game.commander.navigationTier == tier)
+    #expect(game.commander.fittedComponent(at: .navigation)?.statistics[.jumpReach] == reach)
+    #expect(game.commander.equipmentPurchaseHistory?.paid.last?.node.key == tier.equipmentName)
+    #expect(game.commander.fuel == 20)
+    if tier == .advanced { #expect(game.navigationPlanningRadius == 21) }
+  }
   #expect(game.navigationPlanningRadius == nil && game.knownSystems.allSatisfy(game.canPlan))
+  #expect(NavigationTier.allCases.map(\.price) == [10000, 30000, 90000])
+  #expect(game.commander.equipmentPurchaseHistory?.paid.count == 2 && game.commander.valid)
   game.commander.fuel = 0
   game.selectedSystem = 129
   game.key("n")
@@ -139,12 +152,13 @@ private func longRoute(_ game: Game) -> [Int] {
   game.manuallySelectSystem(129)
   #expect(game.commander.navigationPlan == nil && game.selectedSystem == 129)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .military, originFuel: 70)
+  game.commander.equipment.insert("Galactic Hyperdrive")
   game.launch()
+  #expect(game.commander.fittedEquipment(at: .utility(.galacticHyperdrive)) != nil)
   game.selectedSystem = (path[1] + 1) % 256
   game.arrive()
   #expect(game.commander.navigationPlan == nil)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .military, originFuel: 70)
-  game.commander.equipment.insert("Galactic Hyperdrive")
   game.galacticJump()
   #expect(game.commander.navigationPlan == nil)
 }

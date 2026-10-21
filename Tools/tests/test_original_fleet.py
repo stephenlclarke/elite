@@ -1,0 +1,257 @@
+"""Bounded offline tests: original data joins, explicit gaps and safe staging."""
+
+import contextlib
+import copy
+import importlib.util
+import io
+import json
+from pathlib import Path
+import tempfile
+import tomllib
+import unittest
+
+
+TOOL = Path(__file__).resolve().parents[1] / "compile-original-fleet.py"
+SPEC = importlib.util.spec_from_file_location("original_fleet", TOOL)
+COMPILER = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(COMPILER)
+
+
+def spec(identifier="SH001", flyable=True):
+    result = {
+        "id": identifier, "name": "Original " + identifier, "family": "new-family",
+        "role": "trader", "license": "MIT", "playerFlyable": flyable,
+        "purchasePolicy": "blueprintFabrication" if flyable else "never",
+        "balance": {"method": "Independent fixture budget", "sourceProfilesIncluded": False},
+    }
+    if flyable:
+        result["game"] = {
+            "cargo": 63, "speed": 34.8, "acceleration": 9.6, "energy": 270,
+            "recharge": 3.78, "roll": 0.88, "pitch": 0.77, "yaw": 0.72,
+            "shield": 240, "shieldRecharge": 1.5, "fuel": 130, "jump": 9,
+            "spool": 12, "missiles": 5, "facings": 15, "cargoExpansion": 25, "price": 216000,
+        }
+    else:
+        result["display"] = {"purchasable": False, "specification": "Structural object"}
+    return result
+
+
+def hull(identity):
+    design = {
+        "vertices": [[0.0, 0.0, -0.0], [1.25, 0.0, 0.0], [0.0, 2.5, 0.0], [0.0, 0.0, 3.75]],
+        "faces": [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+        "license": "MIT", "source": "Original fixture geometry, no imported model",
+        "materials": [{"name": "original", "colour": 0xFFFFFFFF, "emissive": False}],
+        "faceMaterials": [0, 0, 0, 0],
+        "textures": [{"asset": "original-test", "license": "MIT", "repeat": True}],
+        "faceTextures": [{"texture": 0, "uv": [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]]} for _ in range(4)],
+    }
+    return {"proposal": {key: identity[key] for key in ("id", "name", "family")},
+            "design": design, "nativeDesign": copy.deepcopy(design)}
+
+
+def write_toml(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("# Immutable test fixture\n" + "\n".join(
+        json.dumps(key) + " = " + COMPILER.toml_value(value) for key, value in data.items()
+    ) + "\n")
+
+
+class OriginalFleetTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.source = self.root / "proposal"
+        self.output = self.root / "staging"
+        self.ship = spec()
+        self.geometry = hull(self.ship)
+        write_toml(self.source / "fleet-specs/SH001.toml", self.ship)
+        write_toml(self.source / "fleet-specs/SH002.toml", spec("SH002", False))
+        write_toml(self.source / "replacement-hulls/SH001-design.toml", self.geometry)
+
+    def compile(self, output=None):
+        return COMPILER.compile_fleet(self.source, output or self.output, 2, 1)
+
+    def test_exact_original_data_join_and_missing_mesh_preservation(self):
+        manifest = self.compile()
+        joined = tomllib.loads((self.output / "joined/SH001.toml").read_text())
+        self.assertEqual({k: joined[k] for k in self.ship}, self.ship)
+        self.assertEqual(joined["design"], self.geometry["design"])
+        for key in ("nativeDesign", "nativeHull", "nativeCombat", "profiles"):
+            self.assertNotIn(key, joined)
+        self.assertEqual((self.output / "specs/SH001.toml").read_bytes(), (self.source / "fleet-specs/SH001.toml").read_bytes())
+        self.assertEqual((self.output / "original-hulls/SH001-design.toml").read_bytes(), (self.source / "replacement-hulls/SH001-design.toml").read_bytes())
+        self.assertFalse((self.output / "joined/SH002.toml").exists())
+        missing = manifest["ships"][1]
+        self.assertIn("approved-original-mesh-missing", missing["dependencies"])
+        self.assertFalse(missing["playerFlyableAuthored"])
+        self.assertNotIn("game", tomllib.loads((self.output / missing["spec"]).read_text()))
+        self.assertEqual(manifest["ships"][0]["unsupportedDesignFields"], ["faceTextures", "textures"])
+        self.assertEqual(manifest["ships"][0]["textureAssetsNotSupplied"], ["original-test"])
+        self.assertIn("original-cargo-and-accommodation-contract", manifest["ships"][0]["dependencies"])
+        self.assertFalse(manifest["ships"][0]["currentLoaderCompatible"])
+        self.assertNotIn("readiness.json", [item["path"] for item in manifest["files"]])
+
+    def test_deterministic_generation_and_check_mode(self):
+        first = self.compile()
+        second_output = self.root / "second"
+        second = self.compile(second_output)
+        self.assertEqual(first, second)
+        for path in self.output.rglob("*"):
+            if path.is_file():
+                self.assertEqual(path.read_bytes(), (second_output / path.relative_to(self.output)).read_bytes())
+        stamps = {p: p.stat().st_mtime_ns for p in self.output.rglob("*") if p.is_file()}
+        self.assertEqual(COMPILER.check_staging(self.output), first)
+        self.assertEqual({p: p.stat().st_mtime_ns for p in stamps}, stamps)
+        with self.assertRaisesRegex(ValueError, "fresh/empty"):
+            self.compile()
+
+    def test_policy_zeros_and_unknown_fields_retained_without_fixes(self):
+        self.ship["purchasePolicy"] = "plughQuestFabrication"
+        self.ship["game"]["price"] = 0
+        self.ship["game"]["futureAuthoredQuantity"] = 123.75
+        self.ship["access"] = "quest-gated"
+        write_toml(self.source / "fleet-specs/SH001.toml", self.ship)
+        manifest = self.compile()
+        entry = manifest["ships"][0]
+        self.assertEqual(entry["purchasePolicyAuthored"], "plughQuestFabrication")
+        self.assertIn("unsupported-purchase-policy", entry["dependencies"])
+        self.assertIn("access", entry["unsupportedSpecFields"])
+        self.assertTrue(any("game.price" in issue for issue in entry["gameValidityIssues"]))
+        self.assertTrue(any("futureAuthoredQuantity" in issue for issue in entry["gameValidityIssues"]))
+        joined = tomllib.loads((self.output / entry["joined"]).read_text())
+        self.assertEqual(joined["game"], self.ship["game"])
+        self.assertEqual(joined["access"], "quest-gated")
+
+    def test_identity_mismatch_and_legacy_attachment_fail_explicitly(self):
+        for change in ("id", "legacy"):
+            with self.subTest(change=change):
+                geometry = copy.deepcopy(self.geometry)
+                if change == "legacy":
+                    geometry["nativeCombat"] = {"energy": 256}
+                else:
+                    geometry["proposal"][change] = "wrong"
+                write_toml(self.source / "replacement-hulls/SH001-design.toml", geometry)
+                with self.assertRaises(ValueError):
+                    self.compile(self.root / change)
+        geometry = copy.deepcopy(self.geometry)
+        geometry["proposal"]["family"] = "other-authored-family"
+        write_toml(self.source / "replacement-hulls/SH001-design.toml", geometry)
+        manifest = self.compile(self.root / "family-difference")
+        entry = manifest["ships"][0]
+        self.assertEqual(entry["hullSpecMetadataDifferences"], [{"field": "family", "spec": "new-family", "hullProposal": "other-authored-family"}])
+        self.assertIn("hull-spec-metadata-difference", entry["dependencies"])
+        self.assertEqual(tomllib.loads((self.root / "family-difference" / entry["joined"]).read_text())["family"], "new-family")
+        self.ship["profiles"] = []
+        write_toml(self.source / "fleet-specs/SH001.toml", self.ship)
+        with self.assertRaisesRegex(ValueError, "Legacy/geometry"):
+            self.compile(self.root / "profiles")
+
+    def test_bad_geometry_material_uv_and_nonfinite_rejected(self):
+        for change in ("face", "vertex", "material", "uv"):
+            with self.subTest(change=change):
+                design = copy.deepcopy(self.geometry["design"])
+                if change == "face":
+                    design["faces"][0][0] = 999
+                elif change == "vertex":
+                    design["vertices"][0][0] = float("inf")
+                elif change == "material":
+                    design["materials"][0]["colour"] = 0xFFFFFF00
+                else:
+                    design["faceTextures"][0]["uv"].pop()
+                with self.assertRaises(ValueError):
+                    COMPILER.validate_design(design, "fixture")
+        design = copy.deepcopy(self.geometry["design"])
+        design["textures"] = []
+        for mapping in design["faceTextures"]:
+            mapping["texture"] = -1
+            mapping["uv"] = [[0.0, 0.0]] * 3
+        self.assertEqual(COMPILER.validate_design(design, "untextured")["untexturedCornerUVs"], 4)
+
+    def test_missing_or_mismatched_spec_filename_fails_before_writes(self):
+        write_toml(self.source / "fleet-specs/SH002.toml", spec("SH003"))
+        with self.assertRaisesRegex(ValueError, "filename/ID"):
+            self.compile()
+        self.assertFalse(self.output.exists())
+        with self.assertRaisesRegex(ValueError, "Expected"):
+            COMPILER.compile_fleet(self.source, self.output, 171, 94)
+
+    def test_check_detects_corruption_extra_files_and_traversal(self):
+        manifest = self.compile()
+        path = self.output / "specs/SH001.toml"
+        raw = path.read_bytes()
+        path.write_bytes(raw.replace(b"216000", b"999999"))
+        with self.assertRaisesRegex(ValueError, "corrupt"):
+            COMPILER.check_staging(self.output)
+        path.write_bytes(raw)
+        extra = self.output / "unexpected.toml"
+        extra.write_text("extra")
+        with self.assertRaisesRegex(ValueError, "Unexpected/missing"):
+            COMPILER.check_staging(self.output)
+        extra.unlink()
+        manifest["files"][0]["path"] = "../../outside"
+        (self.output / "readiness.json").write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError, "Unsafe"):
+            COMPILER.check_staging(self.output)
+
+    def test_input_symlink_overlap_and_output_budget_rejected(self):
+        with self.assertRaisesRegex(ValueError, "overlap"):
+            COMPILER.compile_fleet(self.source, self.source / "output", 2, 1)
+        path = self.source / "fleet-specs/SH001.toml"
+        other = self.root / "elsewhere.toml"
+        other.write_bytes(path.read_bytes())
+        path.unlink()
+        path.symlink_to(other)
+        with self.assertRaises(ValueError):
+            self.compile()
+        sink = COMPILER.Artifacts(self.root / "budget")
+        sink.total = COMPILER.MAX_OUTPUT_BYTES
+        with self.assertRaisesRegex(ValueError, "500 MiB"):
+            sink.emit("small.txt", [b"x"])
+
+    def test_toml_escaping_and_cli_missing_input(self):
+        value = 'Original "quoted" \\ hull\n\t' + chr(0x1F680)
+        self.assertEqual(tomllib.loads("value = " + COMPILER.toml_value(value))["value"], value)
+        output = io.StringIO()
+        with contextlib.redirect_stderr(output):
+            status = COMPILER.main(["--output-root", str(self.output)])
+        self.assertEqual(status, 2)
+        self.assertIn("--input-root is required", output.getvalue())
+        self.assertFalse(self.output.exists())
+
+    def test_escaped_source_del_and_controls_round_trip_through_real_join(self):
+        value = 'Original "quoted" \\ ' + "".join(chr(i) for i in range(32)) + chr(127) + chr(0x1F680)
+        geometry = copy.deepcopy(self.geometry)
+        geometry["design"]["source"] = value
+        geometry["design"]["extra" + chr(127)] = {"note" + chr(127): value}
+        path = self.source / "replacement-hulls/SH001-design.toml"
+        write_toml(path, geometry)
+        # The source remains legal TOML even with the pre-fix encoder; exercise the joined writer.
+        raw = path.read_text().replace(chr(127), "\\u007f")
+        path.write_text(raw)
+        self.assertEqual(tomllib.loads(raw)["design"]["source"], value)
+        manifest = self.compile()
+        joined_raw = (self.output / manifest["ships"][0]["joined"]).read_text()
+        joined = tomllib.loads(joined_raw)
+        self.assertEqual(joined["design"], geometry["design"])
+        self.assertNotIn(chr(127), joined_raw)
+        self.assertIn("\\u007f", joined_raw)
+
+    def test_explicit_output_root_symlink_refused_without_destination_writes(self):
+        destination = self.root / "empty-destination"
+        destination.mkdir()
+        link = self.root / "output-link"
+        link.symlink_to(destination, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "Symlink output root"):
+            self.compile(link)
+        with self.assertRaisesRegex(ValueError, "Symlink output root"):
+            COMPILER.Artifacts(link)
+        with self.assertRaisesRegex(ValueError, "Symlink output root"):
+            COMPILER.check_staging(link)
+        self.assertEqual(list(destination.iterdir()), [])
+        self.assertTrue(link.is_symlink())
+
+
+if __name__ == "__main__":
+    unittest.main()

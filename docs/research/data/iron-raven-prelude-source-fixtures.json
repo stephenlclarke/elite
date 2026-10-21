@@ -1,0 +1,2139 @@
+{
+  "profile_id": "P19-PRELUDE-SOURCE-v1",
+  "scope": "Selected unchanged source callbacks in lexical VM with native-style absent mission-variable nulls, spied dialogs/marks/station/PAD/credits APIs. Source Continue deliberately auto-invokes with undefined to expose source behavior. Library0.8 actual registration/getText callbacks; formatting, Oolite UI, native persistence and gameplay not executed. Serialization cases reconstruct JS globals only. Synthetic stale/foreign/missing callbacks expose absent guards; they do not assert original engine event scheduling. Individual durations are callback-only.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-brief.js",
+      "sha256": "3e4a645973a07d31ff5ed884793e2f0abef7d96708777cefb2f68485a905667a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-shipment.js",
+      "sha256": "fb6facb5eb11f0cbe1fb3c998216fc9c30b4c1ea820560a469271cfa1e2f170a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-finance.js",
+      "sha256": "e412efebe3c4475ce73b705c1e1a7c9dacce92a866c0c01b26ecbba19d9ba688"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-SDF.js",
+      "sha256": "42667bd9bd081dc31ab8a99365561f02cc330d9430d4f7f278950c8c55274145"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-defences.js",
+      "sha256": "23ce32e0370ce1ac1ac129805191f4bd536403fca6e0ee7bc38d8cc92a4aa299"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Config/missiontext.plist",
+      "sha256": "288335f9100111ed1284016143b38311716fc4ad32849c7af31e92c84fc0be79"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Config/descriptions.plist",
+      "sha256": "71aa8b4ac2e8ba9952ca118178f2d9d4a4a71c703bb34beb3aae4d6e2fb524b4"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/readme.txt",
+      "sha256": "a8dc6c2d8e8569ca76ee06419cb9b84ad99dd79e9a64160567a060d769eb35d7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/manifest.plist",
+      "sha256": "3f7c7e85ad2230a52533cc36ca1b5ac6d5d1f82d5948bc441fbc77828fceeeb3"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Iron Raven Brief.pdf",
+      "sha256": "d02c262661f3c3de9f97f9b6d73d99eb89045179e1ba8c151cf808fefc00711f"
+    },
+    {
+      "path": "/tmp/elite-gap-research/dependencies/ShipsLibrary/Scripts/ingame-manual.js",
+      "sha256": "256e5a30f8bb295d8ae4b9407065a29f1ac169551cd082d4543099ee8ca46975"
+    },
+    {
+      "path": "/tmp/elite-gap-research/dependencies/ShipsLibrary/manifest.plist",
+      "sha256": "74241650b33953cc64b37c51cc0d8a402b9e94215b5af9faca6971f3f7de0cc3"
+    }
+  ],
+  "total": 70,
+  "passed": 70,
+  "cases": [
+    {
+      "name": "Invitation gate: unstarted G8 main station",
+      "passed": true,
+      "duration_ms": 0.937541,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0,
+          "IR_order_date": 70
+        },
+        "messages": [
+          "title",
+          "IR_IBANEZ_1"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "data",
+            "GALCOP.INTELLIGENCE"
+          ],
+          [
+            "data",
+            "INFOS.GHC"
+          ],
+          [
+            "data",
+            "SYSTEMS.VEGEDIUS"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Invitation gate: other galaxy",
+      "passed": true,
+      "duration_ms": 0.003708,
+      "result": {
+        "variables": {
+          "IR_status": null,
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Invitation gate: nonmain dock",
+      "passed": true,
+      "duration_ms": 0.002708,
+      "result": {
+        "variables": {
+          "IR_status": null,
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Invitation gate: undocked",
+      "passed": true,
+      "duration_ms": 0.00325,
+      "result": {
+        "variables": {
+          "IR_status": null,
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Invitation gate: occupied offer",
+      "passed": true,
+      "duration_ms": 0.004666,
+      "result": {
+        "variables": {
+          "IR_status": null,
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Invitation gate: existing phase",
+      "passed": true,
+      "duration_ms": 0.007458,
+      "result": {
+        "variables": {
+          "IR_status": "EXISTING",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Invitation gate: no credits or named prerequisites",
+      "passed": true,
+      "duration_ms": 0.014792,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0,
+          "IR_order_date": 70
+        },
+        "messages": [
+          "title",
+          "IR_IBANEZ_1"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "data",
+            "GALCOP.INTELLIGENCE"
+          ],
+          [
+            "data",
+            "INFOS.GHC"
+          ],
+          [
+            "data",
+            "SYSTEMS.VEGEDIUS"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source invoice backstory day 0",
+      "passed": true,
+      "duration_ms": 0.014584,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0,
+          "IR_order_date": -30
+        },
+        "messages": [
+          "title",
+          "IR_IBANEZ_1"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "data",
+            "GALCOP.INTELLIGENCE"
+          ],
+          [
+            "data",
+            "INFOS.GHC"
+          ],
+          [
+            "data",
+            "SYSTEMS.VEGEDIUS"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source invoice backstory day 29",
+      "passed": true,
+      "duration_ms": 0.009,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0,
+          "IR_order_date": -1
+        },
+        "messages": [
+          "title",
+          "IR_IBANEZ_1"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "data",
+            "GALCOP.INTELLIGENCE"
+          ],
+          [
+            "data",
+            "INFOS.GHC"
+          ],
+          [
+            "data",
+            "SYSTEMS.VEGEDIUS"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source invoice backstory day 30",
+      "passed": true,
+      "duration_ms": 0.006709,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0,
+          "IR_order_date": 0
+        },
+        "messages": [
+          "title",
+          "IR_IBANEZ_1"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "data",
+            "GALCOP.INTELLIGENCE"
+          ],
+          [
+            "data",
+            "INFOS.GHC"
+          ],
+          [
+            "data",
+            "SYSTEMS.VEGEDIUS"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source invoice backstory day 1000",
+      "passed": true,
+      "duration_ms": 0.007125,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0,
+          "IR_order_date": 970
+        },
+        "messages": [
+          "title",
+          "IR_IBANEZ_1"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "data",
+            "GALCOP.INTELLIGENCE"
+          ],
+          [
+            "data",
+            "INFOS.GHC"
+          ],
+          [
+            "data",
+            "SYSTEMS.VEGEDIUS"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Opening contact IR_IBANEZ_1",
+      "passed": true,
+      "duration_ms": 0.233209,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_IBANEZ_2a",
+          "IR_IBANEZ_2b",
+          "IR_IBANEZ_2c"
+        ],
+        "marks": [
+          230
+        ],
+        "instructions": [
+          {
+            "key": "IR_RAAED_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ],
+          [
+            "character",
+            "ibanez"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Wrong system cannot advance IR_IBANEZ_1",
+      "passed": true,
+      "duration_ms": 0.010292,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Nonmain cannot advance IR_IBANEZ_1",
+      "passed": true,
+      "duration_ms": 0.004959,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Busy dialog cannot advance IR_IBANEZ_1",
+      "passed": true,
+      "duration_ms": 0.005084,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_1",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Opening contact IR_IBANEZ_2",
+      "passed": true,
+      "duration_ms": 0.029916,
+      "result": {
+        "variables": {
+          "IR_status": "IR_RAAED_1",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b",
+          "IR_RAAED_1c",
+          "IR_RAAED_1d",
+          "IR_RAAED_1e"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            230
+          ],
+          [
+            "character",
+            "lexicon"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Wrong system cannot advance IR_IBANEZ_2",
+      "passed": true,
+      "duration_ms": 0.005125,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Nonmain cannot advance IR_IBANEZ_2",
+      "passed": true,
+      "duration_ms": 0.001375,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Busy dialog cannot advance IR_IBANEZ_2",
+      "passed": true,
+      "duration_ms": 0.001791,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Opening contact IR_RAAED_1",
+      "passed": true,
+      "duration_ms": 0.014959,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_3",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_IBANEZ_3"
+        ],
+        "marks": [
+          232
+        ],
+        "instructions": [
+          {
+            "key": "IR_JANES_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ],
+          [
+            "data",
+            "INFOS.JANES"
+          ],
+          [
+            "data",
+            "SYSTEMS.BIRAA"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Wrong system cannot advance IR_RAAED_1",
+      "passed": true,
+      "duration_ms": 0.005208,
+      "result": {
+        "variables": {
+          "IR_status": "IR_RAAED_1",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Nonmain cannot advance IR_RAAED_1",
+      "passed": true,
+      "duration_ms": 0.0015,
+      "result": {
+        "variables": {
+          "IR_status": "IR_RAAED_1",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Busy dialog cannot advance IR_RAAED_1",
+      "passed": true,
+      "duration_ms": 0.003625,
+      "result": {
+        "variables": {
+          "IR_status": "IR_RAAED_1",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Opening contact IR_IBANEZ_3",
+      "passed": true,
+      "duration_ms": 0.039209,
+      "result": {
+        "variables": {
+          "IR_status": "IR_JANES_1",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_JANES_1a",
+          "IR_JANES_1b",
+          "IR_JANES_1c"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            232
+          ],
+          [
+            "character",
+            "lindberg"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Wrong system cannot advance IR_IBANEZ_3",
+      "passed": true,
+      "duration_ms": 0.005375,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_3",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Nonmain cannot advance IR_IBANEZ_3",
+      "passed": true,
+      "duration_ms": 0.004167,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_3",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Busy dialog cannot advance IR_IBANEZ_3",
+      "passed": true,
+      "duration_ms": 0.003875,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_3",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Opening contact IR_JANES_1",
+      "passed": true,
+      "duration_ms": 0.092583,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 1,
+          "IR_shipment_question_key": "shipment_question_1",
+          "IR_shipment_question_string": "[shipment_question_string_1]",
+          "IR_SDF_question_no": 1,
+          "IR_SDF_question_key": "SDF_question_1",
+          "IR_SDF_question_string": "[SDF_question_string_1]",
+          "IR_finance_question_no": 1,
+          "IR_finance_question_key": "finance_question_1",
+          "IR_finance_question_string": "[finance_question_string_1]",
+          "IR_defences_question_no": 1,
+          "IR_defences_question_key": "defences_question_1",
+          "IR_defences_question_string": "[defences_question_string_1]",
+          "IR_question_settings": "SET",
+          "IR_shipment_status_no": 0,
+          "IR_finance_status_no": 0,
+          "IR_SDF_status_no": 0,
+          "IR_defences_status_no": 0
+        },
+        "messages": [
+          "IR_IBANEZ_4a",
+          "IR_IBANEZ_4b",
+          "IR_IBANEZ_4c",
+          "IR_IBANEZ_4d"
+        ],
+        "marks": [],
+        "instructions": [
+          {
+            "key": null
+          },
+          {
+            "key": "IR_shipment_brief_0",
+            "src": "IR-shipment.js"
+          },
+          {
+            "key": "IR_SDF_brief_0",
+            "src": "IR-SDF.js"
+          },
+          {
+            "key": "IR_finance_brief_0",
+            "src": "IR-finance.js"
+          },
+          {
+            "key": "IR_defences_brief_0",
+            "src": "IR-defences.js"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ],
+          [
+            "registerBrief"
+          ],
+          [
+            "interface"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Wrong system cannot advance IR_JANES_1",
+      "passed": true,
+      "duration_ms": 0.005292,
+      "result": {
+        "variables": {
+          "IR_status": "IR_JANES_1",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Nonmain cannot advance IR_JANES_1",
+      "passed": true,
+      "duration_ms": 0.001583,
+      "result": {
+        "variables": {
+          "IR_status": "IR_JANES_1",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Busy dialog cannot advance IR_JANES_1",
+      "passed": true,
+      "duration_ms": 0.0015,
+      "result": {
+        "variables": {
+          "IR_status": "IR_JANES_1",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source disregards Continue choice null",
+      "passed": true,
+      "duration_ms": 0.016917,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_IBANEZ_2a",
+          "IR_IBANEZ_2b",
+          "IR_IBANEZ_2c"
+        ],
+        "marks": [
+          230
+        ],
+        "instructions": [
+          {
+            "key": "IR_RAAED_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ],
+          [
+            "character",
+            "ibanez"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source disregards Continue choice undefined",
+      "passed": true,
+      "duration_ms": 0.008958,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_IBANEZ_2a",
+          "IR_IBANEZ_2b",
+          "IR_IBANEZ_2c"
+        ],
+        "marks": [
+          230
+        ],
+        "instructions": [
+          {
+            "key": "IR_RAAED_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ],
+          [
+            "character",
+            "ibanez"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source disregards Continue choice BACK",
+      "passed": true,
+      "duration_ms": 0.015458,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_IBANEZ_2a",
+          "IR_IBANEZ_2b",
+          "IR_IBANEZ_2c"
+        ],
+        "marks": [
+          230
+        ],
+        "instructions": [
+          {
+            "key": "IR_RAAED_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ],
+          [
+            "character",
+            "ibanez"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source disregards Continue choice INVALID",
+      "passed": true,
+      "duration_ms": 0.01975,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_IBANEZ_2a",
+          "IR_IBANEZ_2b",
+          "IR_IBANEZ_2c"
+        ],
+        "marks": [
+          230
+        ],
+        "instructions": [
+          {
+            "key": "IR_RAAED_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ],
+          [
+            "character",
+            "ibanez"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source Raaed orbital PlanetFall false",
+      "passed": true,
+      "duration_ms": 0.02175,
+      "result": {
+        "variables": {
+          "IR_status": "IR_RAAED_1",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b",
+          "IR_RAAED_1c",
+          "IR_RAAED_1d",
+          "IR_RAAED_1e"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            230
+          ],
+          [
+            "character",
+            "lexicon"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source Raaed orbital PlanetFall true",
+      "passed": true,
+      "duration_ms": 0.005333,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_2",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source Raaed surface alternative false",
+      "passed": true,
+      "duration_ms": 0.017167,
+      "result": {
+        "variables": {
+          "IR_status": "IR_RAAED_1",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b",
+          "IR_RAAED_1c",
+          "IR_RAAED_1d",
+          "IR_RAAED_1e"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            230
+          ],
+          [
+            "character",
+            "lexicon"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source Raaed surface alternative true",
+      "passed": true,
+      "duration_ms": 0.009042,
+      "result": {
+        "variables": {
+          "IR_status": "IR_RAAED_1",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_RAAED_1a",
+          "IR_RAAED_1b",
+          "IR_RAAED_1c",
+          "IR_RAAED_1d",
+          "IR_RAAED_1e"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            230
+          ],
+          [
+            "character",
+            "lexicon"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Four initial questions/statuses and no parent completions",
+      "passed": true,
+      "duration_ms": 1.424334,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_shipment_question_no": 1,
+          "IR_shipment_question_key": "shipment_question_1",
+          "IR_shipment_question_string": "[shipment_question_string_1]",
+          "IR_SDF_question_no": 1,
+          "IR_SDF_question_key": "SDF_question_1",
+          "IR_SDF_question_string": "[SDF_question_string_1]",
+          "IR_finance_question_no": 1,
+          "IR_finance_question_key": "finance_question_1",
+          "IR_finance_question_string": "[finance_question_string_1]",
+          "IR_defences_question_no": 1,
+          "IR_defences_question_key": "defences_question_1",
+          "IR_defences_question_string": "[defences_question_string_1]",
+          "IR_question_settings": "SET",
+          "IR_shipment_status_no": 0,
+          "IR_finance_status_no": 0,
+          "IR_SDF_status_no": 0,
+          "IR_defences_status_no": 0,
+          "IR_addedBrief": "yes"
+        },
+        "messages": [
+          "IR_IBANEZ_4a",
+          "IR_IBANEZ_4b",
+          "IR_IBANEZ_4c",
+          "IR_IBANEZ_4d"
+        ],
+        "marks": [],
+        "instructions": [
+          {
+            "text": null,
+            "key": "IR-main-script.js"
+          },
+          {
+            "text": [
+              "IR_manifest_title",
+              "IR_shipment_brief_0"
+            ],
+            "key": "IR-main-script.js"
+          },
+          {
+            "text": [
+              "IR_manifest_title",
+              "IR_shipment_brief_0",
+              "IR_SDF_brief_0"
+            ],
+            "key": "IR-main-script.js"
+          },
+          {
+            "text": [
+              "IR_manifest_title",
+              "IR_shipment_brief_0",
+              "IR_SDF_brief_0",
+              "IR_finance_brief_0"
+            ],
+            "key": "IR-main-script.js"
+          },
+          {
+            "text": [
+              "IR_manifest_title",
+              "IR_shipment_brief_0",
+              "IR_SDF_brief_0",
+              "IR_finance_brief_0",
+              "IR_defences_brief_0"
+            ],
+            "key": "IR-main-script.js"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ],
+          [
+            "interface"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Missing reader throws after partial campaign commit",
+      "passed": true,
+      "duration_ms": 0.468958,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 3,
+          "IR_shipment_question_no": 1,
+          "IR_shipment_question_key": "shipment_question_1",
+          "IR_shipment_question_string": "[shipment_question_string_1]",
+          "IR_SDF_question_no": 1,
+          "IR_SDF_question_key": "SDF_question_1",
+          "IR_SDF_question_string": "[SDF_question_string_1]",
+          "IR_finance_question_no": 1,
+          "IR_finance_question_key": "finance_question_1",
+          "IR_finance_question_string": "[finance_question_string_1]",
+          "IR_defences_question_no": 1,
+          "IR_defences_question_key": "defences_question_1",
+          "IR_defences_question_string": "[defences_question_string_1]",
+          "IR_question_settings": "SET",
+          "IR_shipment_status_no": 0,
+          "IR_finance_status_no": 0,
+          "IR_SDF_status_no": 0,
+          "IR_defences_status_no": 0,
+          "IR_addedBrief": "yes"
+        },
+        "messages": [
+          "IR_IBANEZ_4a",
+          "IR_IBANEZ_4b",
+          "IR_IBANEZ_4c",
+          "IR_IBANEZ_4d"
+        ],
+        "marks": [],
+        "instructions": [
+          {
+            "key": null
+          },
+          {
+            "key": "IR_shipment_brief_0",
+            "src": "IR-shipment.js"
+          },
+          {
+            "key": "IR_SDF_brief_0",
+            "src": "IR-SDF.js"
+          },
+          {
+            "key": "IR_finance_brief_0",
+            "src": "IR-finance.js"
+          },
+          {
+            "key": "IR_defences_brief_0",
+            "src": "IR-defences.js"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Actual book registration is idempotent by stable dictionary key",
+      "passed": true,
+      "duration_ms": 0.0835,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_addedBrief": "yes"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Reader reload flag null",
+      "passed": true,
+      "duration_ms": 0.063334,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_addedBrief": null
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Reader reload flag no",
+      "passed": true,
+      "duration_ms": 0.041084,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_addedBrief": "no"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Reader reload flag yes",
+      "passed": true,
+      "duration_ms": 0.056125,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_addedBrief": "yes"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Reader missing on reload does not clear previously persisted unlock",
+      "passed": true,
+      "duration_ms": 0.066417,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_addedBrief": "yes"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "0.8 registerBook ignores fourth parameter22",
+      "passed": true,
+      "duration_ms": 1.166666,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_addedBrief": "yes"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "All 18 book bodies are read without advancing story",
+      "passed": true,
+      "duration_ms": 0.573292,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_addedBrief": "yes"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": [],
+        "extra": [
+          {
+            "key": "iron_raven-frontpage",
+            "text": "iron_raven-frontpage-text"
+          },
+          {
+            "key": "iron_raven-commercialorgs",
+            "text": "iron_raven-commercialorgs-text"
+          },
+          {
+            "key": "iron_raven-commercial1",
+            "text": "iron_raven-commercial1-text"
+          },
+          {
+            "key": "iron_raven-commercial2",
+            "text": "iron_raven-commercial2-text"
+          },
+          {
+            "key": "iron_raven-commercial3",
+            "text": "iron_raven-commercial3-text"
+          },
+          {
+            "key": "iron_raven-commercial4",
+            "text": "iron_raven-commercial4-text"
+          },
+          {
+            "key": "iron_raven-commercial5",
+            "text": "iron_raven-commercial5-text"
+          },
+          {
+            "key": "iron_raven-commercial6",
+            "text": "iron_raven-commercial6-text"
+          },
+          {
+            "key": "iron_raven-commercial7",
+            "text": "iron_raven-commercial7-text"
+          },
+          {
+            "key": "iron_raven-commercial8",
+            "text": "iron_raven-commercial8-text"
+          },
+          {
+            "key": "iron_raven-noncommercialorgs",
+            "text": "iron_raven-noncommercialorgs-text"
+          },
+          {
+            "key": "iron_raven-noncommercial1",
+            "text": "iron_raven-noncommercial1-text"
+          },
+          {
+            "key": "iron_raven-noncommercial2",
+            "text": "iron_raven-noncommercial2-text"
+          },
+          {
+            "key": "iron_raven-noncommercial3",
+            "text": "iron_raven-noncommercial3-text"
+          },
+          {
+            "key": "iron_raven-appendix",
+            "text": "iron_raven-appendix-text"
+          },
+          {
+            "key": "iron_raven-objectives",
+            "text": "iron_raven-objectives-text"
+          },
+          {
+            "key": "iron_raven-procedure",
+            "text": "iron_raven-procedure-text"
+          },
+          {
+            "key": "iron_raven-hints",
+            "text": "iron_raven-hints-text"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PAD dossier adds only missing organisation/system pages",
+      "passed": true,
+      "duration_ms": 0.217958,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_addedBrief": "yes"
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": [],
+        "extra": [
+          {
+            "k": "GALCOP.INTELLIGENCE",
+            "silent": true
+          },
+          {
+            "k": "INFOS.GHC",
+            "silent": true
+          },
+          {
+            "k": "INFOS.KSR",
+            "silent": true
+          },
+          {
+            "k": "INFOS.OKB",
+            "silent": true
+          },
+          {
+            "k": "INFOS.QUICO",
+            "silent": true
+          },
+          {
+            "k": "INFOS.NWE",
+            "silent": true
+          },
+          {
+            "k": "INFOS.YOKOHAMA",
+            "silent": true
+          },
+          {
+            "k": "INFOS.JANES",
+            "silent": true
+          },
+          {
+            "k": "INFOS.SIRIUS",
+            "silent": true
+          },
+          {
+            "k": "INFOS.SDF",
+            "silent": true
+          },
+          {
+            "k": "INFOS.LOA",
+            "silent": true
+          },
+          {
+            "k": "INFOS.PW",
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.VEGEDIUS",
+            "links": [
+              "INFOS.GHC"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.AARZARI",
+            "links": [
+              "INFOS.OKB"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.USTIZA",
+            "links": [
+              "INFOS.GSE"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.MAENES",
+            "links": [
+              "INFOS.QUICO"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.ARANCE",
+            "links": [
+              "INFOS.NWE"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.ALETIUS",
+            "links": [
+              "INFOS.YOKOHAMA"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.LAXESORI",
+            "links": [
+              "INFOS.PW"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.BIRAA",
+            "links": [
+              "INFOS.JANES"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.TEVEBEBI",
+            "links": [
+              "INFOS.SIRIUS",
+              "INFOS.SDF"
+            ],
+            "silent": true
+          },
+          {
+            "k": "SYSTEMS.EDZAAR",
+            "links": [
+              "INFOS.LOA"
+            ],
+            "silent": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source question contact 23",
+      "passed": true,
+      "duration_ms": 0.150042,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_MAENES_QUESTIONS"
+        },
+        "messages": [
+          "IR_MAENES_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "ruiz"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source question contact 171",
+      "passed": true,
+      "duration_ms": 0.004,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_YOKOHAMA_QUESTIONS"
+        },
+        "messages": [
+          "IR_YOKOHAMA_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source question contact 232",
+      "passed": true,
+      "duration_ms": 0.007375,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_JANES_QUESTIONS"
+        },
+        "messages": [
+          "IR_JANES_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source question contact 240",
+      "passed": true,
+      "duration_ms": 0.004333,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_alsto": "MET"
+        },
+        "messages": [
+          "IR_PIRATE_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "abonlo"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source question contact 119",
+      "passed": true,
+      "duration_ms": 0.003583,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PW_QUESTIONS"
+        },
+        "messages": [
+          "IR_PW_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source question contact 180",
+      "passed": true,
+      "duration_ms": 0.004916,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_NWE_QUESTIONS"
+        },
+        "messages": [
+          "IR_NWE_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "nash"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source question contact 219",
+      "passed": true,
+      "duration_ms": 0.003625,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_GSE_QUESTIONS"
+        },
+        "messages": [
+          "IR_GSE_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "tobias"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source question contact 31",
+      "passed": true,
+      "duration_ms": 0.003417,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_KORSHKOV_QUESTIONS"
+        },
+        "messages": [
+          "IR_KORSHKOV_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source direct question callback lacks location/UI guard {\"galaxy\":6}",
+      "passed": true,
+      "duration_ms": 0.01525,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_alsto": "MET"
+        },
+        "messages": [
+          "IR_PIRATE_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "abonlo"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source direct question callback lacks location/UI guard {\"main\":false}",
+      "passed": true,
+      "duration_ms": 0.003375,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_alsto": "MET"
+        },
+        "messages": [
+          "IR_PIRATE_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "abonlo"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source direct question callback lacks location/UI guard {\"docked\":false}",
+      "passed": true,
+      "duration_ms": 0.004583,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_alsto": "MET"
+        },
+        "messages": [
+          "IR_PIRATE_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "abonlo"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source direct question callback lacks location/UI guard {\"vars\":{\"IR_offer\":\"BUSY\"}}",
+      "passed": true,
+      "duration_ms": 0.003667,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_alsto": "MET"
+        },
+        "messages": [
+          "IR_PIRATE_intro"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "abonlo"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source Abonlo first/revisit shared shipment flag",
+      "passed": true,
+      "duration_ms": 0.017292,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PIRATE_QUESTIONS",
+          "IR_alsto": "MET"
+        },
+        "messages": [
+          "IR_PIRATE_intro",
+          "IR_PIRATE_intro_alt"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "character",
+            "abonlo"
+          ],
+          [
+            "character",
+            "abonlo"
+          ]
+        ],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source log interface exists before mission begins",
+      "passed": true,
+      "duration_ms": 0.117042,
+      "result": {
+        "variables": {
+          "IR_status": null,
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": [
+          {
+            "key": "IR_log",
+            "title": "IR_mission_log_title"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source contact interface offered in same-number foreign galaxy",
+      "passed": true,
+      "duration_ms": 0.091917,
+      "result": {
+        "variables": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": [
+          {
+            "key": "IR_log",
+            "title": "IR_mission_log_title"
+          },
+          {
+            "key": "IR_questions",
+            "title": "IR_revisit_spacebar"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source new phase does not remove stale question interface",
+      "passed": true,
+      "duration_ms": 0.089375,
+      "result": {
+        "variables": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": [
+          {
+            "key": "IR_log",
+            "title": "IR_mission_log_title"
+          },
+          {
+            "key": "IR_questions",
+            "title": "IR_revisit_spacebar"
+          },
+          {
+            "key": "IR_log",
+            "title": "IR_mission_log_title"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source empty log fails if native lookup returns null",
+      "passed": true,
+      "duration_ms": 0.064083,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_screen_log": "",
+          "IR_screen_location": ""
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source log reading repeats raw key expansion and current overlay",
+      "passed": true,
+      "duration_ms": 0.030125,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_screen_log": "IR_IBANEZ_2a,",
+          "IR_screen_location": "VEGEDIUS,"
+        },
+        "messages": [
+          {
+            "screenID": "IR_mission_log",
+            "title": "IR_log_title",
+            "message": "IR_IBANEZ_2a",
+            "exitScreen": "GUI_SCREEN_INTERFACES",
+            "initialChoicesKey": "",
+            "choicesKey": "IR_log_choices",
+            "overlay": {
+              "name": "IR_galcop.png",
+              "height": 546
+            }
+          },
+          {
+            "screenID": "IR_mission_log",
+            "title": "IR_log_title",
+            "message": "IR_IBANEZ_2a",
+            "exitScreen": "GUI_SCREEN_INTERFACES",
+            "initialChoicesKey": "",
+            "choicesKey": "IR_log_choices",
+            "overlay": {
+              "name": "IR_galcop.png",
+              "height": 546
+            }
+          }
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Actual screen log skips intro/negative but stores story key",
+      "passed": true,
+      "duration_ms": 0.1295,
+      "result": {
+        "variables": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_screen_log": "IR_IBANEZ_2a,",
+          "IR_screen_location": "mock-system,"
+        },
+        "messages": [
+          {
+            "screenID": "iron_raven",
+            "message": "IR_YOKOHAMA_intro",
+            "overlay": {
+              "name": "IR_yk_logo.png",
+              "height": 546
+            }
+          },
+          {
+            "screenID": "iron_raven",
+            "message": "IR_negative_answer"
+          },
+          {
+            "screenID": "iron_raven",
+            "message": "IR_no_more_answer"
+          },
+          {
+            "screenID": "iron_raven",
+            "message": "IR_IBANEZ_2a",
+            "overlay": {
+              "name": "IR_galcop.png",
+              "height": 546
+            }
+          }
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Source clear matches substring and deletes loan/property flags",
+      "passed": true,
+      "duration_ms": 0.035291,
+      "result": {
+        "variables": {
+          "other": 2
+        },
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "interfaces": []
+      }
+    },
+    {
+      "name": "Serialized source contact stages resume at next legitimate location",
+      "passed": true,
+      "duration_ms": 1.683542,
+      "result": {
+        "variables": {
+          "IR_quest_count": 0,
+          "IR_status": "IR_IBANEZ_4",
+          "IR_order_date": 70,
+          "IR_shipment_question_no": 1,
+          "IR_shipment_question_key": "shipment_question_1",
+          "IR_shipment_question_string": "[shipment_question_string_1]",
+          "IR_SDF_question_no": 1,
+          "IR_SDF_question_key": "SDF_question_1",
+          "IR_SDF_question_string": "[SDF_question_string_1]",
+          "IR_finance_question_no": 1,
+          "IR_finance_question_key": "finance_question_1",
+          "IR_finance_question_string": "[finance_question_string_1]",
+          "IR_defences_question_no": 1,
+          "IR_defences_question_key": "defences_question_1",
+          "IR_defences_question_string": "[defences_question_string_1]",
+          "IR_question_settings": "SET",
+          "IR_shipment_status_no": 0,
+          "IR_finance_status_no": 0,
+          "IR_SDF_status_no": 0,
+          "IR_defences_status_no": 0
+        },
+        "messages": [
+          "title",
+          "IR_IBANEZ_1"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_IBANEZ_INFO"
+          }
+        ],
+        "actions": [
+          [
+            "data",
+            "GALCOP.INTELLIGENCE"
+          ],
+          [
+            "data",
+            "INFOS.GHC"
+          ],
+          [
+            "data",
+            "SYSTEMS.VEGEDIUS"
+          ]
+        ],
+        "interfaces": [],
+        "extra": {
+          "final": "IR_IBANEZ_4"
+        }
+      }
+    }
+  ]
+}

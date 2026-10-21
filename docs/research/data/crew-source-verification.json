@@ -1,0 +1,640 @@
+{
+  "scope": "Research data/schema and independently read source-byte bindings; twenty-five worked accounting cases; not native game integration tests or binary parity.",
+  "catalogue_rows": 170,
+  "enabled_refits_checked": 161,
+  "native_fact_count": 173,
+  "independent_ffe_bindings_passed": 50,
+  "source_checks": [
+    {
+      "canonical_ship_id": "SH040",
+      "source_name": "Escape Capsule",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002556",
+      "source_word_hex": "0100",
+      "duration_ms": 1.878916984423995,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH105",
+      "source_name": "Interplanetary Shuttle",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002562",
+      "source_word_hex": "0100",
+      "duration_ms": 1.6984159592539072,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH110",
+      "source_name": "StowMaster Fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002568",
+      "source_word_hex": "0100",
+      "duration_ms": 1.6892908606678247,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH076",
+      "source_name": "Lifter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002580",
+      "source_word_hex": "0100",
+      "duration_ms": 1.7055831849575043,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH094",
+      "source_name": "Osprey attack fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002586",
+      "source_word_hex": "0100",
+      "duration_ms": 1.7109590116888285,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH042",
+      "source_name": "Falcon attack fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002592",
+      "source_word_hex": "0100",
+      "duration_ms": 1.728250179439783,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH059",
+      "source_name": "Hawk airfighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002597",
+      "source_word_hex": "0100",
+      "duration_ms": 1.7280001193284988,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH069",
+      "source_name": "Kestrel airfighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002603",
+      "source_word_hex": "0100",
+      "duration_ms": 1.7307910602539778,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH037",
+      "source_name": "Eagle long range fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002609",
+      "source_word_hex": "0100",
+      "duration_ms": 1.8934591207653284,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH038",
+      "source_name": "Eagle Mk2 fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002614",
+      "source_word_hex": "0100",
+      "duration_ms": 1.8394580110907555,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH039",
+      "source_name": "Eagle Mk3 fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002619",
+      "source_word_hex": "0100",
+      "duration_ms": 1.8271671142429113,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH107",
+      "source_name": "Sidewinder",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002625",
+      "source_word_hex": "0100",
+      "duration_ms": 1.835457980632782,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH071",
+      "source_name": "Krait Assault Craft",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002631",
+      "source_word_hex": "0100",
+      "duration_ms": 1.8642919603735209,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH049",
+      "source_name": "Gecko",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002637",
+      "source_word_hex": "0100",
+      "duration_ms": 1.8749998416751623,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH001",
+      "source_name": "Adder",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002643",
+      "source_word_hex": "0100",
+      "duration_ms": 1.8803749699145555,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH136",
+      "source_name": "Viper Defence Craft",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002649",
+      "source_word_hex": "0100",
+      "duration_ms": 1.887582940980792,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH103",
+      "source_name": "Saker III fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002655",
+      "source_word_hex": "0100",
+      "duration_ms": 1.91333401016891,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH095",
+      "source_name": "Osprey X attack fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002661",
+      "source_word_hex": "0100",
+      "duration_ms": 1.9380419980734587,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH085",
+      "source_name": "Merlin attack fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002667",
+      "source_word_hex": "0100",
+      "duration_ms": 1.9721249118447304,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH137",
+      "source_name": "Viper Defence MkII",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002673",
+      "source_word_hex": "0100",
+      "duration_ms": 2.011458156630397,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH055",
+      "source_name": "Gyr attack fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002679",
+      "source_word_hex": "0100",
+      "duration_ms": 2.0329998806118965,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH022",
+      "source_name": "Cobra Mk I",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002685",
+      "source_word_hex": "0100",
+      "duration_ms": 2.2904579527676105,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH088",
+      "source_name": "Moray Starboat",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002691",
+      "source_word_hex": "0100",
+      "duration_ms": 2.0257500000298023,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH023",
+      "source_name": "Cobra Mk III",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002697",
+      "source_word_hex": "0100",
+      "duration_ms": 1.9716660026460886,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH026",
+      "source_name": "Constrictor",
+      "crew_including_commander": 2,
+      "hired_after_commander": 1,
+      "stats_label": "DATA_002703",
+      "source_word_hex": "0200",
+      "duration_ms": 1.9761670846492052,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH008",
+      "source_name": "Asp Explorer",
+      "crew_including_commander": 2,
+      "hired_after_commander": 1,
+      "stats_label": "DATA_002709",
+      "source_word_hex": "0200",
+      "duration_ms": 2.0042499527335167,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH074",
+      "source_name": "Lanner",
+      "crew_including_commander": 3,
+      "hired_after_commander": 2,
+      "stats_label": "DATA_002715",
+      "source_word_hex": "0300",
+      "duration_ms": 2.0120409317314625,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH057",
+      "source_name": "Harris fighter",
+      "crew_including_commander": 3,
+      "hired_after_commander": 2,
+      "stats_label": "DATA_002721",
+      "source_word_hex": "0300",
+      "duration_ms": 2.0287910010665655,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH109",
+      "source_name": "Spar attack fighter",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002727",
+      "source_word_hex": "0100",
+      "duration_ms": 2.054832875728607,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH144",
+      "source_name": "Wyvern Explorer",
+      "crew_including_commander": 3,
+      "hired_after_commander": 2,
+      "stats_label": "DATA_002733",
+      "source_word_hex": "0300",
+      "duration_ms": 2.0709580276161432,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH108",
+      "source_name": "Skeet cruiser",
+      "crew_including_commander": 6,
+      "hired_after_commander": 5,
+      "stats_label": "DATA_002739",
+      "source_word_hex": "0600",
+      "duration_ms": 2.089708112180233,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH007",
+      "source_name": "Turner Class",
+      "crew_including_commander": 1,
+      "hired_after_commander": 0,
+      "stats_label": "DATA_002745",
+      "source_word_hex": "0100",
+      "duration_ms": 2.1299589425325394,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH075",
+      "source_name": "Lanner II",
+      "crew_including_commander": 3,
+      "hired_after_commander": 2,
+      "stats_label": "DATA_002751",
+      "source_word_hex": "0300",
+      "duration_ms": 2.1289580035954714,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH056",
+      "source_name": "Harrier",
+      "crew_including_commander": 2,
+      "hired_after_commander": 1,
+      "stats_label": "DATA_002757",
+      "source_word_hex": "0200",
+      "duration_ms": 2.1583749912679195,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH128",
+      "source_name": "Transporter",
+      "crew_including_commander": 3,
+      "hired_after_commander": 2,
+      "stats_label": "DATA_002786",
+      "source_word_hex": "0300",
+      "duration_ms": 2.1900408901274204,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH077",
+      "source_name": "Lion Transport",
+      "crew_including_commander": 4,
+      "hired_after_commander": 3,
+      "stats_label": "DATA_002792",
+      "source_word_hex": "0400",
+      "duration_ms": 2.217582892626524,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH127",
+      "source_name": "Tiger Trader",
+      "crew_including_commander": 5,
+      "hired_after_commander": 4,
+      "stats_label": "DATA_002798",
+      "source_word_hex": "0500",
+      "duration_ms": 2.2938749752938747,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH063",
+      "source_name": "Imperial Courier",
+      "crew_including_commander": 3,
+      "hired_after_commander": 2,
+      "stats_label": "DATA_002804",
+      "source_word_hex": "0300",
+      "duration_ms": 2.8095408342778683,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH099",
+      "source_name": "Python Freighter",
+      "crew_including_commander": 7,
+      "hired_after_commander": 6,
+      "stats_label": "DATA_002810",
+      "source_word_hex": "0700",
+      "duration_ms": 2.5118328630924225,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH067",
+      "source_name": "Imperial Trader",
+      "crew_including_commander": 6,
+      "hired_after_commander": 5,
+      "stats_label": "DATA_002815",
+      "source_word_hex": "0600",
+      "duration_ms": 3.9756251499056816,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH005",
+      "source_name": "Anaconda Freighter",
+      "crew_including_commander": 8,
+      "hired_after_commander": 7,
+      "stats_label": "DATA_002821",
+      "source_word_hex": "0800",
+      "duration_ms": 2.6116250082850456,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH098",
+      "source_name": "Puma Clipper",
+      "crew_including_commander": 9,
+      "hired_after_commander": 8,
+      "stats_label": "DATA_002827",
+      "source_word_hex": "0900",
+      "duration_ms": 2.687125001102686,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH013",
+      "source_name": "Boa Freighter",
+      "crew_including_commander": 10,
+      "hired_after_commander": 9,
+      "stats_label": "DATA_002833",
+      "source_word_hex": "0a00",
+      "duration_ms": 2.4380418471992016,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH096",
+      "source_name": "Panther Clipper",
+      "crew_including_commander": 12,
+      "hired_after_commander": 11,
+      "stats_label": "DATA_002838",
+      "source_word_hex": "0c00",
+      "duration_ms": 2.5216250214725733,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH126",
+      "source_name": "Tiercel Freighter",
+      "crew_including_commander": 6,
+      "hired_after_commander": 5,
+      "stats_label": "DATA_002850",
+      "source_word_hex": "0600",
+      "duration_ms": 2.4632499553263187,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH066",
+      "source_name": "Imperial Explorer",
+      "crew_including_commander": 10,
+      "hired_after_commander": 9,
+      "stats_label": "DATA_002856",
+      "source_word_hex": "0a00",
+      "duration_ms": 2.550459001213312,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH084",
+      "source_name": "Mantis Transport",
+      "crew_including_commander": 8,
+      "hired_after_commander": 7,
+      "stats_label": "DATA_002868",
+      "source_word_hex": "0800",
+      "duration_ms": 2.5640828534960747,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH052",
+      "source_name": "Griffin Carrier",
+      "crew_including_commander": 12,
+      "hired_after_commander": 11,
+      "stats_label": "DATA_002874",
+      "source_word_hex": "0c00",
+      "duration_ms": 2.5482908822596073,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH079",
+      "source_name": "Lynx Bulk Carrier",
+      "crew_including_commander": 20,
+      "hired_after_commander": 19,
+      "stats_label": "DATA_002885",
+      "source_word_hex": "1400",
+      "duration_ms": 2.602041931822896,
+      "passed": true
+    },
+    {
+      "canonical_ship_id": "SH078",
+      "source_name": "Long-range Cruiser",
+      "crew_including_commander": 100,
+      "hired_after_commander": 99,
+      "stats_label": "DATA_002891",
+      "source_word_hex": "6400",
+      "duration_ms": 2.490874845534563,
+      "passed": true
+    }
+  ],
+  "capacity_examples": [
+    {
+      "name": "Cobra20t four otherwise empty berths",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Cobra15t cargo cannot coexist with two berths",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "one free of two berths cannot fit party2",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Vector source-standard gear plus one cabin",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Vector source-standard gear plus two cabins fails equipment",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Vector expanded otherwise empty fits3",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "zero cargo no implicit passenger cabin",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "unfitted empty hold not a passenger berth",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Arafura125t standard extras5 plus25 fitted berths",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Arafura25berths plus1t freight fails hold",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Arafura passenger lore does not fit cabins",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Inspector20t baseline plus4 berths",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Inspector crew seat is not a fifth berth",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Expanded Arafura five standard extras plus expansion fits27",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Expanded Arafura same extras cannot fit28 without storing a module",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Minnowzero hold cannot admit one passenger",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Sunray source berth admits one with5t freight",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Sunray source berth plus6t freight fails",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Sunray one source berth is not two places",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Sunray explicit second berth uses all10t",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Sunray transferred9units plus2cabins fails equipment",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Stingray15t firstextras2 plus3 fitted berths",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Stingray no source berth grants no passenger",
+      "passed": true,
+      "admitted": false
+    },
+    {
+      "name": "Expanded Stingray30t twoextras plus expansion fits6",
+      "passed": true,
+      "admitted": true
+    },
+    {
+      "name": "Expanded Stingray6berths plus1t cargo fails",
+      "passed": true,
+      "admitted": false
+    }
+  ],
+  "manual_and_assembly_hashes_checked": 7,
+  "additional_commies_source_members_checked": 6,
+  "canonical_identity_check": "Mantis native8 belongs SH084; Majestic SH081 has no FFE crew evidence.",
+  "passed": true
+}

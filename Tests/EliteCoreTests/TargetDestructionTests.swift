@@ -4,11 +4,13 @@ import Testing
 
 private func lockedGame() -> Game {
   var game = Game(executive: false)
+  game.commander.installTargetingComputer(.military)
   game.launch()
   game.speed = 0
-  game.commander.installTargetingComputer(.military)
+  #expect(game.commander.targetingTier == .military)
   game.bodies = [.init(id: 42, hull: .cobra, position: .init(0, 0, 1000), hostile: true)]
-  game.key("r")
+  game.key("tab")
+  #expect(game.autoPilot.targetID == 42 && game.weaponsTargetID == 42)
   return game
 }
 private func announcements(_ game: Game, _ text: String) -> Int {
@@ -29,17 +31,38 @@ private func announcements(_ game: Game, _ text: String) -> Int {
   #expect(
     announcements(game, "TARGET LOST") == 0 && announcements(game, "RIGHT ON, COMMANDER") == 1)
 }
-@Test func playerImmediateAndTravellingMissilesAndBombCarryKillAttribution() {
-  for mode in 0..<3 {
+@Test(arguments: 0..<3)
+func playerImmediateAndTravellingMissilesAndBombCarryKillAttribution(_ mode: Int) throws {
+  do {
     var game = lockedGame()
     if mode == 2 {
-      game.commander.equipment.insert("Energy Bomb")
+      try game.commander.grantEquipment(
+        "Energy Bomb", at: .utility(.energyBomb), provenance: .grant("kill attribution fixture"))
+      #expect(game.commander.fittedEquipment(at: .utility(.energyBomb)) != nil)
       game.energyBomb()
     } else {
       game.bodies[0].ecmEnabled = mode == 1
       game.bodies[0].position = .init(0, 0, 100)
+      let target = try #require(game.bodies[0].physical?.identity)
+      let player = try #require(game.commander.flightSimulation.player)
       game.key("t")
       game.key("m")
+      let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
+      let flight = try #require(missile.physical?.ordnance)
+      #expect(flight.target == target && flight.origin.owner == player)
+      #expect(game.commander.missiles == 2 && game.commander.kills == 0)
+      #expect(game.bodies[0].energy > 0 && flight.propulsionTravel == 0)
+      // Isolate actual ordnance attribution from the separately tested counterfire lane.
+      game.commander.flightSimulation.advancePhysicalTime(0.1)
+      game.advanceNavalMissiles(delta: 0.1)
+      let impact = try #require(
+        game.bodies.first { $0.id == missile.id }?.physical?.ordnance)
+      #expect(impact.termination == .impact && impact.propulsionTravel > 0)
+      #expect(game.bodies[0].energy == 0 && game.bodies[0].physical?.deathOrigin == flight.origin)
+      #expect(game.ecmFrames == 0)
+      game.resolveDestroyed()
+      #expect(game.commander.kills == 1)
+      #expect(announcements(game, "TARGET DESTROYED - YOUR KILL") == 1)
     }
     game.tick(delta: 0.1)
     for _ in 0..<5 { game.tick(delta: 0.1) }
@@ -49,25 +72,29 @@ private func announcements(_ game: Game, _ text: String) -> Int {
   }
 }
 @Test func thirdPartyDestructionRangeLossAndDespawnCannotClaimPlayerKill() {
-  for mode in 0..<3 {
-    var game = lockedGame()
-    if mode == 0 {
-      game.bodies[0].energy = 0
-    } else if mode == 1 {
-      game.bodies[0].position.z = 100_000
-    } else {
-      game.bodies = []
-    }
-    game.tick(delta: 0.01)
-    game.tick(delta: 0.01)
-    #expect(
-      game.commander.kills == 0 && game.weaponsTargetID == nil && game.autoPilot.targetID == nil)
-    #expect(announcements(game, "TARGET LOST") == 1)
-    #expect(announcements(game, "TARGET DESTROYED - YOUR KILL") == 0)
+  for mode in 0..<3 { verifyThirdPartyRemoval(mode: mode) }
+  verifyManualTargetCancellation()
+}
+private func verifyThirdPartyRemoval(mode: Int) {
+  var game = lockedGame()
+  if mode == 0 {
+    game.bodies[0].energy = 0
+  } else if mode == 1 {
+    game.bodies[0].position.z = 100_000
+  } else {
+    game.bodies = []
   }
+  game.tick(delta: 0.01)
+  game.tick(delta: 0.01)
+  #expect(
+    game.commander.kills == 0 && game.weaponsTargetID == nil && game.autoPilot.targetID == nil)
+  #expect(announcements(game, "TARGET LOST") == 1)
+  #expect(announcements(game, "TARGET DESTROYED - YOUR KILL") == 0)
+}
+private func verifyManualTargetCancellation() {
   var game = lockedGame()
   game.bodies.append(.init(id: 43, hull: .cobra, position: .init(10, 0, 1200)))
-  game.key("r")
+  game.key("tab")
   game.key("q")
   #expect(
     announcements(game, "TARGET LOST") == 0

@@ -39,9 +39,45 @@ public struct ECMControl: Sendable {
   public private(set) var epoch = UUID()
   private var nextEvent = 0
   private var seen: Set<Int> = []
-  private var ownFrames = 0
+  /// Preserve the native 32-frame field at the documented 60 Hz reference cadence.
+  static let activationEnergyCost = 10.0
+  public static let referenceFramesPerSecond = 60.0
+  public static let fieldDuration = 32.0 / referenceFramesPerSecond
+  public private(set) var remainingDuration = 0.0
+  private var ownedActivation = false
+  private static let completionTolerance = 1e-10
+  public var fieldActive: Bool { remainingDuration > 0 }
+  var legacyFrames: Int { Self.legacyFrames(forRemainingDuration: remainingDuration) ?? 0 }
+  static func legacyFrames(forRemainingDuration duration: Double) -> Int? {
+    guard duration.isFinite, duration >= 0 else { return nil }
+    guard duration > 0 else { return 0 }
+    let frames = ceil(max(0, duration * Self.referenceFramesPerSecond - 1e-9))
+    return frames >= Double(Int.max) ? Int.max : Int(frames)
+  }
+  /// Explicit save admission restores time, without inheriting live activation ownership or events.
+  @discardableResult
+  mutating func restoreRemainingDuration(_ duration: Double) -> Bool {
+    guard duration.isFinite,
+      (0...(1024.0 / Self.referenceFramesPerSecond)).contains(duration)
+    else { return false }
+    self = ECMControl()
+    remainingDuration = duration
+    return true
+  }
+  /// Compatibility writes use the same clock; refreshing an owned field retains its owner.
+  mutating func setLegacyFrames(_ frames: Int) {
+    guard frames > 0 else {
+      finishField()
+      return
+    }
+    remainingDuration = Double(frames) / Self.referenceFramesPerSecond
+  }
+  mutating func activateExternalField() {
+    finishField()
+    remainingDuration = Self.fieldDuration
+  }
   public private(set) var activation = 0
-  public var ownFieldActive: Bool { ownFrames > 0 }
+  public var ownFieldActive: Bool { fieldActive && ownedActivation }
   private var destroyed = 0
   public init() {}
   mutating func emit(_ announcement: FlightAnnouncement) {
@@ -57,29 +93,35 @@ public struct ECMControl: Sendable {
     return !ids.isEmpty
   }
   mutating func activate(destroyed count: Int) {
-    ownFrames = 32
+    remainingDuration = Self.fieldDuration
+    ownedActivation = true
     activation += 1
     destroyed = count
     emit(.ecmActivated)
   }
   mutating func recordDestruction() {
-    if ownFrames > 0 { destroyed += 1 }
+    if ownFieldActive { destroyed += 1 }
   }
-  mutating func advance() {
-    guard ownFrames > 0 else { return }
-    ownFrames -= 1
-    if ownFrames == 0 && destroyed > 0 {
-      emit(.missilesDestroyed(destroyed))
-      destroyed = 0
-    }
+  mutating func advance(delta: Double = 1.0 / ECMControl.referenceFramesPerSecond) {
+    guard delta.isFinite, delta > 0, fieldActive else { return }
+    remainingDuration = max(0, remainingDuration - delta)
+    if remainingDuration <= Self.completionTolerance { finishField() }
   }
+  private mutating func finishField() {
+    remainingDuration = 0
+    if ownedActivation && destroyed > 0 { emit(.missilesDestroyed(destroyed)) }
+    destroyed = 0
+    ownedActivation = false
+  }
+
 }
 
 extension Game {
   mutating func detectIncomingMissiles() {
     let incoming = ecmControl.detect(bodies)
     detectRetaliationSources()
-    if incoming && commander.xyzzyActive && commander.autoECM && ecmFrames == 0 { ecm() }
+    let automatic = (commander.xyzzyActive && commander.autoECM) || stationAutoDockingActive
+    if incoming && automatic && ecmFrames == 0 { ecm() }
   }
 }
 

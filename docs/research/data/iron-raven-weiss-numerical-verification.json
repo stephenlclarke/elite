@@ -1,0 +1,329 @@
+{
+  "profile_id": "P19-WEISS-NUMERICAL-v1",
+  "scope": "22 independent compiled C/Python transcriptions of pinned normal/debug fuel setter, actual float compound deduction and strict scanner expression. Scanner default25600 follows source SCANNER_MAX_RANGE; values are expression/boundary cases, not complete scanner z-list/cloak/visibility/native gameplay simulation. Normal buildMAX_JUMP_RANGE7, OO_DUMP_PLANETINFO debug150; debug is not selected runtime profile. Actual native AI scheduling/frame time, wormhole admission/geometry and original binary parity remain separate.",
+  "normal_build_fuel_cap_ly": 7,
+  "debug_planetinfo_fuel_cap_ly": 150,
+  "scanner_default_source_units": 25600,
+  "case_count": 22,
+  "passed": 22,
+  "cases": [
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        -1,
+        7
+      ],
+      "C_value": 0.0,
+      "Python_float_transcription_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 3084,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        0,
+        7
+      ],
+      "C_value": 0.0,
+      "Python_float_transcription_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 2250,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        2,
+        7
+      ],
+      "C_value": 20.0,
+      "Python_float_transcription_value": 20,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 458,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        4.4,
+        7
+      ],
+      "C_value": 44.0,
+      "Python_float_transcription_value": 44,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        7,
+        7
+      ],
+      "C_value": 70.0,
+      "Python_float_transcription_value": 70,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 417,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        10,
+        7
+      ],
+      "C_value": 70.0,
+      "Python_float_transcription_value": 70,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 250,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        150,
+        7
+      ],
+      "C_value": 70.0,
+      "Python_float_transcription_value": 70,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 208,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        -1,
+        150
+      ],
+      "C_value": 0.0,
+      "Python_float_transcription_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 291,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        0,
+        150
+      ],
+      "C_value": 0.0,
+      "Python_float_transcription_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 250,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        2,
+        150
+      ],
+      "C_value": 20.0,
+      "Python_float_transcription_value": 20,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 209,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        4.4,
+        150
+      ],
+      "C_value": 44.0,
+      "Python_float_transcription_value": 44,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 375,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        7,
+        150
+      ],
+      "C_value": 70.0,
+      "Python_float_transcription_value": 70,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 208,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        10,
+        150
+      ],
+      "C_value": 100.0,
+      "Python_float_transcription_value": 100,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 208,
+      "passed": true
+    },
+    {
+      "kind": "normal/debug JS fuel clamp and lround",
+      "input": [
+        150,
+        150
+      ],
+      "C_value": 1500.0,
+      "Python_float_transcription_value": 1500,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 333,
+      "passed": true
+    },
+    {
+      "kind": "unsigned fuel subtraction with float distance",
+      "input": [
+        70,
+        2
+      ],
+      "C_value": 50.0,
+      "Python_float_transcription_value": 50,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 9416,
+      "passed": true
+    },
+    {
+      "kind": "unsigned fuel subtraction with float distance",
+      "input": [
+        70,
+        4.4
+      ],
+      "C_value": 26.0,
+      "Python_float_transcription_value": 26,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1209,
+      "passed": true
+    },
+    {
+      "kind": "strict float scanner squared-distance",
+      "input": [
+        25599,
+        25600
+      ],
+      "C_value": 1.0,
+      "Python_float_transcription_value": 1,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 1250,
+      "passed": true
+    },
+    {
+      "kind": "strict float scanner squared-distance",
+      "input": [
+        25600,
+        25600
+      ],
+      "C_value": 0.0,
+      "Python_float_transcription_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 958,
+      "passed": true
+    },
+    {
+      "kind": "strict float scanner squared-distance",
+      "input": [
+        25601,
+        25600
+      ],
+      "C_value": 0.0,
+      "Python_float_transcription_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 750,
+      "passed": true
+    },
+    {
+      "kind": "strict float scanner squared-distance",
+      "input": [
+        25599.999,
+        25600
+      ],
+      "C_value": 1.0,
+      "Python_float_transcription_value": 1,
+      "C_duration_ns": 1000,
+      "Python_duration_ns": 708,
+      "passed": true
+    },
+    {
+      "kind": "strict float scanner squared-distance",
+      "input": [
+        25599.9999,
+        25600
+      ],
+      "C_value": 0.0,
+      "Python_float_transcription_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    },
+    {
+      "kind": "strict float scanner squared-distance",
+      "input": [
+        25600.0001,
+        25600
+      ],
+      "C_value": 0.0,
+      "Python_float_transcription_value": 0,
+      "C_duration_ns": 0,
+      "Python_duration_ns": 667,
+      "passed": true
+    }
+  ],
+  "rounding_boundary_differences": [
+    {
+      "distance": 25599.9999,
+      "range": 25600,
+      "source_float_squared_detected": false,
+      "unrounded_double_distance_detected": true
+    }
+  ],
+  "AI_action_order_findings": {
+    "first_leg": "WAIT_FOR_PLAYER scan queues TARGET_FOUND; think handles pending messages after UPDATE, so PERFORM_JUMP ENTER pause5 follows/overrides WAIT update pause1. Detecting on ENTER may be processed at the next think; no exact wall-time or extra15second NPC spool claim.",
+    "second_leg": "PREPARE_FOR_JUMP ENTER pause30; its UPDATE pause30 then immediate setStateTo PERFORM_JUMP enters pause20, overriding that second pause30. Nominal first attempt50seconds after second-AI entry, frame/think scheduling and hostiles/blockers may delay it.",
+    "engine_think_interval_seconds": 0.125,
+    "world_think_gate": "universal_time > nextThinkTime or nextThinkTime==0, not >=",
+    "pause_domain": "unpaused simulation/world seconds; preserves selected offscene freeze policy, not commander calendar or current external pack flight stage clock"
+  },
+  "inputs": [
+    {
+      "path": "/tmp/elite-gap-research/iron-raven-weiss-numerical.c",
+      "sha256": "7dc493c33752f887ff3cfc0205583b211bd9b212deca9b188c2f4520af9f80e5"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJSShip.m",
+      "sha256": "a889adc46459f0954bc6834d4e3086486cb615ce5e2811fbb288746380f55a02"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntity.h",
+      "sha256": "b68f852bad5f87aca74767ad57090437aa57e6c80780d205807da99daf2a4a8b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntity.m",
+      "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntityAI.m",
+      "sha256": "b761b8312703dac9c40c47d598551d37ec09be1a5cf2b1d81ff4e4b31ca7445e"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/AI.m",
+      "sha256": "abc9110f4c074b3f8de183a9444160615dbd453b8f2179e35cf027a0c455b1d8"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/AI.h",
+      "sha256": "6c305b27dd238d15cf0703b7a82d9f929fb240634281ece5ab989405f561840b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Universe.m",
+      "sha256": "062c2282d8ebc5214a34233a0828e041b704214370fdc16526e75d4d6ca56f2a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/Entity.h",
+      "sha256": "3c92b02a14d4bff9bf27e882f90d3d700ef785c8a7562898b83b598a345d5a1e"
+    }
+  ],
+  "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)"
+}
