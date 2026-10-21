@@ -159,8 +159,20 @@ extension Game {
     -> WayfarerRecordRecoverySelectionFacts?
   {
     guard let alias = recordRecoveryAlias(body),
-      let index = WayfarerRecordRecovery.aliases.firstIndex(of: alias),
-      let state = recordRecoveryState,
+      let index = WayfarerRecordRecovery.aliases.firstIndex(of: alias)
+    else { return nil }
+    let currentBody = copy body
+    return withReadOnlyCommander { commander in
+      recordRecoveryFacts(currentBody, context: context, index: index, commander: commander)
+    }
+  }
+
+  @inline(never)
+  private func recordRecoveryFacts(
+    _ body: borrowing SpaceBody, context: EncounterContext, index: Int,
+    commander: borrowing Commander
+  ) -> WayfarerRecordRecoverySelectionFacts? {
+    guard let state = recordRecoveryState,
       let source = commander.scriptState.savedRecordRecoverySource,
       commander.scriptState.instances[state.permission.mission]?.outcome == .active,
       state.losses.isEmpty, state.reception == nil,
