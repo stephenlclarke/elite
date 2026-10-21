@@ -152,28 +152,50 @@ struct WayfarerRecordRecoveryAcquisitionTests {
     } else {
       #expect(failed.nativeRecordRecoveryPending != nil)
     }
-    try f.files.restoreWrites(blocked, files: files)
-    let retry: GameRuntime
     if stage == "identify" {
-      // Controlled player framing of the attained failed frame; retain the real producer's
-      // pending identification. Publication retry and pickup still run through native advance.
-      var approached = failed
+      // Keep the real pending attempt in its originating runtime/epoch. Existing Tab guidance
+      // physically reaches the aperture while the writer remains blocked; no snapshot reload
+      // may carry this transient authority into a new runtime.
       let identity = f.logical(accepted)
-      let body = try #require(approached.bodies.first { $0.missionActorID == identity })
-      var pose = approached.commander.flightSimulation.pose
-      pose.position = pose.systemPoint(body.position) - pose.orientation.apply(.init(0, -45, 55))
-      NativeStationTestFixture.reframe(&approached, to: pose)
-      retry = GameRuntime(game: approached, saveURL: f.save)
-      _ = await retry.advance(delta: 0.05)
-      let identified = await retry.snapshot()
+      let actor = try #require(
+        failed.bodies.first { $0.missionActorID == identity }?.physical?.identity)
+      for _ in 0..<100 {
+        await runtime.key("tab")
+        if await runtime.snapshot().workGuidance?.parent == actor { break }
+      }
+      try #require(await runtime.snapshot().workGuidance?.parent == actor)
+      var scoopReady = false
+      for _ in 0..<600 {
+        let actual = await runtime.snapshot()
+        let body = try #require(actual.bodies.first { $0.missionActorID == identity })
+        let mesh = try #require(actual.scriptNPCMesh(body))
+        let radius = try #require(mesh.vertices.map(\.length).max())
+        let offset = body.position - Vector3(0, -45, 55)
+        if abs(offset.x) + radius <= 16 && abs(offset.y) + radius <= 16
+          && abs(offset.z) + radius <= 16
+        {
+          scoopReady = true
+          break
+        }
+        _ = await runtime.advance(delta: 0.05)
+      }
+      try #require(scoopReady, "Actual native guidance must reach the unchanged recorder aperture.")
+      let uncommitted = await runtime.snapshot()
+      #expect(uncommitted.recordRecoveryState?.identification == nil)
+      #expect(uncommitted.recordRecoveryState?.captures.isEmpty == true)
+      #expect(uncommitted.nativeRecordRecoveryIdentificationPending != nil)
+      try f.files.restoreWrites(blocked, files: files)
+      _ = await runtime.advance(delta: 0.05)
+      let identified = await runtime.snapshot()
       #expect(identified.recordRecoveryState?.identification != nil)
       #expect(identified.recordRecoveryState?.captures.isEmpty == true)
       #expect(identified.bodies.contains { $0.missionActorID == identity })
-      _ = await retry.advance(delta: 0.05)
+      _ = await runtime.advance(delta: 0.05)
     } else {
-      retry = runtime
-      try await retry.save(to: f.save)
+      try f.files.restoreWrites(blocked, files: files)
+      try await runtime.save(to: f.save)
     }
+    let retry = runtime
     try await retry.save(to: f.save)
     #expect(await retry.snapshot().recordRecoveryState?.captures.count == 1)
   }
