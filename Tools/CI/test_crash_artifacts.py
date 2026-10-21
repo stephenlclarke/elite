@@ -295,7 +295,8 @@ class OwnedFaultStackTests(unittest.TestCase):
             SBError=Error, eStateExited=3, eStateDetached=4, eStateStopped=1,
             eStateCrashed=2, eStopReasonException=9, eStopReasonSignal=10,
             SBCommandReturnObject=lambda: SimpleNamespace(GetOutput=lambda: 'fixture stack',
-                                                         GetError=lambda: ''))
+                                                         GetError=lambda: '',
+                                                         Succeeded=lambda: mode != 'format-refusal'))
         debugger = SimpleNamespace(
             SetAsync=lambda value: calls.append(('async', value)),
             CreateTarget=lambda path: SimpleNamespace(AttachToProcessWithID=attach),
@@ -375,6 +376,33 @@ class OwnedFaultStackTests(unittest.TestCase):
         result = self.hook.finish()
         self.assertTrue(result['diagnosticallyInterrupted'])
         self.assertEqual(set(self.cleaned), {21, 55, 56})
+
+    def test_minimal_formats_precede_attach_and_fault_output_without_extended_queries(self):
+        result, calls = self.run_session('fault')
+        settings = [call for call in calls if isinstance(call, str) and call.startswith('settings ')]
+        self.assertEqual(len(settings), 3)
+        expected = {
+            'thread-format': {'thread.index', 'thread.id'},
+            'thread-stop-format': {'thread.index', 'thread.id'},
+            'frame-format': {'frame.index', 'frame.pc'},
+        }
+        import re
+        for command in settings:
+            name = command.split()[2]
+            variables = set(re.findall(r'\$\{([^}]+)\}', command))
+            self.assertEqual(variables, expected[name])
+            self.assertLess(calls.index(command), calls.index(('attach', 21)))
+            self.assertLess(calls.index(command), calls.index('thread backtrace all -c 64'))
+        self.assertTrue(result['handedBack'])
+        self.assertIn('register read', calls)
+        self.assertIn('image list -u -f', calls)
+
+    def test_format_refusal_stops_before_attachment_or_default_backtrace(self):
+        result, calls = self.run_session('format-refusal')
+        self.assertEqual(result['status'], 'observer-error')
+        self.assertNotIn(('attach', 21), calls)
+        self.assertNotIn('continue', calls)
+        self.assertNotIn('thread backtrace all -c 64', calls)
 
     def test_session_failed_detach_is_never_claimed_handed_back(self):
         result, calls = self.run_session('detach-failure')

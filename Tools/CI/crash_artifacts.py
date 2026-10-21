@@ -270,6 +270,18 @@ def run_owned_fault_session(debugger, identity_path, session_path, cancel_path):
         if not same_process(identity, row):
             result.update(status='identity-changed-or-exited', handedBack=True)
             return
+        # Configure both automatic stop output and explicit backtrace headers before attach.
+        # Default queue/activity/function-argument formatting can enter vendor type readers.
+        for command in (
+            r'settings set thread-format "thread #${thread.index}: tid=${thread.id}\n"',
+            r'settings set thread-stop-format "thread #${thread.index}: tid=${thread.id}\n"',
+            r'settings set frame-format "frame #${frame.index}: pc=${frame.pc}\n"',
+        ):
+            output = lldb.SBCommandReturnObject()
+            debugger.GetCommandInterpreter().HandleCommand(command, output)
+            if not output.Succeeded():
+                raise RuntimeError('Unable to configure minimal fault format: '
+                                   + (output.GetError() or '')[:512])
         debugger.SetAsync(False)
         target = debugger.CreateTarget(identity['arguments'][0])
         error = lldb.SBError()
