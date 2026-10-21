@@ -1,9 +1,0 @@
-Random Hits oxp, version 1.10.1, 18.2.2015
-
-_Licence of the oxp including ships special to this oxp and excluding other ships_
-
-This work is licensed under the Creative Commons Attribution-Noncommercial-Share Alike 4.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
-
-_Licence of other ships_
-
-Ships are used with variable licences, some are used with authors permission, some with cc licence etc. For licence of a particular ship refer to the licence of the original ship oxp. If the original ship oxp has no licence, then the ship has been used with a special permission from the author.
