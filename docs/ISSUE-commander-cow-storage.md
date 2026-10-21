@@ -1,0 +1,7 @@
+# The Commander Array element read still copies at the actual tick fault
+
+The strictly attributed1135 OS report on `e378546103f87151c37d3c349d0b0cf707909e64` records stack exhaustion at initializeWithCopy for Commander inside Game.commander.read588. It is reached through withReadOnlyCommander600, the scalar-time contact-step argument and the unchanged native people producer's actual tick/EMP path. Raw IPS SHA256: `5ae7356d60a17a92c1933dc68ed475adfe63acb1034ffb39078d0cfe38600be4`, PID3688, image `dbae7b79-bf33-3039-b3b0-8f61c98fe2a1`. Forwarding through _read did not remove the observed Array-element copy. The retained Game/Commander layout sizes are not stack measurements.
+
+Root reserves Game.swift's private Commander storage/accessor seam and array-specific galaxy accessor, meaningful tests in GameCommanderStorageTests.swift, and paired notes. Replace the single-element Array with one private stored-property COW holder; preserve every other Game/W05/MC1 hunk. No new storage API, ownership framework, actor bypass or nested Commander storage refactor is included.
+
+Status: source freeze, qualification pending. No author native build/test/probe/replay ran. G1 alone composes, compiles and executes the finite affected selection before one coherent independent bugs/performance/style review. Actual compiler/runtime evidence must establish whether the attributed fault is resolved; no no-copy or stack-size improvement is claimed from source alone.
