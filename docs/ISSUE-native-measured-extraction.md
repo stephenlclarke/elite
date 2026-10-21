@@ -41,3 +41,7 @@ Execution 1160 passes initial hardware setup but the positive native acceptance 
 ## Reconstructed validation context
 
 Execution 1162 confirms current native acceptance inputs and failure at nativeSaveValidation with Commander.valid false. Preserve the actual positive assertion and use only a separately reconstructed diagnostic candidate from the genuine pre-confirmation snapshot and reviewed operation to identify validator groups. Never install or save that reconstruction, and never treat its results as proof of equality with the discarded publication candidate.
+
+## Contract equipment-fit acceptance correction
+
+Execution 1164 identifies accommodation as the rejecting group in the reconstructed candidate. The native equipment-unit budget is independent of hold tonnes: the maximum-hardware SH023 fixture fits eighteen units against a twelve-unit budget. Its legacy outfit is permitted before a contract, while actual acceptance activates contract-fit validation. The G12 quote omitted that native fit requirement and advertised an operation that could not publish. Require the actual passengerFit issues alongside the unchanged twelve-tonne hold and required-tools checks. Use a valid required-hardware fit for positive journeys and preserve the original over-equipped fixture in a refusal regression. No capacity is enlarged, no equipment is assigned zero cost and no strict save predicate is relaxed.
