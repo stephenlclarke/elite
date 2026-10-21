@@ -396,6 +396,16 @@ This original project mission follows **Avenor → Renas → Avenor**. It is int
 4. Return in the same collecting ship and dock at the original Avenor depot. In Station Contracts, Confirm **PELL / return original depot property** to receive **880 CR once**. Pickup alone never pays.
 5. To abandon the assignment, return to that owner and Confirm **PELL / return held property and cancel**. Surviving held originals are returned unpaid; lost property is not replenished. Mission property cannot be sold, stored or jettisoned as ordinary cargo.
 
+## SENN flight-recorder recovery (development)
+
+This original project mission follows **Cedamar → Celalen → Cedamar**. Its focused native tests and independent review pass; the complete manual UI journey remains unverified.
+
+1. Save your commander, fit a targeting core, Salvage targeting module and Fuel Scoops, free one real hold tonne and fuel the return route.
+2. Dock at Cedamar’s main station, open **Game > Station Contracts**, select **SENN / accept depot retrieval permission**, then Confirm with Left/Right and Return.
+3. At Celalen, use **F** for the Salvage filter and **Tab** to select the original **CDR-001**. Identify it in front view within 2 degrees and 250–1,500 surface flight units. Identification leaves it at its cradle; a later safe scoop collects that same original.
+4. Return in the same collecting ship to Cedamar’s archive. Confirm **SENN / return original depot property** on Station Contracts for **650 CR once** and the record-recovery clue. Identification and pickup pay nothing.
+5. To cancel, Confirm **SENN / return held property and cancel** at the owner. Held property returns unpaid, the reserved hold tonne is released, and the finite original is never replenished.
+
 ## Mission Gallery
 
 Choose **Game > Mission Gallery** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show the list and details side by side; narrow windows open a detail page. Use arrows and Return, click a mission, and scroll with the trackpad or Option-Up/Option-Down. Tab switches between list and details; Escape returns to the list, then to the previous screen.

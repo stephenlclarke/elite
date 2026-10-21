@@ -1144,3 +1144,5 @@ Current MC1cdec helper correction is frozen for20/34 after the attributed1131Com
 Trackpad native-hull fixture: exact b59 three paths integrate after matching1138 build, actual1139 four methods/four cases PASS and complete CLEAN independent review. All original runtime oracles remain unchanged. Commander COW1140 compilation passed; its selected execution and W05 correction qualification remain pending.
 
 W05 recorder recovery: exact31 reviewed paths from5173 integrate with no unqualified MC1 storage/contact changes. Original complete review and five-path correction review are CLEAN; owner aggregate35methods75cases PASS comprises1143 affected3/5 plus retained32/70. Required renderer refresh and final-head hosted checks/review remain pending.
+
+Renderer1144 on exact canonical3c273 passes in55.245s (55.916s outer),171 fingerprints refreshed with identical GIF bytes and4104decoded frames; ships-check passes and66 starts close with protected source/preferences/README exact. Final-head hosted checks/review remain required. README now describes the integrated SENN player journey.
