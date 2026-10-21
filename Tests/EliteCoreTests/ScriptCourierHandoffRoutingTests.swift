@@ -6,7 +6,7 @@ import Testing
 @Test func typedCourierBackClearsPresentationAndOnlyTheReopenedContactCanDeliver() async throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  var game = try CourierNativeFixture.rows[1].game(using: fixture)
   let id = try fixture.accept(&game, variant: .package)
   try fixture.travel(&game, id: id)
   try fixture.requestContact(&game, id: id)
