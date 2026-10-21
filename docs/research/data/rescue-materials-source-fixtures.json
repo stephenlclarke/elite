@@ -1,0 +1,368 @@
+{
+  "package_id": "P30",
+  "source_version": "1.5.4",
+  "profile": "PROJECT-P30-MATERIALS-6-v1",
+  "scope": "Selected actual base6 source callbacks with mocked Oolite lexical scope; ratio-count anomaly, no physical cargo, late debrief timing, finite hunters and omitted-radius defect retained. Selected source quirks recorded, not all adopted; no route/AI/native physics/cargo integration parity claim.",
+  "runtime": "v26.9.0",
+  "total": 51,
+  "passed": 51,
+  "cases": [
+    {
+      "name": "6 availability boundary -1,0,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.19766599999999812,
+      "passed": true
+    },
+    {
+      "name": "6 availability boundary 0,50,0.75",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.03933399999999665,
+      "passed": true
+    },
+    {
+      "name": "6 availability boundary 0,51,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.0108330000000052,
+      "passed": true
+    },
+    {
+      "name": "6 availability boundary 0,0,0.750001",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.00779100000001165,
+      "passed": true
+    },
+    {
+      "name": "6 unavailable without another suitable waystation",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.01983299999999133,
+      "passed": true
+    },
+    {
+      "name": "6 source offer count sqrt(U/V) 0,0.5",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.023625000000009777,
+      "passed": true
+    },
+    {
+      "name": "6 source offer count sqrt(U/V) 0.01,0.5",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.008207999999996218,
+      "passed": true
+    },
+    {
+      "name": "6 source offer count sqrt(U/V) 0.99,0.25",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.006833000000000311,
+      "passed": true
+    },
+    {
+      "name": "6 source offer count sqrt(U/V) 0.5,0.125",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.008750000000006253,
+      "passed": true
+    },
+    {
+      "name": "6 source offer count sqrt(U/V) 0.9,0.1",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.013708999999991534,
+      "passed": true
+    },
+    {
+      "name": "6 source offer count sqrt(U/V) 0.64,0.04",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.007416999999989571,
+      "passed": true
+    },
+    {
+      "name": "6 source offer count sqrt(U/V) 0.99,0.001",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.006000000000000227,
+      "passed": true
+    },
+    {
+      "name": "6 source offer count sqrt(U/V) 0.5,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.007000000000005002,
+      "passed": true
+    },
+    {
+      "name": "6 source0/0 offer count isNaN",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.03637500000000671,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate valid",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.029583999999999833,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate same",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005458000000004404,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate nova",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.006000000000000227,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate noRRS",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.00533300000000736,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate straight7",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005332999999993149,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate straight7plus",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005958000000006791,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate straight25",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005584000000013134,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate straight25plus",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005750000000006139,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate noRoute",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.00595799999999258,
+      "passed": true
+    },
+    {
+      "name": "6 target predicate route25plus",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.006582999999992012,
+      "passed": true
+    },
+    {
+      "name": "6 source quote/preview deadline/risk 0,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.24970799999999826,
+      "passed": true
+    },
+    {
+      "name": "6 source quote/preview deadline/risk 0.5,0.249999",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.02341599999999744,
+      "passed": true
+    },
+    {
+      "name": "6 source quote/preview deadline/risk 0.99999,0.25",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.012416999999999234,
+      "passed": true
+    },
+    {
+      "name": "6 source destination arrival 199.99,true,1,2",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.03258300000000247,
+      "passed": true
+    },
+    {
+      "name": "6 source destination arrival 200,true,1,2",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.0062500000000085265,
+      "passed": true
+    },
+    {
+      "name": "6 source destination arrival 200.01,true,1,2",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005875000000003183,
+      "passed": true
+    },
+    {
+      "name": "6 source destination arrival 199,true,2,2",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005000000000009663,
+      "passed": true
+    },
+    {
+      "name": "6 source destination arrival 199,false,1,2",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005541999999991276,
+      "passed": true
+    },
+    {
+      "name": "6 source destination arrival 199,true,1,1",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.004915999999994369,
+      "passed": true
+    },
+    {
+      "name": "6 on-time full pay/+5rep",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.05791700000000333,
+      "passed": true
+    },
+    {
+      "name": "6 late no pay/net rep capped whole days 0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.022542000000001394,
+      "passed": true
+    },
+    {
+      "name": "6 late no pay/net rep capped whole days 86399.99",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.00854199999999139,
+      "passed": true
+    },
+    {
+      "name": "6 late no pay/net rep capped whole days 86400",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.00808400000001086,
+      "passed": true
+    },
+    {
+      "name": "6 late no pay/net rep capped whole days 864000",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.00837500000000091,
+      "passed": true
+    },
+    {
+      "name": "6 late no pay/net rep capped whole days 864001",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.007916999999991958,
+      "passed": true
+    },
+    {
+      "name": "6 finite hunter budget/appear>1/radius omission false,3,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.04000000000000625,
+      "passed": true
+    },
+    {
+      "name": "6 finite hunter budget/appear>1/radius omission false,3,0.5",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005707999999998492,
+      "passed": true
+    },
+    {
+      "name": "6 finite hunter budget/appear>1/radius omission false,3,0.99",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.3665419999999955,
+      "passed": true
+    },
+    {
+      "name": "6 finite hunter budget/appear>1/radius omission true,3,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.014167000000000485,
+      "passed": true
+    },
+    {
+      "name": "6 finite hunter budget/appear>1/radius omission true,1,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005958000000006791,
+      "passed": true
+    },
+    {
+      "name": "6 finite hunter budget/appear>1/radius omission false,0,0.99",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.0049999999999954525,
+      "passed": true
+    },
+    {
+      "name": "6 source offer decision NO",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.03929200000000321,
+      "passed": true
+    },
+    {
+      "name": "6 source offer decision YES",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.022750000000002046,
+      "passed": true
+    },
+    {
+      "name": "6 source offer decision null",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.007874999999998522,
+      "passed": true
+    },
+    {
+      "name": "6 source map loses original system0 by truthiness",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.01720800000001077,
+      "passed": true
+    },
+    {
+      "name": "6 source cleanup has no physical package custody",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.031999999999996476,
+      "passed": true
+    },
+    {
+      "name": "shared materials count reevaluates each loop guard",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.08437499999999432,
+      "passed": true
+    }
+  ]
+}

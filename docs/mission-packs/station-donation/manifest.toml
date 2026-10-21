@@ -1,0 +1,47 @@
+schemaVersion = 2
+missionAPI = 2
+id = "project.station-aid"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "local-flight-clocks-v2", "contracts-basic-v2", "station-pledges-basic-v2", "durable-commands-v2", "gallery-basic-v2"]
+priority = 550
+source = "Original G21 project Station Aid family, PROJECT-SPACE-G21-1. Donation structure references S10/S18/D03/D04/O08 through the research authority snapshot. Amounts, local standing and hourly board cadence are project estimates/policies, not historical or live-server distributions."
+license = "MIT"
+environments = ["orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "donation"
+title = "Station Aid donations"
+briefing = "Read six voluntary credit/Food pledge offers on Station Contracts. Choose a difficulty and variant, then deliberately Donate the full amount at the actual offering main station. Back transfers nothing. One complete donation adds one Station Aid point local to this station. Amounts and standing are project estimates; this grants no faction, legal or trading privileges."
+destination = "The actual offering main orbital station; no travel."
+reward = "One local Station Aid standing point. No cash reward."
+milestones = ["Confirm one full donation"]
+
+[board]
+id = "station-aid"
+title = "Station Aid / voluntary donations"
+generator = "generate"
+clock = "local"
+refreshSeconds = 3600
+exclusiveGroup = "station-aid"
+
+[pledge]
+profile = "PROJECT-SPACE-G21-1"
+provider = "project.station-aid"
+title = "Station Aid"
+creditAmounts = [5000, 15000, 30000]
+foodTonnes = [1, 3, 5]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+
+[trial]
+ship = "SH023"
+galaxy = 0
+system = 7
+credits = 100000
+cabins = 0
+flight = false
+offer = 0

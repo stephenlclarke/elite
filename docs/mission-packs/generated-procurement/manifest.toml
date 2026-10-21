@@ -1,0 +1,67 @@
+schemaVersion = 2
+missionAPI = 2
+id = "project.generated-procurement"
+version = "1.1.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "local-flight-clocks-v2", "contracts-basic-v2", "procurement-contracts-basic-v2", "mission-calendar-v2", "durable-commands-v2", "partial-collections-v2", "gallery-basic-v2"]
+priority = 565
+source = "PROJECT-SPACE-G03-1 procurement variant, approved project adaptation of S10/S18/D03/D04/O08 in generated-space-project-profiles.json. Quantities, payment, deadlines and generation are PROJECT ESTIMATES, not recovered live-server distributions. Supplied freight is not implemented by this pack."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "procurement"
+title = "Procurement jobs"
+briefing = "Acquire the frozen Food, Textiles or Machinery requirement through ordinary trade, then deliver it at the named destination main station. Real partial lots are retained. Only the final native handoff pays. Estimates are project balance values."
+destination = "Frozen destination main orbital / Procurement Receiving Officer"
+reward = "Frozen tier base plus 300 CR per required hop, once after all goods are received. PROJECT ESTIMATES."
+milestones = ["Deliver the entire frozen native material requirement"]
+requiredCollections = ["procurement-goods"]
+
+[board]
+id = "procurement-jobs"
+title = "Procurement jobs / PROJECT ESTIMATES"
+generator = "generate"
+clock = "missionCalendar"
+refreshSeconds = 3600
+exclusiveGroup = "g03-procurement"
+
+[procurement]
+profile = "PROJECT-SPACE-G03-1"
+generatorRevision = 2
+variant = "procurement"
+deliveryContact = "procurement-delivery"
+abandonContact = "procurement-abandon"
+
+[procurement.collectionTemplate]
+id = "procurement-goods"
+title = "Requested procurement goods"
+
+[[dialogs]]
+id = "procurement-delivery"
+text = "Procurement Receiving Officer: confirm the displayed ordinary goods. Earlier partial receipts remain recorded. Only the entire frozen requirement earns its single payment. Back changes nothing."
+collection = "procurement-goods"
+
+[[dialogs]]
+id = "procurement-abandon"
+text = "Procurement Dispatch Officer: confirm abandonment for 0 CR. Earlier partial deliveries remain recorded; remaining ordinary cargo stays yours. Back changes nothing."
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[trial]
+ship = "SH023"
+galaxy = 0
+system = 0
+credits = 100000
+cabins = 0
+flight = true
+offer = 0

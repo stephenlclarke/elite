@@ -1,0 +1,148 @@
+{
+  "package_id": "P46",
+  "scope": "Selected exact CCL1.7.2 source API/quotation callbacks, not historical1.6/native runtime parity. Known source defects asserted; repairs specified separately.",
+  "total": 20,
+  "passed": 20,
+  "cases": [
+    {
+      "name": "player hull/shield score energy85",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.4146250000000009,
+      "passed": true
+    },
+    {
+      "name": "player hull/shield score energy256",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.022959000000000174,
+      "passed": true
+    },
+    {
+      "name": "player hull/shield score energy384",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.017458000000001306,
+      "passed": true
+    },
+    {
+      "name": "player hull/shield score energy500",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.028833999999999804,
+      "passed": true
+    },
+    {
+      "name": "missile capacity strength0",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.04570799999999764,
+      "passed": true
+    },
+    {
+      "name": "missile capacity strength1",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.030166000000001247,
+      "passed": true
+    },
+    {
+      "name": "missile capacity strength2",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.015457999999998862,
+      "passed": true
+    },
+    {
+      "name": "missile capacity strength4",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.013749999999998153,
+      "passed": true
+    },
+    {
+      "name": "missile capacity strength8",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.01754200000000239,
+      "passed": true
+    },
+    {
+      "name": "fitted missile key+1 bug but capacity increment0",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.03029199999999932,
+      "passed": true
+    },
+    {
+      "name": "fitted missile key+1 bug but capacity increment1",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.01891599999999727,
+      "passed": true
+    },
+    {
+      "name": "fitted missile key+1 bug but capacity increment2",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.015207999999997668,
+      "passed": true
+    },
+    {
+      "name": "fitted missile key+1 bug but capacity increment4",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.01816700000000182,
+      "passed": true
+    },
+    {
+      "name": "source unknown laser key makes NaN",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.03999999999999915,
+      "passed": true
+    },
+    {
+      "name": "injectors and high thrust score",
+      "source": "CCL/Cabal_Common_OXPStrength.js",
+      "source_sha256": "b8490f77919760d8b3a51597853294d768f46aa1d756638a1afc7f9dbd074782",
+      "duration_ms": 0.02674999999999983,
+      "passed": true
+    },
+    {
+      "name": "market quote elapsed0",
+      "source": "CCL/Cabal_Common_SpecialMarkets.js",
+      "source_sha256": "b37fda2a33fc2510402199437d83f39e745ced27db8ba77fc3c04d7843c21eb7",
+      "duration_ms": 0.5167920000000024,
+      "passed": true
+    },
+    {
+      "name": "market quote elapsed10",
+      "source": "CCL/Cabal_Common_SpecialMarkets.js",
+      "source_sha256": "b37fda2a33fc2510402199437d83f39e745ced27db8ba77fc3c04d7843c21eb7",
+      "duration_ms": 0.061624999999999375,
+      "passed": true
+    },
+    {
+      "name": "market quote elapsed15",
+      "source": "CCL/Cabal_Common_SpecialMarkets.js",
+      "source_sha256": "b37fda2a33fc2510402199437d83f39e745ced27db8ba77fc3c04d7843c21eb7",
+      "duration_ms": 0.04395899999999742,
+      "passed": true
+    },
+    {
+      "name": "market quote elapsed100",
+      "source": "CCL/Cabal_Common_SpecialMarkets.js",
+      "source_sha256": "b37fda2a33fc2510402199437d83f39e745ced27db8ba77fc3c04d7843c21eb7",
+      "duration_ms": 0.028625000000001677,
+      "passed": true
+    },
+    {
+      "name": "market quote elapsed1000",
+      "source": "CCL/Cabal_Common_SpecialMarkets.js",
+      "source_sha256": "b37fda2a33fc2510402199437d83f39e745ced27db8ba77fc3c04d7843c21eb7",
+      "duration_ms": 0.029790999999999457,
+      "passed": true
+    }
+  ]
+}

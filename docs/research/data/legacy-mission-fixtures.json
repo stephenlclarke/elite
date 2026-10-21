@@ -1,0 +1,208 @@
+{
+  "scope": "Selected exact source callbacks with approximate Oolite script-object scope. Source defects deliberately asserted; not native engine/combat parity.",
+  "runtime": "v26.9.0",
+  "total": 25,
+  "passed": 25,
+  "cases": [
+    {
+      "package_id": "P05",
+      "name": "station null",
+      "source": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks.js",
+      "source_sha256": "2cd0b78bc4f0aa046dba3428e03aa494adb2fe1d456fa32fb714fea7ead42dbb",
+      "duration_ms": 0.26054200000000094,
+      "passed": true
+    },
+    {
+      "package_id": "P05",
+      "name": "station STAGE2",
+      "source": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks.js",
+      "source_sha256": "2cd0b78bc4f0aa046dba3428e03aa494adb2fe1d456fa32fb714fea7ead42dbb",
+      "duration_ms": 0.03670800000000085,
+      "passed": true
+    },
+    {
+      "package_id": "P05",
+      "name": "station STAGE3",
+      "source": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks.js",
+      "source_sha256": "2cd0b78bc4f0aa046dba3428e03aa494adb2fe1d456fa32fb714fea7ead42dbb",
+      "duration_ms": 0.05349999999999966,
+      "passed": true
+    },
+    {
+      "package_id": "P05",
+      "name": "station STAGE4",
+      "source": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks.js",
+      "source_sha256": "2cd0b78bc4f0aa046dba3428e03aa494adb2fe1d456fa32fb714fea7ead42dbb",
+      "duration_ms": 0.04116699999999973,
+      "passed": true
+    },
+    {
+      "package_id": "P05",
+      "name": "station STAGE6",
+      "source": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks.js",
+      "source_sha256": "2cd0b78bc4f0aa046dba3428e03aa494adb2fe1d456fa32fb714fea7ead42dbb",
+      "duration_ms": 0.03612499999999841,
+      "passed": true
+    },
+    {
+      "package_id": "P05",
+      "name": "Bolts any killer gold20kg",
+      "source": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks_bolts.js",
+      "source_sha256": "c7238194732341e2f320f12fbbe9dcf1f39cbb33ad825662ec500d00ed9930bb",
+      "duration_ms": 0.04779200000000117,
+      "passed": true
+    },
+    {
+      "package_id": "P05",
+      "name": "witness source ungated death",
+      "source": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks_witness.js",
+      "source_sha256": "b1e98e2d680f3bdaf4690a3cda99f836b100b2532fe42f137f4cf88f82668143",
+      "duration_ms": 0.039708000000000965,
+      "passed": true
+    },
+    {
+      "package_id": "P32",
+      "name": "finish 750/100/1079999",
+      "source": "runnerG5-1.0/RunnerG5-1.0.oxp/Scripts/runnerG5.js",
+      "source_sha256": "6e820007a1662dd446b73d6f0c420da500a0f0cadc8b2de60a3c0dc2458f7326",
+      "duration_ms": 0.04650000000000176,
+      "passed": true
+    },
+    {
+      "package_id": "P32",
+      "name": "finish 750/99/100",
+      "source": "runnerG5-1.0/RunnerG5-1.0.oxp/Scripts/runnerG5.js",
+      "source_sha256": "6e820007a1662dd446b73d6f0c420da500a0f0cadc8b2de60a3c0dc2458f7326",
+      "duration_ms": 0.031333000000000055,
+      "passed": true
+    },
+    {
+      "package_id": "P32",
+      "name": "finish 749/100/100",
+      "source": "runnerG5-1.0/RunnerG5-1.0.oxp/Scripts/runnerG5.js",
+      "source_sha256": "6e820007a1662dd446b73d6f0c420da500a0f0cadc8b2de60a3c0dc2458f7326",
+      "duration_ms": 0.034791000000002015,
+      "passed": true
+    },
+    {
+      "package_id": "P32",
+      "name": "finish 750/100/1080000",
+      "source": "runnerG5-1.0/RunnerG5-1.0.oxp/Scripts/runnerG5.js",
+      "source_sha256": "6e820007a1662dd446b73d6f0c420da500a0f0cadc8b2de60a3c0dc2458f7326",
+      "duration_ms": 0.028249999999999886,
+      "passed": true
+    },
+    {
+      "package_id": "P47",
+      "name": "choice 1_Cont",
+      "source": "Victim11/Victim11_1.0..oxp/Scripts/Victim11-Main.js",
+      "source_sha256": "f173100ddbb799c86c72935df04bad6f20694c5f196ccdae05f23c59f1d38d81",
+      "duration_ms": 0.12079199999999801,
+      "passed": true
+    },
+    {
+      "package_id": "P47",
+      "name": "choice 3_Cont",
+      "source": "Victim11/Victim11_1.0..oxp/Scripts/Victim11-Main.js",
+      "source_sha256": "f173100ddbb799c86c72935df04bad6f20694c5f196ccdae05f23c59f1d38d81",
+      "duration_ms": 0.03849999999999909,
+      "passed": true
+    },
+    {
+      "package_id": "P47",
+      "name": "choice 1_galcop",
+      "source": "Victim11/Victim11_1.0..oxp/Scripts/Victim11-Main.js",
+      "source_sha256": "f173100ddbb799c86c72935df04bad6f20694c5f196ccdae05f23c59f1d38d81",
+      "duration_ms": 0.027833000000001107,
+      "passed": true
+    },
+    {
+      "package_id": "P47",
+      "name": "choice 4_Cont",
+      "source": "Victim11/Victim11_1.0..oxp/Scripts/Victim11-Main.js",
+      "source_sha256": "f173100ddbb799c86c72935df04bad6f20694c5f196ccdae05f23c59f1d38d81",
+      "duration_ms": 0.044375000000002274,
+      "passed": true
+    },
+    {
+      "package_id": "P47",
+      "name": "choice 2_murder",
+      "source": "Victim11/Victim11_1.0..oxp/Scripts/Victim11-Main.js",
+      "source_sha256": "f173100ddbb799c86c72935df04bad6f20694c5f196ccdae05f23c59f1d38d81",
+      "duration_ms": 0.24499999999999744,
+      "passed": true
+    },
+    {
+      "package_id": "P47",
+      "name": "pod count 2",
+      "source": "Victim11/Victim11_1.0..oxp/Scripts/V11capsule.js",
+      "source_sha256": "ce50fe2c0479eeea85caf7f359b405e6a5b774876f8ecf400c90d6e86c78fbe8",
+      "duration_ms": 0.07249999999999801,
+      "passed": true
+    },
+    {
+      "package_id": "P47",
+      "name": "pod count 3",
+      "source": "Victim11/Victim11_1.0..oxp/Scripts/V11capsule.js",
+      "source_sha256": "ce50fe2c0479eeea85caf7f359b405e6a5b774876f8ecf400c90d6e86c78fbe8",
+      "duration_ms": 0.03304099999999721,
+      "passed": true
+    },
+    {
+      "package_id": "P47",
+      "name": "Black Maria four pods any killer",
+      "source": "Victim11/Victim11_1.0..oxp/Scripts/blackmaria-script.js",
+      "source_sha256": "1569c182d108d8df740feaee36e32ff0abf0001c5de2cb9899e516ae7811ab96",
+      "duration_ms": 0.11108399999999818,
+      "passed": true
+    },
+    {
+      "package_id": "P28-current",
+      "name": "source safe pay typo gov3",
+      "source": "Config/script.js",
+      "source_sha256": "3f6c82e280438894fd181289d127b31ca4e390f3956b924b527ad470198211df",
+      "duration_ms": 0.07583299999999937,
+      "passed": true
+    },
+    {
+      "package_id": "P28-current",
+      "name": "source safe pay typo gov4",
+      "source": "Config/script.js",
+      "source_sha256": "3f6c82e280438894fd181289d127b31ca4e390f3956b924b527ad470198211df",
+      "duration_ms": 0.025166999999999717,
+      "passed": true
+    },
+    {
+      "package_id": "P28-current",
+      "name": "source completion wrong key",
+      "source": "Scripts/oohauler.js",
+      "source_sha256": "da60c5c15a943783f0e18e927e502fdcfe714c8b73c8e06e3cc3406a0ca8b679",
+      "duration_ms": 0.05020800000000136,
+      "passed": true
+    },
+    {
+      "package_id": "P28-current",
+      "name": "crate penalty remaining3",
+      "source": "Scripts/oohaulcargo.js",
+      "source_sha256": "df96c0c7754dc838f8446c4916f0cd4b934909fbd9ba261eeb4bc16a3940743d",
+      "duration_ms": 0.04237499999999983,
+      "passed": true
+    },
+    {
+      "package_id": "P28-current",
+      "name": "crate penalty remaining1",
+      "source": "Scripts/oohaulcargo.js",
+      "source_sha256": "df96c0c7754dc838f8446c4916f0cd4b934909fbd9ba261eeb4bc16a3940743d",
+      "duration_ms": 0.021374999999999034,
+      "passed": true
+    },
+    {
+      "package_id": "P28-current",
+      "name": "traitor crate",
+      "source": "Scripts/oohaulcargo.js",
+      "source_sha256": "df96c0c7754dc838f8446c4916f0cd4b934909fbd9ba261eeb4bc16a3940743d",
+      "duration_ms": 0.03612499999999841,
+      "passed": true
+    }
+  ]
+}
