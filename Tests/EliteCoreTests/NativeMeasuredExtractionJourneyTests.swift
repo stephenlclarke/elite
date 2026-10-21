@@ -225,8 +225,16 @@ struct NativeMeasuredExtractionFixture {
     // A trigger held during approach is stopped on attaining hold. Reach the real
     // native ready state with the trigger released, then extraction presses it.
     await runtime.setControls(Controls())
+    var preceding = await runtime.snapshot()
+    var firstFailedBoundary: String?
     for _ in 0..<400 {
-      _ = await runtime.advance(delta: 0.05)
+      let current = await runtime.advance(delta: 0.05)
+      if firstFailedBoundary == nil, let guidance = current.workGuidance,
+        case .blocked(.clearance(_)) = guidance.controller.status
+      {
+        firstFailedBoundary = measuredExtractionBoundaryPacket(before: preceding, after: current)
+      }
+      preceding = current
       if await runtime.snapshot().workGuidance?.holding == true { break }
     }
     let ready = await runtime.snapshot()
@@ -236,7 +244,7 @@ struct NativeMeasuredExtractionFixture {
     try #require(ready.workGuidance?.mode == .hold(.mining))
     try #require(
       ready.workGuidance?.holding == true,
-      "Native Mining hold did not attain readiness: \(ready.workGuidance?.status ?? "no guidance"); controller=\(String(describing: ready.workGuidance?.controller.status)); message=\(ready.message)"
+      "Native Mining hold did not attain readiness: \(ready.workGuidance?.status ?? "no guidance"); controller=\(String(describing: ready.workGuidance?.controller.status)); message=\(ready.message); firstFailedBoundary=\(firstFailedBoundary ?? "not observed")"
     )
     try #require(!ready.workFireSuspended)
     try #require(ready.selectedFlightTool == .miningLaser)
@@ -292,6 +300,43 @@ struct NativeMeasuredExtractionFixture {
     try await flight.dock(runtime)
     await runtime.procurementRefuel()
     try await flight.travel(runtime, path: [7, 185])
+  }
+}
+
+private func measuredExtractionBoundaryPacket(before: borrowing Game, after: borrowing Game)
+  -> String
+{
+  func snapshot(_ game: borrowing Game) -> [String: Any] {
+    let native = game.withReadOnlyCommander {
+      ($0.flightSimulation.pose, $0.flightSimulation.physicalTime)
+    }
+    let work = game.workGuidance
+    let parent = work?.parent
+    let bodies = game.bodies
+    let body = bodies.first { $0.physical?.identity == parent }
+    return [
+      "physicalTime": native.1, "gameplayRevision": game.gameplayRevision,
+      "playerPose": String(describing: native.0),
+      "flightWorldVelocity": String(describing: game.flightWorldVelocity),
+      "workController": String(describing: work?.controller),
+      "surface": String(describing: work?.surface),
+      "collectionOffset": String(describing: work?.collectionOffset),
+      "workVelocity": String(describing: work?.velocity),
+      "workAngularVelocity": String(describing: work?.angularVelocity),
+      "targetBody": String(describing: body),
+      "lastAppliedWorkMotion": String(describing: game.lastAppliedWorkMotion),
+    ]
+  }
+  do {
+    let bytes = try JSONSerialization.data(
+      withJSONObject: ["before": snapshot(before), "after": snapshot(after)], options: [.sortedKeys]
+    )
+    guard bytes.count <= 256 * 1024 else {
+      return "BOUNDARY_PACKET_REFUSED_OVERSIZE bytes=\(bytes.count) limit=262144; no partial packet"
+    }
+    return String(decoding: bytes, as: UTF8.self)
+  } catch {
+    return "BOUNDARY_PACKET_REFUSED_ENCODING \(error); no partial packet"
   }
 }
 
