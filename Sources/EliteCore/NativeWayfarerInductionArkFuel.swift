@@ -25,8 +25,26 @@ struct NativeArkFuelOffer: Codable, Sendable, Equatable {
   let supplierRevision: UInt64
   let availableTenthsLY: Int
   let pricePerTenth: Int
+  let supplierActor: ActorIdentity
+  let quotedAtPhysicalTime: Double
+  init(
+    contact: NativeArkFuelContact, supplierRevision: UInt64, availableTenthsLY: Int,
+    pricePerTenth: Int, supplierActor: ActorIdentity? = nil, quotedAtPhysicalTime: Double? = nil
+  ) {
+    self.contact = contact
+    self.supplierRevision = supplierRevision
+    self.availableTenthsLY = availableTenthsLY
+    self.pricePerTenth = pricePerTenth
+    self.supplierActor = supplierActor ?? contact.stationActor
+    self.quotedAtPhysicalTime = quotedAtPhysicalTime ?? contact.physicalTime
+  }
   var valid: Bool {
     contact.valid && supplierRevision < UInt64(Int64.max)
+      && supplierActor.system == contact.station.system && supplierActor.entity == 1
+      && supplierActor.visit >= contact.stationActor.visit
+      && supplierActor.visit < UInt64(Int64.max)
+      && quotedAtPhysicalTime.isFinite && quotedAtPhysicalTime >= contact.physicalTime
+      && quotedAtPhysicalTime <= 1e12
       && (0...10000).contains(availableTenthsLY)
       && pricePerTenth > 0 && pricePerTenth == Equipment.base[0].price
   }

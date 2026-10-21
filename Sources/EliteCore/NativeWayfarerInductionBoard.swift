@@ -210,6 +210,7 @@ extension Game {
       "At Renas repair desk, Confirm service of the same original cassette and its owner's receiving record. This releases its tonne and pays nothing.",
       "At Enlirin, review the seed custodians' consent before Confirm borrows their unique one-tonne vault key for Lareria's receiving cradle. The key stays their property; the seed travels aboard the ark.",
       "The loan is untimed, needs one free tonne and cannot be sold, fitted or released as personal equipment. At Enlirin, separately review and Confirm the one original ark registration; no extra player cargo space is required.",
+      "The registered ark uses actual native aperture docking and its own custodian escrow for needed-hop fuel. Each real main station has a separate finite 100-LY ark-service reserve. Saving, revisiting or reopening never refills stock or funds; actual Lareria receiving/key return remains locked.",
       "These stages pay nothing and grant no accreditation or clue. "
         + NativeWayfarerInduction.laterStages,
     ]

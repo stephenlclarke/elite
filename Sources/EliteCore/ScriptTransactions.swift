@@ -52,6 +52,7 @@ extension GameRuntime {
       }
     }
     candidate.persistScriptActors()
+    candidate.inductionArkDockPublicationPending = false
     return try Self.prepareNativeSaveState(
       candidate, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
   }

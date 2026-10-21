@@ -8,7 +8,10 @@ private final class NativeArkProgressAttempt {
 extension Game {
   /// Observe native admissions and deaths, then ask the existing wormhole producer for one hop.
   /// Writer refusal leaves the already-attained physical world intact and retries observation.
-  mutating func advanceInductionArk(publish: ScriptPublisher?) {
+  mutating func advanceInductionArk(
+    from sample: NativeWormholeMotionSample?, publish: ScriptPublisher?
+  ) {
+    observeInductionArkDock(from: sample)
     guard let publish, !paused, !isMissionTrial,
       let id = wayfarerInductionMission?.savedWayfarerInduction?.ark?.job,
       let child = commander.scriptState.instances[id], child.suspension == nil,
@@ -16,7 +19,9 @@ extension Game {
     else { return }
     let attempt = NativeArkProgressAttempt(self)
     do {
-      guard try attempt.game.prepareInductionArkProgress(id) else { return }
+      let changed = try attempt.game.prepareInductionArkProgress(id)
+      guard changed || inductionArkDockPublicationPending else { return }
+      attempt.game.inductionArkDockPublicationPending = false
       attempt.game.persistScriptActors()
       guard attempt.game.commander.valid else { throw SaveError.invalidCommander }
       try publish(&attempt.game)
@@ -31,6 +36,7 @@ extension Game {
       let retained = group.actors[NativeInductionArkPack.alias],
       retained.identity == previous.authorization.actor
     else { return false }
+    if previous.dockedContact != nil { return try serviceInductionArk(id) }
     var next = previous
     if previous.admission == nil {
       let body =
@@ -126,6 +132,12 @@ extension Game {
     if state.loss != nil {
       return "Original ark destroyed; original crew and seed lost. No receiving credit."
     }
+    if let contact = state.dockedContact {
+      return
+        "Original ark berthed at G\(contact.station.system.galaxy + 1)-S\(contact.station.system.system)"
+        + (state.serviceWait.map { " / " + $0.rawValue }
+          ?? " / own fuel service or cradle receiving")
+    }
     if state.admission == nil {
       return "Original ark registered; depart Enlirin for native admission."
     }
@@ -137,5 +149,15 @@ extension Game {
         + (leg.refusal.map { " / " + $0 } ?? "")
     }
     return "Original ark admitted; awaiting its own drive/fuel and an available native hop."
+  }
+}
+
+extension Game {
+  var hasInductionArkMotionObserver: Bool {
+    guard let id = wayfarerInductionMission?.savedWayfarerInduction?.ark?.job,
+      let state = commander.scriptState.instances[id]?.savedNativeArk,
+      state.admission != nil, state.loss == nil, state.dockedContact == nil
+    else { return false }
+    return bodies.contains { $0.missionActorID == state.authorization.actor }
   }
 }

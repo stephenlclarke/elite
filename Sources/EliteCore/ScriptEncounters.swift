@@ -182,6 +182,7 @@ enum MissionActorAdmissionAuthority: Sendable, Equatable {
   case worldJob(identity: UUID, pulse: UInt64)
   case retained
   case transit(UUID)
+  case inductionArkBerth(UUID)
 }
 
 struct MissionActorAdmissionPart: Sendable {
@@ -355,9 +356,13 @@ extension MissionActorAdmissionSource {
       guard var actor = updated.actors[alias], actor.identity == actorID else {
         throw MissionPackError("Actor retention mapping changed before native admission.")
       }
-      if case .transit = authority {
+      switch authority {
+      case .transit:
         actor.body = actors[index].canonicalBody
         actor.transitLocation = system
+      case .inductionArkBerth:
+        actor.body = actors[index].canonicalBody
+      default: break
       }
       actor.body.id = bodyID
       actor.presence = .present
@@ -434,6 +439,9 @@ extension Game {
       if case .transit(let leg) = source.authority, let context = source.transitContext {
         return try original.transitMissionActorAdmissionSource(leg, context: context)
       }
+      if case .inductionArkBerth(let job) = source.authority {
+        return try original.inductionArkBerthAdmissionSource(job)
+      }
       guard source.authority == .retained,
         owner.ownedEncounters[source.encounterID] == source.retention,
         source.system == .init(galaxy: galaxy, system: system)
@@ -450,7 +458,7 @@ extension Game {
         return try original.preparedMissionActorAdmissionSource(
           pack: pack, state: owner, encounter: source.retention,
           worldJob: identity, pulse: pulse, installedOwner: installedOwner)
-      case .retained, .transit:
+      case .retained, .transit, .inductionArkBerth:
         throw MissionPackError("A prepared cohort cannot substitute retained admission authority.")
       }
     }
@@ -1505,5 +1513,62 @@ extension Commander {
   ) {
     let state = scriptState
     return (state.instances, state.geometry, galaxy, system)
+  }
+}
+
+extension Game {
+  /// A real facility launches its retained original hull via the existing native admission policy.
+  func inductionArkBerthAdmissionSource(_ id: UUID) throws -> MissionActorAdmissionSource {
+    guard !docked, !paused, let owner = commander.scriptState.instances[id],
+      owner.definition == NativeInductionArkPack.stateID,
+      owner.digest == NativeInductionArkPack.digest,
+      let state = owner.savedNativeArk, let dock = state.dockedContact, state.loss == nil,
+      case .living(let facility) = nativeOriginalMainStationDestination,
+      facility.identity == dock.station,
+      let pack = nativeInductionArkPack,
+      let encounter = owner.ownedEncounters[NativeInductionArkPack.encounter], encounter.admitted,
+      var actor = encounter.actors[NativeInductionArkPack.alias], actor.presence == .unloaded,
+      actor.body.energy > 0, actor.identity == state.authorization.actor,
+      !bodies.contains(where: { $0.missionActorID == actor.identity }),
+      let exit = currentNativeMainStationAnchor(at: commander.flightSimulation.physicalTime),
+      let anchor = scriptAnchor, let profile = actor.body.scriptNPC?.fit.definition
+    else { throw SaveError.invalidCommander }
+    let definition = try validateMissionActorAdmissionEncounter(
+      mode: .retained, pack: pack, state: owner, encounter: encounter)
+    guard let spec = definition.actors.first(where: { $0.id == actor.alias }) else {
+      throw SaveError.invalidCommander
+    }
+    let pose = commander.flightSimulation.pose
+    let direction = exit.exitDirection.unit
+    var orientation = Basis3()
+    orientation.z = direction
+    orientation.y = exit.orientation.y
+    orientation.x = orientation.y.cross(orientation.z).unit
+    actor.body.position = anchor.orientation.inverse(
+      pose.shipPoint(exit.exitPosition) - anchor.position)
+    actor.body.orientation = orientation.relative(to: pose.orientation).relative(
+      to: anchor.orientation)
+    let stationVelocity =
+      commander.nativeStations?.stationInertia.first(where: {
+        if case .main(let identity) = $0.station { return identity == dock.station }
+        return false
+      })?.velocity ?? .init(0, 0, 0)
+    guard stationVelocity.length <= profile.speed else {
+      throw NativeMissionActorAdmissionError.invalidCondition
+    }
+    actor.body.scriptNPC?.velocity = anchor.orientation.inverse(pose.shipVector(stationVelocity))
+    let goal = exit.position + direction * 1200
+    actor.body.scriptNPC?.intent = .init(
+      request: "native-ark-berth-exit", mode: .approach, target: nil, player: false,
+      offset: anchor.orientation.inverse(pose.shipPoint(goal) - anchor.position),
+      speed: min(1, 144 / profile.speed), tolerance: 50)
+    let template = try Self.missionActorAdmissionTemplate(
+      actor, specification: spec,
+      npcDefinitions: pack.manifest.npcs ?? [], installedModels: pack.models,
+      geometry: commander.scriptState.geometry, legacy: nil)
+    return .init(
+      mode: .retained, authority: .inductionArkBerth(id), instance: owner, pack: pack,
+      encounter: encounter, definition: definition, actors: [template],
+      installedBaseEncounter: encounter)
   }
 }

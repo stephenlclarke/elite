@@ -65,6 +65,11 @@ struct NativeArkAdmission: Codable, Sendable, Equatable {
   let actor: ActorIdentity
   let physicalTime: Double
 }
+struct NativeArkBerthExit: Codable, Sendable, Equatable {
+  let contactSequence: UInt64
+  let actor: ActorIdentity
+  let physicalTime: Double
+}
 struct NativeArkHullLoss: Codable, Sendable, Equatable {
   let actor: ActorIdentity
   let observedPhysicalTime: Double
@@ -93,11 +98,15 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
   let fuelContacts: [NativeArkFuelContact]
   let dockedContact: NativeArkFuelContact?
   let exitedContacts: [UInt64]
+  let serviceWait: NativeArkServiceWait?
+  private let savedExits: [NativeArkBerthExit]?
+  var exits: [NativeArkBerthExit] { savedExits ?? [] }
   init(
     authorization: NativeArkLaunchAuthorization, fuel: NativeArkFuelEscrow,
     admission: NativeArkAdmission? = nil, legs: [NativeArkHopReference] = [],
     loss: NativeArkHullLoss? = nil, fuelContacts: [NativeArkFuelContact] = [],
-    dockedContact: NativeArkFuelContact? = nil, exitedContacts: [UInt64] = []
+    dockedContact: NativeArkFuelContact? = nil, exitedContacts: [UInt64] = [],
+    serviceWait: NativeArkServiceWait? = nil, exits: [NativeArkBerthExit] = []
   ) {
     self.authorization = authorization
     self.fuel = fuel
@@ -107,25 +116,31 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
     self.fuelContacts = fuelContacts
     self.dockedContact = dockedContact
     self.exitedContacts = exitedContacts
+    self.serviceWait = serviceWait
+    self.savedExits = exits.isEmpty ? nil : exits
   }
   static func == (a: NativeInductionArkState, b: NativeInductionArkState) -> Bool {
     a.authorization == b.authorization && a.fuel == b.fuel && a.admission == b.admission
       && a.legs == b.legs && a.loss == b.loss && a.fuelContacts == b.fuelContacts
       && a.dockedContact == b.dockedContact && a.exitedContacts == b.exitedContacts
+      && a.serviceWait == b.serviceWait && a.exits == b.exits
   }
   func replacing(
     admission: NativeArkAdmission? = nil, legs: [NativeArkHopReference]? = nil,
     loss: NativeArkHullLoss? = nil, fuel: NativeArkFuelEscrow? = nil,
     fuelContacts: [NativeArkFuelContact]? = nil,
     dockedContact: NativeArkFuelContact? = nil, clearsDock: Bool = false,
-    exitedContacts: [UInt64]? = nil
+    exitedContacts: [UInt64]? = nil, serviceWait: NativeArkServiceWait? = nil,
+    clearsServiceWait: Bool = false, exits: [NativeArkBerthExit]? = nil
   ) -> NativeInductionArkState {
     .init(
       authorization: authorization, fuel: fuel ?? self.fuel,
       admission: admission ?? self.admission, legs: legs ?? self.legs, loss: loss ?? self.loss,
       fuelContacts: fuelContacts ?? self.fuelContacts,
       dockedContact: clearsDock ? nil : (dockedContact ?? self.dockedContact),
-      exitedContacts: exitedContacts ?? self.exitedContacts)
+      exitedContacts: exitedContacts ?? self.exitedContacts,
+      serviceWait: clearsServiceWait ? nil : (serviceWait ?? self.serviceWait),
+      exits: exits ?? self.exits)
   }
   var livingCrew: Int { admission != nil && loss == nil ? authorization.crew.count : 0 }
   var intactSeedTonnes: Int { admission != nil && loss == nil ? authorization.seeds.count : 0 }
@@ -146,6 +161,26 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
       fuel.purchases.allSatisfy({ purchase in fuelContacts.contains(purchase.request.offer.contact)
       })
     else { return false }
+    guard fuelContacts.enumerated().allSatisfy({ $0.element.sequence == UInt64($0.offset + 1) }),
+      exitedContacts == fuelContacts.filter({ $0 != dockedContact }).map(\.sequence),
+      fuel.refusal.map({ fuelContacts.contains($0.request.offer.contact) }) ?? true,
+      serviceWait == nil || dockedContact != nil
+    else { return false }
+    guard exits.map(\.contactSequence) == exitedContacts,
+      zip(fuelContacts, fuelContacts.dropFirst()).allSatisfy({
+        $0.physicalTime < $1.physicalTime && $0.arkActor.visit <= $1.arkActor.visit
+      })
+    else { return false }
+    for exit in exits {
+      guard let contact = fuelContacts.first(where: { $0.sequence == exit.contactSequence }),
+        exit.actor != contact.arkActor,
+        exit.actor.system == contact.station.system, exit.actor.visit >= contact.arkActor.visit,
+        exit.actor.visit < UInt64(Int64.max), exit.actor.entity > 1,
+        exit.actor.entity < UInt64(Int64.max),
+        exit.physicalTime.isFinite, exit.physicalTime >= contact.physicalTime,
+        exit.physicalTime <= 1e12
+      else { return false }
+    }
     if let dockedContact {
       guard fuelContacts.last == dockedContact, !exitedContacts.contains(dockedContact.sequence)
       else { return false }

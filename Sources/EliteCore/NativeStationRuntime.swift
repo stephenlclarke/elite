@@ -1590,3 +1590,128 @@ extension GameRuntime {
     }
   }
 }
+
+/// Created only by the attained full-hull proof below; a saved contact is never this authority.
+struct NativeArkDockWitness {
+  let contact: NativeArkFuelContact
+  let body: SpaceBody
+  fileprivate init(contact: NativeArkFuelContact, body: SpaceBody) {
+    self.contact = contact
+    self.body = body
+  }
+}
+
+extension Game {
+  func nativeInductionArkDockWitness(
+    state: NativeInductionArkState, sample: NativeWormholeMotionSample
+  ) -> NativeArkDockWitness? {
+    let flight = commander.flightSimulation
+    let delta = flight.physicalTime - sample.physicalTime
+    guard !docked, sample.system == systemIdentity, sample.visit == flight.visit,
+      delta.isFinite, delta > 0, delta <= 0.100001,
+      state.admission != nil, state.loss == nil, state.dockedContact == nil,
+      state.fuelContacts.count < 128,
+      let body = bodies.first(where: { $0.missionActorID == state.authorization.actor }),
+      body.energy > 0, body.missionInstanceID == state.authorization.job,
+      body.scriptNPC?.fit.definition == (try? NativeInductionArkSource.profile()),
+      let physical = body.physical,
+      let beforeBody = sample.bodies.first(where: { $0.physical?.identity == physical.identity }),
+      let station = bodies.first(where: { $0.id == 0 && $0.hull == .station && $0.energy > 0 }),
+      let stationActor = station.physical?.identity,
+      let beforeStation = sample.bodies.first(where: { $0.physical?.identity == stationActor }),
+      let source = try? OriginalHullPhysicalContract.haflinger.get(),
+      case .living(let facility) = nativeOriginalMainStationDestination,
+      facility.observation.actor == stationActor,
+      let current = currentNativeMainStationAnchor(at: flight.physicalTime),
+      let previous = currentNativeMainStationAnchor(at: sample.physicalTime),
+      (sample.pose.systemPoint(beforeStation.position) - previous.position).length < 1e-5,
+      (flight.pose.systemPoint(station.position) - current.position).length < 1e-5
+    else { return nil }
+    let start = Self.arkModelPose(beforeBody, player: sample.pose)
+    let end = modelPose(of: body)
+    let fromStation = Self.arkModelPose(beforeStation, player: sample.pose)
+    let toStation = modelPose(of: station)
+    guard
+      NativeArkDockCrossing.admits(
+        from: start, to: end,
+        stationFrom: fromStation, stationTo: toStation, delta: delta),
+      nativeInductionArkHullSweepIsClear(
+        source.physicalMesh, from: start, to: end,
+        stationFrom: fromStation, stationTo: toStation, delta: delta, requireAperture: true),
+      inductionArkOtherMotionIsClear(
+        body: body, from: start.position, to: end.position,
+        sample: sample, radius: source.envelope.clearanceRadius)
+    else { return nil }
+    let contact = NativeArkFuelContact(
+      mission: state.authorization.parent, ark: state.authorization.registeredArk,
+      station: facility.identity, stationActor: stationActor, arkActor: physical.identity,
+      sequence: UInt64(state.fuelContacts.count + 1), physicalTime: flight.physicalTime)
+    guard contact.valid else { return nil }
+    return .init(contact: contact, body: body)
+  }
+
+  /// Same aperture and solid-triangle sweep as native main-station docking, with the actual NPC mesh.
+  func nativeInductionArkHullSweepIsClear(
+    _ mesh: Mesh, from: ShipPose, to: ShipPose,
+    stationFrom: ShipPose, stationTo: ShipPose, delta: Double, requireAperture: Bool
+  ) -> Bool {
+    guard delta.isFinite, delta >= 0, delta <= 0.100001 else { return false }
+    let angle =
+      Self.arkTurnAngle(from.orientation, to.orientation)
+      + Self.arkTurnAngle(stationFrom.orientation, stationTo.orientation)
+    let margin = (nativeStationRadius(mesh) + nativeStationRadius(MainStationGeometry.mesh)) * angle
+    guard margin.isFinite else { return false }
+    if requireAperture {
+      guard
+        nativeStationHullFits(
+          mesh, ship: from, station: stationFrom.position,
+          orientation: stationFrom.orientation, port: MainStationGeometry.docking, margin: margin),
+        nativeStationHullFits(
+          mesh, ship: to, station: stationTo.position,
+          orientation: stationTo.orientation, port: MainStationGeometry.docking, margin: margin)
+      else { return false }
+    }
+    return nativeStructureHullSweepClear(
+      mesh, from: from, to: to,
+      position: stationFrom.position, endPosition: stationTo.position,
+      fromOrientation: stationFrom.orientation, toOrientation: stationTo.orientation,
+      margin: margin, mesh: MainStationGeometry.mesh)
+  }
+
+  private static func arkTurnAngle(_ a: Basis3, _ b: Basis3) -> Double {
+    acos(max(-1, min(1, (a.x.dot(b.x) + a.y.dot(b.y) + a.z.dot(b.z) - 1) / 2)))
+  }
+  private static func arkModelPose(_ body: SpaceBody, player: ShipPose) -> ShipPose {
+    var orientation = Basis3()
+    orientation.x = player.orientation.apply(body.modelVector(.init(1, 0, 0)))
+    orientation.y = player.orientation.apply(body.modelVector(.init(0, 1, 0)))
+    orientation.z = player.orientation.apply(body.modelVector(.init(0, 0, 1)))
+    return .init(position: player.systemPoint(body.position), orientation: orientation)
+  }
+  func inductionArkOtherMotionIsClear(
+    body: SpaceBody, from: Vector3, to: Vector3, sample: NativeWormholeMotionSample, radius: Double
+  ) -> Bool {
+    func clear(_ start: Vector3, _ end: Vector3, _ obstacleRadius: Double) -> Bool {
+      let a = from - start
+      let d = to - end - a
+      let squared = d.dot(d)
+      let t = squared > 1e-12 ? max(0, min(1, -a.dot(d) / squared)) : 0
+      return (a + d * t).length > radius + obstacleRadius
+    }
+    let pose = commander.flightSimulation.pose
+    if !clear(sample.pose.position, pose.position, nativeStationRadius(commander.playerMesh)) {
+      return false
+    }
+    for other in bodies where other.id != body.id && other.id != 0 && other.energy > 0 {
+      guard let identity = other.physical?.identity,
+        let before = sample.bodies.first(where: { $0.physical?.identity == identity })
+      else { return false }
+      guard
+        clear(
+          sample.pose.systemPoint(before.position), pose.systemPoint(other.position),
+          nativeStationRadius(gameplayMesh(for: other)))
+      else { return false }
+    }
+    return true
+  }
+}

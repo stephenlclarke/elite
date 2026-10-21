@@ -167,6 +167,11 @@ extension Game {
     var prepared: [SpaceBody] = []
     for index in source.actors.indices {
       let actorID = source.actors[index].actorID
+      if source.authority == .retained,
+        withReadOnlyCommander({ NativeInductionArkPack.facilityHolds(actorID, commander: $0) })
+      {
+        continue
+      }
       if withReadOnlyCommander({ WayfarerRecordRecovery.consumed(actorID, commander: $0) }) {
         continue
       }

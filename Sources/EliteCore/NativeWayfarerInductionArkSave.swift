@@ -1,12 +1,14 @@
 import Foundation
 
 enum NativeInductionArkSave {
-  static let version = 75
-  static let alienVersion = 76
-  static func contains(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
+  static let version = 77
+  static let alienVersion = 78
+  static func contains(_ schema: Int?) -> Bool {
+    schema == version || schema == alienVersion || schema == 75 || schema == 76
+  }
   static func lowerSchema(_ schema: Int?) -> Int? {
     guard contains(schema) else { return schema }
-    return schema == alienVersion
+    return schema == alienVersion || schema == 76
       ? NativeWayfarerInductionSave.alienVersion : NativeWayfarerInductionSave.version
   }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
@@ -48,10 +50,11 @@ enum NativeInductionArkSave {
         commander.equipmentOwnerID == source.owner,
         currentBoundsValid(state, commander: commander),
         actorValid(child, state: state, source: source),
-        legsValid(state, source: source, engine: engine)
+        legsValid(state, source: source, engine: engine),
+        fuelHistoryValid(state, child: child, engine: engine)
       else { return false }
     }
-    return true
+    return supplierClaimsValid(commander)
   }
 
   private static func currentBoundsValid(
@@ -80,6 +83,16 @@ enum NativeInductionArkSave {
         contact.physicalTime <= commander.flightSimulation.physicalTime
       else { return false }
     }
+    for exit in state.exits {
+      guard exit.actor.visit <= commander.flightSimulation.visit,
+        exit.physicalTime <= commander.flightSimulation.physicalTime
+      else { return false }
+    }
+    for purchase in state.fuel.purchases {
+      guard purchase.request.offer.supplierActor.visit <= commander.flightSimulation.visit,
+        purchase.request.offer.quotedAtPhysicalTime <= commander.flightSimulation.physicalTime
+      else { return false }
+    }
     return true
   }
 
@@ -97,6 +110,12 @@ enum NativeInductionArkSave {
       actor.body.missionInstanceID == child.id, actor.body.missionActorID == actor.identity,
       let npc = actor.body.scriptNPC, source.matchesFit(npc.fit)
     else { return false }
+    if let contact = state.dockedContact {
+      guard actor.presence == .unloaded, actor.body.energy > 0,
+        actor.body.physical?.identity == contact.arkActor,
+        actor.location(in: group) == contact.station.system
+      else { return false }
+    }
     if let loss = state.loss {
       guard actor.presence == .destroyed && actor.body.energy == 0,
         actor.body.physical?.identity == loss.actor

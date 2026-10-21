@@ -71,73 +71,79 @@ extension Game {
           definition.energy, bodies[index].energy + definition.recharge * delta)
       }
       var desired = Vector3(0, 0, 0)
-      if npc.intent == nil, let goal = nativeTransitExitClearanceGoal(bodies[index]) {
-        let offset = goal - bodies[index].position
-        if offset.length > 1e-6 {
-          bodies[index].orientation = Self.steerScriptNPC(
-            bodies[index].orientation, toward: offset, profile: definition, delta: delta)
-          desired =
-            bodies[index].orientation.z
-            * min(
-              definition.speed,
-              sqrt(2 * definition.acceleration * offset.length))
-        }
-      }
-      if var intent = npc.intent {
-        intent = nativeTransitSteeringIntent(bodies[index], intent: intent)
-        let transitGoal = nativeTransitSteeringGoal(bodies[index], intent: intent)
-        var goal: Vector3?
-        var targetVelocity = Vector3(0, 0, 0)
-        if intent.mode == .hold {
-          goal = bodies[index].position
-        } else if intent.mode == .approach, let station {
-          goal =
-            transitGoal
-            ?? (station.position + station.orientation.apply(intent.offset))
-        } else if intent.player {
-          goal = intent.offset
-        } else if let identity = intent.target, let target = owned[identity], target.energy > 0 {
-          goal = target.position + target.modelVector(intent.offset)
-          targetVelocity = target.scriptNPC?.velocity ?? .init(0, 0, 0)
-        }
-        if let goal {
+      if let guidance = inductionArkDockGuidance(bodies[index], profile: definition, delta: delta) {
+        bodies[index].orientation = guidance.orientation
+        desired = guidance.desired
+      } else {
+        if npc.intent == nil, let goal = nativeTransitExitClearanceGoal(bodies[index]) {
           let offset = goal - bodies[index].position
-          let aim = intent.mode == .flee ? offset * -1 : offset
-          if intent.mode != .hold && aim.length > 1e-6 {
+          if offset.length > 1e-6 {
             bodies[index].orientation = Self.steerScriptNPC(
-              bodies[index].orientation, toward: aim, profile: definition, delta: delta)
+              bodies[index].orientation, toward: offset, profile: definition, delta: delta)
+            desired =
+              bodies[index].orientation.z
+              * min(
+                definition.speed,
+                sqrt(2 * definition.acceleration * offset.length))
           }
-          var speed = definition.speed * intent.speed
-          if transitGoal != nil && aim.length > 1e-6
-            && bodies[index].orientation.z.dot(aim.unit) < 0.98
-          {
-            speed = 0
-          }
-          if [.hold, .approach, .follow].contains(intent.mode) {
-            speed = min(
-              speed, sqrt(2 * definition.acceleration * max(0, offset.length - intent.tolerance)))
-          }
-          desired = bodies[index].orientation.z * speed
-          if intent.mode == .follow { desired = desired + targetVelocity }
-          desired = desired.limited(to: definition.speed)
-          if intent.status == .requested && [.hold, .approach, .follow].contains(intent.mode)
-            && transitGoal == nil
-            && offset.length <= intent.tolerance && (npc.velocity - targetVelocity).length < 1
-          {
-            intent.status = .reached
-            emitScriptNPCFlightResult(bodies[index], intent: intent, kind: "actor.arrived")
-          }
-        } else if intent.status != .lost {
-          intent.status = .lost
-          emitScriptNPCFlightResult(bodies[index], intent: intent, kind: "actor.target.lost")
         }
-        npc.intent = intent
+        if var intent = npc.intent {
+          intent = nativeTransitSteeringIntent(bodies[index], intent: intent)
+          let transitGoal = nativeTransitSteeringGoal(bodies[index], intent: intent)
+          var goal: Vector3?
+          var targetVelocity = Vector3(0, 0, 0)
+          if intent.mode == .hold {
+            goal = bodies[index].position
+          } else if intent.mode == .approach, let station {
+            goal =
+              transitGoal
+              ?? (station.position + station.orientation.apply(intent.offset))
+          } else if intent.player {
+            goal = intent.offset
+          } else if let identity = intent.target, let target = owned[identity], target.energy > 0 {
+            goal = target.position + target.modelVector(intent.offset)
+            targetVelocity = target.scriptNPC?.velocity ?? .init(0, 0, 0)
+          }
+          if let goal {
+            let offset = goal - bodies[index].position
+            let aim = intent.mode == .flee ? offset * -1 : offset
+            if intent.mode != .hold && aim.length > 1e-6 {
+              bodies[index].orientation = Self.steerScriptNPC(
+                bodies[index].orientation, toward: aim, profile: definition, delta: delta)
+            }
+            var speed = definition.speed * intent.speed
+            if transitGoal != nil && aim.length > 1e-6
+              && bodies[index].orientation.z.dot(aim.unit) < 0.98
+            {
+              speed = 0
+            }
+            if [.hold, .approach, .follow].contains(intent.mode) {
+              speed = min(
+                speed, sqrt(2 * definition.acceleration * max(0, offset.length - intent.tolerance)))
+            }
+            desired = bodies[index].orientation.z * speed
+            if intent.mode == .follow { desired = desired + targetVelocity }
+            desired = desired.limited(to: definition.speed)
+            if intent.status == .requested && [.hold, .approach, .follow].contains(intent.mode)
+              && transitGoal == nil
+              && offset.length <= intent.tolerance && (npc.velocity - targetVelocity).length < 1
+            {
+              intent.status = .reached
+              emitScriptNPCFlightResult(bodies[index], intent: intent, kind: "actor.arrived")
+            }
+          } else if intent.status != .lost {
+            intent.status = .lost
+            emitScriptNPCFlightResult(bodies[index], intent: intent, kind: "actor.target.lost")
+          }
+          npc.intent = intent
+        }
       }
       npc.velocity =
         npc.velocity + (desired - npc.velocity).limited(to: definition.acceleration * delta)
       bodies[index].position = bodies[index].position + npc.velocity * delta
       bodies[index].scriptNPC = npc
     }
+    resolveInductionArkDockMotion(before: snapshot, delta: delta)
     resolveNativeTransitMotion(before: snapshot, delta: delta)
   }
   private static func steerScriptNPC(

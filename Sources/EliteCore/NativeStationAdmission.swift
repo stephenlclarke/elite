@@ -210,6 +210,7 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
   var nextMainDockSequence: UInt64
   var currentMainDock: NativeMainStationDockReceipt?
   var stationInertia: [NativeStationInertia] = []
+  var arkFuel: [NativeArkStationFuel]? = nil
 
   init(owner: UUID) throws {
     guard NativeStationSource.bindings.count <= NativeStationLedger.maximumSourceRecords else {
@@ -254,7 +255,7 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
   /// Decode and every changed semantic world must still pass all of it.
   private var validWithoutMemo: Bool {
     let originals = Set(mainStations)
-    guard inertiaIsValid, adapterRevision == NativeStationSource.adapterRevision,
+    guard arkFuelIsValid, inertiaIsValid, adapterRevision == NativeStationSource.adapterRevision,
       geometryRevision == NativeStationGeometry.adapterRevision, clockOrigin == 0,
       mainStations.count <= NativeMainStationIdentity.maximumCount,
       originals.count == mainStations.count,
@@ -299,7 +300,7 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
 
   private enum CodingKeys: String, CodingKey {
     case adapterRevision, geometryRevision, clockOrigin, ledger, poses, mainStations,
-      mainObservations, nextMainDockSequence, currentMainDock, stationInertia
+      mainObservations, nextMainDockSequence, currentMainDock, stationInertia, arkFuel
   }
 
   init(from decoder: Decoder) throws {
@@ -366,7 +367,23 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
       }
       stationInertia.append(try inertiaEntries.decode(NativeStationInertia.self))
     }
+    if values.contains(.arkFuel) {
+      arkFuel = try NativeUtilityCoding.array(
+        NativeArkStationFuel.self, key: .arkFuel, container: values,
+        limit: NativeMainStationIdentity.maximumCount)
+    }
     guard valid else { throw NativeStationRuntimeError.invalidState }
+  }
+}
+
+extension NativeStationWorld {
+  var arkFuelIsValid: Bool {
+    guard let arkFuel else { return true }
+    return !arkFuel.isEmpty && arkFuel.count <= NativeMainStationIdentity.maximumCount
+      && Set(arkFuel.map(\.station)).count == arkFuel.count
+      && arkFuel.allSatisfy {
+        $0.valid && $0.station.world == ledger.world && mainStations.contains($0.station)
+      }
   }
 }
 

@@ -13,6 +13,7 @@ struct NativeStationWorldContent: Equatable, Sendable {
   let nextMainDockSequence: UInt64
   let currentMainDock: NativeMainStationDockReceipt?
   let stationInertia: [NativeStationInertia]
+  let arkFuel: [NativeArkStationFuel]?
 
   init(_ world: NativeStationWorld) {
     adapterRevision = world.adapterRevision
@@ -25,5 +26,6 @@ struct NativeStationWorldContent: Equatable, Sendable {
     nextMainDockSequence = world.nextMainDockSequence
     currentMainDock = world.currentMainDock
     stationInertia = world.stationInertia
+    arkFuel = world.arkFuel
   }
 }

@@ -8,6 +8,21 @@ extension NativeInductionArkSave {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
       !root.keys.contains("savedNativeArk"), !root.keys.contains("nativeArk")
     else { throw SaveError.invalidCommander }
+    if let world = root["nativeStations"] as? [String: Any], world.keys.contains("arkFuel") {
+      guard part == .commander, schema == version || schema == alienVersion,
+        let stocks = world["arkFuel"] as? [[String: Any]], !stocks.isEmpty,
+        stocks.count <= NativeMainStationIdentity.maximumCount
+      else { throw SaveError.invalidCommander }
+      for stock in stocks {
+        let bytes = try JSONSerialization.data(withJSONObject: stock)
+        guard bytes.count <= 262_144 else { throw SaveError.invalidCommander }
+        let decoded = try JSONDecoder().decode(NativeArkStationFuel.self, from: bytes)
+        guard decoded.valid,
+          (stock as NSDictionary).isEqual(
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))
+        else { throw SaveError.invalidCommander }
+      }
+    }
     if part == .missions {
       try validateInstances(root["instances"], schema: schema, embedded: false)
     }
@@ -43,6 +58,12 @@ extension NativeInductionArkSave {
         let bytes = try JSONSerialization.data(withJSONObject: leaf)
         guard bytes.count <= 524_288, let bank = leaf["fuel"] as? [String: Any] else {
           throw SaveError.invalidCommander
+        }
+        if schema == 75 || schema == 76 {
+          guard leaf["serviceWait"] == nil, leaf["savedExits"] == nil,
+            (leaf["fuelContacts"] as? [Any])?.isEmpty == true,
+            (bank["purchases"] as? [Any])?.isEmpty == true
+          else { throw SaveError.invalidCommander }
         }
         _ = try NativeArkFuelEscrow.decodeClosed(JSONSerialization.data(withJSONObject: bank))
         let decoded = try JSONDecoder().decode(NativeInductionArkState.self, from: bytes)
