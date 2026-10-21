@@ -414,6 +414,11 @@ extension Game {
         switch result {
         case .clear: continue
         case .refused(let failure):
+          #if DEBUG
+            print(
+              "ELITE_CONTACT_OBS phase=initial-pair-refusal source=\(trajectories[source].frame.identity.entity) sourceBody=\(String(describing: trajectories[source].frame.bodyID)) sourceHull=\(trajectories[source].frame.hull) sourceDebris=\(trajectories[source].frame.debris) target=\(trajectories[target].frame.identity.entity) targetBody=\(String(describing: trajectories[target].frame.bodyID)) targetHull=\(trajectories[target].frame.hull) targetDebris=\(trajectories[target].frame.debris) delta=\(delta) relativeVelocity=\(trajectories[source].motion.initialVelocity - trajectories[target].motion.initialVelocity) failure=\(failure)"
+            )
+          #endif
           return refuseDebrisStep(frame, reason: "SWEEP UNPROVEN: " + failure.message)
         case .contact(let contact):
           if selected == nil || contact.lowerTime < selected!.2.lowerTime {
@@ -492,9 +497,22 @@ extension Game {
           targetHull: trajectories[b].hull)
         switch result {
         case .clear: break
-        case .contact:
-          return refuseDebrisStep(frame, reason: "REMAINING CONTACT")
+        #if DEBUG
+          case .contact(let remainingContact):
+            print(
+              "ELITE_CONTACT_OBS phase=remaining-proved-contact source=\(trajectories[a].frame.identity.entity) sourceBody=\(String(describing: trajectories[a].frame.bodyID)) sourceHull=\(trajectories[a].frame.hull) sourceDebris=\(trajectories[a].frame.debris) target=\(trajectories[b].frame.identity.entity) targetBody=\(String(describing: trajectories[b].frame.bodyID)) targetHull=\(trajectories[b].frame.hull) targetDebris=\(trajectories[b].frame.debris) selectedSource=\(trajectories[source].frame.identity.entity) selectedTarget=\(trajectories[target].frame.identity.entity) selectedLower=\(contact.lowerTime) selectedUpper=\(contact.upperTime) selectedNormal=\(contact.normal) remainingLower=\(remainingContact.lowerTime) remainingUpper=\(remainingContact.upperTime) remainingNormal=\(remainingContact.normal) impulseSourceVelocity=\(impulse.source) impulseTargetVelocity=\(impulse.target) delta=\(delta) capturedSelectedRelativeVelocity=\(trajectories[source].frame.velocity - trajectories[target].frame.velocity) remainingRelativeVelocity=\(trajectories[a].motion.initialVelocity - trajectories[b].motion.initialVelocity)"
+            )
+            return refuseDebrisStep(frame, reason: "REMAINING CONTACT")
+        #else
+          case .contact:
+            return refuseDebrisStep(frame, reason: "REMAINING CONTACT")
+        #endif
         case .refused(let failure):
+          #if DEBUG
+            print(
+              "ELITE_CONTACT_OBS phase=remaining-pair-refusal source=\(trajectories[a].frame.identity.entity) sourceBody=\(String(describing: trajectories[a].frame.bodyID)) sourceHull=\(trajectories[a].frame.hull) sourceDebris=\(trajectories[a].frame.debris) target=\(trajectories[b].frame.identity.entity) targetBody=\(String(describing: trajectories[b].frame.bodyID)) targetHull=\(trajectories[b].frame.hull) targetDebris=\(trajectories[b].frame.debris) selectedSource=\(trajectories[source].frame.identity.entity) selectedTarget=\(trajectories[target].frame.identity.entity) selectedLower=\(contact.lowerTime) selectedUpper=\(contact.upperTime) selectedNormal=\(contact.normal) impulseSourceVelocity=\(impulse.source) impulseTargetVelocity=\(impulse.target) delta=\(delta) capturedSelectedRelativeVelocity=\(trajectories[source].frame.velocity - trajectories[target].frame.velocity) remainingRelativeVelocity=\(trajectories[a].motion.initialVelocity - trajectories[b].motion.initialVelocity) failure=\(failure)"
+            )
+          #endif
           return refuseDebrisStep(frame, reason: "REMAINING SWEEP UNPROVEN: " + failure.message)
         }
       }

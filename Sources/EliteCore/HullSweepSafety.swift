@@ -255,7 +255,13 @@ public enum HullSweepSafety {
       let numerical =
         1e-8 * max(1, hull.radius + radius + center.length + pose.position.length)
       guard numerical.isFinite else { throw HullSweepFailure.invalidMotion }
-      guard separation - requiredClearance > numerical else { throw HullSweepFailure.unproven }
+      guard separation - requiredClearance > numerical else {
+        #if DEBUG
+          work.nativeUnprovenObservation =
+            "origin=point-clearance gap=\(separation) required=\(requiredClearance) numerical=\(numerical)"
+        #endif
+        throw HullSweepFailure.unproven
+      }
       return result(nil, obstacle: nil, work: work)
     } catch let failure as HullSweepFailure {
       return result(failure, obstacle: nil, work: work)
@@ -343,7 +349,12 @@ public enum HullSweepSafety {
           obstacle.hull.radius + sweep.playerRadius + sweep.start.position.length
             + obstacle.pose.position.length)
       if separation - envelope - numerical > requiredClearance { continue }
-      guard depth < work.budget.subdivisionDepth else { throw HullSweepFailure.unproven }
+      guard depth < work.budget.subdivisionDepth else {
+        #if DEBUG
+          work.nativeUnprovenObservation = "origin=clearance-subdivision depth=\(depth)"
+        #endif
+        throw HullSweepFailure.unproven
+      }
       intervals.append((middle, end, depth + 1))
       intervals.append((start, middle, depth + 1))
     }
@@ -481,6 +492,10 @@ public enum HullSweepSafety {
               let b = target.shipPoint(ship.systemPoint(original.b))
               let c = target.shipPoint(ship.systemPoint(original.c))
               guard sweepFinite(a), sweepFinite(b), sweepFinite(c) else {
+                #if DEBUG
+                  work.nativeUnprovenObservation =
+                    "origin=mesh-distance-transformed-nonfinite triangle=\(first)"
+                #endif
                 throw HullSweepFailure.unproven
               }
               triangle = SweepTriangle(
@@ -596,7 +611,13 @@ public enum HullSweepSafety {
     _ point: Vector3, hull: PreparedHull, work: inout SweepWork
   ) throws -> Bool {
     for component in hull.components where component.bounds.contains(point) {
-      guard component.closed, component.hasResolvedSurface else { throw HullSweepFailure.unproven }
+      guard component.closed, component.hasResolvedSurface else {
+        #if DEBUG
+          work.nativeUnprovenObservation =
+            "origin=contains-component closed=\(component.closed) resolved=\(component.hasResolvedSurface) point=\(point)"
+        #endif
+        throw HullSweepFailure.unproven
+      }
       if try inside(point, hull: hull, component: component, work: &work) { return true }
     }
     return false
@@ -612,6 +633,9 @@ public enum HullSweepSafety {
         return parity
       }
     }
+    #if DEBUG
+      work.nativeUnprovenObservation = "origin=contains-unresolved-parity point=\(point)"
+    #endif
     throw HullSweepFailure.unproven
   }
   private static func rayParity(
@@ -683,6 +707,9 @@ private func sweepBVH(_ triangles: [SweepTriangle]) -> [SweepNode] {
 }
 
 private struct SweepWork {
+  #if DEBUG
+    fileprivate var nativeUnprovenObservation: String?
+  #endif
   let budget: HullSweepBudget
   var queries = 0
   var tests = 0
@@ -1674,13 +1701,28 @@ extension HullSweepSafety {
       let initial = try meshDistance(
         hull, pose: source.start, obstacle: targetHull,
         pose: target.start, work: &work)
-      guard initial > 1e-9 else { throw HullSweepFailure.unproven }
+      guard initial > 1e-9 else {
+        #if DEBUG
+          work.nativeUnprovenObservation = "origin=native-initial-gap gap=\(initial)"
+        #endif
+        throw HullSweepFailure.unproven
+      }
       return try contactInterval(
         source, hull: hull, target: target, targetHull: targetHull,
         start: 0, end: source.duration, depth: 0, known: nil, work: &work)
     } catch let failure as HullSweepFailure {
+      #if DEBUG
+        print(
+          "ELITE_CONTACT_OBS phase=hull-final-refusal failure=\(failure) \(failure == .unproven ? work.nativeUnprovenObservation ?? "origin=unmarked" : "origin=not-unproven")"
+        )
+      #endif
       return .refused(failure)
     } catch {
+      #if DEBUG
+        print(
+          "ELITE_CONTACT_OBS phase=hull-final-refusal failure=unexpected-error \(work.nativeUnprovenObservation ?? "origin=unmarked")"
+        )
+      #endif
       return .refused(.unproven)
     }
   }
@@ -1740,6 +1782,10 @@ extension HullSweepSafety {
         switch axial {
         case .clear:
           guard witness == nil || witness!.upperTime > end else {
+            #if DEBUG
+              work.nativeUnprovenObservation =
+                "origin=native-leaf-clear-with-witness start=\(start) end=\(end) depth=\(depth) witnessUpper=\(String(describing: witness?.upperTime))"
+            #endif
             throw HullSweepFailure.unproven
           }
           return .clear
@@ -1764,6 +1810,10 @@ extension HullSweepSafety {
         }
       }
       guard let witness, witness.upperTime >= start, witness.upperTime <= end else {
+        #if DEBUG
+          work.nativeUnprovenObservation =
+            "origin=native-leaf-no-contained-witness start=\(start) end=\(end) depth=\(depth) witnessUpper=\(String(describing: witness?.upperTime)) separation=\(separation) envelope=\(envelope) numerical=\(numerical)"
+        #endif
         throw HullSweepFailure.unproven
       }
       return .contact(
@@ -1896,7 +1946,13 @@ extension HullSweepSafety {
           let time = gap / closing
           guard time.finite, time.lower >= start, time.upper <= end else { continue }
           let point = shipPose(source, at: time.upper).systemPoint(a)
-          guard point.finite else { throw HullSweepFailure.unproven }
+          guard point.finite else {
+            #if DEBUG
+              work.nativeUnprovenObservation =
+                "origin=native-axial-point-nonfinite lower=\(time.lower) upper=\(time.upper)"
+            #endif
+            throw HullSweepFailure.unproven
+          }
           return .contact(
             .init(lowerTime: start, upperTime: time.upper, point: point, normal: normal))
         }
@@ -2007,7 +2063,13 @@ extension HullSweepSafety {
                 time: time.upper, ownerIsSource: !reversed)
             else { continue }
             let point = shipPose(owner, at: time.upper).systemPoint(local)
-            guard point.finite else { throw HullSweepFailure.unproven }
+            guard point.finite else {
+              #if DEBUG
+                work.nativeUnprovenObservation =
+                  "origin=native-translated-point-nonfinite lower=\(time.lower) upper=\(time.upper)"
+              #endif
+              throw HullSweepFailure.unproven
+            }
             earliest = .init(lowerTime: start, upperTime: time.upper, point: point, normal: normal)
           }
         }
@@ -2089,14 +2151,24 @@ extension HullSweepSafety {
         a: pose.systemPoint(sourceTriangle.a), b: pose.systemPoint(sourceTriangle.b),
         c: pose.systemPoint(sourceTriangle.c), conditioned: true,
         unresolvedSupport: sourceTriangle.unresolvedSupport)
-      guard !a.unresolvedSupport else { throw HullSweepFailure.unproven }
+      guard !a.unresolvedSupport else {
+        #if DEBUG
+          work.nativeUnprovenObservation = "origin=native-witness-source-support time=\(time)"
+        #endif
+        throw HullSweepFailure.unproven
+      }
       for targetTriangle in target.triangles {
         try work.triangle()
         let b = SweepTriangle(
           a: targetPose.systemPoint(targetTriangle.a), b: targetPose.systemPoint(targetTriangle.b),
           c: targetPose.systemPoint(targetTriangle.c), conditioned: true,
           unresolvedSupport: targetTriangle.unresolvedSupport)
-        guard !b.unresolvedSupport else { throw HullSweepFailure.unproven }
+        guard !b.unresolvedSupport else {
+          #if DEBUG
+            work.nativeUnprovenObservation = "origin=native-witness-target-support time=\(time)"
+          #endif
+          throw HullSweepFailure.unproven
+        }
         for index in 0..<3 {
           let edge = a.edge(at: index)
           let local = sourceTriangle.edge(at: index)
@@ -2177,7 +2249,13 @@ extension HullSweepSafety {
         let prior = container.start.shipPoint(owner.start.systemPoint(local))
         for face in target.triangles {
           try work.triangle()
-          guard !face.unresolvedSupport else { throw HullSweepFailure.unproven }
+          guard !face.unresolvedSupport else {
+            #if DEBUG
+              work.nativeUnprovenObservation =
+                "origin=native-contained-entry-target-support time=\(time) ownerIsSource=\(ownerIsSource)"
+            #endif
+            throw HullSweepFailure.unproven
+          }
           if let hit = sweepRay(
             prior, direction: current - prior, triangle: face,
             conditioned: true, maximumDistance: 1), !hit.boundary,
