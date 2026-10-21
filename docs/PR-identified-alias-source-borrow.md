@@ -15,3 +15,7 @@ G1 owns these existing three methods and three cases:
 - NativeIdentifiedSalvageJourneyTests/actualTwoOriginalJourneyReservesOnceAndPaysOnlyAtSameOwner
 
 A full independent review of all three paths follows actual owner PASS, then integration. The retained public fault evidence is separate from focused qualification; hosted CI repair is not yet claimed.
+
+## Optional unwrap compiler correction
+
+The actual 1242 build rejected consuming the borrowing optional in its existing guard. The same guard now explicitly copies that Copyable optional before binding its value. This intentionally retains one local copy inside the static helper while the outer retained tuple stays removed. Nested synchronous borrows, early guards and all remaining validation order and returns are unchanged. No test ran on the rejected build; G1 owns the matching corrected build and the same three existing cases. No frame-size or copy-performance benefit is claimed from this correction.

@@ -7,3 +7,7 @@ The outer reader already borrows the body and rejects unmarked actors. It nevert
 The original outer guards, bounded body copy and current-system read remain. The entire static helper body, guard order, alias loop, source/current-actor/mission/custody/fit authority and returns remain byte-exact. Only the final optional string escapes the synchronous borrows. No storage, ownership, schema, save representation, state or authority changes are introduced, and adjacent readers are unchanged.
 
 MBA formatting, strict lint and a whole-file inverse source check pass. G1 owns one matching build and three existing cases covering the exact station fault, genuine and forged aliases, and the full two-original journey. One complete three-path independent review follows actual PASS. Source checks do not promise a frame size or repaired hosted CI.
+
+## Optional unwrap compiler correction
+
+The actual 1242 build rejected consuming the borrowing optional in its existing guard. The same guard now explicitly copies that Copyable optional before binding its value. This intentionally retains one local copy inside the static helper while the outer retained tuple stays removed. Nested synchronous borrows, early guards and all remaining validation order and returns are unchanged. No test ran on the rejected build; G1 owns the matching corrected build and the same three existing cases. No frame-size or copy-performance benefit is claimed from this correction.

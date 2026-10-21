@@ -72,7 +72,7 @@ extension Game {
   ) -> String? {
     guard let bodyMission = body.missionInstanceID, let logical = body.missionActorID,
       body.hull == .cobra, body.position.finite, body.orientation.validRotation,
-      let source = source,
+      let source = copy source,
       source.batch == NativeIdentifiedSalvage.batch, source.owner.valid,
       source.owner.world == commander.equipmentOwnerID,
       source.owner.system == SystemIdentity(galaxy: 0, system: 7),
