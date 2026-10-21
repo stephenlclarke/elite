@@ -289,6 +289,7 @@ struct NativeMeasuredExtractionFixture {
     try #require(await runtime.snapshot().bodies.contains { $0.physical?.payload == payload })
   }
   func collect(_ runtime: GameRuntime, count: Int = 12) async throws {
+    var lastAttemptedPayload: PayloadIdentity?
     for _ in 0..<100 {
       let game = await runtime.snapshot()
       if game.measuredExtractionState?.captures.count ?? 0 >= count { break }
@@ -296,11 +297,43 @@ struct NativeMeasuredExtractionFixture {
         guard let payload = body.physical?.payload else { return false }
         return game.measuredPayloadIsAllocated(payload)
       }), let payload = body.physical?.payload {
+        lastAttemptedPayload = payload
         try await framePayload(runtime, payload: payload)
       }
       _ = await runtime.advance(delta: 0.01)
     }
-    try #require(try await state(runtime).captures.count >= count)
+    let final = await runtime.snapshot()
+    let finalState = try #require(final.measuredExtractionState)
+    var context = ""
+    if finalState.captures.count < count {
+      let bodies = final.bodies
+      let body = lastAttemptedPayload.flatMap { payload in
+        bodies.first { $0.physical?.payload == payload }
+      }
+      let native: (ActorIdentity?, TypedCargoPayload?) = final.withReadOnlyCommander { commander in
+        if let payload = lastAttemptedPayload {
+          let items = commander.miningLedger.pendingPayloads
+          return (
+            commander.miningLedger.boundActor(for: payload),
+            items.first { $0.identity == payload }
+          )
+        }
+        return (nil, nil)
+      }
+      let playerVelocity = final.flightWorldVelocity
+      let playerOmega =
+        final.lastAppliedWorkMotion?.worldAngularVelocity.length
+        ?? abs(final.pitch) + abs(final.yaw) + abs(final.roll)
+      let relativeSpeed = body?.physical.map { ($0.velocity - playerVelocity).length }
+      let apertureSpin = playerOmega * Vector3(0, -45, 55).length
+      let missionID = finalState.permission.mission
+      let outcome = final.withReadOnlyScriptState { $0.instances[missionID]?.outcome }
+      context =
+        "requested=\(count) captures=\(finalState.captures.count) payload=\(String(describing: lastAttemptedPayload)); body=\(String(describing: body?.id)) actor=\(String(describing: body?.physical?.identity)) producer=\(String(describing: body?.physical?.spawnIdentity?.producer)); position=\(String(describing: body?.position)) velocity=\(String(describing: body?.physical?.velocity)) omega=\(String(describing: body?.physical?.angularVelocity)) canonical=\(String(describing: body?.physical?.canonicalSpin)) legacyRate=\(String(describing: body?.rotationRate)); bound=\(String(describing: native.0)) pendingAmount=\(String(describing: native.1?.amount)); playerV=\(playerVelocity) relative=\(String(describing: relativeSpeed)) playerOmega=\(playerOmega) apertureSpin=\(apertureSpin); mode=\(String(describing: final.workGuidance?.mode)) parent=\(String(describing: final.workGuidance?.parent)) braking=\(String(describing: final.workBraking?.velocity)); pendingIntakes=\(final.nativeMeasuredExtractionPending?.intakes.count ?? 0) losses=\(finalState.losses.count) outcome=\(String(describing: outcome)); message=\(String(final.message.prefix(256)))"
+      // Even a split UTF-8 scalar adds at most two replacement bytes: below the 2 KiB cap.
+      context = String(decoding: context.utf8.prefix(2000), as: UTF8.self)
+    }
+    try #require(finalState.captures.count >= count, context)
   }
   func renas(_ runtime: GameRuntime) async throws {
     try await flight.dock(runtime)
