@@ -61,3 +61,9 @@ The positive fixture must attain the actual Mining hold with the trigger release
 ## Exact native hold refusal context
 
 Execution 1170 fails actual holding readiness with the mapped PATH NOT CLEAR label. That label does not distinguish clearance, unresolved geometry or sweep budget refusal. Attach the existing read-only controller status to the same positive assertion before choosing a correction. Preserve the actual hold and every mining/receipt assertion; do not choose a different pose or relax clearance based on an ambiguous display label.
+
+## G2 test-only handoff and reception clue gap
+
+G2 now owns completion of this parked G12 delta. Original clean owner6a0d9c42594ad9a56f48b4d2de5f06b7f8c89764 and its32-path packet remain preserved in native-measured-extraction/elite and /tmp/elite-g3-G12-owner/CURRENT-DELTA.json. A separate child changes only the existing positive journey's post-reception clue assertions and these notes. Product, geometry, fit, hold and every pre-existing test oracle remain unchanged.
+
+The positive journey already proves twelve exact captures, twelve linked products/12000kg, no processing cash/clue, separate receiving for8900tenths, complete milestones/strict claims and no repeat cash. It lacked an explicit expected family clue after receiving. The child now requires exactly one award with measured-extraction-family-trace under NativeMeasuredExtraction.stateID and requires the whole journal to remain identical after the existing repeat Return. No new input action or alternate mission path is introduced.

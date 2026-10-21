@@ -342,6 +342,12 @@ struct NativeMeasuredExtractionJourneyTests {
     #expect(graded.commander.scriptState.savedClueJournal == nil)
     try await f.confirm(runtime, .receive)
     let received = await runtime.snapshot()
+    let receivedJournal = received.commander.scriptState.savedClueJournal
+    let firstClues = try #require(receivedJournal)
+    #expect(firstClues.awards.count == 1)
+    #expect(
+      firstClues.awards[NativeMeasuredExtraction.stateID]?.clueID
+        == "measured-extraction-family-trace")
     #expect(received.commander.credits == cash + 8900)
     #expect(received.commander.cargoTonnes == raw.commander.cargoTonnes - 12)
     #expect(
@@ -354,6 +360,8 @@ struct NativeMeasuredExtractionJourneyTests {
       NativeMeasuredExtractionSave.validateClaims(received.commander, requireRecordedLoss: true))
     await runtime.key("return")
     #expect(await runtime.snapshot().commander.credits == cash + 8900)
+    let repeatedJournal = await runtime.snapshot().commander.scriptState.savedClueJournal
+    #expect(repeatedJournal == firstClues)
   }
 
   @Test func twelveFreeTonnesAndRequiredToolsStillRefuseAnOverBudgetEquipmentFit() async throws {
