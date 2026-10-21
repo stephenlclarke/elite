@@ -100,7 +100,7 @@ public enum PlayerHelp {
       rows = [
         "UP / DOWN - SELECT CAMPAIGN LINK",
         "RETURN / CLICK - FOLLOW SELECTED LINK",
-        "PAGE-UP/DOWN - MOVE EIGHT LINKS",
+        "OPTION-UP/DOWN - MOVE EIGHT LINKS",
         "TAB - RETURN TO DETAILS",
         "ESC - PREVIOUS CAMPAIGN PAGE",
       ]
@@ -388,7 +388,7 @@ public enum PlayerHelp {
         title: "TITLE SCREEN",
         rows: ["RETURN / SPACE - CONTINUE COMMANDER", "COMMANDER: " + game.commander.name])
     case .gameOver:
-      .init(title: "GAME OVER", rows: ["RETURN / SPACE - NEW COMMANDER JAMESON"])
+      .init(title: "GAME OVER", rows: ["RETURN / SPACE - NEW COMMANDER"])
     default:
       .init(
         title: "STATION / SHIP INFORMATION",
