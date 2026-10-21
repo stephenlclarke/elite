@@ -30,7 +30,7 @@ struct NativeInductionArkSource: Sendable {
     owner = permission.owner
     mission = permission.mission
     loanOperation = loan.operation
-    actor = ScriptIdentity.uuid("induction-original-seed-ark-v1:\(mission):\(loanOperation)")
+    actor = Self.actorIdentity(mission: mission, loan: loanOperation)
     source = NativeWayfarerInduction.seedSource
     destination = NativeWayfarerInduction.seedReceiver
     let namespace = "induction-original-ark-stock-v1:\(owner):\(actor)"
@@ -38,6 +38,18 @@ struct NativeInductionArkSource: Sendable {
     crew = (0..<Self.crewCount).map { ScriptIdentity.uuid("\(namespace):crew:\($0)") }
     self.physical = physical
     definition = try Self.definition(physical: physical, performance: performance)
+  }
+
+  static func actorIdentity(mission: UUID, loan: UUID) -> UUID {
+    ScriptIdentity.uuid("induction-original-seed-ark-v1:\(mission):\(loan)")
+  }
+
+  static func profile() throws -> ScriptNPCDefinition {
+    guard let original = OriginalFleetDefinitionData.definition(for: hull),
+      let performance = original.nativePerformance, performance.valid
+    else { throw SaveError.invalidCommander }
+    return try definition(
+      physical: OriginalHullPhysicalContract.haflinger.get(), performance: performance)
   }
 
   /// Keep source units explicit: ordinary flight uses 18 m/s per speed unit and 0.1 LY per fuel unit.
@@ -79,7 +91,7 @@ struct NativeInductionArkSource: Sendable {
 
   var valid: Bool {
     mission == NativeWayfarerInduction.mission(owner: owner)
-      && actor == ScriptIdentity.uuid("induction-original-seed-ark-v1:\(mission):\(loanOperation)")
+      && actor == Self.actorIdentity(mission: mission, loan: loanOperation)
       && source == NativeWayfarerInduction.seedSource
       && destination == NativeWayfarerInduction.seedReceiver
       && seeds.count == Self.seedTonnes && Set(seeds).count == Self.seedTonnes

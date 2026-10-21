@@ -4196,13 +4196,16 @@
       "new_methods": 4,
       "new_cases": 6,
       "selection_methods": 92,
-      "unit_status": "exact-head39676452424 cancelled before execution; unchanged cases await existing descendant39677429396",
+      "unit_status": "MBA verified unchanged key implementation/tests on existing descendantb0bb6794/run39677429396; original run cancelled/unexecuted",
       "source_review": "MBA exact delta/native callers/four methods six cases reviewed; no actionable defect",
       "next_assigned": "M10.P01.C08",
       "next_queued": "M10.P02.C08",
       "usable_build_delivered": false,
       "executed_in_original_run": 0,
-      "descendant_run": 39677429396
+      "descendant_run": 39677429396,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326974138",
+      "verified_new_methods": 4,
+      "verified_new_cases": 6
     },
     {
       "event": "Root resolved exact seed-ark hull calibration and finite manifest; owning physical prerequisite assigned",
@@ -4217,13 +4220,24 @@
       "base": "d498fed7be17a7d6598df83c3ee4039e5aa52f61",
       "ledger_parent": "M04.H061.units",
       "new_methods": 3,
-      "unit_status": "pending",
+      "unit_status": "MBA verified exact-head hosted PASS",
       "source_review": "MBA exact delta/necessary callers reviewed; no actionable defect",
       "next_assigned": "M10.P01.C08",
       "usable_build_delivered": false,
       "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326746645",
       "github_run": 39677429396,
-      "selection_methods": 95
+      "selection_methods": 95,
+      "verified_methods": 95,
+      "verified_expanded_cases": 126,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326974138"
+    },
+    {
+      "event": "Root resolved finite custodian intermediate fuel escrow to unblock real ark route",
+      "ledger_parent": "M10.P01.C08.fuel",
+      "owner": "G1",
+      "custodian_initial_escrow_cr": 1000,
+      "scope": "real reachable hops and docked paid fuel service; retained9LYdrive13LYtank; separate player cash/reward",
+      "usable_build_delivered": false
     }
   ]
 }
