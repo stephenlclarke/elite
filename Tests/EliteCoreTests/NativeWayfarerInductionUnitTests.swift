@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 struct NativeWayfarerInductionUnitTests {
-  private func dock(owner: UUID, system: Int, visit: UInt64, sequence: UInt64)
+  func dock(owner: UUID, system: Int, visit: UInt64, sequence: UInt64)
     -> NativeMainStationDockReceipt
   {
     let location = SystemIdentity(galaxy: 0, system: system)
@@ -15,7 +15,7 @@ struct NativeWayfarerInductionUnitTests {
       station: station, actor: .init(system: location, visit: visit, entity: 1),
       commanderOwner: owner, sequence: sequence, calendarSeconds: Double(sequence))
   }
-  private func fixture() throws -> (NativeWayfarerInductionState, ScriptEngineState) {
+  func fixture() throws -> (NativeWayfarerInductionState, ScriptEngineState) {
     let owner = UUID()
     let carrier = UUID()
     let source = dock(owner: owner, system: 7, visit: 1, sequence: 1)
@@ -38,7 +38,7 @@ struct NativeWayfarerInductionUnitTests {
       carrier: carrier, inventoryRevision: 1, physicalTime: 1, flightSeconds: 10)
     return (.init(permission: permission), engine)
   }
-  private func crate(
+  func crate(
     _ state: NativeWayfarerInductionState, source: NativeMainStationDockReceipt? = nil,
     unit: UUID? = nil, allowance: Double = 1800, deadline: Double? = nil
   ) throws -> NativeInductionClinicCrate {
@@ -52,7 +52,7 @@ struct NativeWayfarerInductionUnitTests {
       dock: source, carrier: p.carrier, inventoryRevision: 1, physicalTime: 31,
       issuedFlightSeconds: 60, allowance: allowance, deadline: deadline ?? 60 + allowance)
   }
-  private func loss(_ state: NativeWayfarerInductionState, escape: Bool = false, energy: Double = 0)
+  func loss(_ state: NativeWayfarerInductionState, escape: Bool = false, energy: Double = 0)
     -> NativeInductionCrateLoss
   {
     let context = ScriptEventContext(

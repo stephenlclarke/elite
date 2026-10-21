@@ -4,7 +4,7 @@ extension Game {
   /// Called at the real escape/destruction boundary; it consumes no replacement clinic stock.
   mutating func loseWayfarerInductionCrate(_ cause: WayfarerColdChainLossCause) throws -> Bool {
     guard var mission = wayfarerInductionMission, let state = mission.savedWayfarerInduction,
-      state.crate != nil, state.loss == nil
+      !state.payloads.isEmpty
     else { return false }
     guard !docked, mission.outcome == .active, let carrier = commander.hullInstanceID,
       commander.scriptState.nextEvent < UInt64(Int64.max) - 1,
@@ -22,7 +22,7 @@ extension Game {
     mission.revision += 1
     mission.acknowledge(sequence)
     mission.journal.append(
-      "The original induction clinic crate was lost with its carrier; no replacement stock or success was granted."
+      "The original induction consignment was lost with its carrier; no replacement stock or success was granted."
     )
     commander.scriptState.nextEvent = sequence
     commander.scriptState.instances[mission.id] = mission
@@ -34,13 +34,13 @@ extension GameRuntime {
   func commitWayfarerInductionCrateLoss() {
     guard game.screen == .gameOver, game.energy.isFinite, game.energy <= 0,
       let state = game.wayfarerInductionMission?.savedWayfarerInduction,
-      state.crate != nil, state.loss == nil, let publish = scriptPublisher()
+      !state.payloads.isEmpty, let publish = scriptPublisher()
     else { return }
     var candidate = game
     do {
       guard try candidate.loseWayfarerInductionCrate(.shipDestroyed) else { return }
       try publish(&candidate)
       game = candidate
-    } catch { game.notify("CLINIC CRATE LOSS NOT SAVED - NATIVE LOSS RETAINED FOR RETRY") }
+    } catch { game.notify("INDUCTION CARGO LOSS NOT SAVED - NATIVE LOSS RETAINED FOR RETRY") }
   }
 }

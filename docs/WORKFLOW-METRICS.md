@@ -37,3 +37,5 @@ Batch JSON updates at natural packet boundaries, meaningful delivery changes and
 Authoritative reads: current development PR comments/reviews (queue23 is historical); `gh issue list --state all --label mba-finding --json number,title,state,createdAt,closedAt,labels`; exact-head `gh run list`; and ledger-linked commit history. Match actual run heads and conclusions; skipped, cancelled or missing tests are not PASS. If a required timestamp or old comparison is unavailable, leave it unknown and explain the limitation rather than inventing a number.
 
 The next C08 compile result created a second ready issue, #35. The bounded issue-only MBP helper is assigned its display-expression correction while G1 retains34. The failed run executed no units and contributes no qualified packet or playable delivery.
+
+G1 subsequently composed35 atb8cd1cfa and pushed34 at8c82f024. Both findings now await independent verification; neither is a ready unimplemented defect. The maintained78-method hosted run39673657024 is active. The stopped helper has no new assignment. No unit PASS or usable delivery is inferred from this push.

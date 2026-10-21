@@ -1,12 +1,14 @@
 import Foundation
 
 enum NativeWayfarerInductionAction: String, Sendable {
-  case accept, pickup, progress
+  case accept, pickup, receive, cassette, progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
     switch self {
     case .accept: "Senn / review Exchange induction"
     case .pickup: "Renas clinic / review sealed cold crate"
+    case .receive: "Navidor clinic / review intact crate reception"
+    case .cassette: "Enmadan workshop / review failed cassette collection"
     case .progress: "Senn / current induction records"
     }
   }
@@ -29,8 +31,7 @@ extension Game {
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
       action =
-        state.crate == nil && systemIdentity == NativeWayfarerInduction.clinic
-        ? .pickup : .progress
+        state.action(at: systemIdentity)
     } else {
       guard systemIdentity == NativeWayfarerInduction.source else { return [] }
       action = .accept
@@ -63,23 +64,24 @@ extension Game {
     var issues: [String] = []
     if isMissionTrial { issues.append("Return to your commander before starting this induction.") }
     if paused { issues.append("Resume before confirming the induction action.") }
-    let expected =
-      action == .accept ? NativeWayfarerInduction.source : NativeWayfarerInduction.clinic
+    let expected = action.station
     if !nativeMainStationDockEvidenceIsCurrent || systemIdentity != expected {
-      issues.append(
-        action == .accept
-          ? "Use Senn's actual Avenor main orbital berth."
-          : "Use the actual Renas clinic main orbital berth.")
+      issues.append("Use the actual registered main orbital berth for " + action.title + ".")
     }
     if !scriptDurabilityAvailable { issues.append("Choose a writable commander save first.") }
     if wayfarerInductionPack == nil { issues.append("Restore the approved Exchange opening.") }
     if commander.hullInstanceID == nil || commander.equipmentInventory == nil {
       issues.append("The actual owned carrier and fitting must be available.")
     }
-    if commander.tradeCargoCapacity - commander.cargoTonnes < 1 {
+    if action != .receive, commander.tradeCargoCapacity - commander.cargoTonnes < 1 {
       issues.append("Keep one free tonne for the serial induction consignment.")
     }
-    issues += action == .accept ? inductionAcceptanceIssues(trade) : inductionPickupIssues()
+    switch action {
+    case .accept: issues += inductionAcceptanceIssues(trade)
+    case .pickup: issues += inductionPickupIssues()
+    case .receive, .cassette: issues += inductionContinuationIssues(action)
+    case .progress: break
+    }
     return issues
   }
 
@@ -145,7 +147,7 @@ extension Game {
       candidate.commander.scriptState.instances[missionID] = mission
       candidate.emitScriptEvent("mission.accepted", only: missionID)
       candidate.notify("EXCHANGE INDUCTION ACCEPTED - REVIEW RENAS CLINIC PICKUP")
-    } else {
+    } else if quote.action == .pickup {
       guard var mission = wayfarerInductionMission,
         let state = mission.savedWayfarerInduction, state.crate == nil,
         mission.revision < UInt64(Int64.max) - 1
@@ -173,6 +175,10 @@ extension Game {
       candidate.commander.scriptState.instances[mission.id] = mission
       candidate.notify("SEALED CLINIC CRATE ABOARD - NAVIDOR / 1800 FLIGHT SECONDS")
     }
+    if quote.action == .receive || quote.action == .cassette {
+      try candidate.confirmInductionContinuation(
+        quote.action, dock: dock, carrier: carrier, revision: revision)
+    }
     self = candidate
   }
 
@@ -188,11 +194,28 @@ extension Game {
       "Clinic cooling allowance: 1800 seconds (30 minutes) of armed flight after Confirm pickup.",
       "Preparation is untimed. Pause stops the clock; saving/loading or reopening never resets the fixed deadline.",
       "At zero remaining allowance the sample is spoiled; ordinary commodities cannot replace this original.",
-      "Pickup pays nothing and grants no accreditation or clue. "
+      "Confirm intact clinic reception at Navidor before the original cooling deadline, then collect Enmadan's failed workshop cassette for the Renas repair desk.",
+      "Reception frees the clinic tonne; cassette collection needs one free tonne and has no deadline.",
+      "These stages pay nothing and grant no accreditation or clue. "
         + NativeWayfarerInduction.laterStages,
     ]
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
-      if let crate = state.crate {
+      if let reception = state.reception {
+        lines.append(
+          String(
+            format:
+              "Original clinic crate received intact at Navidor with %.1f flight seconds remaining.",
+            reception.remaining))
+        if state.cassette != nil {
+          lines.append(
+            state.cassetteLoss == nil
+              ? "Enmadan's original failed cassette is aboard. Renas repair receiving remains unavailable."
+              : "The original workshop cassette was lost. No replacement is created.")
+        } else {
+          lines.append(
+            "Next: collect the one-tonne failed cassette at Enmadan main orbital workshop.")
+        }
+      } else if let crate = state.crate {
         let remaining = (try? crate.remaining(at: commander.scriptState.flightSeconds)) ?? 0
         lines.append(
           String(format: "Clinic integrity: %.1f armed-flight seconds remaining.", remaining))

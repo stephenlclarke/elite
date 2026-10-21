@@ -1,12 +1,18 @@
 import Foundation
 
 enum NativeWayfarerInductionSave {
-  static let version = 67
-  static let alienVersion = 68
-  static func contains(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
+  static let version = 69
+  static let alienVersion = 70
+  static func contains(_ schema: Int?) -> Bool {
+    schema == version || schema == alienVersion || schema == 67 || schema == 68
+  }
+  static func isAlien(_ schema: Int?) -> Bool { schema == alienVersion || schema == 68 }
+  static func supportsContinuation(_ schema: Int?) -> Bool {
+    schema == version || schema == alienVersion
+  }
   static func lowerSchema(_ schema: Int?) -> Int? {
     guard contains(schema) else { return schema }
-    return schema == alienVersion
+    return isAlien(schema)
       ? NativeFirstCommoditySaleSave.alienVersion : NativeFirstCommoditySaleSave.version
   }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
@@ -41,7 +47,7 @@ enum NativeWayfarerInductionSave {
       mission.dialogue == nil, mission.timers.isEmpty, mission.ownedEncounters.isEmpty,
       mission.gearIssues.isEmpty, let state = mission.savedWayfarerInduction, state.valid,
       state.permission.mission == mission.id, mission.payloads == state.payloads,
-      mission.milestones == (state.crate == nil ? Set([0]) : Set([0, 1])),
+      mission.milestones == state.milestones,
       let owner = commander.equipmentOwnerID, owner == state.permission.owner,
       let world = commander.nativeStations,
       state.permission.trade.valid(in: commander.scriptState, owner: owner)
@@ -61,7 +67,23 @@ enum NativeWayfarerInductionSave {
         crate.issuedFlightSeconds <= commander.scriptState.flightSeconds
       else { return false }
     }
-    if let loss = state.loss {
+    if let reception = state.reception {
+      guard world.mainStations.contains(reception.dock.station),
+        reception.dock.sequence < world.nextMainDockSequence,
+        reception.dock.actor.visit <= commander.flightSimulation.visit,
+        reception.physicalTime <= commander.flightSimulation.physicalTime,
+        reception.flightSeconds <= commander.scriptState.flightSeconds
+      else { return false }
+    }
+    if let cassette = state.cassette {
+      guard world.mainStations.contains(cassette.dock.station),
+        cassette.dock.sequence < world.nextMainDockSequence,
+        cassette.dock.actor.visit <= commander.flightSimulation.visit,
+        cassette.physicalTime <= commander.flightSimulation.physicalTime,
+        cassette.flightSeconds <= commander.scriptState.flightSeconds
+      else { return false }
+    }
+    for loss in [state.loss, state.cassetteLoss].compactMap({ $0 }) {
       guard loss.physicalTime <= commander.flightSimulation.physicalTime,
         loss.facts.visit <= commander.flightSimulation.visit,
         loss.facts.sequence <= commander.scriptState.nextEvent,
@@ -110,6 +132,11 @@ enum NativeWayfarerInductionSave {
           let bytes = try JSONSerialization.data(withJSONObject: leaf)
           guard bytes.count <= 16_384 else { throw SaveError.invalidCommander }
           let decoded = try JSONDecoder().decode(NativeWayfarerInductionState.self, from: bytes)
+          guard
+            supportsContinuation(schema)
+              || (decoded.reception == nil && decoded.cassette == nil
+                && decoded.cassetteLoss == nil)
+          else { throw SaveError.invalidCommander }
           guard decoded.valid,
             (leaf as NSDictionary).isEqual(
               try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))

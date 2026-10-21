@@ -719,7 +719,7 @@ enum ScriptSaveStore {
       || pointer.schemaVersion == ScriptFreightVersionedSave.alienVersion
     let alien =
       pointer.schemaVersion == 27
-      || pointer.schemaVersion == NativeWayfarerInductionSave.alienVersion
+      || NativeWayfarerInductionSave.isAlien(pointer.schemaVersion)
       || pointer.schemaVersion == NativeFirstCommoditySaleSave.alienVersion
       || pointer.schemaVersion == NativeGlassMeridianSave.alienVersion
       || pointer.schemaVersion == NativeFleetDiscoverySave.alienVersion

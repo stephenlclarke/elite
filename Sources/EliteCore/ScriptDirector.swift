@@ -1319,7 +1319,7 @@ extension Game {
     let reason = scriptGalleryEntryReason(pack, stateID: stateID)
     let openingIssue: String?
     if pack.manifest.stateID == NativeWayfarerInduction.stateID,
-      state?.milestones.contains(1) == true
+      state?.milestones.contains(3) == true
     {
       openingIssue = NativeWayfarerInduction.laterStages
     } else if pack.manifest.stateID == NativeGlassMeridian.stateID,
@@ -1348,12 +1348,23 @@ extension Game {
             $0.offer.destinationSystem
           ].name
       } ?? pack.manifest.mission.destination
+    let briefing: String
+    let objective: String
+    let displayedDestination: String
+    if pack.manifest.stateID == NativeWayfarerInduction.stateID {
+      briefing = NativeWayfarerInduction.currentBriefing
+      objective = suspension ?? wayfarerInductionObjective
+      displayedDestination = wayfarerInductionDestination
+    } else {
+      briefing = job?.offer.briefing ?? pack.manifest.mission.briefing
+      objective = suspension ?? state?.journalLast ?? briefing
+      displayedDestination = destination
+    }
     return GalleryMission(
       name: job?.offer.title ?? pack.manifest.mission.title, status: status,
-      objective: suspension ?? state?.journalLast ?? pack.manifest.mission.briefing,
-      briefing: (job?.offer.briefing ?? pack.manifest.mission.briefing)
-        + scriptGalleryEntrySummary(stateID),
-      destination: destination,
+      objective: objective,
+      briefing: briefing + scriptGalleryEntrySummary(stateID),
+      destination: displayedDestination,
       reward: job.map { String(format: "%.1f CR", Double($0.offer.reward) / 10) }
         ?? pack.manifest.mission.reward,
       prerequisites: (reason ?? openingIssue).map { [$0] } ?? [],

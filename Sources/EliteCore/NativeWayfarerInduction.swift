@@ -134,16 +134,25 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let permission: NativeInductionPermission
   let crate: NativeInductionClinicCrate?
   let loss: NativeInductionCrateLoss?
+  let reception: NativeInductionClinicReception?
+  let cassette: NativeInductionWorkshopCassette?
+  let cassetteLoss: NativeInductionCrateLoss?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
-    loss: NativeInductionCrateLoss? = nil
+    loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
+    cassette: NativeInductionWorkshopCassette? = nil, cassetteLoss: NativeInductionCrateLoss? = nil
   ) {
     self.permission = permission
     self.crate = crate
     self.loss = loss
+    self.reception = reception
+    self.cassette = cassette
+    self.cassetteLoss = cassetteLoss
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
+      && lhs.reception == rhs.reception && lhs.cassette == rhs.cassette
+      && lhs.cassetteLoss == rhs.cassetteLoss
   }
   var valid: Bool {
     let p = permission
@@ -169,10 +178,14 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     } else if loss != nil {
       return false
     }
-    return true
+    return continuationValid
   }
   var payloads: [String: Int] {
-    crate != nil && loss == nil ? [NativeWayfarerInduction.payload: 1] : [:]
+    if cassette != nil && cassetteLoss == nil {
+      return [NativeWayfarerInduction.cassettePayload: 1]
+    }
+    return crate != nil && loss == nil && reception == nil
+      ? [NativeWayfarerInduction.payload: 1] : [:]
   }
 
   func collecting(_ original: NativeInductionClinicCrate, freeTonnes: Int) throws -> Self {
@@ -185,8 +198,15 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   }
 
   func losing(_ fact: NativeInductionCrateLoss) throws -> Self {
-    guard valid, crate != nil, loss == nil else { throw SaveError.invalidCommander }
-    let next = Self(permission: permission, crate: crate, loss: fact)
+    guard valid, !payloads.isEmpty else { throw SaveError.invalidCommander }
+    let next: Self
+    if cassette != nil {
+      next = Self(
+        permission: permission, crate: crate, reception: reception, cassette: cassette,
+        cassetteLoss: fact)
+    } else {
+      next = Self(permission: permission, crate: crate, loss: fact)
+    }
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }
@@ -205,7 +225,8 @@ enum NativeWayfarerInduction {
   static let source = SystemIdentity(galaxy: 0, system: 7)
   static let clinic = SystemIdentity(galaxy: 0, system: 185)
   static let receiver = SystemIdentity(galaxy: 0, system: 164)
-  static let laterStages = "Opening only: stages 3-14 and accreditation are not yet available."
+  static let laterStages =
+    "Stages 5-14, cassette repair receiving and accreditation are not yet available."
   static func mission(owner: UUID) -> UUID {
     ScriptIdentity.uuid("wayfarer-induction-v1:\(owner)")
   }
