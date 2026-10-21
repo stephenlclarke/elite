@@ -121,6 +121,7 @@ extension Game {
     persistOrePoses()
     if nativeCrimboLifecycleAvailable { try parkNativeCrimboBeforeDeparture() }
     commander.cargoDebrisLedger.depart(system: systemIdentity)
+    try recordMeasuredDeparture()
     commander.miningLedger.depart(system: systemIdentity)
     commander.npcPersistence.depart(system: systemIdentity)
     commander.resetWantedCareerBindings(system: systemIdentity)
@@ -130,6 +131,7 @@ extension Game {
     payload: PayloadIdentity, into cargo: inout [Int], freeTonnes: Int,
     hasScoops: Bool, approachAllowed: Bool, protection: MissionProtection
   ) -> CargoCollectionReceipt {
+    guard !measuredPayloadIsAllocated(payload) else { return .refused(.protectedPayload) }
     switch payload {
     case .ore:
       return commander.miningLedger.collect(
