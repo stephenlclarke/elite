@@ -4334,6 +4334,20 @@
       "verified_methods": 115,
       "verified_expanded_cases": 147,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328738544"
+    },
+    {
+      "event": "Lareria receiving and original key return pushed; finite recovery assigned",
+      "head": "19618fca2338e2a5adab532a7c4c05ff249a9fd7",
+      "base": "725356a6c3ce35da05080111171a81162f0a8e33",
+      "ledger_parent": "M10.P02.C08",
+      "github_run": 39692866450,
+      "selection_methods": 121,
+      "new_methods": 6,
+      "source_review": "MBA assigned",
+      "unit_status": "existing hosted run active; artifact pending",
+      "next_assigned": "M10.P02.C08.recovery",
+      "usable_build_delivered": false,
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328761703"
     }
   ]
 }
