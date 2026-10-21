@@ -1,0 +1,242 @@
+import Foundation
+
+/// Explicit authored drive units. Fuel is the profiled NPC's own reservoir, in native LY.
+/// The component alias must resolve to the actual surviving fitted component at activation/entry.
+public struct ScriptNPCDriveDefinition: Codable, Sendable, Equatable {
+  public let component: String
+  public let rangeLightYears: Double
+  public let activationSeconds: Double
+  public let massLockScale: Double
+  public let fuelUnit: String
+  var valid: Bool {
+    PackValidation.localID(component) && fuelUnit == "native-light-years"
+      && rangeLightYears.isFinite && (0.001...200).contains(rangeLightYears)
+      && activationSeconds.isFinite && (0.1...3600).contains(activationSeconds)
+      && massLockScale.isFinite && (0.01...10).contains(massLockScale)
+  }
+}
+
+/// Saved route facts are never an installed catalogue authority.
+struct NativeWormholeRoute: Codable, Sendable, Equatable {
+  let catalogueRevision: String
+  let origin: ScriptNavigationTradeEndpoint
+  let destination: ScriptNavigationTradeEndpoint
+  let distanceLightYears: Double
+  /// Actual destination-world exit in system coordinates, supplied by its native adapter.
+  let exit: ShipPose
+  var seconds: Double { distanceLightYears * distanceLightYears * 3600 }
+  var valid: Bool {
+    ScriptCompletionReceipt.validDigest(catalogueRevision)
+      && origin.valid && destination.valid && origin.galaxy == destination.galaxy
+      && origin.worldID != destination.worldID && origin.location != destination.location
+      && distanceLightYears.isFinite && (0.001...200).contains(distanceLightYears)
+      && exit.position.finite && exit.position.length <= 1e9 && exit.orientation.validRotation
+  }
+}
+
+/// Nonserialized native binding. Installing an original catalogue adapter is a genuine dependency.
+/// Production cannot replace this with a name lookup or reinterpret historical integer distances.
+struct OriginalWorldJourneyContext: Sendable, Equatable {
+  let route: NativeWormholeRoute
+  static func production(in game: borrowing Game, destinationWorld: String) -> Self? { nil }
+  func matches(_ game: borrowing Game, at location: SystemIdentity) -> Bool {
+    guard route.valid, location == game.systemIdentity,
+      location == route.origin.location || location == route.destination.location,
+      game.commander.galaxy == route.origin.galaxy
+    else { return false }
+    let systems = game.systems
+    return [route.origin, route.destination].allSatisfy {
+      systems.indices.contains($0.system.id) && systems[$0.system.id] == $0.system
+    }
+  }
+}
+
+struct NativeWormholeOpening: Codable, Sendable, Equatable {
+  let id: UUID
+  let leg: UUID
+  let route: NativeWormholeRoute
+  let sourceActor: ActorIdentity
+  let entrance: ShipPose
+  let radius: Double
+  let openedAt: Double
+  let expiresAt: Double
+  var valid: Bool {
+    route.valid && sourceActor.system == route.origin.location
+      && sourceActor.visit > 0 && sourceActor.entity > 0
+      && entrance.position.finite && entrance.position.length <= 1e9
+      && entrance.orientation.validRotation && radius.isFinite && (1...100_000).contains(radius)
+      && openedAt.isFinite && expiresAt.isFinite && (0...1e12).contains(openedAt)
+      && expiresAt > openedAt && expiresAt <= 1e12 && expiresAt - openedAt <= 120
+  }
+}
+
+struct NativeWormholeDeparture: Codable, Sendable, Equatable {
+  let hole: UUID
+  let nativeActor: ActorIdentity
+  let calendarSeconds: Double
+  let physicalTime: Double
+  let revision: UInt64
+  let fuelBefore: Double
+  let fuelAfter: Double
+  /// Complete actual condition after debit; historical physical addresses are not live authority.
+  let body: SpaceBody
+}
+
+struct NativeWormholeArrival: Codable, Sendable, Equatable {
+  let nativeActor: ActorIdentity
+  let calendarSeconds: Double
+}
+
+struct NativeWormholeLeg: Codable, Sendable, Equatable {
+  enum Phase: String, Codable, Sendable {
+    case requested, spooling, open, inTransit, arrivalPending, arrived, cancelled
+  }
+  let id: UUID
+  let instance: UUID
+  let actor: UUID
+  let encounter: String
+  let alias: String
+  let request: String
+  let destinationWorld: String
+  let requestedAt: Double
+  var phase: Phase = .requested
+  var attempts = 0
+  var nextAttemptAt = 0.0
+  var refusal: String?
+  var route: NativeWormholeRoute?
+  var spooledAt: Double?
+  var driveComponent: UUID?
+  var driveTerms: ScriptNPCDriveDefinition?
+  var opening: NativeWormholeOpening?
+  var departure: NativeWormholeDeparture?
+  var arrival: NativeWormholeArrival?
+  var dueAt: Double? {
+    departure.flatMap { departure in route.map { departure.calendarSeconds + $0.seconds } }
+  }
+  static func identity(instance: UUID, actor: UUID, request: String) -> UUID {
+    ScriptIdentity.uuid("native-npc-transit-v1:\(instance):\(actor):\(request)")
+  }
+  var valid: Bool {
+    guard id == Self.identity(instance: instance, actor: actor, request: request),
+      PackValidation.localID(request), PackValidation.localID(encounter),
+      PackValidation.localID(alias),
+      PackValidation.identifier(destinationWorld), requestedAt.isFinite,
+      (0...1e12).contains(requestedAt), nextAttemptAt.isFinite,
+      (0...1e12).contains(nextAttemptAt), (0...128).contains(attempts),
+      refusal.map({ $0.utf8.count <= 240 }) ?? true,
+      route.map({ $0.valid && $0.destination.worldID == destinationWorld }) ?? true,
+      spooledAt.map({ $0.isFinite && (requestedAt...1e12).contains($0) }) ?? true
+    else { return false }
+    if let opening {
+      guard opening.valid, opening.leg == id, opening.route == route,
+        let spooledAt, opening.openedAt >= spooledAt
+      else { return false }
+    }
+    if let departure {
+      guard let opening, let route, departure.hole == opening.id,
+        departure.nativeActor.system == route.origin.location,
+        departure.calendarSeconds.isFinite,
+        (opening.openedAt...opening.expiresAt).contains(departure.calendarSeconds),
+        departure.physicalTime.isFinite && departure.physicalTime >= 0,
+        departure.fuelBefore.isFinite && departure.fuelAfter.isFinite,
+        departure.fuelAfter >= 0,
+        departure.fuelAfter == departure.fuelBefore - route.distanceLightYears,
+        departure.body.missionActorID == actor, departure.body.missionInstanceID == instance,
+        departure.body.physical?.identity == departure.nativeActor,
+        departure.body.energy > 0, departure.body.scriptNPC?.valid == true,
+        departure.body.scriptNPC?.fuel == departure.fuelAfter,
+        let dueAt, dueAt <= 1e12
+      else { return false }
+    }
+    if let arrival {
+      guard let dueAt, let route, arrival.calendarSeconds.isFinite,
+        (dueAt...1e12).contains(arrival.calendarSeconds),
+        arrival.nativeActor.system == route.destination.location,
+        arrival.nativeActor.visit > 0, arrival.nativeActor.entity > 0
+      else { return false }
+    }
+    switch phase {
+    case .requested: return opening == nil && departure == nil && arrival == nil
+    case .spooling: return route != nil && spooledAt != nil && opening == nil && departure == nil
+    case .open: return opening != nil && departure == nil && arrival == nil
+    case .inTransit, .arrivalPending: return departure != nil && arrival == nil
+    case .arrived: return arrival != nil
+    case .cancelled: return departure == nil && arrival == nil
+    }
+  }
+}
+
+struct NativeWormholeTransitState: Codable, Sendable, Equatable {
+  var legs: [UUID: NativeWormholeLeg] = [:]
+  var commanderPassages: [UUID: NativeCommanderWormholeReceipt] = [:]
+  var valid: Bool {
+    guard legs.count <= 128, commanderPassages.count <= 128,
+      legs.allSatisfy({ $0.key == $0.value.id && $0.value.valid }),
+      commanderPassages.allSatisfy({ id, receipt in
+        guard id == receipt.opening,
+          let hole = legs.values.compactMap(\.opening).first(where: { $0.id == id })
+        else { return false }
+        return receipt.source.system == hole.route.origin.location
+          && receipt.arrival.system == hole.route.destination.location
+          && receipt.source.visit > 0 && receipt.arrival.visit > receipt.source.visit
+          && receipt.source.entity > 0 && receipt.arrival.entity > 0
+          && receipt.calendarOperation > 0 && receipt.seconds == hole.route.seconds
+          && (0...10_000).contains(receipt.fuelBefore) && receipt.fuelAfter >= 0
+          && receipt.fuelAfter < receipt.fuelBefore
+      })
+    else {
+      return false
+    }
+    // An actor cannot be in two concurrent journeys. Finished history never authorizes a new leg.
+    let active = legs.values.filter { ![.arrived, .cancelled].contains($0.phase) }
+    return Set(active.map(\.actor)).count == active.count
+  }
+}
+
+extension ScriptEngineState {
+  var nativeWormholeStateValid: Bool {
+    guard wormholeTransit?.valid ?? true else { return false }
+    guard (wormholeTransit?.commanderPassages.values ?? [:].values).allSatisfy({
+      $0.calendarOperation <= (calendarLedger?.operation ?? 0) && $0.seconds <= transitSeconds
+    }) else { return false }
+    let legs = Array((wormholeTransit?.legs ?? [:]).values)
+    for leg in legs {
+      guard let instance = instances[leg.instance],
+        let encounter = instance.ownedEncounters[leg.encounter],
+        let actor = encounter.actors[leg.alias], actor.identity == leg.actor,
+        leg.requestedAt <= calendarSeconds
+      else { return false }
+      if let departure = leg.departure {
+        guard departure.calendarSeconds <= calendarSeconds else { return false }
+        if leg.arrival == nil {
+          guard [.inTransit, .arrivalPending].contains(actor.presence),
+            actor.body == departure.body
+          else { return false }
+        }
+      }
+      if let arrival = leg.arrival {
+        guard arrival.calendarSeconds <= calendarSeconds else { return false }
+      }
+    }
+    for instance in instances.values {
+      for encounter in instance.ownedEncounters.values {
+        for actor in encounter.actors.values {
+          let history = legs.filter { $0.instance == instance.id && $0.actor == actor.identity }
+          if [.inTransit, .arrivalPending].contains(actor.presence) {
+            guard history.contains(where: { $0.departure != nil && $0.arrival == nil }) else {
+              return false
+            }
+          }
+          if let location = actor.transitLocation {
+            guard
+              history.contains(where: {
+                $0.arrival != nil && $0.route?.destination.location == location
+              })
+            else { return false }
+          }
+        }
+      }
+    }
+    return true
+  }
+}
