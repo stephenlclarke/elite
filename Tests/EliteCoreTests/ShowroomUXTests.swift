@@ -68,7 +68,14 @@ import Testing
   #expect(game.commander.name == "CLARKE" && game.commander.shipID == "SH023")
   #expect(game.secretChoices.contains { $0.hasPrefix("C SWITCH TO COBRA MK III") })
   game.commander.autoTrade = false
-  game.commander.shipID = "SH013"
+  game.commander.cargo = Array(repeating: 0, count: 17)
+  let owner = game.commander.equipmentOwnerID
+  for slot in [ComponentFittingSlot.utility(.miningLaser), .utility(.salvageCutter)] {
+    let item = try #require(game.commander.fittedEquipment(at: slot))
+    let revision = try #require(game.commander.equipmentInventory?.revision)
+    try game.commander.storeEquipment(item, expectedRevision: revision)
+  }
+  try game.commander.transferEquipment(to: "SH013", hullID: UUID())
   game.commander.unlimitedCargo = false
   game.commander.cargo[0] = 40
   game.commander.credits = 12345
@@ -82,8 +89,14 @@ import Testing
   let cargo = game.commander.cargo
   let bodies = game.bodies
   let progress = game.commander.missionProgress
+  let inventory = try #require(game.commander.equipmentInventory)
+  let portable = Set(inventory.items.filter { $0.boundHull == nil }.map(\.id))
+  #expect(game.commander.valid && game.commander.shipID == "SH013")
   game.key("c")
   #expect(game.commander.shipID == "SH023" && game.commander.credits == 12345)
+  #expect(game.commander.equipmentOwnerID == owner)
+  #expect(game.commander.hullInstanceID != inventory.activeHull)
+  #expect(portable.isSubset(of: Set(game.commander.equipmentInventory?.items.map(\.id) ?? [])))
   #expect(game.commander.cargo == cargo && game.commander.unlimitedCargo)
   #expect(game.commander.legal == 17 && game.commander.kills == 42)
   #expect(game.commander.missionStage == .huntingConstrictor && game.bodies == bodies)

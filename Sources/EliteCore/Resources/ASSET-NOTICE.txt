@@ -2,8 +2,8 @@ SHOWROOM MODEL ATTRIBUTION
 
 The per-ship Ships/*.toml files contain adapted numerical mesh geometry, without textures.
 Each model and adaptation retains its corresponding source terms,
-as recorded in its JSON license field and the bundled original notices.
-56 models: CC-BY-NC-SA-3.0. 14 models: CC-BY-NC-SA-4.0.
+as recorded in its per-model design.license field and the bundled original notices.
+59 models: CC-BY-NC-SA-3.0. 14 models: CC-BY-NC-SA-4.0.
 One model: CC-BY-SA-3.0. Three: author-declared public-domain geometry.
 https://creativecommons.org/licenses/by-nc-sa/3.0/
 https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -79,3 +79,18 @@ included. Unresolved ArcElite and conflicting Cougar permissions have not
 been treated as permission to distribute those models.
 
 Original gap designs: 93 project-authored numerical meshes under MIT. Source/provenance and original notices remain embedded or linked in each ship TOML. TOMLDecoder 0.4.5 is MIT; see Legal/TOMLDecoder-LICENSE.md.
+
+SELECTED COMMIES 2.20 ADAPTATIONS (3 RECORDS)
+
+SH168 Convict Miner Minnow, SH169 Ray Mk I and SH170 Military Stingray
+(Ray Mk II): CC-BY-NC-SA-3.0. Commies 2.20 credits Amaranth, Dr. Nil,
+Eric Walch, Norby, phkb and GearsNSuch. The retained README credits
+GearsNSuch for replacement Ray and derivative graphics; no individual
+Minnow modeller is asserted. Full original README and manifest text,
+archive/model SHA256s and adaptation attribution are preserved in each
+TOML's design.custody and packaged intact with Ships. No source texture
+pixels are included and no underlying source terms are replaced by MIT.
+
+The current 171-record catalogue contains 77 imported designs and 94
+project-authored MIT interpretations, including the 93 gap designs above
+and the separately attributed Liberator DSV2 interpretation.

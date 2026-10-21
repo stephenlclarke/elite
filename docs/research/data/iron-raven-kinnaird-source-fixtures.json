@@ -1,0 +1,1602 @@
+{
+  "profile_id": "P19-KINNAIRD-SOURCE-v1",
+  "scope": "Selected unchanged main-script callbacks in lexical VM with native-null mission variables, dialog/marker/credit/native API spies. Source message keys and state graph verified, not original engine, actual station flight, assets or runtime implementation. Shared selector tests also pin alternative branch entry only, not their full completion. Per-case timing retained.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Config/missiontext.plist",
+      "sha256": "288335f9100111ed1284016143b38311716fc4ad32849c7af31e92c84fc0be79"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/manifest.plist",
+      "sha256": "3f7c7e85ad2230a52533cc36ca1b5ac6d5d1f82d5948bc441fbc77828fceeeb3"
+    }
+  ],
+  "total": 50,
+  "passed": 50,
+  "cases": [
+    {
+      "name": "Source parent count exact-four selector 0",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.314833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 0,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source parent count exact-four selector 3",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 3,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.010125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 3,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source parent count exact-four selector 4",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.055958,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_kinnaird_1"
+        ],
+        "marks": [
+          35
+        ],
+        "instructions": [
+          {
+            "key": "IR_kinnaird_brief_1"
+          }
+        ],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source parent count exact-four selector 5",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 5,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.007958,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 5,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Shared selector dock/galaxy/location/offer gate {\"galaxy\":6}",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "galaxy": 6,
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.009333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Shared selector dock/galaxy/location/offer gate {\"system\":8}",
+      "initial": {
+        "system": 8,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.007875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Shared selector dock/galaxy/location/offer gate {\"main\":false}",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "main": false,
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002583,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Shared selector dock/galaxy/location/offer gate {\"docked\":false}",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "docked": false,
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.001542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Shared selector dock/galaxy/location/offer gate {\"vars\":{\"IR_offer\":\"BUSY\"}}",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED",
+          "IR_offer": "BUSY"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.00375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED",
+          "IR_offer": "BUSY"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source exclusive next lead IR_IBANEZ_A_weiss",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_A_weiss"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.05875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_1",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_weiss_1"
+        ],
+        "marks": [
+          23
+        ],
+        "instructions": [
+          {
+            "key": "IR_weiss_brief_1"
+          }
+        ],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source exclusive next lead IR_IBANEZ_B_kinnaird",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.013,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_kinnaird_1"
+        ],
+        "marks": [
+          35
+        ],
+        "instructions": [
+          {
+            "key": "IR_kinnaird_brief_1"
+          }
+        ],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source exclusive next lead IR_IBANEZ_C_moreinfo",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_C_moreinfo"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.010584,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LEXICON_1",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED",
+          "IR_LEXICON_deadline": 115
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_LEXICON_1"
+        ],
+        "marks": [],
+        "instructions": [
+          {
+            "key": "IR_LEXICON_1"
+          }
+        ],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source dismissed/unrecognised choice consumes join undefined",
+      "initial": {
+        "system": 7,
+        "choices": [
+          null
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.047542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source dismissed/unrecognised choice consumes join INVALID",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "INVALID"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.018417,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source dismissed/unrecognised choice consumes join BACK",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "BACK"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.015875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source shipment dismissal precedence {\"IR_shipment_quest_method\":\"YOKOHAMA_AMBUSH\"}",
+      "initial": {
+        "system": 7,
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED",
+          "IR_shipment_quest_method": "YOKOHAMA_AMBUSH"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.052792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_completed",
+          "IR_tipoff_deadline": 110
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5a",
+          "IR_theend"
+        ],
+        "marks": [],
+        "instructions": [
+          {
+            "key": null
+          }
+        ],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source shipment dismissal precedence {\"IR_shipment_quest\":\"FAILED\"}",
+      "initial": {
+        "system": 7,
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "FAILED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.025917,
+      "result": {
+        "vars": {
+          "IR_status": "IR_completed",
+          "IR_tipoff_deadline": 110
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5b",
+          "IR_theend"
+        ],
+        "marks": [],
+        "instructions": [
+          {
+            "key": null
+          }
+        ],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source shipment dismissal precedence {\"IR_shipment_quest_method\":\"YOKOHAMA_AMBUSH\",\"IR_shipment_quest\":\"FAILED\"}",
+      "initial": {
+        "system": 7,
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "FAILED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED",
+          "IR_shipment_quest_method": "YOKOHAMA_AMBUSH"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_completed",
+          "IR_tipoff_deadline": 110
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5a",
+          "IR_theend"
+        ],
+        "marks": [],
+        "instructions": [
+          {
+            "key": null
+          }
+        ],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Kinnaird first clue at Atanon only 34",
+      "initial": {
+        "system": 34,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.01975,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Kinnaird first clue at Atanon only 35",
+      "initial": {
+        "system": 35,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.030625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_kinnaird_2"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "unmark",
+            35
+          ]
+        ],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Kinnaird first clue at Atanon only 41",
+      "initial": {
+        "system": 41,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.005333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Kinnaird first clue at Atanon only 119",
+      "initial": {
+        "system": 119,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.008,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "unmark",
+            119
+          ]
+        ],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source intermediate enquiry 0",
+      "initial": {
+        "system": 0,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.029792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0,
+          "IR_onceOnly": "TRUE",
+          "IR_saved_location_1": "mock-system"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_kinnaird_3alt"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source intermediate enquiry 7",
+      "initial": {
+        "system": 7,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.016041,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0,
+          "IR_onceOnly": "TRUE",
+          "IR_saved_location_1": "mock-system"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_kinnaird_3alt"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source intermediate enquiry 35",
+      "initial": {
+        "system": 35,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.010875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source intermediate enquiry 41",
+      "initial": {
+        "system": 41,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.02075,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_kinnaird_3"
+        ],
+        "marks": [
+          119
+        ],
+        "instructions": [
+          {
+            "key": "IR_kinnaird_brief_3"
+          }
+        ],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Source intermediate enquiry 119",
+      "initial": {
+        "system": 119,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.012333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0,
+          "IR_onceOnly": "TRUE",
+          "IR_saved_location_1": "mock-system"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_kinnaird_3alt"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [
+          [
+            "unmark",
+            119
+          ]
+        ],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Launch clears unrelated-enquiry latch so another visit can enquire",
+      "initial": {
+        "system": 42,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.106292,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0,
+          "IR_saved_location_1": "mock-system",
+          "IR_onceOnly": "TRUE"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_kinnaird_3alt",
+          "IR_kinnaird_3alt"
+        ],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Laxesori source evidence visit 118",
+      "initial": {
+        "system": 118,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.015625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Laxesori source evidence visit 119",
+      "initial": {
+        "system": 119,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.286584,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_kinnaird_4a",
+          "IR_kinnaird_4b"
+        ],
+        "marks": [
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_kinnaird_brief_4"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            119
+          ]
+        ],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Laxesori source evidence visit 120",
+      "initial": {
+        "system": 120,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.005541,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Vegedius evidence debrief and20day continuation 7",
+      "initial": {
+        "system": 7,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0315,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_5",
+          "IR_quest_count": 0,
+          "IR_cherkasova_deadline": 120
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5_debrief"
+        ],
+        "marks": [],
+        "instructions": [
+          {
+            "key": "IR_waitforinfo_brief"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            7
+          ]
+        ],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Vegedius evidence debrief and20day continuation 8",
+      "initial": {
+        "system": 8,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.009416,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_1/{\"galaxy\":6}",
+      "initial": {
+        "system": 35,
+        "galaxy": 6,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.006042,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_1/{\"main\":false}",
+      "initial": {
+        "system": 35,
+        "main": false,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002417,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_1/{\"docked\":false}",
+      "initial": {
+        "system": 35,
+        "docked": false,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.000833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_1/{\"vars\":{\"IR_offer\":\"BUSY\"}}",
+      "initial": {
+        "system": 35,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_offer": "BUSY"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002042,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_2/{\"galaxy\":6}",
+      "initial": {
+        "system": 41,
+        "galaxy": 6,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002541,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_2/{\"main\":false}",
+      "initial": {
+        "system": 41,
+        "main": false,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002667,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_2/{\"docked\":false}",
+      "initial": {
+        "system": 41,
+        "docked": false,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.001125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_2/{\"vars\":{\"IR_offer\":\"BUSY\"}}",
+      "initial": {
+        "system": 41,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_offer": "BUSY"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002041,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_3/{\"galaxy\":6}",
+      "initial": {
+        "system": 119,
+        "galaxy": 6,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.00375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_3/{\"main\":false}",
+      "initial": {
+        "system": 119,
+        "main": false,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.003375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_3/{\"docked\":false}",
+      "initial": {
+        "system": 119,
+        "docked": false,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.001084,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_3/{\"vars\":{\"IR_offer\":\"BUSY\"}}",
+      "initial": {
+        "system": 119,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_offer": "BUSY"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.001583,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_4/{\"galaxy\":6}",
+      "initial": {
+        "system": 7,
+        "galaxy": 6,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0015,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_4/{\"main\":false}",
+      "initial": {
+        "system": 7,
+        "main": false,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002208,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_4/{\"docked\":false}",
+      "initial": {
+        "system": 7,
+        "docked": false,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.000792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "Each Kinnaird stage preserves global docking gate IR_KINNAIRD_4/{\"vars\":{\"IR_offer\":\"BUSY\"}}",
+      "initial": {
+        "system": 7,
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4",
+          "IR_offer": "BUSY"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.00175,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4",
+          "IR_quest_count": 0,
+          "IR_offer": "BUSY"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "marks": [],
+        "instructions": [],
+        "actions": [],
+        "spawn": []
+      }
+    },
+    {
+      "name": "No source Kinnaird transport/cargo/combat or numeric deadline along complete selected branch",
+      "initial": {
+        "system": 7,
+        "choices": [
+          "IR_IBANEZ_B_kinnaird"
+        ],
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.175542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_5",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_finance_quest": "COMPLETED",
+          "IR_SDF_quest": "COMPLETED",
+          "IR_defences_quest": "COMPLETED",
+          "IR_cherkasova_deadline": 120
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_kinnaird_1",
+          "IR_kinnaird_2",
+          "IR_kinnaird_3",
+          "IR_kinnaird_4a",
+          "IR_kinnaird_4b",
+          "IR_IBANEZ_5_debrief"
+        ],
+        "marks": [
+          35,
+          119,
+          7
+        ],
+        "instructions": [
+          {
+            "key": "IR_kinnaird_brief_1"
+          },
+          {
+            "key": "IR_kinnaird_brief_3"
+          },
+          {
+            "key": "IR_kinnaird_brief_4"
+          },
+          {
+            "key": "IR_waitforinfo_brief"
+          }
+        ],
+        "actions": [
+          [
+            "unmark",
+            35
+          ],
+          [
+            "unmark",
+            119
+          ],
+          [
+            "unmark",
+            7
+          ]
+        ],
+        "spawn": []
+      }
+    }
+  ]
+}

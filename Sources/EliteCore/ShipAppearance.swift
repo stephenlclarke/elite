@@ -22,6 +22,15 @@ extension ShipDesign {
     }
     let textures = sourceTextures ?? []
     let mappings = sourceFaceTextures ?? []
+    let resolved = resolvedTextures ?? []
+    guard resolved.count <= textures.count,
+      Set(resolved.map(\.sourceTexture)).count == resolved.count,
+      resolved.allSatisfy({
+        textures.indices.contains($0.sourceTexture)
+          && textures[$0.sourceTexture].source.contains("sha256=" + $0.modelSHA256)
+          && ShipTextureAssets.accepts($0)
+      })
+    else { return false }
     guard textures.allSatisfy({ !$0.name.isEmpty && !$0.source.isEmpty && !$0.license.isEmpty })
     else { return false }
     if mappings.isEmpty { return textures.isEmpty }
@@ -30,6 +39,18 @@ extension ShipDesign {
       if mapping.texture == -1 { return mapping.uv.isEmpty }
       return textures.indices.contains(mapping.texture) && mapping.uv.count == face.count
         && mapping.uv.allSatisfy { $0.count == 2 && $0.allSatisfy(\.isFinite) }
+    }
+  }
+
+  var resolvedFaceTextures: [ShipMeshTexture?] {
+    guard let resolvedTextures, !resolvedTextures.isEmpty, let mappings = sourceFaceTextures else {
+      return []
+    }
+    let assets = Dictionary(
+      uniqueKeysWithValues: resolvedTextures.map { ($0.sourceTexture, $0.asset) })
+    return mappings.map { mapping in
+      guard let asset = assets[mapping.texture] else { return nil }
+      return .init(asset: asset, uv: mapping.uv)
     }
   }
 }

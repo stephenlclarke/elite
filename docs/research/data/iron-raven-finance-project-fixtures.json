@@ -1,0 +1,219 @@
+{
+  "profile_id": "PROJECT-P19-FINANCE-v1",
+  "scope": "Twelve selected actual-source checks after exact minimal textual repairs: recompute manifest flag, reject invalid/null wife choice, remove Isabella semicolon. Narrow repairs only; stable identity, physical capture, atomic custody/save and native engine capability checks remain separate specification requirements, not proved by these VM calls.",
+  "inputs": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-isabella.js",
+      "sha256": "e2100225e9e6e24614d7d2bf8ea812182fd53dd78be429656fd1bd0d33401093"
+    }
+  ],
+  "total": 12,
+  "passed": 12,
+  "cases": [
+    {
+      "name": "Recompute manifest rather than retain TRUE",
+      "passed": true,
+      "duration_ms": 0.046583,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_cargo_radioactives": 10,
+          "IR_cargo_alloys": 5,
+          "IR_cargo_minerals": 2,
+          "IR_cargo_alien_items": 2,
+          "IR_cargo_platinum": 1,
+          "IR_manifestOK": null
+        },
+        "messages": []
+      }
+    },
+    {
+      "name": "Recompute manifest rather than retain PART",
+      "passed": true,
+      "duration_ms": 0.002833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_cargo_radioactives": 10,
+          "IR_cargo_alloys": 5,
+          "IR_cargo_minerals": 2,
+          "IR_cargo_alien_items": 2,
+          "IR_cargo_platinum": 1,
+          "IR_manifestOK": null
+        },
+        "messages": []
+      }
+    },
+    {
+      "name": "Recompute manifest rather than retain undefined",
+      "passed": true,
+      "duration_ms": 0.001708,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_cargo_radioactives": 10,
+          "IR_cargo_alloys": 5,
+          "IR_cargo_minerals": 2,
+          "IR_cargo_alien_items": 2,
+          "IR_cargo_platinum": 1,
+          "IR_manifestOK": null
+        },
+        "messages": []
+      }
+    },
+    {
+      "name": "All required goods still qualify",
+      "passed": true,
+      "duration_ms": 0.032917,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_cargo_radioactives": 10,
+          "IR_cargo_alloys": 5,
+          "IR_cargo_minerals": 2,
+          "IR_cargo_alien_items": 2,
+          "IR_cargo_platinum": 1,
+          "IR_manifestOK": "TRUE"
+        },
+        "messages": []
+      }
+    },
+    {
+      "name": "Real partial delivery remains PART",
+      "passed": true,
+      "duration_ms": 0.012959,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_cargo_radioactives": 10,
+          "IR_cargo_alloys": 5,
+          "IR_cargo_minerals": 2,
+          "IR_cargo_alien_items": 2,
+          "IR_cargo_platinum": 1,
+          "IR_manifestOK": "PART"
+        },
+        "messages": []
+      }
+    },
+    {
+      "name": "Validated wife choice undefined",
+      "passed": true,
+      "duration_ms": 0.299,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_finance_quest": "WIFE_MET",
+          "IR_finance_status_no": 8
+        },
+        "messages": [
+          "IR_finance_quest_8"
+        ]
+      }
+    },
+    {
+      "name": "Validated wife choice INVALID",
+      "passed": true,
+      "duration_ms": 0.008375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_finance_quest": "WIFE_MET",
+          "IR_finance_status_no": 8
+        },
+        "messages": [
+          "IR_finance_quest_8"
+        ]
+      }
+    },
+    {
+      "name": "Validated wife choice IR_wife_yes",
+      "passed": true,
+      "duration_ms": 0.036,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_finance_quest": "WAIT3",
+          "IR_finance_status_no": 9,
+          "IR_wife_status": "AFFAIR_CONFIRMED",
+          "IR_KORSHKOV_deadline": 110,
+          "IR_offer": null
+        },
+        "messages": [
+          "IR_finance_quest_8",
+          "IR_finance_quest_9_confirm"
+        ]
+      }
+    },
+    {
+      "name": "Validated wife choice IR_wife_no",
+      "passed": true,
+      "duration_ms": 0.011583,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_finance_quest": "WAIT3",
+          "IR_finance_status_no": 9,
+          "IR_wife_status": "AFFAIR_DENIED",
+          "IR_KORSHKOV_deadline": 110,
+          "IR_offer": null
+        },
+        "messages": [
+          "IR_finance_quest_8",
+          "IR_finance_quest_9_deny"
+        ]
+      }
+    },
+    {
+      "name": "Removed semicolon respects phase WIFE",
+      "passed": true,
+      "duration_ms": 0.035959,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_finance_quest": "WIFE"
+        },
+        "messages": []
+      }
+    },
+    {
+      "name": "Removed semicolon respects phase WIFE_IDENTIFIED",
+      "passed": true,
+      "duration_ms": 0.004417,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_finance_quest": "WIFE_DOCKED"
+        },
+        "messages": []
+      }
+    },
+    {
+      "name": "Removed semicolon respects phase COMPLETED",
+      "passed": true,
+      "duration_ms": 0.002916,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_finance_quest": "COMPLETED"
+        },
+        "messages": []
+      }
+    }
+  ]
+}

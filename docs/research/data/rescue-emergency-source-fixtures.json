@@ -1,0 +1,454 @@
+{
+  "package_id": "P30",
+  "source_version": "1.5.4",
+  "profiles": [
+    "5"
+  ],
+  "scope": "Selected actual scenario5/freighter/shared-raider/framework callbacks, mocked Oolite lexical scope/engine. Source any-dock resurrection, NULL acceptance and group-as-array bug recorded, not adopted. No native/binary/AI physics parity.",
+  "runtime": "v26.9.0",
+  "total": 63,
+  "passed": 63,
+  "cases": [
+    {
+      "name": "5 eligibility 9,0,0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.2006660000000018,
+      "passed": true
+    },
+    {
+      "name": "5 eligibility 10,50,0.199999",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.016958999999999946,
+      "passed": true
+    },
+    {
+      "name": "5 eligibility 10,51,0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.014291000000000054,
+      "passed": true
+    },
+    {
+      "name": "5 eligibility 10,0,0.2",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.009166999999997927,
+      "passed": true
+    },
+    {
+      "name": "5 eligibility 100,0,0.999",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.007542000000000826,
+      "passed": true
+    },
+    {
+      "name": "5 exactly one offer with250 fixed pay/local system",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.052832999999999686,
+      "passed": true
+    },
+    {
+      "name": "5 offer decision NO",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.04925000000000068,
+      "passed": true
+    },
+    {
+      "name": "5 offer decision YES",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.020000000000003126,
+      "passed": true
+    },
+    {
+      "name": "5 offer decision null",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.011041999999999774,
+      "passed": true
+    },
+    {
+      "name": "5 acceptance explicitly grants7 fuel and launches",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.0934999999999988,
+      "passed": true
+    },
+    {
+      "name": "5 group count/geometry/scripts and group-as-array target defect 0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.4239999999999995,
+      "passed": true
+    },
+    {
+      "name": "5 group count/geometry/scripts and group-as-array target defect 3",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.03275000000000006,
+      "passed": true
+    },
+    {
+      "name": "5 direction rejects dot below-.5 and accepts equality",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.045417000000000485,
+      "passed": true
+    },
+    {
+      "name": "5 defender count 0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.06745899999999949,
+      "passed": true
+    },
+    {
+      "name": "5 defender count 0.499999",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.02804100000000176,
+      "passed": true
+    },
+    {
+      "name": "5 defender count 0.5",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.020167000000000712,
+      "passed": true
+    },
+    {
+      "name": "5 defender count 0.99999",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.013999999999999346,
+      "passed": true
+    },
+    {
+      "name": "5 player docking stage/location 100,true,0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.041541999999999746,
+      "passed": true
+    },
+    {
+      "name": "5 player docking stage/location 100,false,0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.015625,
+      "passed": true
+    },
+    {
+      "name": "5 player docking stage/location 100,true,1",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.006041999999997216,
+      "passed": true
+    },
+    {
+      "name": "5 player docking stage/location 1,true,0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.004959000000003044,
+      "passed": true
+    },
+    {
+      "name": "5 player docking stage/location 2,true,0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.005708000000002045,
+      "passed": true
+    },
+    {
+      "name": "5 player docking stage/location 99,true,0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.005666999999998978,
+      "passed": true
+    },
+    {
+      "name": "5 player docking stage/location 1000,false,0",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.004666000000000281,
+      "passed": true
+    },
+    {
+      "name": "5 witchspace abandonment stage1",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.02595799999999926,
+      "passed": true
+    },
+    {
+      "name": "5 witchspace abandonment stage2",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.004667000000001309,
+      "passed": true
+    },
+    {
+      "name": "5 witchspace abandonment stage3",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.005458000000000851,
+      "passed": true
+    },
+    {
+      "name": "5 witchspace abandonment stage99",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.004417000000000115,
+      "passed": true
+    },
+    {
+      "name": "5 witchspace abandonment stage100",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.022959000000000174,
+      "passed": true
+    },
+    {
+      "name": "5 witchspace abandonment stage1000",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.004166999999998922,
+      "passed": true
+    },
+    {
+      "name": "5 pay and source success/news metadata",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.07062499999999972,
+      "passed": true
+    },
+    {
+      "name": "5 failure penalty-5 and cleanup keys",
+      "source": "Scripts/rescue_scenario_5.js",
+      "source_sha256": "eab26b2ccbfd30bffde3a103b4630d4ac5962d9944e6f57ae04fb610ef00a92a",
+      "duration_ms": 0.031124999999999403,
+      "passed": true
+    },
+    {
+      "name": "5 freighter death source central failure/player additional-20 false",
+      "source": "Scripts/rescue_scenario_5_freighter.js",
+      "source_sha256": "c41f0bebb558466c75ddef6faec13248f347b2641086203b82f212aead35b3a2",
+      "duration_ms": 0.030791999999998154,
+      "passed": true
+    },
+    {
+      "name": "5 freighter death source central failure/player additional-20 true",
+      "source": "Scripts/rescue_scenario_5_freighter.js",
+      "source_sha256": "c41f0bebb558466c75ddef6faec13248f347b2641086203b82f212aead35b3a2",
+      "duration_ms": 0.00858400000000259,
+      "passed": true
+    },
+    {
+      "name": "5 source freighter any station docking marks100",
+      "source": "Scripts/rescue_scenario_5_freighter.js",
+      "source_sha256": "c41f0bebb558466c75ddef6faec13248f347b2641086203b82f212aead35b3a2",
+      "duration_ms": 0.01754099999999781,
+      "passed": true
+    },
+    {
+      "name": "5 damage complaint strict10/quarter 10,100",
+      "source": "Scripts/rescue_scenario_5_freighter.js",
+      "source_sha256": "c41f0bebb558466c75ddef6faec13248f347b2641086203b82f212aead35b3a2",
+      "duration_ms": 0.02112499999999784,
+      "passed": true
+    },
+    {
+      "name": "5 damage complaint strict10/quarter 10.001,26",
+      "source": "Scripts/rescue_scenario_5_freighter.js",
+      "source_sha256": "c41f0bebb558466c75ddef6faec13248f347b2641086203b82f212aead35b3a2",
+      "duration_ms": 0.011874999999999858,
+      "passed": true
+    },
+    {
+      "name": "5 damage complaint strict10/quarter 10.001,25",
+      "source": "Scripts/rescue_scenario_5_freighter.js",
+      "source_sha256": "c41f0bebb558466c75ddef6faec13248f347b2641086203b82f212aead35b3a2",
+      "duration_ms": 0.004291999999999518,
+      "passed": true
+    },
+    {
+      "name": "5 damage complaint strict10/quarter 11,0",
+      "source": "Scripts/rescue_scenario_5_freighter.js",
+      "source_sha256": "c41f0bebb558466c75ddef6faec13248f347b2641086203b82f212aead35b3a2",
+      "duration_ms": 0.011167000000000371,
+      "passed": true
+    },
+    {
+      "name": "5 source corridor3000 then station centre",
+      "source": "Scripts/rescue_scenario_5_freighter.js",
+      "source_sha256": "c41f0bebb558466c75ddef6faec13248f347b2641086203b82f212aead35b3a2",
+      "duration_ms": 0.029792000000000485,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 0,false",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.03295800000000071,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 0,true",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.0067909999999997694,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 1,false",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.003124999999997158,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 1,true",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.004207999999998435,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 3,false",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.003416999999998893,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 3,true",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.005375000000000796,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 99,false",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.0021249999999994884,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 99,true",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.002833000000002528,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 100,false",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.002834000000000003,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 100,true",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.0037920000000006837,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 1000,false",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.0024590000000017653,
+      "passed": true
+    },
+    {
+      "name": "5 source50 kill bonus boundaries 1000,true",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.002375000000000682,
+      "passed": true
+    },
+    {
+      "name": "shared raider Thargoid death curse retained",
+      "source": "Scripts/rescue_scenario_5_pirate.js",
+      "source_sha256": "1d23af300b51da2f913337f3c67ef85b742036a7ae1127da457b329fed13f6f0",
+      "duration_ms": 0.017832999999999544,
+      "passed": true
+    },
+    {
+      "name": "danger128 floor-square-root 0,0",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.029833,
+      "passed": true
+    },
+    {
+      "name": "danger128 floor-square-root 128,0",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.014167000000000485,
+      "passed": true
+    },
+    {
+      "name": "danger128 floor-square-root 128,0.999",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.018333999999999406,
+      "passed": true
+    },
+    {
+      "name": "danger128 floor-square-root 512,0.999",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.015125000000001165,
+      "passed": true
+    },
+    {
+      "name": "danger128 floor-square-root 1152,0.999",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.014041999999999888,
+      "passed": true
+    },
+    {
+      "name": "optional news chance equality 0.05,true",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.03358300000000014,
+      "passed": true
+    },
+    {
+      "name": "optional news chance equality 0.050001,true",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.0027919999999994616,
+      "passed": true
+    },
+    {
+      "name": "optional news chance equality 0,false",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.002041999999999433,
+      "passed": true
+    },
+    {
+      "name": "source high-score pirate request 476287",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.021375000000002586,
+      "passed": true
+    },
+    {
+      "name": "source high-score pirate request 476288",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.014165999999999457,
+      "passed": true
+    }
+  ]
+}
