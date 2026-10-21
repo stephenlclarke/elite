@@ -1,14 +1,15 @@
 import Foundation
 
 enum NativeInductionArkSave {
-  static let version = 77
-  static let alienVersion = 78
+  static let version = 79
+  static let alienVersion = 80
   static func contains(_ schema: Int?) -> Bool {
-    schema == version || schema == alienVersion || schema == 75 || schema == 76
+    schema == version || schema == alienVersion || schema == 77 || schema == 78 || schema == 75
+      || schema == 76
   }
   static func lowerSchema(_ schema: Int?) -> Int? {
     guard contains(schema) else { return schema }
-    return schema == alienVersion || schema == 76
+    return schema == alienVersion || schema == 78 || schema == 76
       ? NativeWayfarerInductionSave.alienVersion : NativeWayfarerInductionSave.version
   }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
@@ -38,12 +39,15 @@ enum NativeInductionArkSave {
         child.digest == NativeInductionArkPack.digest,
         child.id == state.authorization.job, child.outcome == .active,
         child.contract == nil, child.completionReceipt == nil, child.dialogue == nil,
-        child.payloads.isEmpty, child.gearIssues.isEmpty, child.milestones.isEmpty,
+        child.payloads.isEmpty, child.gearIssues.isEmpty,
+        child.milestones == (state.reception == nil ? [] : [0]),
         child.data == .object([:]), child.campaignParent == nil, child.campaignChildren.isEmpty,
         child.timers.keys.allSatisfy({ $0 == NativeInductionArkPack.launchTimer }),
         link.job == child.id, link.registeredArk == source.actor,
         link.operation == state.authorization.operation, link.loanOperation == key.operation,
         state.shapeValid(source: source, key: key),
+        state.reception == leaf.seedReception,
+        receivingClaimsValid(state, parent: parent, child: child, engine: engine),
         state.authorization.sequence <= engine.nextEvent,
         parent.hasAcknowledged(state.authorization.sequence),
         child.hasAcknowledged(state.authorization.sequence),
@@ -81,6 +85,12 @@ enum NativeInductionArkSave {
       guard world.mainStations.contains(contact.station),
         contact.arkActor.visit <= commander.flightSimulation.visit,
         contact.physicalTime <= commander.flightSimulation.physicalTime
+      else { return false }
+    }
+    if let reception = state.reception {
+      guard reception.playerDock.sequence < world.nextMainDockSequence,
+        reception.playerDock.actor.visit <= commander.flightSimulation.visit,
+        reception.physicalTime <= commander.flightSimulation.physicalTime
       else { return false }
     }
     for exit in state.exits {

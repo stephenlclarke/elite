@@ -9,7 +9,8 @@ extension NativeInductionArkSave {
       !root.keys.contains("savedNativeArk"), !root.keys.contains("nativeArk")
     else { throw SaveError.invalidCommander }
     if let world = root["nativeStations"] as? [String: Any], world.keys.contains("arkFuel") {
-      guard part == .commander, schema == version || schema == alienVersion,
+      guard part == .commander,
+        schema == version || schema == alienVersion || schema == 77 || schema == 78,
         let stocks = world["arkFuel"] as? [[String: Any]], !stocks.isEmpty,
         stocks.count <= NativeMainStationIdentity.maximumCount
       else { throw SaveError.invalidCommander }
@@ -52,12 +53,24 @@ extension NativeInductionArkSave {
       {
         guard !embedded, contains(schema) else { throw SaveError.invalidCommander }
       }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("seedReception")
+      {
+        guard !embedded, schema == version || schema == alienVersion else {
+          throw SaveError.invalidCommander
+        }
+      }
       if own {
         guard !embedded, contains(schema), let leaf = mission["savedNativeArk"] as? [String: Any]
         else { throw SaveError.invalidCommander }
         let bytes = try JSONSerialization.data(withJSONObject: leaf)
         guard bytes.count <= 524_288, let bank = leaf["fuel"] as? [String: Any] else {
           throw SaveError.invalidCommander
+        }
+        if schema != version && schema != alienVersion {
+          guard leaf["reception"] == nil, bank["closure"] == nil else {
+            throw SaveError.invalidCommander
+          }
         }
         if schema == 75 || schema == 76 {
           guard leaf["serviceWait"] == nil, leaf["savedExits"] == nil,

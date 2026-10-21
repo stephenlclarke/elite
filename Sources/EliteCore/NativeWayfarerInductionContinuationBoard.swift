@@ -8,6 +8,7 @@ extension NativeWayfarerInductionAction {
     case .receive: NativeWayfarerInduction.receiver
     case .service: NativeWayfarerInduction.clinic
     case .keyLoan, .launchArk: NativeWayfarerInduction.seedSource
+    case .receiveArk: NativeWayfarerInduction.seedReceiver
     case .cassette: NativeWayfarerInduction.workshop
     }
   }
@@ -15,6 +16,11 @@ extension NativeWayfarerInductionAction {
 
 extension NativeWayfarerInductionState {
   func action(at system: SystemIdentity) -> NativeWayfarerInductionAction {
+    if seedKey != nil && seedKeyLoss == nil && seedReception == nil && ark != nil
+      && system == NativeWayfarerInduction.seedReceiver
+    {
+      return .receiveArk
+    }
     if seedKey != nil && seedKeyLoss == nil && ark == nil
       && system == NativeWayfarerInduction.seedSource
     {
@@ -75,8 +81,11 @@ extension Game {
 
   var wayfarerInductionDestination: String {
     let state = wayfarerInductionMission?.savedWayfarerInduction
+    if state?.seedReception != nil {
+      return "Cevilis custody-recorder recovery / stages8-14 unavailable"
+    }
     if state?.seedKey != nil {
-      return "Lareria receiving cradle, G01-S091 / actual escort and key return locked"
+      return "Lareria receiving cradle, G01-S091 / original ark receiving and key return"
     }
     if state?.cassetteService != nil { return "Enlirin main orbital seed vault, G01-S162" }
     if state?.cassette != nil { return "Renas main orbital repair desk, G01-S185" }

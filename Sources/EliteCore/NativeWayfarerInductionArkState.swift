@@ -99,6 +99,7 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
   let dockedContact: NativeArkFuelContact?
   let exitedContacts: [UInt64]
   let serviceWait: NativeArkServiceWait?
+  let reception: NativeInductionSeedReception?
   private let savedExits: [NativeArkBerthExit]?
   var exits: [NativeArkBerthExit] { savedExits ?? [] }
   init(
@@ -106,7 +107,8 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
     admission: NativeArkAdmission? = nil, legs: [NativeArkHopReference] = [],
     loss: NativeArkHullLoss? = nil, fuelContacts: [NativeArkFuelContact] = [],
     dockedContact: NativeArkFuelContact? = nil, exitedContacts: [UInt64] = [],
-    serviceWait: NativeArkServiceWait? = nil, exits: [NativeArkBerthExit] = []
+    serviceWait: NativeArkServiceWait? = nil, exits: [NativeArkBerthExit] = [],
+    reception: NativeInductionSeedReception? = nil
   ) {
     self.authorization = authorization
     self.fuel = fuel
@@ -117,13 +119,14 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
     self.dockedContact = dockedContact
     self.exitedContacts = exitedContacts
     self.serviceWait = serviceWait
+    self.reception = reception
     self.savedExits = exits.isEmpty ? nil : exits
   }
   static func == (a: NativeInductionArkState, b: NativeInductionArkState) -> Bool {
     a.authorization == b.authorization && a.fuel == b.fuel && a.admission == b.admission
       && a.legs == b.legs && a.loss == b.loss && a.fuelContacts == b.fuelContacts
       && a.dockedContact == b.dockedContact && a.exitedContacts == b.exitedContacts
-      && a.serviceWait == b.serviceWait && a.exits == b.exits
+      && a.serviceWait == b.serviceWait && a.exits == b.exits && a.reception == b.reception
   }
   func replacing(
     admission: NativeArkAdmission? = nil, legs: [NativeArkHopReference]? = nil,
@@ -131,7 +134,8 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
     fuelContacts: [NativeArkFuelContact]? = nil,
     dockedContact: NativeArkFuelContact? = nil, clearsDock: Bool = false,
     exitedContacts: [UInt64]? = nil, serviceWait: NativeArkServiceWait? = nil,
-    clearsServiceWait: Bool = false, exits: [NativeArkBerthExit]? = nil
+    clearsServiceWait: Bool = false, exits: [NativeArkBerthExit]? = nil,
+    reception: NativeInductionSeedReception? = nil
   ) -> NativeInductionArkState {
     .init(
       authorization: authorization, fuel: fuel ?? self.fuel,
@@ -140,10 +144,13 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
       dockedContact: clearsDock ? nil : (dockedContact ?? self.dockedContact),
       exitedContacts: exitedContacts ?? self.exitedContacts,
       serviceWait: clearsServiceWait ? nil : (serviceWait ?? self.serviceWait),
-      exits: exits ?? self.exits)
+      exits: exits ?? self.exits, reception: reception ?? self.reception)
   }
   var livingCrew: Int { admission != nil && loss == nil ? authorization.crew.count : 0 }
-  var intactSeedTonnes: Int { admission != nil && loss == nil ? authorization.seeds.count : 0 }
+  var intactSeedTonnes: Int {
+    admission != nil && loss == nil && reception == nil ? authorization.seeds.count : 0
+  }
+  var deliveredSeedTonnes: Int { reception?.seeds.count ?? 0 }
 
   func shapeValid(source: NativeInductionArkSource, key: NativeInductionVaultKeyLoan) -> Bool {
     let a = authorization
@@ -192,6 +199,19 @@ final class NativeInductionArkState: Codable, Sendable, Equatable {
         admission.physicalTime <= 1e12
       else { return false }
     } else if !legs.isEmpty || loss != nil || !fuelContacts.isEmpty || !fuel.purchases.isEmpty {
+      return false
+    }
+    if let reception {
+      let link = NativeInductionArkLink(
+        job: a.job, registeredArk: a.registeredArk,
+        operation: a.operation, loanOperation: a.loanOperation)
+      guard loss == nil, reception.valid(key: key, link: link),
+        reception.seeds == a.seeds, reception.crew == a.crew,
+        reception.arkDock == dockedContact, reception.owner == a.owner,
+        reception.parent == a.parent, reception.flightSeconds >= a.flightSeconds,
+        fuel.closure?.receivingOperation == reception.operation
+      else { return false }
+    } else if fuel.closure != nil {
       return false
     }
     if let loss {

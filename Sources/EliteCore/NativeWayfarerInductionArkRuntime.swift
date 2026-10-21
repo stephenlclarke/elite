@@ -36,6 +36,7 @@ extension Game {
       let retained = group.actors[NativeInductionArkPack.alias],
       retained.identity == previous.authorization.actor
     else { return false }
+    if previous.reception != nil { return false }
     if previous.dockedContact != nil { return try serviceInductionArk(id) }
     var next = previous
     if previous.admission == nil {
@@ -129,6 +130,10 @@ extension Game {
     guard let link = wayfarerInductionMission?.savedWayfarerInduction?.ark,
       let child = commander.scriptState.instances[link.job], let state = child.savedNativeArk
     else { return nil }
+    if state.reception != nil {
+      return
+        "Original forty seed tonnes received at Lareria; original vault key returned. Later accreditation stages remain locked."
+    }
     if state.loss != nil {
       return "Original ark destroyed; original crew and seed lost. No receiving credit."
     }

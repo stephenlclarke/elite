@@ -67,6 +67,7 @@ extension NativeWayfarerInductionState {
     if cassette != nil { result.insert(3) }
     if cassetteService != nil { result.insert(4) }
     if seedKey != nil { result.insert(5) }
+    if seedReception != nil { result.insert(6) }
     return result
   }
 

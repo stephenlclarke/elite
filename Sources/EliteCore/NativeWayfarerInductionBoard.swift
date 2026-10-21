@@ -1,7 +1,7 @@
 import Foundation
 
 enum NativeWayfarerInductionAction: String, Sendable {
-  case accept, pickup, receive, cassette, service, keyLoan, launchArk, progress
+  case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
     switch self {
@@ -12,6 +12,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .service: "Renas repair desk / review original service and owner return"
     case .keyLoan: "Enlirin seed vault / review consent and original key loan"
     case .launchArk: "Enlirin seed custodians / review original ark launch"
+    case .receiveArk: "Lareria cradle / review original ark receiving and key return"
     case .progress: "Senn / current induction records"
     }
   }
@@ -23,6 +24,8 @@ struct NativeWayfarerInductionReview: Sendable {
   let inventoryRevision: UInt64?
   let trade: NativeInductionTradeEvidence?
   let epoch: UUID
+  let missionRevision: UInt64?
+  let arkRevision: UInt64?
   let issues: [String]
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
@@ -58,6 +61,10 @@ extension Game {
       action: action, dock: commander.nativeStations?.currentMainDock,
       carrier: commander.hullInstanceID, inventoryRevision: commander.equipmentInventory?.revision,
       trade: trade, epoch: nativeStationRuntimeEpoch,
+      missionRevision: wayfarerInductionMission?.revision,
+      arkRevision: wayfarerInductionMission?.savedWayfarerInduction?.ark.flatMap {
+        commander.scriptState.instances[$0.job]?.revision
+      },
       issues: action == .progress ? [] : inductionActionIssues(action, trade: trade))
   }
 
@@ -76,7 +83,7 @@ extension Game {
     if commander.hullInstanceID == nil || commander.equipmentInventory == nil {
       issues.append("The actual owned carrier and fitting must be available.")
     }
-    if action != .receive && action != .service && action != .launchArk,
+    if action != .receive && action != .service && action != .launchArk && action != .receiveArk,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -86,6 +93,7 @@ extension Game {
     case .pickup: issues += inductionPickupIssues()
     case .receive, .cassette, .service, .keyLoan: issues += inductionContinuationIssues(action)
     case .launchArk: issues += inductionArkLaunchIssues()
+    case .receiveArk: issues += inductionArkReceivingIssues()
     case .progress: break
     }
     return issues
@@ -123,6 +131,7 @@ extension Game {
     guard quote.allowed, current.allowed, quote.dock == current.dock,
       quote.carrier == current.carrier, quote.inventoryRevision == current.inventoryRevision,
       quote.trade == current.trade, quote.epoch == current.epoch,
+      quote.missionRevision == current.missionRevision, quote.arkRevision == current.arkRevision,
       let owner = commander.equipmentOwnerID, let dock = current.dock,
       let carrier = current.carrier, let revision = current.inventoryRevision,
       let pack = wayfarerInductionPack
@@ -190,6 +199,9 @@ extension Game {
     if quote.action == .launchArk {
       try candidate.confirmInductionArkLaunch(dock: dock, carrier: carrier, revision: revision)
     }
+    if quote.action == .receiveArk {
+      try candidate.confirmInductionArkReceiving(dock: dock, carrier: carrier, revision: revision)
+    }
     self = candidate
   }
 
@@ -210,7 +222,7 @@ extension Game {
       "At Renas repair desk, Confirm service of the same original cassette and its owner's receiving record. This releases its tonne and pays nothing.",
       "At Enlirin, review the seed custodians' consent before Confirm borrows their unique one-tonne vault key for Lareria's receiving cradle. The key stays their property; the seed travels aboard the ark.",
       "The loan is untimed, needs one free tonne and cannot be sold, fitted or released as personal equipment. At Enlirin, separately review and Confirm the one original ark registration; no extra player cargo space is required.",
-      "The registered ark uses actual native aperture docking and its own custodian escrow for needed-hop fuel. Each real main station has a separate finite 100-LY ark-service reserve. Saving, revisiting or reopening never refills stock or funds; actual Lareria receiving/key return remains locked.",
+      "The registered ark uses actual native aperture docking and its own custodian escrow for needed-hop fuel. Each real main station has a separate finite 100-LY ark-service reserve. Saving, revisiting or reopening never refills stock or funds; actual Lareria receiving and original key return need their separate Confirm review.",
       "These stages pay nothing and grant no accreditation or clue. "
         + NativeWayfarerInduction.laterStages,
     ]
@@ -223,10 +235,17 @@ extension Game {
               "Original clinic crate received intact at Navidor with %.1f flight seconds remaining.",
             reception.remaining))
         if let key = state.seedKey {
+          if state.seedReception != nil {
+            lines.append(
+              "Lareria received the forty original seed tonnes with all six original crew alive. The original vault key and unused custodian escrow were returned; the carried tonne is released. No player payment, clue or accreditation."
+            )
+          }
           lines.append(
-            state.seedKeyLoss == nil
-              ? "Original Enlirin vault key aboard on loan; return is restricted to Lareria's seed-ark receiving cradle. Original ark registration is reviewed separately at Enlirin; actual cradle receiving/key return remains locked."
-              : "The original vault key was lost; its outstanding custodian loan remains recorded. No replacement or return is granted."
+            state.seedReception != nil
+              ? "Original Enlirin vault key returned at the actual Lareria receiving cradle."
+              : state.seedKeyLoss == nil
+                ? "Original Enlirin vault key aboard on loan; return is restricted to Lareria's seed-ark receiving cradle. Original ark registration is reviewed separately at Enlirin; actual cradle receiving and original key return are reviewed separately at Lareria."
+                : "The original vault key was lost; its outstanding custodian loan remains recorded. No replacement or return is granted."
           )
           lines.append(
             "Loan source: " + key.source.resource + "; issued original remains custodian property.")
