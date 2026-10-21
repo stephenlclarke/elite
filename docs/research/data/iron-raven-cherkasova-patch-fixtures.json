@@ -1,0 +1,379 @@
+{
+  "profile_id": "P19-CHERKASOVA-NARROW-PATCH-v1",
+  "scope": "Exact occurrence-checked JS edits execute blocked/G8/proven-blocker callback guard, supplied physical-meeting readiness flag, 3Continue and final selector guards, fresh combat distance/absent player/derelict and friendly-fire target guards. Proof/readiness flags are explicit test inputs, not actual native world/docking proof. Per-page native receipts, actual admission/blocker/station/person identity, scoped text, complete repaired AI and save/gallery remain separate acceptance.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-cherkasova.js",
+      "sha256": "4e7ad0037e1c048bca49ce437f3074cc8f65ef7c39bd9428a93c3d437952667b"
+    }
+  ],
+  "main_edits": [
+    {
+      "before": "this.playerJumpFailed = function () {",
+      "after": "this.playerJumpFailed = function (reason) { if (galaxyNumber !== 7 || reason !== \"blocked\" || !this._IRBlockedByCherkasova) return;"
+    },
+    {
+      "before": "if (missionVariables.IR_status == \"IR_CHERKASOVA_1\") { // briefing with Cherkasova\r\n\t\t\tmissionVariables.IR_saved_location_3 = system.name;\r\n\t\t\tthis._runScreen({ messageKey: \"IR_CHERKASOVA_1a\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\tthis._runScreen({ messageKey: \"IR_CHERKASOVA_1b\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\tthis._runScreen({ messageKey: \"IR_CHERKASOVA_1c\", choicesKey: \"IR_continue\" }, function (choice) {\r\n\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_CHERKASOVA_1d\", choicesKey: \"IR_cherkasova_choices\" }, function (choice) {\r\n\t\t\t\t\t\t\tthis.$addPadCharacter(\"cherkasova\");\r\n\t\t\t\t\t\t\tif (choice == 1) {\r\n\t\t\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_LOA_1\" });\r\n\t\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_LOA_brief_1\");\r\n\t\t\t\t\t\t\t\tmission.markSystem({ name: this.name, system: 240 });\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_status = \"IR_LOA_1\";\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_cherkasova_deadline = null;\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\tif (choice == 2) {\r\n\t\t\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_sources_1\" }); //screen fails to run\r\n\t\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_LEXICON_brief_1\");\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_status = \"IR_sources_1\";\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_cherkasova_deadline = null;\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_sources_deadline = clock.days + 15;\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t});\r\n\t\t}\r\n\r\n\t\t",
+      "after": "if (missionVariables.IR_status == \"IR_CHERKASOVA_1\") { // briefing with Cherkasova\r\n\t\t\tmissionVariables.IR_saved_location_3 = system.name;\r\n\t\t\tthis._runScreen({ messageKey: \"IR_CHERKASOVA_1a\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\tthis._runScreen({ messageKey: \"IR_CHERKASOVA_1b\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\tthis._runScreen({ messageKey: \"IR_CHERKASOVA_1c\", choicesKey: \"IR_continue\" }, function (choice) { if (choice !== \"1\") return;\r\n\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_CHERKASOVA_1d\", choicesKey: \"IR_cherkasova_choices\" }, function (choice) { if (choice !== \"1\" && choice !== \"2\") return;\r\n\t\t\t\t\t\t\tthis.$addPadCharacter(\"cherkasova\");\r\n\t\t\t\t\t\t\tif (choice == 1) {\r\n\t\t\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_LOA_1\" });\r\n\t\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_LOA_brief_1\");\r\n\t\t\t\t\t\t\t\tmission.markSystem({ name: this.name, system: 240 });\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_status = \"IR_LOA_1\";\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_cherkasova_deadline = null;\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\tif (choice == 2) {\r\n\t\t\t\t\t\t\t\tthis._runScreen({ messageKey: \"IR_sources_1\" }); //screen fails to run\r\n\t\t\t\t\t\t\t\tthis._setInstructionsKey(\"IR_LEXICON_brief_1\");\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_status = \"IR_sources_1\";\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_cherkasova_deadline = null;\r\n\t\t\t\t\t\t\t\tmissionVariables.IR_sources_deadline = clock.days + 15;\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t});\r\n\t\t\t\t});\r\n\t\t\t});\r\n\t\t}\r\n\r\n\t\t"
+    },
+    {
+      "before": "if (missionVariables.IR_status == \"IR_CHERKASOVA_1\") { // briefing with Cherkasova",
+      "after": "if (missionVariables.IR_status == \"IR_CHERKASOVA_1\" && this._IRMeetingReady) { // briefing with Cherkasova"
+    }
+  ],
+  "actor_edits": [
+    {
+      "before": "if (!player.ship || !player.ship.position)\n\tthis.playerDistance = this.ship.position.distanceTo(player.ship);",
+      "after": "if (!player.ship || !player.ship.position) return;\n\tthis.playerDistance = this.ship.position.distanceTo(player.ship);"
+    },
+    {
+      "before": "if (!player.ship || !player.ship.position) return;",
+      "after": "if (this.ship.target && this.ship.target.isPlayer) { this.ship.reactToAIMessage(\"FRIENDLY_FIRE\"); return; }\n\tif (!player.ship || !player.ship.position) return;"
+    },
+    {
+      "before": "this.ship.reactToAIMessage(\"TARGET_EJECTED\");",
+      "after": "this.ship.reactToAIMessage(\"TARGET_EJECTED\"); return;"
+    },
+    {
+      "before": "if (player.ship.target == this.ship && this.ship.target.isPlayer) {",
+      "after": "if (!this.ship.target) { this.ship.AIState = \"LOCATE_PLAYER\"; return; }\n\tif (this.ship.target.isPlayer) {"
+    }
+  ],
+  "patched_main_sha256": "7683042041149ab628279b632d51218dfb9a84022b8a6014a7daf547f7d32092",
+  "patched_actor_sha256": "98b96d99adb1792b86c64fee730007bc49ddfb68195149d2f87dbcc1f6dd9592",
+  "total": 29,
+  "passed": 29,
+  "cases": [
+    {
+      "name": "Guard jump failure 7,blocked,true",
+      "passed": true,
+      "duration_ms": 3.801416,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "actions": [
+          [
+            "AI",
+            "IR-cherkasova-enterAI.plist"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Guard jump failure 7,blocked,false",
+      "passed": true,
+      "duration_ms": 0.591291,
+      "result": {
+        "phase": "IR_IBANEZ_5",
+        "actions": []
+      }
+    },
+    {
+      "name": "Guard jump failure 6,blocked,true",
+      "passed": true,
+      "duration_ms": 0.578666,
+      "result": {
+        "phase": "IR_IBANEZ_5",
+        "actions": []
+      }
+    },
+    {
+      "name": "Guard jump failure 7,insufficient fuel,true",
+      "passed": true,
+      "duration_ms": 0.412583,
+      "result": {
+        "phase": "IR_IBANEZ_5",
+        "actions": []
+      }
+    },
+    {
+      "name": "Guard jump failure 7,too far,true",
+      "passed": true,
+      "duration_ms": 0.44275,
+      "result": {
+        "phase": "IR_IBANEZ_5",
+        "actions": []
+      }
+    },
+    {
+      "name": "Guard jump failure 7,malfunction,true",
+      "passed": true,
+      "duration_ms": 0.476334,
+      "result": {
+        "phase": "IR_IBANEZ_5",
+        "actions": []
+      }
+    },
+    {
+      "name": "Guard jump failure 7,,true",
+      "passed": true,
+      "duration_ms": 0.383958,
+      "result": {
+        "phase": "IR_IBANEZ_5",
+        "actions": []
+      }
+    },
+    {
+      "name": "Physical meeting and final selector guard false,1",
+      "passed": true,
+      "duration_ms": 0.729917,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": []
+      }
+    },
+    {
+      "name": "Physical meeting and final selector guard false,2",
+      "passed": true,
+      "duration_ms": 0.382792,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": []
+      }
+    },
+    {
+      "name": "Physical meeting and final selector guard false,BACK",
+      "passed": true,
+      "duration_ms": 0.473333,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": []
+      }
+    },
+    {
+      "name": "Physical meeting and final selector guard false,",
+      "passed": true,
+      "duration_ms": 0.442792,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": []
+      }
+    },
+    {
+      "name": "Physical meeting and final selector guard true,1",
+      "passed": true,
+      "duration_ms": 0.445083,
+      "result": {
+        "phase": "IR_LOA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a",
+          "IR_CHERKASOVA_1b",
+          "IR_CHERKASOVA_1c",
+          "IR_CHERKASOVA_1d",
+          "IR_LOA_1"
+        ]
+      }
+    },
+    {
+      "name": "Physical meeting and final selector guard true,2",
+      "passed": true,
+      "duration_ms": 0.501041,
+      "result": {
+        "phase": "IR_sources_1",
+        "messages": [
+          "IR_CHERKASOVA_1a",
+          "IR_CHERKASOVA_1b",
+          "IR_CHERKASOVA_1c",
+          "IR_CHERKASOVA_1d",
+          "IR_sources_1"
+        ]
+      }
+    },
+    {
+      "name": "Physical meeting and final selector guard true,BACK",
+      "passed": true,
+      "duration_ms": 0.402167,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a",
+          "IR_CHERKASOVA_1b",
+          "IR_CHERKASOVA_1c",
+          "IR_CHERKASOVA_1d"
+        ]
+      }
+    },
+    {
+      "name": "Physical meeting and final selector guard true,",
+      "passed": true,
+      "duration_ms": 0.533417,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a",
+          "IR_CHERKASOVA_1b",
+          "IR_CHERKASOVA_1c",
+          "IR_CHERKASOVA_1d"
+        ]
+      }
+    },
+    {
+      "name": "Each Continue page guard 0,BACK",
+      "passed": true,
+      "duration_ms": 0.470125,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a"
+        ]
+      }
+    },
+    {
+      "name": "Each Continue page guard 0,",
+      "passed": true,
+      "duration_ms": 0.488,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a"
+        ]
+      }
+    },
+    {
+      "name": "Each Continue page guard 1,BACK",
+      "passed": true,
+      "duration_ms": 0.390958,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a",
+          "IR_CHERKASOVA_1b"
+        ]
+      }
+    },
+    {
+      "name": "Each Continue page guard 1,",
+      "passed": true,
+      "duration_ms": 0.358542,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a",
+          "IR_CHERKASOVA_1b"
+        ]
+      }
+    },
+    {
+      "name": "Each Continue page guard 2,BACK",
+      "passed": true,
+      "duration_ms": 0.512083,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a",
+          "IR_CHERKASOVA_1b",
+          "IR_CHERKASOVA_1c"
+        ]
+      }
+    },
+    {
+      "name": "Each Continue page guard 2,",
+      "passed": true,
+      "duration_ms": 0.406083,
+      "result": {
+        "phase": "IR_CHERKASOVA_1",
+        "messages": [
+          "IR_CHERKASOVA_1a",
+          "IR_CHERKASOVA_1b",
+          "IR_CHERKASOVA_1c"
+        ]
+      }
+    },
+    {
+      "name": "Combat recomputes actual distance 51200",
+      "passed": true,
+      "duration_ms": 0.589959,
+      "result": {
+        "distance": 51200,
+        "actions": [
+          [
+            "react",
+            "ENEMY_FIRE"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Combat recomputes actual distance 51201",
+      "passed": true,
+      "duration_ms": 0.45325,
+      "result": {
+        "distance": 51201,
+        "state": "LOCATE_PLAYER",
+        "actions": []
+      }
+    },
+    {
+      "name": "Missing player returns without throwing",
+      "passed": true,
+      "duration_ms": 0.503625,
+      "result": {
+        "actions": []
+      }
+    },
+    {
+      "name": "Derelict target returns after EJECTED",
+      "passed": true,
+      "duration_ms": 0.624,
+      "result": {
+        "target": null,
+        "actions": [
+          [
+            "react",
+            "TARGET_EJECTED"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Friendly fire never depends on player aim false",
+      "passed": true,
+      "duration_ms": 0.400167,
+      "result": {
+        "actions": [
+          [
+            "react",
+            "FRIENDLY_FIRE"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Friendly fire never depends on player aim true",
+      "passed": true,
+      "duration_ms": 0.368208,
+      "result": {
+        "actions": [
+          [
+            "react",
+            "FRIENDLY_FIRE"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Missing target returns to search safely",
+      "passed": true,
+      "duration_ms": 0.449875,
+      "result": {
+        "state": "LOCATE_PLAYER"
+      }
+    },
+    {
+      "name": "Combat guard stops a newly selected player target",
+      "passed": true,
+      "duration_ms": 0.506458,
+      "result": {
+        "actions": [
+          [
+            "react",
+            "FRIENDLY_FIRE"
+          ]
+        ]
+      }
+    }
+  ]
+}

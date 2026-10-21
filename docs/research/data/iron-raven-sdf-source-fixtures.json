@@ -1,0 +1,1990 @@
+{
+  "profile_id": "P19-SDF-SOURCE-v1",
+  "scope": "Actual recovered main/helper/actor callbacks under lexical vm globals with native-missing-mission-variable null semantics and finite native credit spy. Source actors/Timer/positions/populator APIs are explicit spies; no original engine AI/physics/thermal/scoop/docking/save proof. Unchanged scripted source functions expose quirks, not their selected project repairs. Missing/foreign fixtures are synthetic API circumstances, not evidence of a real original playthrough.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-SDF.js",
+      "sha256": "42667bd9bd081dc31ab8a99365561f02cc330d9430d4f7f278950c8c55274145"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-krait.js",
+      "sha256": "74b26d695ab15eb69dd32bd2812c024f999e6a006a9c3544891c2a7b332c5f37"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-fuel-waste.js",
+      "sha256": "d6599032fd63f0d94e8186e4fa7088142c68705e87f664fc1fd1ca6676018200"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-damaged-escape-pod.js",
+      "sha256": "233282fdde5ca2306a33cfc4a7ac79ebf430eb543976fab17562e478f694c006"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-mfd.js",
+      "sha256": "3eeddde1bf2e07767921c4bd75222fb4b6383cf932a27a2c78d8e20c1c4c36df"
+    }
+  ],
+  "total": 65,
+  "passed": 65,
+  "cases": [
+    {
+      "name": "Jane intelligence question gate 1",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_JANES_QUESTIONS",
+          "IR_SDF_question_no": 1
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.180833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_JANES_QUESTIONS",
+          "IR_SDF_question_no": 2,
+          "IR_SDF_question_key": "SDF_question_2",
+          "IR_SDF_question_string": "[SDF_question_string_2]"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_JANES_SDF_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Jane intelligence question gate 2",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_JANES_QUESTIONS",
+          "IR_SDF_question_no": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.005042,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_JANES_QUESTIONS",
+          "IR_SDF_question_no": 2
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_no_more_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Jane intelligence question gate 3",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_JANES_QUESTIONS",
+          "IR_SDF_question_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.00425,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_JANES_QUESTIONS",
+          "IR_SDF_question_no": 3
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_no_more_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "PleasureWorld question progression 1",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_PW_QUESTIONS",
+          "IR_SDF_question_no": 1
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.015,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_ASKED",
+          "IR_SDF_question_no": 1
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_negative_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "PleasureWorld question progression 2",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_PW_QUESTIONS",
+          "IR_SDF_question_no": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.035917,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PW_QUESTIONS",
+          "IR_SDF_question_no": 3,
+          "IR_SDF_question_key": "SDF_question_3",
+          "IR_SDF_question_string": "[SDF_question_string_3]",
+          "IR_SDF_quest": "ADDRESS",
+          "IR_SDF_deadline": 110
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_PW_SDF_answer_1",
+          "IR_SDF_quest_1"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "character",
+            "devries"
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "PleasureWorld question progression 3",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_PW_QUESTIONS",
+          "IR_SDF_question_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.005958,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_ASKED",
+          "IR_SDF_question_no": 3
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_no_more_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "PleasureWorld question progression 4",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_PW_QUESTIONS",
+          "IR_SDF_question_no": 4
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.00375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_ASKED",
+          "IR_SDF_question_no": 4
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_negative_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "PleasureWorld question progression 5",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_PW_QUESTIONS",
+          "IR_SDF_question_no": 5
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.011458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_PW_QUESTIONS",
+          "IR_SDF_question_no": 6,
+          "IR_SDF_question_key": "SDF_question_6",
+          "IR_SDF_question_string": "[SDF_question_string_6]",
+          "IR_SDF_quest": "PHOTO",
+          "IR_SDF_deadline": 135
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_PW_SDF_answer_2"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "PleasureWorld question progression 6",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_PW_QUESTIONS",
+          "IR_SDF_question_no": 6
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.006625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_ASKED",
+          "IR_SDF_question_no": 6
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_negative_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "ADDRESS message >=10calendar day 109",
+      "initial": {
+        "days": 109,
+        "vars": {
+          "IR_SDF_quest": "ADDRESS",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.282542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "ADDRESS",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "ADDRESS message >=10calendar day 110",
+      "initial": {
+        "days": 110,
+        "vars": {
+          "IR_SDF_quest": "ADDRESS",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.045,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JACOB",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 1
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_2"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "ADDRESS message >=10calendar day 111",
+      "initial": {
+        "days": 111,
+        "vars": {
+          "IR_SDF_quest": "ADDRESS",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.009125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JACOB",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 1
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_2"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Inorle main gives optional Luftslotte directions",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "JACOB"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.01575,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "LUFTSLOTTE"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_3"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            82
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Actual Luftslotte contact phase JACOB",
+      "initial": {
+        "system": 82,
+        "main": false,
+        "roles": [
+          "IR-luft-core"
+        ],
+        "vars": {
+          "IR_SDF_quest": "JACOB"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0085,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_4"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Actual Luftslotte contact phase LUFTSLOTTE",
+      "initial": {
+        "system": 82,
+        "main": false,
+        "roles": [
+          "IR-luft-core"
+        ],
+        "vars": {
+          "IR_SDF_quest": "LUFTSLOTTE"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.007125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_4"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Actual Luftslotte contact phase ADDRESS",
+      "initial": {
+        "system": 82,
+        "main": false,
+        "roles": [
+          "IR-luft-core"
+        ],
+        "vars": {
+          "IR_SDF_quest": "ADDRESS"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "ADDRESS"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Actual Luftslotte contact phase KRAIT",
+      "initial": {
+        "system": 82,
+        "main": false,
+        "roles": [
+          "IR-luft-core"
+        ],
+        "vars": {
+          "IR_SDF_quest": "KRAIT"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source same-role Luftslotte elsewhere can advance without system binding",
+      "initial": {
+        "system": 1,
+        "main": false,
+        "roles": [
+          "IR-luft-core"
+        ],
+        "vars": {
+          "IR_SDF_quest": "JACOB"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.013916,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_4"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source launch after Luftslotte contact does not create target Krait",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "KRAIT"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.110333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Inorle populator Krait phase JACOB",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "JACOB"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.10475,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JACOB"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-luft-core",
+            "count": 1,
+            "pos": {
+              "id": "position"
+            },
+            "radius": 0
+          }
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Inorle populator Krait phase KRAIT",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "KRAIT"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.014209,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-luft-core",
+            "count": 1,
+            "pos": {
+              "id": "position"
+            },
+            "radius": 0
+          },
+          {
+            "role": "IR-krait",
+            "count": 1,
+            "pos": {
+              "id": "position"
+            },
+            "radius": 21000
+          }
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Inorle populator Krait phase JUMPED",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.00925,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JUMPED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-luft-core",
+            "count": 1,
+            "pos": {
+              "id": "position"
+            },
+            "radius": 0
+          },
+          {
+            "role": "IR-krait",
+            "count": 1,
+            "pos": {
+              "id": "position"
+            },
+            "radius": 21000
+          }
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Inorle populator Krait phase CONTAMINATED",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "CONTAMINATED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.007792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-luft-core",
+            "count": 1,
+            "pos": {
+              "id": "position"
+            },
+            "radius": 0
+          },
+          {
+            "role": "IR-krait",
+            "count": 1,
+            "pos": {
+              "id": "position"
+            },
+            "radius": 21000
+          }
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Inorle populator Krait phase POD_SCOOPED",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "POD_SCOOPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.006417,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "POD_SCOOPED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-luft-core",
+            "count": 1,
+            "pos": {
+              "id": "position"
+            },
+            "radius": 0
+          }
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Existing Luftslotte suppresses entire populator including absent Krait",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "KRAIT"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.011,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Target acquisition reaction KRAIT",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "KRAIT"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.306084,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT",
+          "IR_comms": "TRUE"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_krait_seen"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Target acquisition reaction JUMPED",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.012083,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JUMPED",
+          "IR_SDF_quest_location": 82,
+          "IR_SDF_quest_location_name": "source-bound-system",
+          "IR_comms": "TRUE"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_krait_seen2"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Target acquisition reaction CONTAMINATED",
+      "initial": {
+        "system": 82,
+        "vars": {
+          "IR_SDF_quest": "CONTAMINATED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.003459,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source first-role targeting ignores another actual Krait",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "KRAIT"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.016208,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source performJump flags success before an actual jump",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "KRAIT"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.2415,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JUMPED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source spawning Krait resets waste counter KRAIT",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "KRAIT",
+          "IR_cargoCount": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.030791,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT",
+          "IR_cargoCount": 10
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source spawning Krait resets waste counter JUMPED",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "JUMPED",
+          "IR_cargoCount": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.015208,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JUMPED",
+          "IR_cargoCount": 10
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source spawning Krait resets waste counter CONTAMINATED",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "CONTAMINATED",
+          "IR_cargoCount": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.012584,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED",
+          "IR_cargoCount": 10
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Ten-counter source creates exactly nine ejection attempts and sentinel1",
+      "initial": {
+        "vars": {
+          "IR_cargoCount": 10
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.075875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_cargoCount": 1
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_krait_examine_cargo"
+          ],
+          [
+            "IR_krait_examine_cargo"
+          ],
+          [
+            "IR_krait_examine_cargo"
+          ],
+          [
+            "IR_krait_examine_cargo"
+          ]
+        ],
+        "actions": [
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "ENTER"
+          ],
+          [
+            "AI",
+            "EJECTION_COMPLETE"
+          ],
+          [
+            "AI",
+            "EJECTION_COMPLETE"
+          ],
+          [
+            "AI",
+            "EJECTION_COMPLETE"
+          ],
+          [
+            "AI",
+            "EJECTION_COMPLETE"
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source failed waste spawn still consumes counter",
+      "initial": {
+        "vars": {
+          "IR_cargoCount": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.029292,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_cargoCount": 1
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_krait_examine_cargo"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Krait death creates evidence pod only contaminated KRAIT",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "KRAIT"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.027291,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KRAIT"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Krait death creates evidence pod only contaminated JUMPED",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.021083,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JUMPED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Krait death creates evidence pod only contaminated CONTAMINATED",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "CONTAMINATED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.024791,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-damaged-escape-pod",
+            "count": 1
+          }
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Krait death creates evidence pod only contaminated COMPLETED",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.016625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "COMPLETED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source repeated contaminated-death call would create duplicate pods; not an engine duplicate-event claim",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "CONTAMINATED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.033,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [
+          {
+            "role": "IR-damaged-escape-pod",
+            "count": 1
+          },
+          {
+            "role": "IR-damaged-escape-pod",
+            "count": 1
+          }
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Waste pickup source force-position boundary 24999.9",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.266375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_fuel_sample_warning"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Waste pickup source force-position boundary 25000",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.019083,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_fuel_sample_warning"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Waste pickup source force-position boundary 25000.1",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.031416,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_fuel_sample_warning"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Waste pickup source force-position boundary 50000",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.027875,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_fuel_sample_warning"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Empty native-style role array compares equal0 and avoids missing-Krait access",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.021333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_fuel_sample_warning"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Waste pickup NPC does not change player quest",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "JUMPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0175,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "JUMPED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Waste source lacks terminal guard and overwrites COMPLETED",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.019333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_fuel_sample_warning"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Damaged scripted pod scoop player",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "CONTAMINATED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.24125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "POD_SCOOPED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Damaged scripted pod scoop npc",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "CONTAMINATED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.020917,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "CONTAMINATED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Damaged pod source lacks terminal guard",
+      "initial": {
+        "vars": {
+          "IR_SDF_quest": "COMPLETED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.032,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "POD_SCOOPED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Garbled pod comms is actor-local once",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.031625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR-garbled",
+            null,
+            {}
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source quarantine at any G8 main station invokes whole special cargo",
+      "initial": {
+        "system": 5,
+        "vars": {
+          "IR_SDF_quest": "POD_SCOOPED",
+          "IR_SDF_status_no": 1
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.03075,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KORSHKOV",
+          "IR_SDF_status_no": 2
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_5"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "useSpecialCargo",
+            "IR_fuel_sample_warning"
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source nonmain station does not quarantine",
+      "initial": {
+        "main": false,
+        "vars": {
+          "IR_SDF_quest": "POD_SCOOPED"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.005667,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "POD_SCOOPED"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Aarzari decontamination removes ordinary cargo without a receipt",
+      "initial": {
+        "system": 31,
+        "vars": {
+          "IR_SDF_quest": "KORSHKOV",
+          "IR_SDF_status_no": 2
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.022666,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "ANALYSIS",
+          "IR_SDF_status_no": 3,
+          "IR_SDF_deadline": 110
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_6"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            31
+          ],
+          [
+            "removeAllCargo"
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Aarzari analysis ten-day equality 109",
+      "initial": {
+        "system": 31,
+        "days": 109,
+        "vars": {
+          "IR_SDF_quest": "ANALYSIS",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 3,
+          "IR_SDF_question_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.022333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "ANALYSIS",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 3,
+          "IR_SDF_question_no": 3
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            31
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Aarzari analysis ten-day equality 110",
+      "initial": {
+        "system": 31,
+        "days": 110,
+        "vars": {
+          "IR_SDF_quest": "ANALYSIS",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 3,
+          "IR_SDF_question_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.020125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "DATA",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 4,
+          "IR_SDF_question_no": 4,
+          "IR_SDF_question_key": "SDF_question_4",
+          "IR_SDF_question_string": "[SDF_question_string_4]"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_7a",
+          "IR_SDF_quest_7b"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            31
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Aarzari analysis ten-day equality 111",
+      "initial": {
+        "system": 31,
+        "days": 111,
+        "vars": {
+          "IR_SDF_quest": "ANALYSIS",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 3,
+          "IR_SDF_question_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.010667,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "DATA",
+          "IR_SDF_deadline": 110,
+          "IR_SDF_status_no": 4,
+          "IR_SDF_question_no": 4,
+          "IR_SDF_question_key": "SDF_question_4",
+          "IR_SDF_question_string": "[SDF_question_string_4]"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_7a",
+          "IR_SDF_quest_7b"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "unmark",
+            31
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Foreign main station cannot release analysis",
+      "initial": {
+        "system": 32,
+        "days": 111,
+        "vars": {
+          "IR_SDF_quest": "ANALYSIS",
+          "IR_SDF_deadline": 110
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.008,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "ANALYSIS",
+          "IR_SDF_deadline": 110
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "NWE array examination question 3",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_SDF_question_no": 3
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.011666,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_SDF_question_no": 3
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_negative_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "NWE array examination question 4",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_SDF_question_no": 4
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.020791,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_question_no": 5,
+          "IR_SDF_question_key": "SDF_question_5",
+          "IR_SDF_question_string": "[SDF_question_string_5]"
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_NWE_SDF_answer_1a",
+          "IR_NWE_SDF_answer_1b",
+          "IR_negative_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "NWE array examination question 5",
+      "initial": {
+        "vars": {
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_SDF_question_no": 5
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.004042,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_offer": "IR_NWE_QUESTIONS",
+          "IR_SDF_question_no": 5
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_negative_answer"
+        ],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Anonymous identification thirty-five-day equality 134",
+      "initial": {
+        "days": 134,
+        "vars": {
+          "IR_SDF_quest": "PHOTO",
+          "IR_SDF_deadline": 135,
+          "IR_SDF_status_no": 4,
+          "IR_SDF_question_no": 6
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.020291,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "PHOTO",
+          "IR_SDF_deadline": 135,
+          "IR_SDF_status_no": 4,
+          "IR_SDF_question_no": 6
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [],
+        "actions": [],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Anonymous identification thirty-five-day equality 135",
+      "initial": {
+        "days": 135,
+        "vars": {
+          "IR_SDF_quest": "PHOTO",
+          "IR_SDF_deadline": 135,
+          "IR_SDF_status_no": 4,
+          "IR_SDF_question_no": 6
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0275,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 1,
+          "IR_SDF_quest": "COMPLETED",
+          "IR_SDF_question_no": 6
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_8a",
+          "IR_SDF_quest_8b",
+          "IR_SDF_quest_8c"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "character",
+            "kinnaird"
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Anonymous identification thirty-five-day equality 136",
+      "initial": {
+        "days": 136,
+        "vars": {
+          "IR_SDF_quest": "PHOTO",
+          "IR_SDF_deadline": 135,
+          "IR_SDF_status_no": 4,
+          "IR_SDF_question_no": 6
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.01025,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 1,
+          "IR_SDF_quest": "COMPLETED",
+          "IR_SDF_question_no": 6
+        },
+        "credits": 1000000,
+        "messages": [
+          "IR_SDF_quest_8a",
+          "IR_SDF_quest_8b",
+          "IR_SDF_quest_8c"
+        ],
+        "mfd": [],
+        "actions": [
+          [
+            "character",
+            "kinnaird"
+          ]
+        ],
+        "spawn": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Aarzari aegis uses Timer null-delay/10interval and self-stops; native first due verified separately",
+      "initial": {
+        "system": 31,
+        "vars": {
+          "IR_SDF_quest": "KORSHKOV"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.048958,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0,
+          "IR_SDF_quest": "KORSHKOV"
+        },
+        "credits": 1000000,
+        "messages": [],
+        "mfd": [
+          [
+            "IR_radiation_damage"
+          ],
+          [
+            "IR_korshkov_reply",
+            null,
+            null,
+            "IR_aarzari_stn"
+          ]
+        ],
+        "actions": [],
+        "spawn": [],
+        "timers": [
+          {
+            "delay": null,
+            "interval": 10,
+            "stopped": true
+          }
+        ]
+      }
+    }
+  ]
+}

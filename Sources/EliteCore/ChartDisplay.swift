@@ -62,6 +62,9 @@ public struct ChartLayout: Sendable {
       x: width - min(320, width - 32) - 16, y: local ? 44 : 96, width: min(320, width - 32),
       height: min(320, height - (local ? 80 : 132)))
   }
+  public var searchClearRect: CanvasRect {
+    .init(x: searchRect.maxX - 60, y: searchRect.y, width: 60, height: 28)
+  }
   public var searchRows: Int { max(1, Int((searchRect.height - 36) / 22)) }
   public init(
     width: Double, height: Double, local: Bool, fuel: Int = 70, docked: Bool = false,
@@ -183,7 +186,7 @@ extension Game {
       return
     }
     if mapSearch.active {
-      if x > layout.searchRect.maxX - 60 && y < layout.searchRect.y + 28 {
+      if layout.searchClearRect.contains(.init(x, y)) {
         searchKey("search-clear")
         return
       }
@@ -227,7 +230,8 @@ extension Display {
       layout.local ? "SHORT RANGE CHART" : "Viewing Galaxy \(game.viewedGalaxy + 1)", 16, 10,
       scale: layout.font, ink: .yellow)
     frame.label(
-      "M: " + game.mapColour.rawValue, layout.local ? 16 : 220, layout.local ? 32 : 10,
+      "M: " + game.mapColour.rawValue + "  <> belt", layout.local ? 16 : 220,
+      layout.local ? 32 : 10,
       scale: layout.font, ink: .cyan)
     if !layout.local {
       frame.label(
@@ -252,13 +256,16 @@ extension Display {
         }) : [:]
     let markerBoxes = visible.map { system -> CanvasRect in
       let point = layout.point(system, current: game.currentSystem)
-      let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 3)
+      let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 4)
       return .init(x: point.x - radius, y: point.y - radius, width: radius * 2, height: radius * 2)
     }
     for system in visible {
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system)
       frame.point(point.x, point.y, radius: radius, ink: game.mapColour.colour(system))
+      if game.commander.miningLedger.ringPresence(system: system, galaxy: game.viewedGalaxy) {
+        frame.ellipse(point.x, point.y, radius + 2, radius + 1, .cyan)
+      }
       if ranks[system.id] != nil {
         frame.ellipse(point.x, point.y, radius + 7, radius + 7, .gold)
       }
@@ -365,7 +372,9 @@ extension Display {
     let values = [
       "Selected: G\(game.viewedGalaxy + 1) / " + system.name, "Economy: " + system.economyName,
       "Government: " + system.governmentName,
-      "Tech \(system.technology + 1)  Radius \(system.radius) km",
+      "Tech \(system.technology + 1)  Radius \(system.radius) km  Belt: "
+        + (game.commander.miningLedger.ringPresence(system: system, galaxy: game.viewedGalaxy)
+          ? "Yes" : "No"),
       game.mapIsCurrentGalaxy
         ? String(format: "Distance %.1f light-years", game.currentSystem.distance(to: system))
         : "Distance: unavailable across galaxies",
@@ -377,7 +386,9 @@ extension Display {
     let nav =
       game.commander.navigationTier.map { tier in
         "Nav: " + tier.label + " "
-          + (tier.radius(capacity: game.commander.fuelCapacity).map {
+          + (tier.radius(
+            capacity: game.commander.fuelCapacity, fuelMultiplier: game.commander.jumpFuelMultiplier
+          ).map {
             String(format: "%.1f ly", $0)
           }
             ?? "Whole galaxy")

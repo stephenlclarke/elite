@@ -11,6 +11,7 @@ extension Mesh {
     let radius = vertices.map { ($0 - center).length }.max()!
     return Mesh(
       vertices: vertices.map { ($0 - center) * (100 / radius) }, faces: faces,
-      details: details, materials: materials, faceMaterials: faceMaterials, preserveWinding: true)
+      details: details, materials: materials, faceMaterials: faceMaterials,
+      faceTextures: faceTextures, preserveWinding: true)
   }
 }

@@ -3767,7 +3767,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 
 | Game specification | Value |
 | --- | --- |
-| Cargo (t) | 0 |
+| Cargo (t) | 12 |
 | Top speed | 9.1 |
 | Acceleration (speed/s) | 7.5 |
 | Energy capacity | 150.0 |
@@ -4844,6 +4844,96 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Trade-in (CR) | 110250.0 |
 | Operating crew | 1 (project solo automation) |
 | Design | 118 vertices; 164 faces |
+
+## SH168 - Convict Miner Minnow
+
+![Rotating Convict Miner Minnow](ships/SH168.gif)
+
+**Class:** Ship | [Definition](../Sources/EliteCore/Resources/Ships/SH168.toml) | [Provenance](SHIP-PROVENANCE.md#sh168)
+
+| Game specification | Value |
+| --- | --- |
+| Cargo (t) | 0 |
+| Top speed | 21.9 |
+| Acceleration (speed/s) | 4.5 |
+| Energy capacity | 25.0 |
+| Energy recharge /s | 0.5 |
+| Roll (rad/s) | 0.5 |
+| Pitch (rad/s) | 0.5 |
+| Yaw (rad/s) | 0.5 |
+| Each shield | 255.0 |
+| Shield recharge /s | 1.0 |
+| Fuel tank (LY) | 7.0 |
+| Base jump (LY) | 7.0 |
+| Jump charge (s) | 15.0 |
+| Missile pylons | 1 |
+| Laser mounts | Front |
+| Cargo bay upgrade (t) | 0 |
+| Hull price (CR) | 65,000 |
+| Power index | 743.0 |
+| Trade-in (CR) | 48750.0 |
+| Operating crew | 1 (project solo automation) |
+| Design | 52 vertices; 100 faces |
+
+## SH169 - Ray Mk I
+
+![Rotating Ray Mk I](ships/SH169.gif)
+
+**Class:** Ship | [Definition](../Sources/EliteCore/Resources/Ships/SH169.toml) | [Provenance](SHIP-PROVENANCE.md#sh169)
+
+| Game specification | Value |
+| --- | --- |
+| Cargo (t) | 10 |
+| Top speed | 35.7 |
+| Acceleration (speed/s) | 18.8 |
+| Energy capacity | 300.0 |
+| Energy recharge /s | 1.8 |
+| Roll (rad/s) | 1.4 |
+| Pitch (rad/s) | 2.1 |
+| Yaw (rad/s) | 2.1 |
+| Each shield | 255.0 |
+| Shield recharge /s | 1.0 |
+| Fuel tank (LY) | 7.0 |
+| Base jump (LY) | 7.0 |
+| Jump charge (s) | 15.0 |
+| Missile pylons | 1 |
+| Laser mounts | Front |
+| Cargo bay upgrade (t) | 0 |
+| Hull price (CR) | 137,000 |
+| Power index | 1058.0 |
+| Trade-in (CR) | 102750.0 |
+| Operating crew | 1 (project solo automation) |
+| Design | 383 vertices; 171 faces |
+
+## SH170 - Military Stingray (Ray Mk II)
+
+![Rotating Military Stingray (Ray Mk II)](ships/SH170.gif)
+
+**Class:** Ship | [Definition](../Sources/EliteCore/Resources/Ships/SH170.toml) | [Provenance](SHIP-PROVENANCE.md#sh170)
+
+| Game specification | Value |
+| --- | --- |
+| Cargo (t) | 15 |
+| Top speed | 39.3 |
+| Acceleration (speed/s) | 5.6 |
+| Energy capacity | 275.0 |
+| Energy recharge /s | 3.0 |
+| Roll (rad/s) | 1.4 |
+| Pitch (rad/s) | 2.1 |
+| Yaw (rad/s) | 2.1 |
+| Each shield | 255.0 |
+| Shield recharge /s | 1.0 |
+| Fuel tank (LY) | 7.0 |
+| Base jump (LY) | 7.0 |
+| Jump charge (s) | 15.0 |
+| Missile pylons | 3 |
+| Laser mounts | Front |
+| Cargo bay upgrade (t) | 15 |
+| Hull price (CR) | 153,000 |
+| Power index | 1201.0 |
+| Trade-in (CR) | 114750.0 |
+| Operating crew | 1 (project solo automation) |
+| Design | 424 vertices; 180 faces |
 
 ## SH171 - Liberator DSV2
 
