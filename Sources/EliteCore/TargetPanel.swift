@@ -24,11 +24,12 @@ struct TargetPanelLayout {
     if let body = game.informationTargetBody, let notice = game.wantedNotice(for: body) {
       wanted = notice + " / "
     }
-    statuses = ShowroomText.wrap(
-      wanted + (info.status ?? "Unknown") + "  I: " + (expanded ? "Hide" : "Detail")
-        + (game.orbitalOutlookScanStatus.map { " / " + $0 } ?? "")
-        + (game.originalSurveyScanStatus.map { " / " + $0 } ?? ""), width: columns
-    )
+    var statusText = wanted + (info.status ?? "Unknown") + "  I: " + (expanded ? "Hide" : "Detail")
+    let observations: [String?] = [
+      game.orbitalOutlookScanStatus, game.originalSurveyScanStatus, game.glassMeridianScanStatus,
+    ]
+    for observation in observations.compactMap({ $0 }) { statusText += " / " + observation }
+    statuses = ShowroomText.wrap(statusText, width: columns)
     fields = info.fields.flatMap { ShowroomText.wrap($0.text, width: columns) }
 
     fieldY = y + row * Double(headings.count + statuses.count) + previewHeight + 8
@@ -72,9 +73,15 @@ extension Display {
       if let survey = game.originalSurveyScanStatus {
         status = (status.map { $0 + " / " } ?? "") + survey
       }
+      if let meridian = game.glassMeridianScanStatus {
+        status = (status.map { $0 + " / " } ?? "") + meridian
+      }
+      let observing =
+        game.orbitalOutlookScanStatus != nil || game.originalSurveyScanStatus != nil
+        || game.glassMeridianScanStatus != nil
       if let status {
         for (index, line) in ShowroomText.wrap(status, width: Int((width - 8) / (6 * font))).prefix(
-          game.orbitalOutlookScanStatus == nil && game.originalSurveyScanStatus == nil ? 3 : 8
+          observing ? 8 : 3
         ).enumerated() {
           frame.label(line, x, y + panel.row * Double(index + 1), scale: font, ink: cueInk)
         }

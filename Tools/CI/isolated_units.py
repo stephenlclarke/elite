@@ -13,6 +13,14 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeGlassMeridianUnitTests": (
+        "entryRequiresThreeDistinctActualWorldsAndTwoIdentifiedTypesFromTheSameOwner",
+        "contiguousNativeDwellSealsTwelveSecondsAndChangingTargetOrClockRestartsIt",
+        "eitherClockOrderIsValidButDuplicateForeignAndOverlappingReadingsCannotAdvance",
+        "destroyedUnreadClockRequiresNewLogicalAndPhysicalIdentityWhileKeepingCompletedEvidence",
+        "strictOpeningSchemaLowersThroughFleetAndRejectsOldOrUnknownClaims",
+        "openingPackPinsRealClockGeometryAndAllNineAuthoredMilestonesWithoutATerminal",
+    ),
     "NativeFleetDiscoveryUnitTests": (
         "encounterAndIdentificationNeverGrantBlueprintWithoutPlayerDestruction",
         "npcKillsForeignOwnersUnknownTypesAndBackdatedEvidenceRefuseAtomically",

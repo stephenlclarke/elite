@@ -688,7 +688,8 @@ extension Game {
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
       let actor = try Self.validatedMissionActorAdmissionActor(
-        spec, encounter: encounter, instanceID: state.id, packDigest: pack.digest, legacy: legacy)
+        spec, encounter: encounter, instanceID: state.id, packDigest: pack.digest, legacy: legacy,
+        glassMeridian: state.savedGlassMeridian)
       if mode == .retained {
         if actor.location(in: encounter) != original.missionActorAdmissionSystemIdentity
           || [.inTransit, .arrivalPending].contains(actor.presence)
@@ -742,13 +743,17 @@ extension Game {
   @inline(never)
   private static func validatedMissionActorAdmissionActor(
     _ spec: ScriptActorDefinition, encounter: ScriptOwnedEncounter, instanceID: UUID,
-    packDigest: String, legacy: LegacyMissionEncounterProvenance?
+    packDigest: String, legacy: LegacyMissionEncounterProvenance?,
+    glassMeridian: NativeGlassMeridianState? = nil
   ) throws -> ScriptOwnedActor {
     guard let actor = encounter.actors[spec.id], actor.alias == spec.id,
       legacy?.actors[spec.id]?.identity == actor.identity
         || actor.identity
           == ScriptIdentity.uuid(
-            "script-actor-v2:\(instanceID):\(packDigest):\(encounter.id):\(spec.id)"),
+            "script-actor-v2:\(instanceID):\(packDigest):\(encounter.id):\(spec.id)")
+        || NativeGlassMeridian.authorizesReplacement(
+          glassMeridian, actor: actor,
+          encounter: encounter.id, instance: instanceID, packDigest: packDigest),
       actor.body.missionInstanceID == instanceID, actor.body.scriptShot == nil
     else { throw MissionPackError("Actor source identity or canonical condition is invalid.") }
     return actor

@@ -1,0 +1,58 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.glass-meridian"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "profiled-encounters-v2", "native-glass-meridian-v1"]
+priority = 600
+source = "Original Glass Meridian campaign. Current native opening: Venn commission at Avenor, then both certified Renas clock beacons; later authored stages remain unavailable, without payment or final clue."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "glass-meridian"
+title = "The Glass Meridian"
+briefing = "Captain Elara Venn: Our clinic convoy cannot launch while two ships can hold the same reservation. Accept at the actual Avenor berth after visiting three different systems and identifying two real ship types. At Renas, scan both certified clock beacons in either order with fitted targeting: front view, within 2 degrees, 250-1500 surface flight units and clear native nearest-hit sight, for 12 continuous seconds per target. Pause freezes progress; interruption or loading resets unfinished dwell. Completed readings persist. These first two stages pay nothing and grant no final clue. The remaining seven authored stages are not yet available."
+destination = "Both certified navigation beacons at Renas"
+reward = "Full campaign advertises 4800 CR at final reception; opening stages pay 0 CR."
+milestones = ["Accept the lane investigation at Avenor.", "Scan both certified navigation beacons at Renas.", "Locate the disabled Harrier and recover its flight recorder at Navidor.", "Dock at Enmadan and compare the recorder with the convoy booking ledger.", "Recover the one-tonne timing standard from the abandoned maintenance cradle at Enlirin.", "Use the standard to recalibrate three relay nodes at Lareria.", "Escort the clinic tender from the maintenance cradle to Lareria main station.", "Return to Avenor and choose how to release the booking evidence.", "Confirm the completed lane-safety report and collect payment."]
+
+[glassMeridian]
+profile = "native-clock-pair-v1"
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[npcs]]
+id = "meridian-clock"
+name = "Certified Glass Meridian clock beacon"
+source = "Original Glass Meridian clock pair; zero-speed, unarmed certified measurement devices. No cargo, payment or collection blueprint."
+basis = "Existing SH040 geometry, explicit zero speed and armament; no new hull or renderer."
+model = "catalogue:SH040"
+scale = 1.0
+energy = 100.0
+recharge = 0.0
+speed = 0.0
+acceleration = 0.0
+pitch = 0.0
+yaw = 0.0
+roll = 0.0
+missiles = 0
+fuel = 0.0
+ecm = false
+bounty = 0
+
+[[encounters]]
+id = "meridian-clock-a"
+galaxy = 0
+system = 185
+profile = "profiled-local-freeze-v1"
+actors = [{id="sedan-clock-a",npc="meridian-clock",x=-5000.0,y=0.0,z=20000.0,hostile=false}]
+
+[[encounters]]
+id = "meridian-clock-b"
+galaxy = 0
+system = 185
+profile = "profiled-local-freeze-v1"
+actors = [{id="sedan-clock-b",npc="meridian-clock",x=5000.0,y=0.0,z=24000.0,hostile=false}]

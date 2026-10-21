@@ -329,6 +329,8 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    guard pack.manifest.glassMeridian == nil, pack.manifest.stateID != NativeGlassMeridian.stateID
+    else { throw MissionPackError("Use the actual Venn commission review.") }
     guard pack.manifest.flightReception == nil,
       pack.manifest.stateID != NativeFlightReception.stateID
     else { throw MissionPackError("Use the actual native training berth practice.") }
@@ -1290,7 +1292,10 @@ extension Game {
     }
     let state = scriptGalleryEntryValues(stateID)
     let reason = scriptGalleryEntryReason(pack, stateID: stateID)
-    let suspension = state?.suspension ?? reason
+    let openingIssue: String? =
+      pack.manifest.stateID == NativeGlassMeridian.stateID
+        && state?.milestones.contains(1) == true ? NativeGlassMeridian.laterStages : nil
+    let suspension = state?.suspension ?? reason ?? openingIssue
     let status: GalleryStatus =
       suspension != nil
       ? .locked
@@ -1317,10 +1322,14 @@ extension Game {
       destination: destination,
       reward: job.map { String(format: "%.1f CR", Double($0.offer.reward) / 10) }
         ?? pack.manifest.mission.reward,
-      prerequisites: reason.map { [$0] } ?? [], completed: state?.milestones.count ?? 0,
+      prerequisites: (reason ?? openingIssue).map { [$0] } ?? [],
+      completed: state?.milestones.count ?? 0,
       milestones: pack.manifest.mission.milestones.enumerated().map { i, title in
         MissionMilestone(
-          title: title, state: state?.milestones.contains(i) == true ? "Complete" : "Upcoming")
+          title: title,
+          state: state?.milestones.contains(i) == true
+            ? "Complete"
+            : openingIssue != nil && i >= 2 ? "Locked" : "Upcoming")
       }, trialDigest: job == nil && state?.hasCampaignParent != true ? pack.digest : nil,
       savedInstance: state?.id)
   }

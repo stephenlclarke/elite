@@ -456,7 +456,8 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard NativeFleetDiscoverySave.validateClaims(self),
+    guard NativeGlassMeridianSave.validateClaims(self),
+      NativeFleetDiscoverySave.validateClaims(self),
       NativeFlightReceptionSave.validateClaims(self),
       WayfarerFieldReliefSave.validateClaims(self)
     else { return false }
@@ -695,6 +696,7 @@ public struct Game: Sendable {
     didSet {
       nativeOrbitalOutlookRuntime = .init()
       nativeOriginalSurveyRuntime = nil
+      nativeGlassMeridianRuntime = nil
       nativeFlightReceptionPending = nil
       nativeMeasuredExtractionPending = nil
       nativeRecordRecoveryPending = nil
@@ -704,6 +706,7 @@ public struct Game: Sendable {
   }
   var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
   var nativeOriginalSurveyRuntime: NativeOriginalSurveyRuntime?
+  var nativeGlassMeridianRuntime: NativeGlassMeridianRuntime?
   var nativeFlightReceptionPending: NativeFlightReceptionPending?
   var nativeMeasuredExtractionPending: NativeMeasuredExtractionPending?
   var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending?
@@ -2506,6 +2509,7 @@ public actor GameRuntime {
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
     guard let context = prepareAdvance(delta: delta) else { return snapshot() }
+    let glassMeridianStart = game.glassMeridianSample()
     let flightReceptionStart = game.flightReceptionSample()
     let outlookStart = game.orbitalOutlookSample()
     let surveyStart = game.originalSurveySample()
@@ -2528,6 +2532,8 @@ public actor GameRuntime {
     let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()
     if game.docked { game.stationAutoDefence = nil }
+    commitGlassMeridianScan(start: glassMeridianStart)
+    commitGlassMeridianBeacons()
     commitFlightReception(start: flightReceptionStart)
     commitOrbitalOutlookScan(start: outlookStart)
     commitOriginalSurveyScan(start: surveyStart)
@@ -2675,6 +2681,7 @@ public actor GameRuntime {
     var stage = ScriptRefusalStage.nativePeople
     do {
       try candidate.recordFlightReceptionFailureIfNeeded()
+      _ = try candidate.applyGlassMeridianPending()
       _ = try candidate.applyFlightReceptionPending()
       try candidate.recordNativePeopleLossIfNeeded()
       candidate.stageMeasuredHullLoss()

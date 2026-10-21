@@ -75,6 +75,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedFieldRelief: WayfarerFieldReliefCustody?
   var savedNavigationTrade: ScriptNavigationTradeState?
   var savedOriginalSurvey: NativeOriginalSurveyState?
+  var savedGlassMeridian: NativeGlassMeridianState?
   var savedFlightReception: NativeFlightReceptionState?
   var savedMeasuredExtraction: NativeMeasuredExtractionState?
   var savedRecordRecovery: WayfarerRecordRecoveryState?
@@ -204,6 +205,10 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   var savedFieldRelief: WayfarerFieldReliefCustody? {
     _read { yield storage[0].savedFieldRelief }
     _modify { yield &storage[0].savedFieldRelief }
+  }
+  var savedGlassMeridian: NativeGlassMeridianState? {
+    _read { yield storage[0].savedGlassMeridian }
+    _modify { yield &storage[0].savedGlassMeridian }
   }
   var savedFlightReception: NativeFlightReceptionState? {
     _read { yield storage[0].savedFlightReception }
@@ -503,6 +508,14 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       guard cargo.valid(state: instance, engine: self) else { return false }
     } else {
       guard instance.contract?.offer.freightPlan == nil else { return false }
+    }
+    if instance.definition == NativeGlassMeridian.stateID {
+      guard let opening = instance.savedGlassMeridian,
+        opening.permission.mission == instance.id, instance.payloads.isEmpty,
+        NativeGlassMeridian.readingsValid(opening), NativeGlassMeridian.lossesValid(opening)
+      else { return false }
+    } else if instance.savedGlassMeridian != nil {
+      return false
     }
     if instance.definition == NativeFlightReception.stateID {
       guard let practice = instance.savedFlightReception,

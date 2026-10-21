@@ -440,6 +440,10 @@ Development source adds **Flight and reception practice** on **Game > Station Co
 
 Development Equipment details compare offered and actually fitted shield, energy and navigation values against their own authored Basic template (100%). Shield front/rear capacity and recharge remain separate; lower navigation time/fuel percentages mean lower costs. Retained component improvements appear in the fitted readout. This display does not change prices, prerequisites or the rule that weaker purchases stay stored.
 
+Development source includes the **Glass Meridian opening**. After actually visiting three different systems and identifying two ship types with Identification-tier targeting, dock at Avenor and open **Game > Station Contracts**. Select **Venn / review Glass Meridian commission**, read the terms, then Confirm with arrows/Return. Your current commander and fitting remain in use.
+
+At Renas, select either certified clock beacon, **sedan-clock-a** or **sedan-clock-b**, in front view. Keep it within 2 degrees and 250–1,500 surface flight units with clear native nearest-hit sight for 12 continuous seconds. Both are required, in either order. Pause freezes dwell; interruption or loading restarts an unfinished reading. Completed readings persist. A destroyed unread device is replaced through native admission with a new identity while its loss history remains; a completed measurement remains valid. Clock destruction grants no ship-kill point. The opening occupies no hold and pays no reward or clue. **Stages 3–9 remain locked**, including the advertised 4,800 CR final settlement. This is source work awaiting hosted units and review, outside the linked preview/release.
+
 ## Mission Gallery
 
 Choose **Game > Mission Gallery** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show the list and details side by side; narrow windows open a detail page. Use arrows and Return, click a mission, and scroll with the trackpad or Option-Up/Option-Down. Tab switches between list and details; Escape returns to the list, then to the previous screen.

@@ -31,6 +31,8 @@ extension Display {
     var rows: [String]
     if row.utility != nil {
       rows = game.nativeUtilityDetail
+    } else if row.glassMeridian != nil {
+      rows = game.glassMeridianDetail()
     } else if let action = row.flightReception {
       rows = game.flightReceptionDetail(action)
     } else if let action = row.measuredExtraction {
@@ -172,6 +174,7 @@ extension Display {
         let coldChain = game.contractBoard.coldChainQuote
         let provider = game.contractBoard.providerQuote
         let survey = game.contractBoard.surveyQuote
+        let glassMeridian = game.contractBoard.glassMeridianQuote
         let flightReception = game.contractBoard.flightReceptionQuote
         let measuredExtraction = game.contractBoard.measuredExtractionQuote
         let recordRecovery = game.contractBoard.recordRecoveryQuote
@@ -179,6 +182,7 @@ extension Display {
         let available =
           action == .back
           || (utility != nil && action == .accept && utility?.allowed == true)
+          || (glassMeridian != nil && action == .accept && glassMeridian?.allowed == true)
           || (flightReception != nil && action == .accept && flightReception?.allowed == true)
           || (measuredExtraction != nil && action == .accept && measuredExtraction?.allowed == true)
           || (recordRecovery != nil && action == .accept && recordRecovery?.allowed == true)
@@ -200,7 +204,8 @@ extension Display {
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
             + (action == .accept
-              && (flightReception != nil || measuredExtraction != nil || recordRecovery != nil
+              && (glassMeridian != nil || flightReception != nil || measuredExtraction != nil
+                || recordRecovery != nil
                 || identifiedSalvage != nil
                 || survey != nil
                 || provider != nil || coldChain != nil
@@ -251,6 +256,8 @@ extension Display {
         }
         var preferredSummary: String? =
           row.reason
+          ?? (row.glassMeridian == nil
+            ? nil : "Venn commission / two clock readings / opening only")
           ?? (row.flightReception == nil
             ? nil : "Current-fit flight practice / no payment / Confirm required")
           ?? (row.utility == nil
