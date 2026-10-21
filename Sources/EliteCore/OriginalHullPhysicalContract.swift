@@ -28,6 +28,10 @@ struct OriginalHullEnvelope: Sendable, Equatable {
 struct OriginalHullPhysicalContract: Sendable {
   enum Failure: Error { case unsupportedSource, invalidGeometry }
   let id: String
+  let name: String
+  let metresPerSourceUnit: Double
+  let unitBasis: String
+  let physicalMesh: Mesh
   let specificationSHA256: String
   let model: OriginalFleetShowroomModel
   let envelope: OriginalHullEnvelope
@@ -41,34 +45,67 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH029"))
   }
 
+  static let haflinger: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH061") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH061"))
+  }
+
   init(definition: OriginalFleetDefinition, model: OriginalFleetShowroomModel) throws {
-    guard definition.id == "SH029", definition.name == "Burro",
-      definition.sourceSHA256
-        == "8f94df2d92f9cd5a93c2a3eb8ee8c057a1093b922235f0ec8c01a2c8c4b3826f",
-      definition.approvedMeshAvailable, model.id == definition.id,
-      model.coordinateUnits == "metres",
-      model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH029-design.toml",
-      model.sourceSHA256 == "585cb9a7f47fb13f6249c09f2ccc262eb852c98ad10721a95730b68fc4eb7b5c",
-      model.nativeDesign.valid
-    else { throw Failure.unsupportedSource }
+    guard definition.approvedMeshAvailable, model.id == definition.id, model.nativeDesign.valid
+    else {
+      throw Failure.unsupportedSource
+    }
+    switch definition.id {
+    case "SH029":
+      guard definition.name == "Burro",
+        definition.sourceSHA256
+          == "8f94df2d92f9cd5a93c2a3eb8ee8c057a1093b922235f0ec8c01a2c8c4b3826f",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH029-design.toml",
+        model.sourceSHA256 == "585cb9a7f47fb13f6249c09f2ccc262eb852c98ad10721a95730b68fc4eb7b5c"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH061":
+      guard definition.name == "Haflinger",
+        definition.sourceSHA256
+          == "71000f32ab2cc28cacc3406e49bee33550fb339f89d43a64e04dad3a15ca46db",
+        model.coordinateUnits == nil,
+        model.sourcePath == "replacement-hulls/SH061-design.toml",
+        model.sourceSHA256 == "fad88f0e9cfc1f9a3748ab995b9fca058f675a0c8a6fc89bc72ccefd8399e26b"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 20
+      unitBasis =
+        "Explicit project calibration approved 21 October 2026: 20 metres per SH061 source unit. Source coordinates did not declare SI units."
+    default: throw Failure.unsupportedSource
+    }
     let mesh = model.displayMesh
     id = definition.id
+    name = definition.name
     specificationSHA256 = definition.sourceSHA256
     self.model = model
-    envelope = try OriginalHullEnvelope(vertices: mesh.vertices)
+    let scale = metresPerSourceUnit
+    physicalMesh = .init(
+      vertices: mesh.vertices.map { $0 * scale }, faces: mesh.faces,
+      details: mesh.details, materials: mesh.materials, faceMaterials: mesh.faceMaterials,
+      faceTextures: mesh.faceTextures, preserveWinding: true)
+    envelope = try OriginalHullEnvelope(vertices: physicalMesh.vertices)
     nativeTriangles = mesh.faces.reduce(0) { $0 + max(0, $1.count - 2) }
   }
 
   var sourceFields: [ShipSpec] {
     let size = envelope.dimensions
     let basis =
-      "Exact approved native LOD in authored metres; independent of display normalization. "
-      + "Derived bounds are not a docking-route or activated-hull claim."
+      unitBasis
+      + " Independent of display normalization; derived bounds do not certify a docking route or activate a hull."
     func field(_ key: String, _ label: String, _ value: Double, unit: String) -> ShipSpec {
       .init(
         key: "original.physical." + key, label: label,
         text: String(format: "%.2f", value) + " " + unit, number: value,
-        unit: unit, status: "source", basis: basis)
+        unit: unit, status: metresPerSourceUnit == 1 ? "source" : "calibration", basis: basis)
     }
     return [
       field("width", "Native LOD width X", size.x, unit: "m"),
@@ -87,10 +124,13 @@ struct OriginalHullPhysicalContract: Sendable {
 extension CatalogueShip {
   /// Keep the complete original-source profile intact; physical evidence has its own units/group.
   var physicalSourceContract: OriginalHullPhysicalContract? {
-    guard id == "SH029", case .success(let contract) = OriginalHullPhysicalContract.burro else {
-      return nil
+    let result: Result<OriginalHullPhysicalContract, any Error>
+    switch id {
+    case "SH029": result = OriginalHullPhysicalContract.burro
+    case "SH061": result = OriginalHullPhysicalContract.haflinger
+    default: return nil
     }
-    return contract
+    return try? result.get()
   }
 
   var physicalSourcePreview: Mesh? {
@@ -102,10 +142,10 @@ extension CatalogueShip {
     guard let contract = physicalSourceContract else { return retained }
     return retained + [
       .init(
-        id: id + "/original-physical", title: "Physical source: Burro",
+        id: id + "/original-physical", title: "Physical source: " + contract.name,
         group: "original-physical-metres",
         context:
-          "Approved native LOD in authored metres. Active fitting and docking remain separate.",
+          contract.unitBasis + " Active fitting and docking remain separate.",
         fields: contract.sourceFields)
     ]
   }

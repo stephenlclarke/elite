@@ -1,0 +1,9 @@
+# Bind the original Haflinger to explicit physical metres
+
+M04.H061.units adds one authenticated physical binding for original SH061 Haflinger, a prerequisite of the actual C08 seed-ark provider. The explicit project calibration is 20 metres per source unit: 41.536 m wide, 35.7 m high and 80 m long. This is a new project decision, not an inferred historical/SI measurement or showroom scale.
+
+The existing physical-source contract now supports SH061 alongside SH029 Burro. It verifies each exact specification/model identity, source path, source hash and declared/absent unit policy. A separate physical mesh scales every original vertex while retaining winding, materials, textures and detail indices. Bounds and conservative clearance radius use every physical vertex about the authored origin. The original raw model and performance remain unchanged; Burro retains its authored 1:1 metre contract.
+
+Showroom Source notes labels Haflinger's calibration and retains the separate normalized preview and complete original specification profile. No player-purchase activation, fleet-wide unit conversion, live ark spawn, escort arrival or docking-clearance certification is granted. The actual ark producer and receiving adapter remain the next M10 children.
+
+Three new isolated methods check all-vertex conversion and visual feature preservation, exact source/units refusal, original performance/runtime status, origin-based clearance and separate calibration presentation. Core authoring compilation and both physical-contract suites' declaration type-checks pass; six Python report fixtures and scoped Markdown/whitespace checks pass. Actual Swift unit execution and independent MBA review are pending. No native journey, GUI, integration, sanitizer, leak, performance or release campaign was run; no new usable app is claimed.

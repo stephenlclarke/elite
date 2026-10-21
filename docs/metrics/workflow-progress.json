@@ -4155,7 +4155,7 @@
       "base": "8c82f02410ef821d4c8b2eb6ae20dbadd5f10660",
       "ledger_parent": "C08.P02",
       "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326416972",
-      "unit_status": "in_progress",
+      "unit_status": "MBA verified exact-head hosted artifact PASS",
       "selection_methods": 84,
       "new_methods": 6,
       "new_cases": 8,
@@ -4163,7 +4163,10 @@
       "next_queued": "C08.P03.B",
       "usable_build_delivered": false,
       "source_review": "MBA exact delta/necessary callers reviewed; no actionable defect",
-      "github_run": 39674916516
+      "github_run": 39674916516,
+      "verified_methods": 84,
+      "verified_expanded_cases": 112,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326627718"
     },
     {
       "event": "C08.P03.A original cassette service/return pushed; P03.B key-loan assigned",
@@ -4179,6 +4182,29 @@
       "github_run": 39675764624,
       "selection_methods": 88,
       "new_cases": 5
+    },
+    {
+      "event": "Consented vault-key loan pushed; exact missing ark provider and receiving dependencies assigned",
+      "head": "d498fed7be17a7d6598df83c3ee4039e5aa52f61",
+      "base": "e58251030e82dbeb14683f4f382836d9eae26382",
+      "ledger_parent": "C08.P03.B",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326620621",
+      "github_run": 39676452424,
+      "new_methods": 4,
+      "new_cases": 6,
+      "selection_methods": 92,
+      "unit_status": "pending",
+      "source_review": "MBA exact delta/native callers/four methods six cases reviewed; no actionable defect",
+      "next_assigned": "M10.P01.C08",
+      "next_queued": "M10.P02.C08",
+      "usable_build_delivered": false
+    },
+    {
+      "event": "Root resolved exact seed-ark hull calibration and finite manifest; owning physical prerequisite assigned",
+      "ledger_parent": "M04.H061.units / M10.P01.C08",
+      "owner": "G1",
+      "decision_scope": "SH061 existing approved geometry20metres/authoredunit,40t custodian seed stores,6crew; retain flight stats and real transit/receiving",
+      "usable_build_delivered": false
     }
   ]
 }
