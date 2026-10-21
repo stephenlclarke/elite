@@ -4238,6 +4238,33 @@
       "custodian_initial_escrow_cr": 1000,
       "scope": "real reachable hops and docked paid fuel service; retained9LYdrive13LYtank; separate player cash/reward",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Ark source prerequisite pushed; independent verification pending",
+      "head": "71cbb6b248ab07cc975c750500f937f3df44af49",
+      "base": "b0bb67949557327014026225ff1e1b0abd35d588",
+      "ledger_parent": "M10.P01.C08.source",
+      "github_run": 39678595031,
+      "selection_methods": 98,
+      "source_review": "MBA no actionable source finding",
+      "unit_status": "MBA verified exact-head PASS",
+      "usable_build_delivered": false,
+      "scope": "Source/model prerequisite only; actual native admission/dock/fuel/transit/receiving remains unfinished",
+      "verified_methods": 98,
+      "verified_expanded_cases": 129,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6327436195"
+    },
+    {
+      "event": "Ark source prerequisite pushed; independent verification pending",
+      "head": "5fa9c568c79ca32153d4491674e50953960b45ce",
+      "base": "71cbb6b248ab07cc975c750500f937f3df44af49",
+      "ledger_parent": "M10.P01.C08.fuel",
+      "github_run": 39682596661,
+      "selection_methods": 103,
+      "source_review": "MBA exact model-only delta and five methods/six cases reviewed; no actionable finding",
+      "unit_status": "in_progress; actual artifact pending",
+      "usable_build_delivered": false,
+      "scope": "Source/model prerequisite only; actual native admission/dock/fuel/transit/receiving remains unfinished"
     }
   ]
 }
