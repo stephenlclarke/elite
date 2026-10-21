@@ -122,22 +122,19 @@ extension Display {
           : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
     var detailReason: String? {
-      if let reason = game.contractBoard.recordRecoveryQuote?.issues.first
-        ?? game.contractBoard.identifiedSalvageQuote?.issues.first
-        ?? game.contractBoard.surveyQuote?.issues.first
-        ?? game.contractBoard.repairLoopQuote?.issues.first
-        ?? game.contractBoard.coldChainQuote?.issues.first
-        ?? game.contractBoard.providerQuote?.issues.first
-      {
+      if let reason: String = game.contractBoard.recordRecoveryQuote?.issues.first { return reason }
+      if let reason: String = game.contractBoard.identifiedSalvageQuote?.issues.first {
         return reason
       }
-      if let reason = game.contractBoard.rrsQuote?.issues.first
-        ?? game.contractBoard.financeQuote?.issues.first
-        ?? game.contractBoard.peopleQuote?.issues.first
-      {
-        return reason
-      }
-      return game.contractBoard.quote?.issues.first ?? game.contractBoard.selected?.reason
+      if let reason: String = game.contractBoard.surveyQuote?.issues.first { return reason }
+      if let reason: String = game.contractBoard.repairLoopQuote?.issues.first { return reason }
+      if let reason: String = game.contractBoard.coldChainQuote?.issues.first { return reason }
+      if let reason: String = game.contractBoard.providerQuote?.issues.first { return reason }
+      if let reason: String = game.contractBoard.rrsQuote?.issues.first { return reason }
+      if let reason: String = game.contractBoard.financeQuote?.issues.first { return reason }
+      if let reason: String = game.contractBoard.peopleQuote?.issues.first { return reason }
+      if let reason: String = game.contractBoard.quote?.issues.first { return reason }
+      return game.contractBoard.selected?.reason
     }
     if game.contractBoard.detail, let reason = detailReason {
       frame.label(short(reason), layout.left, 84, scale: scale, ink: .orange)

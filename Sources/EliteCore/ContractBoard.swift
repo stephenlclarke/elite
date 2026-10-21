@@ -20,11 +20,16 @@ public struct ContractBoardRow: Sendable {
   var recordRecovery: WayfarerRecordRecoveryAction? = nil
   var identifiedSalvage: NativeIdentifiedSalvageAction? = nil
   public var key: String {
-    recordRecovery?.key ?? identifiedSalvage?.key ?? survey?.key ?? repairLoop?.key ?? coldChain?
-      .key ?? provider?.key
-      ?? people?.key ?? finance?.key
-      ?? rrs?.key
-      ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
+    if let key: String = recordRecovery?.key { return key }
+    if let key: String = identifiedSalvage?.key { return key }
+    if let key: String = survey?.key { return key }
+    if let key: String = repairLoop?.key { return key }
+    if let key: String = coldChain?.key { return key }
+    if let key: String = provider?.key { return key }
+    if let key: String = people?.key { return key }
+    if let key: String = finance?.key { return key }
+    if let key: String = rrs?.key { return key }
+    return board + "/" + (offer?.id.uuidString ?? "unavailable")
   }
 }
 public struct ContractScreenSave: Codable, Sendable {
