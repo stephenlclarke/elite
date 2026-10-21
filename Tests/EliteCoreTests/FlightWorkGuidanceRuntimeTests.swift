@@ -1327,7 +1327,8 @@ extension FlightWorkGuidanceRuntimeTests {
     #expect(game.workRecoveryAdmissionDeadline == nil && game.workRecoveryRock == rock.identity)
     let pending = game.commander.miningLedger.pendingPayloads
     for payload in pending {
-      #expect(game.commander.miningLedger.destroy(payload: payload.identity))
+      let destroyed = game.commander.miningLedger.destroy(payload: payload.identity)
+      #expect(destroyed)
     }
     game.key("q")
     game.workRecoveryRock = rock.identity

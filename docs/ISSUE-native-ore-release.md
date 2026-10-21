@@ -13,3 +13,7 @@ Recovery also declared ORE RECOVERY FINISHED when no eligible live body existed,
 Spread only fresh native chunk births symmetrically about their original centroid using the actual cargo geometry, preserving every identity, amount and velocity. Keep all existing objects, saved motion, source guards and ordinary fallback generation unchanged.
 
 Declare completion only when same-source pending cargo is empty. Retry existing normal admission for unbound pending cargo until a transient60-second physical deadline; expiry or bound-but-ineligible cargo reports blockage with cargo and momentum intact. Q and scene cancellation must clear a pending wait even without a live guidance controller. No extra admission loop, saved schema or general framework is needed. See [the implementation handoff](PR-native-ore-release.md).
+
+## Test assertion compiler correction
+
+The focused 1217 build rejected the mutating ledger destroy call inside the testing macro. The completion test now evaluates that same call once into a local Boolean before asserting it. The payload, action order, state and oracle remain unchanged; production code is unchanged. Source formatting and lint checks are complete; matching native qualification remains assigned to G1.
