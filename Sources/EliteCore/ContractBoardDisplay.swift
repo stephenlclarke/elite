@@ -259,22 +259,39 @@ extension Display {
             Double($0.deposit) / 10,
             $0.duration == 0 ? "no limit" : String(format: "%.0fs", $0.duration))
         }
-        var preferredSummary: String? =
-          row.reason
-          ?? (row.wayfarerInduction == nil
-            ? nil : "Exchange induction / sealed 1t / review the 1800s flight allowance")
-          ?? (row.glassMeridian == nil
-            ? nil : "Venn commission / two clock readings / opening only")
-          ?? (row.flightReception == nil
-            ? nil : "Current-fit flight practice / no payment / Confirm required")
-          ?? (row.utility == nil
-            ? nil : "Field relief / original 4t / payment at verified reception")
-          ?? (row.repairLoop == nil ? nil : "Repair loop / 2t / 610 CR on owner return")
+        var preferredSummary: String? = row.reason
         if preferredSummary == nil {
           preferredSummary =
-            (row.provider == nil ? nil : "Review native provider contract")
-            ?? (row.people == nil ? nil : "Review person transfer")
-            ?? (row.finance == nil ? nil : "Review loan terms")
+            row.wayfarerInduction == nil
+            ? nil : "Exchange induction / sealed 1t / review the 1800s flight allowance"
+        }
+        if preferredSummary == nil {
+          preferredSummary =
+            row.glassMeridian == nil
+            ? nil : "Venn commission / two clock readings / opening only"
+        }
+        if preferredSummary == nil {
+          preferredSummary =
+            row.flightReception == nil
+            ? nil : "Current-fit flight practice / no payment / Confirm required"
+        }
+        if preferredSummary == nil {
+          preferredSummary =
+            row.utility == nil
+            ? nil : "Field relief / original 4t / payment at verified reception"
+        }
+        if preferredSummary == nil {
+          preferredSummary =
+            row.repairLoop == nil ? nil : "Repair loop / 2t / 610 CR on owner return"
+        }
+        if preferredSummary == nil {
+          preferredSummary = row.provider == nil ? nil : "Review native provider contract"
+        }
+        if preferredSummary == nil {
+          preferredSummary = row.people == nil ? nil : "Review person transfer"
+        }
+        if preferredSummary == nil {
+          preferredSummary = row.finance == nil ? nil : "Review loan terms"
         }
         if preferredSummary == nil { preferredSummary = rrsSummary ?? courier?.summary }
         let summary: String = preferredSummary ?? pledgeSummary ?? offerSummary ?? "Unavailable"
