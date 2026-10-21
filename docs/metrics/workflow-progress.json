@@ -4325,12 +4325,15 @@
       "ledger_parent": "M10.P01.C08.refuel",
       "selection_methods": 115,
       "new_methods": 6,
-      "source_review": "MBA completed; no actionable source finding",
-      "unit_status": "existing hosted run active; artifact pending",
+      "source_review": "MBA complete; no actionable source finding",
+      "unit_status": "MBA verified exact-head hosted PASS",
       "next_assigned": "M10.P02.C08",
       "usable_build_delivered": false,
       "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328545511",
-      "github_run": 39691152810
+      "github_run": 39691152810,
+      "verified_methods": 115,
+      "verified_expanded_cases": 147,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6328738544"
     }
   ]
 }
