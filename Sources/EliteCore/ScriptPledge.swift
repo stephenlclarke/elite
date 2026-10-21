@@ -91,7 +91,7 @@ extension Game {
   }
   func pledgeAssets(
     _ definition: ScriptPledgeDefinition, station: ContractStationIdentity,
-    commander: Commander
+    commander: borrowing Commander
   ) -> ScriptPledgeAssets {
     .init(
       cash: commander.credits, food: commander.cargo[Self.pledgeFood],
