@@ -270,6 +270,20 @@ struct NativeMeasuredExtractionFixture {
   func framePayload(
     _ runtime: GameRuntime, payload: PayloadIdentity, offset: Vector3 = .init(0, -45, 55)
   ) async throws {
+    // Collection here is manual; release recovery only after the genuine mining approach.
+    await runtime.key("q")
+    var braking = Controls()
+    braking.throttle = -1
+    await runtime.setControls(braking)
+    for _ in 0..<100 {
+      let current = await runtime.snapshot()
+      if current.flightWorldVelocity == Vector3(0, 0, 0) { break }
+      _ = await runtime.advance(delta: 0.05)
+    }
+    await runtime.setControls(Controls())
+    let stopped = await runtime.snapshot()
+    try #require(stopped.workGuidance == nil && stopped.workBraking == nil)
+    try #require(stopped.flightWorldVelocity == Vector3(0, 0, 0))
     await runtime.nativeCommand { game in
       guard let body = game.bodies.first(where: { $0.physical?.payload == payload }) else { return }
       var pose = game.commander.flightSimulation.pose
