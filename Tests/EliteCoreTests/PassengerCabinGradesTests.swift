@@ -71,7 +71,8 @@ private struct CabinPartyFixture {
   #expect(commanderPreserved1)
   game.commander.system = 129
   game.emitScriptEvent("contact.requested")
-  try #require(game.showScriptDialogue())
+  let dialogueShown = game.showScriptDialogue()
+  try #require(dialogueShown)
   game.confirmScriptDialogue()
   #expect(game.commander.scriptState.instances[mission]?.outcome == .complete)
   #expect(game.commander.accommodation.people.count == 20)

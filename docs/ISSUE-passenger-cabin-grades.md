@@ -19,3 +19,9 @@ Actual matching builds 1269 and 1271 reject borrowed Commander capture in Native
 The combined child stages the same predicate inside the existing reply function. Destination/path/count and optional place life-support/compatibility checks run first. Only when that prefix succeeds does a direct support call read borrowing Commander outside any autoclosure. Private-cabin status, reservation and offered-place suffix checks follow in the original short-circuit order. Nil remains ineligible, and the original optional berth is retained in the reply. The now-unused helper is removed. No owned Commander copy, moved predicate evaluation, state/storage/schema/authority change or test selection change is introduced.
 
 Parent 6694b3821a04b069ce2b2c6617da3e16ef4e883d and the first compiler child 8700cad004f239e5f5cf3eaddccbdf36b4663ee5 remain immutable. Whole-source inverse and the other 205 parent feature blobs are verified. Source checks do not establish compiler success. G1 owns a fresh matching compilation, then the unchanged primary 11-method/12-case cohort before remaining focused qualification and full independent review.
+
+### Test macro correction
+
+Actual matching build 1273 no longer reports the borrowed rescue-code error. It fails only at the mutating showScriptDialogue call inside require in PassengerCabinGradesTests: the macro projects an immutable receiver. Raw evidence remains at /tmp/elite-FR058-cabin-staged-build-1273/build.log, SHA256 46cc4f263a05f4c754226ad1945267442e77b5f5401cb73b45c270e3c1047029. No tests ran.
+
+Evaluate that same one dialogue call into a local Boolean immediately before requiring its result. The action order, assertion and oracle are identical; production code and all other tests remain unchanged. Parent 70307c6007225fb16b40c8d7e2f306170964fa42 is immutable. A fresh G1 matching compilation and the unchanged primary 11-method/12-case selection remain required; source checks are not native PASS.
