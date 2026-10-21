@@ -92,21 +92,26 @@ extension Game {
     return finishScriptEventContext(game, scalars: scalars, playerPosition: playerPosition)
   }
 
-  /// Computed Commander read storage returns before anchor selection starts.
+  /// Scalar borrows return before anchor selection starts.
   @inline(never)
   private static func scriptEventContextScalars(
     _ game: borrowing Game, revision: UInt64
   ) -> ScriptEventContextScalars {
     let mainStation = game.dockedAtMainStation
     let frameTime = game.time
-    return .init(
-      galaxy: game.commander.galaxy, system: game.commander.system, docked: game.docked,
-      mainStation: game.docked && mainStation, revision: revision,
-      frameSeconds: game.scriptStartupTime ?? frameTime,
-      localSeconds: game.commander.scriptState.localSeconds,
-      flightSeconds: game.commander.scriptState.flightSeconds,
-      calendarSeconds: game.commander.scriptState.calendarSeconds,
-      transitSeconds: game.commander.scriptState.transitSeconds)
+    let (galaxy, system) = game.withReadOnlyCommander { ($0.galaxy, $0.system) }
+    let docked = game.docked
+    let atMainStation = game.docked && mainStation
+    let frameSeconds = game.scriptStartupTime ?? frameTime
+    return game.withReadOnlyCommander { commander in
+      commander.withReadOnlyScriptState { state in
+        .init(
+          galaxy: galaxy, system: system, docked: docked,
+          mainStation: atMainStation, revision: revision, frameSeconds: frameSeconds,
+          localSeconds: state.localSeconds, flightSeconds: state.flightSeconds,
+          calendarSeconds: state.calendarSeconds, transitSeconds: state.transitSeconds)
+      }
+    }
   }
 
   @inline(never)
@@ -130,6 +135,6 @@ extension Game {
       transitSeconds: scalars.transitSeconds, playerPosition: playerPosition,
       nativeStation: nativeStation,
       nativeMainDock: docked && mainStation
-        ? game.commander.nativeStations?.currentMainDock : nil)
+        ? game.withReadOnlyCommander { $0.nativeStations?.currentMainDock } : nil)
   }
 }
