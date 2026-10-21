@@ -77,7 +77,7 @@ struct NativeOrbitalOutlookScanTests {
     if reason == "equipment" {
       await runtime.nativeCommand { game in
         guard let key = game.commander.fittedEquipment(at: .targetingCore)?.node.key else { return }
-        try? game.commander.removeFittedEquipment(key)
+        _ = try? game.commander.removeFittedEquipment(key)
       }
     }
     if reason == "epoch" { await runtime.nativeCommand { $0.invalidateNativeStationAuthority() } }

@@ -48,8 +48,9 @@ struct NativeMeasuredExtractionAcquisitionTests {
       let regularPayloadTimes: [PayloadIdentity: Double]
     }
     func clocks(_ ledger: MiningLedger) throws -> [PayloadIdentity: Double] {
-      try JSONDecoder().decode(ClockEnvelope.self, from: JSONEncoder().encode(ledger))
-        .regularPayloadTimes
+      let data = try JSONEncoder().encode(ledger)
+      let envelope = try JSONDecoder().decode(ClockEnvelope.self, from: data)
+      return envelope.regularPayloadTimes
     }
     let f = try NativeMeasuredExtractionFixture()
     defer { f.files.clean() }

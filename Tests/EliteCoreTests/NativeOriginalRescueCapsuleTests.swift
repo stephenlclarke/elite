@@ -174,7 +174,7 @@ struct NativeOriginalRescueCapsuleTests {
     try await f.approach(runtime, alias: alias, distance: reason == "range" ? 500 : nil)
     if reason == "motion" { await runtime.nativeCommand { $0.speed = 10 } }
     if reason == "tools" {
-      await runtime.nativeCommand { try? $0.commander.removeFittedEquipment("Fuel Scoops") }
+      await runtime.nativeCommand { _ = try? $0.commander.removeFittedEquipment("Fuel Scoops") }
       try #require(await runtime.snapshot().hasNativeRescueTools == false)
     }
     if reason == "paused" { await runtime.key("pause") }

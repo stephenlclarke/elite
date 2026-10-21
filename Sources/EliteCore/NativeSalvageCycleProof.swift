@@ -37,7 +37,7 @@ enum NativeSalvageCycleProof {
       }
       guard !baselineDepleted, cycle.currentWorkSeconds >= baselineWork,
         !baselineDamage || cycle.damagedTechnology,
-        cycle.lastOperation.map { $0 > (baselineOperation ?? 0) } == true,
+        cycle.lastOperation.map({ $0 > (baselineOperation ?? 0) }) == true,
         try finish(cycle, from: original, releasedDepleted: false, plan: plan, section: section)
       else { throw AlienStorageError.invalidJoin }
       return
@@ -95,7 +95,7 @@ enum NativeSalvageCycleProof {
         return
       }
       guard !old.depleted,
-        current.lastOperation.map { $0 > (old.lastOperation ?? 0) } == true,
+        current.lastOperation.map({ $0 > (old.lastOperation ?? 0) }) == true,
         try finish(
           current, from: old.progress, releasedDepleted: false, plan: plan, section: section)
       else { throw AlienStorageError.historyChanged }
