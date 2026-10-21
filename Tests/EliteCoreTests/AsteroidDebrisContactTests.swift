@@ -319,3 +319,226 @@ extension AsteroidDebrisContactTests {
     }
   }
 }
+
+extension AsteroidDebrisContactTests {
+  @Test func translatedCoplanarNearMissHasAContinuousCertificateAtTheExistingLeaf() throws {
+    let source = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+    let target = try PreparedHull(mesh: contactBox(1, 1, 1))
+    let motion = contactMotion(.init(-3, 1.5001, 0), .init(3, 1.5001, 0), radius: source.radius)
+    let stationary = contactMotion(.init(0, 0, 0), .init(0, 0, 0), radius: target.radius)
+    // The scalar travel envelope exceeds the true 0.0001 face gap even at
+    // this leaf. Only a certificate over every triangle pair can admit it.
+    let result = HullSweepSafety.firstNativeContact(
+      source: motion, hull: source,
+      target: stationary, targetHull: target,
+      budget: .init(
+        distanceQueries: 256, triangleTests: 500_000,
+        nodeVisits: 500_000, subdivisionDepth: 1))
+    guard case .clear = result else {
+      Issue.record("Translated separated coplanar faces were not continuously certified")
+      return
+    }
+  }
+
+  @Test(arguments: ["pose", "geometry", "pair", "reuse"])
+  func sealedFrontierRequiresTheExactPairPoseAndOneUse(mismatch: String) throws {
+    let source = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+    let target = try PreparedHull(mesh: contactBox(0.01, 2, 2))
+    let motion = contactMotion(.init(-20, 0.3, 0.2), .init(20, 0.3, 0.2), radius: source.radius)
+    let stationary = contactMotion(.init(0, 0, 0), .init(0, 0, 0), radius: target.radius)
+    guard
+      case .contact(let contact) = HullSweepSafety.firstNativeContact(
+        source: motion,
+        hull: source, target: stationary, targetHull: target)
+    else {
+      Issue.record("The original real contact must mint its clear frontier")
+      return
+    }
+    let frontier = try #require(
+      HullSweepSafety.nativeFrontierPoses(
+        contact,
+        sourceHull: source, targetHull: target))
+    let retreat = contactMotion(
+      frontier.source.position,
+      frontier.source.position - Vector3(1, 0, 0), radius: source.radius)
+    let still = contactMotion(
+      frontier.target.position, frontier.target.position, radius: target.radius)
+    let wrong: NativeHullContactResult
+    switch mismatch {
+    case "pose":
+      let shifted = contactMotion(
+        frontier.source.position + Vector3(0, 0.001, 0),
+        frontier.source.position - Vector3(1, -0.001, 0), radius: source.radius)
+      wrong = HullSweepSafety.continueNativeContact(
+        contact, source: shifted, hull: source,
+        target: still, targetHull: target)
+    case "geometry":
+      let replacement = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+      wrong = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: replacement,
+        target: still, targetHull: target)
+    case "pair":
+      wrong = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: target,
+        target: still, targetHull: source)
+    default:
+      let accepted = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: source,
+        target: still, targetHull: target)
+      guard case .clear = accepted else {
+        Issue.record("The exact frontier did not authorize its separating continuation")
+        return
+      }
+      wrong = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: source,
+        target: still, targetHull: target)
+    }
+    guard case .refused(.invalidMotion) = wrong else {
+      Issue.record("A mismatched or spent frontier granted authority")
+      return
+    }
+    if mismatch != "reuse" {
+      let valid = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: source,
+        target: still, targetHull: target)
+      guard case .clear = valid else {
+        Issue.record("Rejected mismatches consumed the valid geometric frontier")
+        return
+      }
+    }
+    #expect(
+      HullSweepSafety.nativeFrontierPoses(contact, sourceHull: source, targetHull: target) == nil)
+  }
+
+  @Test(arguments: [false, true])
+  func freshNativeStartsRetainClosedContainmentAndAmbiguousOpenRefusal(open: Bool) throws {
+    let source = try PreparedHull(mesh: contactBox(0.1, 0.1, 0.1))
+    let mesh = contactBox(2, 2, 2)
+    let target = try PreparedHull(
+      mesh: .init(
+        vertices: mesh.vertices,
+        faces: open ? Array(mesh.faces.dropLast()) : mesh.faces))
+    let small = contactMotion(.init(0, 0, 0), .init(0.01, 0, 0), radius: source.radius)
+    let large = contactMotion(.init(0, 0, 0), .init(0, 0, 0), radius: target.radius)
+    let result = HullSweepSafety.firstNativeContact(
+      source: small, hull: source,
+      target: large, targetHull: target)
+    guard case .refused(let failure) = result else {
+      Issue.record("A fresh contained or ambiguous open start was admitted")
+      return
+    }
+    #expect(failure == (open ? .unproven : .insideHull))
+  }
+}
+
+extension AsteroidDebrisContactTests {
+  @Test func aContinuedContactInsideTheFirstLeafAdvancesItsCertifiedFrontier() throws {
+    let source = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+    let target = try PreparedHull(mesh: contactBox(0.01, 2, 2))
+    let incoming = contactMotion(.init(-20, 0.3, 0.2), .init(20, 0.3, 0.2), radius: source.radius)
+    let stationary = contactMotion(.init(0, 0, 0), .init(0, 0, 0), radius: target.radius)
+    guard
+      case .contact(let first) = HullSweepSafety.firstNativeContact(
+        source: incoming, hull: source, target: stationary, targetHull: target)
+    else {
+      Issue.record("Expected the original native contact")
+      return
+    }
+    let frontier = try #require(
+      HullSweepSafety.nativeFrontierPoses(
+        first, sourceHull: source, targetHull: target))
+    let continued = contactMotion(
+      frontier.source.position,
+      frontier.source.position + .init(40, 0, 0), radius: source.radius)
+    let still = contactMotion(
+      frontier.target.position, frontier.target.position, radius: target.radius)
+    guard
+      case .contact(let next) = HullSweepSafety.continueNativeContact(
+        first, source: continued, hull: source, target: still, targetHull: target)
+    else {
+      Issue.record("Expected a certified contact on the continued path")
+      return
+    }
+    #expect(next.lowerTime > 0 && next.upperTime >= next.lowerTime)
+    let advanced = try #require(
+      HullSweepSafety.nativeFrontierPoses(
+        next, sourceHull: source, targetHull: target))
+    #expect(advanced.source.position.x > frontier.source.position.x)
+  }
+}
+
+extension AsteroidDebrisContactTests {
+  @Test func aMaterialCornerResponseSeparatesAllCertifiedFacesWithoutAddingEnergy() throws {
+    let normals = [
+      Vector3(-0.5893675749470058, 0.552532101512818, -0.5893675749470058), .init(1, 0, 0),
+    ]
+    let sourceMass = 25_000.0
+    let targetMass = 100_000.0
+    let incoming = Vector3(0, 0, -6000)
+    let first = try #require(
+      AsteroidImpactPolicy.impulse(
+        sourceMass: sourceMass,
+        targetMass: targetMass, sourceVelocity: incoming, targetVelocity: .init(0, 0, 0),
+        normal: normals[0]))
+    let response = try #require(
+      AsteroidImpactPolicy.impulse(
+        sourceMass: sourceMass,
+        targetMass: targetMass, sourceVelocity: first.source, targetVelocity: first.target,
+        normals: normals))
+    let relative = response.source - response.target
+    #expect(normals.allSatisfy { relative.dot($0) <= 1e-8 })
+    #expect(
+      (response.source * sourceMass + response.target * targetMass - incoming * sourceMass).length
+        < 1e-6)
+    let before =
+      sourceMass * first.source.dot(first.source) + targetMass * first.target.dot(first.target)
+    let after =
+      sourceMass * response.source.dot(response.source) + targetMass
+      * response.target.dot(response.target)
+    #expect(after <= before && response.damage > 0)
+    let cross = normals[0].cross(normals[1])
+    let tangent = cross * (1 / cross.length)
+    #expect(abs(relative.dot(tangent) - (first.source - first.target).dot(tangent)) < 1e-8)
+  }
+
+  @Test func aThreeFaceResponseRetainsAuthoredRestitutionAndMomentum() throws {
+    let normals = [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)]
+    let response = try #require(
+      AsteroidImpactPolicy.impulse(
+        sourceMass: 1000,
+        targetMass: 4000, sourceVelocity: .init(20, 30, 40), targetVelocity: .init(0, 0, 0),
+        normals: normals))
+    #expect(
+      ((response.source - response.target) - Vector3(20, 30, 40) * -AsteroidImpactPolicy.restitution)
+        .length < 1e-10)
+    #expect(
+      (response.source * 1000 + response.target * 4000 - Vector3(20, 30, 40) * 1000).length < 1e-8)
+    #expect(
+      AsteroidImpactPolicy.impulse(
+        sourceMass: 1000, targetMass: 4000,
+        sourceVelocity: .init(20, 30, 40), targetVelocity: .init(0, 0, 0), normals: [.init(0, 0, 0)]
+      ) == nil)
+  }
+}
+
+extension AsteroidDebrisContactTests {
+  @Test func crossedThinBarsHaveAnEdgeContactEvenWhenNoVertexEntersAFace() throws {
+    let source = try PreparedHull(mesh: contactBox(2, 0.2, 0.01))
+    let target = try PreparedHull(mesh: contactBox(0.2, 2, 0.01))
+    let moving = contactMotion(.init(0, 0, -4), .init(0, 0, 4), radius: source.radius)
+    let stationary = contactMotion(.init(0, 0, 0.31), .init(0, 0, 0.31), radius: target.radius)
+    let result = HullSweepSafety.firstNativeContact(
+      source: moving, hull: source,
+      target: stationary, targetHull: target,
+      budget: .init(
+        distanceQueries: 256, triangleTests: 500_000, nodeVisits: 500_000, subdivisionDepth: 0))
+    guard case .contact(let contact) = result else {
+      Issue.record("A true edge intersection was lost between separated samples")
+      return
+    }
+    let expected = (4 + 0.31 - 0.02) / 80
+    #expect(contact.lowerTime <= expected && abs(contact.upperTime - expected) < 1e-10)
+    #expect(abs(contact.normal.z - 1) < 1e-10)
+    #expect(abs(contact.point.x) < 0.21 && abs(contact.point.y) < 0.21)
+  }
+}

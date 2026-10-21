@@ -187,6 +187,8 @@ On long station approaches, AUTO uses the fitted hull’s speed capability and b
 
 Solid station collisions stop the ship and cause impact damage. Fly around structural arms and align with a clear doorway; the rescue station has a real open passage, with fit limited by its narrower inner bore.
 
+Development source also handles continued debris contact against multiple native hull faces. Responses conserve linear momentum and lose energy, and thin crossing edges can supply a collision certificate between samples. An uncertain continuation rolls back the step. This change has focused geometry and impulse unit coverage; it is not yet included in the linked development preview.
+
 Development source adds swept debris impacts with finite station mass, real station resource damage and retained translational momentum. Current station positions, doorway checks and departures derive from that motion while authored anchors stay fixed. The new station impact, coast and persistence cases are authored but await central execution; this is not a release or campaign-completion claim. See [station inertia](docs/PR-native-station-inertia.md).
 
 ## Ship showroom and secret ports

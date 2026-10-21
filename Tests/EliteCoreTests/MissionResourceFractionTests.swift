@@ -52,12 +52,13 @@ struct MissionResourceFractionTests {
 
   @Test func actualDockAndPlansRewardRefillOnlyToTheNewEnergyCapacity() throws {
     var game = try upgradedPlansDelivery()
+    let rewardedCapacity = game.commander.nativePerformance.energy
     game.energy = game.commander.performance.energy / 4
     game.frontShield = 0
     game.rearShield = 0
     game.dock()
     #expect(game.commander.missionStage == .plansDelivered && game.screen == .mission)
-    #expect(game.energy == game.commander.performance.energy && game.energy == 256)
+    #expect(game.energy == game.commander.performance.energy && game.energy == rewardedCapacity)
     #expect(game.frontShield == game.commander.shieldCapacity)
     #expect(game.rearShield == game.commander.rearShieldCapacity)
   }

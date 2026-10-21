@@ -46,6 +46,87 @@ enum AsteroidImpactPolicy {
     else { return nil }
     return .init(source: a, target: b, transferred: impulse, damage: damage)
   }
+
+  /// Resolve the cone of already certified material faces together. Restitution
+  /// is bounded by the authored value and cannot push either body back into a
+  /// previous face or add kinetic energy at a corner.
+  static func impulse(
+    sourceMass: Double, targetMass: Double, sourceVelocity: Vector3,
+    targetVelocity: Vector3, normals: [Vector3]
+  ) -> AsteroidImpulse? {
+    guard sourceMass.isFinite, targetMass.isFinite,
+      (0.001...1e12).contains(sourceMass), (0.001...1e12).contains(targetMass),
+      sourceVelocity.finite, targetVelocity.finite,
+      sourceVelocity.length <= maximumSpeed, targetVelocity.length <= maximumSpeed,
+      !normals.isEmpty, normals.count <= maximumCandidatePairs,
+      normals.allSatisfy({ $0.finite && abs($0.length - 1) < 1e-6 })
+    else { return nil }
+    if normals.count == 1 {
+      return impulse(
+        sourceMass: sourceMass, targetMass: targetMass,
+        sourceVelocity: sourceVelocity, targetVelocity: targetVelocity, normal: normals[0])
+    }
+    let relative = sourceVelocity - targetVelocity
+    let numerical = 1e-12 * max(1, relative.length)
+    var correction: Vector3?
+    func consider(_ candidate: Vector3, multipliers: [Double]) {
+      guard candidate.finite, multipliers.allSatisfy({ $0.isFinite && $0 >= 0 }),
+        normals.allSatisfy({ (relative - candidate).dot($0) <= numerical })
+      else { return }
+      if correction == nil || candidate.dot(candidate) < correction!.dot(correction!) {
+        correction = candidate
+      }
+    }
+    consider(.init(0, 0, 0), multipliers: [])
+    for i in normals.indices {
+      let a = normals[i]
+      let c = relative.dot(a) / a.dot(a)
+      consider(a * c, multipliers: [c])
+      for j in normals.indices where j > i {
+        let b = normals[j]
+        let aa = a.dot(a)
+        let ab = a.dot(b)
+        let bb = b.dot(b)
+        let determinant = aa * bb - ab * ab
+        if determinant > 1e-12 {
+          let x = (relative.dot(a) * bb - relative.dot(b) * ab) / determinant
+          let y = (relative.dot(b) * aa - relative.dot(a) * ab) / determinant
+          consider(a * x + b * y, multipliers: [x, y])
+        }
+        for k in normals.indices where k > j {
+          let c = normals[k]
+          let determinant = a.dot(b.cross(c))
+          guard abs(determinant) > 1e-12 else { continue }
+          let x = relative.dot(b.cross(c)) / determinant
+          let y = a.dot(relative.cross(c)) / determinant
+          let z = a.dot(b.cross(relative)) / determinant
+          consider(relative, multipliers: [x, y, z])
+        }
+      }
+    }
+    guard let correction else { return nil }
+    let projected = relative - correction
+    var bounce = restitution
+    for normal in normals {
+      let rebound = -correction.dot(normal)
+      if rebound > 0 { bounce = min(bounce, max(0, -projected.dot(normal) / rebound)) }
+    }
+    let outgoing = projected - correction * bounce
+    guard outgoing.finite, outgoing.dot(outgoing) <= relative.dot(relative) + numerical,
+      normals.allSatisfy({ outgoing.dot($0) <= numerical })
+    else { return nil }
+    let inverseMass = 1 / sourceMass + 1 / targetMass
+    let transfer = (relative - outgoing) * (1 / inverseMass)
+    let a = sourceVelocity - transfer * (1 / sourceMass)
+    let b = targetVelocity + transfer * (1 / targetMass)
+    let damage =
+      max(0, relative.dot(relative) - outgoing.dot(outgoing))
+      * (0.5 / inverseMass * metresPerCollisionUnit * metresPerCollisionUnit / joulesPerEnergy)
+    guard a.finite, b.finite, a.length <= maximumSpeed, b.length <= maximumSpeed,
+      transfer.finite, damage.isFinite, (0...1e12).contains(damage)
+    else { return nil }
+    return .init(source: a, target: b, transferred: transfer, damage: damage)
+  }
 }
 
 struct AsteroidImpulse: Sendable {
@@ -293,6 +374,15 @@ private struct DebrisTrajectory {
   let endVelocity: Vector3
 }
 
+private struct DebrisPlannedImpact {
+  let contact: NativeHullContact
+  let impulse: AsteroidImpulse
+  let offset: Double
+  let player: ShipPose
+  let source: ShipPose
+  let target: ShipPose
+}
+
 extension Game {
   @inline(never)
   mutating func beginAsteroidContactStep(delta: Double = 0) -> AsteroidContactFrame? {
@@ -434,6 +524,11 @@ extension Game {
       guard (expected - trajectory.endVelocity).length < 1e-5 else {
         return refuseDebrisStep(frame, reason: "NATIVE VELOCITY UNPROVEN")
       }
+    }
+    if trajectories[source].frame.station == nil && trajectories[target].frame.station == nil {
+      return stageContinuingDebrisContacts(
+        frame, trajectories: trajectories,
+        source: source, target: target, contact: contact, pairs: pairs, delta: delta)
     }
     guard
       let impulse = AsteroidImpactPolicy.impulse(
@@ -600,6 +695,187 @@ extension Game {
         point: contact.point, transferredMomentum: impulse.transferred,
         damage: impulse.damage, incident: incident.id,
         contactPhysicalTime: frame.time - delta + contact.upperTime))
+  }
+
+  /// Keep health, law, pose and resource changes in a value candidate until the
+  /// entire chronological response and every actual effect have been accepted.
+  @inline(never)
+  private mutating func stageContinuingDebrisContacts(
+    _ frame: AsteroidContactFrame, trajectories: [DebrisTrajectory],
+    source: Int, target: Int, contact: NativeHullContact, pairs: Int, delta: Double
+  ) -> AsteroidContactStepResult {
+    var candidate = self
+    let result = candidate.applyContinuingDebrisContacts(
+      frame, trajectories: trajectories,
+      source: source, target: target, contact: contact, pairs: pairs, delta: delta)
+    switch result {
+    case .advanced:
+      self = candidate
+      return result
+    case .refused(let reason):
+      return refuseDebrisStep(frame, reason: reason)
+    }
+  }
+
+  @inline(never)
+  private mutating func applyContinuingDebrisContacts(
+    _ frame: AsteroidContactFrame, trajectories original: [DebrisTrajectory],
+    source: Int, target: Int, contact first: NativeHullContact, pairs initialPairs: Int,
+    delta: Double
+  ) -> AsteroidContactStepResult {
+    var trajectories = original
+    var pairs = initialPairs
+    var contact = first
+    var offset = 0.0
+    var impacts: [DebrisPlannedImpact] = []
+    var normals: [Vector3] = []
+    while true {
+      let absoluteLower = offset + contact.lowerTime
+      guard impacts.isEmpty || (contact.lowerTime > 0 && absoluteLower > offset),
+        let frontier = HullSweepSafety.nativeFrontierPoses(
+          contact,
+          sourceHull: trajectories[source].hull, targetHull: trajectories[target].hull)
+      else { return .refused("CONTINUATION UNPROVEN") }
+      if !normals.contains(contact.normal) { normals.append(contact.normal) }
+      guard
+        let impulse = AsteroidImpactPolicy.impulse(
+          sourceMass: trajectories[source].frame.mass, targetMass: trajectories[target].frame.mass,
+          sourceVelocity: trajectories[source].motion.initialVelocity
+            + trajectories[source].motion.acceleration * contact.lowerTime,
+          targetVelocity: trajectories[target].motion.initialVelocity
+            + trajectories[target].motion.acceleration * contact.lowerTime,
+          normals: normals)
+      else { return .refused("CONTINUATION UNPROVEN") }
+      let playerPose =
+        trajectories.first { $0.frame.bodyID == nil }
+        .map { debrisPose($0.motion, at: contact.upperTime) } ?? commander.flightSimulation.pose
+      impacts.append(
+        .init(
+          contact: contact, impulse: impulse, offset: offset,
+          player: playerPose,
+          source: debrisPose(trajectories[source].motion, at: contact.upperTime),
+          target: debrisPose(trajectories[target].motion, at: contact.upperTime)))
+      let advance = contact.lowerTime
+      offset = absoluteLower
+      let remainder = delta - offset
+      guard remainder > 0 else { return .refused("CONTINUATION UNPROVEN") }
+      for index in trajectories.indices {
+        let old = trajectories[index].motion
+        let start: ShipPose
+        let velocity: Vector3
+        let acceleration: Vector3
+        let end: ShipPose
+        if index == source || index == target {
+          start = index == source ? frontier.source : frontier.target
+          velocity = index == source ? impulse.source : impulse.target
+          acceleration = .init(0, 0, 0)
+          end = debrisAdvancedPose(
+            start, velocity: velocity,
+            omega: old.worldAngularVelocity, time: remainder)
+        } else {
+          start = debrisPose(old, at: advance)
+          velocity = old.initialVelocity + old.acceleration * advance
+          acceleration = old.acceleration
+          end = old.end
+        }
+        trajectories[index].motion = .init(
+          start: start, end: end,
+          initialVelocity: velocity, acceleration: acceleration,
+          worldAngularVelocity: old.worldAngularVelocity, duration: remainder,
+          playerRadius: trajectories[index].hull.radius)
+      }
+      var next: NativeHullContact?
+      for a in trajectories.indices where trajectories[a].frame.debris {
+        for b in trajectories.indices where b != a {
+          if trajectories[a].frame.station != nil && trajectories[b].frame.asteroid { continue }
+          if trajectories[b].frame.debris && b < a
+            && !(trajectories[a].frame.asteroid && trajectories[b].frame.station != nil)
+          {
+            continue
+          }
+          let samePair = a == source && b == target
+          guard samePair || debrisMayIntersect(trajectories[a], trajectories[b]) else { continue }
+          pairs += 1
+          guard pairs <= AsteroidImpactPolicy.maximumCandidatePairs else {
+            return .refused("CONTACT CAPACITY")
+          }
+          let result: NativeHullContactResult
+          if samePair {
+            result = HullSweepSafety.continueNativeContact(
+              contact,
+              source: trajectories[a].motion, hull: trajectories[a].hull,
+              target: trajectories[b].motion, targetHull: trajectories[b].hull)
+          } else {
+            result = HullSweepSafety.firstNativeContact(
+              source: trajectories[a].motion,
+              hull: trajectories[a].hull, target: trajectories[b].motion,
+              targetHull: trajectories[b].hull)
+          }
+          switch result {
+          case .clear: break
+          case .contact(let found):
+            guard samePair else { return .refused("REMAINING CONTACT") }
+            next = found
+          case .refused(let failure):
+            return .refused("REMAINING SWEEP UNPROVEN: " + failure.message)
+          }
+        }
+      }
+      guard let next else { break }
+      contact = next
+    }
+    let simulation = commander.flightSimulation
+    let reserved = UInt64(impacts.count)
+    guard simulation.nextEmission < UInt64.max - reserved,
+      simulation.nextIncident < UInt64.max - reserved * 3,
+      let sourceID = trajectories[source].frame.bodyID,
+      let sourceBody = bodies.first(where: { $0.id == sourceID }),
+      sourceBody.physical?.identity == trajectories[source].frame.identity, sourceBody.energy > 0
+    else { return .refused("INCIDENT CAPACITY") }
+    let targetActor = trajectories[target].frame
+    var receipt: AsteroidImpactReceipt?
+    for impact in impacts {
+      // A later mechanical response still conserves momentum after destruction,
+      // but cannot settle health, death or rewards for the same victim twice.
+      let alive: Bool
+      if let id = targetActor.bodyID {
+        guard let body = bodies.first(where: { $0.id == id }),
+          body.physical?.identity == targetActor.identity
+        else { return .refused("STALE CONTACT") }
+        alive = body.energy > 0
+      } else {
+        alive = energy > 0
+      }
+      guard alive else { continue }
+      mapDebrisEffectToContact(
+        player: impact.player, sourceID: sourceID, source: impact.source,
+        targetID: targetActor.bodyID, target: impact.target)
+      guard let origin = makeAttackOrigin(owner: trajectories[source].frame.identity) else {
+        return .refused("INCIDENT REFUSED")
+      }
+      let targetHit: GameplayHitTarget = targetActor.bodyID.map { .body($0) } ?? .player
+      let hit = GameplayHit(
+        target: targetHit, distance: 0,
+        point: commander.flightSimulation.pose.shipPoint(impact.contact.point))
+      guard
+        let incident = applyCombatHit(
+          hit, origin: origin, kind: .collision,
+          damage: impact.impulse.damage)
+      else { return .refused("DAMAGE REFUSED") }
+      commander.crimeLedger.finishEmission(origin.emissionID)
+      if receipt == nil {
+        receipt = .init(
+          source: trajectories[source].frame.identity, target: targetActor.identity,
+          point: impact.contact.point, transferredMomentum: impact.impulse.transferred,
+          damage: impact.impulse.damage, incident: incident.id,
+          contactPhysicalTime: frame.time - delta + impact.offset + impact.contact.upperTime)
+      }
+    }
+    guard let receipt, let last = impacts.last else { return .refused("DAMAGE REFUSED") }
+    commitDebrisMotion(trajectories, source: source, target: target, impulse: last.impulse)
+    persistAsteroidBreakupMotion()
+    persistOrePoses()
+    return .advanced(receipt)
   }
 
   private mutating func refuseDebrisStep(_ frame: AsteroidContactFrame, reason: String)

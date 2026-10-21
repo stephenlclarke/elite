@@ -7,7 +7,9 @@ private func eliteEnergyShop() throws -> Game {
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.credits = 1_000_000
-  game.commander.system = try #require(game.systems.first { $0.technology >= 13 }?.id)
+  let elite = try #require(Equipment.all.first { $0.name == Equipment.eliteEnergyUnit })
+  game.commander.system = try #require(
+    game.systems.first { $0.technology >= elite.requiredTechnologyLevel }?.id)
   try game.commander.prepareEquipment(legacy: false)
   return game
 }
@@ -68,10 +70,10 @@ struct EliteEnergyUnitTests {
     #expect(!Equipment.isReward(advanced.name) && !Equipment.isReward(elite.name))
     for item in [advanced, elite] {
       game.commander.system = try #require(
-        game.systems.first { $0.technology < item.technology }?.id)
+        game.systems.first { $0.technology == item.requiredTechnologyLevel - 1 }?.id)
       #expect(!game.equipmentAvailable(item))
       game.commander.system = try #require(
-        game.systems.first { $0.technology >= item.technology }?.id)
+        game.systems.first { $0.technology >= item.requiredTechnologyLevel }?.id)
       #expect(game.equipmentAvailable(item))
     }
   }

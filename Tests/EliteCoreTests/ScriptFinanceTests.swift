@@ -25,11 +25,19 @@ struct ScriptFinanceTestFixture {
     }
   }
   func runtime(credits: Int = 1000) async throws -> GameRuntime {
-    var game = try NativeStationTestFixture.launched()
+    let terms = try #require(pack.manifest.loans?.first)
+    var game = Game(executive: false)
+    game.commander.galaxy = terms.galaxy
+    game.commander.system = terms.system
+    game.systems = Universe.systemsIncludingPlugh(number: terms.galaxy)
+    game.selectedSystem = terms.system
+    game.screen = .status
     game.scriptPacks = [pack]
     game.commander.credits = credits
-    game.market[0].price = 1500
+    game.launch()
+    try #require(!game.docked && game.commander.valid)
     game.market[0].quantity = 10
+    try #require(game.commander.originalMarkets.valid)
     try Self.approachMain(&game)
     let runtime = GameRuntime(game: game, saveURL: storage.url)
     try await Self.enterMain(runtime)
@@ -176,8 +184,14 @@ struct ScriptFinanceTests {
   @Test func nativeBorrowPartialAndFinalRepaymentUseActualMarketResourcesOnce() async throws {
     let fixture = try ScriptFinanceTestFixture()
     defer { fixture.storage.clean() }
-    let runtime = try await fixture.runtime()
-    let initial = await runtime.snapshot().commander
+    let runtime = try await fixture.runtime(credits: 100)
+    let initialGame = await runtime.snapshot()
+    let initial = initialGame.commander
+    let ask = initialGame.market[0].price
+    let bid = initialGame.market[0].bidPrice
+    try #require(initial.credits < ask && ask - initial.credits < bid && bid < ask)
+    let afterPurchase = initial.credits + 2000 - ask
+    let remainingPrincipal = ask - initial.credits
     let page = try await ScriptFinanceTestFixture.review(runtime)
     #expect(await runtime.snapshot().contractBoard.financeQuote?.allowed == true)
     #expect(await runtime.snapshot().contractBoard.quote == nil)
@@ -186,7 +200,8 @@ struct ScriptFinanceTests {
     await runtime.scriptPageKey("return", expected: page)
     let borrowed = await runtime.snapshot().commander
     #expect(
-      borrowed.credits == 3000 && borrowed.scriptState.financeLedger?.records[0].remaining == 2000)
+      borrowed.credits == initial.credits + 2000
+        && borrowed.scriptState.financeLedger?.records[0].remaining == 2000)
     #expect(borrowed.scriptState.financeLedger?.receiptCount == 1)
     await runtime.scriptPageKey("return", expected: page)
     #expect(await runtime.snapshot().commander == borrowed)
@@ -194,20 +209,22 @@ struct ScriptFinanceTests {
     await runtime.key("escape")
     await runtime.key("7")
     await runtime.key("right")
-    #expect(await runtime.snapshot().commander.credits == 1500)
+    #expect(await runtime.snapshot().commander.credits == afterPurchase)
     #expect(await runtime.snapshot().commander.cargo[0] == initial.cargo[0] + 1)
     try await ScriptFinanceTestFixture.confirm(runtime)
     let partial = await runtime.snapshot().commander
-    #expect(partial.credits == 0 && partial.scriptState.financeLedger?.records[0].remaining == 500)
+    #expect(
+      partial.credits == 0
+        && partial.scriptState.financeLedger?.records[0].remaining == remainingPrincipal)
     #expect(partial.scriptState.financeLedger?.records[0].status == .outstanding)
     #expect(partial.scriptState.financeLedger?.receiptCount == 2)
     await runtime.key("escape")
     await runtime.key("7")
     await runtime.key("left")
-    #expect(await runtime.snapshot().commander.credits == 1500)
+    #expect(await runtime.snapshot().commander.credits == bid)
     try await ScriptFinanceTestFixture.confirm(runtime)
     let paid = await runtime.snapshot().commander
-    #expect(paid.credits == initial.credits && paid.cargo == initial.cargo)
+    #expect(paid.credits == initial.credits - ask + bid && paid.cargo == initial.cargo)
     #expect(paid.scriptState.financeLedger?.records[0].remaining == 0)
     #expect(paid.scriptState.financeLedger?.records[0].status == .paid)
     #expect(paid.scriptState.financeLedger?.receiptCount == 3 && paid.valid)

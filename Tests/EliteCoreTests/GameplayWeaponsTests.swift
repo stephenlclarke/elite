@@ -31,9 +31,10 @@ struct GameplayWeaponsTests {
     var target = SpaceBody(id: 10, hull: .cargo, position: position)
     target.energy = 100
     game.bodies = [target]
+    let energy = game.energy
     game.fireLaser()
     #expect(game.bodies[0].energy == 85)
-    #expect(game.fireCooldown == LaserKind.pulse.firingInterval && game.energy == 255)
+    #expect(game.fireCooldown == LaserKind.pulse.firingInterval && game.energy == energy - 1)
   }
 
   @Test func nearestActualHullWinsRegardlessOfBodyArrayOrderAndWeaponLock() {
@@ -117,6 +118,7 @@ struct GameplayWeaponsTests {
 
   @Test func actualMiningBeamDepletesTheMatchedRockAndCreatesFiniteTypedOre() throws {
     var game = weaponsGame()
+    let credits = game.commander.credits
     game.beginGameplayVisit(arriving: true)
     let rock = try #require(game.miningFields.first?.rocks.first)
     game.commander.flightSimulation.pose.position = rock.position - Vector3(0, 0, 300)
@@ -138,6 +140,6 @@ struct GameplayWeaponsTests {
     game.fireCooldown = 0
     game.fireLaser()
     #expect(game.commander.miningLedger.pendingPayloads == pending)
-    #expect(game.commander.kills == 0 && game.commander.credits == 1000)
+    #expect(game.commander.kills == 0 && game.commander.credits == credits)
   }
 }
