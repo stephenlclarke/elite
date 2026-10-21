@@ -1,0 +1,7 @@
+# The read helper still copies Commander at the attributed tick boundary
+
+The strictly PID/start/executable-attributed1131 OS report on `2d050e423f9402e77f7e46064295049a4541e11f` records "Thread stack size exceeded" at outlined init with copy of Commander inside the withReadOnlyCommander buffer closure, Game.swift601. The caller is completeAsteroidContactStep's scalar-time read at328, reached through native movement/tick and the unchanged native people producer's actual EMP loop. Retained original IPS SHA256: `8f39c2656ebd2a3d4272dc36f6b4c2e30b53925ac0a1340d7e2e1fbce02e4255`; PID93027; image UUID `111ea9f5-a455-3e74-a8b4-138b1bac95ba`.
+
+The existing helper passes storage.baseAddress!.pointee to a borrowing callback. The actual generated stack shows that this call still copies the complete Commander. A borrowing callback annotation alone did not prevent the observed materialization. Game already exposes its stored Commander with an explicit _read coroutine.
+
+Root reserves only the withReadOnlyCommander implementation and obsolete pointer comment in shared Game.swift, plus paired notes. This child of `4afa541184a374bf3a96e016b3c0f90fa631f0ab` must be composed as a hunk by G1 so current W05 changes remain intact. No storage/accessor/caller, schema, authority, unsafe ownership or Game-wide representation rewrite is authorized. Author native execution, replay and stack-limit changes remain excluded.
