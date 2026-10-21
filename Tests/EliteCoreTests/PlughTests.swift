@@ -19,6 +19,31 @@ private func plughGame(galaxy: Int = 0) -> Game {
   return game
 }
 
+// Buy real predecessors so the desired PLUGH transaction tests its own single discount.
+private func buyPlughPrerequisites(_ node: EquipmentNodeID, game: inout Game) throws {
+  let definition = try #require(EquipmentRuntimeCatalog.graph.nodes.first { $0.id == node })
+  for parent in definition.prerequisites {
+    let predecessor = try #require(EquipmentRuntimeCatalog.graph.nodes.first { $0.id == parent })
+    if predecessor.policy == .standardFoundation { continue }
+    try buyPlughPrerequisites(parent, game: &game)
+    try buyPlughPredecessor(parent, game: &game)
+  }
+}
+
+// Keep purchase and assertion read buffers outside the recursive graph traversal frames.
+private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) throws {
+  if game.commander.equipmentPurchaseHistory?.paid.contains(where: { $0.node == parent }) == true {
+    return
+  }
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == parent.key })
+  let cash = game.commander.credits
+  let price = game.shopPrice(Equipment.all[game.selection])
+  game.purchase()
+  #expect(game.commander.credits == cash - price)
+  let receipt = try #require(game.commander.equipmentPurchaseHistory?.paid.last)
+  #expect(receipt.node == parent && receipt.price == price)
+}
+
 @Test func plughAddsOneDistinctStableSystemPerGalaxyWithoutChangingOriginals() {
   var identities = Set<String>()
   for galaxy in 0..<8 {
@@ -103,10 +128,15 @@ private func plughGame(galaxy: Int = 0) -> Game {
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   let runtime = GameRuntime(game: game)
+  let bootstrapped = await runtime.snapshot()
   try await runtime.save(to: url)
+  let bytes = try Data(contentsOf: url)
   try await runtime.load(from: url)
   let saved = await runtime.snapshot()
-  #expect(saved.commander == game.commander && saved.currentSystem.name == "PLUGH")
+  var expected = bootstrapped.commander
+  expected.npcPersistence.resetPhysicalBindings(system: bootstrapped.systemIdentity)
+  #expect(saved.commander == expected && saved.currentSystem.name == "PLUGH")
+  #expect(try Data(contentsOf: url) == bytes)
   var invalid = saved.commander
   invalid.plughDiscoveryMask = 0
   #expect(!invalid.valid)
@@ -115,13 +145,21 @@ private func plughGame(galaxy: Int = 0) -> Game {
   invalid.plughDiscoveryMask = 256
   #expect(!invalid.valid)
   var departure = saved
-  departure.commander.equipment.insert("Galactic Hyperdrive")
+  try departure.commander.grantEquipment(
+    "Galactic Hyperdrive", at: .utility(.galacticHyperdrive), provenance: .grant("plugh-test"))
+  let drive = try #require(departure.commander.fittedEquipment(at: .utility(.galacticHyperdrive)))
+  let owner = departure.commander.equipmentOwnerID
+  let hull = departure.commander.hullInstanceID
   departure.launch()
   departure.galacticJump()
   #expect(departure.commander.galaxy == 3 && departure.commander.system == 7)
   #expect(
     !departure.commander.hasDiscoveredPlugh(in: 3) && departure.commander.hasDiscoveredPlugh(in: 2))
   #expect(!departure.commander.equipment.contains("Galactic Hyperdrive"))
+  #expect(departure.commander.equipmentInventory?.items.contains { $0.id == drive.id } == false)
+  #expect(
+    departure.commander.equipmentOwnerID == owner && departure.commander.hullInstanceID == hull)
+  #expect(departure.commander.valid)
 }
 
 @Test func plughShopSellsEverySupportedItemAtOneDiscountAndKeepsRewardsRestrictedElsewhere() throws
@@ -130,13 +168,35 @@ private func plughGame(galaxy: Int = 0) -> Game {
     var game = plughGame()
     game.commander.credits = 10_000_000
     game.commander.fuel = 0
+    try game.commander.prepareEquipment(legacy: false)
     game.equipmentMount = .left
+    if let node = EquipmentRuntimeCatalog.node(for: item.name) {
+      try buyPlughPrerequisites(node, game: &game)
+    }
     game.selection = index
     let cost = game.shopPrice(item)
-    #expect(cost > 0 && game.equipmentAvailable(item))
+    let undiscounted =
+      item.name == "Fuel"
+      ? (game.commander.fuelCapacity - game.commander.fuel) * item.price
+      : Plugh.rewardPrices[item.name] ?? item.price
+    #expect(cost == Plugh.discount(undiscounted) && cost > 0 && game.equipmentAvailable(item))
     let cash = game.commander.credits
+    let fuel = game.commander.fuel
+    let history = game.commander.equipmentPurchaseHistory?.paid.count ?? 0
     game.purchase()
-    #expect(game.commander.credits == cash - cost, "\(item.name): \(game.message)")
+    if item.name == NavigationTier.basic.equipmentName {
+      #expect(game.commander.credits == cash && game.commander.navigationTier == .basic)
+      #expect(game.message == "STANDARD OR ACQUISITION HARDWARE - NOT FOR SALE")
+      #expect(game.commander.equipmentPurchaseHistory?.paid.count == history)
+    } else {
+      #expect(game.commander.credits == cash - cost, "\(item.name): \(game.message)")
+      if let node = EquipmentRuntimeCatalog.node(for: item.name) {
+        let receipt = try #require(game.commander.equipmentPurchaseHistory?.paid.last)
+        #expect(receipt.node == node && receipt.price == cost)
+        #expect(game.commander.equipmentPurchaseHistory?.paid.count == history + 1)
+      }
+    }
+    if item.name != "Fuel" { #expect(game.commander.fuel == fuel) }
     if let laser = LaserKind.from(item.name) { #expect(game.commander.laser(on: .left) == laser) }
     #expect(game.commander.valid)
     if Equipment.isReward(item.name) {
@@ -148,10 +208,14 @@ private func plughGame(galaxy: Int = 0) -> Game {
     }
   }
   var game = plughGame()
-  game.selection = try #require(Equipment.all.firstIndex { $0.name == Equipment.navalEnergyUnit })
-  game.commander.equipment.insert("Extra Energy Unit")
   game.commander.credits = 1_000_000
+  let naval = try #require(EquipmentRuntimeCatalog.node(for: Equipment.navalEnergyUnit))
+  try buyPlughPrerequisites(naval, game: &game)
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == Equipment.navalEnergyUnit })
+  let cash = game.commander.credits
+  let cost = game.shopPrice(Equipment.all[game.selection])
   game.purchase()
+  #expect(game.commander.credits == cash - cost)
   #expect(
     game.commander.equipment.contains(Equipment.navalEnergyUnit)
       && !game.commander.equipment.contains("Extra Energy Unit"))
@@ -181,11 +245,23 @@ private func plughGame(galaxy: Int = 0) -> Game {
   game.purchase()
   #expect(game.commander == fitted)
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Missile" })
+  try game.commander.grantEquipment(
+    "Missile", at: .missilePylon(3), provenance: .grant("plugh full rack fixture"))
+  #expect(
+    game.commander.fittedEquipment(at: .missilePylon(3))?.node
+      == EquipmentRuntimeCatalog.standardMissile)
+  #expect(game.commander.missiles == 4)
   game.commander.missiles = 4
   let full = game.commander
   game.purchase()
   #expect(game.commander == full)
-  game.commander.installNavigationComputer(.military)
+  try game.commander.grantEquipment(
+    NavigationTier.military.equipmentName, at: .navigation,
+    provenance: .grant("plugh tier refusal fixture"))
+  #expect(game.commander.navigationTier == .military)
+  #expect(
+    game.commander.fittedEquipment(at: .navigation)?.node.key
+      == NavigationTier.military.equipmentName)
   game.selection = try #require(
     Equipment.all.firstIndex { $0.name == NavigationTier.basic.equipmentName })
   let maxed = game.commander

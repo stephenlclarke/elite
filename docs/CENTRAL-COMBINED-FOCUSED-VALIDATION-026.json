@@ -1,0 +1,120 @@
+{
+  "status": "Affected focused checks pass across two explicitly separate runs; full integrated gate pending",
+  "fresh026": {
+    "source": "a23ffc9fa165a26ee2f00d984517423eed55e2be",
+    "lease": {
+      "version": 1,
+      "leaseId": "elite-validation-026",
+      "state": "active",
+      "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+      "candidate": "a23ffc9fa165a26ee2f00d984517423eed55e2be",
+      "worktree": "/Users/sclarke/.codex/worktrees/gameplay-ecology/elite",
+      "mayUpdateCandidateWithinApprovedScope": true,
+      "candidateUpdateScope": "After exact2focusedPASS only renderer-generated fingerprint/media+readiness metadata commits before finalfreeze. Source/Tests/Tools/Package/build/missionpacks MUSTremain byteidentical a23 throughout. Root alone changes owner/id/state.",
+      "previousLeaseId": "elite-validation-025",
+      "purpose": "Finish authorized combined validation while immutable-a23 broad review proceeds separately. ONEfresh exact2failedUItest focus; retain45other025passes withsourceproof/no relabelof025failedaggregate. OnPASS make ships+readme-media, inspectoriginals/generatedonlycommit/refreeze, ONEfullmakeci coverage/TSan/serialASan/leaks. No retries/repairs/waivers; stopfirstfailure/preserveinput-saveprefs-logs-per-laneoriginalnativeartifacts/reportrelease-no-process. No auditfinding fixes/Missionbridge/main/Sonar/release/PRmerge scope.",
+      "evidenceDirectory": "/tmp/elite-central-combined-026",
+      "startedAt": "2026-10-16T11:00:44.096422+00:00"
+    },
+    "command": [
+      "swift",
+      "test",
+      "--filter",
+      "statusSummaryAndInventoryHaveDistinctResponsibilities|statusEquipmentAndInventoryShowAllMountsAndCanBrowseEveryEquipmentRow"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 36.47191295889206,
+    "changed_inputs": [],
+    "production_save_unchanged": true,
+    "summary": [
+      "\u2714 Test run with 2 tests in 0 suites passed after 27.559 seconds."
+    ],
+    "passed_methods": [
+      [
+        "statusSummaryAndInventoryHaveDistinctResponsibilities()",
+        "7.910 seconds."
+      ],
+      [
+        "statusEquipmentAndInventoryShowAllMountsAndCanBrowseEveryEquipmentRow()",
+        "27.559 seconds."
+      ],
+      [
+        "run with 2 tests in 0 suites",
+        "27.559 seconds."
+      ]
+    ],
+    "issues": []
+  },
+  "freshActualMethodCount": 2,
+  "freshActualMethods": [
+    "statusEquipmentAndInventoryShowAllMountsAndCanBrowseEveryEquipmentRow",
+    "statusSummaryAndInventoryHaveDistinctResponsibilities"
+  ],
+  "freshRawLogSHA256": "379d61b0a683d3020675808641120c4f82f510b26581e92c62bbf9d287ce4592",
+  "retained025IndividualPassProof": {
+    "status": "Retained45individualpasses only; original025aggregate remainsFAILED",
+    "passedSource": "83d409ecbad4261f6c8196027c7112f58a48f757",
+    "candidate": "a23ffc9fa165a26ee2f00d984517423eed55e2be",
+    "retainedPassedMethodCount": 45,
+    "retainedPassedMethods": [
+      "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam",
+      "buyingBoosterRespectsTechnologyCashAndPreventsWeakerTierCharges",
+      "capitalRewardUsesEliteRankAndMigratesExistingSavesOnceWithoutCheatRankClaims",
+      "changedActualWreckPoseStillPublishesAndAnIdenticalCaptureIsIdempotent",
+      "competingSameRevisionPhysicalSlotIntentsCannotBothCreatePaidItems",
+      "concurrentFuelAndMissileDuplicateIntentsCommitOnceWithoutInventoryRevisionChange",
+      "concurrentRecoveredSourceCommandsConsumeExactLotOnceWithoutCashOrPaidReceipts",
+      "concurrentSnapshotsObserveOnlyCoherentBeforeOrAfterPurchaseStates",
+      "contextHelpPausesFlightAndRestoresEveryScreen",
+      "dockingLoadingAndArrivalUseExistingDockedSaveSemantics",
+      "ecmEscapeEnemiesAndSimulationBounds",
+      "equipmentRowsUseSmallFontWithRightAlignedCreditPricesAndVisibleSelection",
+      "explicitAndLegacyMountSavesPreserveSingleFrontLaserWithoutInventingSideWeapons",
+      "failedSavePublishesNeitherDeathSettlementNorChangedRuntime",
+      "finiteXYZzyCashAndUnlimitedCargoKeepTransactionsAndSavesValid",
+      "fourMountsStartWithOnlyFrontPulseAndPurchasesReplaceOnlyChosenMount",
+      "helpUsesTheUnderlyingInformationScreenAndExchangeContext",
+      "informationScrollHintsShareViewportAndStopAtBothBoundaries",
+      "invalidLiveSnapshotCannotPublishPartialMotionOrConsumeTheGalacticDrive",
+      "legacyMiningStrengthSurvivesPaidWeakerPurchasesStoredWithOriginalIdentity",
+      "loadRefreshesContextEvenWhenCommanderPurchaseFactsAreUnchanged",
+      "missingOrChangedPacksSuspendWithoutDeletingCargoOrReplayingRewards",
+      "nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography",
+      "nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing",
+      "nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts",
+      "nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext",
+      "nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn",
+      "nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce",
+      "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce",
+      "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce",
+      "navigationTiersUseSpecifiedPricesFuelBasedScopeAndOneInstalledUpgrade",
+      "noOpPosePersistenceDockingAndSavingKeepTheAbsentLedgerAbsent",
+      "normalizedComparisonsSortAndTOMLLoaderAreConsistent",
+      "playerImmediateAndTravellingMissilesAndBombCarryKillAttribution",
+      "plughDiscoverySaveValidationAndGalacticDeparturePreserveIdentityAndEquipment",
+      "plughShopSellsEverySupportedItemAtOneDiscountAndKeepsRewardsRestrictedElsewhere",
+      "refusalRollsBackAndFailedLaterExplicitSaveCannotUndoCommittedMutation",
+      "restoredStartupWaitsAtTitleAndContinuesTheSameCommander",
+      "showroomActorSavingAndConcurrentBrowsingKeepCommanderUnchanged",
+      "startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame",
+      "trackpadFlightHelpFitsEveryPageWhileUsingOtherScreensInSpace",
+      "xyzzyCobraRestorePreservesPropertyProgressAndUniqueShipsWithoutMintingCash",
+      "xyzzyFitsClarkeAndCyclesDisplayWhilePreservingProgress",
+      "xyzzyFuelScoopsAreFittedAndCollectCargoOnlyThroughTheLowerScoop",
+      "xyzzyNavalLasersAndEliteShieldsAreEffectiveAcrossEverySupportedView"
+    ],
+    "freshFocusRequired": [
+      "statusSummaryAndInventoryHaveDistinctResponsibilities",
+      "statusEquipmentAndInventoryShowAllMountsAndCanBrowseEveryEquipmentRow"
+    ],
+    "sourceProof": "All Sources/Tests/Tools/Package/Makefile delta is exactlytwo expectedliteralleading-whitespace removals inside twofailedmethods; allother45methodbody andruntime/Tools/build inputsunchanged. Gitdiff retained.",
+    "exactRuntimeTestDiff": "diff --git a/Tests/EliteCoreTests/MarketFlowTests.swift b/Tests/EliteCoreTests/MarketFlowTests.swift\nindex 5b397cf..e5937a0 100644\n--- a/Tests/EliteCoreTests/MarketFlowTests.swift\n+++ b/Tests/EliteCoreTests/MarketFlowTests.swift\n@@ -65 +65 @@ import Testing\n-  #expect(inventory.contains(\"  Fitted Energy bomb - Granted\"))\n+  #expect(inventory.contains(\"Fitted Energy bomb - Granted\"))\ndiff --git a/Tests/EliteCoreTests/StationTests.swift b/Tests/EliteCoreTests/StationTests.swift\nindex 983f9be..d06bad7 100644\n--- a/Tests/EliteCoreTests/StationTests.swift\n+++ b/Tests/EliteCoreTests/StationTests.swift\n@@ -124 +124 @@ import Testing\n-        initialRows.contains { $0.hasPrefix(\"  Fitted \" + mount.label + \" combat mount - \") }\n+        initialRows.contains { $0.hasPrefix(\"Fitted \" + mount.label + \" combat mount - \") }\n",
+    "priorFocusEvidence": "/tmp/elite-central-combined-025/focus.json",
+    "priorFocusRawLogSHA256": "e123707c063c7959f3a4b867b5ef3cabc0cea1e09fdd1f87995c907dcb1c3c9b"
+  },
+  "distinctAffectedMethods": 47,
+  "original025Aggregate": "FAILED47with5issues; preserved unchanged; never relabelled",
+  "retainedNativeEvidence": "docs/CENTRAL-COMBINED-FOCUS-FAILURE-025.json retains52originalcapture/timinghashes from8passednative methods",
+  "productionPreferencesUnchanged": true,
+  "completeCoverageSanitizerLeakGatePassed": false
+}

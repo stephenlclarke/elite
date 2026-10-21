@@ -4,7 +4,7 @@ Copyright (c) 2026 Stephen Clarke. The original Swift implementation, tools, tes
 
 ## Ship models
 
-The numerical meshes in [individual ship TOMLs](Sources/EliteCore/Resources/Ships) are adapted third-party artwork. Each entry has its own `license`, source identity and source file hashes. The current collection contains 56 models under CC-BY-NC-SA-3.0, 14 under CC-BY-NC-SA-4.0, one under CC-BY-SA-3.0 and three ADCK Eagle models under the author's public-domain declaration. Model adaptations remain under the corresponding source terms. This is a mixed-licence distribution: the MIT code licence does not permit commercial use of the included NonCommercial artwork.
+The numerical meshes in [individual ship TOMLs](Sources/EliteCore/Resources/Ships) are adapted third-party artwork. Each entry has its own `license`, source identity and source file hashes. The current collection contains 59 models under CC-BY-NC-SA-3.0, 14 under CC-BY-NC-SA-4.0, one under CC-BY-SA-3.0 and three ADCK Eagle models under the author's public-domain declaration. Model adaptations remain under the corresponding source terms. This is a mixed-licence distribution: the MIT code licence does not permit commercial use of the included NonCommercial artwork.
 
 Full Creative Commons legal codes are included here and in the app resource bundle:
 
@@ -14,11 +14,13 @@ Full Creative Commons legal codes are included here and in the app resource bund
 
 [Asset attribution](Sources/EliteCore/Resources/ASSET-NOTICE.txt) identifies source versions and modifications. Full original credits, copyright statements, disclaimers and additional author terms are retained without alteration in [ModelLicenses](Sources/EliteCore/Resources/ModelLicenses), [Oolite-LICENSE.txt](Sources/EliteCore/Resources/Oolite-LICENSE.txt), [Vector-MANIFEST.txt](Sources/EliteCore/Resources/Vector-MANIFEST.txt) and [RescueStations-LICENSE.txt](Sources/EliteCore/Resources/RescueStations-LICENSE.txt). The two ModelLicenses indexes record each notice's original archive path and SHA256. The catalogue and retained model research identify the exact source archives and model/definition hashes.
 
+The three selected Commies 2.20 adaptations, SH168/SH169/SH170, retain CC-BY-NC-SA-3.0. Their full original README and manifest are preserved in each TOML's `design.custody.originalReadme` and `originalManifest`, alongside archive/model hashes and attribution. These TOMLs are copied intact into the app resource bundle; their inclusion does not extend the project MIT grant.
+
 Oolite core artwork is used under its CC-BY-NC-SA-3.0 option; its engine and other code are not included. The ADCK geometry declaration excludes Simon Bridge shaders, which are not included. See the [retained declaration](Sources/EliteCore/Resources/Legal/ADCK-declaration.txt) and original ADCK readme. Conflicting or unresolved asset permissions do not qualify a model for inclusion.
 
 ## Adaptations and attribution
 
-Mesh adaptations by Stephen Clarke / XYZZY include DAT decoding, camera-axis reflection, winding reconciliation, source subentity transforms, JSON conversion and radius normalization. The previews omit source textures, shaders and flashers. These changes are not presented as the authors' original files or as an endorsement. Original Elite, Frontier, First Encounters and Elite Dangerous designs remain attributed to their respective creators; an Oolite rendition is labelled as such.
+Mesh adaptations by Stephen Clarke / XYZZY include DAT decoding, camera-axis reflection, winding reconciliation, source subentity transforms, JSON conversion and radius normalization. Except for the selected Ray diffuse textures described below, previews omit source textures; source shaders and flashers remain omitted. These changes are not presented as the authors' original files or as an endorsement. Original Elite, Frontier, First Encounters and Elite Dangerous designs remain attributed to their respective creators; an Oolite rendition is labelled as such.
 
 Elite was created by David Braben and Ian Bell. The project credits Mark Moxon's [annotated Elite sources](https://elite.bbcelite.com/) as historical implementation research. The original game, its ROMs and its assembly source are not distributed under this project's MIT licence. Ship facts, historical names and source references in the catalogue do not grant rights to the referenced games or assets. Upstream research extracts and notices retain their original rights.
 
@@ -36,10 +38,10 @@ Keep the applicable copyright, attribution and licence notices with redistribute
 
 ## Individual ship definitions
 
-The runtime ship catalogue and numerical geometry now live in `Sources/EliteCore/Resources/Ships/*.toml`. The 74 imported models retain the original terms and custody metadata in each definition and the preserved asset notices. Ninety-four original project designs are MIT licensed. Generated GIFs depict each definition and follow that design's listed terms; the central source/design appendix records the distinction. TOMLDecoder 0.4.5 is MIT licensed, with its full notice packaged in `Legal/TOMLDecoder-LICENSE.md`.
+The runtime ship catalogue and numerical geometry now live in `Sources/EliteCore/Resources/Ships/*.toml`. The 77 imported models retain the original terms and custody metadata in each definition and the preserved asset notices. Ninety-four original project designs are MIT licensed. Generated GIFs depict each definition and follow that design's listed terms; the central source/design appendix records the distinction. TOMLDecoder 0.4.5 is MIT licensed, with its full notice packaged in `Legal/TOMLDecoder-LICENSE.md`.
 
 ## Liberator DSV2 adaptation
 
 The Liberator mesh and material authoring code are project-authored interpretations of the Blake's 7 spacecraft, with visual attribution and adaptation limits in [docs/LIBERATOR.md](docs/LIBERATOR.md). Tony Gardner's ArtStation artwork and other reference images/models are not included. The project's MIT terms cover its authored implementation and mesh data, and do not grant rights to the underlying television property or external reference artwork.
 
-Imported DAT face triples, texture names and UV mappings are retained as source metadata with model hashes. Referenced bitmap textures are not bundled or rendered; their rights are not inferred from geometry licences. Native per-face palettes and newly authored surface details are explicitly project adaptations.
+Imported DAT face triples, texture names and UV mappings are retained as source metadata with model hashes. SH169 Sunray and SH170 Military Stingray additionally bundle three selected Commies 2.20 Ray diffuse PNGs and derived opaque RGB caches under CC-BY-NC-SA-3.0. Their explicit new-artwork licence statement, unchanged original notices, member hashes and exact archive provenance accompany `Resources/ShipTextures`; see [the bounded texture contract](docs/SHIP-TEXTURES.md). This does not clear unrelated texture rights or imply source shader fidelity. Other referenced bitmaps remain archival metadata. Native per-face palettes and newly authored surface details are explicitly project adaptations.

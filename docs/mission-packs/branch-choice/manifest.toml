@@ -1,0 +1,46 @@
+schemaVersion = 2
+missionAPI = 2
+id = "example.branch-choice"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "completion-receipts-v2", "exclusive-choices-v2", "gallery-basic-v2"]
+priority = 400
+source = "Original station choice demonstration; not a historical Elite campaign."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "route"
+title = "Choose a station assignment demonstration"
+briefing = "At Lave Mission Contacts, select either the actual patrol or an actual courier delivery, then Confirm. This durable choice unlocks only its matching follow-up pack. Reading, changing the selection and Back do not choose a branch."
+destination = "Lave main orbital station"
+reward = "One assignment choice; no payment."
+milestones = ["Confirm one assignment"]
+requiredChoiceGroups = ["assignment"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[[dialogs]]
+id = "assignment"
+text = "Choose the work you want to undertake. The patrol fights two actual ships near Lave; the courier transports actual cargo to Zaonce. Confirm records one exclusive assignment. Back leaves both choices uncommitted."
+choices = [
+  {id="patrol", label="Patrol: defeat the two assigned raiders near Lave", group="assignment"},
+  {id="courier", label="Courier: carry sealed supplies to Zaonce orbital station", group="assignment"}
+]
+
+[trial]
+ship = "SH023"
+galaxy = 0
+system = 7
+credits = 1000
+cabins = 0
+flight = false
