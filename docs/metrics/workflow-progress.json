@@ -4148,6 +4148,20 @@
       "ready_findings": 0,
       "awaiting_verification_findings": 0,
       "usable_build_delivered": false
+    },
+    {
+      "event": "C08.P02 clinic receiving and workshop cassette source pushed; MBA review assigned; P03 split into service/return and consented key loan",
+      "head": "56681af4469c0dcce0920a8ab6e734c5e42324f3",
+      "base": "8c82f02410ef821d4c8b2eb6ae20dbadd5f10660",
+      "ledger_parent": "C08.P02",
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326416972",
+      "unit_status": "pending",
+      "selection_methods": 84,
+      "new_methods": 6,
+      "new_cases": 8,
+      "next_assigned": "C08.P03.A",
+      "next_queued": "C08.P03.B",
+      "usable_build_delivered": false
     }
   ]
 }
