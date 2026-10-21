@@ -86,7 +86,8 @@ struct MarketCargoBoundsTests {
     game.commander.cargo[0] = remaining
     game.screen = .buy
     game.selection = 0
-    game.market[0] = .init(price: 2, quantity: 2)
+    game.market[0].quantity = 2
+    try #require(game.commander.valid)
     let runtime = GameRuntime(game: game)
     let before = await runtime.snapshot()
     try #require(before.commander.unlimitedCargo)
