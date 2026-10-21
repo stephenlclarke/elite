@@ -456,7 +456,8 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard NativeFlightReceptionSave.validateClaims(self),
+    guard NativeFleetDiscoverySave.validateClaims(self),
+      NativeFlightReceptionSave.validateClaims(self),
       WayfarerFieldReliefSave.validateClaims(self)
     else { return false }
     guard NativeMeasuredExtractionSave.validateClaims(self) else { return false }
@@ -880,6 +881,7 @@ public struct Game: Sendable {
       !value.usesEMPSaveVersion, !value.usesModularDriveSaveVersion,
       !value.usesEconomyMiningSaveVersion,
       !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
+      value.scriptState.savedFleetDiscovery == nil,
       value.scriptState.financeLedger == nil, value.scriptState.savedClueJournal == nil,
       !value.scriptState.instances.values.contains(where: { $0.savedNavigationTrade != nil })
     else {
@@ -2600,6 +2602,7 @@ public actor GameRuntime {
     commitMeasuredExtraction()
     commitRecordRecoveryLoss()
     commitIdentifiedSalvageLoss()
+    game.observeSelectedFleetDiscovery()
     game.observeNativeCrimboAttainedMotion(
       delta: delta, flightWasActive: wasLive && !wasDocked && localActive && flightActive,
       startTime: startPhysicalTime, startPlayer: startPlayer,

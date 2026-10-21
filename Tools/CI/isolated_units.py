@@ -13,6 +13,13 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeFleetDiscoveryUnitTests": (
+        "encounterAndIdentificationNeverGrantBlueprintWithoutPlayerDestruction",
+        "npcKillsForeignOwnersUnknownTypesAndBackdatedEvidenceRefuseAtomically",
+        "stationCollectionNeedsActualDockingEvidenceAndCannotCreateABlueprint",
+        "nonstationCapitalDestructionCompletesItsOwnMilestoneWithoutPurchaseRights",
+        "strictDiscoverySchemaPreservesLowerFeaturesAndRejectsNestedUnknownFields",
+    ),
     "EquipmentModuleReadoutUnitTests": (
         "authoredShieldEnergyAndNavigationOfferValuesUseTheirOwnBasicBaseline",
         "actualFittedUpgradesAndAsymmetricShieldsRemainVisibleWithoutChangingTheComponent",

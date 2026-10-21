@@ -305,6 +305,7 @@ extension Game {
     for notice in resolution.notices where message != notice.text || messageTime <= 0 {
       notify(notice.text)
     }
+    observeFleetDestruction(resolution.death, target: target, context: context)
     creditCombatDeath(resolution.death, target: target, context: context)
   }
 

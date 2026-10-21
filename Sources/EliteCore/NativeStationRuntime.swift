@@ -609,6 +609,7 @@ extension Game {
     commander.nativeStations = updated
     invalidateNativeStationAuthority()
     nativeMainStationDockEvidence = .init(receipt: receipt, runtimeEpoch: nativeStationRuntimeEpoch)
+    observeFleetDocking(body: station, main: receipt)
   }
 
   /// This is evaluated by native movement, with the real effective hull at both sweep endpoints.
@@ -1409,6 +1410,7 @@ extension Game {
       throw NativeStationRuntimeError.invalidState
     }
     nativeStationDockEvidence = .init(receipt: receipt, runtimeEpoch: nativeStationRuntimeEpoch)
+    observeFleetDocking(body: body, secondary: receipt)
   }
 
   func prepareNativeStationExit(_ receipt: NativeStationDockReceipt) throws -> ShipPose {

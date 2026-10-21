@@ -367,6 +367,12 @@ extension Display {
     var rows = headings.flatMap { ShowroomText.wrap($0, width: columns) }.map {
       [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]
     }
+    let discovery: [String] =
+      game.commander.scriptState.savedFleetDiscovery?.readout(for: ship.id)
+      ?? ["Collection: unknown; no native encounter recorded"]
+    rows += discovery.flatMap { ShowroomText.wrap($0, width: columns) }.map {
+      [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]
+    }
     if game.showroom.compare {
       rows += game.showroomTradeoffs.flatMap {
         ShowroomText.wrap("Tradeoff: " + $0, width: columns)

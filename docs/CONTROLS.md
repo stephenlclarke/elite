@@ -19,6 +19,8 @@ The main pattern is the same everywhere: **numbers open areas, arrows move, Retu
 | 8 | Commander status | Commander status |
 | 9 | Inventory | Inventory |
 
+Showroom specifications also show recorded fleet collection status and first encounter location. In flight, Tab selects an actual target; a visible, unobstructed original catalogue actor can enter your encounter record, and a fitted Identification targeting tier records its type. Catalogue milestones distinguish player-attributed destruction from real station doorway docking. Browsing a model grants no discovery or blueprint. These development records do not enable pending hulls or fabrication services.
+
 The Screens menu offers these same destinations. Plain numbers are the navigation shortcuts; there are no additional Command-number shortcuts. Docked 1/2 have no action; use Market (7) and Tab to choose Buy or Sell. Number keys work in read-only browsers as well as ordinary screens, but mission dialogs, help, pause and XYZZY consume their own controls. Escape from ordinary information screens returns through the screens you visited, ending at commander status when docked or your cockpit in flight. Switching to a cockpit view starts a fresh return path. Escape in the cockpit leaves you flying.
 
 ## Basic flight
