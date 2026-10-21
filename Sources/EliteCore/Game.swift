@@ -580,18 +580,30 @@ public struct Controls: Sendable {
   public init() {}
 }
 
+/// Private COW storage never escapes Game. Shared instances are read-only; each Game
+/// detaches before yielding mutable access. This invariant supports unchecked Sendable.
+private final class GameCommanderStorage: @unchecked Sendable {
+  var value: Commander
+
+  init(_ value: consuming Commander) {
+    self.value = consume value
+  }
+}
+
 public struct Game: Sendable {
-  // Exactly one value lives in checked copy-on-write storage. Game copies retain independent
-  // nested commander mutations without reserving the whole commander in every Game temporary.
-  private var commanderStorage = [Commander()]
+  private var commanderStorage = GameCommanderStorage(Commander())
   public var commander: Commander {
-    _read { yield commanderStorage[0] }
-    _modify { yield &commanderStorage[0] }
+    _read { yield commanderStorage.value }
+    set { commanderStorage = GameCommanderStorage(newValue) }
+    _modify {
+      if !isKnownUniquelyReferenced(&commanderStorage) {
+        commanderStorage = GameCommanderStorage(commanderStorage.value)
+      }
+      yield &commanderStorage.value
+    }
   }
   var commanderGalaxy: Int {
-    commanderStorage.withUnsafeBufferPointer { storage in
-      storage.baseAddress!.pointee.galaxy
-    }
+    withReadOnlyCommander { $0.galaxy }
   }
   /// Synchronous read-only access through the existing Commander read coroutine.
   func withReadOnlyCommander<Result>(

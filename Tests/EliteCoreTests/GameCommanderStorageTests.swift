@@ -84,7 +84,7 @@ struct GameCommanderStorageTests {
     try #require(committed.commander.name == "CLARKE" && committed.commander.xyzzyActive)
     try #require(committed.commander.valid)
     #expect(retained.commander == authorityBefore && initial.commander == supplied)
-    #expect(retained.commander.name == "JAMESON" && !retained.commander.xyzzyActive)
+    #expect(retained.commander.name == supplied.name && !retained.commander.xyzzyActive)
     #expect(committed.commander.equipmentInventory != retained.commander.equipmentInventory)
     var caller = committed
     caller.commander.credits = 0
@@ -200,6 +200,36 @@ struct GameCommanderStorageTests {
     }
     let committedReceipt = await runtime.takeNewCommanderSaveReceipt()
     #expect(committedReceipt?.url == save)
+  }
+
+  @Test func sentGameCopiesDetachConcurrentNestedMutations() async throws {
+    var prepared = Game(executive: false)
+    try prepared.commander.prepareEquipment(legacy: false)
+    let original = prepared
+    let before = original.commander
+    let copies = await withTaskGroup(of: (Int, Commander).self) { group in
+      for offset in 1...4 {
+        group.addTask {
+          var copy = original
+          copy.commander.credits += offset
+          copy.commander.cargo[0] = offset
+          copy.commander.scriptState.nextEvent = UInt64(offset)
+          return (offset, copy.commander)
+        }
+      }
+      var values: [(Int, Commander)] = []
+      for await value in group { values.append(value) }
+      return values
+    }
+    #expect(copies.count == 4 && Set(copies.map { $0.0 }) == Set(1...4))
+    for (offset, commander) in copies {
+      var expected = before
+      expected.credits += offset
+      expected.cargo[0] = offset
+      expected.scriptState.nextEvent = UInt64(offset)
+      #expect(commander == expected)
+    }
+    #expect(original.commander == before && prepared.commander == before)
   }
 
   @Test func borrowedCommanderReadsPreserveDefaultFlightAndOwnedSnapshots() throws {
