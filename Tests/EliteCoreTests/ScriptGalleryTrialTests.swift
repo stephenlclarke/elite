@@ -21,6 +21,17 @@ private func sortedWorld(_ game: Game) throws -> Data {
   encoder.outputFormatting = .sortedKeys
   return try encoder.encode(game.scriptWorldSave)
 }
+private func passengerTrialCredits(_ pack: ScriptPack) throws -> Int {
+  let scene = try #require(pack.manifest.trial)
+  var pricing = Game(executive: false)
+  pricing.commander.galaxy = scene.galaxy
+  pricing.commander.system = scene.system
+  pricing.systems = Universe.systemsIncludingPlugh(number: scene.galaxy)
+  let grade = PassengerCabinGrade.economy
+  let price = pricing.shopPrice(
+    Equipment(name: grade.equipmentName, price: grade.price, technology: 0))
+  return scene.credits - scene.cabins * price
+}
 @Test func galleryTrialPreservesCompleteLiveWorldAndRestoresItsWriter() async throws {
   let directory = try galleryFolder()
   defer { try? FileManager.default.removeItem(at: directory) }
@@ -47,9 +58,10 @@ private func sortedWorld(_ game: Game) throws -> Data {
   let namespace = try #require(await runtime.gallerySaveDirectory())
   defer { try? FileManager.default.removeItem(at: namespace) }
   let trial = await runtime.snapshot()
+  let expectedTrialCredits = try passengerTrialCredits(passengers)
   #expect(
     trial.isMissionTrial && trial.commander.name == NewCommanderDefaults.name
-      && trial.commander.credits == 90000)
+      && trial.commander.credits == expectedTrialCredits)
   #expect(
     trial.commander.accommodation.people.count == 1
       && trial.commander.accommodation.fitted.count == 1)
@@ -427,7 +439,8 @@ private func sortedWorld(_ game: Game) throws -> Data {
   _ = await runtime.advance(delta: 0.1)
   await runtime.key("trial-restart")
   let restarted = await runtime.snapshot()
-  #expect(restarted.isMissionTrial && restarted.commander.credits == 90000)
+  let expectedTrialCredits = try passengerTrialCredits(pack)
+  #expect(restarted.isMissionTrial && restarted.commander.credits == expectedTrialCredits)
   #expect(restarted.commander.scriptState.instances.values.first?.randomState == 99)
   #expect(restarted.commander.scriptState.instances.keys.first != old)
   #expect(restarted.commander.accommodation.people.count == 1)
@@ -475,9 +488,11 @@ private func sortedWorld(_ game: Game) throws -> Data {
   defer { try? FileManager.default.removeItem(at: namespace) }
   await runtime.key(" ")
   let restarted = await runtime.snapshot()
+  let expectedTrialCredits = try passengerTrialCredits(pack)
   #expect(restarted.isMissionTrial && restarted.screen == .status)
   #expect(
-    restarted.commander.credits == 90000 && restarted.commander.accommodation.people.count == 1)
+    restarted.commander.credits == expectedTrialCredits
+      && restarted.commander.accommodation.people.count == 1)
   #expect(restarted.commander.scriptState.instances.values.first?.randomState == 17)
   #expect(restarted.energy > 0)
   let receipt = try await runtime.saveForInterface()

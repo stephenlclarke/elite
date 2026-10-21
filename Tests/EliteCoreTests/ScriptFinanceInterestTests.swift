@@ -315,26 +315,37 @@ extension ScriptFinanceInterestTests {
   @Test func actualMarketPartialInterestPaymentSurvivesCurrentVersionedSave() async throws {
     let fixture = try interestFixture(edits: [("periodSeconds = 86400", "periodSeconds = 100")])
     defer { fixture.storage.clean() }
-    let borrower = try await fixture.runtime()
+    let borrower = try await fixture.runtime(credits: 100)
+    let beforeBorrow = await borrower.snapshot()
+    let ask = beforeBorrow.market[0].price
+    let expectedPayment = beforeBorrow.commander.credits + 2000 - ask
+    let expectedPrincipal = 2000 - (expectedPayment - 200)
+    try #require(expectedPayment > 200 && expectedPayment < 2200 && expectedPrincipal > 0)
+    let nextInterest = (expectedPrincipal * 1000 + 9999) / 10000
     try await ScriptFinanceTestFixture.confirm(borrower)
-    var game = await borrower.snapshot()
+    let borrowed = await borrower.snapshot()
     let start = try #require(
-      game.commander.scriptState.financeLedger?.records.first?.receipts.first?.calendarSeconds)
-    // Controlled period boundary for the repayment oracle, not a synthetic travel receipt.
-    game.commander.scriptState.calendarSeconds = start + 100
-    let runtime = GameRuntime(game: game, saveURL: fixture.storage.url)
+      borrowed.commander.scriptState.financeLedger?.records.first?.receipts.first?.calendarSeconds)
+    // Controlled period boundary, through the current protected actor: no synthetic travel receipt
+    // or fresh runtime that discards the actual native main-station authority.
+    await borrower.nativeCommand { candidate in
+      candidate.commander.scriptState.calendarSeconds = start + 100
+    }
+    let runtime = borrower
+    let game = await runtime.snapshot()
     await runtime.key("escape")
     await runtime.key("7")
     await runtime.key("right")
-    #expect(await runtime.snapshot().commander.credits == 1500)
+    #expect(await runtime.snapshot().commander.credits == expectedPayment)
     #expect(await runtime.snapshot().commander.cargo[0] == game.commander.cargo[0] + 1)
     try await ScriptFinanceTestFixture.confirm(runtime)
     let partial = await runtime.snapshot().commander
     let ledger = try #require(partial.scriptState.financeLedger)
     let receipt = try #require(ledger.records.first?.receipts.last)
-    #expect(partial.credits == 0 && receipt.amount == 1500)
+    #expect(partial.credits == 0 && receipt.amount == expectedPayment)
     #expect(
-      receipt.interestAdded == 200 && receipt.afterInterest == 0 && receipt.afterPrincipal == 700)
+      receipt.interestAdded == 200 && receipt.afterInterest == 0
+        && receipt.afterPrincipal == expectedPrincipal)
     #expect(ledger.records[0].status == .outstanding)
     try await runtime.save(to: fixture.storage.url)
     let restored = try ScriptSaveStore.read(
@@ -342,6 +353,8 @@ extension ScriptFinanceInterestTests {
     ).0
     #expect(restored.scriptState.financeLedger == ledger)
     #expect(restored.credits == partial.credits && restored.cargo == partial.cargo)
-    #expect(restored.scriptState.financeLedger?.records[0].balance(at: start + 200)?.total == 770)
+    #expect(
+      restored.scriptState.financeLedger?.records[0].balance(at: start + 200)?.total
+        == expectedPrincipal + nextInterest)
   }
 }

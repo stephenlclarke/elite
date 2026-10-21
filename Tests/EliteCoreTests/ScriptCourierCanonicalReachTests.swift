@@ -3,10 +3,23 @@ import Testing
 
 @testable import EliteCore
 
-private func canonicalCourierGame(_ fixture: CourierFixture, axis: SalvageUpgradeAxis) throws
+private func canonicalCourierGame(
+  _ fixture: CourierFixture, axis: SalvageUpgradeAxis,
+  shipID: String = NewCommanderDefaults.shipID
+) throws
   -> (Game, UUID)
 {
   var game = try recoveredEquipmentGame("drive-technology")
+  if game.commander.shipID != shipID {
+    let originals = game.commander.salvageLedger
+    game.commander.fuel = 0
+    try game.commander.transferEquipment(to: shipID, hullID: UUID())
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
+    try #require(game.commander.valid && game.commander.salvageLedger == originals)
+  }
   let stock = try #require(game.commander.fittedEquipment(at: .navigation))
   game.commander.credits = 100_000
   game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
@@ -157,7 +170,7 @@ struct ScriptCourierCanonicalReachTests {
   {
     let fixture = try CourierFixture()
     defer { fixture.clean() }
-    let prepared = try canonicalCourierGame(fixture, axis: .jumpFuelCost)
+    let prepared = try canonicalCourierGame(fixture, axis: .jumpFuelCost, shipID: "SH023")
     var game = prepared.0
     let stockID = prepared.1
     #expect(game.commander.jumpFuelMultiplier < 1)

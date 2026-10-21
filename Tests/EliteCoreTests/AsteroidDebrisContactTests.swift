@@ -319,3 +319,114 @@ extension AsteroidDebrisContactTests {
     }
   }
 }
+
+extension AsteroidDebrisContactTests {
+  @Test func translatedCoplanarNearMissHasAContinuousCertificateAtTheExistingLeaf() throws {
+    let source = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+    let target = try PreparedHull(mesh: contactBox(1, 1, 1))
+    let motion = contactMotion(.init(-3, 1.5001, 0), .init(3, 1.5001, 0), radius: source.radius)
+    let stationary = contactMotion(.init(0, 0, 0), .init(0, 0, 0), radius: target.radius)
+    // The scalar travel envelope exceeds the true 0.0001 face gap even at
+    // this leaf. Only a certificate over every triangle pair can admit it.
+    let result = HullSweepSafety.firstNativeContact(
+      source: motion, hull: source,
+      target: stationary, targetHull: target,
+      budget: .init(
+        distanceQueries: 256, triangleTests: 500_000,
+        nodeVisits: 500_000, subdivisionDepth: 1))
+    guard case .clear = result else {
+      Issue.record("Translated separated coplanar faces were not continuously certified")
+      return
+    }
+  }
+
+  @Test(arguments: ["pose", "geometry", "pair", "reuse"])
+  func sealedFrontierRequiresTheExactPairPoseAndOneUse(mismatch: String) throws {
+    let source = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+    let target = try PreparedHull(mesh: contactBox(0.01, 2, 2))
+    let motion = contactMotion(.init(-20, 0.3, 0.2), .init(20, 0.3, 0.2), radius: source.radius)
+    let stationary = contactMotion(.init(0, 0, 0), .init(0, 0, 0), radius: target.radius)
+    guard
+      case .contact(let contact) = HullSweepSafety.firstNativeContact(
+        source: motion,
+        hull: source, target: stationary, targetHull: target)
+    else {
+      Issue.record("The original real contact must mint its clear frontier")
+      return
+    }
+    let frontier = try #require(
+      HullSweepSafety.nativeFrontierPoses(
+        contact,
+        sourceHull: source, targetHull: target))
+    let retreat = contactMotion(
+      frontier.source.position,
+      frontier.source.position - Vector3(1, 0, 0), radius: source.radius)
+    let still = contactMotion(
+      frontier.target.position, frontier.target.position, radius: target.radius)
+    let wrong: NativeHullContactResult
+    switch mismatch {
+    case "pose":
+      let shifted = contactMotion(
+        frontier.source.position + Vector3(0, 0.001, 0),
+        frontier.source.position - Vector3(1, -0.001, 0), radius: source.radius)
+      wrong = HullSweepSafety.continueNativeContact(
+        contact, source: shifted, hull: source,
+        target: still, targetHull: target)
+    case "geometry":
+      let replacement = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+      wrong = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: replacement,
+        target: still, targetHull: target)
+    case "pair":
+      wrong = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: target,
+        target: still, targetHull: source)
+    default:
+      let accepted = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: source,
+        target: still, targetHull: target)
+      guard case .clear = accepted else {
+        Issue.record("The exact frontier did not authorize its separating continuation")
+        return
+      }
+      wrong = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: source,
+        target: still, targetHull: target)
+    }
+    guard case .refused(.invalidMotion) = wrong else {
+      Issue.record("A mismatched or spent frontier granted authority")
+      return
+    }
+    if mismatch != "reuse" {
+      let valid = HullSweepSafety.continueNativeContact(
+        contact, source: retreat, hull: source,
+        target: still, targetHull: target)
+      guard case .clear = valid else {
+        Issue.record("Rejected mismatches consumed the valid geometric frontier")
+        return
+      }
+    }
+    #expect(
+      HullSweepSafety.nativeFrontierPoses(contact, sourceHull: source, targetHull: target) == nil)
+  }
+
+  @Test(arguments: [false, true])
+  func freshNativeStartsRetainClosedContainmentAndAmbiguousOpenRefusal(open: Bool) throws {
+    let source = try PreparedHull(mesh: contactBox(0.1, 0.1, 0.1))
+    let mesh = contactBox(2, 2, 2)
+    let target = try PreparedHull(
+      mesh: .init(
+        vertices: mesh.vertices,
+        faces: open ? Array(mesh.faces.dropLast()) : mesh.faces))
+    let small = contactMotion(.init(0, 0, 0), .init(0.01, 0, 0), radius: source.radius)
+    let large = contactMotion(.init(0, 0, 0), .init(0, 0, 0), radius: target.radius)
+    let result = HullSweepSafety.firstNativeContact(
+      source: small, hull: source,
+      target: large, targetHull: target)
+    guard case .refused(let failure) = result else {
+      Issue.record("A fresh contained or ambiguous open start was admitted")
+      return
+    }
+    #expect(failure == (open ? .unproven : .insideHull))
+  }
+}

@@ -107,7 +107,11 @@ private struct CommanderQueryFixture {
   let before = actual.commander
   let query = actual.scriptCommanderQuery
   #expect(query["accommodation"]?["occupied_berths"] == .integer(1))
-  #expect(query["accommodation"]?["free_compatible_places"] == .integer(0))
+  try #require(before.accommodation.fittedCabins.count == 1)
+  try #require(before.accommodation.fittedCabins[0].grade == .economy)
+  #expect(
+    query["accommodation"]?["free_compatible_places"]
+      == .integer(Int64(PassengerCabinGrade.economy.places - 1)))
   let profile = try ShipAccommodationProfile(ship: actual.commander.ship)
   #expect(
     query["accommodation"]?["required_operating_crew"] == .integer(Int64(profile.operatingCrew)))

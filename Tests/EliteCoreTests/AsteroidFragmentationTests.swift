@@ -146,6 +146,13 @@ private func moveFractureObserver(_ game: inout Game, to position: Vector3) {
 
 private func nativeFractureGame() throws -> (Game, MiningRock, Int) {
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try #require(
+    game.commander.valid && game.commander.performance.workTools?.contains(.miningLaser) == true)
   try game.commander.prepareEquipment(legacy: false)
   try game.commander.grantEquipment(
     LaserKind.mining.equipmentName, at: .utility(.miningLaser),
@@ -1125,5 +1132,213 @@ extension AsteroidFragmentationTests {
       world.sceneIsConsistent(
         bodies: game.bodies, docked: game.docked, mainStation: game.dockedAtMainStation,
         system: game.systemIdentity, flight: game.commander.flightSimulation))
+  }
+}
+
+private func nativeContinuationPlayerGame() throws -> (Game, MiningRock, Int) {
+  var (game, rock, bodyID) = try nativeFractureGame()
+  try nativeFractureHit(&game, bodyID: bodyID, damage: rock.energy + 1)
+  let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
+  game.bodies[index].rotation = 0
+  game.bodies[index].orientation = .init()
+  game.bodies[index].position = .init(0, 0, 500)
+  game.bodies[index].physical?.velocity = .init(0, 0, -6000)
+  game.persistOrePoses()
+  return (game, rock, bodyID)
+}
+
+extension AsteroidFragmentationTests {
+  @Test func secondNativeFaceTransfersMomentumAfterDeathWithoutASecondSettlement() throws {
+    var (game, _, bodyID) = try nativeContinuationPlayerGame()
+    let body = try #require(game.bodies.first { $0.id == bodyID })
+    let mass = try #require(game.asteroidDebrisMassKg(body))
+    let playerMass = AsteroidImpactPolicy.massKg(hull: .cobra)
+    let sourceHull = try PreparedHull(mesh: game.gameplayMesh(for: body))
+    let targetHull = try PreparedHull(mesh: game.commander.playerMesh)
+    let sourceStart = game.modelPose(of: body)
+    let playerStart = game.commander.flightSimulation.pose
+    var sourceEnd = sourceStart
+    sourceEnd.position = sourceEnd.position + Vector3(0, 0, -600)
+    let motion = HullSceneMotion(
+      start: sourceStart, end: sourceEnd,
+      initialVelocity: .init(0, 0, -6000), acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: sourceHull.radius)
+    let stationary = HullSceneMotion(
+      start: playerStart, end: playerStart,
+      initialVelocity: .init(0, 0, 0), acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: targetHull.radius)
+    guard
+      case .contact(let first) = HullSweepSafety.firstNativeContact(
+        source: motion,
+        hull: sourceHull, target: stationary, targetHull: targetHull)
+    else {
+      Issue.record("Native hull did not supply the first certified face")
+      return
+    }
+    let firstResponse = try #require(
+      AsteroidImpactPolicy.impulse(
+        sourceMass: mass,
+        targetMass: playerMass, sourceVelocity: motion.initialVelocity,
+        targetVelocity: stationary.initialVelocity, normal: first.normal))
+    let emission = game.commander.flightSimulation.nextEmission
+    let incident = game.commander.flightSimulation.nextIncident
+    let cash = game.commander.credits
+    let kills = game.commander.kills
+    let rear = game.rearShield
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let captured = game.beginAsteroidContactStep()
+    let frame = try #require(captured)
+    moveNativeContactEndpoints(&game, delta: 0.1)
+    let result = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .advanced(let receipt) = result, let receipt else {
+      Issue.record("Native second-face continuation refused: \(nativeContactOutcome(result))")
+      return
+    }
+    let after = try #require(game.bodies.first { $0.id == bodyID }?.physical?.velocity)
+    #expect((after - firstResponse.source).length > 1)
+    #expect(
+      (after * mass + game.flightWorldVelocity * playerMass
+        - motion.initialVelocity * mass).length < 1e-6)
+    #expect(game.energy <= 0 && game.rearShield == rear)
+    #expect(game.commander.flightSimulation.nextEmission == emission + 1)
+    #expect(game.commander.flightSimulation.nextIncident == incident + 2)
+    #expect(receipt.incident == incident)
+    #expect(game.commander.credits == cash && game.commander.kills == kills)
+  }
+
+  @Test func continuationIncidentCapacityRefusalRestoresMotionAndAllHealth() throws {
+    var (game, _, _) = try nativeContinuationPlayerGame()
+    let encoded = try JSONEncoder().encode(game.commander.flightSimulation)
+    var object = try #require(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+    object["nextIncident"] = NSNumber(value: UInt64.max - 1)
+    game.commander.flightSimulation = try JSONDecoder().decode(
+      FlightSimulationState.self,
+      from: JSONSerialization.data(withJSONObject: object))
+    try #require(game.commander.flightSimulation.valid)
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let commander = game.commander
+    let bodies = game.bodies
+    let health = [game.energy, game.frontShield, game.rearShield]
+    let velocity = game.flightWorldVelocity
+    let captured = game.beginAsteroidContactStep()
+    let frame = try #require(captured)
+    moveNativeContactEndpoints(&game, delta: 0.1)
+    let result = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .refused(let reason) = result else {
+      Issue.record("Insufficient incident capacity committed a partial continuation")
+      return
+    }
+    #expect(reason == "INCIDENT CAPACITY")
+    #expect(game.commander == commander && game.bodies == bodies)
+    #expect([game.energy, game.frontShield, game.rearShield] == health)
+    #expect(game.flightWorldVelocity == velocity)
+  }
+}
+
+extension AsteroidFragmentationTests {
+  @Test func anotherNativePairOnTheResponsePathRefusesWithoutPartialDamageOrImpulse() throws {
+    var (game, _, bodyID) = try nativeContinuationPlayerGame()
+    let sourceBody = try #require(game.bodies.first { $0.id == bodyID })
+    let mass = try #require(game.asteroidDebrisMassKg(sourceBody))
+    let sourceHull = try PreparedHull(mesh: game.gameplayMesh(for: sourceBody))
+    let playerHull = try PreparedHull(mesh: game.commander.playerMesh)
+    let start = game.modelPose(of: sourceBody)
+    var end = start
+    end.position = end.position + Vector3(0, 0, -600)
+    let incoming = HullSceneMotion(
+      start: start, end: end,
+      initialVelocity: .init(0, 0, -6000), acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: sourceHull.radius)
+    let player = game.commander.flightSimulation.pose
+    let stillPlayer = HullSceneMotion(
+      start: player, end: player,
+      initialVelocity: .init(0, 0, 0), acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: playerHull.radius)
+    guard
+      case .contact(let first) = HullSweepSafety.firstNativeContact(
+        source: incoming,
+        hull: sourceHull, target: stillPlayer, targetHull: playerHull)
+    else {
+      Issue.record("Missing original native player contact")
+      return
+    }
+    let frontier = try #require(
+      HullSweepSafety.nativeFrontierPoses(
+        first,
+        sourceHull: sourceHull, targetHull: playerHull))
+    let response = try #require(
+      AsteroidImpactPolicy.impulse(
+        sourceMass: mass,
+        targetMass: AsteroidImpactPolicy.massKg(hull: .cobra),
+        sourceVelocity: incoming.initialVelocity, targetVelocity: .init(0, 0, 0),
+        normal: first.normal))
+    let remaining = 0.1 - first.lowerTime
+    var responseEnd = frontier.source
+    responseEnd.position = responseEnd.position + response.source * remaining
+    let cargoHull = try PreparedHull(mesh: Mesh.hull(.cargo))
+    let cargoPose = ShipPose(position: responseEnd.position)
+    let stillCargo = HullSceneMotion(
+      start: cargoPose, end: cargoPose,
+      initialVelocity: .init(0, 0, 0), acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: cargoHull.radius)
+    // This third body is placed at the response endpoint derived from the real
+    // normal, with no search or replacement of the original collision fixture.
+    guard
+      case .clear = HullSweepSafety.firstNativeContact(
+        source: incoming,
+        hull: sourceHull, target: stillCargo, targetHull: cargoHull)
+    else {
+      Issue.record("Third-party fixture must leave the original incoming path continuously clear")
+      return
+    }
+    let responseMotion = HullSceneMotion(
+      start: frontier.source, end: responseEnd,
+      initialVelocity: response.source, acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: remaining, playerRadius: sourceHull.radius)
+    let remainingCargo = HullSceneMotion(
+      start: cargoPose, end: cargoPose,
+      initialVelocity: .init(0, 0, 0), acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: remaining, playerRadius: cargoHull.radius)
+    guard
+      case .contact = HullSweepSafety.firstNativeContact(
+        source: responseMotion,
+        hull: sourceHull, target: remainingCargo, targetHull: cargoHull)
+    else {
+      Issue.record("Third-party fixture must independently prove a real response-path contact")
+      return
+    }
+    let context = try #require(game.gameplayContext())
+    let allocated = game.commander.flightSimulation.allocateSpawn()
+    let sequence = try #require(allocated)
+    let request = SpawnRequest(
+      identity: .init(
+        system: context.system, visit: context.visit,
+        sequence: sequence, member: 0, producer: .ambient), population: .cargo, hull: .cargo,
+      position: cargoPose.position, orientation: .init(), velocity: .init(0, 0, 0),
+      npc: nil, rock: nil, payload: nil, priority: .ordinary)
+    let receipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit,
+        revision: context.revision, batches: [.init(requests: [request], atomic: true)], intents: []
+      ))
+    let actor = try #require(receipts.first?.actor)
+    let cargo = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
+    game.bodies[cargo].rotation = 0
+    game.bodies[cargo].orientation = .init()
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let commander = game.commander
+    let bodies = game.bodies
+    let health = [game.energy, game.frontShield, game.rearShield]
+    let captured = game.beginAsteroidContactStep()
+    let frame = try #require(captured)
+    moveNativeContactEndpoints(&game, delta: 0.1)
+    let result = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .refused(let reason) = result else {
+      Issue.record("A third pair on the response path committed a partial step")
+      return
+    }
+    #expect(reason == "REMAINING CONTACT")
+    #expect(game.commander == commander && game.bodies == bodies)
+    #expect([game.energy, game.frontShield, game.rearShield] == health)
   }
 }
