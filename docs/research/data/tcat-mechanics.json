@@ -1,0 +1,3549 @@
+{
+  "package_id": "P43",
+  "version": "2.0",
+  "status": "Source factual AI operations and equipment values; original prose omitted; source defects not silently repaired.",
+  "ai_definitions": [
+    {
+      "path": "AIs/TCAT_armadaAI.plist",
+      "sha256": "eed3b2475311412c75c7b528ac537739a0d6f31ef48141bb61550fc289b48b27",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: HEAD_FOR_STATION"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "fireMissile",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_INVALID": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "TARGET_VALID": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NO_TARGET": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "UPDATE": [
+            "pauseAI: 15.0",
+            "setStateTo: LAUNCH_COUNTDOWN"
+          ]
+        },
+        "LAUNCH_COUNTDOWN": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_INVALID": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "performAttack"
+          ],
+          "TARGET_VALID": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "ROLL_2": [
+            "pauseAI: 15.0",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ROLL_3": [
+            "pauseAI: 30.0",
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "NO_TARGET": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "ROLL_1": [
+            "fireMissile",
+            "pauseAI: 15.0",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "UPDATE": [
+            "rollD: 3"
+          ]
+        },
+        "HEAD_FOR_STATION": {
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "ENTER": [
+            "sendScriptMessage: findStation"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "setDesiredRangeTo: 5000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "TARGET_INVALID": [
+            "sendScriptMessage: findStation"
+          ],
+          "TARGET_VALID": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENERGY_LOW": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "STATION_FOUND": [
+            "setDestinationToTarget",
+            "setDesiredRangeTo: 5000.0",
+            "checkCourseToDestination"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NO_TARGET": [
+            "sendScriptMessage: findStation"
+          ],
+          "NOTHING_FOUND": [
+            "sendScriptMessage: findStation"
+          ]
+        },
+        "HEAD_FOR_WITCHPOINT": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "ENTER": [
+            "setCourseToWitchpoint",
+            "setDesiredRangeTo: 15000.0",
+            "checkCourseToDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "TARGET_VALID": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_INVALID": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "NO_TARGET": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "UPDATE": [
+            "setCourseToWitchpoint",
+            "setDesiredRangeTo: 15000.0",
+            "checkCourseToDestination",
+            "scanForNonThargoid",
+            "pauseAI: 10.0"
+          ]
+        },
+        "EXIT_SYSTEM": {
+          "ENTER": [
+            "addFuel: 7.0"
+          ],
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "UPDATE": [
+            "performHyperSpaceExitWithoutReplacing"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE UNAVAILABLE": [
+            "switchAITo: thargoidAI.plist"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_baseAI.plist",
+      "sha256": "aba90cc20c4e21074260923e44d57669576ea61149079da32ce50c4e1fb30363",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: IDLE"
+          ],
+          "RESTARTED": [
+            "setStateTo: IDLE"
+          ]
+        },
+        "DEFENSE_MODE": {
+          "ENERGY_FULL": [
+            "pauseAI: 10.0",
+            "setStateTo: IDLE"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "sendScriptMessage: mineScan",
+            "increaseAlertLevel"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "increaseAlertLevel"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: findNonThargoid",
+            "randomPauseAI: 5.0 10.0"
+          ],
+          "ENTER": [
+            "randomPauseAI: 2.5 10.0"
+          ],
+          "TARGET_LOST": [
+            "pauseAI: 10.0",
+            "setStateTo: IDLE"
+          ],
+          "DOCKING_REQUESTED": [
+            "increaseAlertLevel",
+            "increaseAlertLevel"
+          ],
+          "ENERGY_LOW": [
+            "sendScriptMessage: launchAll"
+          ],
+          "TARGET_DESTROYED": [
+            "pauseAI: 10.0",
+            "setStateTo: IDLE"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "increaseAlertLevel"
+          ],
+          "RED_ALERT": [
+            "setStateTo: LAUNCH"
+          ],
+          "GREEN_ALERT": [
+            "setStateTo: IDLE"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: IDLE"
+          ]
+        },
+        "IDLE": {
+          "UPDATE": [
+            "sendScriptMessage: findNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "NOTHING_FOUND": [
+            "decreaseAlertLevel"
+          ],
+          "TARGET_FOUND": [
+            "increaseAlertLevel",
+            "setStateTo: LAUNCH"
+          ],
+          "ENTER": [
+            "sendScriptMessage: findNonThargoid"
+          ],
+          "DOCKING_REQUESTED": [
+            "increaseAlertLevel",
+            "increaseAlertLevel"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "sendScriptMessage: mineScan",
+            "increaseAlertLevel",
+            "setStateTo: LAUNCH"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: LAUNCH"
+          ]
+        },
+        "LAUNCH": {
+          "ROLL_6": [
+            "fireMissile"
+          ],
+          "ROLL_12": [
+            "sendScriptMessage: launchAll"
+          ],
+          "ENTER": [
+            "rollD: 30"
+          ],
+          "ROLL_5": [
+            "fireMissile"
+          ],
+          "ROLL_4": [
+            "fireMissile"
+          ],
+          "ROLL_11": [
+            "sendScriptMessage: launchGuards"
+          ],
+          "ROLL_9": [
+            "launchDefenseShip"
+          ],
+          "ROLL_3": [
+            "fireMissile"
+          ],
+          "ROLL_8": [
+            "launchDefenseShip"
+          ],
+          "ROLL_2": [
+            "fireMissile"
+          ],
+          "ROLL_10": [
+            "sendScriptMessage: launchGuards"
+          ],
+          "ROLL_7": [
+            "launchDefenseShip"
+          ],
+          "ROLL_1": [
+            "fireMissile"
+          ],
+          "UPDATE": [
+            "setStateTo: DEFENSE_MODE"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_bugStationAI.plist",
+      "sha256": "0c08975ae58064f0d963895fc6d5e6accae02521ea422aee3babe043de8cb2fa",
+      "states": {
+        "DEFENSE_MODE": {
+          "ENERGY_FULL": [
+            "pauseAI: 10.0",
+            "setStateTo: IDLE"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "sendScriptMessage: mineScan",
+            "increaseAlertLevel"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "increaseAlertLevel"
+          ],
+          "NOTHING_FOUND": [
+            "pauseAI: 10.0",
+            "setStateTo: IDLE"
+          ],
+          "ENTER": [
+            "sendScriptMessage: findNonThargoid"
+          ],
+          "TARGET_LOST": [
+            "pauseAI: 10.0",
+            "setStateTo: IDLE"
+          ],
+          "DOCKING_REQUESTED": [
+            "increaseAlertLevel",
+            "increaseAlertLevel"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: findNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "ENERGY_LOW": [
+            "setStateTo: DEFENDER"
+          ],
+          "TARGET_DESTROYED": [
+            "pauseAI: 10.0",
+            "setStateTo: IDLE"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "increaseAlertLevel"
+          ],
+          "RED_ALERT": [
+            "setStateTo: MISSILE"
+          ],
+          "GREEN_ALERT": [
+            "setStateTo: IDLE"
+          ],
+          "YELLOW_ALERT": [
+            "setStateTo: LAUNCH"
+          ]
+        },
+        "MISSILE": {
+          "ENTER": [
+            "increaseAlertLevel",
+            "rollD: 4"
+          ],
+          "DOCKING_REQUESTED": [
+            "increaseAlertLevel",
+            "increaseAlertLevel"
+          ],
+          "EXIT": [
+            "randomPauseAI: 0.25 5.0",
+            "decreaseAlertLevel"
+          ],
+          "ROLL_1": [
+            "fireMissile"
+          ],
+          "UPDATE": [
+            "setStateTo: DEFENSE_MODE"
+          ],
+          "ROLL_2": [
+            "setStateTo: DEFENDER"
+          ]
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: IDLE"
+          ],
+          "RESTARTED": [
+            "setStateTo: IDLE"
+          ]
+        },
+        "DEFENDER": {
+          "ENTER": [
+            "sendScriptMessage: dropDoor"
+          ],
+          "DOCKING_REQUESTED": [
+            "increaseAlertLevel",
+            "increaseAlertLevel"
+          ],
+          "LAUNCH_DEFENDER": [
+            "launchDefenseShip"
+          ],
+          "UPDATE": [
+            "setStateTo: DEFENSE_MODE"
+          ]
+        },
+        "IDLE": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: DEFENSE_MODE"
+          ],
+          "ENTER": [
+            "sendScriptMessage: findNonThargoid"
+          ],
+          "DOCKING_REQUESTED": [
+            "increaseAlertLevel",
+            "increaseAlertLevel"
+          ],
+          "UPDATE": [
+            "decreaseAlertLevel",
+            "pauseAI: 10.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "sendScriptMessage: mineScan",
+            "increaseAlertLevel"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: DEFENSE_MODE"
+          ]
+        },
+        "LAUNCH": {
+          "ENTER": [
+            "rollD: 5"
+          ],
+          "DOCKING_REQUESTED": [
+            "increaseAlertLevel",
+            "increaseAlertLevel"
+          ],
+          "EXIT": [
+            "randomPauseAI: 0.25 5.0"
+          ],
+          "ROLL_1": [
+            "setStateTo: DEFENDER"
+          ],
+          "UPDATE": [
+            "setStateTo: DEFENSE_MODE"
+          ],
+          "ROLL_2": [
+            "setStateTo: DEFENDER"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_burningFuelAI.plist",
+      "sha256": "54df14f2f676b9cd01c81d6c9d677bcc74fe063683937e8fe8093623adda7481",
+      "states": {
+        "GO_BANG": {
+          "ENTER": [],
+          "EXIT": [],
+          "UPDATE": [
+            "setStateTo: DETONATE"
+          ]
+        },
+        "DETONATE": {
+          "ENTER": [
+            "setDesiredRangeTo: 250.0",
+            "dealEnergyDamageWithinDesiredRange",
+            "becomeExplosion"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: GO_BANG"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_clawAI.plist",
+      "sha256": "cbe1c380efe9d7502ecf7c73faed71346c96b0219fa038e0a975405af61c0420",
+      "states": {
+        "GO_BANG": {
+          "ENTER": [
+            "throwSparks",
+            "randomPauseAI: 1.5 5.0"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "becomeExplosion"
+          ]
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "switchLightsOn",
+            "randomPauseAI: 1.5 5.0"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "setStateTo: SPAWN_TALONS"
+          ]
+        },
+        "SPAWN_TALONS": {
+          "ENTER": [
+            "sendScriptMessage: spawnTalons"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "setStateTo: GO_BANG"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_controllerAI.plist",
+      "sha256": "bd253da91ff08e584f179954b90cf153099aa52d073def24169679601a725046",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        },
+        "ATTACK_SHIP": {
+          "TARGET_LOST": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 15.0"
+          ],
+          "ENERGY_LOW": [
+            "fireMissile",
+            "fireMissile",
+            "fireMissile",
+            "fireMissile",
+            "fireMissile"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "groupAttackTarget",
+            "performAttack"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "HEAD_FOR_PLANET": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "UPDATE": [
+            "setCourseToPlanet",
+            "setDesiredRangeTo: 80000.0",
+            "checkCourseToDestination",
+            "scanForNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "setCourseToPlanet",
+            "setDesiredRangeTo: 80000.0",
+            "checkCourseToDestination"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "LOOK_FOR_TARGETS": {
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 5.0"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: HEAD_FOR_PLANET"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "setSpeedTo: 0.0",
+            "performTumble",
+            "scanForNonThargoid",
+            "pauseAI: 5.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_controllerDroneAI.plist",
+      "sha256": "a7a2db336e601b4178b2e43e7b20915f49d1f8d11476af5b136e2d7f412265e0",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: BEGIN_BUSINESS"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        },
+        "CLEAR_STATION": {
+          "ENTER": [
+            "setTargetToStation",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 8000.0",
+            "setSpeedFactorTo: 0.5",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "scanForFormationLeader",
+            "pauseAI: 15.0"
+          ],
+          "ESCORTING": [
+            "setDesiredRangeTo: 0.0",
+            "setStateTo: FLYING_ESCORT"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "suggestEscort"
+          ]
+        },
+        "LOOK_FOR_BUSINESS": {
+          "UPDATE": [
+            "pauseAI: 7.5",
+            "scanForFormationLeader"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "suggestEscort"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: CHECK_FOR_CONTROL"
+          ],
+          "RESTARTED": [
+            "setStateTo: BEGIN_BUSINESS"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "scanForFormationLeader"
+          ],
+          "ESCORTING": [
+            "setDesiredRangeTo: 0.0",
+            "setStateTo: FLYING_ESCORT"
+          ],
+          "LAUNCHED OKAY": [
+            "setStateTo: CLEAR_STATION"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "performAttack"
+          ]
+        },
+        "BEGIN_BUSINESS": {
+          "UPDATE": [
+            "escortCheckMother",
+            "pauseAI: 7.5"
+          ],
+          "NOT_ESCORTING": [
+            "setStateTo: CHECK_FOR_CONTROL"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "escortCheckMother"
+          ],
+          "ESCORTING": [
+            "setDesiredRangeTo: 0.0",
+            "setStateTo: FLYING_ESCORT"
+          ],
+          "LAUNCHED OKAY": [
+            "setStateTo: CLEAR_STATION"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "performAttack"
+          ]
+        },
+        "ENTER_WORMHOLE": {
+          "ENTER": [
+            "setDestinationToTarget",
+            "setDesiredRangeTo: 1.0",
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "UPDATE": [],
+          "PLAYER WITCHSPACE": [
+            "enterTargetWormhole"
+          ]
+        },
+        "FLYING_ESCORT": {
+          "EXIT": [],
+          "RESTARTED": [
+            "setStateTo: BEGIN_BUSINESS"
+          ],
+          "ESCORTING": [
+            "setDesiredRangeTo: 0.0",
+            "performEscort"
+          ],
+          "INCOMING_MISSILE": [
+            "messageMother: INCOMING_MISSILE"
+          ],
+          "ENTER": [
+            "performEscort"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ],
+          "NOT_ESCORTING": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToFoundTarget",
+            "performAttack"
+          ],
+          "ATTACKED": [
+            "messageMother: ATTACKED"
+          ],
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 15"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "messageMother: ATTACKED"
+          ],
+          "ENTER WORMHOLE": [
+            "setStateTo: ENTER_WORMHOLE"
+          ],
+          "NOTHING_FOUND": [
+            "escortCheckMother"
+          ]
+        },
+        "CHECK_FOR_CONTROL": {
+          "THARGOID_DESTROYED": [
+            "setStateTo: CHECK_FOR_CONTROL"
+          ],
+          "ENTER": [
+            "setSpeedTo: 0.0",
+            "performTumble"
+          ],
+          "EXIT": [],
+          "NOTHING_FOUND": [
+            "becomeUncontrolledThargon"
+          ],
+          "UPDATE": [
+            "scanForNearestShipHavingRole: thargoid-mothership",
+            "pauseAI: 1.0"
+          ],
+          "TARGET_FOUND": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_deactivatedAI.plist",
+      "sha256": "fc197728f2be34f3f403da96f6984a974510b1d1b439a0179c0c0a4e5c6dec7a",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "switchLightsOff",
+            "setSpeedFactorTo: 0.0"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: WAITFORIT"
+          ],
+          "UPDATE": [
+            "setStateTo: WAITFORIT"
+          ]
+        },
+        "WAITFORIT": {
+          "ENTER": [
+            "throwSparks",
+            "randomPauseAI: 20.0 60.0"
+          ],
+          "UPDATE": [
+            "becomeExplosion"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_dockingAI.plist",
+      "sha256": "8b52856c1f83623be194214888c788b50ba54a2913814101ed19d789637bd050",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setSpeedTo: 0.0",
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ],
+          "UPDATE": [
+            "pauseAI: 2.0"
+          ]
+        },
+        "APPROACH": {
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 2.0"
+          ],
+          "TARGET_FOUND": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ],
+          "DOCKING_ABORTED": [
+            "setStateTo: ABORT"
+          ],
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "ENTER": [
+            "recallDockingInstructions",
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "COLLISION": [
+            "setStateTo: ABORT"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ],
+          "ATTACKED": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ]
+        },
+        "ABORT": {
+          "ENTER": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ],
+          "RESTARTED": [
+            "performIdle",
+            "setStateTo: GLOBAL"
+          ],
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 2"
+          ],
+          "TARGET_FOUND": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ]
+        },
+        "AWAIT_COORDS": {
+          "DOCKED": [
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "TARGET_FOUND": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ],
+          "DOCKING_ABORTED": [
+            "setStateTo: ABORT"
+          ],
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 2.0"
+          ],
+          "HOLD_POSITION": [
+            "setStateTo: STATIONKEEPING"
+          ],
+          "APPROACH": [
+            "setStateTo: APPROACH"
+          ],
+          "COLLISION": [
+            "setStateTo: ABORT"
+          ],
+          "APPROACH_COORDINATES": [
+            "setStateTo: GO_TO_COORDS"
+          ],
+          "BACK_OFF": [
+            "setStateTo: RETREAT"
+          ],
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "TRY_AGAIN_LATER": [
+            "pauseAI: 30.0",
+            "setStateTo: ABORT"
+          ]
+        },
+        "GO_TO_COORDS": {
+          "DOCKED": [
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "FACING_DESTINATION": [
+            "recallDockingInstructions",
+            "performFlyToRangeFromDestination"
+          ],
+          "DOCKING_ABORTED": [
+            "setStateTo: ABORT"
+          ],
+          "ATTACKED": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ],
+          "TARGET_FOUND": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ],
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 2"
+          ],
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "ENTER": [
+            "performFaceDestination"
+          ],
+          "FRUSTRATED": [
+            "setSpeedTo: 0.0",
+            "performFaceDestination"
+          ],
+          "COLLISION": [
+            "setStateTo: ABORT"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ]
+        },
+        "STATIONKEEPING": {
+          "ATTACKED": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ],
+          "ENTER": [
+            "performIdle",
+            "setSpeedTo: 0.0",
+            "pauseAI: 10.0"
+          ],
+          "RESTARTED": [
+            "performIdle",
+            "setStateTo: GLOBAL"
+          ],
+          "UPDATE": [
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ]
+        },
+        "EXIT_SYSTEM": {
+          "ENTER": [
+            "performDocking",
+            "exitAI"
+          ]
+        },
+        "RETREAT": {
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 2"
+          ],
+          "FACING_DESTINATION": [
+            "setSpeedFactorTo: 1.0",
+            "setDesiredRangeTo: 500.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "DOCKING_ABORTED": [
+            "setStateTo: ABORT"
+          ],
+          "TARGET_FOUND": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ],
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "ENTER": [
+            "recallDockingInstructions",
+            "setSpeedTo: 0.0",
+            "setDestinationToDockingAbort",
+            "performFaceDestination"
+          ],
+          "COLLISION": [
+            "setStateTo: ABORT"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setSpeedTo: 0.0",
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ],
+          "ATTACKED": [
+            "abortDocking",
+            "setTargetToPrimaryAggressor",
+            "exitAI"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_droneAI.plist",
+      "sha256": "97735e796f6702b824d02c1d77116c539afa9d01185bef2c2d03fd14318e58f4",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_INVALID": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_VALID": [
+            "performAttack"
+          ],
+          "INTERCEPT_TARGET": [
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "GO_TO_TARGET": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "FRUSTRATED": [
+            "sendScriptMessage: findNonThargoid"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "INTERCEPT_TARGET": [
+            "setDestinationToTarget",
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "setDestinationToTarget",
+            "setDesiredRangeTo: 20000.0",
+            "checkCourseToDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "LOOK_FOR_TARGETS": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENTER": [],
+          "NOTHING_FOUND": [
+            "setStateTo: GO_HOME"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: findNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "INTERCEPT_TARGET": [
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "TARGET_FOUND": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "GO_HOME": {
+          "STATION_FOUND": [
+            "setTargetToFoundTarget",
+            "setAITo: TCAT_dockingAI.plist"
+          ],
+          "ENTER": [
+            "checkForMotherStation"
+          ],
+          "RESTARTED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: LOOK_FOR_STATION"
+          ]
+        },
+        "LOOK_FOR_STATION": {
+          "ENTER": [
+            "scanForNearestShipWithRole: TCAT_station"
+          ],
+          "RESTARTED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "NOTHING_FOUND": [
+            "becomeUncontrolledThargon"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setAITo: TCAT_dockingAI.plist"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_escortAI.plist",
+      "sha256": "6dc0ab82b39b37e99c2a4e11f5e98ca2634ddf54e89ef59d728100a298a07085",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: BEGIN_BUSINESS"
+          ]
+        },
+        "CLEAR_STATION": {
+          "UPDATE": [
+            "pauseAI: 15.0"
+          ],
+          "NOTHING_FOUND": [
+            "setSpeedFactorTo: 0.50",
+            "performFlyToRangeFromDestination"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "suggestEscort",
+            "pauseAI: 1.0"
+          ],
+          "NOT_ESCORTING": [
+            "scanForFormationLeader"
+          ],
+          "ENTER": [
+            "getWitchspaceEntryCoordinates",
+            "setDestinationFromCoordinates",
+            "setDesiredRangeTo: 5000.0",
+            "setSpeedFactorTo: 0.50",
+            "performFlyToRangeFromDestination",
+            "escortCheckMother"
+          ],
+          "ESCORTING": [
+            "setDesiredRangeTo: 0.0",
+            "setStateTo: FLYING_ESCORT"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ]
+        },
+        "NEXT_TARGET": {
+          "ENTER": [
+            "requestNewTarget"
+          ],
+          "RESTARTED": [
+            "requestNewTarget"
+          ],
+          "NOTHING_FOUND": [
+            "switchLightsOff",
+            "setStateTo: FLYING_ESCORT"
+          ],
+          "MOTHER_LOST": [
+            "switchLightsOff",
+            "setStateTo: BEGIN_BUSINESS"
+          ],
+          "INCOMING_MISSILE": [
+            "messageMother: INCOMING_MISSILE"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setAITo: interceptAI.plist"
+          ]
+        },
+        "LOOK_FOR_BUSINESS": {
+          "FRUSTRATED": [
+            "switchAITo: TCAT_thargoidAI.plist"
+          ],
+          "NOTHING_FOUND": [
+            "switchAITo: TCAT_thargoidAI.plist"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "suggestEscort"
+          ],
+          "UPDATE": [
+            "pauseAI: 7.5",
+            "scanForFormationLeader"
+          ],
+          "RESTARTED": [
+            "setStateTo: BEGIN_BUSINESS"
+          ],
+          "ENTER": [
+            "scanForFormationLeader"
+          ],
+          "ESCORTING": [
+            "setDesiredRangeTo: 0.0",
+            "setStateTo: FLYING_ESCORT"
+          ],
+          "LAUNCHED OKAY": [
+            "setStateTo: CLEAR_STATION"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setAITo: interceptAI.plist"
+          ]
+        },
+        "BEGIN_BUSINESS": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setAITo: interceptAI.plist"
+          ],
+          "ESCORTING": [
+            "setDesiredRangeTo: 0.0",
+            "setStateTo: FLYING_ESCORT"
+          ],
+          "UPDATE": [
+            "escortCheckMother",
+            "pauseAI: 7.5"
+          ],
+          "LAUNCHED OKAY": [
+            "setStateTo: CLEAR_STATION"
+          ],
+          "NOT_ESCORTING": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ]
+        },
+        "ENTER_WORMHOLE": {
+          "ENTER": [
+            "setDestinationToTarget",
+            "setDesiredRangeTo: 1.0",
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ],
+          "PLAYER WITCHSPACE": [
+            "enterTargetWormhole"
+          ]
+        },
+        "FLYING_ESCORT": {
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToFoundTarget",
+            "setAITo: interceptAI.plist"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ],
+          "NOT_ESCORTING": [
+            "setStateTo: LOOK_FOR_BUSINESS"
+          ],
+          "UPDATE": [
+            "escortCheckMother",
+            "pauseAI: 15"
+          ],
+          "RESTARTED": [
+            "setStateTo: NEXT_TARGET"
+          ],
+          "ENTER WORMHOLE": [
+            "setStateTo: ENTER_WORMHOLE"
+          ],
+          "ENTER": [
+            "performEscort"
+          ],
+          "ESCORTING": [
+            "setDesiredRangeTo: 0.0",
+            "performEscort"
+          ],
+          "INCOMING_MISSILE": [
+            "messageMother: INCOMING_MISSILE"
+          ],
+          "ATTACKED": [
+            "messageMother: ATTACKED",
+            "messageMother: ESCORT_ATTACKED"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_guardAI.plist",
+      "sha256": "af4f285798e5583886e4c756d8178975890cfb699957edc596aff2fe6d36b181",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "switchLightsOn"
+          ],
+          "UPDATE": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "UPDATE": [
+            "pauseAI: 5.0"
+          ],
+          "TARGET_VALID": [
+            "performAttack"
+          ],
+          "ENERGY_LOW": [
+            "sendScriptMessage: launchOrbiters"
+          ],
+          "INTERCEPT_TARGET": [
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: checkTarget"
+          ]
+        },
+        "LOOK_FOR_TARGETS": {
+          "UPDATE": [
+            "sendScriptMessage: findNonThargoid",
+            "pauseAI: 5.0"
+          ],
+          "TARGET_FOUND": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: TRAVEL_TO_LURK_AREA"
+          ],
+          "INTERCEPT_TARGET": [
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "setSpeedTo: 0.0",
+            "performTumble",
+            "sendScriptMessage: findNonThargoid"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "LURK": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: findNonThargoid",
+            "pauseAI: 5.0"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "INTERCEPT_TARGET": [
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "setSpeedTo: 0.0",
+            "performIdle"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: TRAVEL_TO_LURK_AREA",
+            "pauseAI: 0.5"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "GO_TO_TARGET": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "FRUSTRATED": [
+            "sendScriptMessage: findNonThargoid"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: LURK"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "INTERCEPT_TARGET": [
+            "setDestinationToTarget",
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "setDestinationToTarget",
+            "setDesiredRangeTo: 20000.0",
+            "checkCourseToDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "TRAVEL_TO_LURK_AREA": {
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LURK"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "ENTER": [
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 1500.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "FRUSTRATED": [
+            "setStateTo: LURK"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "FLEE_FOR_CLOAKED": {
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LURK"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "REACHED_SAFETY": [
+            "setSpeedTo: 0.0",
+            "performIdle",
+            "pauseAI: 10.0"
+          ],
+          "ENERGY_FULL": [
+            "setStateTo: LURK"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 7500",
+            "performFlee"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LURK"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_guardRotAI.plist",
+      "sha256": "8d475eec20feb065c7c1128995d6eae4bf97d691dffc90cadce2063d0beec9a2",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setSpeedFactorTo: 1.00",
+            "switchLightsOn",
+            "setStateTo: MOVE_AWAY"
+          ]
+        },
+        "MOVE_AWAY": {
+          "DESIRED_RANGE_ACHIEVED": [
+            "sendScriptMessage: shipSwap"
+          ],
+          "UPDATE": [
+            "setDesiredRangeTo: 300.0",
+            "checkDistanceTravelled",
+            "setDesiredRangeTo: 250.0",
+            "pauseAI: 5.0"
+          ],
+          "GONE_BEYOND_RANGE": [
+            "sendScriptMessage: shipSwap"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 250.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "FRUSTRATED": [
+            "sendScriptMessage: shipSwap"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "sendScriptMessage: shipSwap"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: shipSwap"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_jammerAI.plist",
+      "sha256": "b864c699607ae2ba3c118e207ef4d75166a7f8f87ccc7f4fbad5aac404f1a4f0",
+      "states": {
+        "GO_BANG": {
+          "ENTER": [
+            "sendScriptMessage: performJamming"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "becomeExplosion"
+          ]
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "switchLightsOn",
+            "randomPauseAI: 1.0 2.0"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "setStateTo: GO_BANG"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_jumpGateAI.plist",
+      "sha256": "1e31647e2f8f86811c333e2e3226a2247a5445b353c0b760250ccd7763d3f34b",
+      "states": {
+        "GLOBAL": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: underAttack"
+          ],
+          "ENTER": [
+            "switchLightsOn",
+            "sendScriptMessage: findGates"
+          ],
+          "NO_GATE": [
+            "setStateTo: LIGHTS_OFF"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: underAttack"
+          ],
+          "GATE_FOUND": [
+            "setStateTo: IDLE"
+          ]
+        },
+        "IDLE": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: underAttack"
+          ],
+          "NO_GATE": [
+            "setStateTo: LIGHTS_OFF"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: findGates",
+            "pauseAI: 5.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: underAttack"
+          ]
+        },
+        "LIGHTS_OFF": {
+          "ATTACKED": [
+            "switchLightsOn",
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: underAttack",
+            "pauseAI: 5.0"
+          ],
+          "ENTER": [
+            "switchLightsOff"
+          ],
+          "UPDATE": [
+            "switchLightsOff",
+            "sendScriptMessage: findGates",
+            "pauseAI: 5.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "switchLightsOn",
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: underAttack"
+          ],
+          "GATE_FOUND": [
+            "switchLightsOn",
+            "setStateTo: IDLE"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_largeWreckAI.plist",
+      "sha256": "68e1471d62fd95b88b96d938ac2a74fff2ac7b7c530d954accf8071cdc3da419",
+      "states": {
+        "DETONATE": {
+          "ENTER": [
+            "sendScriptMessage: shipDied",
+            "setDesiredRangeTo: 250.0",
+            "dealEnergyDamageWithinDesiredRange",
+            "becomeExplosion"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        },
+        "FLY_AWAY": {
+          "ENTER": [
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 1000",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "rollD: 4",
+            "pauseAI: 0.5"
+          ],
+          "ROLL_1": [
+            "setStateTo: DETONATE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: DETONATE"
+          ]
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "setSpeedFactorTo: 1.0",
+            "performTumble"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "setStateTo: FLY_AWAY"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_mantisAI.plist",
+      "sha256": "31809747e0952141f4db01ca4b9a250044dea3764f3030103b30303aa9991fdc",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: HEAD_FOR_STATION"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "fireMissile",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "sendScriptMessage: scramble",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENERGY_LOW": [
+            "sendScriptMessage: scramble",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_VALID": [
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: launchGuards",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "NO_TARGET": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "UPDATE": [
+            "pauseAI: 15.0",
+            "setStateTo: LAUNCH_COUNTDOWN"
+          ]
+        },
+        "LAUNCH_COUNTDOWN": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "sendScriptMessage: scramble",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_VALID": [
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: launchGuards",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "performAttack"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "ROLL_3": [
+            "pauseAI: 30.0",
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "ROLL_2": [
+            "pauseAI: 15.0",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NO_TARGET": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "ROLL_1": [
+            "fireMissile",
+            "pauseAI: 15.0",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "UPDATE": [
+            "rollD: 3"
+          ]
+        },
+        "HEAD_FOR_STATION": {
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "ENTER": [
+            "sendScriptMessage: findStation"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "sendScriptMessage: scramble",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "TARGET_VALID": [
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: launchGuards",
+            "deployEscorts"
+          ],
+          "ENERGY_LOW": [
+            "sendScriptMessage: scramble",
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "STATION_FOUND": [
+            "setDestinationToTarget",
+            "setDesiredRangeTo: 10000.0",
+            "checkCourseToDestination"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "deployEscorts"
+          ],
+          "NO_TARGET": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "NOTHING_FOUND": [
+            "sendScriptMessage: findStation"
+          ]
+        },
+        "HEAD_FOR_WITCHPOINT": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NO_TARGET": [
+            "setStateTo: HEAD_FOR_STATION"
+          ],
+          "TARGET_VALID": [
+            "setTargetToPrimaryAggressor",
+            "sendScriptMessage: launchGuards",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "UPDATE": [
+            "setCourseToWitchpoint",
+            "setDesiredRangeTo: 15000.0",
+            "checkCourseToDestination",
+            "scanForNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "ENTER": [
+            "setCourseToWitchpoint",
+            "setDesiredRangeTo: 15000.0",
+            "checkCourseToDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "sendScriptMessage: checkTarget"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "ATTACKED": [
+            "sendScriptMessage: checkTarget"
+          ]
+        },
+        "EXIT_SYSTEM": {
+          "ENTER": [
+            "addFuel: 7.0"
+          ],
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "UPDATE": [
+            "performHyperSpaceExitWithoutReplacing"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE UNAVAILABLE": [
+            "setStateTo: HEAD_FOR_STATION"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_nailAI.plist",
+      "sha256": "1799b28553057af9dd35789f02beab0d3e14af0634a63be2f0cd1c7af9db98b3",
+      "states": {
+        "EJECT": {
+          "ENTER": [
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 500",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "messageSelf: DESIRED_RANGE_ACHIEVED",
+            "randomPauseAI: 0.5 5.0"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: DETONATE"
+          ]
+        },
+        "DETONATE": {
+          "ENTER": [
+            "setDesiredRangeTo: 500.0",
+            "dealEnergyDamageWithinDesiredRange",
+            "becomeExplosion"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "setSpeedFactorTo: 1.00",
+            "performTumble"
+          ],
+          "EXIT": [
+            "throwSparks"
+          ],
+          "UPDATE": [
+            "setStateTo: EJECT"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_nailBombAI.plist",
+      "sha256": "c8028695790aa125dbd0fc75d06822d3d3eafc6caa759b6b199417fc0a106538",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "pauseAI: 0.5",
+            "setSpeedFactorTo: 1.0"
+          ],
+          "UPDATE": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ROLL_1": [
+            "setStateTo: DETONATE"
+          ],
+          "ECM": [
+            "rollD: 20"
+          ],
+          "ROLL_2": [
+            "setStateTo: EXPLODE"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "ECM": [
+            "setStateTo: CHECK_EXPLOSION"
+          ],
+          "UPDATE": [
+            "setDesiredRangeTo: 50000.0",
+            "checkDistanceTravelled",
+            "setDesiredRangeTo: 25.0",
+            "pauseAI: 5.0"
+          ],
+          "GONE_BEYOND_RANGE": [
+            "setStateTo: EXPLODE"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25.0",
+            "performIntercept"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: EXPLODE"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: EXPLODE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: DETONATE"
+          ]
+        },
+        "CHECK_EXPLOSION": {
+          "ENTER": [
+            "rollD: 20"
+          ],
+          "UPDATE": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ROLL_1": [
+            "setStateTo: DETONATE"
+          ],
+          "ROLL_2": [
+            "setStateTo: EXPLODE"
+          ]
+        },
+        "EXPLODE": {
+          "ENTER": [
+            "becomeExplosion"
+          ]
+        },
+        "DETONATE": {
+          "ENTER": [
+            "setDesiredRangeTo: 250.0",
+            "dealEnergyDamageWithinDesiredRange"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: spawnNails",
+            "becomeExplosion"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_navyStationAI.plist",
+      "sha256": "698c5f801b48824bec2cf8db4de1f616a6e2444ac070511e5b1e38cfac59b459",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: IDLE"
+          ]
+        },
+        "DEFENSE_MODE": {
+          "YELLOW_ALERT": [
+            "checkTargetLegalStatus"
+          ],
+          "ENERGY_FULL": [
+            "pauseAI: 20.0",
+            "setStateTo: IDLE"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "increaseAlertLevel"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "increaseAlertLevel",
+            "sendScriptMessage: missileCheck"
+          ],
+          "ENTER": [
+            "checkTargetLegalStatus"
+          ],
+          "TARGET_LOST": [
+            "pauseAI: 20.0",
+            "setStateTo: IDLE"
+          ],
+          "NO_TARGET": [
+            "pauseAI: 20.0",
+            "setStateTo: IDLE"
+          ],
+          "UPDATE": [
+            "decreaseAlertLevel",
+            "pauseAI: 3.0"
+          ],
+          "OFFENCE_COMMITTED": [
+            "setTargetToFoundTarget",
+            "markTargetForOffence: 15",
+            "launchDefenseShip",
+            "increaseAlertLevel"
+          ],
+          "ENERGY_LOW": [
+            "setStateTo: BATTLE_STATIONS"
+          ],
+          "TARGET_DESTROYED": [
+            "pauseAI: 20.0",
+            "setStateTo: IDLE"
+          ],
+          "RED_ALERT": [
+            "launchDefenseShip"
+          ],
+          "TARGET_OFFENDER": [
+            "increaseAlertLevel"
+          ],
+          "GREEN_ALERT": [
+            "setStateTo: IDLE"
+          ],
+          "TARGET_FUGITIVE": [
+            "sendScriptMessage: missileCheck",
+            "increaseAlertLevel"
+          ]
+        },
+        "BATTLE_STATIONS": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "fireMissile",
+            "sendScriptMessage: missileCheck"
+          ],
+          "ENTER": [
+            "launchShipWithRole: TCAT_squadRaptor"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: DEFENSE_MODE"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM"
+          ],
+          "UPDATE": [
+            "scanForNearestShipWithScanClass: CLASS_THARGOID",
+            "pauseAI: 3.0"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "sendScriptMessage: missileCheck"
+          ]
+        },
+        "IDLE": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "increaseAlertLevel",
+            "markTargetForOffence: 15",
+            "setStateTo: DEFENSE_MODE"
+          ],
+          "UPDATE": [
+            "decreaseAlertLevel",
+            "setStateTo: IDLE"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "increaseAlertLevel"
+          ],
+          "OFFENCE_COMMITTED": [
+            "setTargetToFoundTarget",
+            "markTargetForOffence: 15",
+            "launchDefenseShip",
+            "increaseAlertLevel"
+          ]
+        },
+        "LAUNCH_SQUAD": {
+          "ENTER": [
+            "launchShipWithRole: TCAT_squadRaptor"
+          ],
+          "UPDATE": [
+            "setStateTo: IDLE"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_orbiterAI.plist",
+      "sha256": "7a412ad47dd17cca821ed41e9c632a49d3f1528160e100535c979f579d74bb90",
+      "states": {
+        "CHECK_ECM": {
+          "ENTER": [
+            "rollD: 10"
+          ],
+          "UPDATE": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ROLL_1": [
+            "setStateTo: DETONATE"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: UNCONTROLLED"
+          ],
+          "ROLL_2": [
+            "setStateTo: UNCONTROLLED"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "ECM": [
+            "setStateTo: CHECK_ECM"
+          ],
+          "UPDATE": [
+            "setDesiredRangeTo: 36000.0",
+            "checkDistanceTravelled",
+            "setDesiredRangeTo: 25.0",
+            "pauseAI: 5.0"
+          ],
+          "GONE_BEYOND_RANGE": [
+            "setStateTo: UNCONTROLLED"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25.0",
+            "performIntercept"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: UNCONTROLLED"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: UNCONTROLLED"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: DETONATE"
+          ]
+        },
+        "UNCONTROLLED": {
+          "ENTER": [
+            "becomeUncontrolledThargon"
+          ]
+        },
+        "GLOBAL": {
+          "TARGET_LOST": [
+            "setStateTo: UNCONTROLLED"
+          ],
+          "ENTER": [
+            "pauseAI: 0.5",
+            "setSpeedFactorTo: 1.0",
+            "throwSparks"
+          ],
+          "UPDATE": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ROLL_1": [
+            "setStateTo: DETONATE"
+          ],
+          "ECM": [
+            "rollD: 10"
+          ],
+          "ROLL_2": [
+            "setStateTo: UNCONTROLLED"
+          ]
+        },
+        "DETONATE": {
+          "ENTER": [
+            "setDesiredRangeTo: 250.0",
+            "dealEnergyDamageWithinDesiredRange",
+            "becomeExplosion"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_raptorAI.plist",
+      "sha256": "86cb16b8018d2d9eb3f9100f33fa6ee65554cb55388b9bf64f4eaae5f390eb06",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: FIND_NEAR_THARGOIDS"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_LOST": [
+            "setStateTo: FIND_NEAR_THARGOIDS"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: scanForAliens",
+            "pauseAI: 6.0"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "ENERGY_LOW": [
+            "setStateTo: FLEE"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: FIND_NEAR_THARGOIDS"
+          ],
+          "FRUSTRATED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ]
+        },
+        "FLEE": {
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LURK"
+          ],
+          "REACHED_SAFETY": [
+            "setSpeedTo: 0.0",
+            "performIdle",
+            "pauseAI: 10.0"
+          ],
+          "ENERGY_FULL": [
+            "setStateTo: LURK"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LURK"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ]
+        },
+        "LURK": {
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: INTERCEPT_THARGOID"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: TRAVEL_TO_LURK_AREA"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: locateThargoids",
+            "pauseAI: 5.0"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "ENTER": [
+            "setSpeedTo: 0.0",
+            "performIdle"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: TRAVEL_TO_LURK_AREA",
+            "pauseAI: 0.5"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "FIND_FAR_THARGOIDS": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENTER": [
+            "sendScriptMessage: locateThargoids"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: TRAVEL_TO_LURK_AREA"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: INTERCEPT_THARGOID"
+          ]
+        },
+        "INTERCEPT_THARGOID": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: INTERCEPT_THARGOID"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: FIND_NEAR_THARGOIDS"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: TRAVEL_TO_LURK_AREA"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: locateThargoids",
+            "pauseAI: 10.0"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 4500.0",
+            "setDestinationToTarget",
+            "checkCourseToDestination"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: FIND_NEAR_THARGOIDS"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "TRAVEL_TO_LURK_AREA": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LURK"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "ENTER": [
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 1500.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FRUSTRATED": [
+            "setStateTo: LURK"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "FLEE_FOR_CLOAKED": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "REACHED_SAFETY": [
+            "setSpeedTo: 0.0",
+            "performIdle",
+            "pauseAI: 10.0"
+          ],
+          "ENERGY_FULL": [
+            "setStateTo: LURK"
+          ],
+          "ENERGY_LOW": [
+            "setStateTo: FLEE"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 7500",
+            "performFlee"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LURK"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LURK"
+          ]
+        },
+        "FIND_NEAR_THARGOIDS": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENTER": [
+            "scanForNearestShipWithScanClass: CLASS_THARGOID"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: FIND_FAR_THARGOIDS"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: INTERCEPT_THARGOID"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_smallWreckAI.plist",
+      "sha256": "4552bf9cbaacc06e9ea446a5092f98c384922493723fd6abd979fe5ea4f0190c",
+      "states": {
+        "DETONATE": {
+          "ENTER": [
+            "setDesiredRangeTo: 100.0",
+            "dealEnergyDamageWithinDesiredRange",
+            "becomeExplosion"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        },
+        "FLY_AWAY": {
+          "ENTER": [
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 2000",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "rollD: 6",
+            "pauseAI: 0.5"
+          ],
+          "ROLL_1": [
+            "setStateTo: DETONATE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: DETONATE"
+          ]
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "setSpeedFactorTo: 1.0",
+            "performTumble"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "setStateTo: FLY_AWAY"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_sneakAI.plist",
+      "sha256": "4a988fc931cf1ddb2df13de304407c20e1fb58dcb584caa67755c287c365f97b",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_DESTROYED": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "ENERGY_LOW": [
+            "setSpeedFactorTo: 1.0",
+            "pauseAI: 15.0",
+            "setStateTo: FLEE"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setSpeedFactorTo: 1.0",
+            "pauseAI: 15.0",
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ]
+        },
+        "SHUTDOWN": {
+          "ENTER": [
+            "performStop",
+            "throwSparks",
+            "randomPauseAI: 0.25 2.0"
+          ],
+          "UPDATE": [
+            "throwSparks",
+            "deployEscorts",
+            "becomeUncontrolledThargon"
+          ]
+        },
+        "EXIT_SYSTEM": {
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "UPDATE": [
+            "performHyperSpaceExitWithoutReplacing"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE UNAVAILABLE": [
+            "setStateTo: FLEE"
+          ]
+        },
+        "FLEE": {
+          "INCOMING_MISSILE": [
+            "setTargetToPrimaryAggressor",
+            "fightOrFleeMissile"
+          ],
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "REACHED_SAFETY": [
+            "performIdle",
+            "setStateTo: GLOBAL"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_DESTROYED": [
+            "performIdle",
+            "setStateTo: GLOBAL"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "setStateTo: GLOBAL"
+          ],
+          "ATTACKED": [
+            "fightOrFleeHostiles"
+          ]
+        },
+        "HEAD_AWAY_FROM_PLANET": {
+          "ATTACKED": [
+            "fightOrFleeHostiles"
+          ],
+          "ENTER": [
+            "setCourseToWitchpoint",
+            "setSpeedFactorTo: 0.75",
+            "performFlyToRangeFromDestination"
+          ],
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setSpeedFactorTo: 1.0",
+            "pauseAI: 15.0",
+            "setStateTo: EXIT_SYSTEM"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_stationExplodeAI.plist",
+      "sha256": "08b0e9099bea7b055f5c6c134c3d40698f4509d7bac3ed7002b430a886eb278d",
+      "states": {
+        "GO_BANG": {
+          "ENTER": [
+            "pauseAI: 10.0"
+          ],
+          "EXIT": [],
+          "UPDATE": [
+            "becomeEnergyBlast"
+          ]
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: GO_BANG"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_survivingWreckAI.plist",
+      "sha256": "c3615ec7fc6e4ccd068c68db785dab08af308a864ccaff08aad6babc7da06ac5",
+      "states": {
+        "EJECT": {
+          "ENTER": [
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 2500",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "UPDATE": [],
+          "DESIRED_RANGE_ACHIEVED": [
+            "performTumble"
+          ]
+        },
+        "GLOBAL": {
+          "ENTER": [
+            "setSpeedFactorTo: 1.00",
+            "setStateTo: EJECT"
+          ],
+          "EXIT": [],
+          "UPDATE": []
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_talonAI.plist",
+      "sha256": "16748141dbfbfd004a887a419d043c43bb261c80036fcccbce69f1a8f995344a",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "pauseAI: 0.5",
+            "setSpeedFactorTo: 1.0"
+          ],
+          "UPDATE": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_DESTROYED": [
+            "setStateTo: FIND_NEW_TARGET"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 10.0",
+            "performIntercept"
+          ],
+          "UPDATE": [
+            "setDesiredRangeTo: 25600.0",
+            "checkDistanceTravelled",
+            "setDesiredRangeTo: 10.0",
+            "pauseAI: 2.0"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: FIND_NEW_TARGET"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: DETONATE"
+          ],
+          "GONE_BEYOND_RANGE": [
+            "setStateTo: EXPLODE"
+          ]
+        },
+        "FIND_NEW_TARGET": {
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENTER": [
+            "scanForNearestShipWithScanClass: CLASS_THARGOID"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: EXPLODE"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "EXPLODE": {
+          "ENTER": [
+            "becomeExplosion"
+          ]
+        },
+        "DETONATE": {
+          "ENTER": [
+            "setDesiredRangeTo: 500.0",
+            "dealEnergyDamageWithinDesiredRange",
+            "becomeExplosion"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_thargoidAI.plist",
+      "sha256": "7d67eef61713208d34040698b3970db4a2f4b45d1ef4b899343fc9422b3a8aaf",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_INVALID": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_VALID": [
+            "performAttack"
+          ],
+          "INTERCEPT_TARGET": [
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "sendScriptMessage: validateTarget"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "GO_TO_TARGET": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "FRUSTRATED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "INTERCEPT_TARGET": [
+            "setDestinationToTarget",
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "setDestinationToTarget",
+            "setDesiredRangeTo: 20000.0",
+            "checkCourseToDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "HEAD_FOR_WITCHPOINT": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "UPDATE": [
+            "setCourseToWitchpoint",
+            "setDesiredRangeTo: 15000.0",
+            "checkCourseToDestination",
+            "sendScriptMessage: findNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "INTERCEPT_TARGET": [
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "setCourseToWitchpoint",
+            "setDesiredRangeTo: 15000.0",
+            "checkCourseToDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "LOOK_FOR_TARGETS": {
+          "FRUSTRATED": [
+            "scanForNonThargoid"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: HEAD_FOR_WITCHPOINT"
+          ],
+          "UPDATE": [
+            "sendScriptMessage: findNonThargoid",
+            "pauseAI: 5.0"
+          ],
+          "INTERCEPT_TARGET": [
+            "setStateTo: GO_TO_TARGET"
+          ],
+          "ENTER": [
+            "setSpeedTo: 0.0",
+            "performTumble"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_tridentAI.plist",
+      "sha256": "96395e36945961b6ef079af04706a3b3461085d460c3345dcafbb41f64704814",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "pauseAI: 0.5",
+            "setSpeedFactorTo: 1.0"
+          ],
+          "ECM": [
+            "setStateTo: CHECK_EXPLOSION"
+          ],
+          "UPDATE": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "ECM": [
+            "setStateTo: CHECK_EXPLOSION"
+          ],
+          "UPDATE": [
+            "setDesiredRangeTo: 40000.0",
+            "checkDistanceTravelled",
+            "setDesiredRangeTo: 1000.0",
+            "pauseAI: 0.75"
+          ],
+          "GONE_BEYOND_RANGE": [
+            "setStateTo: EXPLODE"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 1000.0",
+            "performIntercept"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: EXPLODE"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: EXPLODE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: SPAWN"
+          ]
+        },
+        "CHECK_EXPLOSION": {
+          "ENTER": [
+            "rollD: 20"
+          ],
+          "UPDATE": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ROLL_1": [
+            "setStateTo: EXPLODE"
+          ],
+          "ROLL_2": [
+            "setStateTo: SPAWN"
+          ]
+        },
+        "EXPLODE": {
+          "ENTER": [
+            "becomeExplosion"
+          ]
+        },
+        "SPAWN": {
+          "ENTER": [
+            "sendScriptMessage: spawnTines",
+            "becomeExplosion"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_tridentTineAI.plist",
+      "sha256": "0e26991781a4f8091e461829fb3e1183c54f7e2ccb31611247c7a6282420684a",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "pauseAI: 0.5",
+            "setSpeedFactorTo: 1.0"
+          ],
+          "UPDATE": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_DESTROYED": [
+            "setStateTo: EXPLODE"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 10.0",
+            "performIntercept"
+          ],
+          "UPDATE": [
+            "setDesiredRangeTo: 5000.0",
+            "checkDistanceTravelled",
+            "setDesiredRangeTo: 10.0",
+            "pauseAI: 2.0"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: EXPLODE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: DETONATE"
+          ],
+          "GONE_BEYOND_RANGE": [
+            "setStateTo: EXPLODE"
+          ]
+        },
+        "EXPLODE": {
+          "ENTER": [
+            "becomeExplosion"
+          ]
+        },
+        "DETONATE": {
+          "ENTER": [
+            "setDesiredRangeTo: 500.0",
+            "dealEnergyDamageWithinDesiredRange",
+            "becomeExplosion"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_uncontrolledThargonAI.plist",
+      "sha256": "1ffaea37b3a4db00008786a853bcae8eb30ab8087307cc135bf4ae4d30ad80e8",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "pauseAI: 1.0"
+          ],
+          "UPDATE": [
+            "becomeUncontrolledThargon"
+          ]
+        }
+      }
+    },
+    {
+      "path": "AIs/TCAT_useGateAI.plist",
+      "sha256": "69529bb0115ba909ae2aec9d5f1c29e2ebb34666309bf96899f4b1b731aee015",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "performIdle"
+          ],
+          "UPDATE": [
+            "setStateTo: FIND_GATE"
+          ]
+        },
+        "ENTER_RING": {
+          "NAVPOINT_REACHED": [
+            "setSpeedFactorTo: 0.75",
+            "setStateTo: PASS_THRU_RING"
+          ],
+          "NOTHING_FOUND": [
+            "exitAIWithMessage: ENTER"
+          ],
+          "RACEPOINTS_SET": [
+            "performFlyRacepoints"
+          ],
+          "ENTER": [
+            "setSpeedFactorTo: 0.75",
+            "setRacepointsFromTarget"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "exitAIWithMessage: INCOMING_MISSILE"
+          ],
+          "ENDPOINT_REACHED": [
+            "setSpeedFactorTo: 1.0",
+            "exitAIWithMessage: ENTER"
+          ],
+          "ATTACKED": [
+            "exitAIWithMessage: ATTACKED"
+          ]
+        },
+        "LEAVE_RING": {
+          "ATTACKED": [
+            "exitAIWithMessage: ATTACKED"
+          ],
+          "ENTER": [
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 1000",
+            "performFlyToRangeFromDestination"
+          ],
+          "ENDPOINT_REACHED": [
+            "setSpeedFactorTo: 1.0",
+            "exitAIWithMessage: ENTER"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "exitAIWithMessage: INCOMING_MISSILE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setSpeedFactorTo: 1.0",
+            "exitAIWithMessage: ENTER"
+          ]
+        },
+        "FIND_GATE": {
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: ENTER_RING"
+          ],
+          "NOTHING_FOUND": [
+            "exitAIWithMessage: ENTER"
+          ],
+          "TARGET_FOUND": [
+            "setDestinationToTarget",
+            "setSpeedFactorTo: 1.0",
+            "setDesiredRangeTo: 5000",
+            "performFlyToRangeFromDestination",
+            "sendScriptMessage: checkGateDistance"
+          ],
+          "ENTER": [
+            "setSpeedFactorTo: 1.0",
+            "targetFirstBeaconWithCode: Jump Gate"
+          ],
+          "INCOMING_MISSILE": [
+            "fireECM",
+            "exitAIWithMessage: INCOMING_MISSILE"
+          ],
+          "NEXT_GATE": [
+            "targetNextBeaconWithCode: Jump Gate"
+          ],
+          "ATTACKED": [
+            "exitAIWithMessage: ATTACKED"
+          ]
+        },
+        "PASS_THRU_RING": {
+          "JUMPED": [
+            "setStateTo: LEAVE_RING"
+          ],
+          "ENDPOINT_REACHED": [
+            "setStateTo: LEAVE_RING"
+          ],
+          "NAVPOINT_REACHED": [
+            "setStateTo: LEAVE_RING"
+          ]
+        }
+      }
+    }
+  ],
+  "equipment": [
+    {
+      "tech_index": "0",
+      "price_decicredits": "10000",
+      "name": "Thargon Jammer Mine",
+      "key": "EQ_TCAT_JAMMER_MINE",
+      "properties": {
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "200000",
+      "name": "Energy Unit Upgrade",
+      "key": "EQ_TCAT_EU_UPGRADE",
+      "properties": {
+        "incompatible_with_equipment": "EQ_NAVAL_ENERGY_UNIT",
+        "requires_equipment": "EQ_ENERGY_UNIT",
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "200000",
+      "name": "Energy Unit Upgrade",
+      "key": "EQ_TCAT_EU_FIXGRADE",
+      "properties": {
+        "incompatible_with_equipment": "EQ_NAVAL_ENERGY_UNIT",
+        "requires_equipment": "EQ_ENERGY_UNIT_DAMAGED",
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "50000",
+      "name": "Naval Energy Unit Repair",
+      "key": "EQ_TCAT_NEU_REPAIR",
+      "properties": {
+        "requires_equipment": "EQ_NAVAL_ENERGY_UNIT_DAMAGED",
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "50000",
+      "name": "E.C.M. Jammer",
+      "key": "EQ_TCAT_ECM_JAMMER",
+      "properties": {
+        "script": "TCAT_ecmJammer.js",
+        "script_info": {
+          "thargoidRepairBotChance": "0.2"
+        },
+        "available_to_all": "true",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "1",
+      "name": "Disabled ECM System",
+      "key": "EQ_TCAT_DISABLED_ECM",
+      "properties": {
+        "incompatible_with_equipment": "EQ_ECM",
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "0",
+      "name": "Quirium Cascade Mine",
+      "key": "EQ_TCAT_FREE_MINE",
+      "properties": {
+        "requires_empty_pylon": "true",
+        "available_to_all": "true",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "0",
+      "name": "ECM Hardened Missile",
+      "key": "EQ_TCAT_FREE_MISSILE",
+      "properties": {
+        "requires_empty_pylon": "true",
+        "available_to_all": "true",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "0",
+      "name": "Thargon Jammer Mine",
+      "key": "EQ_TCAT_FREE_JAMMER_MINE",
+      "properties": {
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "0",
+      "name": "Dump all pylon mounted weapons",
+      "key": "EQ_TCAT_CLEARPYLONS",
+      "properties": {
+        "requires_mounted_pylon": "true",
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "25000",
+      "name": "Quirium Cascade Mine",
+      "key": "EQ_TCAT_DUMMY_MINE",
+      "properties": {
+        "requires_empty_pylon": "true",
+        "available_to_all": "true",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "3500",
+      "name": "ECM Hardened Missile",
+      "key": "EQ_TCAT_DUMMY_MISSILE",
+      "properties": {
+        "requires_empty_pylon": "true",
+        "available_to_all": "true",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "400000",
+      "name": "Naval Energy Unit",
+      "key": "EQ_TCAT_DUMMY_NEU",
+      "properties": {
+        "incompatible_with_equipment": [
+          "EQ_NAVAL_ENERGY_UNIT",
+          "EQ_NAVAL_ENERGY_UNIT_DAMAGED",
+          "EQ_ENERGY_UNIT",
+          "EQ_ENERGY_UNIT_DAMAGED"
+        ],
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "400000",
+      "name": "Military Shield Enhancement",
+      "key": "EQ_TCAT_DUMMY_SHIELDS",
+      "properties": {
+        "incompatible_with_equipment": "EQ_NAVAL_SHIELD_BOOSTER",
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "0",
+      "name": "NPC Trident Missile",
+      "key": "EQ_TCAT_NPC_TRIDENT_MISSILE",
+      "properties": {
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "0",
+      "name": "NPC Thargon Drone",
+      "key": "EQ_TCAT_NPC_DRONE_MISSILE",
+      "properties": {
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "0",
+      "name": "NPC Nailbomb Missile",
+      "key": "EQ_TCAT_NPC_NAILBOMB_MISSILE",
+      "properties": {
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    },
+    {
+      "tech_index": "0",
+      "price_decicredits": "0",
+      "name": "Fleet of ships for the Mantis Dreadnaught",
+      "key": "EQ_TCAT_MANTIS_FLEET_MISSILE",
+      "properties": {
+        "available_to_all": "yes",
+        "condition_script": "TCAT_conditions.js"
+      }
+    }
+  ]
+}

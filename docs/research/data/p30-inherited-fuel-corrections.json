@@ -1,0 +1,654 @@
+{
+  "package_id": "P30",
+  "scope": "Corrected inherited fuel fields in earlier filtered numeric dictionaries; direct raw inheritance and independent first-explicit-ancestor walk. Not a refuel grant, NPC drive installation, or proof of native full-flight parity. Does not alter original source bytes.",
+  "source_commit": "574ca848c91a067178416216523e8d09c1e9282a",
+  "total": 42,
+  "passed": 42,
+  "inputs": [
+    {
+      "path": "Resources/Config/shipdata.plist",
+      "sha256": "f4910d79b88cc803f7bd785fd2fa7d34597c0c891925659c23748313052ac166"
+    },
+    {
+      "path": "src/Core/Entities/ShipEntity.m",
+      "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623"
+    },
+    {
+      "path": "src/Core/OOShipRegistry.m",
+      "sha256": "1005316bb00b864b299dd1f87421d06f511eb4a4d7eb4de73e3023296bab057b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P30/Config/shipdata.plist",
+      "sha256": "489517ba8d056211bb58a789113638476643d540eb05091f19709258fbbc073d"
+    }
+  ],
+  "rows": [
+    {
+      "mechanics_file": "rescue-blackbox-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_cobra3",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobra3",
+      "parent_chain": [
+        "rsvh_cobra3",
+        "cobra3-trader",
+        "oolite_template_cobra3-trader",
+        "oolite_template_cobra3"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-blackbox-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_cobra1",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobramk1",
+      "parent_chain": [
+        "rsvh_cobra1",
+        "cobramk1",
+        "oolite_template_cobramk1"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-blackbox-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_krait",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_krait",
+      "parent_chain": [
+        "rsvh_krait",
+        "krait",
+        "oolite_template_krait"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-blackbox-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_adder",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_adder",
+      "parent_chain": [
+        "rsvh_adder",
+        "adder",
+        "oolite_template_adder"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-blackbox-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_fdl",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_ferdelance",
+      "parent_chain": [
+        "rsvh_fdl",
+        "ferdelance",
+        "oolite_template_ferdelance"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-blackbox-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_asp",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_asp",
+      "parent_chain": [
+        "rsvh_asp",
+        "asp",
+        "oolite_template_asp"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-courier-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_cobra3",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobra3",
+      "parent_chain": [
+        "rsvh_cobra3",
+        "cobra3-trader",
+        "oolite_template_cobra3-trader",
+        "oolite_template_cobra3"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-courier-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_cobra1",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobramk1",
+      "parent_chain": [
+        "rsvh_cobra1",
+        "cobramk1",
+        "oolite_template_cobramk1"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-courier-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_krait",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_krait",
+      "parent_chain": [
+        "rsvh_krait",
+        "krait",
+        "oolite_template_krait"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-courier-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_adder",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_adder",
+      "parent_chain": [
+        "rsvh_adder",
+        "adder",
+        "oolite_template_adder"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-courier-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_fdl",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_ferdelance",
+      "parent_chain": [
+        "rsvh_fdl",
+        "ferdelance",
+        "oolite_template_ferdelance"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-courier-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_asp",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_asp",
+      "parent_chain": [
+        "rsvh_asp",
+        "asp",
+        "oolite_template_asp"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rescue_target_anaconda",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_anaconda",
+      "parent_chain": [
+        "rescue_target_anaconda",
+        "anaconda",
+        "oolite_template_anaconda"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_cobra3",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobra3",
+      "parent_chain": [
+        "rsvh_cobra3",
+        "cobra3-trader",
+        "oolite_template_cobra3-trader",
+        "oolite_template_cobra3"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rrs_astrominer_rockhermit",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_adder",
+      "parent_chain": [
+        "rrs_astrominer_rockhermit",
+        "adder",
+        "oolite_template_adder"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rescue_target_boa",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_boa",
+      "parent_chain": [
+        "rescue_target_boa",
+        "boa",
+        "oolite_template_boa"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rescue_freighter_boa-mk2",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_boa-mk2",
+      "parent_chain": [
+        "rescue_freighter_boa-mk2",
+        "boa-mk2",
+        "oolite_template_boa-mk2"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_cobra1",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobramk1",
+      "parent_chain": [
+        "rsvh_cobra1",
+        "cobramk1",
+        "oolite_template_cobramk1"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_krait",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_krait",
+      "parent_chain": [
+        "rsvh_krait",
+        "krait",
+        "oolite_template_krait"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rescue_freighter_anaconda",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_anaconda",
+      "parent_chain": [
+        "rescue_freighter_anaconda",
+        "anaconda",
+        "oolite_template_anaconda"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_adder",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_adder",
+      "parent_chain": [
+        "rsvh_adder",
+        "adder",
+        "oolite_template_adder"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_fdl",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_ferdelance",
+      "parent_chain": [
+        "rsvh_fdl",
+        "ferdelance",
+        "oolite_template_ferdelance"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rsvh_asp",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_asp",
+      "parent_chain": [
+        "rsvh_asp",
+        "asp",
+        "oolite_template_asp"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rescue_freighter_boa",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_boa",
+      "parent_chain": [
+        "rescue_freighter_boa",
+        "boa",
+        "oolite_template_boa"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rrs_astroguard_rockhermit",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_krait",
+      "parent_chain": [
+        "rrs_astroguard_rockhermit",
+        "krait",
+        "oolite_template_krait"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rrs_asp",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_asp",
+      "parent_chain": [
+        "rrs_asp",
+        "asp",
+        "oolite_template_asp"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rescue_target_python",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_python",
+      "parent_chain": [
+        "rescue_target_python",
+        "python",
+        "oolite_template_python"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rescue_target_boa-mk2",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_boa-mk2",
+      "parent_chain": [
+        "rescue_target_boa-mk2",
+        "boa-mk2",
+        "oolite_template_boa-mk2"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rrs_cobra3",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobra3",
+      "parent_chain": [
+        "rrs_cobra3",
+        "cobra3-alternate",
+        "oolite_template_cobra3-alternate",
+        "oolite_template_cobra3"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rrsl_python",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_python",
+      "parent_chain": [
+        "rrsl_python",
+        "python",
+        "oolite_template_python"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-family1-mechanics.json",
+      "group": "definitions",
+      "definition_id": "rescue_freighter_python",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_python",
+      "parent_chain": [
+        "rescue_freighter_python",
+        "python",
+        "oolite_template_python"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "source_definitions",
+      "definition_id": "rrsl_python",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_python",
+      "parent_chain": [
+        "rrsl_python",
+        "python",
+        "oolite_template_python"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "adder",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_adder",
+      "parent_chain": [
+        "adder",
+        "oolite_template_adder"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "asp",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_asp",
+      "parent_chain": [
+        "asp",
+        "oolite_template_asp"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "cobra3-alternate",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobra3",
+      "parent_chain": [
+        "cobra3-alternate",
+        "oolite_template_cobra3-alternate",
+        "oolite_template_cobra3"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "cobra3-pirate",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobra3",
+      "parent_chain": [
+        "cobra3-pirate",
+        "oolite_template_cobra3-pirate",
+        "oolite_template_cobra3"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "cobramk1",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobramk1",
+      "parent_chain": [
+        "cobramk1",
+        "oolite_template_cobramk1"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "cobramk1-alt",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_cobramk1",
+      "parent_chain": [
+        "cobramk1-alt",
+        "oolite_template_cobramk1-alt",
+        "oolite_template_cobramk1"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "ferdelance",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_ferdelance",
+      "parent_chain": [
+        "ferdelance",
+        "oolite_template_ferdelance"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "krait",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_krait",
+      "parent_chain": [
+        "krait",
+        "oolite_template_krait"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "moray",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_moray",
+      "parent_chain": [
+        "moray",
+        "oolite_template_moray"
+      ],
+      "passed": true
+    },
+    {
+      "mechanics_file": "rescue-slaver-mechanics.json",
+      "group": "pinned_core_definitions",
+      "definition_id": "python",
+      "previous_filtered_fuel": null,
+      "actual_raw_inherited_fuel_internal": "70",
+      "basis": "Full raw OOShipRegistry-equivalent inheritance, including native template fields; missing filtered field was not missing native fuel.",
+      "independent_first_explicit_fuel_ancestor": "oolite_template_python",
+      "parent_chain": [
+        "python",
+        "oolite_template_python"
+      ],
+      "passed": true
+    }
+  ]
+}

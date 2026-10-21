@@ -1,0 +1,1244 @@
+{
+  "access_date": "2026-10-13",
+  "packages": [
+    {
+      "id": "P16",
+      "version": "0.16",
+      "title": "GalCop Most Wanted",
+      "download_url": "https://wiki.alioth.net/img_auth.php/9/92/GalCopMostWanted.oxz",
+      "access_date": "2026-10-13",
+      "sha256": "2d70369b8b4bde1cfb61889d109a6360fb479e22bb8c1d494e7b64ed5ccc2e87",
+      "bytes_fetched": 65129,
+      "files": [
+        {
+          "path": "Config/descriptions.plist",
+          "sha256": "6c66059659ad42bab44f104891fd1ec3d753ef09426b6e3af88f1db0c760db26",
+          "lines": 18
+        },
+        {
+          "path": "Config/equipment.plist",
+          "sha256": "9a8c885436771e14f21496fdbbd1d869bfb29f96bbd11f7a2371155a8f829f8d",
+          "lines": 44
+        },
+        {
+          "path": "Config/shipdata.plist",
+          "sha256": "fa5ceeeb35bd0c22349ea2c340181adda3e77f600d0ce1d6fae72764a0dc9cbb",
+          "lines": 2564
+        },
+        {
+          "path": "Config/world-scripts.plist",
+          "sha256": "3d0dc15ba326cc6b4fb7add8c1f22fe50d958fec97926b013de14328187b6275",
+          "lines": 3
+        },
+        {
+          "path": "manifest.plist",
+          "sha256": "4e4a73c45e7bc34d0f17aee008d06cfe4947d6d6067fc9ee2c2979d6100aab92",
+          "lines": 32
+        },
+        {
+          "path": "readme.txt",
+          "sha256": "9c77f803d97ed8f2672641adfaa4514e03d70a4d21c57f13609e6304e13172f4",
+          "lines": 124
+        },
+        {
+          "path": "Scripts/bountysystem_licence.js",
+          "sha256": "a2af6a77b2adb25507e8867ebbf36c36dfd9b407ea1f1fa128f7c6a08a732e34",
+          "lines": 29
+        },
+        {
+          "path": "Scripts/bountysystem_mostwanted.js",
+          "sha256": "44d2e106b19e5ce37d812755098ce8095b127906c1b1035994613242ca911c17",
+          "lines": 3415
+        }
+      ],
+      "status": "fetched; semantic mission/ship analysis pending"
+    },
+    {
+      "id": "P22",
+      "version": "1.05",
+      "title": "Localhero",
+      "download_url": "https://wiki.alioth.net/img_auth.php/3/36/Localhero_1_05.zip",
+      "access_date": "2026-10-13",
+      "sha256": "b49878de71e70e0612a68415a8d6f1cf181c8409e8207f7626de57c3f81034df",
+      "bytes_fetched": 835456,
+      "files": [
+        {
+          "path": "localhero_1_05.oxp/AIs/harkov01AI.plist",
+          "sha256": "bd9d5b023b6998b6b7610c4635ec9a86881b9c6545e7a7bd30a468a0009c7f4e",
+          "lines": 53
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkov02AI.plist",
+          "sha256": "c25c16fbf7108ef492b02f489bf98b04cdcea6d3e64d7f3d8f47b4d608aa17a8",
+          "lines": 53
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkov03AI.plist",
+          "sha256": "568a30499a3b0d96eb0601f10bbb97b68733c9785a514fb8036a42a5ce3c16ee",
+          "lines": 53
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkov04AI.plist",
+          "sha256": "e17ed2dc178243cc01952b12add4884e062a4897073d60483c67ba1d0bbe88f9",
+          "lines": 53
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkov05AI.plist",
+          "sha256": "5cf836f82bae1f965d54d0ebd5331ca43080b55ea4b2023175ed2cfcdfb6fc74",
+          "lines": 53
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkov06AI.plist",
+          "sha256": "4f70a65446e04c926e109c24ac6adf63d198e0a05a837670790db8e9429811fb",
+          "lines": 53
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovescort2AI.plist",
+          "sha256": "f7f80123f4a34ca4ecc7944fef68a8098d401c856d0768aa90172f6e5c624814",
+          "lines": 50
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovescortAI.plist",
+          "sha256": "7f1b480ccfca6da12b6a57c26313db477a057f9d10ee3ac5c095194d8f10b88d",
+          "lines": 50
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovhoneypod2AI.plist",
+          "sha256": "c2d73a74efa9dff11526556b7727c1d4c7af761325943d898a1f6c5b2f25debc",
+          "lines": 29
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovhoneypodAI.plist",
+          "sha256": "ffb7b6c1136f882fc5ed10ce742c50b7b6703d7223a5827e74d7490ffe156b42",
+          "lines": 10
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovleaveAI.plist",
+          "sha256": "e3f14778c978a353228437dad6ee75f1e1e3e700d57d74eaa46aa47f1a6b43e5",
+          "lines": 13
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovnormal2AI.plist",
+          "sha256": "e4054bdc6e262d8113c29bf2e8f94aef4642aa331c7aa25aa86c00b01cb00ae3",
+          "lines": 53
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovnormalAI.plist",
+          "sha256": "1db18ae97f4842326cededd5a1c7103130eea535932d97e89a497e2a30382b7d",
+          "lines": 53
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovpod1AI.plist",
+          "sha256": "c6cf7511f279d2fb97f06a664b244beaf70150ef393c449d39ed8af20d74e142",
+          "lines": 8
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovpodAI.plist",
+          "sha256": "77556c6205d7f933d862117c9244d9e4135799c3d18c228d6d9561bb6dbc97f7",
+          "lines": 28
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovraidgAI.plist",
+          "sha256": "73e9c4ac1959aeb30390504be1866c6048c4d23e5c2609fc072a4b9d50e3e773",
+          "lines": 85
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovraidpAI.plist",
+          "sha256": "1b00b899ac25bf6e412ae836ef7f49eed988fa8e6a374c303e9ca978ba093144",
+          "lines": 87
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovraidsAI.plist",
+          "sha256": "62cf24b665ba3fb99ee947dcdd6f13d97d743b3e193ac9b02f3c5ef77e6a3774",
+          "lines": 95
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovraidtAI.plist",
+          "sha256": "db297d89ffebcff337d95be41d942403bccd2410b789349dcb8457cb4a375173",
+          "lines": 87
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovRoll1AI.plist",
+          "sha256": "507a41a1a7a9b5b189174a4bb65b8d07f40f6d35ccffa787b874a26cb84e3bec",
+          "lines": 39
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovRoll2AI.plist",
+          "sha256": "e165751fb3c3fcf27eb0b3efc19e3415ea53d2a51e7dfbc13cc95542da8bc781",
+          "lines": 37
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovshuttleAI.plist",
+          "sha256": "a19b2cb4020ad4d09bff6bb0fc225148562b99daa5fd9086a202fb10230086c4",
+          "lines": 135
+        },
+        {
+          "path": "localhero_1_05.oxp/AIs/harkovtransportAI.plist",
+          "sha256": "10072196db5d8b6abc856f5cac83537bcd9ae7060188d494aec75611313e9e63",
+          "lines": 54
+        },
+        {
+          "path": "localhero_1_05.oxp/Config/descriptions.plist",
+          "sha256": "d4b81a610c6e952e65b7f772cf9092b43ea99df47688ee8f30b493083818bf18",
+          "lines": 144
+        },
+        {
+          "path": "localhero_1_05.oxp/Config/missiontext.plist",
+          "sha256": "46a8ab0e4506f15c3e2b98d3d134d1f5e8449ce477feced29435e75e7e1be71a",
+          "lines": 69
+        },
+        {
+          "path": "localhero_1_05.oxp/Config/shipdata.plist",
+          "sha256": "9930aa493f3c06ebd39ba247f8fad7e9d0e499f2b7a5ea016a608a800810fd8e",
+          "lines": 869
+        },
+        {
+          "path": "localhero_1_05.oxp/Config/world-scripts.plist",
+          "sha256": "3c4c40d6e2bbbea24e8db8a5628a6e1d9faf9f249e064603a802507ca2523db1",
+          "lines": 7
+        },
+        {
+          "path": "localhero_1_05.oxp/Models/harkov.dat",
+          "sha256": "2716169d5e1fb759bb9465f4a3787015811e4e212b1607c62860b5a641fe5c6d",
+          "lines": 263
+        },
+        {
+          "path": "localhero_1_05.oxp/Models/harkovgl.dat",
+          "sha256": "dcc2d9904082dd8581e2c901fdf75de3d0cec7156494745b812300a7c2f99f73",
+          "lines": 254
+        },
+        {
+          "path": "localhero_1_05.oxp/Models/harkovgm.dat",
+          "sha256": "933beaad5d5be3912e806dcc2fb4b17330e813f09cc4368b547962e5eec7dc46",
+          "lines": 369
+        },
+        {
+          "path": "localhero_1_05.oxp/Models/harkovshuttle.dat",
+          "sha256": "b91a620f5901d38a7837f20ef9bb35de6b9edef7412e790de11c3c76be5c1e7f",
+          "lines": 993
+        },
+        {
+          "path": "localhero_1_05.oxp/requires.plist",
+          "sha256": "152be61fb13f599c3e32ad26f0418aabf0fa2b7a8b299072c792191349496dea",
+          "lines": 4
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_general.js",
+          "sha256": "198bf0806d0ea27d5cf1a37df7d0904d0d60f8d82005ba93e8ffd4db5832551f",
+          "lines": 39
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_gl.js",
+          "sha256": "14ee29ca72dfd851f72e022e4d495cfa4ca9f87c1b1560f5f4d7edacca8d88ce",
+          "lines": 39
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_glH.js",
+          "sha256": "64287e44272418f03f263d70b27cdd2ab822cc743c849800fd9b7fce8fec8497",
+          "lines": 40
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_gm.js",
+          "sha256": "0a65082a20c5ce3c6a2190eaa52948630b5e77bceed703a2e93f8b91e4068283",
+          "lines": 40
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_gmplus.js",
+          "sha256": "df69a29cfa422d5f6212a04de3990c4f2740bf8b5e1c645b39669d859cea1a40",
+          "lines": 41
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_honeypod.js",
+          "sha256": "60b520e7b10b4f44040fd72464edb3b1dccf570519ef049cc2919d39f2c993d3",
+          "lines": 29
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_honeypod1.js",
+          "sha256": "f04d774964e06f0387c2a83977b02023fa14d206c9361389ddf4cdc10e06cf14",
+          "lines": 14
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_honeypod2.js",
+          "sha256": "5bccbe8e1657bc56c215ddd93bc0d226bc442533a9bb8bec7826d0991ec853b4",
+          "lines": 14
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_honeypod3.js",
+          "sha256": "05f44d58eef36fe6ff6692bd13b1337ad13ea947e800269fdc4e45968da171f4",
+          "lines": 14
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_pod1.js",
+          "sha256": "5a04cf6452d4d0cf8f8f70ee0d78511ef59a5bd71a221fef9ab96642456534f5",
+          "lines": 22
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_pod2.js",
+          "sha256": "1f1fd6a338b6e16db8fc0bb7cc7732c941e941b94c05ebb2d361f431f330cd0d",
+          "lines": 22
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_pod3.js",
+          "sha256": "f6abf112ed71cccec98977dd4191da7b07266362c4d4395308fc5ae30bfdff73",
+          "lines": 38
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_pod4.js",
+          "sha256": "82eb89c0a32e13a9ec5cc0b97adc72081eb2b5e7ea49785e51cf06dc1f7b4f2c",
+          "lines": 24
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_pod5.js",
+          "sha256": "c29603ffc93f02d60e3b53de1f04dbbcb251c16f6ade5ca09e77d2e665fa4267",
+          "lines": 24
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_raidgl.js",
+          "sha256": "dc0b75198d44518aee363a0078c99265ceb1a7c9caf0fee14a685cb963e3b69f",
+          "lines": 38
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_raidgmp.js",
+          "sha256": "9f9cfa110bb934fab75dca41ae1cd7abb551e8eed3dfaa67cad6e18cbafd185e",
+          "lines": 38
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_raidgms.js",
+          "sha256": "c7d79c5406c10bc36db119e277d92d34fadf8423db5d1301b9efe6aa4aefea74",
+          "lines": 38
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_raidgmt.js",
+          "sha256": "78b724351f48324c2ff480a56ab1d148bbe4bcfddb20e2620b21b5008231235a",
+          "lines": 40
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_shuttle1.js",
+          "sha256": "42be8b08d880e7e4ebda811a33aff83aba6e49394397f3b56cbe6779da222c5c",
+          "lines": 35
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_shuttle2.js",
+          "sha256": "7277c75d584c651c6ae03a4957fc6046e4602058a66131811bbec1e1c11b4f84",
+          "lines": 55
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/harkov_transporter.js",
+          "sha256": "0c0fc16e7a21a78d8de19773a9145e808ac7214b04a7c5442c8841fdebdbf23f",
+          "lines": 19
+        },
+        {
+          "path": "localhero_1_05.oxp/Scripts/localhero.js",
+          "sha256": "9ccfcc59d5a9e903c6aecfdcd064ccf19354e522f0fe7aad356904ad4e836ff9",
+          "lines": 1130
+        }
+      ],
+      "status": "fetched; semantic mission/ship analysis pending"
+    },
+    {
+      "id": "P46",
+      "version": "1.7.2",
+      "title": "Vector",
+      "download_url": "https://wiki.alioth.net/img_auth.php/d/dc/Vector_1.7.2.oxz",
+      "access_date": "2026-10-13",
+      "sha256": "fe52d384e50a2846fcd5a2072bc240c0413ac697374da7acfa5aea5a00866d02",
+      "bytes_fetched": 10914203,
+      "files": [
+        {
+          "path": "AIs/vector_cpodBAI.plist",
+          "sha256": "cde15fa7e88eb3ab3d0d403ec48730a1ff91c3ca0badb07a408a97ef2137f967",
+          "lines": 25
+        },
+        {
+          "path": "AIs/vector_sunskimAI.plist",
+          "sha256": "44ca1ee46c7d423b9df4c85e6776ce1a0ad2a1f02186556424ce66af6f5296f5",
+          "lines": 82
+        },
+        {
+          "path": "AIs/vector_leaveAI.plist",
+          "sha256": "c326142b0fd28d8034b28298d3d6e8e7a1998a319ea765fc200b441a79e3343e",
+          "lines": 38
+        },
+        {
+          "path": "AIs/vector_arnForceAI.plist",
+          "sha256": "5e43ad2371a73932a8666038e337c2b5ca4452f9364c2e3f6fab21eb7ca1e219",
+          "lines": 43
+        },
+        {
+          "path": "AIs/vector_funAAI.plist",
+          "sha256": "2658a05f18b80813cc463bd7a6be4fafe846fd625cbf28d4ecb1eed103d8e8bc",
+          "lines": 34
+        },
+        {
+          "path": "AIs/vector_revengeAI.plist",
+          "sha256": "6333ee8ceafc36cdcb30d346390ac7b1528cf0eca200f545cac71621cfe981ae",
+          "lines": 35
+        },
+        {
+          "path": "AIs/vector_inspectionAI.plist",
+          "sha256": "d527d2daff690638108c567edf1de9d782b689790a6b2d869709e0a7d8698f7d",
+          "lines": 163
+        },
+        {
+          "path": "AIs/vector_official_shuttleAI.plist",
+          "sha256": "2dd63c1a72e8762f6c08c6c28b183f81c50586124e4c339c5af2c0460eca284f",
+          "lines": 131
+        },
+        {
+          "path": "AIs/vector_empmineAI.plist",
+          "sha256": "fb2ebb3a22e70861374e7ce05ccc4beceff68f3e58b84db31e3c44dbc9455872",
+          "lines": 7
+        },
+        {
+          "path": "AIs/vector_arnAI.plist",
+          "sha256": "795d59f411ed3df4fce376ae71fe135ec392e1c98fe43c248668095f910265ba",
+          "lines": 62
+        },
+        {
+          "path": "AIs/vector_visitorAI.plist",
+          "sha256": "9f01680c2cc71093dae99eda8e7a3662936a0ab941e8845a8092eb5fdc856a82",
+          "lines": 35
+        },
+        {
+          "path": "AIs/vector_specialiststationAI.plist",
+          "sha256": "4269d288c14634feee1ba1df030c133e1f2e59cd48e9dd8e21430a06ca160358",
+          "lines": 15
+        },
+        {
+          "path": "AIs/vector_benusAI.plist",
+          "sha256": "34e79e7b3444d11be6adc78ebd33b044e75d9b72962c391fbba8f65857ffd5c6",
+          "lines": 35
+        },
+        {
+          "path": "AIs/vector_epodAI.plist",
+          "sha256": "7fef341ba7d50e17d3b76062f8ead8057203ee597274af6e5c7ead791125bb0a",
+          "lines": 17
+        },
+        {
+          "path": "AIs/vector_areidisStationAI.plist",
+          "sha256": "801fb27e9a2297d7ff855831f34bb0ff3343f6c0f423da5ec31308294d55dfd6",
+          "lines": 12
+        },
+        {
+          "path": "AIs/vector_wreckAI.plist",
+          "sha256": "f516775004b37f74f33d2dfd603f12e335d808dc6267e25a02b2940aa4daa29c",
+          "lines": 6
+        },
+        {
+          "path": "AIs/vector_defenderAI.plist",
+          "sha256": "e3e2a91ae40e4ee1f80dc9335418df9c498b2fe248e244e46c035d9f27b8889c",
+          "lines": 40
+        },
+        {
+          "path": "AIs/vector_empAI.plist",
+          "sha256": "2c144b8747c58324d822c26be7f0accbfd20e2690faf984d474d1b24cafa711c",
+          "lines": 7
+        },
+        {
+          "path": "AIs/vector_traderAI.plist",
+          "sha256": "2fed52d16f8d2e6d6d5d78377c2608d1121b1dd4d8267e341e309220e9f45cb1",
+          "lines": 82
+        },
+        {
+          "path": "AIs/vector_funABI.plist",
+          "sha256": "81f9dab6b790fc546e88e3af6b08eb93183c38833eca920841135fd139f8e0e5",
+          "lines": 27
+        },
+        {
+          "path": "AIs/vector_cpodAI.plist",
+          "sha256": "6c39b8ee83aed842a28d8738d2ec910ab268e4923be8db6dc0607e23660fde5f",
+          "lines": 3
+        },
+        {
+          "path": "Config/shipyard.plist",
+          "sha256": "ff8da1560ea4dfc1bafc0817bbe43dc844657da78c5be6f6b7dd127e3842d64d",
+          "lines": 17
+        },
+        {
+          "path": "Config/equipment.plist",
+          "sha256": "bffd8fd957b7ac38faaa6f5273b872b790b09720185d8d0f142fa8b01fdc1a1d",
+          "lines": 34
+        },
+        {
+          "path": "Config/descriptions.plist",
+          "sha256": "7201fa3c900c8cb5293303b4446d9af455586bc6d0c75994f9b789526e8fe9a7",
+          "lines": 32
+        },
+        {
+          "path": "Config/shipdata.plist",
+          "sha256": "0d0ca2e1de7c72071f69db5fdbebe55e9dc2fddc4061df7e3464529de8dd5007",
+          "lines": 1488
+        },
+        {
+          "path": "Config/world-scripts.plist",
+          "sha256": "87d8932989db504e744d956b39b6dfe0a4df86fae84b58e3026dbb221aaae228",
+          "lines": 10
+        },
+        {
+          "path": "Config/pirate-victim-roles.plist",
+          "sha256": "3e1f49409479f2ac0490cbf1ec253d06f8dd3552bc72ae932f1a60f840da40dd",
+          "lines": 3
+        },
+        {
+          "path": "Config/missiontext.plist",
+          "sha256": "cee5848b604057f113e2d4daa11c5580f6ac2a88a7ac6915c41d1e34afe1bd61",
+          "lines": 326
+        },
+        {
+          "path": "Config/customsounds.plist",
+          "sha256": "6852c5f3721c6f1128eff692cc1197dc4e361893d0d6d2d3fb0ef9b1fc27471e",
+          "lines": 9
+        },
+        {
+          "path": "Config/characters.plist",
+          "sha256": "ca3218a7a2673bfe08cec957fb873b122a5f5dc3bbf457da4c3b97aaef3b4200",
+          "lines": 8
+        },
+        {
+          "path": "Info.plist",
+          "sha256": "a957a188ab46461e80804d92888812ac6e2cc1861e883f9a0c6f399731329576",
+          "lines": 14
+        },
+        {
+          "path": "Models/vector_cubes.dat",
+          "sha256": "f45b4eeed8d1e608ada7a9f87bedce4ae48c6623620e46ebd685bf54857030c8",
+          "lines": 37
+        },
+        {
+          "path": "Models/vector_areidiswalk_doorB.dat",
+          "sha256": "88e4914ca385db22f7a5e5a8acf6a43ada45f703b757222d5f17c8cdb9186a97",
+          "lines": 151
+        },
+        {
+          "path": "Models/vector_shuttle.dat",
+          "sha256": "d555b307227e53e85c9f925be4964d7905936841449ea25a9a2355456f1f75fd",
+          "lines": 987
+        },
+        {
+          "path": "Models/vector_areidiswalk_blend.dat",
+          "sha256": "b8dfba4b42d004be2fa3f21a57cfd7abcf5e784f95aa7ad6b9d16b867f105bde",
+          "lines": 21
+        },
+        {
+          "path": "Models/vector_areidiswalk_corridor.dat",
+          "sha256": "97c9ad2b2fe3c863b9c3f8279228d7e66a288a8ebcf5fff5d840dd0cd2a2728d",
+          "lines": 3329
+        },
+        {
+          "path": "Models/vector_specialistlaser.dat",
+          "sha256": "4e92b089eef7d15fe54b14cd7c30102ddf92f3652e4990690c67a757238786d6",
+          "lines": 269
+        },
+        {
+          "path": "Models/vector_specialistrock.dat",
+          "sha256": "9554b304bd5357169d36fd648fbe66df9650f7e7fc5b1e3423779ef08fc9b30e",
+          "lines": 661
+        },
+        {
+          "path": "Models/vector_areidis_rock.dat",
+          "sha256": "8da71d41c4382720ae06c0ba0dc6f7dd8ff03d6c2600dd76551a5dbe17ffd053",
+          "lines": 590
+        },
+        {
+          "path": "Models/vector_newsA.dat",
+          "sha256": "7ba3ffb1b268c699d648bacf103c17cf496b982f8a4b9b559dece3f088321932",
+          "lines": 45
+        },
+        {
+          "path": "Models/vector_inspection.dat",
+          "sha256": "8f9f0a8116cce60eefb83a5bd9d693d15239658c624688118f2364926d79bca3",
+          "lines": 459
+        },
+        {
+          "path": "Models/vector_areidis_turret.dat",
+          "sha256": "4182d3149ba66d66a25d68578c71e878119e4800d7b8ea953a1f79f01b6268b6",
+          "lines": 149
+        },
+        {
+          "path": "Models/vector_specialistbay.dat",
+          "sha256": "4e36c5172ccd57e9302723a49ee76f51ab857a71417a26c3406bc9dd7da2cb03",
+          "lines": 41
+        },
+        {
+          "path": "Models/vector_areidis_bay.dat",
+          "sha256": "c183503ec59df449cea916cb69c20e8a1ffa2a5ee34e0ee002f929f4d386be02",
+          "lines": 664
+        },
+        {
+          "path": "Models/vector.dat",
+          "sha256": "c3eba2f5be66f4182300d2e0e5726ccb509335f155b7d1c551b2bef0780230d6",
+          "lines": 528
+        },
+        {
+          "path": "Models/vector_areidis_sign.dat",
+          "sha256": "9707233ede5d68203a2eafb9257439235eb5c4402d267287602b9af33682a15e",
+          "lines": 45
+        },
+        {
+          "path": "Models/vector_specialistcenter.dat",
+          "sha256": "1b3fd1deeb47baea79cf082512b7937945990cd09f42fecb41bb206e83efd806",
+          "lines": 867
+        },
+        {
+          "path": "Models/vector_areidiswalk_doorA.dat",
+          "sha256": "ed9126c741b6c46dd69626f5577a6a681317bffb0fe26f15748ea1540333134c",
+          "lines": 151
+        },
+        {
+          "path": "Models/vector_empmine.dat",
+          "sha256": "31edb0cd2fabf14e426d6ee66c8890c195260a3d2d0cdf5f8083a1e804a4bdfd",
+          "lines": 576
+        },
+        {
+          "path": "Models/vector_racer.dat",
+          "sha256": "7157b7f3285e782a404d6b3b66be4ea9ddab0413e7483a6d115147ed47f32b5f",
+          "lines": 1816
+        },
+        {
+          "path": "Models/vector_areidis_sub.dat",
+          "sha256": "6a7d065cfb7c9abdaa29cdc59243e7af1db02d11fa1ee93d43c20e845e1ec44c",
+          "lines": 1963
+        },
+        {
+          "path": "Models/vector_instruments.dat",
+          "sha256": "c90d2ee55835c491b64608d32c8efe78527cf4dc6c840dfe3f73567cfdc2b49a",
+          "lines": 21
+        },
+        {
+          "path": "Models/vector_specialiststruct.dat",
+          "sha256": "f457e59a95176230b16293fd14a31abb0f3c936c286ab3292c16d2606a6e4c64",
+          "lines": 1643
+        },
+        {
+          "path": "Models/vector_areidis_station.dat",
+          "sha256": "fb80135db55ac498aa062e63ac27ae9a0a658f41825834f0be264b8a7fe7753d",
+          "lines": 994
+        },
+        {
+          "path": "Models/vector_cubeA.dat",
+          "sha256": "33c0a027842c923b2ce1406e116e3debb4380bf5709be8dc1b50a993e50e958b",
+          "lines": 45
+        },
+        {
+          "path": "requires.plist",
+          "sha256": "e30276450e4665f6145a476e96c9bc375a7413c2e5bbd01d20464c46f25ffc96",
+          "lines": 1
+        },
+        {
+          "path": "Scripts/vector_ppodF.js",
+          "sha256": "a693104deb78c9d070ba02f1ccff171600f73511128788fd214303ac985f1d64",
+          "lines": 32
+        },
+        {
+          "path": "Scripts/vector_inspection.js",
+          "sha256": "34aa5be8ffc0311655ff1c2e9d49d6f79dde0dfe64df01235b3920663686c7ee",
+          "lines": 48
+        },
+        {
+          "path": "Scripts/vector_cpodD.js",
+          "sha256": "3705e604930de904346b18f25bfe1e10e650af27063ff09619294c98bbe26ccd",
+          "lines": 39
+        },
+        {
+          "path": "Scripts/vector_areidisStation.js",
+          "sha256": "73add7f5413800d4a6a5de5a6208b632a0c65bb6f6c3100e5bf5037d5d20e6b2",
+          "lines": 152
+        },
+        {
+          "path": "Scripts/vector_specialiststation.js",
+          "sha256": "1cf7f4d4f146e0bd0299a5dde3018ea6ba1b7432ffb5adb2e20bba9f83c5d485",
+          "lines": 174
+        },
+        {
+          "path": "Scripts/vector_cubes.js",
+          "sha256": "b8037e0f250086e6e509ba9e32b470d9389dd74091b79ae716ee82970440f1a9",
+          "lines": 245
+        },
+        {
+          "path": "Scripts/vector_funA.js",
+          "sha256": "f083658a8b70e2604d3a7fa90126363dfe2d672ef9f0c5553694fbe5c502bc94",
+          "lines": 44
+        },
+        {
+          "path": "Scripts/vector_empmine.js",
+          "sha256": "615fc603d94281101070a5222c4a7ef1d99afbbbc34ec9f656aa77885d0f2677",
+          "lines": 31
+        },
+        {
+          "path": "Scripts/vector_news.js",
+          "sha256": "905df1e23d6b36be1d45faf55166b18e043aad2731fe86d9c1f3c44fd93c0297",
+          "lines": 455
+        },
+        {
+          "path": "Scripts/vector_ovc.js",
+          "sha256": "b325d6e37519061cc824624e46ad376a6999f866c5efd8b88d128b94eb900d77",
+          "lines": 103
+        },
+        {
+          "path": "Scripts/vector_pad.js",
+          "sha256": "18094f23670292c72e2d8b486f8e73e709455487f6e055b380d5be24c4252ed2",
+          "lines": 557
+        },
+        {
+          "path": "Scripts/vector_benus.js",
+          "sha256": "8bab7d06d9d6b20af2687094d3df57912c7d612ae1857d06e0a0b1493b75fb2b",
+          "lines": 190
+        },
+        {
+          "path": "Scripts/vector_trader.js",
+          "sha256": "aad0eaa969dd5e3c9dbe8bce3b2bb665e7a5a96a8cd5ff48992273dbc2e0fb1c",
+          "lines": 15
+        },
+        {
+          "path": "Scripts/vector.js",
+          "sha256": "f5eb391ca3107621c875f4eefee874a077aadaf38e47dffff32b92269282d82e",
+          "lines": 658
+        },
+        {
+          "path": "Scripts/vector_epodA.js",
+          "sha256": "f2adb1656b9e8e585afec1dcf5d4477808ee17f024944611dee6d548f84b393c",
+          "lines": 37
+        },
+        {
+          "path": "Scripts/vector_ovi.js",
+          "sha256": "3b58b1b6ffb895d8ae3acc3eab7b667018d0b3be92258fdf4d2633ee7471618f",
+          "lines": 112
+        },
+        {
+          "path": "Scripts/vector_richman.js",
+          "sha256": "9302aa03ed5ca99b2547a22ae0a4338dba8b95133e5933846c75a88146c33b86",
+          "lines": 117
+        },
+        {
+          "path": "Scripts/vector_epodHintA.js",
+          "sha256": "d428430d66ba8d5fff95e179c871e6c5433dfbfb26cc9c76c6bbab9d699ccb1b",
+          "lines": 24
+        },
+        {
+          "path": "Scripts/vector_missionArn.js",
+          "sha256": "f40b6186cf7e6e45a8e54e9b8376da4fa6b892adf45afaf10963705af3d45686",
+          "lines": 489
+        },
+        {
+          "path": "Scripts/vector_updater.js",
+          "sha256": "6e349eac5645f06ac4320566ff6b182f713c93af0003d879cd8cfa5881045dbf",
+          "lines": 102
+        },
+        {
+          "path": "Scripts/vector_arn.js",
+          "sha256": "4752cb78fd3bac088ca9c796840852c739c7387304d9f2b6106960a483861a2b",
+          "lines": 53
+        },
+        {
+          "path": "Scripts/vector_areidis.js",
+          "sha256": "179cdb4e4e592b3df4994e674534799fcf7c9b02443c823f6e9fa685598bf564",
+          "lines": 160
+        },
+        {
+          "path": "Scripts/vector_pirate.js",
+          "sha256": "53778b866ca2fdbc22ec6c3eb9a33a17d14cdf373d576caa7b546b4a7fba127a",
+          "lines": 29
+        },
+        {
+          "path": "Scripts/vector_insp.js",
+          "sha256": "b3e36c5bee11853f98f4007f516b1be01150383fb8e05ddf6b5b331ddb78034d",
+          "lines": 253
+        },
+        {
+          "path": "manifest.plist",
+          "sha256": "65789bca2484475734078028b06a753eec0644e28578ebd50c1bbae753be77b1",
+          "lines": 31
+        }
+      ],
+      "status": "fetched; semantic mission/ship analysis pending"
+    },
+    {
+      "id": "P28",
+      "version": "1.6",
+      "title": "Oo-Haul",
+      "download_url": "https://wiki.alioth.net/img_auth.php/2/2a/Oo-Haul_V1.6.zip",
+      "access_date": "2026-10-13",
+      "sha256": "90d0825ddd0c6a2cf43bea26d67b21dae86c7726a9dd088b9abb672a23360769",
+      "bytes_fetched": 814249,
+      "files": [
+        {
+          "path": "Read_me.txt",
+          "sha256": "60cb578912263b3181e240cbf931c91df09740ae4e3da6a951792acd57df9312",
+          "lines": 73
+        },
+        {
+          "path": "Oo-Haul.oxp/AIs/constoreclerkAI.plist",
+          "sha256": "4cae42d0150a97bb723c5a5d5f247ec511766eb2cc0373ecb6423f4ace755f1b",
+          "lines": 14
+        },
+        {
+          "path": "Oo-Haul.oxp/AIs/oohaulmisgoAI.plist",
+          "sha256": "c5ed0e8e3f88e855544bbfecba148624c19a0f16c20d7b0533cee2888a26d3cb",
+          "lines": 100
+        },
+        {
+          "path": "Oo-Haul.oxp/Config/demoships.plist",
+          "sha256": "cac0bc3bcc16335b960f67a5495737d7af21a177627dbd457c15ca335e60829b",
+          "lines": 1
+        },
+        {
+          "path": "Oo-Haul.oxp/Config/descriptions.plist",
+          "sha256": "4a0219cfce3d5a1a7e89735bf17f62dd2f6e90f69c710f7da07bd29f03984414",
+          "lines": 30
+        },
+        {
+          "path": "Oo-Haul.oxp/Config/missiontext.plist",
+          "sha256": "8b4d9ca350c06a65d7fbd61e7e2425eabb0aae58c2a0b597ad1cfcb791db8d4d",
+          "lines": 11
+        },
+        {
+          "path": "Oo-Haul.oxp/Config/pirate-victim-roles.plist",
+          "sha256": "523aeabf7e0fd00e32a86875f8137f43d9537e26577047f7bfa3f5510588d1fa",
+          "lines": 1
+        },
+        {
+          "path": "Oo-Haul.oxp/Config/script.plist",
+          "sha256": "e873cc6e0d50ce36c90d376c8a7fab99f922d4f8ca9582e0f17366a7ea620774",
+          "lines": 136
+        },
+        {
+          "path": "Oo-Haul.oxp/Config/shipdata.plist",
+          "sha256": "2394445f26c81fdcc12d7eeb2d7567b54e12d7ac9039d69c431900dd2ca45f76",
+          "lines": 198
+        },
+        {
+          "path": "Oo-Haul.oxp/Config/shipyard.plist",
+          "sha256": "628281eccca3163bf95b6ecbd226833ba1720560a07886e9ec650b249e3091f0",
+          "lines": 22
+        },
+        {
+          "path": "Oo-Haul.oxp/Models/Constoreclerk.dat",
+          "sha256": "7c3250c8fa7e7986cef184e4e4edeb636bfa7c6f078897f91ebf559812ba9863",
+          "lines": 467
+        },
+        {
+          "path": "Oo-Haul.oxp/Models/Oohauler-player.dat",
+          "sha256": "553bbde79b5f41a5bdb59c2112246d77966da732fe2633f0433f2f0dbe70aa50",
+          "lines": 1001
+        },
+        {
+          "path": "Oo-Haul.oxp/Models/Oohauler.dat",
+          "sha256": "ab98fb2a1ce06c82713bb2ee9a92d53bd8cfb2838431b9cc6822d267012e2ca8",
+          "lines": 1001
+        },
+        {
+          "path": "Oo-Haul.oxp/Models/Oohauler_crate-player.dat",
+          "sha256": "22d69882a8d81fa56740954c97918a971af36f8a4bf311324ef8ac8b70d1c10b",
+          "lines": 51
+        },
+        {
+          "path": "Oo-Haul.oxp/Models/Oohauler_crate01.dat",
+          "sha256": "cf378c8b4996d9d0ea138e7e250caed78f13857a1009908dd81dcf3ffe367601",
+          "lines": 91
+        },
+        {
+          "path": "Oo-Haul.oxp/requires.plist",
+          "sha256": "13fd9e59009b7373eef725edbb8f8b814edc907406b1b2ec3203c5c5eeeecc4a",
+          "lines": 8
+        },
+        {
+          "path": "Oo-Haul.oxp/Scripts/oohaulcargo.js",
+          "sha256": "dec49f1da8e2d52a72e4eef957394ffb931d0c927f8502423a855c6e7a3ea78f",
+          "lines": 15
+        }
+      ],
+      "status": "fetched; semantic mission/ship analysis pending"
+    },
+    {
+      "id": "P05",
+      "version": "1.2.9",
+      "title": "Blackjack's Bullion",
+      "public_shared_url": "https://app.box.com/s/ed1c019b87b021ee54db",
+      "access_date": "2026-10-13",
+      "download_url": "https://app.box.com/index.php?rm=box_download_shared_file&shared_name=ed1c019b87b021ee54db&file_id=f_2389064390",
+      "public_file_id": "2389064390",
+      "archive_name": "Blackjack_Bullion_1.2.9.zip",
+      "sha256": "d3ae65a6bfca690d9154ca7890efa707fb2f0a03d3d14e911f9e16cc9c78bbe8",
+      "bytes_fetched": 807417,
+      "files": [
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Config/missiontext.plist",
+          "sha256": "cc2e6071f18ff4f2dc8235d3a5367a8f8765e70f83dde94c820edcda0a5010ef",
+          "lines": 27
+        },
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Config/shipdata.plist",
+          "sha256": "12ef01d6fb979959d6cab14db1b76a82441a3cb9927db0b382dbfd6a15cb0981",
+          "lines": 422
+        },
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Config/shipyard.plist",
+          "sha256": "58fc2165f30890810974f818eed59a95c43c462d3f81a667563741f5ab5c393c",
+          "lines": 98
+        },
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Config/world-scripts.plist",
+          "sha256": "37036aaaf90d91011406da57d8973dd050fd37d933ce9f3a89ca17a4eb57d1c8",
+          "lines": 7
+        },
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Models/steg.dat",
+          "sha256": "643efaf7288ee62da29fe3b1ba5b8f1a47e1a1906282a6c66dc54a7b9d98f6fb",
+          "lines": 181
+        },
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Models/steo.dat",
+          "sha256": "bc9bba6ad8bbe9c958848ce58abf9472e9533be959b5e24545b8ffabf81eed88",
+          "lines": 181
+        },
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks.js",
+          "sha256": "2cd0b78bc4f0aa046dba3428e03aa494adb2fe1d456fa32fb714fea7ead42dbb",
+          "lines": 61
+        },
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks_bolts.js",
+          "sha256": "c7238194732341e2f320f12fbbe9dcf1f39cbb33ad825662ec500d00ed9930bb",
+          "lines": 21
+        },
+        {
+          "path": "galaxy 2, Blackjack's Bullion 1.2.9.oxp/Scripts/blackjacks_witness.js",
+          "sha256": "b1e98e2d680f3bdaf4690a3cda99f836b100b2532fe42f137f4cf88f82668143",
+          "lines": 12
+        }
+      ],
+      "status": "fetched; semantic analysis pending"
+    },
+    {
+      "id": "P47",
+      "version": "1.1 public archive; verify internal version",
+      "title": "Victim11",
+      "public_shared_url": "https://app.box.com/s/r3i4ba6zdmu7fhu7e51j",
+      "access_date": "2026-10-13",
+      "download_url": "https://app.box.com/index.php?rm=box_download_shared_file&shared_name=r3i4ba6zdmu7fhu7e51j&file_id=f_1231000995",
+      "public_file_id": "1231000995",
+      "archive_name": "Victim11_1.1.zip",
+      "sha256": "0829f328e09d396b112a50b875f3ad364d6d242629744193c61b6ee25d5a14fd",
+      "bytes_fetched": 2730617,
+      "files": [
+        {
+          "path": "Victim11/Victim11_1.0..oxp/AIs/blackMariaAI.plist",
+          "sha256": "ef57cd4d86e458b91120b91771de62461a2f2759c5c9aafc354cef097e209db7",
+          "lines": 25
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/AIs/bmGroupAI.plist",
+          "sha256": "4af6a13ba13840d125f9a85f1c635308e592340e5069bff2f16f7543d1e74e69",
+          "lines": 23
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/AIs/MegaAspAI.plist",
+          "sha256": "d6be70518121adf384a783f619c98751386c1de197c8f2ad65f1e1d2264ce614",
+          "lines": 33
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/AIs/V11capsule.plist",
+          "sha256": "512dd806441244e67bfe18c87549972f90604760484216d93638868b81a93c92",
+          "lines": 1
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Config/descriptions.plist",
+          "sha256": "422406feb41e913250ec30b49b0bc7163aed72d23844ae30be4c9c2f170952d4",
+          "lines": 16
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Config/missiontext.plist",
+          "sha256": "ec1795d66da833fa271898a4ee93f52f2cf57c35d8f3cd204c024c844ddc8cfc",
+          "lines": 101
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Config/shipdata.plist",
+          "sha256": "69bbe3a1639cd06944b617229e961b5ae4874af9887c84f022454db3dbb91bde",
+          "lines": 686
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Config/world-scripts.plist",
+          "sha256": "ec88b6d8a253deca53406bddd717d3e6eef5fd67d4d29cb40d350d8b34462a99",
+          "lines": 6
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/asp_sb.dat",
+          "sha256": "f8288edb1235cae430935f6c1bd9d60975542cbc52ac7ca07f8779273b41edc1",
+          "lines": 77
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/bb_baseship.dat",
+          "sha256": "e6ad841d8b6e4f2d88128c727ae9c50a2a53656b7160635567481a39f01d161e",
+          "lines": 1169
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/bb1_cannon.dat",
+          "sha256": "4a6d4790f05adf7ae14602e0a0bf5fbceb45b893acd21e645757124a812f06e2",
+          "lines": 689
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/bb1_leafspike.dat",
+          "sha256": "d7b605a3946ee0cb1251d42b6b31f159e0af8c939717283c25af4fe17825b65c",
+          "lines": 134
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/bb1_leafspike2.dat",
+          "sha256": "338df723ec2a070e1ffa317c2046eb6021b4c3b7ee34122f7a965ea2752df91b",
+          "lines": 134
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/bb1_mainhull.dat",
+          "sha256": "e1b5dfd39f82663759e6cb568fac77814fabe5d1168bcbc97a85e105bbd3c8a5",
+          "lines": 226
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/bb1_splinter.dat",
+          "sha256": "68edaa0f63a4b92557eb160f594bab6e2b23ea13e4f65fa4fd47620153e6d869",
+          "lines": 191
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/bigship_turret.dat",
+          "sha256": "8ef481e2d5a4f5cae1754736659b3f65b9fb6239461deacc329a247a40997f57",
+          "lines": 211
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/blackmaria.dat",
+          "sha256": "d8016ead1f0d98a7a8a6e982a988cc34b819a9f2f317c3fcad5a5eedcc4a6d35",
+          "lines": 101
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/lwf_headstone.dat",
+          "sha256": "89d4580c465fbd2bd53db7229f91f2dc1ac317a8402238bdbd1bc32dac001cf8",
+          "lines": 151
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Models/nemesis.dat",
+          "sha256": "617a1533f6677bf0ee9173a0133459012f842cada18bb6a212b2af01cc915d63",
+          "lines": 758
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Scripts/blackmaria-script.js",
+          "sha256": "1569c182d108d8df740feaee36e32ff0abf0001c5de2cb9899e516ae7811ab96",
+          "lines": 57
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Scripts/bmGroup.js",
+          "sha256": "e10b30fdc9111f177675ff548f56ceb08c90057f9c6617894d7576d5fc0f65ca",
+          "lines": 20
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Scripts/Mega-Asp-death-script.js",
+          "sha256": "a07ae8d0228bf4b62e76ab0fd6fb7091b9894e92d5e462358fb7847957ab26fc",
+          "lines": 16
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Scripts/V11capsule.js",
+          "sha256": "ce50fe2c0479eeea85caf7f359b405e6a5b774876f8ecf400c90d6e86c78fbe8",
+          "lines": 27
+        },
+        {
+          "path": "Victim11/Victim11_1.0..oxp/Scripts/Victim11-Main.js",
+          "sha256": "f173100ddbb799c86c72935df04bad6f20694c5f196ccdae05f23c59f1d38d81",
+          "lines": 320
+        }
+      ],
+      "status": "fetched; semantic analysis pending"
+    },
+    {
+      "id": "P32",
+      "version": "public archive; verify internal version",
+      "title": "RunnerG5",
+      "public_shared_url": "https://app.box.com/s/kgf4xbncfz",
+      "access_date": "2026-10-13",
+      "download_url": "https://app.box.com/index.php?rm=box_download_shared_file&shared_name=kgf4xbncfz&file_id=f_760664280",
+      "public_file_id": "760664280",
+      "archive_name": "runnerG5-1.0.zip",
+      "sha256": "0757b90f0a77ddf49da912fe2ff55dbb8f1016db65bad44e9d205b737110eb7d",
+      "bytes_fetched": 397582,
+      "files": [
+        {
+          "path": "runnerG5-1.0/RunnerG5.oolite-save",
+          "sha256": "cb98f7b6f2d0075113cf4651f670b0cb00bbce834e8c07542f39091aa7582d1c",
+          "lines": 1095
+        },
+        {
+          "path": "runnerG5-1.0/RunnerG5-1.0.oxp/requires.plist",
+          "sha256": "c75e2e15f9e1c0c193969f43373b17730a675ead2918be9cb8463782f5eaca56",
+          "lines": 8
+        },
+        {
+          "path": "runnerG5-1.0/RunnerG5-1.0.oxp/Config/shipdata.plist",
+          "sha256": "c3167b55eda8af2fa353c3e83f03c129bb8af5575445175f107080cec00b21e1",
+          "lines": 93
+        },
+        {
+          "path": "runnerG5-1.0/RunnerG5-1.0.oxp/Config/anacondaconstrictorhud.plist",
+          "sha256": "a8f02e0ee6c94b0dee15f7c972dd99bee3d5d0b63990c1ef28f6d4d261764eb5",
+          "lines": 655
+        },
+        {
+          "path": "runnerG5-1.0/RunnerG5-1.0.oxp/Config/world-scripts.plist",
+          "sha256": "29843776b8332f49ec712e8a5174cf8ab8ed1790b0b7a2a1c26687c1455d0555",
+          "lines": 3
+        },
+        {
+          "path": "runnerG5-1.0/RunnerG5-1.0.oxp/Config/missiontext.plist",
+          "sha256": "e30d115c6b715c8aac27af278c9fdddab3e518c2b47152be0e90b9cb69f36240",
+          "lines": 33
+        },
+        {
+          "path": "runnerG5-1.0/RunnerG5-1.0.oxp/Scripts/runnerG5.js",
+          "sha256": "6e820007a1662dd446b73d6f0c420da500a0f0cadc8b2de60a3c0dc2458f7326",
+          "lines": 171
+        }
+      ],
+      "status": "fetched; semantic analysis pending"
+    },
+    {
+      "id": "P28-current",
+      "version": "2.0",
+      "title": "Oo-Haul2026",
+      "public_shared_url": "https://app.box.com/s/n6le9s52j9hgrgvo3lalgkrseu7ctfqa",
+      "access_date": "2026-10-13",
+      "download_url": "https://app.box.com/index.php?rm=box_download_shared_file&shared_name=n6le9s52j9hgrgvo3lalgkrseu7ctfqa&file_id=f_2169896349098",
+      "public_file_id": "2169896349098",
+      "archive_name": "Oo-Haul.oxz",
+      "sha256": "97ca058e3b5911b2c458d5f8fc305f4e721370a971b2b774c417ab6393ac0b58",
+      "bytes_fetched": 4866377,
+      "files": [
+        {
+          "path": "AIs/constoreclerkAI.plist",
+          "sha256": "06b39c685af9fd55f67a00eabb7dfd27b8071544cd71c3131987e87409e7ede6",
+          "lines": 16
+        },
+        {
+          "path": "AIs/oohaulmisgoAI.plist",
+          "sha256": "3af7d065e4b130e36313af8b3ab9e75a36c4516e15cf3662037db040203d6bab",
+          "lines": 99
+        },
+        {
+          "path": "Config/descriptions.plist",
+          "sha256": "0df7c30be864183975f37260703029bf7ccebedc6911d38aa36e40140bae686f",
+          "lines": 30
+        },
+        {
+          "path": "Config/missiontext.plist",
+          "sha256": "7afc2c723efed56597242aaeb04dae000a09815eaee35e346b14db06770dc1ce",
+          "lines": 20
+        },
+        {
+          "path": "Config/role-categories.plist",
+          "sha256": "f29964fe64084545c25c6250ee465f6d13e98dbec67d4f4be24a5d502fa8b60d",
+          "lines": 6
+        },
+        {
+          "path": "Config/script.js",
+          "sha256": "3f6c82e280438894fd181289d127b31ca4e390f3956b924b527ad470198211df",
+          "lines": 120
+        },
+        {
+          "path": "Config/shipdata.plist",
+          "sha256": "3163406b699b0a0089ae03e4c4f1156687f87324a70bce0a6bcdeb9cb6ffb691",
+          "lines": 224
+        },
+        {
+          "path": "Config/shipyard.plist",
+          "sha256": "fc1330e66288f20b77e196e4694182ce364669312e2fd3670ab043b8de57d2a4",
+          "lines": 22
+        },
+        {
+          "path": "Models/Oohauler-player_crate01.dat",
+          "sha256": "d1d761181cefd8f28d2c46ec40acc4aa9e151fe6e58610bc6f8e1f784fb7939a",
+          "lines": 51
+        },
+        {
+          "path": "Models/Oohauler.dat",
+          "sha256": "ab98fb2a1ce06c82713bb2ee9a92d53bd8cfb2838431b9cc6822d267012e2ca8",
+          "lines": 1001
+        },
+        {
+          "path": "Models/Oohauler_crate01.dat",
+          "sha256": "cf378c8b4996d9d0ea138e7e250caed78f13857a1009908dd81dcf3ffe367601",
+          "lines": 91
+        },
+        {
+          "path": "Scripts/oohaulcargo.js",
+          "sha256": "df96c0c7754dc838f8446c4916f0cd4b934909fbd9ba261eeb4bc16a3940743d",
+          "lines": 20
+        },
+        {
+          "path": "Scripts/oohauler.js",
+          "sha256": "da60c5c15a943783f0e18e927e502fdcfe714c8b73c8e06e3cc3406a0ca8b679",
+          "lines": 14
+        },
+        {
+          "path": "manifest.plist",
+          "sha256": "6e9fc914dd69b17836de1b55c746909061e843dc45c39f08d288d740d8471619",
+          "lines": 14
+        },
+        {
+          "path": "Read_me.txt",
+          "sha256": "ac3c3d014c965eca2c5c148feeecb06cdd304624693947ac0377509d4ea8c2eb",
+          "lines": 84
+        }
+      ],
+      "status": "fetched; semantic analysis pending"
+    },
+    {
+      "id": "P21",
+      "title": "LinkG7",
+      "version": "0.1; verify internal scripts",
+      "public_shared_url": "https://app.box.com/s/bpl582x1hu",
+      "public_file_id": 631078585,
+      "download_url": "https://app.box.com/index.php?rm=box_download_shared_file&shared_name=bpl582x1hu&file_id=f_631078585",
+      "access_date": "2026-10-13",
+      "archive_name": "LinkG7 v0.1.zip",
+      "sha256": "a61ca5dd1d122f2e618f1f1e8fdd51de5a59e3f230d100fb931abb04e1059db9",
+      "bytes_fetched": 6768,
+      "files": [
+        {
+          "path": "LinkG7 v0.1/LinkG7 v0.1.oxp/Config/equipment.plist",
+          "sha256": "0dd0e63ad28cd03de6e309592349fb1639c7cd94e99f8823e52b9b3bc0f8ca89",
+          "lines": 13
+        },
+        {
+          "path": "LinkG7 v0.1/LinkG7 v0.1.oxp/Config/missiontext.plist",
+          "sha256": "da28d8782ad147d27195e449d3092105cdfb80d868558001ff78cc41cc8d536f",
+          "lines": 15
+        },
+        {
+          "path": "LinkG7 v0.1/LinkG7 v0.1.oxp/Config/shipdata.plist",
+          "sha256": "9a8192bf2e0ddbafd7e806dba8a601c807adb744784289b5c93c4459628e83c4",
+          "lines": 13
+        },
+        {
+          "path": "LinkG7 v0.1/LinkG7 v0.1.oxp/Config/world-scripts.plist",
+          "sha256": "3df5697ee461f912dfde8d76ee702e74d5252779a3e4927be8ef183e922639f6",
+          "lines": 7
+        },
+        {
+          "path": "LinkG7 v0.1/LinkG7 v0.1.oxp/requires.plist",
+          "sha256": "a158d023d20b74d6f7271447ca8d7e80a68038093fa423996194d65997cd9d83",
+          "lines": 1
+        },
+        {
+          "path": "LinkG7 v0.1/LinkG7 v0.1.oxp/Scripts/linkG7_autoJumper.js",
+          "sha256": "5ee259f3e5bde60421b375604b976ed93eede076fa140429ef6a3c7dce8f7e6b",
+          "lines": 108
+        },
+        {
+          "path": "LinkG7 v0.1/LinkG7 v0.1.oxp/Scripts/linkG7_main.js",
+          "sha256": "d3a5a9866c543c5733d32930936f53838c18d17e0398a4457c48a135be7f516a",
+          "lines": 153
+        },
+        {
+          "path": "LinkG7 v0.1/LinkG7_readme.txt",
+          "sha256": "3ee61e59acbd386c8e4ff07bcbb519f64d7fbc4989d49306c788f02a4ebc0c00",
+          "lines": 41
+        }
+      ],
+      "status": "fetched from anonymous public folder inventory; semantic analysis pending"
+    }
+  ],
+  "limits": "Additional recovered distributions, not automatically active mission coverage or original runtime parity. Original assets remain outside repository."
+}

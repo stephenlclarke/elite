@@ -1,0 +1,43 @@
+{
+  "source": "ee3692e928fc31fdce523e1163962de46ac45820",
+  "scope": "Focused actual equipment runtime, physical ownership and mission reward bridge",
+  "full_ci_passed": false,
+  "native_acceptance_passed": false,
+  "corrected_npc_source_composed": false,
+  "production_save_sha256": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+  "runs": [
+    {
+      "source": "438b0cbb2f8bd6a9ce537f3df8da02b3b930da85",
+      "exit_code": 1,
+      "duration_seconds": 45.49258470791392,
+      "filter": "EquipmentRuntimeTransactionTests|MissionEquipmentBridgeTests|CommanderEquipmentMigrationTests|MiningWorkToolTests|OwnedEquipmentInventoryTests|componentLoaded",
+      "log": "/tmp/elite-equipment-runtime-first-focused.log",
+      "inputs_unchanged": true,
+      "raw_log_sha256": "6af354ab1b08737a6182098ef82ba468c329028551f9b39384ce97c412f206a7",
+      "frozen_inputs_path": "/tmp/elite-equipment-runtime-first-focused-inputs.json",
+      "frozen_inputs_sha256": "d04fdce24c782bd6a1c58f8703af512a578403c2e94162ca8c0d0dd95134961d"
+    },
+    {
+      "source": "057c5854c660be8c7c8e0347d8faaeb146ac9471",
+      "exit_code": 0,
+      "duration_seconds": 26.148391916882247,
+      "filter": "EquipmentRuntimeTransactionTests|MissionEquipmentBridgeTests|CommanderEquipmentMigrationTests|MiningWorkToolTests|OwnedEquipmentInventoryTests|componentLoaded",
+      "log": "/tmp/elite-equipment-runtime-corrected-focused.log",
+      "inputs_unchanged": true,
+      "raw_log_sha256": "45fa74ffcfb9d3e3ce3c19b47938d6ed84209c8adb70c80f59ddda7c4852ae45",
+      "frozen_inputs_path": "/tmp/elite-equipment-runtime-corrected-focused-inputs.json",
+      "frozen_inputs_sha256": "27a7a75857d2dad0618e539a42ea1c8c987ab9e1b895d5a0c1dc4f09d657cafb"
+    },
+    {
+      "source": "ee3692e928fc31fdce523e1163962de46ac45820",
+      "exit_code": 0,
+      "duration_seconds": 14.296551707899198,
+      "filter": "EquipmentRuntimeTransactionTests|MissionEquipmentBridgeTests|CommanderEquipmentMigrationTests|MiningWorkToolTests|OwnedEquipmentInventoryTests|componentLoaded",
+      "log": "/tmp/elite-equipment-runtime-mining-cap-focused.log",
+      "inputs_unchanged": true,
+      "raw_log_sha256": "093bbd6a6dc50f9a68720d1831bbf570279f013098b83cde1b93bc85559215c5",
+      "frozen_inputs_path": "/tmp/elite-equipment-runtime-mining-cap-focused-inputs.json",
+      "frozen_inputs_sha256": "41a531b3ae9a921cf49199b6c22f704258e06cd833eabb7741adc91ae12f9c22"
+    }
+  ]
+}

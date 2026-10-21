@@ -1,0 +1,374 @@
+{
+  "package_id": "P30",
+  "source_version": "1.5.4",
+  "scope": "Selected exact base/asteroid/ambush and framework callbacks; approximate Oolite lexical scope/mocked engine. Source defects asserted, not accepted project outcomes. No native AI/binary parity claim.",
+  "runtime": "v26.9.0",
+  "total": 52,
+  "passed": 52,
+  "cases": [
+    {
+      "name": "base gate rep9 bounty50",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.22020799999999952,
+      "passed": true
+    },
+    {
+      "name": "base gate rep9 bounty51",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.011583000000001675,
+      "passed": true
+    },
+    {
+      "name": "base gate rep10 bounty50",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.02174999999999727,
+      "passed": true
+    },
+    {
+      "name": "base gate rep10 bounty51",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.009042000000000883,
+      "passed": true
+    },
+    {
+      "name": "base20percent strict0.1999",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.02499999999999858,
+      "passed": true
+    },
+    {
+      "name": "base20percent strict0.2",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.008000000000002672,
+      "passed": true
+    },
+    {
+      "name": "init500 and danger lower limits",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.08704200000000384,
+      "passed": true
+    },
+    {
+      "name": "terminal rescue_scenario_1.js live0",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.05345899999999659,
+      "passed": true
+    },
+    {
+      "name": "terminal rescue_scenario_1.js live1",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.01504200000000111,
+      "passed": true
+    },
+    {
+      "name": "terminal rescue_scenario_1a.js live0",
+      "source": "Scripts/rescue_scenario_1a.js",
+      "source_sha256": "771cf6d80e415f3ec30f4e01f0ad3e805855e57a9d0cc751254f218608b03129",
+      "duration_ms": 0.03491700000000009,
+      "passed": true
+    },
+    {
+      "name": "terminal rescue_scenario_1a.js live1",
+      "source": "Scripts/rescue_scenario_1a.js",
+      "source_sha256": "771cf6d80e415f3ec30f4e01f0ad3e805855e57a9d0cc751254f218608b03129",
+      "duration_ms": 0.009875000000000966,
+      "passed": true
+    },
+    {
+      "name": "terminal rescue_scenario_1b.js live0",
+      "source": "Scripts/rescue_scenario_1b.js",
+      "source_sha256": "f81183cfdb82498d12a87b131a96845e17717a8772039a8b8f36ae2bf03199d3",
+      "duration_ms": 0.023541999999999064,
+      "passed": true
+    },
+    {
+      "name": "terminal rescue_scenario_1b.js live1",
+      "source": "Scripts/rescue_scenario_1b.js",
+      "source_sha256": "f81183cfdb82498d12a87b131a96845e17717a8772039a8b8f36ae2bf03199d3",
+      "duration_ms": 0.008209000000000799,
+      "passed": true
+    },
+    {
+      "name": "source earlydock stage1",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.036916999999995426,
+      "passed": true
+    },
+    {
+      "name": "source earlydock stage2",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.01433399999999807,
+      "passed": true
+    },
+    {
+      "name": "source earlydock stage3",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.006458000000002073,
+      "passed": true
+    },
+    {
+      "name": "source earlydock stage11",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.006416999999999007,
+      "passed": true
+    },
+    {
+      "name": "source earlydock stage90",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.007207999999998549,
+      "passed": true
+    },
+    {
+      "name": "source earlydock stage100",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.006374999999998465,
+      "passed": true
+    },
+    {
+      "name": "source earlydock stage1000",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.0056659999999979505,
+      "passed": true
+    },
+    {
+      "name": "source briefing choiceNO",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.02516700000000327,
+      "passed": true
+    },
+    {
+      "name": "source briefing choiceYES",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.025292000000000314,
+      "passed": true
+    },
+    {
+      "name": "source briefing choicenull",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.007457999999999743,
+      "passed": true
+    },
+    {
+      "name": "source follow timeout only local fail leaves active",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.04333300000000406,
+      "passed": true
+    },
+    {
+      "name": "follow delay mass0",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.02575000000000216,
+      "passed": true
+    },
+    {
+      "name": "follow delay mass400000",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.007541000000003351,
+      "passed": true
+    },
+    {
+      "name": "follow delay mass5592596.03220865",
+      "source": "Scripts/rescue_scenario_1.js",
+      "source_sha256": "3ee230b0e9fec45902a7a3aacfcf14e9d2ffc7c12312836ce2cc287bbb677fc6",
+      "duration_ms": 0.006875000000000853,
+      "passed": true
+    },
+    {
+      "name": "asteroid variant source quota0,0",
+      "source": "Scripts/rescue_scenario_1a.js",
+      "source_sha256": "771cf6d80e415f3ec30f4e01f0ad3e805855e57a9d0cc751254f218608b03129",
+      "duration_ms": 0.018875000000001307,
+      "passed": true
+    },
+    {
+      "name": "asteroid variant source quota1,0",
+      "source": "Scripts/rescue_scenario_1a.js",
+      "source_sha256": "771cf6d80e415f3ec30f4e01f0ad3e805855e57a9d0cc751254f218608b03129",
+      "duration_ms": 0.007457999999999743,
+      "passed": true
+    },
+    {
+      "name": "asteroid variant source quota1,1",
+      "source": "Scripts/rescue_scenario_1a.js",
+      "source_sha256": "771cf6d80e415f3ec30f4e01f0ad3e805855e57a9d0cc751254f218608b03129",
+      "duration_ms": 0.004207999999998435,
+      "passed": true
+    },
+    {
+      "name": "asteroid variant source quota2,1",
+      "source": "Scripts/rescue_scenario_1a.js",
+      "source_sha256": "771cf6d80e415f3ec30f4e01f0ad3e805855e57a9d0cc751254f218608b03129",
+      "duration_ms": 0.004708000000000823,
+      "passed": true
+    },
+    {
+      "name": "ambush inverted source gate tries0",
+      "source": "Scripts/rescue_scenario_1b.js",
+      "source_sha256": "f81183cfdb82498d12a87b131a96845e17717a8772039a8b8f36ae2bf03199d3",
+      "duration_ms": 0.019207999999999004,
+      "passed": true
+    },
+    {
+      "name": "ambush inverted source gate tries49",
+      "source": "Scripts/rescue_scenario_1b.js",
+      "source_sha256": "f81183cfdb82498d12a87b131a96845e17717a8772039a8b8f36ae2bf03199d3",
+      "duration_ms": 0.004584000000001254,
+      "passed": true
+    },
+    {
+      "name": "ambush inverted source gate tries50",
+      "source": "Scripts/rescue_scenario_1b.js",
+      "source_sha256": "f81183cfdb82498d12a87b131a96845e17717a8772039a8b8f36ae2bf03199d3",
+      "duration_ms": 0.007874999999998522,
+      "passed": true
+    },
+    {
+      "name": "ambush inverted source gate tries51",
+      "source": "Scripts/rescue_scenario_1b.js",
+      "source_sha256": "f81183cfdb82498d12a87b131a96845e17717a8772039a8b8f36ae2bf03199d3",
+      "duration_ms": 0.0050420000000030996,
+      "passed": true
+    },
+    {
+      "name": "derelict energy capped40 only above40",
+      "source": "Scripts/rescue_scenario_1_derelict.js",
+      "source_sha256": "c3e623a5705364a19ea4b9777e7e0645bd0cafc4583520c3f33d64e6dc06b844",
+      "duration_ms": 0.014417000000001678,
+      "passed": true
+    },
+    {
+      "name": "derelict friendlyfire penalty player",
+      "source": "Scripts/rescue_scenario_1_derelict.js",
+      "source_sha256": "c3e623a5705364a19ea4b9777e7e0645bd0cafc4583520c3f33d64e6dc06b844",
+      "duration_ms": 0.025957999999995707,
+      "passed": true
+    },
+    {
+      "name": "derelict friendlyfire penalty npc",
+      "source": "Scripts/rescue_scenario_1_derelict.js",
+      "source_sha256": "c3e623a5705364a19ea4b9777e7e0645bd0cafc4583520c3f33d64e6dc06b844",
+      "duration_ms": 0.006875000000000853,
+      "passed": true
+    },
+    {
+      "name": "leader friendlyfire penalty player",
+      "source": "Scripts/rescue_scenario_1_leader.js",
+      "source_sha256": "0d39bdeace0a77a92a5e30eb30aac94d3e8f0629598ed4fe358d7586315eaaba",
+      "duration_ms": 0.026000000000003354,
+      "passed": true
+    },
+    {
+      "name": "leader friendlyfire penalty npc",
+      "source": "Scripts/rescue_scenario_1_leader.js",
+      "source_sha256": "0d39bdeace0a77a92a5e30eb30aac94d3e8f0629598ed4fe358d7586315eaaba",
+      "duration_ms": 0.008583000000001562,
+      "passed": true
+    },
+    {
+      "name": "livefire set even before target validation",
+      "source": "Scripts/rescue_scenario_1_leader.js",
+      "source_sha256": "0d39bdeace0a77a92a5e30eb30aac94d3e8f0629598ed4fe358d7586315eaaba",
+      "duration_ms": 0.0379999999999967,
+      "passed": true
+    },
+    {
+      "name": "formation boundary5000",
+      "source": "Scripts/rescue_scenario_1_leader.js",
+      "source_sha256": "0d39bdeace0a77a92a5e30eb30aac94d3e8f0629598ed4fe358d7586315eaaba",
+      "duration_ms": 0.02674999999999983,
+      "passed": true
+    },
+    {
+      "name": "formation boundary5001",
+      "source": "Scripts/rescue_scenario_1_leader.js",
+      "source_sha256": "0d39bdeace0a77a92a5e30eb30aac94d3e8f0629598ed4fe358d7586315eaaba",
+      "duration_ms": 0.007124999999994941,
+      "passed": true
+    },
+    {
+      "name": "both home leader-first",
+      "source": "Scripts/rescue_scenario_1_leader.js",
+      "source_sha256": "0d39bdeace0a77a92a5e30eb30aac94d3e8f0629598ed4fe358d7586315eaaba",
+      "duration_ms": 0.05170899999999534,
+      "passed": true
+    },
+    {
+      "name": "both home target-first",
+      "source": "Scripts/rescue_scenario_1_leader.js",
+      "source_sha256": "0d39bdeace0a77a92a5e30eb30aac94d3e8f0629598ed4fe358d7586315eaaba",
+      "duration_ms": 0.009083000000003949,
+      "passed": true
+    },
+    {
+      "name": "source probe death incorrectly advances repair",
+      "source": "Scripts/rescue_evaprobe.js",
+      "source_sha256": "88d5ef869485833a8de84518b1303ffa0526ca348cfb51d199856c59c5ef4fb6",
+      "duration_ms": 0.011749999999999261,
+      "passed": true
+    },
+    {
+      "name": "ambush repair timer fast stage11/12 slow13",
+      "source": "Scripts/rescue_scenario_1b_derelict.js",
+      "source_sha256": "ae7dc08d118d692c9cfc95759b5c52c6e25ee2b72dc43dcdc2879968351addeb",
+      "duration_ms": 0.06775000000000375,
+      "passed": true
+    },
+    {
+      "name": "selected synchronous AI transition gives3fast5slow waits",
+      "source": "Scripts/rescue_scenario_1b_derelict.js",
+      "source_sha256": "ae7dc08d118d692c9cfc95759b5c52c6e25ee2b72dc43dcdc2879968351addeb",
+      "duration_ms": 0.3637080000000026,
+      "passed": true
+    },
+    {
+      "name": "reloaded source missionlog string concatenation",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.043834000000003925,
+      "passed": true
+    },
+    {
+      "name": "danger scale score512 base128",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.03204200000000412,
+      "passed": true
+    },
+    {
+      "name": "danger scale score512 base256",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.014291999999997529,
+      "passed": true
+    },
+    {
+      "name": "danger scale score512 base512",
+      "source": "Scripts/rescue_missions.js",
+      "source_sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f",
+      "duration_ms": 0.01362499999999045,
+      "passed": true
+    }
+  ]
+}

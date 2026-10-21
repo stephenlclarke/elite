@@ -1,0 +1,223 @@
+{
+  "profile": "P01 2.7 package, script 2.6",
+  "method": "Original callbacks evaluated in isolated Node VM with separate world/ship-script this object and mocked Oolite API. No original engine or retail outcome claim.",
+  "source_files": [
+    {
+      "path": "Scripts/assassins_rebooted_assassins_main_script.js",
+      "sha256": "3541fb923375223c06b83675c523e84e1b311b24f08b0352620eecc299c8d130"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_soin_clan_inno_soin.js",
+      "sha256": "4f42119dff626c2bef8a7c4023dca1838a9dbaf4d96465c9676047bb584f2be2"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_black_mesa.js",
+      "sha256": "4f1b709d64a59f4f11a67d038b005a105faeedaf60934d0d28d1c5393f703931"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_graviton_missile.js",
+      "sha256": "4b7f06edf6e1fa14c0afe4b6a0648e595d176f9351c883a949390adaabe41962"
+    },
+    {
+      "path": "AIs/assassins_rebooted_graviton_missileAI.plist",
+      "sha256": "40ad5c90a836472e753cd69cd7f4e38b4b4edd582fbdf2635ca9a05e0c7905c8"
+    },
+    {
+      "path": "AIs/assassins_rebooted_rebel_black_mesa_stationAI.plist",
+      "sha256": "a92d14b8771080bd1a41d828fd8977afe6ceefc62f93b561e9d57d7eab558fdc"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim1.js",
+      "sha256": "5f75b508e19a26193f407f4502ff24663ab2e0e7fcbe3703a39e00bdd1d0416d"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim2.js",
+      "sha256": "d9d4c439fe61ee708a5b986a4f51b1013a83fbd49a5d63de782a0f6986e748aa"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim3.js",
+      "sha256": "27b837feeebc092d2be71e8df5987c12143eaec4cd832352b0f318c2213ed0a0"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim4.js",
+      "sha256": "19101b16f09f29e0658c4a2236200dbb39d161b2856d954aaae759630fdf71e1"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim5.js",
+      "sha256": "394c15735fff9f7d59a5cc6ee6b2984dddefb0cf975b024ae278087507474cbc"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim6.js",
+      "sha256": "fa4143ad584dac735f1df65acc8337e2783c265668cb5729393d74351cae50c7"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim7.js",
+      "sha256": "62e34a0c510ce1a297f7b7fd3f728d1c4e96c634aecd629d1449c84b2704bebe"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim8.js",
+      "sha256": "6e4bb7b945aa6a9c1e47c3c0d69dfa52c4381ba0a3051d40bf2a71bb5d9b4381"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim9.js",
+      "sha256": "6bfe212d6ef1dd0a73509509d3ad5a685ac664afaca0c65093b10014d68ee82c"
+    },
+    {
+      "path": "Scripts/assassins_rebooted_victim10.js",
+      "sha256": "484a4d9841999cb15f0bc8d1a280482efab46cd83623cddac6fe41d5824286ef"
+    }
+  ],
+  "case_count": 25,
+  "cases": [
+    {
+      "case": "victim-1-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 2,
+      "player_bounty": 10
+    },
+    {
+      "case": "victim-2-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 7,
+      "player_bounty": 65
+    },
+    {
+      "case": "victim-3-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 15,
+      "player_bounty": 70
+    },
+    {
+      "case": "victim-4-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 21,
+      "player_bounty": 75
+    },
+    {
+      "case": "victim-5-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 25,
+      "player_bounty": 0
+    },
+    {
+      "case": "victim-6-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 31,
+      "player_bounty": 0
+    },
+    {
+      "case": "victim-7-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 36,
+      "player_bounty": 0
+    },
+    {
+      "case": "victim-8-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 42,
+      "player_bounty": 80
+    },
+    {
+      "case": "victim-9-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 48,
+      "player_bounty": 85
+    },
+    {
+      "case": "victim-10-kill-attribution",
+      "npc_kill": "no progress",
+      "player_kill_stage": 56,
+      "player_bounty": 0
+    },
+    {
+      "case": "inno-soin-npc-kill",
+      "next_stage": 12,
+      "bomb_radii": [
+        5000,
+        10000,
+        15000,
+        20000,
+        25000
+      ],
+      "note": "Unlike contract victims, death has no player-attribution guard."
+    },
+    {
+      "case": "debrief-2",
+      "next_stage": 3,
+      "credits": 180
+    },
+    {
+      "case": "debrief-7",
+      "next_stage": 8,
+      "credits": 4320
+    },
+    {
+      "case": "debrief-10",
+      "next_stage": 11,
+      "credits": 500
+    },
+    {
+      "case": "debrief-12",
+      "next_stage": 13,
+      "credits": 1000
+    },
+    {
+      "case": "debrief-15",
+      "next_stage": 16,
+      "credits": 9000
+    },
+    {
+      "case": "debrief-21",
+      "next_stage": 22,
+      "credits": 15000
+    },
+    {
+      "case": "debrief-25",
+      "next_stage": 26,
+      "credits": 22500
+    },
+    {
+      "case": "debrief-31",
+      "next_stage": 32,
+      "credits": 0
+    },
+    {
+      "case": "debrief-36",
+      "next_stage": 37,
+      "credits": 31500
+    },
+    {
+      "case": "debrief-42",
+      "next_stage": 43,
+      "credits": 36000
+    },
+    {
+      "case": "debrief-48",
+      "next_stage": 49,
+      "credits": 9000
+    },
+    {
+      "case": "graviton-loading-1-pylons",
+      "old_rounds": 1,
+      "remaining_old_rounds": 0,
+      "gravitons": 1,
+      "note": "Capacity-respecting mocked equipment API."
+    },
+    {
+      "case": "graviton-loading-10-pylons",
+      "old_rounds": 10,
+      "remaining_old_rounds": 0,
+      "gravitons": 10,
+      "note": "Capacity-respecting mocked equipment API."
+    },
+    {
+      "case": "graviton-loading-12-pylons",
+      "old_rounds": 12,
+      "remaining_old_rounds": 0,
+      "gravitons": 10,
+      "note": "Source array comparison does not preserve rounds11+ as comment promises."
+    }
+  ],
+  "pass": true,
+  "active_scope_note": "Black Mesa adventure cases excluded from active plan; full68-case source evidence is archived. These remaining25 cases cover ship kill/debrief and historical missile-loading behaviour, not the new storage adapter."
+}

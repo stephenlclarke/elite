@@ -1,0 +1,1498 @@
+{
+  "profile_id": "P19-MAENES-SOURCE-DISCOVERY-v1",
+  "scope": "Unchanged recovered callbacks in lexical VM/native-null mission globals. Timers/world/actor allocation/AI/dialog APIs are explicit spies; no original binary/native physics/flight/group/escorts/station destruction/save parity. Synthetic ordering/duplicate/missing-state cases establish branch consequences, not a recorded original playthrough.",
+  "sources": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-sdf-leader.js",
+      "sha256": "145607824d584921f3e15a2560f80f4eab6809d9ca768f1d67432aef960cabc5"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-sdf-transporter.js",
+      "sha256": "dd1d1228de0be0c4c9d2b42b3a0d14a7c203ce4ef854909498afb173b9980930"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-sdf-ringhals.js",
+      "sha256": "0ffddb21501ad5afa93e3ac532743e07f97a1ca1b0bb8fefe6b6818f0521804f"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-cherkasova.js",
+      "sha256": "4e7ad0037e1c048bca49ce437f3074cc8f65ef7c39bd9428a93c3d437952667b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Config/shipdata.plist",
+      "sha256": "a08dda1663458176a69292f1083910e938d44c8117180f6fc30dcd75df7ac74a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Config/missiontext.plist",
+      "sha256": "288335f9100111ed1284016143b38311716fc4ad32849c7af31e92c84fc0be79"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-sdf-leaderAI.plist",
+      "sha256": "b39630bd9ab98c93593ff31be33639bacd93f1fde39eed885509f87488fb1004"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-followleaderAI.plist",
+      "sha256": "be7b910a60f5253efde70759a6d16eb7fa1e014d84a4b34fbcd9aae4066e648e"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-sdf-transporterattackAI.plist",
+      "sha256": "85cffe3ba170092ce65614508ffd619f7d8ecfe045a5da2eac8478ca94470d5b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-dumb-cannonAI.plist",
+      "sha256": "a5fabd9224d1e01126c7abbdfb9db2b813497ceebdc0fbd77f064d958cc6b0e8"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-cannonAI.plist",
+      "sha256": "3f1e0abf03947c7820128a7942e1af8a81dc15840878008fa98eaf48862f15ae"
+    }
+  ],
+  "total": 49,
+  "passed": 49,
+  "cases": [
+    {
+      "name": "Source Maenes entry shipWillLaunchFromStation normal",
+      "initial": {
+        "system": 23,
+        "galaxy": 7,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.83825,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 0,
+          "IR_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [
+          {
+            "role": "IR-cherkasova",
+            "count": 1,
+            "pos": {
+              "x": 10,
+              "y": 20,
+              "z": 30
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-imperator",
+            "count": 1,
+            "pos": {
+              "x": 9,
+              "y": 18,
+              "z": 27
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-transporter",
+            "count": 8,
+            "pos": {
+              "x": 9,
+              "y": 18,
+              "z": 27
+            },
+            "radius": 10000
+          }
+        ],
+        "actions": [],
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "started": false,
+            "stopped": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source Maenes entry shipWillLaunchFromStation wrong-system",
+      "initial": {
+        "system": 24,
+        "galaxy": 7,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.005708,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes entry shipWillLaunchFromStation wrong-galaxy",
+      "initial": {
+        "system": 23,
+        "galaxy": 6,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.003208,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes entry shipWillLaunchFromStation wrong-phase",
+      "initial": {
+        "system": 23,
+        "galaxy": 7,
+        "vars": {
+          "IR_status": "IR_LOA_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.005375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_4",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes entry shipExitedWitchspace normal",
+      "initial": {
+        "system": 23,
+        "galaxy": 7,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.108667,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 0,
+          "IR_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [
+          {
+            "role": "IR-cherkasova",
+            "count": 1,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-imperator",
+            "count": 1,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-transporter",
+            "count": 8,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          }
+        ],
+        "actions": [],
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "started": false,
+            "stopped": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Source Maenes entry shipExitedWitchspace wrong-system",
+      "initial": {
+        "system": 24,
+        "galaxy": 7,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.00575,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes entry shipExitedWitchspace wrong-galaxy",
+      "initial": {
+        "system": 23,
+        "galaxy": 6,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.002458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes entry shipExitedWitchspace wrong-phase",
+      "initial": {
+        "system": 23,
+        "galaxy": 7,
+        "vars": {
+          "IR_status": "IR_LOA_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.004042,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_4",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Any existing Cherkasova suppresses deployment, other existing actors do not IR-cherkasova",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.039166,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Any existing Cherkasova suppresses deployment, other existing actors do not IR-sdf-imperator",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.023708,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 0,
+          "IR_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [
+          {
+            "role": "IR-cherkasova",
+            "count": 1,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-imperator",
+            "count": 1,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-transporter",
+            "count": 8,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          }
+        ],
+        "actions": [],
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "started": false,
+            "stopped": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Any existing Cherkasova suppresses deployment, other existing actors do not IR-sdf-transporter",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.019083,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 0,
+          "IR_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [
+          {
+            "role": "IR-cherkasova",
+            "count": 1,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-imperator",
+            "count": 1,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-transporter",
+            "count": 8,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          }
+        ],
+        "actions": [],
+        "timers": [
+          {
+            "delay": null,
+            "interval": 1,
+            "started": false,
+            "stopped": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "Existing Timer restarts without resetting old count or stale cannon flag",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_count": 200,
+          "IR_maenes_cannon": "TRUE"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.044416,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_count": 200,
+          "IR_maenes_cannon": "TRUE",
+          "IR_lander_kill_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [
+          {
+            "role": "IR-cherkasova",
+            "count": 1,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-imperator",
+            "count": 1,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          },
+          {
+            "role": "IR-sdf-transporter",
+            "count": 8,
+            "pos": {
+              "x": 8.5,
+              "y": 17,
+              "z": 25.5
+            },
+            "radius": 10000
+          }
+        ],
+        "actions": [
+          [
+            "timer-start"
+          ]
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Full source Maenes opening dialogue and cannon activation on callback285",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.501292,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_count": 285,
+          "IR_maenes_cannon": "TRUE"
+        },
+        "messages": [],
+        "mfd": [
+          [
+            "IR_maenes_reply_10",
+            null
+          ],
+          [
+            "IR_maenes_reply_20",
+            "IR_cherkasova_key"
+          ],
+          [
+            "IR_maenes_reply_30",
+            null
+          ],
+          [
+            "IR_maenes_reply_40",
+            "IR_cherkasova_key"
+          ],
+          [
+            "IR_maenes_reply_50",
+            null
+          ],
+          [
+            "IR_maenes_reply_80",
+            "IR_cherkasova_key"
+          ],
+          [
+            "IR_maenes_reply_90",
+            null
+          ],
+          [
+            "IR_maenes_reply_105",
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_maenes_reply_115",
+            null
+          ],
+          [
+            "IR_maenes_reply_125",
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_maenes_reply_135",
+            null
+          ],
+          [
+            "IR_maenes_reply_255",
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_maenes_reply_285",
+            "IR_ruiz_key"
+          ]
+        ],
+        "spawns": [],
+        "actions": [
+          [
+            "AI",
+            "IR-cannonAI.plist"
+          ]
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter counter equality 0",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_lander_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.198375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 1
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter counter equality 7",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_lander_kill_count": 7
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.023541,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [
+          [
+            "IR_sdf_transport_report",
+            "IR_sunray"
+          ]
+        ],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter counter equality 8",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_lander_kill_count": 8
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.018458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 9
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter counter equality 9",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_lander_kill_count": 9
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.015458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 10
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter phase-only destruction gate IR_LOA_5",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_lander_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.03125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 1
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter phase-only destruction gate IR_landers",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_landers",
+          "IR_lander_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.015584,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter phase-only destruction gate IR_landers_B",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_landers_B",
+          "IR_lander_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.01625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers_B",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter phase-only destruction gate IR_completed",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_completed",
+          "IR_lander_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.014916,
+      "result": {
+        "vars": {
+          "IR_status": "IR_completed",
+          "IR_quest_count": 0,
+          "IR_lander_kill_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source duplicate death calls can stand in for8different hulls, not native duplicate-event proof",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_lander_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.052041,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [
+          [
+            "IR_sdf_transport_report",
+            "IR_sunray"
+          ]
+        ],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Imperator low energy repair phase IR_LOA_5",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.28425,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "extra": 5000,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Imperator low energy repair phase IR_sources_4",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_sources_4"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.019417,
+      "result": {
+        "vars": {
+          "IR_status": "IR_sources_4",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "extra": 5000,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Imperator low energy repair phase IR_landers",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_landers"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.017,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "extra": 10,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Imperator low energy repair phase IR_landers_B",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_landers_B"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.016166,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers_B",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "extra": 10,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Imperator destruction transition phase IR_LOA_5",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.044958,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Imperator destruction transition phase IR_landers",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_landers"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.015292,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Imperator destruction transition phase IR_landers_B",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_landers_B"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.013708,
+      "result": {
+        "vars": {
+          "IR_status": "IR_imperator_alt",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Imperator destruction transition phase IR_imperator_alt_B",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_imperator_alt_B"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.016,
+      "result": {
+        "vars": {
+          "IR_status": "IR_imperator_alt_B",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Flagship destroyed early is forgotten after landers; source cannot complete from the remaining Timer alone",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_LOA_5",
+          "IR_count": 0,
+          "IR_lander_kill_count": 0
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.505334,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers_B",
+          "IR_quest_count": 0,
+          "IR_count": 139
+        },
+        "messages": [],
+        "mfd": [
+          [
+            "IR_sdf_transport_report",
+            "IR_sunray"
+          ],
+          [
+            "IR_landers_reply_15",
+            "IR_cherkasova_key"
+          ],
+          [
+            "IR_landers_reply_65",
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_landers_reply_120",
+            "IR_ruiz_key"
+          ]
+        ],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Lander-resolution Timer reset/15/65/120 and stale cannon flag null",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_landers",
+          "IR_count": 284,
+          "IR_maenes_cannon": null
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.136792,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers_B",
+          "IR_quest_count": 0,
+          "IR_count": 120,
+          "IR_maenes_cannon": null
+        },
+        "messages": [],
+        "mfd": [
+          [
+            "IR_landers_reply_15",
+            "IR_cherkasova_key"
+          ],
+          [
+            "IR_landers_reply_65",
+            "IR_ruiz_key"
+          ],
+          [
+            "IR_landers_reply_120",
+            "IR_ruiz_key"
+          ]
+        ],
+        "spawns": [],
+        "actions": [
+          [
+            "AI",
+            "IR-cannonAI.plist"
+          ]
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Lander-resolution Timer reset/15/65/120 and stale cannon flag TRUE",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_landers",
+          "IR_count": 284,
+          "IR_maenes_cannon": "TRUE"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.078208,
+      "result": {
+        "vars": {
+          "IR_status": "IR_landers_B",
+          "IR_quest_count": 0,
+          "IR_count": 120,
+          "IR_maenes_cannon": "TRUE"
+        },
+        "messages": [],
+        "mfd": [
+          [
+            "IR_landers_reply_15",
+            "IR_cherkasova_key"
+          ]
+        ],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Flagship final Timer completes on10after one reset callback, no stop",
+      "initial": {
+        "vars": {
+          "IR_status": "IR_imperator_alt",
+          "IR_count": 123
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.0405,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_6",
+          "IR_quest_count": 0,
+          "IR_count": 10
+        },
+        "messages": [],
+        "mfd": [
+          [
+            "IR_sdf_destroyed",
+            "IR_cherkasova_key"
+          ]
+        ],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Missing mission group throws in source aggression IR-sdf-leader.js",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.178625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Missing mission group throws in source aggression IR-sdf-transporter.js",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.04,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Leader deployment changes every same-role transporter without ownership filtering",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.053084,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [
+          [
+            "AI",
+            "IR-sdf-transporterattackAI.plist"
+          ],
+          [
+            "AI",
+            "IR-sdf-transporterattackAI.plist"
+          ]
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter missing flagship crashes leader-distance check",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.073375,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter leader distance/teleport boundary 25599",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.060542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [
+          [
+            "AI-message",
+            "LEADER_NEAR"
+          ]
+        ],
+        "extra": 0,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter leader distance/teleport boundary 25600",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.022542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [
+          [
+            "AI-message",
+            "LEADER_MID"
+          ]
+        ],
+        "extra": 0,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter leader distance/teleport boundary 38400",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.017417,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [
+          [
+            "AI-message",
+            "LEADER_MID"
+          ]
+        ],
+        "extra": 0,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter leader distance/teleport boundary 38401",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.016208,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [
+          [
+            "AI-message",
+            "LEADER_FAR"
+          ]
+        ],
+        "extra": 0,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter leader distance/teleport boundary 51200",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.01525,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [
+          [
+            "AI-message",
+            "LEADER_FAR"
+          ]
+        ],
+        "extra": 0,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source transporter leader distance/teleport boundary 51201",
+      "initial": {},
+      "passed": true,
+      "duration_ms": 0.043291,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [
+          [
+            "set-position",
+            31201
+          ],
+          [
+            "AI-message",
+            "LEADER_MID"
+          ]
+        ],
+        "extra": 31201,
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes report phase-only station gate {}",
+      "initial": {
+        "system": 23,
+        "vars": {
+          "IR_status": "IR_LOA_6"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.2935,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_7",
+          "IR_quest_count": 0,
+          "IR_epilogue_deadline": 110
+        },
+        "messages": [
+          "IR_LOA_6"
+        ],
+        "mfd": [],
+        "spawns": [],
+        "actions": [
+          [
+            "unmark",
+            23
+          ]
+        ],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes report phase-only station gate {\"system\":24}",
+      "initial": {
+        "system": 24,
+        "vars": {
+          "IR_status": "IR_LOA_6"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.009333,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_6",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes report phase-only station gate {\"main\":false}",
+      "initial": {
+        "system": 23,
+        "main": false,
+        "vars": {
+          "IR_status": "IR_LOA_6"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.003125,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_6",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Source Maenes report phase-only station gate {\"galaxy\":6}",
+      "initial": {
+        "system": 23,
+        "galaxy": 6,
+        "vars": {
+          "IR_status": "IR_LOA_6"
+        }
+      },
+      "passed": true,
+      "duration_ms": 0.001542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LOA_6",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [],
+        "actions": [],
+        "timers": []
+      }
+    },
+    {
+      "name": "Maenes cannon populator checks misspelled role and duplicates existing50",
+      "initial": {
+        "system": 23
+      },
+      "passed": true,
+      "duration_ms": 0.113625,
+      "result": {
+        "vars": {
+          "IR_status": "IR_TEST_IDLE",
+          "IR_quest_count": 0
+        },
+        "messages": [],
+        "mfd": [],
+        "spawns": [
+          {
+            "role": "IR-cannon-core",
+            "count": 40,
+            "pos": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "radius": 20000
+          },
+          {
+            "role": "IR-cannon-core",
+            "count": 10,
+            "pos": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "radius": 10000
+          }
+        ],
+        "actions": [],
+        "timers": []
+      }
+    }
+  ]
+}
