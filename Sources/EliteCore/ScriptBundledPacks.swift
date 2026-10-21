@@ -27,6 +27,10 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-repair-loop")
   }
 
+  static var bundledFieldReliefDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-field-relief")
+  }
+
   static var bundledSeedTransferDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-seed-transfer")
   }
@@ -237,6 +241,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled crew record recovery pack: " + error.localizedDescription)
+    }
+    do {
+      let relief = try read(bundledFieldReliefDirectory)
+      if !library.packs.contains(where: { $0.digest == relief.digest }) {
+        library.packs.append(relief)
+      }
+    } catch {
+      library.errors.append("Bundled field-relief pack: " + error.localizedDescription)
     }
     return library
   }

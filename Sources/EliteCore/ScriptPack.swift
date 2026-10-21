@@ -54,6 +54,7 @@ public struct ScriptManifest: Codable, Sendable {
   var freight: ScriptFreightDefinition? = nil
   var coldChain: WayfarerColdChainDefinition? = nil
   var repairLoop: WayfarerRepairLoopDefinition? = nil
+  var fieldRelief: WayfarerFieldReliefDefinition? = nil
   var stationJourney: NativeStationPassengerJourneyDefinition? = nil
   var orbitalOutlook: NativeOrbitalOutlookJourneyDefinition? = nil
   var originalSurvey: NativeOriginalSurveyDefinition? = nil
@@ -115,6 +116,7 @@ public enum ScriptCapabilities {
     ScriptFinanceInterest.capability,
     "native-station-passengers-v1", "native-orbital-outlook-v1", "native-consented-survey-v1",
     "native-record-recovery-v1",
+    WayfarerFieldRelief.capability,
     "native-identified-salvage-v1",
     "native-original-rescue-v1",
     "native-orbital-evacuation-v1",
@@ -160,7 +162,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain repairLoop stationJourney orbitalOutlook originalSurvey recordRecovery identifiedSalvage originalRescue orbitalEvacuation npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain repairLoop fieldRelief stationJourney orbitalOutlook originalSurvey recordRecovery identifiedSalvage originalRescue orbitalEvacuation npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -206,6 +208,11 @@ public enum ScriptPackLibrary {
           declaration.table(forKey: "supply"),
           "batch stockUnits commodity issuerContact galaxy system receiverSystem")
       }
+    }
+    if root.contains(key: "fieldRelief") {
+      try keys(
+        root.table(forKey: "fieldRelief"),
+        "sourceSystem targetSystem tonnes maximumActive hazardTier baseReward perLegReward")
     }
     if root.contains(key: "recordRecovery") {
       try keys(
@@ -414,6 +421,7 @@ public enum ScriptPackLibrary {
   static func validate(_ manifest: ScriptManifest) throws {
     try WayfarerColdChainSave.validateDeclaration(manifest)
     try WayfarerRepairLoopSave.validateDeclaration(manifest)
+    try WayfarerFieldReliefSave.validateDeclaration(manifest)
     guard manifest.schemaVersion == 2, manifest.missionAPI == 2, manifest.minimumEngine == "2.0.0",
       PackValidation.identifier(manifest.id), PackValidation.identifier(manifest.mission.id),
       PackValidation.version(manifest.version), (0...1000).contains(manifest.priority),

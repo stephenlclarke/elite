@@ -72,6 +72,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedOwnedCargo: ScriptOwnedCargoState?
   var savedWayfarerColdChain: WayfarerColdChainCustody?
   var savedWayfarerRepairLoop: WayfarerRepairLoopCustody?
+  var savedFieldRelief: WayfarerFieldReliefCustody?
   var savedNavigationTrade: ScriptNavigationTradeState?
   var savedOriginalSurvey: NativeOriginalSurveyState?
   var savedRecordRecovery: WayfarerRecordRecoveryState?
@@ -198,6 +199,11 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     _read { yield storage[0].savedOriginalSurvey }
     _modify { yield &storage[0].savedOriginalSurvey }
   }
+  var savedFieldRelief: WayfarerFieldReliefCustody? {
+    _read { yield storage[0].savedFieldRelief }
+    _modify { yield &storage[0].savedFieldRelief }
+  }
+
   var savedRecordRecovery: WayfarerRecordRecoveryState? {
     _read { yield storage[0].savedRecordRecovery }
     _modify { yield &storage[0].savedRecordRecovery }
@@ -374,7 +380,8 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
-    guard OriginalConsentedFreightSupply.engineValid(self),
+    guard WayfarerFieldReliefSave.engineValid(self),
+      OriginalConsentedFreightSupply.engineValid(self),
       savedClueJournal?.valid(engine: self) ?? true, worldJobsValid, booksValid,
       financeLedger?.valid(engine: self) ?? true, nativeWormholeStateValid,
       missionCalendar.map({

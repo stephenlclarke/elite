@@ -456,6 +456,7 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
+    guard WayfarerFieldReliefSave.validateClaims(self) else { return false }
     guard WayfarerRecordRecoverySave.validateClaims(self) else { return false }
     guard NativeIdentifiedSalvageSave.validateClaims(self) else { return false }
     return nativeStationStateValid && nativeUtilityStateValid
@@ -2575,6 +2576,7 @@ public actor GameRuntime {
     commitWayfarerColdChainFatalLoss()
     commitWayfarerRepairLoopFatalLoss()
     commitNativeUtilityFatalLoss()
+    commitFieldReliefTargetLoss()
     commitRecordRecoveryLoss()
     commitIdentifiedSalvageLoss()
     game.observeNativeCrimboAttainedMotion(
@@ -2658,6 +2660,7 @@ public actor GameRuntime {
       try validateNativeDockEvidenceForSave(&candidate)
       stage = .nativeStations
       try candidate.persistNativeStationConditions()
+      try candidate.failFieldReliefAtDestroyedTarget()
       stage = .equipment
       try candidate.commander.prepareEquipment()
       candidate.commander.mirrorFittedEquipment()

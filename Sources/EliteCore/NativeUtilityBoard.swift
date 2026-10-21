@@ -51,22 +51,26 @@ extension Game {
     }
     var rows = [
       "Field relief: " + review.action.utilityLabel,
-      "Installation and crew receipt only; payment and mission completion are not available yet.",
+      "Collect, install, then separately Confirm the current engineer reception for the frozen payment.",
       "Four original one-tonne materials; zero passenger berths.",
       "Two finite regulator sockets at the actual RRS headquarters, galaxy 1/system 237.",
       "Each installed regulator adds 10 energy/second to native station recharge.",
       "Ordinary variant, hazard tier 0, no deadline. Later route legs assume refuelling.",
-      "Crew receipts preserve evidence only. No payment, story completion or clue is granted.",
+      "Only verified engineer reception pays once and retains the existing field relief clue. Three shared active services maximum.",
     ]
     if let quote = review.quote {
       if !quote.route.isEmpty {
         rows.append("Quoted route: " + quote.route.map(String.init).joined(separator: " -> "))
         rows.append(
-          "Independent mission quote: \(quote.rewardTenths / 10) CR = 610 + 110 per reachable leg; native prerequisite does not pay."
+          "Frozen mission quote: \(quote.rewardTenths / 10) CR = 610 + 110 per reachable leg, payable only at verified reception."
         )
       }
       if let job = quote.expected.active {
         rows.append("Consignment: " + job.id.uuidString)
+        rows.append("Frozen reception payment: \(job.rewardTenths / 10) CR.")
+        if let mission = commander.scriptState.instances[WayfarerFieldRelief.instance(job.id)] {
+          rows.append("Mission: " + mission.outcome.rawValue)
+        }
         rows.append(
           "Exact original materials: " + job.originalUnits.map(\.uuidString).joined(separator: ", ")
         )

@@ -48,6 +48,7 @@ extension Game {
     fields += freightPageFacts
     fields += wayfarerColdChainPageFacts
     fields += wayfarerRepairLoopPageFacts
+    fields += fieldReliefPageFacts
     let visible =
       contractBoard.detail
       ? selected.map { [$0] } ?? []

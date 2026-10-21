@@ -11,7 +11,7 @@ struct NativeUtilityRuntimeFixture {
   var save: URL { files.save }
   init() throws { flight = try OriginalSealedDispatchFixture() }
   func source(escapeReady: Bool = false) async throws -> GameRuntime {
-    try await flight.runtime(escapeReady: escapeReady)
+    try await flight.runtime(escapeReady: escapeReady, defaults: true)
   }
   private func launched(from before: consuming Game, system: Int) throws -> Game {
     var game = before
@@ -99,6 +99,9 @@ struct NativeUtilityRuntimeFixture {
       expected.nativeStations = world
     }
     let loaded = GameRuntime()
+    let errors = await loaded.loadDefaultScriptPacks(
+      directory: files.root.appendingPathComponent("installed"))
+    try #require(errors.isEmpty)
     try await loaded.load(from: save, persistMigrations: false)
     let restored = await loaded.snapshot()
     #expect(restored.commander == expected)
@@ -153,7 +156,7 @@ struct NativeUtilityRuntimeTests {
     #expect(review.contractBoard.detail && review.contractBoard.action == .back)
     #expect(
       Display.contractDetailRows(review, width: 1000).joined(separator: " ").lowercased().contains(
-        "no payment"))
+        "frozen payment"))
     let before = review.commander
     await runtime.key("return")
     #expect(await runtime.snapshot().commander == before)
@@ -205,11 +208,19 @@ struct NativeUtilityRuntimeTests {
       let job = try #require(received.commander.nativeUtility?.consignments.last)
       #expect(job.phase == .received && job.reception?.installation == job.installation?.operation)
       #expect(job.originalUnits == stock.units(socket))
-      #expect(received.commander.credits == before.commander.credits)
-      #expect(received.commander.scriptState.instances == before.commander.scriptState.instances)
-      #expect(
-        received.commander.scriptState.savedClueJournal
-          == before.commander.scriptState.savedClueJournal)
+      #expect(received.commander.credits == before.commander.credits + collect.rewardTenths)
+      let missionID = WayfarerFieldRelief.instance(job.id)
+      let mission = try #require(received.commander.scriptState.instances[missionID])
+      #expect(mission.outcome == .complete && mission.savedFieldRelief?.job == job)
+      #expect(mission.contract?.settlementAmount == collect.rewardTenths)
+      #expect(mission.completionReceipt?.cause?.nativeStation?.receipt == receive.target?.receipt)
+      let award = try #require(
+        received.commander.scriptState.savedClueJournal?.awards[WayfarerFieldRelief.stateID])
+      if let prior = before.commander.scriptState.savedClueJournal?.awards[WayfarerFieldRelief.stateID] {
+        #expect(award == prior)
+      } else {
+        #expect(award.completion == mission.completionReceipt)
+      }
       #expect(received.commander.valid)
       await #expect(throws: (any Error).self) { try await runtime.confirmNativeUtility(receive) }
       runtime = try await f.reloaded(runtime)
@@ -234,6 +245,7 @@ struct NativeUtilityRuntimeTests {
     try await f.refusedWrite(runtime, quote: install, label: "utility-install")
     runtime = try await f.reloaded(runtime)
     let before = await runtime.snapshot().commander
+    let frozenReward = try #require(before.nativeUtility?.active?.rewardTenths)
     await #expect(throws: (any Error).self) { try await runtime.confirmNativeUtility(install) }
     #expect(await runtime.snapshot().commander == before)
     install = try await runtime.nativeUtilityQuote(.install)
@@ -241,7 +253,7 @@ struct NativeUtilityRuntimeTests {
     let receive = try await runtime.nativeUtilityQuote(.receive)
     try await f.refusedWrite(runtime, quote: receive, label: "utility-receive")
     try await runtime.confirmNativeUtility(receive)
-    #expect(await runtime.snapshot().commander.credits == before.credits)
+    #expect(await runtime.snapshot().commander.credits == before.credits + frozenReward)
   }
 
   @Test func wrongDockPausedChangedInventoryAndSubstituteCommodityCannotAuthorizeInstallation()
@@ -441,7 +453,7 @@ extension GameRuntime {
     }
   }
   /// Actual native collision/hit and lifecycle settlement; no energy/tombstone assignment.
-  fileprivate func utilityActualHeadquartersDeath() throws {
+  func utilityActualHeadquartersDeath() throws {
     try scriptCommand { game in
       let body = try #require(
         game.bodies.first { $0.nativeStationIdentity.map(NativeUtilityState.isTarget) == true })
@@ -477,7 +489,7 @@ extension GameRuntime {
     }
   }
   /// Controlled actor and ray produce the actual fatal native hit; no forged loss receipt.
-  fileprivate func utilityActualFatalHit() throws {
+  func utilityActualFatalHit() throws {
     let mesh = game.commander.playerMesh
     let face = try #require(
       mesh.faces.first { indices in
