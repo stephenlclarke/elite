@@ -4066,8 +4066,8 @@
       "severity": "P2",
       "reviewed_head": "9b71b1c96c0346ba53c843ae61b0e5532ec2fccc",
       "ledger_parent": "M01.I34 / W04",
-      "ready_findings": 1,
-      "fix_sha": null,
+      "ready_findings": 0,
+      "fix_sha": "8c82f02410ef821d4c8b2eb6ae20dbadd5f10660",
       "evidence_scope": "source-proven terminal/native custody join; no new runtime execution"
     },
     {
@@ -4098,10 +4098,38 @@
       "ready_findings": 1,
       "fix_sha": "28e2c30ed0779a2ebf56cf58f0e2aaf2c4bea22a",
       "fix_pr": "https://github.com/stephenlclarke/elite/pull/36",
-      "verification_status": "awaiting MBA; no actual compile/unit pass yet",
+      "verification_status": "MBA verified exact helper run39672677427:74 method entries PASS, affected file compiled, composed file identical; issue closed",
       "owner_status": "helper pushed; G1 composition pending",
       "source_review": "MBA exact three-path delta reviewed; no actionable finding",
-      "github_fix_run": 39672677427
+      "github_fix_run": 39672677427,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/36#issuecomment-6326279904"
+    },
+    {
+      "event": "G1 composed35 and pushed34 command/save correction; MBA review assigned",
+      "head": "8c82f02410ef821d4c8b2eb6ae20dbadd5f10660",
+      "ledger_parent": "M01.I34 / C08.P01.I35",
+      "issue_links": [
+        "https://github.com/stephenlclarke/elite/issues/34",
+        "https://github.com/stephenlclarke/elite/issues/35"
+      ],
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6326249034",
+      "composed_helper_sha": "b8cd1cfa32c2535ee0ce2cbc92d7431771274967",
+      "github_run": 39673657024,
+      "unit_status": "in_progress",
+      "selection_methods": 78,
+      "new_regression_methods": 4,
+      "new_expanded_cases": 5,
+      "ready_findings": 0,
+      "awaiting_verification_findings": 2,
+      "usable_build_delivered": false
+    },
+    {
+      "event": "C08.P02 assigned G1 after corrections pushed",
+      "ledger_parent": "C08.P02",
+      "base": "8c82f02410ef821d4c8b2eb6ae20dbadd5f10660",
+      "scope": "stages3\u20134: Navidor clinic receiving, Enmadan failed workshop cassette collection",
+      "owner": "G1",
+      "usable_build_delivered": false
     }
   ]
 }
