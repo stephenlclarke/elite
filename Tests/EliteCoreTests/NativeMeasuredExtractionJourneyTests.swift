@@ -215,7 +215,12 @@ struct NativeMeasuredExtractionFixture {
     try #require(
       await runtime.snapshot().informationTargetBody?.physical?.rock
         == NativeMeasuredExtraction.root)
-    await runtime.key("w")
+    // Native hold acquisition may already select mining. Exercise the real W cycle
+    // through the fitted tools rather than assuming a combat starting selection.
+    for _ in 0..<FlightWorkTool.allCases.count {
+      await runtime.key("w")
+      if await runtime.snapshot().selectedFlightTool == .miningLaser { break }
+    }
     try #require(await runtime.snapshot().selectedFlightTool == .miningLaser)
   }
   func extract(_ runtime: GameRuntime) async throws {
@@ -342,7 +347,13 @@ struct NativeMeasuredExtractionJourneyTests {
     try #require(before.hasMeasuredExtractionFit)
     try #require(before.commander.checkedCargoTonnes == before.commander.standardCargoCapacity - 12)
     let fit = try #require(before.commander.passengerFit)
-    try #require(!fit.allowed && fit.freeEquipmentUnits < 0)
+    let hull = try #require(ShipCatalogue.ship(before.commander.shipID))
+    let profile = try ShipAccommodationProfile(ship: hull)
+    let deficit = before.commander.commonEquipmentUnits - profile.equipmentUnits
+    try #require(deficit > 0)
+    try #require(!fit.allowed)
+    #expect(fit.freeEquipmentUnits == 0)
+    #expect(fit.issues.contains("Accommodation needs \(deficit) more equipment units."))
     let quote = try #require(before.contractBoard.measuredExtractionQuote)
     #expect(!quote.allowed)
     #expect(fit.issues.allSatisfy { quote.issues.contains($0) })
