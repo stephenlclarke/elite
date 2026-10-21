@@ -79,6 +79,16 @@ extension Game {
     _ body: borrowing SpaceBody, context: borrowing EncounterContext,
     commander: borrowing Commander, bodies: borrowing [SpaceBody]
   ) -> NativeOriginalRescueSelectionFacts? {
+    guard body.missionInstanceID != nil, body.missionActorID != nil else { return nil }
+    return eligibleOriginalRescueFacts(
+      body, context: context, commander: commander, bodies: bodies)
+  }
+
+  @inline(never)
+  private static func eligibleOriginalRescueFacts(
+    _ body: borrowing SpaceBody, context: borrowing EncounterContext,
+    commander: borrowing Commander, bodies: borrowing [SpaceBody]
+  ) -> NativeOriginalRescueSelectionFacts? {
     guard let state = commander.nativePeople?.originalRescue, state.terminalOperation == nil,
       state.owner == commander.equipmentOwnerID, state.definition.valid,
       state.version == "1.0.0", state.digest == NativeOriginalRescueJourney.digest,
