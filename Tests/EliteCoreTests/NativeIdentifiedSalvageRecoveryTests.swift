@@ -282,3 +282,46 @@ struct NativeIdentifiedSalvageRecoveryTests {
     #expect(cold == prepared.commander && world.consistent(with: cold))
   }
 }
+
+extension NativeIdentifiedSalvageRecoveryTests {
+  @Test func actualAliasReaderKeepsBothOriginalsAndCradleAuthorityAndRejectsUnprovedBodies()
+    async throws
+  {
+    let f = try NativeIdentifiedSalvageFixture()
+    defer { f.files.clean() }
+    let runtime = try await f.runtime()
+    let state = try await f.accept(runtime)
+    try await f.renas(runtime)
+    let game = await runtime.snapshot()
+    var unproved = game
+    unproved.commander.scriptState.savedIdentifiedSalvageSource = nil
+    for alias in ["pell-cradle", "pell-01", "pell-02"] {
+      let logical = NativeIdentifiedSalvage.actorIdentity(
+        mission: state.permission.mission, digest: f.pack.digest, alias: alias)
+      let body = try #require(game.bodies.first { $0.missionActorID == logical })
+      let actualAlias = game.identifiedSalvageAlias(body)
+      let revokedAlias = unproved.identifiedSalvageAlias(body)
+      #expect(actualAlias == alias)
+      #expect(revokedAlias == nil)
+      let spawn = try #require(body.physical?.spawnIdentity)
+      for mode in ["unmarked", "mission", "logical", "spawn", "visit", "retained-id"] {
+        var changed = body
+        switch mode {
+        case "unmarked":
+          changed.missionInstanceID = nil
+          changed.missionActorID = nil
+        case "mission": changed.missionInstanceID = UUID()
+        case "logical": changed.missionActorID = UUID()
+        case "spawn": changed.physical?.spawnIdentity = nil
+        case "visit":
+          changed.physical?.spawnIdentity = .init(
+            system: spawn.system, visit: spawn.visit + 1, sequence: spawn.sequence,
+            member: spawn.member, producer: spawn.producer)
+        default: changed.id += 10000
+        }
+        let rejected = game.identifiedSalvageAlias(changed)
+        #expect(rejected == nil, "alias: \(alias), mode: \(mode)")
+      }
+    }
+  }
+}
