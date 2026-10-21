@@ -4352,7 +4352,11 @@
       "correction_owner": "G1 at natural packet boundary",
       "correction_sha": "442ba0f36fccab209d25e013d2d3c0df7bc85749",
       "correction_run": 39693528460,
-      "correction_review": "MBA assigned; actual hosted evidence pending"
+      "correction_review": "MBA verified compiler fix;38 closed",
+      "correction_unit_status": "121methods executed;6new receiving pass;2stale boundary assertions fail",
+      "remaining_finding": "https://github.com/stephenlclarke/elite/issues/39",
+      "verified_receiving_methods": 6,
+      "full_batch_pass": false
     }
   ]
 }
