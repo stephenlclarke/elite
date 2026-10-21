@@ -79,14 +79,14 @@ extension Game {
     }
     var review: UUID? = nil
     if contractBoard.detail {
-      review =
-        contractBoard.flightReceptionQuote?.reviewToken ?? contractBoard.measuredExtractionQuote?
-        .reviewToken ?? contractBoard.recordRecoveryQuote?
-        .reviewToken ?? contractBoard.identifiedSalvageQuote?
-        .reviewToken ?? contractBoard.surveyQuote?.reviewToken
-        ?? contractBoard.repairLoopQuote?.reviewToken
-        ?? contractBoard.coldChainQuote?.reviewToken
-        ?? contractBoard.providerQuote?.reviewToken
+      review = contractBoard.flightReceptionQuote?.reviewToken
+      if review == nil { review = contractBoard.measuredExtractionQuote?.reviewToken }
+      if review == nil { review = contractBoard.recordRecoveryQuote?.reviewToken }
+      if review == nil { review = contractBoard.identifiedSalvageQuote?.reviewToken }
+      if review == nil { review = contractBoard.surveyQuote?.reviewToken }
+      if review == nil { review = contractBoard.repairLoopQuote?.reviewToken }
+      if review == nil { review = contractBoard.coldChainQuote?.reviewToken }
+      if review == nil { review = contractBoard.providerQuote?.reviewToken }
       if review == nil {
         review =
           contractBoard.peopleQuote?.reviewToken ?? contractBoard.financeQuote?.reviewToken
