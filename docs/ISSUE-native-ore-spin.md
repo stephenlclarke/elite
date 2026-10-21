@@ -13,3 +13,9 @@ For native mining cargo/ore admissions only, honor the request's actual orientat
 ## Acceptance and limits
 
 Use actual native mining output and ledger admission/acknowledgement to test zero, slow and fast requested angular motion before and after real Tab selection and a native tick. Require continued nonzero rotation and unchanged legacy control. This supports the producer fix; it does not prove full automatic G12 collection, processing or reception. The separate automatic twelve-original journey remains outstanding. See [the handoff](PR-native-ore-spin.md).
+
+## Actual1204 stops at an unsupported fixture mining slot
+
+The first qualification run failed with unsupportedSlot before the spin assertions: all three new requested-spin arguments and the unchanged generated-rock recovery method failed setup, while the exact-mesh capture case passed. The original log is /tmp/elite-native-ore-spin-focused-1204/candidate-1204-attempt-01.log. No spin-behavior PASS or integrated repair follows from that run.
+
+workRuntimeGame inherited the current starter SH025, whose native performance declares no mining work-tool slot. Both methods then grant a Mining Laser at the mining utility slot; native fitting correctly refuses it. Choose the supported initial SH023 and its actual fuel capacity before equipment preparation only when the helper's requested module is Mining. The initial equipment, grants, actual hit/admission/actions and all old test bodies remain unchanged. Default Salvage helper calls retain their previous hull. No slot, catalogue or safety rule is waived.
