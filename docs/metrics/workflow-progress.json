@@ -4268,6 +4268,14 @@
       "verified_methods": 103,
       "verified_expanded_cases": 135,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6327572301"
+    },
+    {
+      "event": "Root resolved finite native-station ark fuel allocation without ordinary Fuel refactor",
+      "ledger_parent": "M10.P01.C08.fuel / producer",
+      "owner": "G1",
+      "station_initial_ark_reserve_fuel_tenths": 1000,
+      "scope": "Persistent100LY ark-service reserve per realstation; actualdockedpaid atomictransfer; ordinaryplayerFuelunchanged",
+      "usable_build_delivered": false
     }
   ]
 }
