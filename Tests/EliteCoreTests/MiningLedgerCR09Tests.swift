@@ -45,7 +45,7 @@ struct MiningLedgerCR09Tests {
       identity: .init(system: cr09System, field: 0, rock: 0),
       position: .init(100, 200, 300), radius: 40, energy: 150)
     let requests = ledger.pendingSpawnRequests(
-      context: ecologyContext(),
+      context: ecologyContext(time: 1),
       fields: [.init(position: rock.position, rocks: [rock])])
     #expect(!requests.isEmpty && ledger.valid)
     #expect(try cr09Decode(cr09Object(ledger)) == ledger)
@@ -60,10 +60,35 @@ struct MiningLedgerCR09Tests {
     let actor = try #require(ledger.boundActor(for: item.identity))
     let moved = ledger.updateOreMotion(
       payload: item.identity, actor: actor,
-      position: .init(400, 500, 600), velocity: .init(1, 2, 3))
+      position: .init(400, 500, 600), velocity: .init(1, 2, 3), physicalTime: 1)
     #expect(moved && ledger.valid)
     #expect(try cr09Decode(cr09Object(ledger)) == ledger)
     let valid = try cr09Object(ledger)
+    let clocks = try #require(valid["regularPayloadTimes"] as? [Any])
+    try #require(clocks.count >= 4)
+    for mutation in 0..<6 {
+      var object = valid
+      var altered = clocks
+      switch mutation {
+      case 0: object.removeValue(forKey: "regularPayloadTimes")
+      case 1: object["regularPayloadTimes"] = []
+      case 2:
+        altered[1] = -1.0
+        object["regularPayloadTimes"] = altered
+      case 3:
+        altered[2] = altered[0]
+        object["regularPayloadTimes"] = altered
+      case 4:
+        let orphan = PayloadIdentity.ore(.init(system: cr09System, field: 0, rock: 1), fragment: 0)
+        altered[0] = try JSONSerialization.jsonObject(with: JSONEncoder().encode(orphan))
+        object["regularPayloadTimes"] = altered
+      default:
+        object["regularPayloadTimes"] = (0...MiningLedger.maximumPending).flatMap { _ in
+          [clocks[0], clocks[1]]
+        }
+      }
+      #expect(throws: (any Error).self) { try cr09Decode(object) }
+    }
     let records = try #require(valid["bindings"] as? [Any])
     for visit in [UInt64(0), UInt64.max] {
       var object = valid

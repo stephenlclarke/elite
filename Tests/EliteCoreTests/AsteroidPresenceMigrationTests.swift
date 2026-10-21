@@ -123,7 +123,16 @@ struct AsteroidPresenceMigrationTests {
     _ = ledger.hit(rock: partial, incident: presenceIncident(1, system: identity), damage: 10)
     _ = ledger.hit(
       rock: depleted, incident: presenceIncident(2, system: identity), damage: depleted.energy)
-    let context = presenceContext(identity)
+    let originalContext = presenceContext(identity)
+    let context = EncounterContext(
+      system: originalContext.system, seed: originalContext.seed,
+      government: originalContext.government,
+      visit: originalContext.visit, revision: originalContext.revision, physicalTime: 2,
+      anchors: originalContext.anchors, player: originalContext.player,
+      actors: originalContext.actors,
+      protection: originalContext.protection, budget: originalContext.budget,
+      perceptionRadius: originalContext.perceptionRadius,
+      depletedRocks: originalContext.depletedRocks, miningPresence: originalContext.miningPresence)
     let requests = ledger.pendingSpawnRequests(context: context, fields: fields)
     let admitted = try #require(requests.first)
     let boundPayload = try #require(admitted.payload)
