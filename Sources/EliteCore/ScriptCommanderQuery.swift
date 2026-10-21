@@ -3,6 +3,11 @@ import Foundation
 extension Game {
   /// Selected native player and common-project fit; never NPC defaults or other-edition physiology.
   var scriptCommanderQuery: ScriptValue {
+    withReadOnlyCommander { makeScriptCommanderQuery($0) }
+  }
+
+  @inline(never)
+  private func makeScriptCommanderQuery(_ commander: borrowing Commander) -> ScriptValue {
     var fields = commander.scriptCommanderFields
     fields["energy"] = .number(energy)
     fields["front_shield"] = .number(frontShield)
