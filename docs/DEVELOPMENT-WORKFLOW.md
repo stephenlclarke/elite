@@ -1,70 +1,60 @@
 # Developer and reviewer workflow
 
-Updated 21 October 2026. This is the single current workflow authority. Older assignment and validation instructions in the completion ledger and historical notes are evidence, not active instructions. Current human direction overrides this document.
+Updated 21 October 2026. This is the single current workflow authority. Earlier ledger instructions are historical. Current human direction always takes precedence.
 
-## Roles
+## Continuous developer loop
 
-| Role | Owns | Does not do |
-| --- | --- | --- |
-| MBP / Elite Coder 1 / GPT-6.1 Sol High | Ledger implementation, regression/unit-test authoring, source pushes, fixes after each packet, integration and release ownership | Wait for review or Orchestrator acknowledgement before starting the next ready task |
-| MBA / Elite Coder 2 | Independent code review, focused isolated unit execution, GitHub findings with suggested fixes, verification and closure of corrected issues | Implement application, renderer or test fixes; run integration tests |
-| Orchestrator | Priorities, issue routing, concise ledger transitions, ownership conflicts and useful delivery notifications | Duplicate the reviewer, start competing builds, require handoff acknowledgements or maintain duplicate issue dossiers |
-| Optional second MBP coder | Explicitly assigned GitHub issue fixes and their regression tests, in an isolated branch with disjoint file ownership | Take ledger features, adjacent refactors or self-assigned work |
+At every packet boundary, MBP takes ready actionable MBA GitHub findings first. If none are ready, it immediately takes the next ready completion-ledger item in priority order, with M01 first.
 
-MBA may additionally create requested graphics/image assets under an explicit brief and separate paths. Application/renderer/shader/model-generation code remains MBP-owned. Asset creation is secondary to correction review and queued code review. README media must still come from the game renderer through `make readme-media`; do not fabricate game screenshots.
+**Select -> implement source and meaningful unit tests -> push -> select the next task.**
 
-## Sources of truth
+GitHub unit runs, MBA review, Sonar, packaging, an empty issue queue and Orchestrator acknowledgement are never waiting states for the developer. Necessary short local checks may resolve authoring uncertainty; routine unit execution belongs to GitHub. Do not pause after reporting readiness or request another assignment when the next ledger item is available.
 
-- [Completion ledger](COMPLETION-LEDGER.md): feature priority, owner and implementation/delivery state. Update at assignment, source push and meaningful review/delivery transitions; do not append an entry for every poll.
-- [GitHub review queue #23](https://github.com/stephenlclarke/elite/issues/23): pushed work packets, their base/head, code-review and unit outcomes, and linked findings. This is a coordination tracker, not a defect.
-- GitHub `mba-finding` issues: actionable defects, reproduction, suggested fixes, correction commits and MBA verification. Do not copy the full issue into the ledger or a second queue file.
-- [MBA queue guide](MBA-TEST-QUEUE.md): links and current execution rules; GitHub holds live state.
+## Responsibilities
 
-## Small, complete work packets
+| Role | Responsibility |
+| --- | --- |
+| MBP / G1 / GPT-6.1 Sol High | Primary ledger development, unit-test authoring, source pushes and ready GitHub issue fixes after every packet; central integration and publishing |
+| GitHub Actions | Execute focused isolated unit tests for pushed code and publish actual head/run/results; no integration testing |
+| MBA / G2 | Review pushed code and GitHub unit results; file actionable findings with suggested fixes; independently verify corrected code/results before closing issues |
+| Orchestrator | Maintain priorities, prevent ownership conflicts, route real blockers and activate issue-only help when needed; no routine ACK or duplicate review gates |
+| Optional second MBP coder | Assigned GitHub issue remediation and regression tests only, with disjoint files/hunks; never ledger features or adjacent refactors |
 
-A packet has one identifiable behavior or one root-cause fix, a ledger/issue ID, a coherent compileable change and meaningful isolated unit tests. Keep independently complete corrections separate where this is natural. Do not split inseparable code into broken commits merely to increase the push count, or hold completed changes for an entire milestone or release.
+MBA may create explicitly requested image/graphics assets on separate paths. Code review and correction verification take precedence over optional art. Application, renderer, shader and model-generation code remains MBP-owned. README media must be produced by the game renderer through `make readme-media`.
 
-MBP posts one comment to queue #23 when it pushes a packet:
+## One small handoff per packet
+
+A packet is one complete behavior or root-cause correction, with coherent source and meaningful isolated tests. Push independently complete work promptly; do not hold it for an entire milestone, or split inseparable code into broken commits.
+
+Post one comment to [GitHub review queue #23](https://github.com/stephenlclarke/elite/issues/23):
 
 ```text
-Packet: <ledger ID or issue number> — <behavior>
-Base: <SHA>  Head: <pushed SHA>  Branch: <branch>
-Unit command: <exact focused selector/command>
-Known gaps: <remaining limitation, or none known>
+<ledger ID / issue> — <behavior>
+Base <SHA> -> pushed head <SHA>; branch <name>
+Unit selection <selector/manifest>; known gaps <if any>
 ```
 
-The same comment is the handoff. No freeze packet, repeated hash inventory, extra source audit or acknowledgement is required. Tag the coherent packet if useful; never label unfinished source as a release.
+That comment is the handoff. Update the ledger once for the packet's implementation/push state. No freeze packet, repeated hash inventory, duplicate issue dossier, pre-push independent review or acknowledgement is required. Keep one active developer checkout/commit chain where practical, preserve worker edits and never rewrite a published packet.
 
-## Developer loop: never wait for review
+## Asynchronous GitHub review loop
 
-1. Implement the next ledger item in priority order, with M01 first, and write isolated unit/regression tests. Use necessary compilation or short focused checks to resolve actual implementation uncertainty; do not repeat unaffected tests.
-2. Commit and push the coherent packet promptly. Do not wait for independent review, an empty review queue, a full milestone, packaging or broad validation.
-3. At the packet boundary, read open actionable `mba-finding` issues. Address all ready findings or explicitly assign disjoint ones to the issue-only coder. Acknowledge a finding once with its owner/branch; avoid repeated chat handoffs.
-4. Push corrections and comment the exact correction SHA on each issue. Apply `awaiting-mba`. Use `Refs #N`, not auto-closing keywords: only MBA verification closes the issue.
-5. If no actionable finding is ready, immediately implement the next ledger item. A pending review, compile, unavailable reviewer or graphics asset never leaves the developer waiting for work. Review findings can interrupt the current packet only for a genuine critical correctness/security/data-loss problem.
+- GitHub runs repository-owned isolated unit commands on the actual pushed head. Never execute shell text taken from untrusted comments/issues. Documentation-only packets need documentation checks, not an app rebuild.
+- MBA reviews the diff and necessary callers while GitHub runs units. Report source-proven defects immediately; inspect actual run SHA, scope and conclusion when results arrive. Cancelled, skipped, missing and unrun checks are not PASS.
+- File one `mba-finding` issue per actionable root cause: severity, SHA/path/line, expected/actual behavior, reproduction/evidence and suggested fix. Mark hypotheses. Advisory style preferences are comments, not blocking defects. Distinguish infrastructure failures from product bugs.
+- MBP comments the exact correction SHA and applies `awaiting-mba`; use `Refs #N`, not auto-closing keywords. MBA reviews corrections first and closes only after corrected code and fresh affected GitHub units are verified. Otherwise keep the issue open with evidence. The developer continues other ready work throughout.
 
-The feature author uses one active development checkout and a stable commit chain where practical; do not recreate worktrees for every helper or re-import old whole files. Never rewrite an already published packet or overwrite another worker's unfinished edits.
+GitHub is the live issue/review state. The [completion ledger](COMPLETION-LEDGER.md) holds feature priorities and milestone transitions; [MBA-TEST-QUEUE.md](MBA-TEST-QUEUE.md) is a link/guide, not a duplicate live table. Do not update these files for every poll.
 
-## Reviewer loop: code review overlaps unit execution
+## Issue backlog and ownership
 
-1. Fetch the exact pushed SHA without historical archive tags. Use one persistent MBA checkout and incremental build cache, with one compiler/test job at a time. Do not re-clone or discard the build cache per packet.
-2. Review the base-to-head diff and necessary callers for bugs, performance and repository coding standards while compilation/units run. Do not wait for tests to finish before reporting a source-proven defect. Review correction deltas rather than re-auditing unchanged whole files.
-3. Run the declared affected isolated unit methods, including parameterized cases. Record the exact source, command and actual result; never convert a cancelled/unrun case into PASS. Documentation-only packets receive documentation review without recompiling the app.
-4. Post code-review and unit outcomes separately on queue #23. One confirmed root cause gets one `mba-finding` issue; reuse an existing issue for repeats. Include severity, SHA/path/line, expected versus actual behavior, reproduction/evidence and a suggested fix. Mark an unverified suggested fix as a hypothesis. Style preferences without a repository violation or material risk are advisory comments, not a stream of blocking defects.
-5. Review pushed corrections first, then new packets in order. Verify the correction and affected unit result, then close the finding and remove `awaiting-mba`. If the issue persists, leave it open with concrete evidence. If verification is blocked, keep it open and state why; the developer continues other work.
+Activate the additional issue-only MBP coder when two or more ready MBA findings remain at a packet boundary and would delay ledger work, or the ready backlog keeps growing across packets. Exclude tracker #23, infrastructure/external blockers and `awaiting-mba` issues. Assign issue numbers, branch/base and disjoint files/hunks first. Never edit overlapping code concurrently; take another independent task instead. G1 composes the corrections and MBA verifies them. Keep the spare coder idle when the ready backlog clears.
 
-No integration, full-game, native mission/runtime journey, GUI, system, broad `make ci` or performance-test campaigns during this code-completion phase. A test's name is insufficient: it must actually isolate the component. Instantiating a whole game and driving flight/docking/save/reload through a mission is not an isolated unit test. Do not weaken or delete existing tests or CI protection. Toolchain, machine and compiler infrastructure failures are reported separately from product defects; the reviewer never fixes source to make a test pass.
+## Testing, Sonar and release boundaries
 
-## Backlog and conflict control
+**No integration, native game/mission journey, GUI, system, performance-test or broad `make ci` campaigns during code completion.** Unit tests must actually isolate components; a whole-game flight/dock/save/reload sequence is not an isolated unit. Do not weaken/delete tests or bypass branch protections.
 
-Activate the additional MBP issue-only coder when two or more ready MBA findings remain at a packet boundary and would delay the next ledger feature, or when the unresolved ready count keeps growing across packet boundaries. Exclude coordination trackers, external/infrastructure blockers and `awaiting-mba` issues from that count. Do not activate a worker merely because an old unrelated issue is open.
+Sonar scans only clean committed `main`, never development branches or PR heads. Retain the main-only Actions guard, exact lowercase 40-character SHA as `sonar.projectVersion`, and `Previous version` baseline. Main Sonar findings become GitHub issues; pending analysis does not stop coding.
 
-Assign issue numbers, branch/base and specific file/hunk ownership before it starts. Never allow both developers to edit overlapping code concurrently; give the remediator another independent issue or let the primary take another ready feature. The remediator pushes linked corrections; G1 composes them into the development chain and MBA verifies the resulting correction. Keep the extra coder idle when the actionable backlog clears.
+Required `@codex review`, applicable approvals and final-head checks govern PR merges, not development pushes or starting the next task. If a required check cannot run under the no-integration direction, keep merge/release pending and continue source work. Do not claim that unit-only checks prove full-game acceptance.
 
-## State and release honesty
-
-Track these separately: implemented, pushed, review outcome, unit outcome, integrated source, usable local build, published release and Homebrew availability. Unit-only checking does not prove full-game acceptance. Existing end-to-end evidence may be retained; lack of new integration testing must not be disguised as an implementation defect or used to block writing the next feature.
-
-Required `@codex review`, applicable approvals and final-head GitHub checks still govern PR merges. They do not govern development-branch pushes or starting the next packet. Do not bypass branch protection or claim a release from an unchecked development push. If required checks cannot run under the current no-integration direction, leave the merge/release pending and continue source development.
-
-The source checkpoints remain backups, not new releases or hundreds of review tasks. Keep signed packaging, release publication and Homebrew work distinct from code authoring. Slack is for a usable player-facing feature with execution evidence and an accessible build, not source pushes, tests, reviews or routine status.
+Keep implemented, pushed, reviewed, unit-checked, integrated source, usable build, release and Homebrew states separate. Source checkpoint tags are archives, not review tasks or releases. Slack is only for usable player-facing behavior with execution evidence and an accessible build; source pushes, test results and routine status stay out of Slack.

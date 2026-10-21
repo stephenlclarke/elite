@@ -1,15 +1,9 @@
-# MBA review and unit queue
+# Code and GitHub unit review queue
 
-The live queue is [GitHub issue #23](https://github.com/stephenlclarke/elite/issues/23). Add one packet comment there when code is pushed. Findings use `mba-finding`; pushed corrections use `awaiting-mba` until the MBA independently verifies and closes them. Issue #23 is a coordination tracker and must not trigger defect remediation.
+The live queue is [GitHub issue #23](https://github.com/stephenlclarke/elite/issues/23). MBP posts one comment per pushed packet, with actual base/head, behavior, isolated unit selection and GitHub run URL or pending status. GitHub runs the isolated unit tests; MBA independently reviews code and the GitHub results. Sonar scans `main` only.
 
-Follow [the developer/reviewer workflow](DEVELOPMENT-WORKFLOW.md). Do not maintain a second live status table in this file. The ledger records feature milestones; GitHub records review and correction state.
+Follow [the authoritative workflow](DEVELOPMENT-WORKFLOW.md). Findings use `mba-finding`; corrections use `awaiting-mba` until MBA verifies corrected code and fresh GitHub unit results. The tracker itself is not a defect. The ledger records milestone progress; GitHub records live review/correction state. Do not maintain another live table here or wait for review before writing the next packet.
 
-The historical baseline is `41c15aed9d2684cc2708077a16f6b8aef576be31`. Its original W04 runtime/journey selection was cancelled before any integration case ran. The replacement MBA task contains only these isolated `NativeUtilityCustodyTests` methods:
+Historical baseline `41c15aed9d2684cc2708077a16f6b8aef576be31` had an MBA-local isolated result: three NativeUtilityCustodyTests methods/17 cases passed, with no Game/GameRuntime/journey cases. Its cached compilation took612.1118seconds and unit runtime0.128seconds; records remain at `/tmp/elite-MBA-units-41c15aed-20261021`. This is retained local evidence, not a GitHub run or whole-game acceptance. Do not repeat it under the new workflow.
 
-- `explicitWorldActivationOwnsEightMaterialsWithoutTargetDockAuthority()`
-- `strictCurrentUtilitySchemaRejectsUnjoinedOrInventedClaims(fault:)` (15 inputs)
-- `targetRequiresUtilityStateAndOtherStationsCannotClaimIt()`
-
-This is three methods/17 cases, using in-memory models and JSON validation only. All Game/GameRuntime/runtime/journey methods are excluded. Cached build path: `/tmp/elite-MBA-baseline-41c15aed-20261021/build`; execution records: `/tmp/elite-MBA-units-41c15aed-20261021`. No result is inferred from assignment or process start. Post the actual result to issue #23.
-
-No integration testing. The MBA may create requested image assets under explicit disjoint ownership, but code reviews and correction checks take precedence over optional asset work.
+The first new packet is collision correction `f6fcbb126818705f805ee67659fde8277d4a7ea9`, based on `0f47b2f60f91f749f23c46a1ac0727ef4fcec5f2`; G1 supplied its five isolated geometry/impulse unit selectors in issue #23. MBA reviews that diff now; GitHub-unit execution remains pending until the unit-only Actions workflow is published. No integration testing is authorized. Requested graphics assets remain an explicit MBA exception, with separate file ownership and pushes.

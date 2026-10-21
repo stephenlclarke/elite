@@ -2,7 +2,7 @@
 
 ## Motivation and implementation
 
-Remove contradictory process gates and duplicate review bookkeeping so source development can continue while MBA review runs. DEVELOPMENT-WORKFLOW.md is authoritative; the ledger links it, and MBA-TEST-QUEUE.md links live GitHub queue #23 rather than maintaining another live table. Define the one-comment packet handoff, code-first review, cached isolated units, issue correction/verification states and a concrete threshold for the optional issue-only coder.
+Remove contradictory process gates and duplicate review bookkeeping so source development can continue while MBA review and GitHub units run. DEVELOPMENT-WORKFLOW.md is authoritative; the ledger links it, and MBA-TEST-QUEUE.md links live GitHub queue #23 rather than maintaining another live table. Define the one-comment packet handoff, code-first review, GitHub-executed isolated units, issue correction/verification states and a concrete threshold for the optional issue-only coder.
 
 ## Validation and limitations
 
