@@ -8,8 +8,9 @@ private func approachGame(
   spin: Double = 0.3, speed: Double = 0
 ) -> Game {
   var game = Game(executive: false)
-  game.launch()
   game.commander.installTargetingComputer(.docking)
+  game.launch()
+  #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .docking)
   game.commander.autoTarget = true
   game.speed = speed
   var station = SpaceBody(id: 0, hull: .station, position: position)
@@ -17,7 +18,7 @@ private func approachGame(
   station.rotation = 1.4
   station.rotationRate = spin
   game.bodies = [station]
-  game.key("r")
+  game.key("tab")
   return game
 }
 
@@ -128,7 +129,7 @@ private func approachGame(
   #expect(!game.dockingComputer)
   game.bodies = [.init(id: 0, hull: .station, position: .init(500, 0, 2400))]
   game.speed = 0
-  game.key("r")
+  game.key("tab")
   for _ in 0..<100 { game.tick(delta: 0.02) }
   #expect(game.autoPilot.status == "APPROACHING" && !game.autoPilot.finalApproach)
 }
@@ -142,7 +143,7 @@ private func approachGame(
     game.bodies.removeAll { $0.hull != .station }
     #expect(game.speed == 8)
     #expect(try #require(game.bodies.first).position == Vector3(0, 0, -500))
-    game.key("r")
+    game.key("tab")
     var collided = false
     var finalFrames = 0
     var minimumTransitRange = Double.infinity

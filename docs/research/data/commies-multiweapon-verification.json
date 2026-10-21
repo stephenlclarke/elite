@@ -1,0 +1,390 @@
+{
+  "profile_id": "PROJECT-COMMIES-SELECTED-SHIPS-v1",
+  "scope": "Selected native multi-emitter arithmetic transcribed into C and independently checked with Python. Strict energy>use*emitterCount, full damage each multiply ray and multiplied heat/use; synthetic doubles, no original float/binary, hit/range/temperature/cadence/physics/runtime integration proof. Individual rays can hit different targets/miss. Player controls separately require shot_time strictly>weapon_recharge_rate.",
+  "total": 20,
+  "passed": 20,
+  "inputs": [
+    {
+      "path": "/tmp/elite-gap-research/commies-multiweapon-oracle.c",
+      "sha256": "75224051e6259fb6ad5b0306e3a97b84f2951cb7db9fd66ac53ffd067cf7feda"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Config/equipment.plist",
+      "sha256": "486a3776a8c37ed95801d3dd17db49f3781f7935587d1f71e474947c8207d67a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntity.m",
+      "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/PlayerEntity.m",
+      "sha256": "f63b5aa15e36ca9e075152cb2a53b48b602ef358fd48daa1f31bcc624c14fe93"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/PlayerEntityControls.m",
+      "sha256": "3465d3235f3df22e637b4415a3ee3ec19fdaf81b105a19934af81edd6dff1f4a"
+    }
+  ],
+  "cases": [
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 0
+      },
+      "result": {
+        "fires": false,
+        "damage_if_all_rays_hit_same_target": 0.0,
+        "energy_used": 0.0,
+        "heat_added": 0.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.010458054021000862,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 0.5
+      },
+      "result": {
+        "fires": false,
+        "damage_if_all_rays_hit_same_target": 0.0,
+        "energy_used": 0.0,
+        "heat_added": 0.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0029169023036956787,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 0.501
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 6.0,
+        "energy_used": 0.5,
+        "heat_added": 3.2
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.005458015948534012,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 25
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 6.0,
+        "energy_used": 0.5,
+        "heat_added": 3.2
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.002209097146987915,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 275
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 6.0,
+        "energy_used": 0.5,
+        "heat_added": 3.2
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.001500127837061882,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 0
+      },
+      "result": {
+        "fires": false,
+        "damage_if_all_rays_hit_same_target": 0.0,
+        "energy_used": 0.0,
+        "heat_added": 0.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.001250067725777626,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 1.0
+      },
+      "result": {
+        "fires": false,
+        "damage_if_all_rays_hit_same_target": 0.0,
+        "energy_used": 0.0,
+        "heat_added": 0.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0009580980986356735,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 1.001
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 12.0,
+        "energy_used": 1.0,
+        "heat_added": 6.4
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0013748649507761002,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 25
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 12.0,
+        "energy_used": 1.0,
+        "heat_added": 6.4
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.001125037670135498,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 6,
+        "energy_use_per_emitter": 0.5,
+        "heat_per_emitter": 3.2,
+        "available_energy": 275
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 12.0,
+        "energy_used": 1.0,
+        "heat_added": 6.4
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0010421499609947205,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 12,
+        "energy_use_per_emitter": 1.1,
+        "heat_per_emitter": 4.25,
+        "available_energy": 0
+      },
+      "result": {
+        "fires": false,
+        "damage_if_all_rays_hit_same_target": 0.0,
+        "energy_used": 0.0,
+        "heat_added": 0.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0009578652679920197,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 12,
+        "energy_use_per_emitter": 1.1,
+        "heat_per_emitter": 4.25,
+        "available_energy": 2.2
+      },
+      "result": {
+        "fires": false,
+        "damage_if_all_rays_hit_same_target": 0.0,
+        "energy_used": 0.0,
+        "heat_added": 0.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0020421575754880905,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 12,
+        "energy_use_per_emitter": 1.1,
+        "heat_per_emitter": 4.25,
+        "available_energy": 2.201
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 24.0,
+        "energy_used": 2.2,
+        "heat_added": 8.5
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0012919772416353226,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 12,
+        "energy_use_per_emitter": 1.1,
+        "heat_per_emitter": 4.25,
+        "available_energy": 25
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 24.0,
+        "energy_used": 2.2,
+        "heat_added": 8.5
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0010831281542778015,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 2,
+        "damage_per_emitter": 12,
+        "energy_use_per_emitter": 1.1,
+        "heat_per_emitter": 4.25,
+        "available_energy": 275
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 24.0,
+        "energy_used": 2.2,
+        "heat_added": 8.5
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.00100000761449337,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 50,
+        "energy_use_per_emitter": 1.4,
+        "heat_per_emitter": 10,
+        "available_energy": 0
+      },
+      "result": {
+        "fires": false,
+        "damage_if_all_rays_hit_same_target": 0.0,
+        "energy_used": 0.0,
+        "heat_added": 0.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.00100000761449337,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 50,
+        "energy_use_per_emitter": 1.4,
+        "heat_per_emitter": 10,
+        "available_energy": 1.4
+      },
+      "result": {
+        "fires": false,
+        "damage_if_all_rays_hit_same_target": 0.0,
+        "energy_used": 0.0,
+        "heat_added": 0.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0009168870747089386,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 50,
+        "energy_use_per_emitter": 1.4,
+        "heat_per_emitter": 10,
+        "available_energy": 1.4009999999999998
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 50.0,
+        "energy_used": 1.4,
+        "heat_added": 10.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0014170072972774506,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 50,
+        "energy_use_per_emitter": 1.4,
+        "heat_per_emitter": 10,
+        "available_energy": 25
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 50.0,
+        "energy_used": 1.4,
+        "heat_added": 10.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0011669471859931946,
+      "passed": true
+    },
+    {
+      "input": {
+        "emitters": 1,
+        "damage_per_emitter": 50,
+        "energy_use_per_emitter": 1.4,
+        "heat_per_emitter": 10,
+        "available_energy": 275
+      },
+      "result": {
+        "fires": true,
+        "damage_if_all_rays_hit_same_target": 50.0,
+        "energy_used": 1.4,
+        "heat_added": 10.0
+      },
+      "C_duration_nanoseconds": 0,
+      "independent_Python_duration_ms": 0.0010831281542778015,
+      "passed": true
+    }
+  ]
+}

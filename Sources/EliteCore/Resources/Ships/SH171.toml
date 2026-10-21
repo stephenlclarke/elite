@@ -10,6 +10,30 @@ modelSource = "Project-authored geometry; Tony Gardner / Blake's 7 visual refere
 dimensions = [183.13726, 163.20903, 300.0]
 geometryContext = "Project renderer envelope units, not a canonical length or SI docking measurement. Visual reference and chosen native mechanics: docs/LIBERATOR.md."
 
+[catalogue]
+schemaVersion = 2
+family = "liberator-dsv2"
+objectKind = "ship"
+origin = "unknown"
+roleWeights = [{ "role" = "military", "weight" = 4 }, { "role" = "leisure", "weight" = 1 }]
+access = "xyzzyOnly"
+playerFlyable = true
+normalPurchaseEligible = false
+discoveryEligible = false
+encounterMode = "none"
+mechanicsStatus = "ready"
+rarity = "uncommon"
+galaxies = []
+regions = []
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
+primaryRole = "military"
+placementStatus = "declared"
+isCapital = false
+primaryType = "alien"
+purchasePolicy = "xyzzyOnly"
+collectionMilestone = "none"
+damagePolicy = "destructible"
+
 [game]
 cargo = 120
 speed = 36.6
@@ -28,6 +52,7 @@ missiles = 8
 facings = 15
 cargoExpansion = 15
 price = 415000
+workTools = ["miningLaser", "salvageCutter"]
 
 [design]
 vertices = [

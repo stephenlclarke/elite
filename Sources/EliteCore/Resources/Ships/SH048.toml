@@ -10,6 +10,31 @@ modelSource = "Oolite 574ca848"
 dimensions = [40.464, 20.35287, 94.4936]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 2
+family = "fer-de-lance"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "bountyHunter", "weight" = 32 }, { "role" = "pirate", "weight" = 1 }, { "role" = "military", "weight" = 1 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "uncommon"
+galaxies = [0, 1, 2]
+regions = ["deepSpace", "tradeLane"]
+basis = "explicit human preference + project category. Project wanted-target interception specialization; Fer-de-Lance/Mamba are explicit human preferences, remaining entries are project balance judgements. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
+primaryRole = "bountyHunter"
+placementStatus = "declared"
+isCapital = false
+primaryType = "bountyHunter"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 12
+
 [game]
 cargo = 12
 speed = 27.429

@@ -14,6 +14,32 @@ private func solarGame(distance: Double = 2970) -> Game {
   return game
 }
 
+private func solarWorldAfterRelaunch(
+  _ game: inout Game, saved: NativeStationWorld
+) throws -> NativeStationWorld {
+  var expected = saved
+  let flight = game.commander.flightSimulation
+  let anchors = try #require(flight.anchors)
+  for record in saved.ledger.records
+  where record.identity.system == game.systemIdentity && record.tombstone == nil {
+    let body = try #require(
+      game.bodies.first { $0.nativeStationIdentity == record.identity })
+    let actor = try #require(body.physical?.identity)
+    #expect(actor.system == game.systemIdentity && actor.visit == flight.visit)
+    #expect(record.binding?.actor != actor)
+    try expected.ledger.rebind(record.identity, to: .init(actor: actor, bodyID: body.id))
+  }
+  // A new visit observes the same original station with its new physical actor.
+  expected.mainObservations = saved.mainObservations.map { observation in
+    guard observation.station.system == game.systemIdentity else { return observation }
+    return .init(
+      station: observation.station, actor: anchors.station.identity,
+      calendarSeconds: game.commander.scriptState.calendarSeconds)
+  }
+  #expect(expected.valid)
+  return expected
+}
+
 @Test func solarScoopAccumulatesFractionalFuelAndRespectsTankCapacity() {
   var game = solarGame()
   for _ in 0..<10 { game.advanceSolarFlight(delta: 0.1) }
@@ -109,13 +135,54 @@ private func solarGame(distance: Double = 2970) -> Game {
   #expect(Set(game.celestials.map(\.kind)) == [.sun, .planet])
   let scene = game.celestials
   game.cabinTemperature = 0.6
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
   let commander = try JSONDecoder().decode(
     Commander.self, from: JSONEncoder().encode(game.commander))
   let loaded = game.load(commander)
   #expect(loaded)
   #expect(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
   game.launch()
-  #expect(game.celestials == scene && game.commander == commander)
+  #expect(game.celestials == scene)
+  #expect(game.commander.flightSimulation.visit == commander.flightSimulation.visit + 1)
+  #expect(game.commander.equipment == commander.equipment)
+  #expect(game.commander.equipmentInventory == commander.equipmentInventory)
+  #expect(game.commander.equipmentPurchaseHistory == commander.equipmentPurchaseHistory)
+  var actual = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander)) as? [String: Any])
+  var expected = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(commander)) as? [String: Any])
+  actual["equipment"] = game.commander.equipment.sorted()
+  expected["equipment"] = commander.equipment.sorted()
+  let savedWorld = try #require(commander.nativeStations)
+  let reboundWorld = try solarWorldAfterRelaunch(&game, saved: savedWorld)
+  expected["nativeStations"] = try JSONSerialization.jsonObject(
+    with: JSONEncoder().encode(reboundWorld))
+  // A genuine docked relaunch adds ten minutes while preserving all other script state.
+  var expectedState = commander.scriptState
+  var ledger = try #require(expectedState.calendarLedger)
+  try #require(expectedState.missionCalendar == nil && ledger.pendingJourney == nil)
+  try #require(
+    ledger.operation < UInt64(Int64.max) - 1 && expectedState.calendarSeconds <= 1e12 - 600)
+  let calendarBefore = expectedState.calendarSeconds
+  expectedState.calendarSeconds += 600
+  ledger.operation += 1
+  ledger.lastAdjustment = .init(
+    operation: ledger.operation, kind: .launch, seconds: 600,
+    before: calendarBefore, after: expectedState.calendarSeconds)
+  expectedState.calendarLedger = ledger
+  #expect(game.commander.scriptState.calendarSeconds == calendarBefore + 600)
+  #expect(game.commander.scriptState.calendarLedger == ledger)
+  expected["savedScriptState"] = try JSONSerialization.jsonObject(
+    with: JSONEncoder().encode(expectedState))
+  for key in [
+    "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity", "savedMiningLedger",
+    "encounterDirector", "savedNPCPersistence",
+  ] {
+    actual.removeValue(forKey: key)
+    expected.removeValue(forKey: key)
+  }
+  #expect(NSDictionary(dictionary: actual).isEqual(to: expected))
 }
 
 @Test func solarHUDReportsActualScoopAndThermalDanger() {
