@@ -1,9 +1,15 @@
-# MBA pushed-commit test queue
+# MBA review and unit queue
 
-The Orchestrator and MBA tester maintain this queue. Only G1 implements features and fixes. Historical source archives preserve work and are not a queue of hundreds of feature deliveries. Every subsequent feature push must have an exact-SHA row here, including corrective commits.
+The live queue is [GitHub issue #23](https://github.com/stephenlclarke/elite/issues/23). Add one packet comment there when code is pushed. Findings use `mba-finding`; pushed corrections use `awaiting-mba` until the MBA independently verifies and closes them. Issue #23 is a coordination tracker and must not trigger defect remediation.
 
-| Exact commit | Scope | Status | Evidence / next action |
-| --- | --- | --- | --- |
-| `41c15aed9d2684cc2708077a16f6b8aef576be31` | Canonical baseline and all-source checkpoint index; W04 locally integrated, collision repair unfinished | Assigned: baseline build and affected W04 tests | [Issue #22](https://github.com/stephenlclarke/elite/issues/22) closed after human-authorized licence acceptance and successful licence check. Run on MBA with one job; no application-test result yet. |
+Follow [the developer/reviewer workflow](DEVELOPMENT-WORKFLOW.md). Do not maintain a second live status table in this file. The ledger records feature milestones; GitHub records review and correction state.
 
-Next feature: G1 owns the M01 collision correction. Add its exact SHA and affected test command when pushed. Never invent a commit ID or mark an unrun case as passed. On a confirmed failure, link a GitHub issue with reproduction, actual/expected behavior and a proposed solution; do not fix source on the MBA. Reuse unaffected results and batch broad integration testing.
+The historical baseline is `41c15aed9d2684cc2708077a16f6b8aef576be31`. Its original W04 runtime/journey selection was cancelled before any integration case ran. The replacement MBA task contains only these isolated `NativeUtilityCustodyTests` methods:
+
+- `explicitWorldActivationOwnsEightMaterialsWithoutTargetDockAuthority()`
+- `strictCurrentUtilitySchemaRejectsUnjoinedOrInventedClaims(fault:)` (15 inputs)
+- `targetRequiresUtilityStateAndOtherStationsCannotClaimIt()`
+
+This is three methods/17 cases, using in-memory models and JSON validation only. All Game/GameRuntime/runtime/journey methods are excluded. Cached build path: `/tmp/elite-MBA-baseline-41c15aed-20261021/build`; execution records: `/tmp/elite-MBA-units-41c15aed-20261021`. No result is inferred from assignment or process start. Post the actual result to issue #23.
+
+No integration testing. The MBA may create requested image assets under explicit disjoint ownership, but code reviews and correction checks take precedence over optional asset work.
