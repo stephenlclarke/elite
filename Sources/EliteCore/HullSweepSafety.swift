@@ -465,11 +465,16 @@ public enum HullSweepSafety {
       }
       if left.children == nil, right.children == nil {
         for first in left.triangles {
+          var rowTriangle: SweepTriangle?
+          var rowBounds: SweepBounds?
           for (offset, second) in right.triangles.enumerated() {
             try work.triangle()
             let triangle: SweepTriangle
-            if let cached = triangleCache[first] {
+            if let cached = rowTriangle {
               triangle = cached
+            } else if let cached = triangleCache[first] {
+              triangle = cached
+              rowTriangle = cached
             } else {
               let original = player.triangles[first]
               let a = target.shipPoint(ship.systemPoint(original.a))
@@ -482,16 +487,23 @@ public enum HullSweepSafety {
                 a: a, b: b, c: c, conditioned: original.conditioned,
                 unresolvedSupport: original.unresolvedSupport, transformedFrom: original)
               triangleCache[first] = triangle
+              rowTriangle = triangle
             }
             if offset == 0, best.isFinite {
               // The first paid pair covers this one bounded row/leaf certificate.
               // The ordinary gap only decides whether to attempt an outward proof.
-              let rowBounds = triangle.bounds
+              let bounds: SweepBounds
+              if let cached = rowBounds {
+                bounds = cached
+              } else {
+                bounds = triangle.bounds
+                rowBounds = bounds
+              }
               let upper = SweepInterval(best).square.upper
-              if rowBounds.finite, right.bounds.finite, upper.isFinite,
-                rowBounds.distanceSquared(to: right.bounds) > upper
+              if bounds.finite, right.bounds.finite, upper.isFinite,
+                bounds.distanceSquared(to: right.bounds) > upper
               {
-                let lower = rowBounds.certifiedLowerSquared(to: right.bounds)
+                let lower = bounds.certifiedLowerSquared(to: right.bounds)
                 if lower.isFinite, lower >= upper { break }
               }
             }
@@ -502,7 +514,13 @@ public enum HullSweepSafety {
             {
               // This pair is already paid. Only an outward certificate can replace
               // its feature kernel; uncertain and conditioned pairs keep that kernel.
-              let pairBounds = triangle.bounds
+              let pairBounds: SweepBounds
+              if let cached = rowBounds {
+                pairBounds = cached
+              } else {
+                pairBounds = triangle.bounds
+                rowBounds = pairBounds
+              }
               let candidateBounds = candidate.bounds
               let upper = SweepInterval(best).square.upper
               if pairBounds.finite, candidateBounds.finite, upper.isFinite,
