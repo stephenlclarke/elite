@@ -4497,10 +4497,13 @@
       "github_run": 39709047303,
       "selection_methods": 168,
       "new_methods": 6,
-      "source_review": "MBA assigned exact delta and shared authority callers",
-      "unit_status": "existing hosted active; prior flight crash remains unqualified",
+      "source_review": "MBA exact delta and necessary shared callers reviewed; no actionable defect",
+      "unit_status": "FAILED after successful592.88s compilation; signal10, truncated XML, no verified method passes",
       "next_assigned": "C08.P05.A.receiving",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331046027",
+      "finding": "https://github.com/stephenlclarke/elite/issues/41",
+      "qualification_scope": "All168 methods START, none verified PASS; same crash signature not proof of same cause; receiving continues"
     }
   ]
 }
