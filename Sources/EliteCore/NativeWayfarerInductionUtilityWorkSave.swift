@@ -1,6 +1,16 @@
 import Foundation
 
 extension NativeInductionUtilitySave {
+  static func bindingMatches(_ arm: NativeInductionUtilityArm, admission: NativeArkAdmission)
+    -> Bool
+  {
+    if let binding = arm.binding {
+      return binding.firstAdmission == admission
+        && binding.valid(job: arm.job, role: arm.role, actor: arm.actor, time: arm.physicalTime)
+    }
+    return arm.actor.visit != admission.actor.visit || arm.actor == admission.actor
+  }
+
   static func workClaimsValid(
     _ state: NativeInductionUtilityState,
     parent: ScriptInstance, child: ScriptInstance, commander: borrowing Commander
@@ -20,7 +30,7 @@ extension NativeInductionUtilitySave {
           parent.hasAcknowledged(arm.sequence),
           arm.actor.visit >= admission.actor.visit, arm.actor.visit <= visit,
           arm.actor.entity < nextActor, arm.physicalTime >= admission.physicalTime,
-          arm.actor.visit != admission.actor.visit || arm.actor == admission.actor,
+          bindingMatches(arm, admission: admission),
           arm.physicalTime <= physicalTime, arm.flightSeconds <= flightTime,
           (segment.last ?? arm.physicalTime) <= physicalTime,
           segment.seconds <= flightTime - arm.flightSeconds + 1e-7

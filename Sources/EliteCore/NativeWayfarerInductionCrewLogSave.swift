@@ -1,10 +1,13 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 101
-  static let alienVersion = 102
-  static func supportsCharterChoice(_ schema: Int?) -> Bool {
+  static let version = 103
+  static let alienVersion = 104
+  static func supportsUtilityBinding(_ schema: Int?) -> Bool {
     schema == version || schema == alienVersion
+  }
+  static func supportsCharterChoice(_ schema: Int?) -> Bool {
+    supportsUtilityBinding(schema) || schema == 101 || schema == 102
   }
   static func supportsUtilityWork(_ schema: Int?) -> Bool {
     supportsCharterChoice(schema) || schema == 99 || schema == 100

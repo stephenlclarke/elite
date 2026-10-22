@@ -224,12 +224,14 @@ struct NativeWayfarerInductionUtilityWorkUnitTests {
     var actors: [String: ScriptOwnedActor] = [:]
     for role in NativeInductionUtilityRole.allCases {
       var actor = try fixture.f.prepared(role)
+      let resources = try NativeInductionUtilityPack.initialResources(
+        state: fixture.f.child(), actor: actor)
       let arm = try fixture.arm(role)
       actor.body.id = Int(arm.actor.entity)
       actor.presence = .unloaded
       actor.body.physical = .init(
         identity: arm.actor, population: .mission,
-        npc: try NativeInductionUtilityPack.initialResources(state: fixture.f.child(), actor: actor)
+        npc: resources
       )
       actors[role.rawValue] = actor
     }
@@ -260,6 +262,9 @@ struct NativeWayfarerInductionUtilityWorkUnitTests {
     game.docked = false
     game.screen = .front
     game.commander.system = 190
+    let initialEnergy = game.energy
+    let initialHeat = game.laserHeat
+    let initialDischarges = game.dischargeAudio.events
     let before = game.scriptPagePresentation
     let review = NativeInductionUtilityWorkReview(
       nonce: UUID(), job: arm.job,
@@ -279,7 +284,8 @@ struct NativeWayfarerInductionUtilityWorkUnitTests {
     _ = game.admitFlightFire(held: false)
     let afterRelease = game.admitFlightFire(held: true)
     #expect(afterRelease)
-    #expect(game.energy == 256 && game.laserHeat == 0)
+    #expect(game.energy == initialEnergy && game.laserHeat == initialHeat)
+    #expect(game.dischargeAudio.events == initialDischarges)
   }
 
   @Test func closedWorkEnvelopeRejectsEarlierSchemaUnknownProgressAndUnpairedReceivingFields()

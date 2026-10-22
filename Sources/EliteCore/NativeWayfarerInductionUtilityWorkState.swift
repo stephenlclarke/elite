@@ -20,15 +20,20 @@ struct NativeInductionUtilityArm: Codable, Sendable, Equatable {
   let epoch: UUID
   let physicalTime: Double
   let flightSeconds: Double
+  var binding: NativeInductionUtilityBinding?
 
   static func identity(
     authorization: UUID, role: NativeInductionUtilityRole,
     actor: ActorIdentity, player: ActorIdentity, carrier: UUID, revision: UInt64,
-    epoch: UUID, time: Double, flightSeconds: Double, sequence: UInt64
+    epoch: UUID, time: Double, flightSeconds: Double, sequence: UInt64,
+    binding: NativeInductionUtilityBinding? = nil
   ) throws -> UUID {
-    ScriptIdentity.uuid(
+    let original = ScriptIdentity.uuid(
       "induction-enron-remote-arm-v1:\(authorization):\(role.rawValue):\(try NativeFlightReception.hash(actor)):\(try NativeFlightReception.hash(player)):\(carrier):\(revision):\(epoch):\(time.bitPattern):\(flightSeconds.bitPattern):\(sequence)"
     )
+    guard let binding else { return original }
+    return ScriptIdentity.uuid(
+      "induction-enron-remote-arm-v2:\(original):\(try NativeFlightReception.hash(binding))")
   }
   func valid(
     authorization: NativeInductionUtilityAuthorization,
@@ -45,11 +50,15 @@ struct NativeInductionUtilityArm: Codable, Sendable, Equatable {
       (authorization.physicalTime...1e12).contains(physicalTime), flightSeconds.isFinite,
       (authorization.flightSeconds...1e12).contains(flightSeconds)
     else { return false }
+    if let binding, !binding.valid(job: job, role: role, actor: actor, time: physicalTime) {
+      return false
+    }
     return operation
       == (try? Self.identity(
         authorization: self.authorization, role: role,
         actor: actor, player: player, carrier: carrier, revision: inventoryRevision,
-        epoch: epoch, time: physicalTime, flightSeconds: flightSeconds, sequence: sequence))
+        epoch: epoch, time: physicalTime, flightSeconds: flightSeconds, sequence: sequence,
+        binding: binding))
   }
 }
 

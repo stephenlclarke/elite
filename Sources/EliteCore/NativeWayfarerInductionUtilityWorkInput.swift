@@ -47,6 +47,7 @@ extension Game {
       quote.inventoryRevision == commander.equipmentInventory?.revision,
       let body = inductionUtilityContactBody, inductionUtilityRole(body) == quote.role,
       body.physical?.identity == quote.actor,
+      let binding = inductionUtilityBinding(for: body, role: quote.role),
       let player = commander.flightSimulation.player, var child = inductionUtilityChild,
       child.id == quote.job, child.revision == quote.revision,
       var state = child.savedNativeInductionUtility,
@@ -64,14 +65,14 @@ extension Game {
       authorization: state.authorization.operation,
       role: quote.role, actor: quote.actor, player: player, carrier: quote.carrier,
       revision: quote.inventoryRevision, epoch: quote.epoch, time: time, flightSeconds: clock,
-      sequence: sequence)
+      sequence: sequence, binding: binding)
     let arm = NativeInductionUtilityArm(
       operation: operation, sequence: sequence,
       authorization: state.authorization.operation, owner: source.owner, job: child.id,
       role: quote.role, module: source.module(quote.role), kit: source.kit(quote.role),
       actor: quote.actor, player: player, carrier: quote.carrier,
       inventoryRevision: quote.inventoryRevision, epoch: quote.epoch,
-      physicalTime: time, flightSeconds: clock)
+      physicalTime: time, flightSeconds: clock, binding: binding)
     var work = state.modules[index].work ?? .init()
     // Empty arm/review attempts consume no bounded work-history slot or kit.
     if work.segments.last?.intervals == 0 { work.segments.removeLast() }

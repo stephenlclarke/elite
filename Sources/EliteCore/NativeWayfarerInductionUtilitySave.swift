@@ -101,6 +101,18 @@ enum NativeInductionUtilitySave {
         throw SaveError.invalidCommander
       }
     }
+    for raw in modules {
+      guard let work = (raw as? [String: Any])?["work"] as? [String: Any],
+        let segments = work["segments"] as? [[String: Any]]
+      else { continue }
+      if segments.contains(where: {
+        ($0["arm"] as? [String: Any])?.keys.contains("binding") == true
+      }) {
+        guard NativeInductionCrewLogSave.supportsUtilityBinding(schema) else {
+          throw SaveError.invalidCommander
+        }
+      }
+    }
     guard bytes.count <= 1_048_576 else { throw SaveError.invalidCommander }
     let decoded = try JSONDecoder().decode(NativeInductionUtilityState.self, from: bytes)
     guard
