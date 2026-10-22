@@ -5659,6 +5659,20 @@
       "route_expected_union": 339,
       "route_push": "author released to one coherent push, no new branch/PR",
       "no_extra_test_campaign": true
+    },
+    {
+      "event": "G11 repeated actual ID aggregate projection fault classified; explicit flat private COW field ownership scope approved",
+      "date": "2026-10-22",
+      "head": "e399275a4b5da78726a2796ec5888e86040a2038",
+      "run": 39778352147,
+      "compile_seconds": 803.25,
+      "runtime_fault": "signal10 ScriptInstance.id.read150 / same retainedactor Tab path",
+      "qualified_completed_methods": 0,
+      "issue": 98,
+      "owner": "Mission Coder1",
+      "approved_scope": "private payload backing directly owns identical53fields; no intermediate stored value; explicit complete referencecopy/equality/all49uniqueness/flatJSON invariant",
+      "runtime_fix_proven": false,
+      "no_extra_diagnostic_campaign": true
     }
   ],
   "two_developer_phase": {
