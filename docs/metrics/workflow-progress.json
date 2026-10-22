@@ -4987,7 +4987,7 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08 complete seed-service loop on feature/wayfarer-seed-service; ready workshop findings at packet boundary",
-      "G3": "M04.P01 original fleet catalogue joins; retains PR51/55/56 final qualification/merge"
+      "G3": "M04.P02 physical calibration/clearance;retainsPR51/55/56qualification/merge"
     },
     "reviewer": "MBA/G2",
     "merge_owner": "Feature author; no separate integrator",
@@ -5209,9 +5209,9 @@
         "new_methods": 11,
         "merged_at": null,
         "playable_at": null,
-        "source_state": "Last legacy direct shared-branch source packet; not independently qualified or included in candidate1.4.901",
-        "compile_seconds": 671.56,
-        "execution_seconds": 45.702,
+        "source_state": "Completeworkshopsource/unitqualified;PR54authormergepending;notnewapp/nativejourney",
+        "compile_seconds": 730.78,
+        "execution_seconds": 53.9,
         "ready_findings": [],
         "finding_owner": "G1",
         "finding_kind": "Overbroad whole-Gallery fixture assertion; scope to exact workshop child; retain unrelated recovery entries",
@@ -5221,10 +5221,13 @@
         "correction_pr": 54,
         "correction_review": "MBA CLEAN; exact-instance/digest exclusion and immutability/history preserved; production unchanged",
         "correction_unit_run": 39741278033,
-        "correction_unit_status": "d33own39741278033SUCCESS;MBAaffectedartifactverificationpending",
-        "awaiting_verification_findings": [
+        "correction_unit_status": "MBAverifiedd33actual255methods287casesALLPASS;all11WorkshopPASS;zeroerrors/skips/crash",
+        "awaiting_verification_findings": [],
+        "closed_findings": [
           53
-        ]
+        ],
+        "correction_verified_methods": 255,
+        "correction_verified_expanded_cases": 287
       },
       {
         "id": "C08.P06.B.seed",
@@ -5264,7 +5267,7 @@
         "first_push_observed_at": "2026-10-22T07:35:56Z",
         "source_state": "Sourcecomplete/source-reviewedclean;hosted257executionpending",
         "unit_run": 39741603995,
-        "unit_status": "Existing257-method jobactive;noactualpassyet",
+        "unit_status": "39741603995SUCCESS;actualartifact257/2newverificationpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/55#issuecomment-6335390517",
         "source_review_result": "MBA CLEAN:actual system/inventory viewport and normalized help-return contexts;2puremethods;exact255+2=257;noinput/weapon/missionhelpchange"
       },
@@ -5307,7 +5310,21 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "OriginalFleetDefinition/catalogueresolver/necessarymaintainedgenerator/puretests/notes;noGame/mission/save/physicalpolicy",
-        "limits": "171exactIDs/truthfulperhullblockers;noactivationbypass/newart/research/unaffectedmediaregeneration"
+        "limits": "171exactIDs/truthfulperhullblockers;noactivationbypass/newart/research/unaffectedmediaregeneration",
+        "disposition": "Implementedincurrentsource;noconcretegap/nochange",
+        "source_evidence": "Exact171typedIDs/authoredfields/provenance/conflicts/blockers;maintainedgenerator+existingfleetunitdefinitions",
+        "qualification_scope": "Sourceinspection/existingtestdefinitions;nofreshexecution/nativeactivation"
+      },
+      {
+        "id": "M04.P02.physical-calibration",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T07:51:10.043861+00:00",
+        "phase_entry_state": "Boundedactualphysicalconversion/calibrationgap assigned;creditcompliantbehavior",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "Exactcalibrationmetadata/ShowroomGeometryphysicalconversion/pureboundsunits/notes",
+        "limits": "RetainSH025;nounapprovedscales/showroomphysicalnormalization/runtimebypass/newresearch"
       }
     ],
     "model_settings": {
