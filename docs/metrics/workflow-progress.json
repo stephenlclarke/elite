@@ -5456,6 +5456,20 @@
       "t03_failed_run": 39772601798,
       "failure_classification_owner": "MBA",
       "no_new_diagnostic_campaign": true
+    },
+    {
+      "event": "C01 corrected run success pending actual report qualification; T03 compile92 closed, semantic/runtime results still unqualified",
+      "date": "2026-10-22",
+      "c01_head": "fff52f3734aa6167128597087c55088aa3314f03",
+      "c01_run": 39773443382,
+      "c01_conclusion": "success",
+      "c01_artifact_qualified": false,
+      "closed_issue": 92,
+      "t03_compile_seconds": 855.62,
+      "t02_compile_seconds": 552.66,
+      "t03_runtime": "unattributed signal4; no371qualification",
+      "t02_runtime": "unattributed signal4; no351qualification",
+      "no_new_diagnostic_campaign": true
     }
   ],
   "two_developer_phase": {
