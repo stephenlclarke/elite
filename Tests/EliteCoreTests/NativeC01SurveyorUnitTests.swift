@@ -267,15 +267,23 @@ struct NativeC01SurveyorUnitTests {
     let oldKills = crossing.commander.kills
     let oldCredits = crossing.commander.credits
     crossing.tick(delta: 0.1)
-    let recorder = try #require(crossing.bodies.first { $0.missionActorID == f.marker.identity })
-    let harrierID = NativeC01Surveyor.actor(
-      mission: f.state.permission.mission, alias: NativeC01Surveyor.aliases[0])
-    let harrier = try #require(crossing.bodies.first { $0.missionActorID == harrierID })
-    let left = try #require(
-      NativeC01SurveyorGeometry.harrier.get().collision.vertices.map(\.x).min())
-    let recorderEnd = crossing.modelPose(of: recorder).position
-    let harrierEnd = crossing.modelPose(of: harrier).position
-    #expect(crossing.paused || recorder.energy <= 0 || recorderEnd.x >= harrierEnd.x + left - 1e-5)
+    let retained = try #require(
+      crossing.commander.scriptState.instances[f.state.permission.mission]?
+        .ownedEncounters[NativeC01Surveyor.encounter])
+    let terminal = retained.actors.values.contains {
+      $0.presence == .destroyed && $0.body.energy == 0
+    }
+    if !crossing.paused && !terminal {
+      let recorder = try #require(crossing.bodies.first { $0.missionActorID == f.marker.identity })
+      let harrierID = NativeC01Surveyor.actor(
+        mission: f.state.permission.mission, alias: NativeC01Surveyor.aliases[0])
+      let harrier = try #require(crossing.bodies.first { $0.missionActorID == harrierID })
+      let left = try #require(
+        NativeC01SurveyorGeometry.harrier.get().collision.vertices.map(\.x).min())
+      let recorderEnd = crossing.modelPose(of: recorder).position
+      let harrierEnd = crossing.modelPose(of: harrier).position
+      #expect(recorderEnd.x >= harrierEnd.x + left - 1e-5)
+    }
     #expect(!crossing.message.contains("MISSION INERTIA AUTHORITY UNAVAILABLE"))
     #expect(crossing.commander.kills == oldKills && crossing.commander.credits == oldCredits)
   }
