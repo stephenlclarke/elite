@@ -127,6 +127,10 @@ private final class C01SurveyorFixture {
     game.speed = 0
     game.messageTime = 10
     let source = try #require(state.surveyor?.source)
+    // Observe the authored source nearby. The arrival pose is far enough away
+    // for the normal culler to remove both actors before this unit's assertions.
+    game.commander.flightSimulation.pose = .init(
+      position: source.position + .init(0, 0, -1000), orientation: source.reference.orientation)
     var mission = try #require(game.commander.scriptState.instances[source.mission])
     for (index, alias) in NativeC01Surveyor.aliases.enumerated() {
       var actor = try #require(mission.ownedEncounters[NativeC01Surveyor.encounter]?.actors[alias])
@@ -243,6 +247,8 @@ struct NativeC01SurveyorUnitTests {
     if work {
       game.workBraking = .init(velocity: .init(100, 0, 0), angularVelocity: .init(0, 0, 0))
     }
+    try #require(game.bodies.count == 2)
+    for body in game.bodies { try #require(body.position.length < 1200) }
     let before = game.commander.flightSimulation.physicalTime
     game.tick(delta: 0.1)
     #expect(!game.paused && game.screen == .front)

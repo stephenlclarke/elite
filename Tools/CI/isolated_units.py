@@ -440,6 +440,10 @@ METHODS = {
         "explicitLifecycleResetStillClearsRejectionAndActiveContacts",
     ),
     "AsteroidDebrisContactTests": (
+        "fastThinCrossingRequiresARealMeshWitnessDespiteClearEndpoints",
+        "nearMissIsContinuouslyClearAndExhaustedWorkNeverMeansContactOrAbsence",
+        "thinFirstFeatureCannotBeLostBetweenBoundedLeafSamples",
+        "sealedFrontierRequiresTheExactPairPoseAndOneUse",
         "aMaterialCornerResponseSeparatesAllCertifiedFacesWithoutAddingEnergy",
         "aThreeFaceResponseRetainsAuthoredRestitutionAndMomentum",
         "aContinuedContactInsideTheFirstLeafAdvancesItsCertifiedFrontier",
