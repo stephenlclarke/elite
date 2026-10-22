@@ -4987,7 +4987,8 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08 complete seed-service loop on feature/wayfarer-seed-service; ready workshop findings at packet boundary",
-      "G3": "M05.P01 native pack validation/capability reporting;retainsPR51/55/56qualification/merge"
+      "G3": "K06.P01 finite issue/same-owner return;retainsPR51/56qualification/merge",
+      "G4": "T02.P01.provider native uncrewed practice targets/harmless native hits"
     },
     "reviewer": "MBA/G2",
     "merge_owner": "Feature author; no separate integrator",
@@ -5360,7 +5361,37 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "MissionPackInput/ScriptPack/PackValidation/narrowNativeMissionMenu/puretests/notes;noG1Director/Game/mission/save",
-        "limits": "Noinvalidpackmutation/rewards;nogenericlanguage/hotreload/replayframework"
+        "limits": "Noinvalidpackmutation/rewards;nogenericlanguage/hotreload/replayframework",
+        "disposition": "Existingvalidatedreferenceinstallation/lockedacceptance meetsledger;nochange",
+        "scope_correction": "Missingcapabilityisnotinvalidpack;preserveexplicitMISSIONREFERENCEanddependencylocking;noScriptRuntimeguardauthorized",
+        "source_evidence": "MissionPackInput;ScriptPackLibraryread;PackValidation;Nativepicker;ScriptDirectoracceptanceguard;existingMissionPackInputTests",
+        "qualification_scope": "Source/existingtestdefinitionsonly;nofreshexecution"
+      },
+      {
+        "id": "K06.P01.issue-return",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T07:55:12.050182+00:00",
+        "phase_entry_state": "Boundedactualfiniteissue/sameownerreceivinggapimplementationassigned",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "EquipmentMissionIssueContract/EquipmentIssueTransactions/narrowreceivingpolicies/puretests/notes;noG1Game/mission/save",
+        "limits": "Reusecurrentloan/bondledgers;nonewframework/campaign",
+        "disposition": "Existingfoundationcredited;noconcretegap/nochange",
+        "qualification_scope": "Source/existingunitdefinitionsonly;nofreshexecution/campaignspecificcompletion"
+      },
+      {
+        "id": "T02.P01.provider",
+        "owner": "G4",
+        "session": "01a16256-13d9-7a00-bd74-07d4dbf942aa",
+        "assigned_at": "2026-10-22T07:57:16.747470+00:00",
+        "phase_entry_state": "Missing native uncrewed practice provider explicitly assigned",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "NewNativePracticeprovider/PracticeTargettests;existingnativehunksrequireexactreservation",
+        "dependencies": "AcceptedT02/T03authoring;actualnativeadmission/hits;noordinaryharmfacts",
+        "limits": "NoG1/G3overlap,no schema changes without decision,no tutorial reward,genericlanguage orlocalintegrationjobs"
       }
     ],
     "model_settings": {
@@ -5379,7 +5410,12 @@
         "source": "Human confirms Coder2 High; Coder2 also runs the existing MBA review workflow",
         "implementation_policy": "Reviewer only; Mission Coder1 supersedes Coder2 as difficult-coding reserve"
       },
-      "comparison_caveat": "Worker count and reported effort settings may differ from the prior period; do not attribute a change solely to parallelism."
+      "comparison_caveat": "Worker count and reported effort settings may differ from the prior period; do not attribute a change solely to parallelism.",
+      "G4": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "source": "Latest explicit human report and authorization; no tool model override"
+      }
     },
     "escalations": [],
     "escalation_reserve": {
@@ -5420,6 +5456,15 @@
         "Unfinished workshop loop"
       ]
     },
-    "branch_policy": "Both authors use feature branches/PRs for new work; seed branches fromfcf, no unreviewed directsharedpush; fcf lastlegacydirectpacket. No history rewrite/integrator."
+    "branch_policy": "Both authors use feature branches/PRs for new work; seed branches fromfcf, no unreviewed directsharedpush; fcf lastlegacydirectpacket. No history rewrite/integrator.",
+    "resource_changes": [
+      {
+        "observed_at": "2026-10-22T07:57:16.747470+00:00",
+        "change": "Human explicitly adds third developer G4 High",
+        "session": "01a16256-13d9-7a00-bd74-07d4dbf942aa",
+        "scope": "T02.P01.provider;newNativePracticefiles/tests;existinghunksreservedbeforeedit",
+        "comparison_caveat": "Retain baseline/phase history;worker count changed;no causal speedup claim"
+      }
+    ]
   }
 }
