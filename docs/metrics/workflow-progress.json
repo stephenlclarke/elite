@@ -5451,18 +5451,17 @@
         "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support",
         "format_precedence": "Highestrequiredfeaturewins:practice121122,network123124,terminal125126;earlierformatsnotwidened",
         "source_state": "Correction66 assigned; full MBA source review continues",
-        "head": "502ff3810db64eab062d261e58893963409f4ac5",
+        "head": "bc15c615f211b34273d72bbd94f0993a72e2bd93",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/65",
-        "ready_findings": [
-          70
-        ],
+        "ready_findings": [],
         "finding_owner": "G4",
         "unit_status": "MBA actual502run39751691960 compilefailure3mutating fixture calls inside Testing macros; no Swift execution/XML/PASS;70concrete,66stillawaiting",
         "awaiting_verification_findings": [
-          66
+          66,
+          70
         ],
-        "unit_run": 39751691960,
-        "source_review_result": "MBA full provider review and correction502ff381 clean; no further actionable finding; actual288-method run pending"
+        "unit_run": 39754379830,
+        "source_review_result": "MBA exact three mutating macro-call bound-local correction clean; full provider retained; actual execution pending"
       },
       {
         "id": "C08.commit-charter.audit",
@@ -5592,10 +5591,10 @@
         "playable_at": null,
         "ownership": "G1C08terminal125126+exactScriptCompletion.valid/C08cluematcherhunks",
         "limits": "Once7600/accreditation/clue;preserveheldcontracts;nogenericreceiptloosening/forgedrevisionacceptance",
-        "head": "a7f337da68f1e78a09804d293a455da91a2f0944",
+        "head": "05fa6dfc443c624a081499538b456e62ef7e1ccb",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/69",
-        "source_state": "Complete terminal source+8methods pushed; actualDIRTY requires single currentbase composition",
-        "composition_policy": "Expected305actualsetunion269base+14seed+8audit+6network+8terminal; earlier57/59/62supersedeonlyaftermerge/inclusionproof",
+        "source_state": "Final305-method composition pushed, GitHub mergeState CLEAN; MBA newSenn/composition review and finalhead execution pending",
+        "composition_policy": "Exact305=293terminal+269shared-257common, author proved allprior entries retained; supersede57/59/62onlyaftermerge/inclusionproof",
         "qualification_scope": "Author Core/declarations/Python/docs checks only; actual finalhead GitHub/MBA qualification pending"
       },
       {
@@ -5660,11 +5659,15 @@
           "Tools/CI additive six AlienHyperspaceDriveUnitTests and exact expected count; existing push-triggered workflow only"
         ],
         "compatibility_scope": "Human waives old-save compatibility; no legacy deterministic-plan replay fallback authorized",
-        "head": "0b16780d38d55a233bfdf8d3d1ee193892eed039",
+        "head": "ffe1311cb430036c1efc7e291b46d61b743981d2",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/68",
-        "source_state": "Source pushed six focused methods;273 maintained union; automatic hosted qualification and MBA review pending",
+        "source_state": "Test-helper correction pushed; production273selectionunchanged; fullsource0bclean retained",
         "source_review_result": "MBA full0b16780d bug/performance/style source review clean; exact273=267+6; existing hosted39752811646 pending",
-        "unit_run": 39752811646
+        "unit_run": 39754462995,
+        "awaiting_verification_findings": [
+          71
+        ],
+        "unit_status": "Initial0bcompilefailed borrowingGame helperclosurecapture, no XML/PASS; source correctionffe pushed, actual final273 job pending"
       },
       {
         "id": "M08.P04.mining-control",
@@ -5861,6 +5864,15 @@
         "assigned_at": "2026-10-22T09:14:10.527855+00:00",
         "ownership": "Bounded actual earned blueprint\u2192paid finite native fabrication quote/transaction source preflight",
         "limits": "Preserve hull activation/gating SH163U05/SH171finale; no inventedprices/resources/blueprints/shipfit; shared state edits needreservation",
+        "merged_at": null,
+        "playable_at": null
+      },
+      {
+        "id": "C01.P02.A.recover-surveyor",
+        "owner": "G1",
+        "assigned_at": "2026-10-22T09:20:03.503256+00:00",
+        "ownership": "Exact accepted Glass Meridian stage3 native disabled Harrier/original recorder source and actual recovery joins; new focused units",
+        "limits": "Confirm actual authoring/hull/sourcebindings; no fabricated recoveredreceipt/modelscale/people, no lateraudit/reward/clue; coordinate G4 lesson/MC1 source hunks",
         "merged_at": null,
         "playable_at": null
       }
