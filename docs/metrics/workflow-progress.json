@@ -5137,27 +5137,29 @@
         "handoff_at": "2026-10-22T07:17:59Z",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6335090954",
         "unit_run": 39739511461,
-        "unit_status": "Existing final258run39739511461active; retainedf791247/279PASS and52CLOSED",
+        "unit_status": "Finalb3existing39739511461FAIL:258methods290cases,257/289PASS, only inherited53; all3inventoryPASS",
         "source_state": "Issue52 corrected and closed after247/279PASS; actual selector merge conflict resolved by author; finalb3 composition source-clean,258-method run pending",
         "source_review_result": "MBA finalb3 composition clean; inventory production/tests unchanged from verifiedf791",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
         "latest_composition_review_seconds_reported": 119,
         "review_latency_caveat": "Includes priority compiler-correction review, not pure source-review CPU time",
-        "ready_findings": [],
-        "finding_owner": "G3",
+        "ready_findings": [
+          53
+        ],
+        "finding_owner": "G1authors53;G3composesexactfixforPR51",
         "finding_kind": "Fixture expects indentation removed by existing wrapper; preserve actual4mount/legacy/empty/no-subject assertions",
         "passed_new_methods": 2,
         "failed_new_methods": 1,
         "verification_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6334812977",
-        "compile_seconds": 748.87,
-        "execution_seconds": 46.292,
+        "compile_seconds": 705.13,
+        "execution_seconds": 44.327,
         "awaiting_verification_findings": [],
         "correction_handoff_at": "2026-10-22T07:02:04Z",
         "correction_source_review_result": "MBA f791 bounded correction/final composition CLEAN; production unchanged; four literal indentation expectations only; originalassertionsretained",
         "selector_review": "Finalb3 exact union of f791247 and fcf255 equals258; no missing/unexpected methods",
         "issue_metadata": "52CLOSED after actual correction verification; no ready inventory finding",
-        "merge_blocker": "Actualselectorconflict resolved byauthor; finalheadchecks/qualification pending",
+        "merge_blocker": "Inherited53singlefixtureassertion; no inventory production finding; correctedfinalheadchecks/MBApending",
         "closed_findings": [
           52
         ],
@@ -5173,6 +5175,21 @@
           "compile_seconds": 783.0,
           "execution_seconds": 54.632,
           "scope": "Inventory3/52 and retainedshowroom/clinic passed; does not qualify new258head"
+        },
+        "final_execution": {
+          "head": "b3b6b89e18610ef32d191019316d2f78790f6c33",
+          "run": 39739511461,
+          "methods": 258,
+          "expanded_cases": 290,
+          "passed_methods": 257,
+          "passed_expanded_cases": 289,
+          "failed_methods": 1,
+          "assertion_failures": 1,
+          "errors": 0,
+          "skips": 0,
+          "crash": false,
+          "failed_issue": 53,
+          "inventory_methods_passed": 3
         }
       },
       {
@@ -5228,11 +5245,11 @@
         "id": "M02.P01.controls",
         "owner": "G3",
         "assigned_at": "2026-10-22T07:31:56.858334+00:00",
-        "phase_entry_state": "Bounded remaining mismatch correction assigned; credit compliant existing behavior",
+        "phase_entry_state": "Concrete missing-overflow paging-hint gap identified; sixbindings/menu/heldReturn/selection credited",
         "source_complete_at": null,
         "merged_at": null,
         "playable_at": null,
-        "ownership": "FlightControlInput/control projection; macOS key/menu hunks; PlayerHelp controls only; pure tests/pairednotes; excludes G1 mission/simulation"
+        "ownership": "Only PlayerHelp.context system/inventory paging-hint hunks;two pure viewport/help methods;pairednotes;G1missionhunks excluded"
       }
     ],
     "model_settings": {
@@ -5262,7 +5279,7 @@
       "model": null,
       "active_assignment": null
     },
-    "qualification_queue_note": "53ready routine G1fixture correction; inventoryfinal39739511461active may inherit samefinding; no duplicateissue; MBA source reviews complete",
+    "qualification_queue_note": "53singleknownfixturefinding blocks workshop/inventory aggregates; G1corrects/G3composes; MBA existingartifacts verified once; controlhint sourcework and seed continue",
     "complete_features_merged": 1,
     "merged_feature_count_scope": "Shared development branch complete featurePR48 only; source qualification/individual packets do not add counts",
     "new_usable_build_deliveries": 0,
