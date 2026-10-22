@@ -4517,6 +4517,14 @@
       "unit_status": "existing hosted active; prior two signal10 runs remain unqualified",
       "next_assigned": "C08.P05.B.source",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Issue41 next-run bounded crash evidence capture assigned",
+      "ledger_parent": "C08.P05.A.I41",
+      "owner": "G1 at normal source boundary",
+      "reviewer": "MBA",
+      "scope": "Existing hosted unit failure artifact only; no new run, assertions or failure status changes",
+      "usable_build_delivered": false
     }
   ]
 }
