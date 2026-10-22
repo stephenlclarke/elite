@@ -336,7 +336,11 @@ final class AsteroidContactFrame {
       let mass = game.asteroidDebrisMassKg(body)
       let mesh: Mesh
       let collisionMass: Double
-      if let recorder = game.recordRecoveryCollision(body) {
+      let surveyor = game.c01SurveyorCollision(body)
+      if let surveyor {
+        mesh = surveyor.mesh
+        collisionMass = surveyor.mass
+      } else if let recorder = game.recordRecoveryCollision(body) {
         mesh = recorder.mesh
         collisionMass = recorder.mass
       } else if let original = game.identifiedSalvageCollision(body) {
@@ -359,7 +363,8 @@ final class AsteroidContactFrame {
           pose: game.modelPose(of: body), velocity: physical.velocity,
           mesh: mesh,
           mass: collisionMass,
-          debris: mass != nil || movingStation, asteroid: mass != nil, station: station,
+          debris: mass != nil || movingStation || surveyor != nil, asteroid: mass != nil,
+          station: station,
           hull: body.hull, localOrientation: body.orientation,
           rotation: body.rotation))
     }

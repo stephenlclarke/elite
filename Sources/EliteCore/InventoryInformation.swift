@@ -36,6 +36,11 @@ extension Game {
     }
     append("Protected property - not ordinary trade cargo", .yellow)
     append("Hold totals include protected and reserved space.", .cyan)
+    if glassMeridianMission?.savedGlassMeridian?.surveyor?.held == true {
+      append(
+        "Glass Meridian original flight recorder: 8kg protected; retained for the investigation",
+        .cyan)
+    }
     if commander.nativeCaptiveCount > 0 {
       append(
         "Captured crew: \(commander.nativeCaptiveCount) (included once in Slaves tonnes)", .orange)

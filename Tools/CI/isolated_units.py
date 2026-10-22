@@ -293,6 +293,16 @@ METHODS = {
         "rotatingSilhouetteKeepsProjectedHullButRevealsNoMaterialsTexturesOrInternalEdges",
         "silhouetteClipsNearPlaneAndViewportAndRefusesNonFiniteProjectionInputs",
     ),
+    "NativeC01SurveyorUnitTests": (
+        "harrierKeepsEveryVisualFaceAt65MetresAndUsesClosedConservativeCollision",
+        "convexEnvelopeRejectsNonfiniteFlatAndDegenerateGeometry",
+        "originalSourceUsesActualPlanetStarFrameAndDetached80MetreRecorderWithoutGrantingCustody",
+        "captureRequiresOriginalNativeRecorderFittedScoopsAndMeasuredSafeIngress",
+        "protectedRecorderUsesEightKilogramsAndNoFabricatedMissionTonne",
+        "recorderDestructionIsTerminalAndHarrierLossAfterSeparationDoesNotDuplicateRecorder",
+        "currentRecorderFormatsRejectEarlierEmbeddedUnknownAndExtraClaims",
+        "stageThreeRetainsBothReadingsAndHasNoStageFourRewardClueOrTerminalReceipt",
+    ),
     "NativeGlassMeridianUnitTests": (
         "unacceptedOpeningRoutesToTheActualBoardAndRejectsChangedPackPins",
         "entryRequiresThreeDistinctActualWorldsAndTwoIdentifiedTypesFromTheSameOwner",

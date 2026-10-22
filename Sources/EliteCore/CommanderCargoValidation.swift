@@ -77,7 +77,11 @@ extension Commander {
     guard alienStorageStateValid else { return nil }
     // Combine actual stored mass before rounding once. Fitted modules and applied
     // upgrades no longer occupy cargo space.
-    let mass = salvageLedger.inventoryMassKg + (alienStorageState?.current.storedMassKg ?? 0)
+    let recorderMass = scriptState.instances.values.reduce(0.0) { mass, mission in
+      mass + (mission.savedGlassMeridian?.surveyor?.held == true ? 8 : 0)
+    }
+    let mass =
+      salvageLedger.inventoryMassKg + (alienStorageState?.current.storedMassKg ?? 0) + recorderMass
     let tonnes = ceil(mass / 1000)
     guard mass.isFinite, mass >= 0, tonnes.isFinite, tonnes < Double(Int.max) else { return nil }
     let reserved = total.addingReportingOverflow(Int(tonnes))

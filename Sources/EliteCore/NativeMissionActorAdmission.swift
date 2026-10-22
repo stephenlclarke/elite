@@ -187,6 +187,9 @@ extension Game {
       if withReadOnlyCommander({ NativeOriginalRescueJourney.consumed(actorID, commander: $0) }) {
         continue
       }
+      if withReadOnlyCommander({ NativeC01Surveyor.consumed(actorID, commander: $0) }) {
+        continue
+      }
       let template = source.actors[index]
       guard template.presence != .destroyed, template.canonicalBody.energy > 0 else { continue }
       if present.contains(template.actorID) {

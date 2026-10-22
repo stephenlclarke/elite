@@ -10,7 +10,7 @@ struct NativeGlassMeridianUnitTests {
       world: owner, system: .init(galaxy: 0, system: system),
       resource: Game.worldResourceIdentity("main-station-v1:main-orbital:0:\(system)"))
   }
-  private func fixture() throws -> NativeGlassMeridianState {
+  func fixture() throws -> NativeGlassMeridianState {
     let owner = UUID()
     let mission = UUID()
     let carrier = UUID()
@@ -44,7 +44,7 @@ struct NativeGlassMeridianUnitTests {
         visited: [origin, station(owner: owner, system: 185), station(owner: owner, system: 93)],
         identified: identified, physicalTime: 0))
   }
-  private func sealed(_ state: NativeGlassMeridianState, ordinal: Int, start: Double = 10) throws
+  func sealed(_ state: NativeGlassMeridianState, ordinal: Int, start: Double = 10) throws
     -> NativeGlassMeridianReading
   {
     let p = state.permission

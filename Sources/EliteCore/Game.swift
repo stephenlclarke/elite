@@ -705,6 +705,7 @@ public struct Game: Sendable {
       nativeMeasuredExtractionPending = nil
       nativeRecordRecoveryPending = nil
       nativeCrewLogPickupPending = nil
+      nativeC01SurveyorPending = nil
       nativeRecordRecoveryIdentificationPending = nil
       nativeIdentifiedSalvagePending = nil
     }
@@ -716,6 +717,7 @@ public struct Game: Sendable {
   var nativeMeasuredExtractionPending: NativeMeasuredExtractionPending?
   var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending?
   var nativeCrewLogPickupPending: NativeCrewLogPickupPending?
+  var nativeC01SurveyorPending: NativeC01SurveyorPending?
   var nativeRecordRecoveryIdentificationPending: WayfarerRecordRecoveryIdentificationPending?
   var nativeIdentifiedSalvagePending: NativeIdentifiedSalvagePending?
   var nativeCrimboMotionSample: NativeCrimboMotionSample?
@@ -1902,6 +1904,10 @@ public struct Game: Sendable {
     let measuredPod = candidate.measuredEscapePod()
     let recorderPod = candidate.recordRecoveryEscapePod()
     let originalPod = candidate.identifiedSalvageEscapePod()
+    let surveyorPod = candidate.commander.fittedEquipment(at: .utility(.escapePod)).flatMap {
+      fitted in
+      try? candidate.commander.purchaseSnapshot().items.first(where: { $0.id == fitted.id })
+    }
     do {
       guard try candidate.consumeNativeEquipment("Escape Pod") else { return }
     } catch {
@@ -1920,6 +1926,7 @@ public struct Game: Sendable {
       try candidate.closeUncollectedInductionClinicOnExit(.escapePod)
       try candidate.loseHeldInductionClinicOnExit(.escapePod)
       try candidate.loseInductionWorkshopOnExit(.escapePod)
+      try candidate.loseC01SurveyorOnEscape(surveyorPod)
     } catch {
       notify("CLINIC RESERVATION LOSS NOT SAVED - ESCAPE NOT COMMITTED")
       return
@@ -2581,6 +2588,7 @@ public actor GameRuntime {
     if game.docked { game.stationAutoDefence = nil }
     commitGlassMeridianScan(start: glassMeridianStart)
     commitGlassMeridianBeacons()
+    commitC01Surveyor(startTime: salvageStart, startPlayer: salvagePlayer)
     commitFlightReception(start: flightReceptionStart)
     commitOrbitalOutlookScan(start: outlookStart)
     commitOriginalSurveyScan(start: surveyStart)
@@ -2662,6 +2670,7 @@ public actor GameRuntime {
     commitMeasuredExtraction()
     commitRecordRecoveryLoss()
     commitIdentifiedSalvageLoss()
+    commitC01Surveyor(startTime: startPhysicalTime, startPlayer: startPlayer)
     game.observeSelectedFleetDiscovery()
     game.observeNativeCrimboAttainedMotion(
       delta: delta, flightWasActive: wasLive && !wasDocked && localActive && flightActive,

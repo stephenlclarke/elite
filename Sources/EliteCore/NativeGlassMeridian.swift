@@ -31,6 +31,7 @@ struct NativeGlassMeridianState: Codable, Sendable, Equatable {
   let permission: NativeGlassMeridianPermission
   var readings: [NativeGlassMeridianReading] = []
   var losses: [NativeGlassMeridianMarkerLoss] = []
+  var surveyor: NativeC01SurveyorState?
 }
 final class NativeGlassMeridianPending: Sendable {
   let sealed: NativeGlassMeridianReading
@@ -54,7 +55,7 @@ enum NativeGlassMeridian {
   static let source = ContractStationIdentity(galaxy: 0, system: 7, stationClass: "main-orbital")
   static let objective = SystemIdentity(galaxy: 0, system: 185)
   static let laterStages =
-    "Opening complete. Stages 3-9 are not yet available; no payment or final clue."
+    "Clocks verified. Recover the original recorder at Navidor; stages 4-9 remain unavailable. No payment or final clue."
 
   static func availability(_ pack: ScriptPack, accepted: Bool) -> String? {
     guard pack.manifest.stateID == stateID, pack.digest == digest,
@@ -176,6 +177,10 @@ extension Game {
   }
   var glassMeridianScanStatus: String? {
     guard let state = glassMeridianMission?.savedGlassMeridian else { return nil }
+    if state.surveyor?.loss != nil { return "MERIDIAN RECORDER LOST - ORIGINAL CANNOT BE REISSUED" }
+    if state.surveyor?.held == true {
+      return "MERIDIAN ORIGINAL RECORDER ABOARD - 8KG PROTECTED / STAGE FOUR UNAVAILABLE"
+    }
     if state.readings.count == 2 { return NativeGlassMeridian.laterStages }
     let elapsed = nativeGlassMeridianRuntime?.observation?.seconds ?? 0
     return "MERIDIAN \(state.readings.count)/2 \(String(format: "%.1f", elapsed))/12s - "
