@@ -704,6 +704,7 @@ public struct Game: Sendable {
       nativeFlightReceptionPending = nil
       nativeMeasuredExtractionPending = nil
       nativeRecordRecoveryPending = nil
+      nativeCrewLogPickupPending = nil
       nativeRecordRecoveryIdentificationPending = nil
       nativeIdentifiedSalvagePending = nil
     }
@@ -714,6 +715,7 @@ public struct Game: Sendable {
   var nativeFlightReceptionPending: NativeFlightReceptionPending?
   var nativeMeasuredExtractionPending: NativeMeasuredExtractionPending?
   var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending?
+  var nativeCrewLogPickupPending: NativeCrewLogPickupPending?
   var nativeRecordRecoveryIdentificationPending: WayfarerRecordRecoveryIdentificationPending?
   var nativeIdentifiedSalvagePending: NativeIdentifiedSalvagePending?
   var nativeCrimboMotionSample: NativeCrimboMotionSample?
@@ -2553,6 +2555,7 @@ public actor GameRuntime {
     commitRecordRecoveryCapture(
       startTime: salvageStart, startPlayer: salvagePlayer,
       committedIdentification: committedRecordIdentification)
+    commitInductionCrewLogCapture(startTime: salvageStart, startPlayer: salvagePlayer)
     commitRecordRecoveryIdentification(start: recordStart)
     let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()
@@ -2720,6 +2723,7 @@ public actor GameRuntime {
       _ = try candidate.recordIdentifiedSalvageLossIfNeeded()
       try candidate.retryRecordRecoveryIdentification()
       try candidate.retryRecordRecoveryCapture()
+      try candidate.retryInductionCrewLogCapture()
       try candidate.retryIdentifiedSalvageCapture()
       stage = .nativeDock
       try validateNativeDockEvidenceForSave(&candidate)

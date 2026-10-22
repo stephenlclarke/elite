@@ -53,6 +53,7 @@ extension Game {
       return
         "Review Senn's induction at Avenor after an ordinary delivery or native commodity sale."
     }
+    if let status = inductionCrewLogStatus { return status }
     if state.loss != nil || state.cassetteLoss != nil || state.seedKeyLoss != nil {
       return "The original consignment was lost. No replacement stock or success is granted."
     }
@@ -81,8 +82,11 @@ extension Game {
 
   var wayfarerInductionDestination: String {
     let state = wayfarerInductionMission?.savedWayfarerInduction
+    if state?.crewLog != nil {
+      return "Original recorder protected / stage9 Enmadan launch receiving not yet available"
+    }
     if state?.seedReception != nil {
-      return "Cevilis custody-recorder recovery / stages8-14 unavailable"
+      return "Cevilis G01-S211 / original custody-recorder recovery"
     }
     if state?.seedKey != nil {
       return "Lareria receiving cradle, G01-S091 / original ark receiving and key return"

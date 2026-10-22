@@ -1,9 +1,12 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 83
-  static let alienVersion = 84
-  static func contains(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
+  static let version = 85
+  static let alienVersion = 86
+  static func supportsPickup(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
+  static func contains(_ schema: Int?) -> Bool {
+    supportsPickup(schema) || schema == 83 || schema == 84
+  }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
     commander.scriptState.instances.values.contains(where: NativeInductionCrewLogPack.marked)
   }
@@ -20,7 +23,8 @@ enum NativeInductionCrewLogSave {
         parent.version == NativeWayfarerInduction.version,
         parent.digest == NativeWayfarerInduction.digest,
         let source = try? NativeInductionCrewLogSource(parent: leaf),
-        state.shapeValid(parent: leaf), state.authorization.manifest == source.manifest,
+        state.shapeValid(parent: leaf), state.capture == leaf.crewLog,
+        state.authorization.manifest == source.manifest,
         state.authorization.manifest.owner == commander.equipmentOwnerID,
         state.authorization.sequence <= engine.nextEvent,
         state.authorization.stationActor.visit <= commander.flightSimulation.visit,
@@ -37,13 +41,26 @@ enum NativeInductionCrewLogSave {
         child.digest == NativeInductionCrewLogPack.digest,
         child.outcome == .active, child.contract == nil, child.completionReceipt == nil,
         child.dialogue == nil, child.payloads.isEmpty, child.gearIssues.isEmpty,
-        child.milestones.isEmpty, child.data == .object([:]), child.campaignParent == nil,
+        child.milestones == (state.capture == nil ? [] : [0]), child.data == .object([:]),
+        child.campaignParent == nil,
         child.campaignChildren.isEmpty,
         child.timers.keys.allSatisfy({ $0 == NativeInductionCrewLogPack.timer }),
         actorClaimsValid(child, state: state, source: source, commander: commander)
       else { return false }
+      if let capture = state.capture {
+        guard capture.sequence <= engine.nextEvent,
+          child.hasAcknowledged(capture.sequence), parent.hasAcknowledged(capture.sequence),
+          capture.actor.visit <= commander.flightSimulation.visit,
+          capture.physicalTime <= commander.flightSimulation.physicalTime,
+          capture.flightSeconds <= engine.flightSeconds
+        else { return false }
+      }
     }
-    return true
+    // A parent cannot claim a recorder pickup without its original source job and actual unit.
+    return engine.instances.values.allSatisfy { parent in
+      guard let capture = parent.savedWayfarerInduction?.crewLog else { return true }
+      return engine.instances[capture.job]?.savedNativeCrewLog?.capture == capture
+    }
   }
 
   static func actorClaimsValid(
@@ -83,6 +100,11 @@ enum NativeInductionCrewLogSave {
           native.identity.entity > 1, native.identity.entity < commander.flightSimulation.nextActor,
           native.ordnance == nil, native.rock == nil, native.salvage == nil,
           native.empSource == nil, native.empCrewPod == nil
+        else { return false }
+      }
+      if role == .recorder, let capture = state.capture {
+        guard actor.presence == .outside, actor.body.energy > 0,
+          actor.body.physical?.identity == capture.actor
         else { return false }
       }
       if let loss = state.losses.first(where: { $0.role == role.rawValue }) {

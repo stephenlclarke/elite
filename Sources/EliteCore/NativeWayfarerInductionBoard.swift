@@ -243,7 +243,16 @@ extension Game {
       "These stages pay nothing and grant no accreditation or clue. "
         + NativeWayfarerInduction.laterStages,
     ]
+    if let status = inductionCrewLogStatus { lines.append(status) }
     if let status = inductionArkStatus { lines.append(status) }
+    if wayfarerInductionMission?.savedWayfarerInduction?.seedReception != nil {
+      lines += [
+        "Cevilis source: empty mechanically disabled original Burro tender, separate marked Burro rescue launch with two original crew, and their original one-tonne custody recorder for Enmadan shelter.",
+        "Source offsets in physical metres from the main station's non-spinning reference: tender(60000,20000,0), launch(60300,20000,0), recorder(60000,20000,100). Admission waits for real clearance/local range; no marker counts as pickup or rescue.",
+        "Fit Fuel Scoops and keep one free tonne. Safely bring only the original recorder into the lower forward scoop at X0/Y-45m/Z+55m; package plus bounds must fit aperture half extents16m at relative speed <=\(Int(ScoopApproachController.maximumRelativeSpeed))m/s. Optional Salvage targeting can guide the same actual scoop. The tender, launch and their equipment stay custodian property; no player cabins are needed.",
+        "Stage8 protects the original recorder as mission cargo, identifying both original launch occupants and Enmadan shelter. Its carrier loss releases the tonne but retains original pickup/loss history, with no reissue. Stage9 actual launch travel and survivors/recorder receiving remain unavailable; no payment, clue or accreditation is awarded here.",
+      ]
+    }
     if let link = wayfarerInductionMission?.savedWayfarerInduction?.ark,
       let state = commander.scriptState.instances[link.job]?.savedNativeArk
     {

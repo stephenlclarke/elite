@@ -107,7 +107,17 @@ enum NativeWayfarerInductionSave {
         key.flightSeconds <= commander.scriptState.flightSeconds
       else { return false }
     }
-    for loss in [state.loss, state.cassetteLoss, state.seedKeyLoss].compactMap({ $0 }) {
+    if let capture = state.crewLog {
+      guard capture.sequence <= commander.scriptState.nextEvent,
+        mission.hasAcknowledged(capture.sequence),
+        capture.physicalTime <= commander.flightSimulation.physicalTime,
+        capture.flightSeconds <= commander.scriptState.flightSeconds,
+        capture.actor.visit <= commander.flightSimulation.visit
+      else { return false }
+    }
+    for loss in [state.loss, state.cassetteLoss, state.seedKeyLoss, state.crewLogLoss].compactMap({
+      $0
+    }) {
       guard loss.physicalTime <= commander.flightSimulation.physicalTime,
         loss.facts.visit <= commander.flightSimulation.visit,
         loss.facts.sequence <= commander.scriptState.nextEvent,

@@ -94,6 +94,7 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
   let authorization: NativeCrewLogAuthorization
   var admission: NativeCrewLogAdmission?
   var losses: [NativeCrewLogActorLoss] = []
+  var capture: NativeCrewLogCapture?
   var livingCrew: [UUID] {
     admission != nil && !losses.contains(where: { $0.role == "launch" })
       ? authorization.manifest.crew : []
@@ -102,7 +103,17 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
     guard authorization.valid(parent: parent), losses.count <= 3,
       Set(losses.map(\.role)).count == losses.count
     else { return false }
-    guard let admission else { return losses.isEmpty }
+    guard let admission else { return losses.isEmpty && capture == nil }
+    if let capture {
+      guard let reception = parent.seedReception,
+        capture.valid(permission: parent.permission, reception: reception),
+        capture.issue == authorization.operation, capture.job == authorization.job,
+        capture.sequence > authorization.sequence,
+        capture.startTime >= admission.physicalTime,
+        capture.actor.visit >= admission.recorder.visit,
+        !losses.contains(where: { $0.role == "recorder" })
+      else { return false }
+    }
     return admission.valid(authorization: authorization)
       && losses.allSatisfy { $0.valid(admission: admission) }
   }

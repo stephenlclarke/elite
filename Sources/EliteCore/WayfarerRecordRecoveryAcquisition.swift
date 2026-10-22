@@ -149,6 +149,7 @@ extension Game {
   func recordRecoveryCompatibleMesh(
     _ body: borrowing SpaceBody, context: EncounterContext? = nil
   ) -> Mesh? {
+    if let original = inductionCrewLogCompatibleMesh(body) { return original }
     guard WayfarerRecordRecovery.marker(body, commander: commander) else {
       return identifiedSalvageCompatibleMesh(body, context: context)
     }

@@ -4399,6 +4399,24 @@
       "verified_expanded_cases": 164,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329646699",
       "qualification_scope": "Source facts/initial poses only; no native admission/pickup/custody or stage8/9 progress"
+    },
+    {
+      "event": "Cevilis native admission source pushed; protected pickup assigned",
+      "head": "5903b6fbbd7905c9204f109cd6102691445cbbd6",
+      "base": "61995c8ce37ac45c50e5be4317996ee138321d78",
+      "ledger_parent": "C08.P04.B.admission",
+      "github_run": 39700051028,
+      "selection_methods": 139,
+      "new_methods": 7,
+      "source_review": "MBA completed; no actionable source finding",
+      "unit_status": "MBA verified exact-head hosted PASS",
+      "next_assigned": "C08.P04.B.pickup",
+      "usable_build_delivered": false,
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329698798",
+      "verified_methods": 139,
+      "verified_expanded_cases": 171,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329819723",
+      "qualification_scope": "Source/admission pure structural units; no native journey/refusal execution or playable delivery"
     }
   ]
 }

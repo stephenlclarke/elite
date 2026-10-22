@@ -172,6 +172,9 @@ extension Game {
       {
         continue
       }
+      if withReadOnlyCommander({ NativeInductionCrewLogPack.consumed(actorID, commander: $0) }) {
+        continue
+      }
       if withReadOnlyCommander({ WayfarerRecordRecovery.consumed(actorID, commander: $0) }) {
         continue
       }

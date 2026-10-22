@@ -119,6 +119,14 @@ struct NativeInductionCrewLogSource: Sendable {
     return design
   }
 
+  static let recorderRadius: Result<Double, any Error> = Result {
+    let design = try authenticatedRecorder.get()
+    guard let radius = design.rawMesh.vertices.map({ ($0 * recorderScale).length }).max(),
+      radius.isFinite, radius > 0, radius <= 16
+    else { throw SaveError.invalidCommander }
+    return radius
+  }
+
   private static let authenticatedModels: Result<[String: String], any Error> = Result {
     [
       model: ScriptPackLibrary.hash(

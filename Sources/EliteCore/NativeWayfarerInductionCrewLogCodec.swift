@@ -30,6 +30,14 @@ extension NativeInductionCrewLogSave {
       let pinned = mission["digest"] as? String == NativeInductionCrewLogPack.digest
       let claimed = mission.keys.contains("savedNativeCrewLog")
       guard own == pinned, own == claimed else { throw SaveError.invalidCommander }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("crewLog") || parent.keys.contains("crewLogLoss")
+      {
+        guard supportsPickup(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
       if own {
         guard contains(schema), !embedded,
           let leaf = mission["savedNativeCrewLog"] as? [String: Any],
@@ -39,7 +47,10 @@ extension NativeInductionCrewLogSave {
           let losses = leaf["losses"] as? [Any], losses.count <= 3
         else { throw SaveError.invalidCommander }
         let bytes = try JSONSerialization.data(withJSONObject: leaf)
-        guard bytes.count <= 16_384 else { throw SaveError.invalidCommander }
+        guard supportsPickup(schema) || leaf["capture"] == nil else {
+          throw SaveError.invalidCommander
+        }
+        guard bytes.count <= 65_536 else { throw SaveError.invalidCommander }
         let decoded = try JSONDecoder().decode(NativeInductionCrewLogState.self, from: bytes)
         guard
           (leaf as NSDictionary).isEqual(

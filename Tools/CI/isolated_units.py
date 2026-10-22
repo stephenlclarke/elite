@@ -13,6 +13,16 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeWayfarerInductionCrewLogPickupUnitTests": (
+        "originalPickupReservesExactlyOneTonneAndOnlyStageEightWithoutBoardingOrReward",
+        "duplicateForeignOrFullHoldPickupCannotReplaceTheOriginalUnitOrEarlierHistory",
+        "safeScoopRequiresTheMeasuredPackageInsideEveryApertureAxisAtNativeRelativeSpeed",
+        "receiptNeedsTheActualFittedScoopOriginalPhysicalMarkerAndPositiveNativeFrame",
+        "laterActualCarrierLossReleasesOnlyTheRecorderTonneAndKeepsOriginalPickupAndCrew",
+        "owningGraphRequiresBothPickupReceiptsAcknowledgementsAndOriginalRemovedUnit",
+        "closedPickupEnvelopePreservesSourceOnlySavesAndRejectsEarlyOrUnknownPickupClaims",
+        "optionalSalvageGuidanceKeepsTheSamePhysicalScoopAndDoesNotRequireCabins",
+    ),
     "NativeWayfarerInductionCrewLogProducerUnitTests": (
         "sourceGraphNeedsTheSameParentOwnerAcknowledgedIssueAndRetainedMainStation",
         "registrationBindsOneOwningOriginalManifestActualCevilisVisitAndPriorReceiving",

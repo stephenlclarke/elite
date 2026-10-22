@@ -63,6 +63,7 @@ extension Game {
       originalRescue: originalRescueFacts(body, context: context),
       measuredExtraction: measuredExtractionFacts(body, context: context),
       recordRecovery: recordRecoveryFacts(body, context: context),
+      inductionCrewLog: inductionCrewLogFacts(body),
       identifiedSalvage: identifiedSalvageFacts(body, context: context))
   }
 
@@ -101,6 +102,7 @@ extension Game {
           center: .init(0, 0, 0), radius: gameplayMesh(for: body).vertices.map(\.length).max() ?? 0),
         workSurfaces: [])
     }
+    if let original = inductionCrewLogMetadata(body) { return original }
     if let original = recordRecoveryMetadata(body, context: context) { return original }
     if let original = identifiedSalvageMetadata(body, context: context) { return original }
     if let original = originalRescueMetadata(body, context: context) { return original }

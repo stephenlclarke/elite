@@ -335,6 +335,13 @@ extension Game {
         && measuredExtractionFacts(body, context: context)?.fits == true
         && automaticScoopShapeCompatible(body, context: context)
     }
+    if NativeInductionCrewLogPack.marker(body, commander: commander) {
+      return state.mode == .autoScoop(.salvage) && commander.targetingTier != nil
+        && commander.fittedEquipment(at: .targetingSalvage) != nil
+        && commander.fittedEquipment(at: .utility(.fuelScoops)) != nil
+        && inductionCrewLogFacts(body)?.fits == true
+        && automaticScoopShapeCompatible(body, context: context)
+    }
     if WayfarerRecordRecovery.marker(body, commander: commander) {
       guard state.mode == .autoScoop(.salvage), hasRecordRecoveryTools,
         recordRecoveryFacts(body, context: context)?.fits == true,

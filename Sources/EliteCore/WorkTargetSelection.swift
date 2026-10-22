@@ -25,6 +25,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
   public let originalRescue: NativeOriginalRescueSelectionFacts?
   public let measuredExtraction: NativeMeasuredExtractionSelectionFacts?
   public let recordRecovery: WayfarerRecordRecoverySelectionFacts?
+  public let inductionCrewLog: NativeInductionCrewLogSelectionFacts?
   public let identifiedSalvage: NativeIdentifiedSalvageSelectionFacts?
 
   public init(
@@ -34,6 +35,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
     originalRescue: NativeOriginalRescueSelectionFacts? = nil,
     measuredExtraction: NativeMeasuredExtractionSelectionFacts? = nil,
     recordRecovery: WayfarerRecordRecoverySelectionFacts? = nil,
+    inductionCrewLog: NativeInductionCrewLogSelectionFacts? = nil,
     identifiedSalvage: NativeIdentifiedSalvageSelectionFacts? = nil
   ) {
     self.identity = identity
@@ -47,6 +49,7 @@ public struct WorkTargetCandidate: Sendable, Equatable {
     self.originalRescue = originalRescue
     self.measuredExtraction = measuredExtraction
     self.recordRecovery = recordRecovery
+    self.inductionCrewLog = inductionCrewLog
     self.identifiedSalvage = identifiedSalvage
   }
 }
@@ -121,6 +124,13 @@ public enum WorkTargetSelection {
       guard candidate.singleScoopCompatible else { return .refused(.notScoopCompatible) }
       guard original.fits else { return .refused(.protectedTarget) }
       return .eligible(.autoScoop(.mining))
+    }
+    if let original = candidate.inductionCrewLog {
+      guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
+      guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
+      guard candidate.singleScoopCompatible else { return .refused(.notScoopCompatible) }
+      guard original.fits else { return .refused(.protectedTarget) }
+      return .eligible(.autoScoop(.salvage))
     }
     if let original = candidate.recordRecovery {
       guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
