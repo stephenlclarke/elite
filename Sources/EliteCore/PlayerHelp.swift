@@ -16,6 +16,18 @@ public enum PlayerHelp {
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
     if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction == .certifyNetwork
+    {
+      pages.insert(
+        .init(
+          title: "VEIL NETWORK CERTIFICATION",
+          rows: [
+            "RETURN - REVIEW ORIGINAL RECEIVING RECORDS", "CONFIRM - CERTIFY NETWORK ONCE",
+            "BACK / ESC - KEEP RECORDS UNCHANGED", "AVENOR / ACTUAL ORIGINAL NETWORK PROOFS",
+            "STAGE13 / NO PAYMENT OR ACCREDITATION", "SENN FINAL RECEIVING IS SEPARATE",
+          ]), at: 0)
+    }
+    if screen == .contracts,
       contextGame.contractBoard.selected?.wayfarerInduction == .auditCharter
     {
       pages.insert(

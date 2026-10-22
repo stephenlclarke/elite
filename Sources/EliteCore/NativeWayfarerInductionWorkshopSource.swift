@@ -265,7 +265,8 @@ extension NativeWayfarerInductionState {
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice, charterCapacity: capacity, charterSignatures: charterSignatures,
       charterClinicSource: charterClinicSource, charterWorkshopSource: source,
-      charterSeedSource: charterSeedSource, charterAudit: charterAudit)
+      charterSeedSource: charterSeedSource, charterAudit: charterAudit,
+      networkCertification: networkCertification)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }

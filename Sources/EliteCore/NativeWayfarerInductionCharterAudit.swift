@@ -216,7 +216,8 @@ extension NativeWayfarerInductionState {
   func auditCopy(
     capacity: NativeInductionCapacityState?, clinic: NativeInductionClinicSource?,
     workshop: NativeInductionWorkshopSource?, seed: NativeInductionSeedSource?,
-    audit: NativeInductionCharterAudit? = nil
+    audit: NativeInductionCharterAudit? = nil,
+    certification: NativeInductionNetworkCertification? = nil
   ) -> NativeWayfarerInductionState {
     .init(
       permission: permission, crate: crate, loss: loss, reception: reception,
@@ -226,7 +227,7 @@ extension NativeWayfarerInductionState {
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice, charterCapacity: capacity, charterSignatures: charterSignatures,
       charterClinicSource: clinic, charterWorkshopSource: workshop, charterSeedSource: seed,
-      charterAudit: audit)
+      charterAudit: audit, networkCertification: certification)
   }
   func auditingCharter(_ receipt: NativeInductionCharterAudit) throws
     -> NativeWayfarerInductionState

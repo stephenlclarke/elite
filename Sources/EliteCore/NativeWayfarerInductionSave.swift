@@ -136,6 +136,12 @@ enum NativeWayfarerInductionSave {
     {
       return false
     }
+    if let receipt = state.networkCertification,
+      !NativeInductionNetworkCertificationSave.claimsValid(
+        receipt, mission: mission, commander: commander)
+    {
+      return false
+    }
     for loss in [state.loss, state.cassetteLoss, state.seedKeyLoss, state.crewLogLoss].compactMap({
       $0
     }) {

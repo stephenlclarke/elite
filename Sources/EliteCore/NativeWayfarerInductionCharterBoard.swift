@@ -84,6 +84,11 @@ extension Game {
       contractBoard.wayfarerInductionQuote?.action.charterPolicy
       ?? contractBoard.selected?.wayfarerInduction?.charterPolicy
       ?? state.charterChoice?.policy
+    if state.networkCertification != nil {
+      return [
+        "Stage13: Veil certified the original network and selected charter. Senn's separate final receiving remains next; certification pays nothing and grants no accreditation or clue."
+      ]
+    }
     if let audit = state.charterAudit {
       return [
         "Stage12: actual Avenor charter audit recorded under the three matching signatures. The named "

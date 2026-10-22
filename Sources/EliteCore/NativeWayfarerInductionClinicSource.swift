@@ -148,7 +148,7 @@ extension NativeWayfarerInductionState {
       charterChoice: charterChoice, charterCapacity: charterCapacity,
       charterSignatures: charterSignatures, charterClinicSource: source,
       charterWorkshopSource: charterWorkshopSource, charterSeedSource: charterSeedSource,
-      charterAudit: charterAudit)
+      charterAudit: charterAudit, networkCertification: networkCertification)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }
