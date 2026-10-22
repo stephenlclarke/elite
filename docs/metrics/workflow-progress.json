@@ -6215,7 +6215,10 @@
         "operation",
         "sequence",
         "physicalTime"
-      ]
+      ],
+      "latest_snapshot": "48db39be93868dcfeb0a3c96d49cdd591fa89c74",
+      "latest_snapshot_tag": "archive/g3-isolation-parent-loss-unqualified-20261022-48db39be",
+      "latest_snapshot_qualification": "UNQUALIFIEDactualprovider/mixedcodec/failureterminal dependencies"
     },
     "recovered_equipment_composition": {
       "owner": "Mission Coder1",
@@ -6313,7 +6316,9 @@
       "final_head": "3c2bf4a88afbac60c5af5b0416b5ace8aacf6560",
       "final_github_run": 39761187231,
       "final_selection": 309,
-      "final_qualification": "pending"
+      "final_qualification": "pending",
+      "final_check": "SUCCESS",
+      "final_artifact_qualification": "MBApending309actualreport"
     },
     "defensive_flight_tutorial": {
       "id": "T03.P01",
@@ -6333,6 +6338,19 @@
       "design_sha256": "521e6e5bd7b0957db15a202f7cb5705b7668c5b600c3b02ce31d864e2c271b65",
       "corridor_inputs": "complete",
       "qualification": "pending actualsource/units/review"
-    }
+    },
+    "practice_provider_current": {
+      "head": "6ce3d42fb9923f02a04e7c7407fab500334bdb98",
+      "github_run": 39760458629,
+      "check": "SUCCESS",
+      "actual_artifact_qualification": "MBApending300actualreport"
+    },
+    "c01_stage4_design": {
+      "owner": "UX",
+      "state": "boundedacceptedstage4designassigned",
+      "implementation_owner": "G1 after acceptedcontract/currentpacket",
+      "scope": "Actualnativeaudit-reservationproof afteroriginalrecorderrecovery; no stage3rewrite or prematureaward"
+    },
+    "next_candidate_boundary": "Afterqualified69integration/currentC01coherenthandoff; cleanlatestqualifiedsource, no waitG11T03, no newintegrationcampaign; artifactnotyetexists"
   }
 }
