@@ -5,7 +5,9 @@ extension NativeInductionCrewLogSave {
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?
   ) throws {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-      !root.keys.contains("savedNativeCrewLog"), !root.keys.contains("nativeCrewLog")
+      !root.keys.contains("savedNativeCrewLog"), !root.keys.contains("nativeCrewLog"),
+      !root.keys.contains("savedNativeInductionUtility"),
+      !root.keys.contains("nativeInductionUtility")
     else { throw SaveError.invalidCommander }
     if part == .missions {
       try validateInstances(root["instances"], schema: schema, embedded: false)
@@ -26,6 +28,7 @@ extension NativeInductionCrewLogSave {
     }
     for entry in instances {
       guard let mission = entry as? [String: Any] else { throw SaveError.invalidCommander }
+      try NativeInductionUtilitySave.validateFields(mission, schema: schema, embedded: embedded)
       let own = mission["definition"] as? String == NativeInductionCrewLogPack.stateID
       let pinned = mission["digest"] as? String == NativeInductionCrewLogPack.digest
       let claimed = mission.keys.contains("savedNativeCrewLog")

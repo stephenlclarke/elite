@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Structural receipt and owned-leg policy only; no fixture executes a native rescue journey.
-private final class RescueReceivingFixture {
+final class RescueReceivingFixture {
   let f: RescueFlightFixture
   let dock: NativeMainStationDockReceipt
   let contact: NativeArkFuelContact

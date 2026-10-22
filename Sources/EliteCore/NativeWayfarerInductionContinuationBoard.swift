@@ -11,6 +11,7 @@ extension NativeWayfarerInductionAction {
     case .receiveArk: NativeWayfarerInduction.seedReceiver
     case .fundRescueLaunch, .startRescueFlight: NativeInductionCrewLogSource.location
     case .receiveRescue: NativeInductionCrewLogSource.receiver
+    case .authorizeUtility: NativeInductionUtilitySource.location
     case .cassette: NativeWayfarerInduction.workshop
     }
   }
@@ -60,6 +61,7 @@ extension Game {
       return
         "Review Senn's induction at Avenor after an ordinary delivery or native commodity sale."
     }
+    if let status = inductionUtilitySourceStatus { return status }
     if let status = inductionCrewLogStatus { return status }
     if state.loss != nil || state.cassetteLoss != nil || state.seedKeyLoss != nil {
       return "The original consignment was lost. No replacement stock or success is granted."
@@ -90,7 +92,7 @@ extension Game {
   var wayfarerInductionDestination: String {
     let state = wayfarerInductionMission?.savedWayfarerInduction
     if state?.rescueReception != nil {
-      return "Original rescue received / stage10 utility-route work remains unavailable"
+      return "Enron G01-S190 / original utility handoff maintenance authorization"
     }
     if state?.crewLog != nil {
       return

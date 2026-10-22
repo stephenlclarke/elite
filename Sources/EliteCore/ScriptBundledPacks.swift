@@ -300,6 +300,12 @@ extension ScriptPackLibrary {
       library.errors.append("Bundled Cevilis custody source: " + error.localizedDescription)
     }
     do {
+      let source = try read(bundledInductionUtilityDirectory)
+      if !library.packs.contains(where: { $0.digest == source.digest }) {
+        library.packs.append(source)
+      }
+    } catch { library.errors.append("Bundled Enron utility source: " + error.localizedDescription) }
+    do {
       let opening = try read(bundledGlassMeridianDirectory)
       if !library.packs.contains(where: { $0.digest == opening.digest }) {
         library.packs.append(opening)

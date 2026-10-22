@@ -16,6 +16,15 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeWayfarerInductionUtilitySourceUnitTests": (
+        "exactInitialEnclosuresKeepPhysicalMetresSeparateFaultsAndFiniteOriginalCrewKits",
+        "sourceAuthorizationNeedsPriorActualReceptionAndOwningLaterEnronDockWithoutProgress",
+        "originalSourceGraphRequiresBothAcknowledgementsOwnerActualStationAndSingleIssue",
+        "nativePreparedConditionKeepsActualOriginalModelAndCannotBecomeEquipmentOrCargo",
+        "actualAdmissionClaimsNeedThreeOriginalNativeActorsAndKeepFaultAndKitStateUnchanged",
+        "exactInternalPackPinsThreeSourcesAndLuaCannotRepairConsumeKitsOrAdvanceStageTen",
+        "closedUtilityEnvelopeRejectsEarlierForeignUnknownAndExtraModuleClaims",
+    ),
     "NativeWayfarerInductionRescueReceivingUnitTests": (
         "originalSurvivorsAndRecorderReturnReleaseExactlyOneTonneAndOnlyStageNineOnce",
         "foreignEmptyDuplicateCrewWrongRecorderOrWrongActualCradleCannotReceive",

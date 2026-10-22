@@ -729,6 +729,9 @@ extension Game {
   private static func preparedNativeMissionResources(
     state: borrowing ScriptInstance, actor: ScriptOwnedActor
   ) throws -> NPCState? {
+    if NativeInductionUtilityPack.marked(state) {
+      return try NativeInductionUtilityPack.initialResources(state: state, actor: actor)
+    }
     if NativeInductionCrewLogPack.marked(state) {
       return try NativeInductionCrewLogPack.initialResources(state: state, actor: actor)
     }

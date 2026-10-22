@@ -155,6 +155,19 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.stateID == NativeInductionUtilityPack.stateID
+      || pack.digest == NativeInductionUtilityPack.digest
+    {
+      guard NativeInductionUtilityPack.matches(pack) else {
+        return "Restore the original Enron utility source."
+      }
+      guard
+        commander.scriptState.instances.values.contains(where: {
+          $0.definition == NativeInductionUtilityPack.stateID && $0.digest == pack.digest
+            && $0.savedNativeInductionUtility != nil
+        })
+      else { return "Use the actual Exchange utility authorization at Enron." }
+    }
     if pack.manifest.stateID == NativeInductionCrewLogPack.stateID
       || pack.digest == NativeInductionCrewLogPack.digest
     {
@@ -377,6 +390,9 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    guard pack.manifest.stateID != NativeInductionUtilityPack.stateID,
+      pack.digest != NativeInductionUtilityPack.digest
+    else { throw MissionPackError("Use the actual utility authorization at Enron.") }
     guard pack.manifest.stateID != NativeInductionCrewLogPack.stateID,
       pack.digest != NativeInductionCrewLogPack.digest
     else { throw MissionPackError("Continue the actual Exchange induction at Cevilis.") }
@@ -1447,6 +1463,11 @@ extension Game {
         $1.manifest.priority, $1.manifest.id, $1.digest
       )
     }) {
+      if pack.manifest.stateID == NativeInductionUtilityPack.stateID
+        || pack.digest == NativeInductionUtilityPack.digest
+      {
+        continue
+      }
       if pack.manifest.stateID == NativeInductionCrewLogPack.stateID
         || pack.digest == NativeInductionCrewLogPack.digest
       {
