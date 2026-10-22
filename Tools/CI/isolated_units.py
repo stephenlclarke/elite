@@ -364,6 +364,10 @@ METHODS = {
     "BundledScriptPackTests": (
         "bundledMeasuredExtractionDeclaresActualTwentyTonneSourceAndClosedTwelveTonneRecipe",
     ),
+    "WantedDossierNameUnitTests": (
+        "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
+        "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
+    ),
     "NativeUtilityCustodyTests": (
         "explicitWorldActivationOwnsEightMaterialsWithoutTargetDockAuthority",
         "strictCurrentUtilitySchemaRejectsUnjoinedOrInventedClaims",
