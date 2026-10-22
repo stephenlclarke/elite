@@ -4921,7 +4921,22 @@
         "unit_status": "pending; composed49/50corrections, unchanged3showroom methods",
         "original_source_handoff_at": "2026-10-22T06:00:41Z",
         "source_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333946221",
-        "queue_delay_note": "Obsolete unselected39731164624 cancelled06:11:18Z; existing correct39731489668 running from06:11:22Z"
+        "queue_delay_note": "Obsolete unselected39731164624 cancelled06:11:18Z; existing correct39731489668 running from06:11:22Z",
+        "retained_showroom_methods": {
+          "head": "40159bbacafc55414e19d86ea6e073869bb9301b",
+          "run": 39731489668,
+          "new_methods_passed": 3,
+          "executed_methods": 234,
+          "executed_cases": 266,
+          "passed_methods": 231,
+          "passed_cases": 263,
+          "failures": 3,
+          "errors": 0,
+          "skips": 0,
+          "crash": false,
+          "aggregate": "FAILURE;only known49/50fixturefailures",
+          "qualification": "Unchanged showroom-method execution evidence only; corrected final-head aggregate still pending"
+        }
       },
       {
         "id": "M02.P05.inventory",
@@ -4960,6 +4975,7 @@
       "policy": "Named necessary blocker only; no standing implementation stream; independent MBA review",
       "model": null,
       "active_assignment": null
-    }
+    },
+    "qualification_queue_note": "2c38 correction and382 showroom composition source clean, execution pending;409 complete clinic source queued for review and hosted execution. Three heads are not three distinct unreviewed features."
   }
 }
