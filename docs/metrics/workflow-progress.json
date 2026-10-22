@@ -5701,8 +5701,14 @@
           "EquipmentMutations and InventoryInteraction ammo fit recognition",
           "CommanderEquipment/EquipmentTransactions/NativeShipValues actual both-profile mirror",
           "GameplayOrdnanceRuntime actual consumed profile/default standard admission argument only",
-          "Shop quote/availability actual owner research and PLUGH context"
-        ]
+          "Shop quote/availability actual owner research and PLUGH context",
+          "AlienStorageCompanion.State researched retaining original collection+receipt",
+          "AlienStorageLegacyCurrent.State and preserve exact live adopted custody transition",
+          "AlienStorageCompanionValidation validate/preserve and AlienStorageLegacyWorld validate/preserve",
+          "AlienNativeSalvageIndex omit spent technology availability but retain original unique claim",
+          "Inventory authenticated artefact row and explicit reverse-engineering action"
+        ],
+        "native_custody_scope": "Actual paged technology must transition collected\u2192researched once; immutable original receipt retained, paid PLUGH prototype join; no duplicate research across ordinary/native stores; writer failure rolls back all changes"
       },
       {
         "id": "K04.P01.person-care",
@@ -5784,14 +5790,15 @@
       },
       {
         "id": "G11.P01.isolation-provider",
-        "owner": "Root design/production scope queued after M01",
+        "owner": "UX designer exact bounded source design",
         "assigned_at": "2026-10-22T09:07:37.915718+00:00",
         "ownership": "Bounded actual two-component isolation source/proof policy preflight; proposed narrow NativeIsolationWork types/tests",
         "limits": "No fabricated flag/tool/receipt; exact source producer must exist; shared mission/save hunks reserved before edit; no reward/terminal in provider slice",
         "merged_at": null,
         "playable_at": null,
         "disposition": "Missing exact original two-component physical resource isolation/work observation provider; existing induction three-module repair cannot substitute",
-        "qualification_scope": "Source/existing utility foundation definitions only; no fresh execution"
+        "qualification_scope": "Source/existing utility foundation definitions only; no fresh execution",
+        "source_state": "Assigned design one actual two-component source/isolation/observation contract, not broad audit or new story"
       },
       {
         "id": "M13.P01.debris-station",
@@ -5806,10 +5813,21 @@
       },
       {
         "id": "M13.P02.allied-response",
-        "owner": "G3",
+        "owner": "Root design/production queue",
         "assigned_at": "2026-10-22T09:10:14.235581+00:00",
         "ownership": "Bounded readonly actual station warning/reception and finite neighbour response source preflight",
         "limits": "No projected marker warning/fictional responders/missionterminal; shared changes require reservation; no localnativejobs",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Missing actual neighbour warning reception, finite responder stock/ownership/loadout and causal dispatch/refusal producer; local police not equivalent",
+        "qualification_scope": "Readonly source preflight only; no edits/units"
+      },
+      {
+        "id": "M14.P01.entitlement",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:11:32.213874+00:00",
+        "ownership": "Bounded commission acceptance and permanent Hearth entitlement pure transaction/codec policy preflight",
+        "limits": "Preview/decline no grant; accept once, both endings/repair/escape retain entitlement; no new artwork/shipanchors/central edit without reservation",
         "merged_at": null,
         "playable_at": null
       }
