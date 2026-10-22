@@ -121,7 +121,7 @@ struct InventoryGroupingUnitTests {
     let rows = legacy.inventoryInformationRows(width: 1512)
     #expect(rows.contains { $0.text == "Equipment - fitted (legacy acquisition unknown)" })
     for laser in legacy.commander.laserMountSummary {
-      #expect(rows.contains { $0.text == "  " + laser })
+      #expect(rows.contains { $0.text == laser })
     }
     #expect(rows.contains { $0.text == "No owned-item storage records in this legacy fit." })
     #expect(rows.allSatisfy { $0.subject == nil && $0.preview == nil })
