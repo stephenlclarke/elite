@@ -4810,7 +4810,25 @@
       "handoff_at": "2026-10-22T06:21:00Z",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6334216242",
       "github_run": 39733300232,
-      "unit_status": "existing correction run in_progress"
+      "unit_status": "existing correction run in_progress",
+      "source_review": "MBA correction and showroom composition source clean",
+      "source_review_completed_at": "2026-10-22T06:24:15Z",
+      "handoff_to_source_review_seconds": 195
+    },
+    {
+      "event": "Complete clinic loop source pushed; next complete workshop service assigned",
+      "at": "2026-10-22T06:25:49Z",
+      "head": "409d042c3a242330c9ae6c71b2316b3678f09180",
+      "base": "2c38cdbba55d86523ff53e5e9e7cc0a0fcf342a2",
+      "ledger_parent": "C08.P06.B.clinic.custody",
+      "handoff_at": "2026-10-22T06:26:25Z",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6334295039",
+      "github_run": 39733884508,
+      "selection_methods": 241,
+      "new_methods": 10,
+      "unit_status": "pending",
+      "source_review": "queued MBA",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -4850,15 +4868,15 @@
         "owner": "G1",
         "assigned_at": null,
         "phase_entry_state": "Clinic source/capacity/consent implemented and unit-qualified; acceptance in development",
-        "source_complete_at": null,
+        "source_complete_at": "2026-10-22T06:25:49Z",
         "merged_at": null,
         "playable_at": null,
-        "latest_packet_head": "1523b3ee2394d74e576645451ad6606925a01488",
+        "latest_packet_head": "409d042c3a242330c9ae6c71b2316b3678f09180",
         "latest_packet_pushed_at": "2026-10-22T06:01:24Z",
-        "latest_packet": "Clinic acceptance/reservation/cancel and uncollected loss closures",
-        "unit_run": 39731389269,
-        "unit_status": "FAILURE;231methods263cases executed,228methods260casesPASS,3failures,0errors/skips,no crash;7/10new methodsPASS",
-        "source_state": "Acceptance packet pushed; actual pickup/integrity/receiving/payment/held-return needed for complete clinic loop",
+        "latest_packet": "Complete clinic pickup/custody/integrity/receiving/payment/cancel-return/loss loop",
+        "unit_run": 39733884508,
+        "unit_status": "pending241methods; original acceptancefailure and correction runs retained",
+        "source_state": "Complete clinic source pushed; independent review, execution, merge and accessible-build delivery pending",
         "source_review_result": "MBA acceptance source review clean at1523b3ee; actual hosted qualification pending",
         "source_review_completed_at": "2026-10-22T06:05:57Z",
         "latest_handoff_at": "2026-10-22T06:01:52Z",
@@ -4872,7 +4890,9 @@
         ],
         "correction_head": "2c38cdbba55d86523ff53e5e9e7cc0a0fcf342a2",
         "correction_unit_run": 39733300232,
-        "correction_handoff_at": "2026-10-22T06:21:00Z"
+        "correction_handoff_at": "2026-10-22T06:21:00Z",
+        "source_complete_head": "409d042c3a242330c9ae6c71b2316b3678f09180",
+        "source_complete_evidence": "Author commit and handoff6334295039; not independent qualification"
       },
       {
         "id": "M02.P04/F06",
@@ -4890,7 +4910,7 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
         "source_state": "G3 composed G1fixture correction; independent final-head review/actual corrected qualification pending",
         "first_push_observed_elapsed_seconds": 224,
-        "source_review_result": "MBA final40159bba composition/selector clean; actual3-method execution pending",
+        "source_review_result": "MBA382664d1 final composition clean; showroom source/3methods/234selector unchanged; hosted correction outcome pending",
         "source_review_time_reported": "2026-10-22 06:02 UTC (minute precision)",
         "handoff_at": "2026-10-22T06:21:20Z",
         "source_review_latency_seconds_reported": 88,
