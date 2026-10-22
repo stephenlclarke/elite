@@ -5007,7 +5007,7 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08Sennterminal;certification/auditreviewasync;MC1seed60sourceinspection",
-      "G3": "M07.P02 native ordnance/attribution;retainsPR51/56/58/61finalqualification/merge",
+      "G3": "M07.P03EMP electrical/charge policy;retains267batch/otherfeaturequalificationandmerges",
       "G4": "T02.P01.provider native uncrewed practice targets/harmless native hits"
     },
     "reviewer": "MBA/G2",
@@ -5346,18 +5346,19 @@
         "ownership": "PureauthoreddisplayIDprojection;StationDisplay market;MarketInteractionclick;ONLYGame.keymarketup/down1060\u20131079;puretests/notes",
         "numeric_policy": "Preservecurrentcatalogueprecedence/modularmechanics;noU03rebalance",
         "credited_behavior": "Authenticated17-good prices/finite stock,stableIDs,quote/revision checks,once-debit,cargo/cash bounds;source/existingtests only",
-        "source_state": "Source/unitqualified;G3ownmergeafterfinalgates;notnewapp/release",
+        "source_state": "Necessaryqualifiedmarket/nightcompositionpushed;MBAcompositionreview/actualfinal267pending",
         "outstanding_separate": "U03authored14baseequipmentprice/TLprecedence;notrebalancedhere",
-        "head": "5da5ae1a982bd6889a5952ede51e4a461646bc6b",
+        "head": "1a48aa0f58a7f59e82aed70a927646ed0639cf05",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/56",
         "first_push_observed_at": "2026-10-22T07:48:15Z",
         "source_review_result": "MBA5danecessaryfd9compositionCLEAN;domaincode/testsunchanged;exact260",
-        "unit_run": 39745589259,
-        "unit_status": "MBAverifiedactual260methods292casesALLPASS;all3new+2Help;zeroerrors/skips/crash",
+        "unit_run": 39747759242,
+        "unit_status": "Combinedmarket/night267existingjobactive;retainedcomponentpassesunchanged",
         "verified_methods": 260,
         "verified_expanded_cases": 292,
         "compile_seconds": 553.0,
-        "execution_seconds": 52.708
+        "execution_seconds": 52.708,
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/56#issuecomment-6336295799"
       },
       {
         "id": "M04.P01.fleet-catalogue",
@@ -5438,7 +5439,8 @@
           "GameplayCombat refuse unscoped beacon damage without practice receipt",
           "GameplayCombat recordCombat registeredbeacontargetguard",
           "NativeMissionImpact missionDamagePlan unscopedbeaconrefusal",
-          "GameplayWeapons applyAttributedEnergyBomb exactbeaconskip"
+          "GameplayWeapons applyAttributedEnergyBomb exactbeaconskip",
+          "Game.loadCommander practice-only hasClaims plain-load guard"
         ],
         "state_scope": "G1approvedoptionalpracticeproperty/init+ScriptPersistencepracticehunks+optionalAlienSave.contains;seed117118,audit119120,practice121122fixed/precedence",
         "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support",
@@ -5458,7 +5460,8 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/59",
         "source_state": "Completestage12auditpushed;8new/279selection;MBAreview/hostedpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336051526",
-        "source_review_result": "MBA1f95new8fixtures/actualfinitecharterrefusalCLEAN;inheritedseed60unqualified"
+        "source_review_result": "MBA1f95new8fixtures/actualfinitecharterrefusalCLEAN;inheritedseed60unqualified",
+        "unit_status": "39746078950FAILURE08:27:36;MBAartifactclassificationpending"
       },
       {
         "id": "M06.P03.appearance",
@@ -5523,7 +5526,9 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "ScriptNPCWeapons/NativeMissionProjectile/narrowpurepolicies/tests/notes",
-        "limits": "NoG4combat/impact/scooporG1Game/mission/save;noscriptedkill/newAI/weapontypes"
+        "limits": "NoG4combat/impact/scooporG1Game/mission/save;noscriptedkill/newAI/weapontypes",
+        "disposition": "Existingfoundationcredited;nocorrectiondemonstrated/nochange",
+        "qualification_scope": "Source/existingunitdefinitionsonly;nofreshexecution/nativeattributionacceptance"
       },
       {
         "id": "C08.close-case.terminal",
@@ -5535,6 +5540,17 @@
         "playable_at": null,
         "ownership": "G1C08terminal125126+exactScriptCompletion.valid/C08cluematcherhunks",
         "limits": "Once7600/accreditation/clue;preserveheldcontracts;nogenericreceiptloosening/forgedrevisionacceptance"
+      },
+      {
+        "id": "M07.P03.emp-electrical",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:29:28.317623+00:00",
+        "phase_entry_state": "BoundedactualEMPdrain/charge/range/splash/cancellationgapimplementationassigned",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "EMPElectricalRuntime/EMPPulseProfile/purechargepolicy/tests/notes",
+        "limits": "NoG1Game/mission/saveorG4combat/impact/scoop;nonewrebalance/framework"
       }
     ],
     "model_settings": {
