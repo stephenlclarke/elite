@@ -5250,6 +5250,22 @@
       "execution_qualified": false,
       "m01_quality_build_seconds": 807.12,
       "m01_observed_failure": "unexpected signal4 during coverage execution; exact capture/source matching pending"
+    },
+    {
+      "event": "M01 coverage crash attributed to matching native-entry equality path; issue88 assigned G1; C01 run failed; T03 source pushed",
+      "date": "2026-10-22",
+      "release_issue": 88,
+      "release_run": 39766540311,
+      "actual_checkout": "4a7173f28838e6e7000198344ad74d476fb69007",
+      "run_head": "f88d66e20972d2c6d5a5273bdf5fbb2e9816bc4b",
+      "source_match": "relevant five source hashes exact",
+      "crash_image_uuid": "DE1E9411-75B7-3AF8-9AA6-0CB9E3877490",
+      "cause_scope": "captured generated equality/native-entry fault; stack exhaustion consistent, not separately proven",
+      "c01_failed_run": 39767872407,
+      "t03_pr": 87,
+      "t03_head": "63e69148e0bf8e8688e309ecd42c896d603cadd2",
+      "t03_authored_methods": 20,
+      "t03_qualified": false
     }
   ],
   "two_developer_phase": {
