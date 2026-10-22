@@ -5899,7 +5899,14 @@
         "ownership": "Exact original programmer definition/actual Lerr issue-return custody policy and focused tests",
         "limits": "Same actual G11 permission/issuer/1t serial; no fake entitlement/new loanledger/reward; shared hooks require exact symbol proposal",
         "merged_at": null,
-        "playable_at": null
+        "playable_at": null,
+        "reserved_shared_hunks": [
+          "EquipmentRuntimeCatalog.graph exact acquisitionOnly programmer node",
+          "OwnedGearKind.valid exact typed programmer resource",
+          "CommanderCargoValidation.checkedCargoTonnes actual canonical programmer count*1t including held under fitbudget"
+        ],
+        "interface": "NativeIsolationProgrammerBinding from existing gearIssues/receipts, typed parent sealed permission/ID/digest/issuer/serial/currentowner/hull/revision/issued status",
+        "production_dependency": "Genuine G11P02 parent acceptance/caller required; no mocked authorization or availability claim"
       }
     ],
     "model_settings": {
