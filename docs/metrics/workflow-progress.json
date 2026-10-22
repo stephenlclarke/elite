@@ -5137,6 +5137,20 @@
       "final_m01_run": 39764055347,
       "final_m01_methods": 321,
       "usable_build_delivered": false
+    },
+    {
+      "event": "Lesson316/351verifiedand78closed; same-author fullT02singlefinalcompositionapprovedafterM01",
+      "date": "2026-10-22",
+      "github_run": 39761626483,
+      "head": "fa2c4733eeb9fbf1f78667b02d5257f7df8c78ff",
+      "verified_methods": 316,
+      "verified_expanded_cases": 351,
+      "issues_closed": [
+        78
+      ],
+      "delivery_pr": 76,
+      "expected_final_union": 350,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -6182,11 +6196,10 @@
         70,
         71,
         74,
-        75
-      ],
-      "verification_pending": [
+        75,
         78
       ],
+      "verification_pending": [],
       "delivery_acceptance_open": [
         15,
         18
@@ -6311,9 +6324,14 @@
       "older_result": "EliteCore compile failure; no XML/no unit execution",
       "correction_head": "fa2c4733eeb9fbf1f78667b02d5257f7df8c78ff",
       "correction_source_review": "MBA bounded snapshot/controlflow clean",
-      "correction_execution": "MBAactualartifactverificationpending",
+      "correction_execution": "MBA316methods351casesALLPASS",
       "correction_github_run": 39761626483,
-      "correction_check": "SUCCESS"
+      "correction_check": "SUCCESS",
+      "verified_methods": 316,
+      "verified_expanded_cases": 351,
+      "focused_lesson_methods": 16,
+      "focused_lesson_cases": 17,
+      "issue78_closed": true
     },
     "c08_qualification": {
       "head": "b0bfda8ad2aa3b7b51f63879c6e2fb3f2d0bb7f4",
@@ -6393,6 +6411,21 @@
       "review": "MBAqueuedafterlessonartifact",
       "execution": "pending",
       "core_and_declarations": "authorPASS",
+      "usable_build_delivered": false
+    },
+    "full_t02_composition": {
+      "owner": "G4",
+      "delivery_pr": 76,
+      "provider_pr_superseded_only_after_merged_inclusion": 65,
+      "retained_provider_methods": 300,
+      "retained_provider_cases": 334,
+      "retained_lesson_methods": 316,
+      "retained_lesson_cases": 351,
+      "after": "M01 current321 check/merge turn",
+      "expected_final_union": 350,
+      "actual_ast_union_required": true,
+      "qualification": "finalcompositionpending",
+      "developer_activity": "T03 source continues; no waiting",
       "usable_build_delivered": false
     }
   }
