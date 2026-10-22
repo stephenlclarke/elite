@@ -55,7 +55,8 @@ enum NativeInductionCharterConsentSave {
       guard case .released(let release) = event else {
         guard let parent = mission.savedWayfarerInduction,
           parent.charterClinicSource?.ownsWindowEvent(event) == true
-            || parent.charterWorkshopSource?.ownsWindowEvent(event) == true,
+            || parent.charterWorkshopSource?.ownsWindowEvent(event) == true
+            || parent.charterSeedSource?.ownsWindowEvent(event) == true,
           let clock = parent.charterCapacityEventClock(event),
           clock.0 <= commander.scriptState.nextEvent, mission.hasAcknowledged(clock.0),
           clock.1 <= commander.flightSimulation.physicalTime,

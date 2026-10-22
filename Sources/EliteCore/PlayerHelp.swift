@@ -16,6 +16,19 @@ public enum PlayerHelp {
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
     if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction?.isSeedStockAction == true
+    {
+      pages.insert(
+        .init(
+          title: "ORIGINAL SEED LOT",
+          rows: [
+            "ARROWS - SELECT EXACT LOT / OPERATION", "RETURN - REVIEW; CONFIRM IS SEPARATE",
+            "BACK / ESC - KEEP ORIGINAL CUSTODY", "ENLIRIN: ISSUE / BOOK / PICKUP / RETURN",
+            "LARERIA: RECEIVE ORIGINAL / FROZEN PAY", "3T / SAME OWNER WINDOW / GLOBAL3 LIMIT",
+            "7200 FLIGHT SECONDS FROM ACTUAL PICKUP", "AFTER PICKUP CANCEL: OWNER RETURN",
+          ]), at: 0)
+    }
+    if screen == .contracts,
       contextGame.contractBoard.selected?.wayfarerInduction?.isWorkshopAction == true
     {
       pages.insert(

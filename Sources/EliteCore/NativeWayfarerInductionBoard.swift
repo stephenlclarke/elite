@@ -10,7 +10,8 @@ enum NativeWayfarerInductionAction: String, Sendable {
     retryClinicExpiry,
     issueWorkshopStock, viewWorkshopStock, acceptWorkshopUnit, pickupWorkshopUnit,
     serviceWorkshopUnit, receiveWorkshopUnit, cancelWorkshopBooking, cancelHeldWorkshopUnit,
-    returnWorkshopUnit, progress
+    returnWorkshopUnit, issueSeedStock, viewSeedStock, acceptSeedLot, cancelSeedBooking,
+    pickupSeedLot, receiveSeedLot, cancelHeldSeedLot, returnSeedLot, retrySeedExpiry, progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
     switch self {
@@ -56,6 +57,15 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .cancelWorkshopBooking: "Workshop booking / cancel before pickup"
     case .cancelHeldWorkshopUnit: "Workshop serial / cancel and retain original return custody"
     case .returnWorkshopUnit: "Enmadan workshop / receive cancelled original serial"
+    case .issueSeedStock: "Enlirin custodians / issue six original seed lots"
+    case .viewSeedStock: "Enlirin custodians / original seed stock and route quote"
+    case .acceptSeedLot: "Enlirin custodians / reserve original seed lot and window"
+    case .cancelSeedBooking: "Seed booking / cancel before pickup"
+    case .pickupSeedLot: "Enlirin custodians / collect reserved original seed lot"
+    case .receiveSeedLot: "Lareria receiver / receive original seed lot and pay quote"
+    case .cancelHeldSeedLot: "Original seed lot / cancel and retain return custody"
+    case .returnSeedLot: "Enlirin custodians / receive cancelled original seed lot"
+    case .retrySeedExpiry: "Original seed lot / retry pending native integrity expiry"
     case .progress: "Senn / current induction records"
     }
   }
@@ -82,6 +92,10 @@ struct NativeWayfarerInductionReview: Sendable {
   var workshopQuote: NativeInductionWorkshopQuote? = nil
   var workshopWindow: NativeInductionCapacityReservation? = nil
   var workshopChildRevision: UInt64? = nil
+  var seedReference: UUID? = nil
+  var seedQuote: NativeInductionSeedQuote? = nil
+  var seedWindow: NativeInductionCapacityReservation? = nil
+  var seedChildRevision: UInt64? = nil
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
 }
@@ -99,7 +113,8 @@ extension Game {
           reason: wayfarerInductionReview(action).issues.first, wayfarerInduction: action)
       }
     }
-    let operatorRows = inductionCharterOperatorRows + inductionClinicRows + inductionWorkshopRows
+    let operatorRows =
+      inductionCharterOperatorRows + inductionClinicRows + inductionWorkshopRows + inductionSeedRows
     if !operatorRows.isEmpty { return operatorRows }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
@@ -151,11 +166,17 @@ extension Game {
   func wayfarerInductionReview(
     _ action: NativeWayfarerInductionAction, capacityUnit: UUID? = nil,
     prepareClinicQuote: Bool = false, clinicReference: UUID? = nil,
-    prepareWorkshopQuote: Bool = false, workshopReference: UUID? = nil
+    prepareWorkshopQuote: Bool = false, workshopReference: UUID? = nil,
+    prepareSeedQuote: Bool = false, seedReference: UUID? = nil
   ) -> NativeWayfarerInductionReview {
     let unit =
       action.isCapacityRelease
       ? (capacityUnit ?? contractBoard.selected?.inductionCapacityUnit) : nil
+    let seedReference = seedReference ?? contractBoard.selected?.inductionSeedReference
+    let seedQuote =
+      prepareSeedQuote && (action == .viewSeedStock || action == .acceptSeedLot)
+      ? try? inductionSeedReadOnlyQuote(unit: seedReference) : nil
+    let seedWindow = seedQuote.flatMap { try? inductionSeedWindow(quote: $0) }
     let workshopReference = workshopReference ?? contractBoard.selected?.inductionWorkshopReference
     let workshopQuote =
       prepareWorkshopQuote && (action == .viewWorkshopStock || action == .acceptWorkshopUnit)
@@ -182,6 +203,20 @@ extension Game {
     }
     if action.isClinicCustodyAction {
       actionIssues += inductionClinicCustodyIssues(action, instance: clinicReference)
+    }
+    if action == .issueSeedStock { actionIssues += inductionSeedSourceIssues() }
+    if action == .acceptSeedLot {
+      actionIssues += inductionSeedBookingIssues(unit: seedReference)
+      if prepareSeedQuote && (seedQuote == nil || seedWindow == nil) {
+        actionIssues.append(
+          "No current reachable original seed quote or eligible same-owner window; review again.")
+      }
+    }
+    if action == .cancelSeedBooking {
+      actionIssues += inductionSeedCancellationIssues(instance: seedReference)
+    }
+    if action.isSeedCustodyAction {
+      actionIssues += inductionSeedCustodyIssues(action, instance: seedReference)
     }
     if action.isWorkshopAction {
       actionIssues += inductionWorkshopActionIssues(action, reference: workshopReference)
@@ -222,7 +257,8 @@ extension Game {
       workshopWindow: workshopWindow,
       workshopChildRevision: workshopReference.flatMap {
         commander.scriptState.instances[$0]?.revision
-      }
+      }, seedReference: seedReference, seedQuote: seedQuote, seedWindow: seedWindow,
+      seedChildRevision: seedReference.flatMap { commander.scriptState.instances[$0]?.revision }
     )
   }
 
@@ -248,7 +284,8 @@ extension Game {
       && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight
       && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility
       && action.charterPolicy == nil && action != .allocateCharterCapacity
-      && action.capacityOperator == nil && !action.isClinicStockAction && !action.isWorkshopAction,
+      && action.capacityOperator == nil && !action.isClinicStockAction && !action.isWorkshopAction
+      && !action.isSeedStockAction,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -281,6 +318,12 @@ extension Game {
     case .issueWorkshopStock, .viewWorkshopStock, .acceptWorkshopUnit, .pickupWorkshopUnit,
       .serviceWorkshopUnit, .receiveWorkshopUnit, .cancelWorkshopBooking, .cancelHeldWorkshopUnit,
       .returnWorkshopUnit:
+      break
+    case .viewSeedStock:
+      issues.append(
+        "Read-only original seed quote; use the separate booking, pickup and custody rows.")
+    case .issueSeedStock, .acceptSeedLot, .cancelSeedBooking, .pickupSeedLot, .receiveSeedLot,
+      .cancelHeldSeedLot, .returnSeedLot, .retrySeedExpiry:
       break
     case .progress: break
     }
@@ -317,7 +360,8 @@ extension Game {
   mutating func confirmWayfarerInduction(_ quote: NativeWayfarerInductionReview) throws {
     let current = wayfarerInductionReview(
       quote.action, prepareClinicQuote: quote.action == .acceptClinicSample,
-      prepareWorkshopQuote: quote.action == .acceptWorkshopUnit)
+      prepareWorkshopQuote: quote.action == .acceptWorkshopUnit,
+      prepareSeedQuote: quote.action == .acceptSeedLot)
     guard quote.allowed, current.allowed, quote.dock == current.dock,
       quote.carrier == current.carrier, quote.inventoryRevision == current.inventoryRevision,
       quote.trade == current.trade, quote.epoch == current.epoch,
@@ -328,6 +372,10 @@ extension Game {
       quote.capacityUnit == current.capacityUnit,
       quote.clinicReference == current.clinicReference,
       quote.clinicChildRevision == current.clinicChildRevision,
+      quote.seedReference == current.seedReference,
+      quote.seedChildRevision == current.seedChildRevision,
+      quote.seedWindow == current.seedWindow,
+      quote.seedQuote?.offer.id == current.seedQuote?.offer.id,
       quote.workshopReference == current.workshopReference,
       quote.workshopChildRevision == current.workshopChildRevision,
       quote.workshopWindow == current.workshopWindow,
@@ -490,10 +538,39 @@ extension Game {
         }
       }
     }
+    if quote.action == .issueSeedStock {
+      try candidate.confirmInductionSeedIssue(dock: dock, carrier: carrier, revision: revision)
+    }
+    if quote.action == .acceptSeedLot {
+      guard let seed = current.seedQuote, let window = current.seedWindow else {
+        throw SaveError.invalidCommander
+      }
+      try candidate.confirmInductionSeedBooking(quote: seed, window: window)
+    }
+    if quote.action == .cancelSeedBooking {
+      guard let id = current.seedReference else { throw SaveError.invalidCommander }
+      try candidate.closeInductionSeedBooking(instance: id)
+    }
+    if quote.action.isSeedCustodyAction {
+      guard let id = current.seedReference else { throw SaveError.invalidCommander }
+      switch quote.action {
+      case .pickupSeedLot: try candidate.confirmInductionSeedPickup(id)
+      case .receiveSeedLot: try candidate.finishInductionSeedCustody(id)
+      case .cancelHeldSeedLot: try candidate.confirmInductionSeedHeldCancellation(id)
+      case .returnSeedLot: try candidate.finishInductionSeedCustody(id, returning: true)
+      case .retrySeedExpiry: try candidate.retryInductionSeedExpiry(id)
+      default: throw SaveError.invalidCommander
+      }
+    }
     self = candidate
   }
 
   func wayfarerInductionDetail() -> [String] {
+    if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
+      .isSeedStockAction == true
+    {
+      return inductionSeedDetail
+    }
     if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
       .isWorkshopAction == true
     {

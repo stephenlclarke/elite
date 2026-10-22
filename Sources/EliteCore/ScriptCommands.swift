@@ -8,6 +8,18 @@ extension Game {
     guard let fields = command.object, let op = fields["op"]?.string else {
       throw MissionPackError("Invalid script command.")
     }
+    if NativeInductionSeedPack.marked(state) || state.savedNativeInductionSeed != nil {
+      guard ["journal.append", "cold-chain.expire"].contains(op) else {
+        throw MissionPackError("Use the original seed lot's native custody transaction.")
+      }
+      if op == "cold-chain.expire" {
+        guard Set(fields.keys) == ["op"], NativeInductionSeedPack.matches(pack) else {
+          throw SaveError.invalidCommander
+        }
+        try applyInductionSeedExpiry(event: event, state: &state, candidate: &candidate)
+        return
+      }
+    }
     if NativeInductionWorkshopPack.marked(state) || state.savedNativeInductionWorkshop != nil {
       guard op == "journal.append" else {
         throw MissionPackError(

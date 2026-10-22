@@ -152,6 +152,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let charterSignatures: [NativeInductionCharterSignature]?
   let charterClinicSource: NativeInductionClinicSource?
   let charterWorkshopSource: NativeInductionWorkshopSource?
+  let charterSeedSource: NativeInductionSeedSource?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
@@ -167,7 +168,8 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     charterCapacity: NativeInductionCapacityState? = nil,
     charterSignatures: [NativeInductionCharterSignature]? = nil,
     charterClinicSource: NativeInductionClinicSource? = nil,
-    charterWorkshopSource: NativeInductionWorkshopSource? = nil
+    charterWorkshopSource: NativeInductionWorkshopSource? = nil,
+    charterSeedSource: NativeInductionSeedSource? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -190,6 +192,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.charterSignatures = charterSignatures
     self.charterClinicSource = charterClinicSource
     self.charterWorkshopSource = charterWorkshopSource
+    self.charterSeedSource = charterSeedSource
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
@@ -203,6 +206,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.charterSignatures == rhs.charterSignatures
       && lhs.charterClinicSource == rhs.charterClinicSource
       && lhs.charterWorkshopSource == rhs.charterWorkshopSource
+      && lhs.charterSeedSource == rhs.charterSeedSource
   }
   var valid: Bool {
     let p = permission
@@ -298,6 +302,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
           guard
             charterClinicSource?.ownsWindowEvent(event) == true
               || charterWorkshopSource?.ownsWindowEvent(event) == true
+              || charterSeedSource?.ownsWindowEvent(event) == true
           else { return false }
           continue
         }
@@ -313,6 +318,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     }
     if let charterClinicSource, !charterClinicSource.valid(parent: self) { return false }
     if let charterWorkshopSource, !charterWorkshopSource.valid(parent: self) { return false }
+    if let charterSeedSource, !charterSeedSource.valid(parent: self) { return false }
     return continuationValid && seedKeyValid
   }
   var payloads: [String: Int] {

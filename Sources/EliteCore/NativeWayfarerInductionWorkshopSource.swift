@@ -252,6 +252,7 @@ extension NativeWayfarerInductionState {
     }
     return charterClinicSource?.windowEventClock(event)
       ?? charterWorkshopSource?.windowEventClock(event)
+      ?? charterSeedSource?.windowEventClock(event)
   }
   private func withWorkshopSource(
     _ source: NativeInductionWorkshopSource, capacity: NativeInductionCapacityState
@@ -263,7 +264,8 @@ extension NativeWayfarerInductionState {
       crewLog: crewLog, crewLogLoss: crewLogLoss, crewLogHullCustody: crewLogHullCustody,
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice, charterCapacity: capacity, charterSignatures: charterSignatures,
-      charterClinicSource: charterClinicSource, charterWorkshopSource: source)
+      charterClinicSource: charterClinicSource, charterWorkshopSource: source,
+      charterSeedSource: charterSeedSource)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }

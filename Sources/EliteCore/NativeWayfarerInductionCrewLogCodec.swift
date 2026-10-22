@@ -14,6 +14,8 @@ extension NativeInductionCrewLogSave {
       !root.keys.contains("nativeInductionWorkshop"),
       !root.keys.contains("charterWorkshopSource"),
       !root.keys.contains("nativeInductionWorkshopSource"),
+      !root.keys.contains("charterSeedSource"), !root.keys.contains("nativeInductionSeedSource"),
+      !root.keys.contains("savedNativeInductionSeed"), !root.keys.contains("nativeInductionSeed"),
       !root.keys.contains("charterClinicSource"), !root.keys.contains("nativeInductionClinicSource")
     else { throw SaveError.invalidCommander }
     if part == .missions {
@@ -35,7 +37,10 @@ extension NativeInductionCrewLogSave {
     }
     for entry in instances {
       guard let mission = entry as? [String: Any] else { throw SaveError.invalidCommander }
-      guard !mission.keys.contains("nativeInductionWorkshop"),
+      guard !mission.keys.contains("charterSeedSource"),
+        !mission.keys.contains("nativeInductionSeedSource"),
+        !mission.keys.contains("nativeInductionSeed"),
+        !mission.keys.contains("nativeInductionWorkshop"),
         !mission.keys.contains("charterWorkshopSource"),
         !mission.keys.contains("nativeInductionWorkshopSource"),
         !mission.keys.contains("nativeInductionClinic"),
@@ -97,6 +102,30 @@ extension NativeInductionCrewLogSave {
           || ((parent["charterCapacity"] as? [String: Any])?["events"] as? [Any])?.isEmpty == false
       {
         guard supportsCharterConsent(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
+      let seed = mission["definition"] as? String == NativeInductionSeedPack.stateID
+      let seedPin = mission["digest"] as? String == NativeInductionSeedPack.digest
+      let seedClaim = mission.keys.contains("savedNativeInductionSeed")
+      guard seed == seedPin, seed == seedClaim else { throw SaveError.invalidCommander }
+      if seed {
+        guard supportsSeed(schema), !embedded,
+          let leaf = mission["savedNativeInductionSeed"] as? [String: Any]
+        else { throw SaveError.invalidCommander }
+        let bytes = try JSONSerialization.data(withJSONObject: leaf)
+        guard bytes.count <= 131072 else { throw SaveError.invalidCommander }
+        let decoded = try JSONDecoder().decode(NativeInductionSeedContract.self, from: bytes)
+        guard
+          (leaf as NSDictionary).isEqual(
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))
+        else { throw SaveError.invalidCommander }
+      }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("charterSeedSource")
+      {
+        guard supportsSeed(schema), !embedded,
           mission["definition"] as? String == NativeWayfarerInduction.stateID,
           mission["digest"] as? String == NativeWayfarerInduction.digest
         else { throw SaveError.invalidCommander }

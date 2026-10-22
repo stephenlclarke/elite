@@ -10,7 +10,7 @@ extension NativeWayfarerInductionAction {
   var isInductionAnyBerthAction: Bool {
     [
       .cancelClinicSample, .cancelHeldClinicSample, .retryClinicExpiry, .cancelWorkshopBooking,
-      .cancelHeldWorkshopUnit,
+      .cancelHeldWorkshopUnit, .cancelSeedBooking, .cancelHeldSeedLot, .retrySeedExpiry,
     ].contains(self)
   }
 }

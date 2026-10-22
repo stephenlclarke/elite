@@ -1916,6 +1916,8 @@ public struct Game: Sendable {
       try candidate.closeUncollectedInductionClinicOnExit(.escapePod)
       try candidate.loseHeldInductionClinicOnExit(.escapePod)
       try candidate.loseInductionWorkshopOnExit(.escapePod)
+      try candidate.closeUncollectedInductionSeedOnExit(.escapePod)
+      try candidate.loseHeldInductionSeedOnExit(.escapePod)
     } catch {
       notify("CLINIC RESERVATION LOSS NOT SAVED - ESCAPE NOT COMMITTED")
       return
@@ -2652,6 +2654,8 @@ public actor GameRuntime {
     commitInductionClinicUncollectedLoss()
     commitInductionClinicHeldFatalLoss()
     commitInductionWorkshopLoss()
+    commitInductionSeedUncollectedLoss()
+    commitInductionSeedHeldFatalLoss()
     commitWayfarerRepairLoopFatalLoss()
     commitNativeUtilityFatalLoss()
     commitFieldReliefTargetLoss()
