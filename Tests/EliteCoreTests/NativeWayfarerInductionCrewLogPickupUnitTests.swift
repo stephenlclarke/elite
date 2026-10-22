@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Typed receipt/graph fixtures only, never a forged native pending contact or executed journey.
-struct CrewLogPickupFixture {
+final class CrewLogPickupFixture {
   let f: CrewLogProducerFixture
   let capture: NativeCrewLogCapture
   init() throws {

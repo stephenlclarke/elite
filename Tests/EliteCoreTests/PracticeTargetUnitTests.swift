@@ -194,8 +194,10 @@ struct PracticeTargetUnitTests {
   func mixedC08ArchivesKeepClosedLowerFeatureValidationAndHighestRequiredFormat(alien: Bool) throws
   {
     let f = try fixture()
-    let workshop = try InductionWorkshopFixture()
-    let commander = try workshop.commander(.init(booking: workshop.booking))
+    let original = try InductionSeedFixture()
+    var commander = try original.commander()
+    try original.restoreOriginalParentSaveClaims(&commander)
+    try original.restoreOriginalNetworkChildren(&commander)
     #expect(NativeInductionCrewLogSave.validateClaims(commander))
     var instances = commander.scriptState.instances
     instances[f.instance.id] = f.instance

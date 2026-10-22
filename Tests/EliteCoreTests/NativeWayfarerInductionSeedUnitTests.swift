@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Three-operator ownership, custody and native timer receipts only; no native journey is executed.
-private final class InductionSeedFixture {
+final class InductionSeedFixture {
   let f: InductionWorkshopFixture
   let signature: NativeInductionCharterSignature
   let issue: NativeInductionSeedIssue
@@ -156,6 +156,106 @@ private final class InductionSeedFixture {
     commander.scriptState.instances[issue.parent]?.acknowledge(280)
     commander.scriptState.instances[booking.instance] = child(custody: custody)
     return commander
+  }
+  /// Full parent-save callers retain the exact original sale and historical receiving stations.
+  func restoreOriginalParentSaveClaims(_ commander: inout Commander) throws {
+    let sale = f.f.f.f.f.f.work.f.originalSale
+    guard held.permission.trade == .sale(sale.operation), sale.owner == held.permission.owner,
+      sale.valid,
+      let state = commander.scriptState.instances[held.permission.mission]?.savedWayfarerInduction
+    else { throw SaveError.invalidCommander }
+    commander.scriptState.firstNativeCommoditySale = sale
+    var docks = [state.permission.dock]
+    docks += [
+      state.crate?.dock, state.reception?.dock, state.cassette?.dock,
+      state.cassetteService?.dock, state.seedKey?.dock, state.seedReception?.playerDock,
+      state.rescueReception?.playerDock, state.utilityReception?.dock,
+      state.charterChoice?.dock, state.charterClinicSource?.issue.dock,
+      state.charterWorkshopSource?.issue.dock, state.charterSeedSource?.issue.dock,
+    ].compactMap { $0 }
+    for dock in docks where commander.nativeStations?.mainStations.contains(dock.station) != true {
+      commander.nativeStations?.mainStations.append(dock.station)
+    }
+  }
+  /// Complete-network callers keep the same original received crew and repaired utility records.
+  func restoreOriginalNetworkChildren(_ commander: inout Commander) throws {
+    let work = f.f.f.f.f.f.work
+    let utility = work.f
+    let rescue = utility.receivingFixture
+    let parent = try #require(
+      commander.scriptState.instances[held.permission.mission]?.savedWayfarerInduction)
+    let received = try #require(parent.rescueReception)
+    let utilityReceived = try #require(parent.utilityReception)
+    var crew = try #require(rescue.f.f.commander().scriptState.instances[received.job])
+    var crewState = try rescue.state(receipt: received)
+    let legs = try rescue.routeLegs()
+    crewState.flight?.legs = legs.map(\.0)
+    if commander.scriptState.wormholeTransit == nil {
+      commander.scriptState.wormholeTransit = .init(owner: parent.permission.owner)
+    }
+    let service = try rescue.interhopService()
+    for (_, leg) in legs {
+      commander.scriptState.wormholeTransit?.legs[leg.id] = leg
+    }
+    let fuel = try #require(legs.last?.1.departure?.fuelAfter)
+    if commander.nativeStations?.mainStations.contains(service.contact.station) != true {
+      commander.nativeStations?.mainStations.append(service.contact.station)
+    }
+    var supplies = commander.nativeStations?.arkFuel ?? []
+    try #require(!supplies.contains(where: { $0.station == service.supply.station }))
+    supplies.append(service.supply)
+    commander.nativeStations?.arkFuel = supplies
+    let encounter = NativeInductionCrewLogPack.encounter
+    var group = try #require(crew.ownedEncounters[encounter])
+    var launch = try #require(group.actors["launch"])
+    launch.presence = .unloaded
+    launch.transitLocation = rescue.contact.station.system
+    launch.body.physical = .init(
+      identity: rescue.contact.arkActor, population: .mission,
+      npc: .init(
+        role: .mission, origin: NativeInductionCrewLogSource.location,
+        destination: NativeInductionCrewLogSource.receiver))
+    launch.body.scriptNPC?.fuel = fuel
+    launch.body.scriptNPC?.velocity = .init(0, 0, 0)
+    launch.body.scriptNPC?.intent = nil
+    group.actors["launch"] = launch
+    crew.ownedEncounters[encounter] = group
+    crew.savedNativeCrewLog = crewState
+    crew.revision = 1000
+    crew.milestones = [0, 1]
+    crew.acknowledge(received.sequence)
+    commander.scriptState.instances[crew.id] = crew
+    if commander.nativeStations?.mainStations.contains(rescue.f.authorization.dock.station) != true
+    {
+      commander.nativeStations?.mainStations.append(rescue.f.authorization.dock.station)
+    }
+    var utilityState = try work.state()
+    utilityState.receiving = utilityReceived
+    var child = utility.child()
+    child.savedNativeInductionUtility = utilityState
+    child.revision = 1000
+    child.milestones = [0]
+    child.acknowledge(utilityReceived.sequence)
+    var actors: [String: ScriptOwnedActor] = [:]
+    for role in NativeInductionUtilityRole.allCases {
+      var actor = try utility.prepared(role)
+      let resources = try NativeInductionUtilityPack.initialResources(
+        state: utility.child(), actor: actor)
+      let arm = try work.arm(role)
+      actor.body.id = Int(arm.actor.entity)
+      actor.presence = .unloaded
+      actor.body.physical = .init(identity: arm.actor, population: .mission, npc: resources)
+      actors[role.rawValue] = actor
+    }
+    var utilityGroup = ScriptOwnedEncounter(
+      id: NativeInductionUtilityPack.encounter,
+      galaxy: 0, system: 190, actors: actors)
+    utilityGroup.admitted = true
+    child.ownedEncounters[utilityGroup.id] = utilityGroup
+    commander.scriptState.instances[child.id] = child
+    while commander.flightSimulation.nextActor <= 44 {
+      _ = commander.flightSimulation.allocateActor()
+    }
   }
   func cancelled() throws -> NativeInductionSeedCustody {
     let contact = WayfarerColdChainContact(
@@ -503,15 +603,18 @@ struct NativeWayfarerInductionSeedUnitTests {
     let clinic = try #require(f.held.charterSignatures?.first(where: { $0.operatorID == .clinic }))
     let unit = try #require(
       capacity.units.first(where: { $0.operatorID == .clinic && $0.slot == 3 }))
+    let laterClinic = f.dock(185, sequence: 110, visit: f.returned.actor.visit + 1)
     let release = try f.f.f.f.f.release(
-      clinic, capacity: capacity, unit: unit, sequence: 270, time: 1_000_270, flightSeconds: 900_270
+      clinic, capacity: capacity, unit: unit, dock: laterClinic, sequence: 270, time: 1_000_270,
+      flightSeconds: 900_270
     )
     let next = try f.held.releasingCharterUnit(release)
     #expect(
       next.charterSeedSource == f.held.charterSeedSource
         && next.charterWorkshopSource == f.held.charterWorkshopSource
         && next.charterClinicSource == f.held.charterClinicSource)
-    let auditor = f.dock(7, sequence: 110, visit: f.returned.actor.visit)
+    #expect(release.dock == laterClinic && release.revision == capacity.revision)
+    let auditor = f.dock(7, sequence: 111, visit: laterClinic.actor.visit + 1)
     let quote = try NativeInductionSeedQuote.prepare(
       source: f.source, parent: f.available, unit: f.source.units[0].id,
       scope: .avenorReadOnlyAudit, dock: auditor, carrier: f.booking.carrier, revision: 1,

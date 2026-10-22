@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-struct InductionVaultKeyFixture {
+final class InductionVaultKeyFixture {
   let helpers: InductionCassetteServiceFixture
   let serviced: NativeWayfarerInductionState
   init() throws {
