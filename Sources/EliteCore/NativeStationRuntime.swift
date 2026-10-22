@@ -909,20 +909,37 @@ extension Game {
     observation: inout [String: String]?, bodyCourseRefused: inout Bool
   ) -> Bool {
     bodyCourseRefused = false
+    guard
+      let corridor = nativeStationAutoEntryCorridorInputs(
+        station, advance: advance, terminalSpeed: terminalSpeed, observation: &observation)
+    else { return false }
+    let clear = nativeStationApproachClear(
+      from: corridor.start, to: corridor.end,
+      excluding: corridor.stationID, radius: corridor.radius, observation: &observation,
+      refineCourse: true, bodyCourseRefused: &bodyCourseRefused)
+    if clear { observation?["refusal"] = "none" }
+    return clear
+  }
+
+  @inline(never)
+  private mutating func nativeStationAutoEntryCorridorInputs(
+    _ station: borrowing SpaceBody, advance: Vector3, terminalSpeed: Double,
+    observation: inout [String: String]?
+  ) -> (start: Vector3, end: Vector3, stationID: Int, radius: Double)? {
     observation?["refusal"] = "native.state"
     let stateValid = commander.nativeStationStateValid
     observation?["nativeStateValid"] = String(stateValid)
     guard stateValid, let world = commander.nativeStations,
       let physical = Self.nativeStationEntryPhysicalFields(station)
-    else { return false }
+    else { return nil }
     observation?["refusal"] = "native.advance"
-    guard advance.finite else { return false }
+    guard advance.finite else { return nil }
     observation?["refusal"] = "native.motion-binding"
     let velocityError = (physical.velocity - nativeStationVelocity(station)).length
     observation?["stationVelocityError"] = String(velocityError)
     guard velocityError < 1e-7,
       NativeStationSnapshot.matches(station, in: bodies)
-    else { return false }
+    else { return nil }
     let flight = commander.flightSimulation
     let player = commander.playerMesh
     observation?["playerShip"] = commander.shipID
@@ -935,37 +952,37 @@ extension Game {
         let source = NativeStationSource.binding(for: identity),
         let position = world.currentPosition(for: .rrs(identity), at: flight.physicalTime),
         let orientation = world.currentOrientation(for: identity, at: flight.physicalTime)
-      else { return false }
+      else { return nil }
       observation?["refusal"] = "rrs.aperture-shape"
-      guard source.geometry.docking.fits(player) else { return false }
+      guard source.geometry.docking.fits(player) else { return nil }
       observation?["refusal"] = "rrs.aperture-start"
       guard
         nativeStationHullFits(
           player, ship: flight.pose, station: position, orientation: orientation,
           port: source.geometry.docking, margin: 0)
-      else { return false }
+      else { return nil }
       observation?["refusal"] = "rrs.aperture-end"
       guard
         nativeStationHullFits(
           player, ship: endpoint, station: position, orientation: orientation,
           port: source.geometry.docking, margin: 0)
-      else { return false }
+      else { return nil }
       observation?["refusal"] = "rrs.structure"
       guard
         nativeStructureHullSweepClear(
           player, from: flight.pose, to: endpoint, position: position,
           fromOrientation: orientation, toOrientation: orientation, margin: 0,
           mesh: source.geometry.mesh)
-      else { return false }
+      else { return nil }
     } else {
       observation?["refusal"] = "main.actor-source"
       guard station.id == 0, physical.identity == flight.anchors?.station.identity,
         let anchor = currentNativeMainStationAnchor(at: flight.physicalTime)
-      else { return false }
+      else { return nil }
       observation?["refusal"] = "main.position-source"
       let positionError = (flight.pose.systemPoint(station.position) - anchor.position).length
       observation?["stationPositionError"] = String(positionError)
-      guard positionError < 1e-5 else { return false }
+      guard positionError < 1e-5 else { return nil }
       observation?["refusal"] = "main.basis-source"
       let stationOrientation = station.orientation
       guard
@@ -976,31 +993,26 @@ extension Game {
           observation?["stationBasisError"] = String(error)
           return error < 1e-5
         })
-      else { return false }
+      else { return nil }
       observation?["refusal"] = "main.resource-source"
       guard let identity = world.mainStations.first(where: { $0.system == systemIdentity }),
         let resource = commander.scriptState.stationResources[identity.key],
         resource.identity == identity.resource, !resource.destroyed, resource.energy > 0
-      else { return false }
+      else { return nil }
       var atDoor = copy station
       atDoor.position = atDoor.position - advance
       observation?["refusal"] = "main.centre-entry"
-      guard atDoor.canEnter(roll: autoPilot.rollRate, speed: terminalSpeed) else { return false }
+      guard atDoor.canEnter(roll: autoPilot.rollRate, speed: terminalSpeed) else { return nil }
       guard
         nativeMainStationHullCourseIsClear(
           station, from: flight.pose, to: endpoint, observation: &observation)
-      else { return false }
+      else { return nil }
     }
     let radius = nativeStationRadius(player)
     observation?["playerRadius"] = String(radius)
     observation?["refusal"] = "corridor.player-radius"
-    guard radius.isFinite else { return false }
-    let clear = nativeStationApproachClear(
-      from: flight.pose.position, to: flight.pose.systemPoint(advance),
-      excluding: station.id, radius: radius, observation: &observation,
-      refineCourse: true, bodyCourseRefused: &bodyCourseRefused)
-    if clear { observation?["refusal"] = "none" }
-    return clear
+    guard radius.isFinite else { return nil }
+    return (flight.pose.position, flight.pose.systemPoint(advance), station.id, radius)
   }
 
   private mutating func nativeStationApproachClear(
