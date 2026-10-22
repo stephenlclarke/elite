@@ -8,8 +8,10 @@ enum NativeSafeGunnerySave {
     instance.savedSafeGunnery != nil || instance.digest == NativeSafeGunnery.digest
   }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
-    commander.scriptState.instances.values.contains(where: marked)
-      || commander.contracts.boards.values.contains { $0.digest == NativeSafeGunnery.digest }
+    let instances = commander.scriptState.instances
+    if instances.values.contains(where: marked) { return true }
+    let boards = commander.contracts.boards
+    return boards.values.contains { $0.digest == NativeSafeGunnery.digest }
   }
   static func shapeValid(_ instance: ScriptInstance) -> Bool {
     guard instance.definition == NativeSafeGunnery.stateID,
@@ -38,7 +40,13 @@ enum NativeSafeGunnerySave {
   }
 
   static func validateClaims(_ commander: borrowing Commander) -> Bool {
-    let own = commander.scriptState.instances.values.filter(marked)
+    let instances = commander.scriptState.instances
+    let boardCache = commander.contracts.boards
+    let physicalTime = commander.flightSimulation.physicalTime
+    let nextEmission = commander.flightSimulation.nextEmission
+    let nextIncident = commander.flightSimulation.nextIncident
+    let nextActor = commander.flightSimulation.nextActor
+    let own = instances.values.filter(marked)
     guard own.count <= 128, own.filter({ $0.outcome == .active }).count <= 1 else { return false }
     var attempts: Set<Int> = []
     for instance in own {
@@ -46,16 +54,16 @@ enum NativeSafeGunnerySave {
         let owner = commander.equipmentOwnerID, state.permission.owner == owner,
         state.permission.consent.valid(for: instance, engine: commander.scriptState),
         NativeFlightReceptionSave.historicalDock(state.permission.dock, commander: commander),
-        state.permission.acceptedAt <= commander.flightSimulation.physicalTime,
-        state.lastDischargeEmission < commander.flightSimulation.nextEmission,
-        state.lastFrameTime.map({ $0 <= commander.flightSimulation.physicalTime }) ?? true,
+        state.permission.acceptedAt <= physicalTime,
+        state.lastDischargeEmission < nextEmission,
+        state.lastFrameTime.map({ $0 <= physicalTime }) ?? true,
         state.ordinaryHit.map({
-          $0.id < commander.flightSimulation.nextIncident
-            && $0.origin.emissionID < commander.flightSimulation.nextEmission
+          $0.id < nextIncident
+            && $0.origin.emissionID < nextEmission
         }) ?? true,
         state.pendingProjectiles.values.allSatisfy({
-          $0.emissionID < commander.flightSimulation.nextEmission
-            && ($0.ordnance.map { $0.entity < commander.flightSimulation.nextActor } ?? false)
+          $0.emissionID < nextEmission
+            && ($0.ordnance.map { $0.entity < nextActor } ?? false)
         }),
         let job = instance.contract, job.provider == "l337.training",
         job.digest == instance.digest, job.version == instance.version,
@@ -72,7 +80,7 @@ enum NativeSafeGunnerySave {
         job.boardKey == instance.digest + "/" + NativeSafeGunnery.boardID + "/" + job.station.key,
         job.offer.id == ScriptIdentity.uuid("contract-offer-v1:\(job.boardKey):0:\(job.offer.key)"),
         Game.contractJobIdentity(job.offer.id) == instance.id,
-        let board = commander.contracts.boards[job.boardKey],
+        let board = boardCache[job.boardKey],
         board.offers.first(where: { $0.id == job.offer.id })?.status == .accepted(instance.id)
       else { return false }
       if let receipt = instance.completionReceipt {
@@ -94,7 +102,7 @@ enum NativeSafeGunnerySave {
       }
     }
     guard attempts == Set(0..<own.count) else { return false }
-    let boards = commander.contracts.boards.filter { $0.value.digest == NativeSafeGunnery.digest }
+    let boards = boardCache.filter { $0.value.digest == NativeSafeGunnery.digest }
     for (key, board) in boards {
       let matching = own.filter { $0.contract?.boardKey == key }
       guard !matching.isEmpty, board.cacheKey == key, board.id == NativeSafeGunnery.boardID,
