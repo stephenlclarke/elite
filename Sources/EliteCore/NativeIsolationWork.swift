@@ -140,20 +140,26 @@ struct NativeIsolationWorkSegment: Codable, Equatable, Sendable {
   }
 }
 
-/// Contiguous attained frames coalesce into one segment, including a 60 Hz twenty-second run.
-/// A history slot limits a distinct measured episode, never a single simulation frame.
+/// Qualifying intervals with the same authority coalesce, including a 60 Hz twenty-second run.
+/// Gaps add no time. A history slot records a distinct authority, never a simulation frame.
 struct NativeIsolationWorkHistory: Codable, Equatable, Sendable {
   private(set) var segments: [NativeIsolationWorkSegment] = []
   func seconds(_ phase: NativeIsolationMeasurementPhase) -> Double {
     segments.filter { $0.phase == phase }.reduce(0) { $0 + $1.seconds }
   }
   var valid: Bool {
-    segments.count <= NativeIsolationWorkEnvelope.maximumSegments
-      && segments.allSatisfy(\.valid)
-      && zip(segments, segments.dropFirst()).allSatisfy { $0.last <= $1.first }
-      && [NativeIsolationMeasurementPhase.work, .observation].allSatisfy {
+    guard segments.count <= NativeIsolationWorkEnvelope.maximumSegments,
+      segments.allSatisfy(\.valid),
+      zip(segments, segments.dropFirst()).allSatisfy({ $0.last <= $1.first }),
+      [NativeIsolationMeasurementPhase.work, .observation].allSatisfy({
         seconds($0).isFinite && seconds($0) <= $0.requiredSeconds + 1e-8
-      }
+      })
+    else { return false }
+    guard let observation = segments.firstIndex(where: { $0.phase == .observation }) else {
+      return true
+    }
+    return abs(seconds(.work) - NativeIsolationWorkEnvelope.requiredWork) < 1e-8
+      && segments[observation...].allSatisfy { $0.phase == .observation }
   }
 
   /// Pure history accounting. Only private native endpoint/meter producers supply runtime facts.
@@ -176,7 +182,7 @@ struct NativeIsolationWorkHistory: Codable, Equatable, Sendable {
     let credit = min(interval, max(0, phase.requiredSeconds - seconds(phase)))
     guard credit > 0 else { return }
     if var last = segments.last, last.authority == authority, last.phase == phase,
-      last.last == start, last.intervals < 999_999_999
+      last.intervals < 999_999_999
     {
       last.last = end
       last.seconds += credit
