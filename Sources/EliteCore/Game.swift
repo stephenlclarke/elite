@@ -991,6 +991,7 @@ public struct Game: Sendable {
   }
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
+    prepareIsolationWorkSafetyKey(key)
     if prepareFlightControlKey(key) { return }
     guard flushNativeSalvageWork() else {
       notify("SALVAGE STATE UNAVAILABLE")
@@ -1847,6 +1848,7 @@ public struct Game: Sendable {
     advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: 0)
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
+    if !retaliating { interruptIsolationWork() }
     guard !docked, !playerEMPDisabled, missileArmed, missileCooldown == 0,
       commander.missiles > 0 || commander.unlimitedMissiles,
       let target = bodies.firstIndex(where: { body in
@@ -1868,6 +1870,7 @@ public struct Game: Sendable {
     else {
       return
     }
+    interruptIsolationWork()
     ensurePhysicalActors()
     guard let player = commander.flightSimulation.player, activateOrdnanceECM(emitter: player)
     else { return }
@@ -1891,6 +1894,7 @@ public struct Game: Sendable {
     notify("E.C.M.", voiced: false)
   }
   public mutating func energyBomb() {
+    interruptIsolationWork()
     guard !docked else { return }
     var candidate = self
     do {
@@ -2431,6 +2435,7 @@ public actor GameRuntime {
     keyAfterGallery(key)
   }
   private func keyAfterGallery(_ key: String) {
+    game.prepareIsolationWorkSafetyKey(key)
     // Safety input survives a refused candidate command because it precedes its rollback snapshot.
     let stopsTool = game.flightKeyStopsTool(key)
     if game.prepareFlightControlKey(key) {

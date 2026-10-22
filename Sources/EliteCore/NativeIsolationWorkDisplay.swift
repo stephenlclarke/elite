@@ -7,7 +7,7 @@ extension Game {
     else { return [] }
     let contact: String
     switch module.contact {
-    case .connected: contact = "CONNECTED / FLOWING WHEN BOTH FEEDERS ARE LIVE"
+    case .connected: contact = "CONTACT CONNECTED"
     case .latchedOpen: contact = "CONTACT LATCHED OPEN"
     }
     var lines = [

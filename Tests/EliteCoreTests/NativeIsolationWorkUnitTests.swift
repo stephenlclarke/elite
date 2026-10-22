@@ -201,6 +201,14 @@ struct NativeIsolationWorkUnitTests {
       }
       #expect(accounts == before)
     }
+    // Historical boundary fixture only: conservation makes an exhausted supply/full load
+    // the same unavailable circuit. Zero connected flow never implies an open contact.
+    var exhausted = try JSONDecoder().decode(
+      NativeIsolationEnergyAccounts.self,
+      from: Data("{\"remainingSupply\":0,\"deliveredLoad\":10000}".utf8))
+    #expect(exhausted.valid && exhausted.headroom == 0)
+    #expect(try exhausted.transfer(seconds: 0.1, contact: .connected) == 0)
+    #expect(exhausted.remainingSupply == 0 && exhausted.deliveredLoad == 10000)
   }
 
   @Test func sixtyHertzHistoryCoalescesIntervalsAndInterruptionsCreditNoGap() async throws {
@@ -423,5 +431,26 @@ struct NativeIsolationWorkUnitTests {
     fixture.game.advanceIsolationWork(from: nil, publish: nil)
     #expect(fixture.game.isolationWorkRuntime.arm == nil)
     #expect(try fixture.state() == state)
+  }
+
+  @Test func combatIntentDisarmsEvenWhenNoInventoryRevisionChanges() async throws {
+    let fixture = try await IsolationWorkFixture()
+    try fixture.admit()
+    try fixture.arm()
+    let before = try fixture.state()
+    for token in ["m", "t", "u", "e", "energy-bomb"] {
+      fixture.game.prepareIsolationWorkSafetyKey(token)
+      #expect(
+        fixture.game.isolationWorkRuntime.arm == nil
+          && fixture.game.isolationWorkRuntime.review == nil)
+      #expect(try fixture.state() == before)
+      fixture.game.key("return")
+      fixture.game.key("return")
+      try #require(fixture.game.isolationWorkRuntime.arm != nil)
+    }
+    fixture.game.missileArmed = false
+    #expect(!fixture.game.fireMissile())
+    #expect(fixture.game.isolationWorkRuntime.arm == nil)
+    #expect(try fixture.state() == before)
   }
 }

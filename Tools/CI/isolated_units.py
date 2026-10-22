@@ -23,6 +23,7 @@ METHODS = {
         "sameBirthIncompleteSourceAndForgedTerminalCannotSupplySuccessfulReception",
     ),
     "NativeIsolationWorkUnitTests": (
+        "combatIntentDisarmsEvenWhenNoInventoryRevisionChanges",
         "exactPackOwnsTwoPassiveSixMetreEnclosuresAndStableFiniteAccounts",
         "genuineParentIssueReservesOnePairAndIdempotenceCannotRefillOrIssueAgain",
         "connectedEnergyConservesFiniteSupplyAndOpenContactStopsTheActualTransfer",

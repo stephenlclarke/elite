@@ -118,6 +118,14 @@ extension Game {
       "Isolation stopped; attained energy transfer and partial work stay."
   }
 
+  /// Apply before command rollback snapshots: a refused combat command must still stop work.
+  mutating func prepareIsolationWorkSafetyKey(_ token: String) {
+    guard isolationWorkRuntime.arm != nil || isolationWorkRuntime.review != nil,
+      ["t", "u", "m", "e", "energy-bomb", "escape-pod"].contains(token.lowercased())
+    else { return }
+    interruptIsolationWork()
+  }
+
   /// Every endpoint re-reads real parent acceptance, original loan, carrier and native actor binding.
   private func isolationMeasurementAuthority(for body: SpaceBody)
     -> NativeIsolationMeasurementAuthority?

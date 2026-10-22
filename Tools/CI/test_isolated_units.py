@@ -30,7 +30,7 @@ class IsolatedReportTests(unittest.TestCase):
         root, suite = self.report()
         self.write(root)
         result = units.inspect_report(self.path)
-        self.assertEqual(result["methods"], 342)
+        self.assertEqual(result["methods"], 343)
         self.assertEqual(result["reported_testcases"], len(suite))
 
     def test_empty_report_does_not_pass_on_zero_process_exit(self):
