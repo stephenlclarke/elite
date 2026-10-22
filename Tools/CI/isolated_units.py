@@ -24,6 +24,20 @@ METHODS = {
         "coldCurrentSaveRetainsResearchAfterPrototypeConsumptionAndRejectsForgedPayment",
         "standardUnlimitedLaunchNeverFabricatesAlienRoundsOrSpendsLoadedOriginal",
     ),
+    "AlienHyperspaceDriveUnitTests": (
+        "alienOnlyLootProducesTypedDriveWithoutScalarUpgradeOrOrdinaryFit",
+        "forgedDriveEvidenceAndReplayCannotCreateOwnedCapability",
+        "pagedDriveCustodyRoundTripKeepsIdentityAndOtherHullIsolation",
+        "actualRecoveryAndPlughFittingSurviveColdSaveAndJumpImmediatelyThroughMassLock",
+        "storingDriveRevokesCapabilityAndStaleOrUndockedRefitDoesNothing",
+        "fittedAlienDriveRetainsFuelElectricalAndOrdinaryDriveGates",
+    ),
+    "NativeIsolationProgrammerUnitTests": (
+        "actualCanonicalLoanOccupiesOneTonneAndReturnRemovesOnlyTheOriginal",
+        "fullRealHoldRefusesBeforeCreatingProgrammerOrObligation",
+        "matchingLabelForeignSerialOrChangedSourceCannotSupplyOriginalCustody",
+        "acquisitionOnlyDefinitionHasNoFittingOrShopOffer",
+    ),
     "WantedDossierNameUnitTests": (
         "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
         "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",

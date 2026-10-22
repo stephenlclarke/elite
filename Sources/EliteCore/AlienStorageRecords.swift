@@ -240,7 +240,7 @@ private struct AlienStorageReplay {
         try AlienModuleDefinition.kind(for: source.lot) == definition.kind
       else { throw AlienStorageError.invalidJoin }
       attachments[id] = .init(
-        disposition: .stored, bonus: AlienModuleDefinition.baseBonusBasisPoints)
+        disposition: .stored, bonus: definition.kind.initialContribution)
     case .acquireUpgrade(let id, let sourceID), .migrateStoredUpgrade(let id, let sourceID, _, _):
       guard receipts.isEmpty, upgrades[id] == nil, let definition = upgradeDefinitions[id],
         definition.source == sourceID, let source = sources[sourceID],

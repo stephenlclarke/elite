@@ -277,12 +277,15 @@ public enum SalvageLootProfiles {
     switch bucket {
     case .alienArtefact:
       guard source.roles.contains(.thargoid) else { return nil }
-      // Project balance: preserve artefacts alongside four uniformly selected module types.
+      // Project balance: five percent of alien outcomes yield a physical drive;
+      // the four scalar modules and their upgrades retain their existing selection.
       // Reuse the pre-existing selection draw; human pools and their RNG cadence are unchanged.
       let kind = AlienModuleKind.allCases[Int((selection / 100) % 4)]
       let roll = selection % 100
       pool = [
-        roll < 50 ? "alien-artefact" : roll < 75 ? kind.definitionID : kind.upgradeDefinitionID
+        roll < 5
+          ? AlienModuleKind.hyperspaceDrive.definitionID
+          : roll < 50 ? "alien-artefact" : roll < 75 ? kind.definitionID : kind.upgradeDefinitionID
       ]
     case .shieldItem: pool = ["shield-technology"]
     case .weaponItem: pool = weapons
@@ -314,8 +317,8 @@ public enum SalvageLootProfiles {
       content: .technology(
         definitionID: id, quality: quality, conditionPercent: condition, axis: axis),
       effect: effect,
-      bonusBasisPoints: physical != nil
-        ? AlienModuleDefinition.baseBonusBasisPoints : axis == nil ? 0 : quality.bonusBasisPoints,
+      bonusBasisPoints: physical?.initialContribution
+        ?? (axis == nil ? 0 : quality.bonusBasisPoints),
       massKg: definition.massKg, halfExtents: definition.halfExtents,
       provenance: definition.provenance,
       saleValueTenths: SalvageDefinitions.saleValue(

@@ -198,7 +198,7 @@ struct NativeSalvageCollectionRuntimeTests {
   }
 }
 
-private func recoveredModuleAtActualPlughDock(
+func recoveredModuleAtActualPlughDock(
   _ file: URL,
   kind: AlienModuleKind = .energyCapacity
 ) async throws -> (GameRuntime, UUID) {

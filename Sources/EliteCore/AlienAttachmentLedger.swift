@@ -65,7 +65,7 @@ struct AlienAttachmentLedger: Equatable, Codable, Sendable {
     let kind = try AlienModuleDefinition.kind(for: lot)
     let item = AlienAttachment(
       id: command, owner: owner, kind: kind, source: lot, disposition: .stored,
-      contributionBasisPoints: AlienModuleDefinition.baseBonusBasisPoints, upgrades: [])
+      contributionBasisPoints: kind.initialContribution, upgrades: [])
     records[command] = item
     sources.insert(lot.identity)
     commit(command: command, action: .acquire(item: command, source: lot.identity), revision: next)
@@ -196,7 +196,7 @@ struct AlienAttachmentLedger: Equatable, Codable, Sendable {
       if case .fitted(let address) = item.disposition, address.attachment != id {
         throw AlienAttachmentError.invalidState
       }
-      var contribution = AlienModuleDefinition.baseBonusBasisPoints
+      var contribution = item.kind.initialContribution
       for upgrade in item.upgrades {
         guard commands[upgrade.operation] == .upgrade(item: id, source: upgrade.source.identity),
           receiptOperations.insert(upgrade.operation).inserted,

@@ -23,6 +23,7 @@ struct AlienModuleLootProducerTests {
   @Test func actualThargoidPlansProduceArtefactsAllFourModulesAndMatchingQualityUpgrades() throws {
     let source = alienProducerSource([.thargoid, .militaryCapital])
     var artefacts = 0
+    var drives = 0
     var modules = 0
     var upgrades = 0
     var moduleTypes: Set<AlienModuleKind> = []
@@ -43,6 +44,11 @@ struct AlienModuleLootProducerTests {
       if id == "alien-artefact" {
         artefacts += 1
         #expect(axis == nil && item.effect == .researchAndSale && item.bonusBasisPoints == 0)
+      } else if id == AlienModuleKind.hyperspaceDrive.definitionID {
+        drives += 1
+        try AlienModuleDefinition.validatePlanned(item)
+        #expect(try AlienModuleDefinition.kind(for: producedLot(item)) == .hyperspaceDrive)
+        #expect(axis == nil && item.bonusBasisPoints == 0 && item.effect == .alienHyperspaceDrive)
       } else if let kind = AlienModuleKind.allCases.first(where: { $0.definitionID == id }) {
         modules += 1
         moduleTypes.insert(kind)
@@ -68,10 +74,12 @@ struct AlienModuleLootProducerTests {
       }
     }
     #expect(
-      (800...1200).contains(artefacts) && (350...650).contains(modules)
+      (700...1100).contains(artefacts) && (50...160).contains(drives)
+        && (350...650).contains(modules)
         && (350...650).contains(upgrades))
     #expect(
-      moduleTypes == Set(AlienModuleKind.allCases) && upgradeTypes == Set(AlienModuleKind.allCases))
+      moduleTypes == Set(AlienModuleKind.allCases.filter(\.supportsUpgrade))
+        && upgradeTypes == moduleTypes)
     #expect(qualities == Set(SalvageQuality.allCases))
   }
 
@@ -128,7 +136,7 @@ struct AlienModuleLootProducerTests {
       stockPylons: 1, installedPylons: 1, structuralPylonLimit: 8, storedEmptyPods: 0,
       fittedLasers: [:], loadedMissiles: 0)
     for kind in AlienModuleKind.allCases {
-      for upgrade in [false, true] {
+      for upgrade in (kind.supportsUpgrade ? [false, true] : [false]) {
         let id = upgrade ? kind.upgradeDefinitionID : kind.definitionID
         let definition = try #require(SalvageDefinitions.definition(id: id))
         #expect(
@@ -138,7 +146,8 @@ struct AlienModuleLootProducerTests {
         #expect(definition.installationCostTenths == (upgrade ? 2500 : 5000))
         #expect(
           SalvageDefinitions.compatibility(
-            definition: definition, action: .fit(axis: kind.axes[0], mount: nil), context: context)
+            definition: definition, action: .fit(axis: kind.axes.first, mount: nil),
+            context: context)
             == .refused(.incompatibleHardware))
         #expect(
           SalvageDefinitions.compatibility(definition: definition, action: .sell, context: context)
