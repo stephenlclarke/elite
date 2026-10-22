@@ -4525,6 +4525,19 @@
       "reviewer": "MBA",
       "scope": "Existing hosted unit failure artifact only; no new run, assertions or failure status changes",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Bounded unit crash evidence collector pushed for independent review",
+      "head": "7068555f9c0d85191bce27b0a8947782e2409894",
+      "base": "fa634d8a141a53403b80da24627dbae77cd0790b",
+      "ledger_parent": "C08.P05.A.I41",
+      "github_run": 39711047075,
+      "selection_methods": 174,
+      "source_review": "MBA assigned exact8-path CI delta",
+      "unit_status": "normal CI-triggered run pending; no crash fix or aggregate pass",
+      "authoring_validation": "10 synthetic crash-evidence Python cases and6 existing report fixtures pass",
+      "next_assigned": "C08.P05.B.source",
+      "usable_build_delivered": false
     }
   ]
 }
