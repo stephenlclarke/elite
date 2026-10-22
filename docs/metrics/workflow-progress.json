@@ -4606,10 +4606,17 @@
       "github_run": 39714460197,
       "selection_methods": 181,
       "new_methods": 7,
-      "source_review": "MBA queued exact source/authority/save delta",
-      "unit_status": "existing hosted pending; correction runs retained separately",
+      "source_review": "MBA exact delta and necessary source/save callers clean",
+      "unit_status": "Aggregate FAILURE solely known42 Cassette99; all7 new source methods PASS, no crash",
       "next_assigned": "C08.P05.B.work",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "executed_methods": 181,
+      "executed_expanded_cases": 213,
+      "passed_methods": 180,
+      "passed_expanded_cases": 212,
+      "failed_assertions": 1,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331834885",
+      "qualification_scope": "Bounded source/typed graph/pack/schema only; no native authorization/admission/work/receiving/gameplay delivery"
     },
     {
       "event": "Final cassette deferred-boundary assertion corrected and pushed",
