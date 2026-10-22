@@ -5198,6 +5198,16 @@
       "pr76_methods": 351,
       "execution_qualified": false,
       "merged": false
+    },
+    {
+      "event": "Full G11 source review completed; only issue85; author instructed to push coherent correction without waiting on defective baseline",
+      "date": "2026-10-22",
+      "reviewed_head": "e69a8731a2caf59f61556e45f0d3685a4c7ecad1",
+      "reviewed_new_methods": 21,
+      "issue": 85,
+      "current_baseline_run": 39768145723,
+      "baseline_execution_qualified": false,
+      "correction_pushed": false
     }
   ],
   "two_developer_phase": {
