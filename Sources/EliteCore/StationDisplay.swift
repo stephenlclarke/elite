@@ -228,10 +228,12 @@ extension Display {
       frame.label(
         label, layout.left + offsets[index] * layout.width, 90, scale: layout.font, ink: .yellow)
     }
-    let start = max(0, min(game.selection - layout.count + 1, Commodity.all.count - layout.count))
-    for index in start..<min(Commodity.all.count, start + layout.count) {
+    let start = MarketDisplayOrder.start(selection: game.selection, visible: layout.count)
+    for (row, index) in MarketDisplayOrder.commodityIDs.dropFirst(start).prefix(layout.count)
+      .enumerated()
+    {
       let item = Commodity.all[index]
-      let y = 114 + Double(index - start) * layout.row
+      let y = 114 + Double(row) * layout.row
       frame.label(
         index == game.selection ? ">" : "", layout.left - 12, y, scale: layout.font, ink: .white)
       frame.label(

@@ -49,9 +49,9 @@ extension Game {
       return
     }
     let row = Int((y - 114) / layout.station.row)
-    let start = max(
-      0, min(selection - layout.station.count + 1, Commodity.all.count - layout.station.count))
-    guard row < layout.station.count, Commodity.all.indices.contains(start + row) else { return }
-    selection = start + row
+    let start = MarketDisplayOrder.start(selection: selection, visible: layout.station.count)
+    guard row < layout.station.count, MarketDisplayOrder.commodityIDs.indices.contains(start + row)
+    else { return }
+    selection = MarketDisplayOrder.commodityIDs[start + row]
   }
 }

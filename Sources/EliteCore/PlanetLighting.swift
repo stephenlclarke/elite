@@ -51,7 +51,16 @@ public struct PlanetNightProfile: Sendable, Equatable {
   public static let uninhabited = Self(economy: 7, technology: 0, government: 0, inhabited: false)
 
   public init(system: StarSystem) {
-    self.init(economy: system.economy, technology: system.technology, government: system.government)
+    guard system.original != nil else {
+      self.init(
+        economy: system.economy, technology: system.technology, government: system.government)
+      return
+    }
+    let authoring = Universe.originalWorlds.authoring
+    // Original worlds have one-based authored levels; explicit legacy previews retain 0...15.
+    self.init(
+      economy: system.economy, technology: system.technology, government: system.government,
+      inhabited: true, technologyRange: authoring.technologyMinimum...authoring.technologyMaximum)
   }
 
   public init(economy: Int, technology: Int, government: Int) {
@@ -68,11 +77,16 @@ public struct PlanetNightProfile: Sendable, Equatable {
     return colour * (light * emissionIntensity * darkness)
   }
 
-  private init(economy: Int, technology: Int, government: Int, inhabited: Bool) {
+  private init(
+    economy: Int, technology: Int, government: Int, inhabited: Bool,
+    technologyRange: ClosedRange<Int> = 0...15
+  ) {
     self.economy = max(0, min(7, economy))
-    self.technology = max(0, min(15, technology))
+    self.technology = max(technologyRange.lowerBound, min(technologyRange.upperBound, technology))
     self.government = max(0, min(7, government))
-    let development = Double(self.technology) / 15
+    let development =
+      Double(self.technology - technologyRange.lowerBound)
+      / Double(technologyRange.upperBound - technologyRange.lowerBound)
     let coverage = [0.64, 0.55, 0.48, 0.34, 0.12, 0.07, 0.05, 0.035][self.economy]
     let intensity = [0.85, 0.74, 0.65, 0.50, 0.20, 0.12, 0.09, 0.07][self.economy]
     // These are bounded visual coefficients, not real-world government claims or hostility rates.

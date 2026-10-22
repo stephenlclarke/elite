@@ -57,6 +57,10 @@ extension Commander {
         total = addition.partialValue
       }
     }
+    let programmer = total.addingReportingOverflow(
+      NativeIsolationProgrammerDefinition.occupiedTonnes(in: equipmentInventory))
+    guard !programmer.overflow else { return nil }
+    total = programmer.partialValue
     let cabins = accommodation.fittedCabins.count.multipliedReportingOverflow(
       by: AccommodationFitting.tonnesPerCabin)
     guard !cabins.overflow else { return nil }

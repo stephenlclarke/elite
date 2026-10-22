@@ -408,6 +408,26 @@ METHODS = {
         "fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce",
         "emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody",
     ),
+    "NativeIsolationProgrammerUnitTests": (
+        "actualCanonicalLoanOccupiesOneTonneAndReturnRemovesOnlyTheOriginal",
+        "fullRealHoldRefusesBeforeCreatingProgrammerOrObligation",
+        "matchingLabelForeignSerialOrChangedSourceCannotSupplyOriginalCustody",
+        "acquisitionOnlyDefinitionHasNoFittingOrShopOffer",
+    ),
+    "WantedDossierNameUnitTests": (
+        "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
+        "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
+    ),
+    "MarketDisplayOrderUnitTests": (
+        "authoredOrderKeepsEachStableCommodityIDAndCargoIndex",
+        "arrowSelectionFollowsAuthoredOrderWithoutTradingOrChangingModes",
+        "renderedRowsAndClicksUseTheSameStableIDsAtCompactAndWideSizes",
+    ),
+    "PlanetNightTechnologyUnitTests": (
+        "originalWorldNightProfilesRetainEveryAuthoredTechnologyLevel",
+        "matchedOriginalEconomyAndGovernmentKeepIncreasingNightDevelopmentAboveFifteen",
+        "explicitLegacyNightProfilesKeepTheirExistingCoefficientsAndBounds",
+    ),
 }
 
 
