@@ -4610,6 +4610,18 @@
       "unit_status": "existing hosted pending; correction runs retained separately",
       "next_assigned": "C08.P05.B.work",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Final cassette deferred-boundary assertion corrected and pushed",
+      "head": "6ff0a669bc11088eea9342cf7e469704d7bebd7e",
+      "base": "aaa6f07444a8fa51d644f3ae2c56f478ff844dfd",
+      "ledger_parent": "M01.I42",
+      "github_run": 39715425338,
+      "selection_methods": 181,
+      "source_review": "MBA assigned exact one-literal correction",
+      "unit_status": "existing normal hosted pending; affected-case pass required for42 closure",
+      "next_assigned": "C08.P05.B.work",
+      "usable_build_delivered": false
     }
   ]
 }
