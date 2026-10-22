@@ -5229,6 +5229,16 @@
       "t02_cause": "pending actual MBA log/XML inspection",
       "g11_reviewed_head": "5f3912b2f45cc4e41501fafe7829b7d53c07f740",
       "g11_review": "clean correction review; actual execution pending"
+    },
+    {
+      "event": "M01 final quality gate failed; exact existing evidence inspection assigned to MBA, G1 release remediation takes priority",
+      "date": "2026-10-22",
+      "run": 39766540311,
+      "head": "f88d66e20972d2c6d5a5273bdf5fbb2e9816bc4b",
+      "conclusion": "failure",
+      "cause": "pending actual log/artifact classification",
+      "candidate902_scope": "local unit-qualified only; not release-qualified",
+      "t02_compile_issue": 86
     }
   ],
   "two_developer_phase": {
