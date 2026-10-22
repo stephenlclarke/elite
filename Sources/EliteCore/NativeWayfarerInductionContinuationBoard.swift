@@ -5,6 +5,9 @@ extension NativeWayfarerInductionAction {
     switch self {
     case .accept, .progress, .pooledCharter, .protectedCharter, .allocateCharterCapacity:
       NativeWayfarerInduction.source
+    case .clinicConsent, .releaseClinicCapacity: NativeWayfarerInduction.clinic
+    case .workshopConsent, .releaseWorkshopCapacity: NativeWayfarerInduction.workshop
+    case .seedConsent, .releaseSeedCapacity: NativeWayfarerInduction.seedSource
     case .pickup: NativeWayfarerInduction.clinic
     case .receive: NativeWayfarerInduction.receiver
     case .service: NativeWayfarerInduction.clinic
@@ -63,9 +66,16 @@ extension Game {
         "Review Senn's induction at Avenor after an ordinary delivery or native commodity sale."
     }
     if state.utilityReception != nil {
-      return state.charterChoice == nil
-        ? "At Avenor, compare Pooled windows and Protected reservations; separately Confirm one charter policy. No operator signature is granted by this choice."
-        : "Charter policy recorded. Actual operator reservation/release and selected-branch signatures remain next; no accreditation or final payment yet."
+      if state.charterChoice == nil {
+        return
+          "At Avenor, compare Pooled windows and Protected reservations; separately Confirm one charter policy. No operator signature is granted by this choice."
+      }
+      if state.charterCapacity == nil {
+        return
+          "At actual Avenor, separately review/Confirm this earlier charter's still-unissued original capacity ledger. Loading issues nothing."
+      }
+      return
+        "Actual owner consents \(state.charterSignatures?.count ?? 0)/3: Renas, Enmadan and Enlirin. Protected free-unit release is separate; actual consignment/source-quote audit remains next. No stage12, accreditation or final payment."
     }
     if let status = inductionUtilitySourceStatus { return status }
     if let status = inductionCrewLogStatus { return status }
@@ -98,9 +108,14 @@ extension Game {
   var wayfarerInductionDestination: String {
     let state = wayfarerInductionMission?.savedWayfarerInduction
     if state?.utilityReception != nil {
-      return state?.charterChoice == nil
-        ? "Avenor main orbital G01-S007 / compare and Confirm charter policy"
-        : "Charter operator signatures / unavailable until actual reservation and release support"
+      if state?.charterChoice == nil {
+        return "Avenor main orbital G01-S007 / compare and Confirm charter policy"
+      }
+      if state?.charterCapacity == nil {
+        return "Avenor main orbital G01-S007 / review still-unissued original capacity"
+      }
+      return
+        "Original charter owners: Renas185 / Enmadan000 / Enlirin162 for separate consent; source-quote audit remains next"
     }
     if state?.rescueReception != nil {
       return "Enron G01-S190 / original utility handoff maintenance authorization"

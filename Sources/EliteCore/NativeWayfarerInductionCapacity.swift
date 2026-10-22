@@ -41,14 +41,19 @@ struct NativeInductionCapacityRelease: Codable, Sendable, Equatable {
   let sequence: UInt64
   let before: String
 
+  var consent: UUID?
+
   static func identity(
     allocation: UUID, unit: UUID, owner: UUID,
     revision: UInt64, before: String, dock: NativeMainStationDockReceipt,
-    carrier: UUID, fit: UInt64, time: Double, flightSeconds: Double, sequence: UInt64
+    carrier: UUID, fit: UInt64, time: Double, flightSeconds: Double, sequence: UInt64,
+    consent: UUID? = nil
   ) throws -> UUID {
-    ScriptIdentity.uuid(
+    let original = ScriptIdentity.uuid(
       "induction-charter-exact-owner-release-v1:\(allocation):\(unit):\(owner):\(revision):\(before):\(try NativeFlightReception.hash(dock)):\(carrier):\(fit):\(time.bitPattern):\(flightSeconds.bitPattern):\(sequence)"
     )
+    guard let consent else { return original }
+    return ScriptIdentity.uuid("induction-charter-owner-release-v2:\(original):\(consent)")
   }
 }
 
@@ -242,7 +247,8 @@ struct NativeInductionCapacityState: Codable, Sendable, Equatable {
             unit: receipt.unit, owner: receipt.owner, revision: revision, before: before,
             dock: receipt.dock,
             carrier: receipt.carrier, fit: receipt.inventoryRevision, time: receipt.physicalTime,
-            flightSeconds: receipt.flightSeconds, sequence: receipt.sequence))
+            flightSeconds: receipt.flightSeconds, sequence: receipt.sequence,
+            consent: receipt.consent))
       else { throw SaveError.invalidCommander }
       slots[index].release = receipt.operation
     }

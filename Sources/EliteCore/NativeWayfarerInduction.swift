@@ -149,6 +149,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let utilityReception: NativeInductionUtilityReception?
   let charterChoice: NativeInductionCharterChoice?
   let charterCapacity: NativeInductionCapacityState?
+  let charterSignatures: [NativeInductionCharterSignature]?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
@@ -161,7 +162,8 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     rescueReception: NativeInductionRescueReception? = nil,
     utilityReception: NativeInductionUtilityReception? = nil,
     charterChoice: NativeInductionCharterChoice? = nil,
-    charterCapacity: NativeInductionCapacityState? = nil
+    charterCapacity: NativeInductionCapacityState? = nil,
+    charterSignatures: [NativeInductionCharterSignature]? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -181,6 +183,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.utilityReception = utilityReception
     self.charterChoice = charterChoice
     self.charterCapacity = charterCapacity
+    self.charterSignatures = charterSignatures
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
@@ -191,6 +194,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.crewLogLoss == rhs.crewLogLoss && lhs.crewLogHullCustody == rhs.crewLogHullCustody
       && lhs.rescueReception == rhs.rescueReception && lhs.utilityReception == rhs.utilityReception
       && lhs.charterChoice == rhs.charterChoice && lhs.charterCapacity == rhs.charterCapacity
+      && lhs.charterSignatures == rhs.charterSignatures
   }
   var valid: Bool {
     let p = permission
@@ -269,6 +273,28 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     }
     if let charterCapacity {
       guard let charterChoice, charterCapacity.valid(choice: charterChoice) else { return false }
+    }
+    if let charterSignatures {
+      guard let charterChoice, let charterCapacity, !charterSignatures.isEmpty,
+        charterSignatures.count <= 3,
+        Set(charterSignatures.map(\.operatorID)).count == charterSignatures.count,
+        Set(charterSignatures.map(\.sequence)).count == charterSignatures.count,
+        charterSignatures
+          == charterSignatures.sorted(by: { $0.operatorID.rawValue < $1.operatorID.rawValue }),
+        charterSignatures.allSatisfy({ $0.valid(choice: charterChoice, capacity: charterCapacity) })
+      else { return false }
+    }
+    if let charterCapacity {
+      for event in charterCapacity.events {
+        guard case .released(let release) = event,
+          let signature = charterSignatures?.first(where: { $0.operatorID == release.operatorID }),
+          release.consent == signature.operation, release.sequence > signature.sequence,
+          release.revision >= signature.capacityRevision,
+          release.dock.sequence >= signature.dock.sequence,
+          release.physicalTime >= signature.physicalTime,
+          release.flightSeconds >= signature.flightSeconds
+        else { return false }
+      }
     }
     return continuationValid && seedKeyValid
   }

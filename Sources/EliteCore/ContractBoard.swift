@@ -19,6 +19,7 @@ public struct ContractBoardRow: Sendable {
   var survey: NativeOriginalSurveyAction? = nil
   var glassMeridian: NativeGlassMeridianAction? = nil
   var wayfarerInduction: NativeWayfarerInductionAction? = nil
+  var inductionCapacityUnit: UUID? = nil
   var flightReception: NativeFlightReceptionAction? = nil
   var measuredExtraction: NativeMeasuredExtractionAction? = nil
   var recordRecovery: WayfarerRecordRecoveryAction? = nil
@@ -26,7 +27,9 @@ public struct ContractBoardRow: Sendable {
   var utility: NativeUtilityAction? = nil
   public var key: String {
     if let utility { return utility.utilityKey }
-    if let key = wayfarerInduction?.key { return key }
+    if let key = wayfarerInduction?.key {
+      return key + (inductionCapacityUnit.map { "/unit/" + $0.uuidString } ?? "")
+    }
     if let key = glassMeridian?.key { return key }
     if let key = flightReception?.key { return key }
     if let key: String = measuredExtraction?.key { return key }

@@ -23,9 +23,11 @@ enum NativeInductionCapacitySave {
     mission: ScriptInstance, commander: borrowing Commander
   ) -> Bool {
     let source = state.allocation
-    // This source envelope exposes allocation only. Later native operator/consignment callers
-    // must join their actual receipts before any policy-only event can be a saved world claim.
-    guard state.events.isEmpty, source.parent == mission.id,
+    // Only actual owner-consent joins admit releases. Policy-only consignment events remain refused.
+    guard
+      NativeInductionCharterConsentSave.capacityEventsValid(
+        state, mission: mission, commander: commander),
+      source.parent == mission.id,
       source.commanderOwner == commander.equipmentOwnerID,
       source.sequence <= commander.scriptState.nextEvent, mission.hasAcknowledged(source.sequence),
       source.physicalTime <= commander.flightSimulation.physicalTime,

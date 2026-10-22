@@ -84,21 +84,23 @@ extension Game {
       contractBoard.wayfarerInductionQuote?.action.charterPolicy
       ?? contractBoard.selected?.wayfarerInduction?.charterPolicy
       ?? state.charterChoice?.policy
-    var lines = [
-      "Avenor charter choice: compare both policies before Confirm. Back/Escape changes nothing.",
-      "Clinic, workshop and seed custodians each retain six indivisible service-window units for the same persistent charter epoch; protected minimum two each, eighteen total.",
-      "One unit authorizes one concurrent independently quoted consignment. It is separate from ship cargo, tools, passenger space and the three-active-contract limit.",
-      "POOLED WINDOWS: only each owner's free surplus above two can enter the pool (at most four per owner / twelve total); protected minimums cannot be borrowed.",
-      "PROTECTED RESERVATIONS: no unit enters the pool until its original owner signs release of that exact free surplus unit. At most four per owner may release; the protected two stay unavailable.",
-      "Saving, loading and revisiting cannot reset the epoch or replenish capacity. Completion/cancellation must return the same reservation to its original owner and selected policy.",
-    ]
-    if let policy {
+    let operatorDetail = inductionCharterOperatorDetail
+    var lines =
+      operatorDetail + [
+        "Avenor charter choice: compare both policies before Confirm. Back/Escape changes nothing.",
+        "Clinic, workshop and seed custodians each retain six indivisible service-window units for the same persistent charter epoch; protected minimum two each, eighteen total.",
+        "One unit authorizes one concurrent independently quoted consignment. It is separate from ship cargo, tools, passenger space and the three-active-contract limit.",
+        "POOLED WINDOWS: only each owner's free surplus above two can enter the pool (at most four per owner / twelve total); protected minimums cannot be borrowed.",
+        "PROTECTED RESERVATIONS: no unit enters the pool until its original owner signs release of that exact free surplus unit. At most four per owner may release; the protected two stay unavailable.",
+        "Saving, loading and revisiting cannot reset the epoch or replenish capacity. Completion/cancellation must return the same reservation to its original owner and selected policy.",
+      ]
+    if let policy, operatorDetail.isEmpty {
       lines.insert(
         "SELECTED POLICY: " + policy.title.uppercased() + ". " + policy.consequence, at: 0)
     }
     if let capacity = state.charterCapacity, let slots = try? capacity.projection() {
       lines.append(
-        "Original persistent capacity: \(capacity.units.count) units / \(slots.filter { capacity.eligible($0) }.count) eligible free surplus / ledger revision\(capacity.revision). Owner signatures and actual booking/release consumers remain separate."
+        "Original persistent capacity: \(capacity.units.count) units / \(slots.filter { capacity.eligible($0) }.count) eligible free surplus / ledger revision\(capacity.revision). Actual owner consent/release remains separate from the choice; actual consignment booking/source audit is still pending."
       )
     } else if state.charterChoice != nil {
       lines.append(
@@ -108,11 +110,11 @@ extension Game {
     if let choice = state.charterChoice {
       lines.append(
         "Stage11 choice recorded: " + choice.policy.title
-          + ". Operator reservation/release and selected-branch signatures remain unavailable; choice alone pays nothing and grants no accreditation or clue."
+          + ". Actual owner consents \(state.charterSignatures?.count ?? 0)/3. Visit Renas, Enmadan and Enlirin separately. Protected free-unit release needs its own review. Real consignment source/quote audit remains next; no stage12, payment, accreditation or clue."
       )
     } else {
       lines.append(
-        "Confirm commits only this one policy and its fixed terms. Separate real operator reservation/release and signatures are required for stage12; these actions remain unavailable."
+        "Confirm commits only this policy and its fixed original capacity source. Each operator must consent separately at their actual main orbital; protected unit release is a separate action. Real consignment/source audit remains next."
       )
     }
     return lines

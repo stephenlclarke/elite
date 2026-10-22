@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Finite ledger and source-policy fixtures; policy bookings/releases do not claim native authority.
-private final class InductionCapacityFixture {
+final class InductionCapacityFixture {
   let f: InductionCharterFixture
   let choice: NativeInductionCharterChoice
   let chosen: NativeWayfarerInductionState

@@ -4,6 +4,8 @@ enum NativeWayfarerInductionAction: String, Sendable {
   case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, replaceArk,
     fundRescueLaunch, startRescueFlight, receiveRescue, authorizeUtility, receiveUtility,
     pooledCharter, protectedCharter, allocateCharterCapacity,
+    clinicConsent, workshopConsent, seedConsent, releaseClinicCapacity, releaseWorkshopCapacity,
+    releaseSeedCapacity,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -25,6 +27,12 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .pooledCharter: "Avenor charter / review Pooled windows"
     case .protectedCharter: "Avenor charter / review Protected reservations"
     case .allocateCharterCapacity: "Avenor charter / review still-unissued original capacity"
+    case .clinicConsent: "Renas clinic / review selected charter consent"
+    case .workshopConsent: "Enmadan workshop / review selected charter consent"
+    case .seedConsent: "Enlirin seed custodians / review selected charter consent"
+    case .releaseClinicCapacity: "Renas clinic / review exact free-unit release"
+    case .releaseWorkshopCapacity: "Enmadan workshop / review exact free-unit release"
+    case .releaseSeedCapacity: "Enlirin seed custodians / review exact free-unit release"
     case .progress: "Senn / current induction records"
     }
   }
@@ -40,6 +48,8 @@ struct NativeWayfarerInductionReview: Sendable {
   let arkRevision: UInt64?
   let rescueRevision: UInt64?
   let utilityRevision: UInt64?
+  let capacityRevision: UInt64?
+  let capacityUnit: UUID?
   let issues: [String]
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
@@ -58,6 +68,8 @@ extension Game {
           reason: wayfarerInductionReview(action).issues.first, wayfarerInduction: action)
       }
     }
+    let operatorRows = inductionCharterOperatorRows
+    if !operatorRows.isEmpty { return operatorRows }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
       if systemIdentity == NativeWayfarerInduction.source, state.charterChoice != nil,
@@ -106,8 +118,11 @@ extension Game {
   }
 
   func wayfarerInductionReview(
-    _ action: NativeWayfarerInductionAction
+    _ action: NativeWayfarerInductionAction, capacityUnit: UUID? = nil
   ) -> NativeWayfarerInductionReview {
+    let unit =
+      action.isCapacityRelease
+      ? (capacityUnit ?? contractBoard.selected?.inductionCapacityUnit) : nil
     let trade =
       action == .accept
       ? commander.equipmentOwnerID.flatMap {
@@ -123,11 +138,15 @@ extension Game {
       },
       rescueRevision: inductionCrewLogChild?.revision,
       utilityRevision: inductionUtilityChild?.revision,
-      issues: action == .progress ? [] : inductionActionIssues(action, trade: trade))
+      capacityRevision: wayfarerInductionMission?.savedWayfarerInduction?.charterCapacity?.revision,
+      capacityUnit: unit,
+      issues: action == .progress
+        ? [] : inductionActionIssues(action, trade: trade, capacityUnit: unit))
   }
 
   private func inductionActionIssues(
-    _ action: NativeWayfarerInductionAction, trade: NativeInductionTradeEvidence?
+    _ action: NativeWayfarerInductionAction, trade: NativeInductionTradeEvidence?,
+    capacityUnit: UUID?
   ) -> [String] {
     var issues: [String] = []
     if isMissionTrial { issues.append("Return to your commander before starting this induction.") }
@@ -144,7 +163,8 @@ extension Game {
     if action != .receive && action != .service && action != .launchArk && action != .receiveArk
       && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight
       && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility
-      && action.charterPolicy == nil && action != .allocateCharterCapacity,
+      && action.charterPolicy == nil && action != .allocateCharterCapacity
+      && action.capacityOperator == nil,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -163,6 +183,9 @@ extension Game {
     case .receiveUtility: issues += inductionUtilityReceivingIssues()
     case .pooledCharter, .protectedCharter: issues += inductionCharterChoiceIssues()
     case .allocateCharterCapacity: issues += inductionCapacityAllocationIssues()
+    case .clinicConsent, .workshopConsent, .seedConsent, .releaseClinicCapacity,
+      .releaseWorkshopCapacity, .releaseSeedCapacity:
+      issues += inductionCharterOperatorIssues(action, unit: capacityUnit)
     case .progress: break
     }
     return issues
@@ -203,6 +226,8 @@ extension Game {
       quote.missionRevision == current.missionRevision, quote.arkRevision == current.arkRevision,
       quote.rescueRevision == current.rescueRevision,
       quote.utilityRevision == current.utilityRevision,
+      quote.capacityRevision == current.capacityRevision,
+      quote.capacityUnit == current.capacityUnit,
       let owner = commander.equipmentOwnerID, let dock = current.dock,
       let carrier = current.carrier, let revision = current.inventoryRevision,
       let pack = wayfarerInductionPack
@@ -303,6 +328,15 @@ extension Game {
       try candidate.confirmInductionCapacityAllocation(
         dock: dock, carrier: carrier, revision: revision)
     }
+    if let operatorID = quote.action.capacityOperator {
+      if quote.action.isCapacityRelease, let unit = quote.capacityUnit {
+        try candidate.confirmInductionCharterRelease(
+          operatorID, unit: unit, dock: dock, carrier: carrier, revision: revision)
+      } else {
+        try candidate.confirmInductionCharterConsent(
+          operatorID, dock: dock, carrier: carrier, revision: revision)
+      }
+    }
     self = candidate
   }
 
@@ -311,6 +345,8 @@ extension Game {
       .charterPolicy != nil
       || (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)
         == .allocateCharterCapacity
+      || (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
+        .capacityOperator != nil
     {
       return inductionCharterDetail
     }

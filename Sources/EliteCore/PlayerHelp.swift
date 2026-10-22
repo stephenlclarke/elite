@@ -15,6 +15,24 @@ public enum PlayerHelp {
     var contextGame = game
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
+    if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction?.capacityOperator != nil
+    {
+      pages.insert(
+        .init(
+          title: "ORIGINAL OWNER CHARTER",
+          rows: [
+            "ARROWS - SELECT CONSENT OR EXACT UNIT",
+            "RETURN - REVIEW; CONFIRM IS SEPARATE",
+            "BACK / ESC - CHANGE NOTHING",
+            "CONSENT DOES NOT RELEASE A UNIT",
+            "PROTECTED: REVIEW NAMED FREE WINDOW",
+            "ONLY THAT OWNER CAN RELEASE IT",
+            "THE TWO PROTECTED UNITS NEVER POOL",
+            "CHOICE/CONSENT DOES NOT ISSUE STOCK",
+            "NO STAGE12 UNTIL ACTUAL SOURCE AUDIT",
+          ]), at: 0)
+    }
     if contextGame.inductionUtilityUsesReturn {
       pages.insert(
         .init(

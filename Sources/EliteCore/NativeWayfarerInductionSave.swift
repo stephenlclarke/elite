@@ -125,6 +125,12 @@ enum NativeWayfarerInductionSave {
     {
       return false
     }
+    if let signatures = state.charterSignatures,
+      !NativeInductionCharterConsentSave.signaturesValid(
+        signatures, mission: mission, commander: commander)
+    {
+      return false
+    }
     for loss in [state.loss, state.cassetteLoss, state.seedKeyLoss, state.crewLogLoss].compactMap({
       $0
     }) {

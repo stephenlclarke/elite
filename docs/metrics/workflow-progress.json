@@ -4686,10 +4686,29 @@
       "github_run": 39720692519,
       "selection_methods": 199,
       "new_methods": 3,
-      "source_review": "MBA correction source clean;45/46/47 execution verification pending",
-      "unit_status": "existing hosted run started and watched",
+      "source_review": "MBA correction source clean;45/46/47 independently verified and CLOSED",
+      "unit_status": "SUCCESS; exact199methods231casesPASS,0failures/errors/skips,no crash",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332466901",
       "next_assigned": "C08.P06.B.capacity",
+      "usable_build_delivered": false,
+      "verified_methods": 199,
+      "verified_expanded_cases": 231,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332786190",
+      "qualification_scope": "All3Binding/9Work/6Charter pass; maintained pure-unit scope only, no native journey/playable/release claim",
+      "issue_status": "45/46/47 CLOSED;awaiting-mba removed"
+    },
+    {
+      "event": "Finite charter allocation and capacity policy pushed; MBA review queued",
+      "head": "aa4ca56c55cf9e4f66b9f357df7677495c0788ae",
+      "base": "811869b45b9566932857b677f908ab8151a7186e",
+      "ledger_parent": "C08.P06.B.capacity",
+      "github_run": 39721907534,
+      "selection_methods": 206,
+      "new_methods": 7,
+      "source_review": "MBA bounded capacity source clean; actual execution pending",
+      "unit_status": "existing hosted run running and watched",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332644511",
+      "next_assigned": "C08.P06.B.consent",
       "usable_build_delivered": false
     }
   ]
