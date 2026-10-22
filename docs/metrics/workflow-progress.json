@@ -6748,8 +6748,8 @@
       "active_assignment": "G11.P01 provider; issue60 source consult complete/no edit, G1 owns combined repair"
     },
     "qualification_queue_note": "Programmer73 prerequisite merged; drive275/307 and missile275/307 verified,74closed; same-author combined285 PR72 pending;69/65 current jobs active. No manual jobs.",
-    "complete_features_merged": 10,
-    "merged_feature_count_scope": "Source delivery: showroom48/help55/inventory51/market+night56/Wanted61, alien drive+missile72, C08career69 and C01original-recorder recovery79 (one stage, not full campaign). Custody/media/fixes excluded; local app and full native acceptance counted separately.",
+    "complete_features_merged": 11,
+    "merged_feature_count_scope": "Bounded source improvements/stages only: prior ten plus actor-bound NPC route projection PR83. Not eleven complete campaigns or usable new releases.",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
     "accessible_unit_qualified_candidates_delivered": 3,
@@ -6832,10 +6832,13 @@
         18
       ],
       "local_worktrees_indexes_files_unchanged": true,
-      "current_remote_branches": 10,
+      "current_remote_branches": 9,
       "newly_retired_pr": 68,
       "new_source_archive": "archive/recovered-equipment-20261022-50950372",
-      "branch_count_scope": "Live count includes main, Root docs, delivery and active feature/repair heads; no inactive branch removed without inclusion/archive proof."
+      "branch_count_scope": "Live count includes main, Root docs, delivery and active feature/repair heads; no inactive branch removed without inclusion/archive proof.",
+      "current_open_app_issues": 13,
+      "current_open_mba_findings": 11,
+      "current_open_app_prs": 7
     },
     "g11_parent_bridge": {
       "owner": "Mission Coder1",
@@ -7069,13 +7072,21 @@
     "npc_target_projection": {
       "id": "M07.P01.I18.cargo-route",
       "owner": "G3",
-      "state": "concretereadonlyrouteomissionimplementation",
+      "state": "qualified and merged",
       "scope": "Actual typedNPCcargo/origin/destination, Pirate/Military readonlyprojectionandpureunits",
       "limits": "No simulation/save/hardware/mapdiscoverychange/fabricateddata; full18backend/deliveryacceptance remainsopen",
       "source": "NativeWormholeLeg actualactor-boundroute; NPClegacyfields remaininferredLocal",
       "shared_symbol": "Game.telemetryFacts(for:) inNPCResourceRuntime.swift",
       "preserve": "Existinggenerated/recordedroutes,cargo,provenance,Pirate/Militarytiers",
-      "hud_performance_limit": "No wholeCommander/fullsave/fullengine validation or speculativecache"
+      "hud_performance_limit": "No wholeCommander/fullsave/fullengine validation or speculativecache",
+      "pr": 83,
+      "qualified_head": "ac50870c39994126499ba4804f1e998fb1c46ae8",
+      "merge_commit": "b46115aa90c356342c186ca9521dd50d3ee8a4a9",
+      "run": 39781532507,
+      "verified_methods": 339,
+      "verified_cases": 376,
+      "broader_issue18_open": true,
+      "usable_build_delivered": false
     },
     "accessible_candidate_count_scope": "Distinct unit-qualified local candidates901,902,903;903 independently artifact-verified and user notified. No native-journey or public-release acceptance claim.",
     "cancelled_superseded_runs": [
@@ -7117,6 +7128,77 @@
       ],
       "local_candidate_delivered": true,
       "full_campaign_complete": false
+    },
+    "current_readout": {
+      "as_of": "2026-10-22T14:02:15Z",
+      "window_start": "2026-10-22T05:55:43Z",
+      "elapsed_hours": 8.109,
+      "game_code_prs_merged": 10,
+      "game_code_pr_numbers": [
+        83,
+        79,
+        73,
+        72,
+        69,
+        61,
+        56,
+        55,
+        51,
+        48
+      ],
+      "support_prs_merged": [
+        54,
+        77
+      ],
+      "median_pr_open_to_merge_minutes": 60.141666666666666,
+      "pr_cycle_sample": 10,
+      "mba_findings_opened": 33,
+      "mba_findings_closed": 22,
+      "mba_findings_open": [
+        104,
+        103,
+        102,
+        101,
+        98,
+        97,
+        96,
+        95,
+        93,
+        88,
+        85
+      ],
+      "all_open_app_issues": 13,
+      "open_app_prs": 7,
+      "remote_app_branches": 9,
+      "bounded_source_improvements_or_stages_merged": 11,
+      "accessible_unit_qualified_local_candidates": 3,
+      "new_development_releases_published": 0,
+      "full_m01_complete": false,
+      "homebrew_existing_release_delivered": "1.4.0",
+      "compile_sample": [
+        {
+          "run": 39778352147,
+          "seconds": 803.25
+        },
+        {
+          "run": 39779399916,
+          "seconds": 894.61
+        },
+        {
+          "run": 39782182054,
+          "seconds": 685.13
+        },
+        {
+          "run": 39786836850,
+          "seconds": 881.84
+        },
+        {
+          "run": 39787990291,
+          "seconds": 860.61
+        }
+      ],
+      "median_compile_seconds": 860.61,
+      "qualification": "Source merges and candidates are not completed native journeys or full campaigns. PR cycle is creation-to-merge, not assignment-to-completion. Previous baseline packet definitions and worker resources differ; no percentage speedup or credit saving established."
     }
   }
 }
