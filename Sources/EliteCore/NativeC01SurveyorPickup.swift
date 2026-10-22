@@ -156,7 +156,11 @@ extension GameRuntime {
       let loss = try candidate.recordC01SurveyorLoss()
       let capture = try candidate.applyC01SurveyorCapture()
       let source = try candidate.prepareC01Surveyor()
-      guard loss || capture || source else { return }
+      guard loss || capture || source else {
+        // Revoking a stale transient contact needs no save. A later real ingress can seal anew.
+        if candidate.nativeC01SurveyorPending == nil { game.nativeC01SurveyorPending = nil }
+        return
+      }
       try publish(&candidate)
       game = candidate
       if capture { game.notify("ORIGINAL RECORDER ABOARD - 8KG PROTECTED") }
