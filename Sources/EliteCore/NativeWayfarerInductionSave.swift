@@ -164,7 +164,7 @@ enum NativeWayfarerInductionSave {
             let leaf = mission["savedWayfarerInduction"] as? [String: Any]
           else { throw SaveError.invalidCommander }
           let bytes = try JSONSerialization.data(withJSONObject: leaf)
-          guard bytes.count <= 16_384 else { throw SaveError.invalidCommander }
+          guard bytes.count <= 32_768 else { throw SaveError.invalidCommander }
           let decoded = try JSONDecoder().decode(NativeWayfarerInductionState.self, from: bytes)
           guard
             supportsContinuation(schema)

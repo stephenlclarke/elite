@@ -7,7 +7,7 @@ extension Game {
       child.revision < UInt64(Int64.max) - 3, let previousState = child.savedNativeCrewLog,
       let previous = previousState.flight,
       let contact = previous.dockedContact, previousState.livingCrew.count == 2,
-      let previousBank = previousState.rescueFuel,
+      let previousBank = previousState.rescueFuel, previousBank.closure == nil,
       var group = child.ownedEncounters[NativeInductionCrewLogPack.encounter],
       var actor = group.actors["launch"], actor.presence == .unloaded,
       var npc = actor.body.scriptNPC, let hop = nextInductionRescueHop(previous)

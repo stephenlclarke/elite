@@ -30,6 +30,10 @@ extension Game {
     guard let parent = wayfarerInductionMission?.savedWayfarerInduction,
       parent.seedReception != nil
     else { return nil }
+    if parent.rescueReception != nil {
+      return
+        "Stage9: Enmadan received both original living crew and the original recorder. Its reserved tonne is released and unused rescue escrow returned to the Cevilis custodian. Utility-route work remains next; no payment or accreditation."
+    }
     if parent.crewLogLoss != nil {
       return
         "Original custody recorder lost with its carrier. Its pickup history remains; no replacement or rescue receiving is invented."
@@ -44,7 +48,7 @@ extension Game {
           "Original rescue launch berthed at G\(contact.station.system.galaxy + 1)-S\(contact.station.system.system) / two original crew aboard / "
           + (flight.serviceWait?.rawValue
             ?? (nextInductionRescueHop(flight) == nil
-              ? "Enmadan original survivor/recorder receiving remains next"
+              ? "dock your actual recorder carrier here and review original survivor receiving"
               : "needed-hop paid fuel and native berth exit"))
       }
       if let last = flight.legs.last,
@@ -60,7 +64,7 @@ extension Game {
         }
         if last.hop == flight.authorization.route.distancesLY.count - 1 && leg.phase == .arrived {
           return
-            "Original marked launch actually admitted at Enmadan and approaching its real station berth. Survivor/recorder receiving remains next; no stage9 credit granted."
+            "Original marked launch actually admitted at Enmadan and approaching its real station berth. Dock your original-recorder carrier at the same living main orbital and review survivor reception; no stage9 credit before Confirm."
         }
       }
       if let hop = nextInductionRescueHop(flight),
@@ -82,7 +86,7 @@ extension Game {
     }
     if parent.crewLog != nil {
       return
-        "Stage8: original crew custody recorder protected aboard / 1t. Its two original crew remain in the marked launch; stage9 actual launch escort and Enmadan receiving are not yet available."
+        "Stage8: original crew custody recorder protected aboard / 1t. Its two original crew remain in the marked launch; review the actual Cevilis escort, follow its real hops and receive both at Enmadan."
     }
     guard let state = inductionCrewLogChild?.savedNativeCrewLog else {
       return

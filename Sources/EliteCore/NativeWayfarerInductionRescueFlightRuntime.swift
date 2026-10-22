@@ -32,6 +32,7 @@ extension Game {
       var flight = state.flight, child.revision < UInt64(Int64.max) - 1,
       let actor = child.ownedEncounters[NativeInductionCrewLogPack.encounter]?.actors["launch"]
     else { return false }
+    if state.rescueReception != nil { return false }
     if !state.losses.contains(where: { $0.role == "launch" }),
       actor.presence == .destroyed, actor.body.energy == 0,
       let native = actor.body.physical?.identity

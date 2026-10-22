@@ -14,22 +14,25 @@ final class NativeRescueFuelEscrow: Codable, Sendable, Equatable {
   let remainingCredits: Int
   let purchases: [NativeArkFuelPurchase]
   let refusal: NativeArkFuelRefusalRecord?
+  let closure: NativeRescueFuelReturn?
 
   init(funding: NativeRescueFuelFunding) throws {
     self.funding = funding
     remainingCredits = Self.initialCredits
     purchases = []
     refusal = nil
+    closure = nil
     guard valid else { throw SaveError.invalidCommander }
   }
   private init(
     _ previous: NativeRescueFuelEscrow, purchases: [NativeArkFuelPurchase],
-    balance: Int, refusal: NativeArkFuelRefusalRecord? = nil
+    balance: Int, refusal: NativeArkFuelRefusalRecord? = nil, closure: NativeRescueFuelReturn? = nil
   ) {
     funding = previous.funding
     remainingCredits = balance
     self.purchases = purchases
     self.refusal = refusal
+    self.closure = closure
   }
 
   private func calculate(_ request: NativeArkFuelRequest, balance: Int) throws
@@ -59,7 +62,7 @@ final class NativeRescueFuelEscrow: Codable, Sendable, Equatable {
       stockAfterTenths: request.offer.availableTenthsLY - result.billedTenths)
   }
   func quote(_ request: NativeArkFuelRequest) throws -> NativeRescueFuelQuote {
-    guard valid, purchases.count < 128,
+    guard valid, closure == nil, purchases.count < 128,
       NativeCustodianFuelMath.later(
         request.offer.contact, than: purchases.last?.request.offer.contact)
     else { throw NativeArkFuelRefusal.staleQuote }
@@ -75,7 +78,7 @@ final class NativeRescueFuelEscrow: Codable, Sendable, Equatable {
     return next
   }
   func recordingRefusal(_ request: NativeArkFuelRequest) throws -> NativeRescueFuelEscrow {
-    guard valid else { throw SaveError.invalidCommander }
+    guard valid, closure == nil else { throw SaveError.invalidCommander }
     do {
       _ = try quote(request)
       throw SaveError.invalidCommander
@@ -87,6 +90,21 @@ final class NativeRescueFuelEscrow: Codable, Sendable, Equatable {
       return next
     }
   }
+  func closing(at receipt: NativeInductionRescueReception) throws -> NativeRescueFuelEscrow {
+    guard valid, closure == nil, receipt.owner == funding.owner, receipt.parent == funding.parent,
+      receipt.launch == funding.launch, receipt.registration == funding.registration,
+      receipt.sequence > funding.sequence, receipt.physicalTime >= funding.physicalTime
+    else { throw SaveError.invalidCommander }
+    let closure = NativeRescueFuelReturn(
+      operation: NativeRescueFuelReturn.identity(
+        issue: funding.issue, receiving: receipt.operation, credits: remainingCredits),
+      receiving: receipt.operation, recipient: funding.custodian,
+      balanceBefore: remainingCredits, returnedCredits: remainingCredits)
+    let next = Self(self, purchases: purchases, balance: 0, closure: closure)
+    guard next.valid else { throw SaveError.invalidCommander }
+    return next
+  }
+
   var valid: Bool {
     guard funding.shapeValid,
       funding.credits == Self.initialCredits, (0...Self.initialCredits).contains(remainingCredits),
@@ -101,6 +119,14 @@ final class NativeRescueFuelEscrow: Codable, Sendable, Equatable {
       else { return false }
       previous = receipt.request.offer.contact
       balance = receipt.balanceAfter
+    }
+    if let closure {
+      return remainingCredits == 0 && refusal == nil && closure.balanceBefore == balance
+        && closure.returnedCredits == balance && closure.recipient == funding.custodian
+        && closure.operation
+          == NativeRescueFuelReturn.identity(
+            issue: funding.issue,
+            receiving: closure.receiving, credits: balance)
     }
     guard remainingCredits == balance else { return false }
     if let refusal {
@@ -125,18 +151,21 @@ final class NativeRescueFuelEscrow: Codable, Sendable, Equatable {
   }
   static func == (lhs: NativeRescueFuelEscrow, rhs: NativeRescueFuelEscrow) -> Bool {
     lhs.funding == rhs.funding && lhs.remainingCredits == rhs.remainingCredits
-      && lhs.purchases == rhs.purchases && lhs.refusal == rhs.refusal
+      && lhs.purchases == rhs.purchases && lhs.refusal == rhs.refusal && lhs.closure == rhs.closure
   }
-  private enum CodingKeys: String, CodingKey { case funding, remainingCredits, purchases, refusal }
+  private enum CodingKeys: String, CodingKey {
+    case funding, remainingCredits, purchases, refusal, closure
+  }
   init(from decoder: any Decoder) throws {
     try NativeUtilityCoding.require(
-      decoder, ["funding", "remainingCredits", "purchases"], optional: ["refusal"])
+      decoder, ["funding", "remainingCredits", "purchases"], optional: ["refusal", "closure"])
     let c = try decoder.container(keyedBy: CodingKeys.self)
     funding = try c.decode(NativeRescueFuelFunding.self, forKey: .funding)
     remainingCredits = try c.decode(Int.self, forKey: .remainingCredits)
     purchases = try NativeUtilityCoding.array(
       NativeArkFuelPurchase.self, key: .purchases, container: c, limit: 128)
     refusal = try c.decodeIfPresent(NativeArkFuelRefusalRecord.self, forKey: .refusal)
+    closure = try c.decodeIfPresent(NativeRescueFuelReturn.self, forKey: .closure)
     guard valid else { throw SaveError.invalidCommander }
   }
   static func decodeClosed(_ data: Data) throws -> NativeRescueFuelEscrow {

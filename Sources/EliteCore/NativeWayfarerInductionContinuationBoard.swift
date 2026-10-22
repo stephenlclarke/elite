@@ -10,6 +10,7 @@ extension NativeWayfarerInductionAction {
     case .keyLoan, .launchArk, .replaceArk: NativeWayfarerInduction.seedSource
     case .receiveArk: NativeWayfarerInduction.seedReceiver
     case .fundRescueLaunch, .startRescueFlight: NativeInductionCrewLogSource.location
+    case .receiveRescue: NativeInductionCrewLogSource.receiver
     case .cassette: NativeWayfarerInduction.workshop
     }
   }
@@ -17,6 +18,11 @@ extension NativeWayfarerInductionAction {
 
 extension NativeWayfarerInductionState {
   func action(at system: SystemIdentity) -> NativeWayfarerInductionAction {
+    if crewLog != nil && crewLogLoss == nil && rescueReception == nil
+      && system == NativeInductionCrewLogSource.receiver
+    {
+      return .receiveRescue
+    }
     if seedKey != nil && seedKeyLoss == nil && seedReception == nil && ark != nil
       && system == NativeWayfarerInduction.seedReceiver
     {
@@ -83,8 +89,12 @@ extension Game {
 
   var wayfarerInductionDestination: String {
     let state = wayfarerInductionMission?.savedWayfarerInduction
+    if state?.rescueReception != nil {
+      return "Original rescue received / stage10 utility-route work remains unavailable"
+    }
     if state?.crewLog != nil {
-      return "Original recorder protected / stage9 Enmadan launch receiving not yet available"
+      return
+        "Enmadan main orbital G01-S000 / same original launch, living crew and recorder receiving"
     }
     if state?.seedReception != nil {
       return "Cevilis G01-S211 / original custody-recorder recovery"

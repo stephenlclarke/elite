@@ -43,6 +43,14 @@ extension NativeInductionCrewLogSave {
       {
         guard supportsHullCustody(schema), !embedded else { throw SaveError.invalidCommander }
       }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("rescueReception")
+      {
+        guard supportsRescueReceiving(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
       if own {
         guard contains(schema), !embedded,
           let leaf = mission["savedNativeCrewLog"] as? [String: Any],
@@ -75,6 +83,11 @@ extension NativeInductionCrewLogSave {
           {
             guard supportsRescueService(schema) else { throw SaveError.invalidCommander }
           }
+        }
+        if leaf.keys.contains("rescueReception")
+          || (leaf["rescueFuel"] as? [String: Any])?.keys.contains("closure") == true
+        {
+          guard supportsRescueReceiving(schema) else { throw SaveError.invalidCommander }
         }
         let bytes = try JSONSerialization.data(withJSONObject: leaf)
         guard supportsPickup(schema) || leaf["capture"] == nil else {

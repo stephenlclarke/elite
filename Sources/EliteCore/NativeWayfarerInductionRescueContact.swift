@@ -5,7 +5,7 @@ extension NativeInductionCrewLogPack {
     commander.scriptState.instances.values.contains { child in
       guard let state = child.savedNativeCrewLog, let flight = state.flight else { return false }
       return flight.authorization.actor == actor && flight.dockedContact != nil
-        && state.livingCrew.count == 2
+        && (state.livingCrew.count == 2 || state.rescueReception != nil)
     }
   }
 }

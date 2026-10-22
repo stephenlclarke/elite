@@ -2,7 +2,7 @@ import Foundation
 
 enum NativeWayfarerInductionAction: String, Sendable {
   case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, replaceArk,
-    fundRescueLaunch, startRescueFlight,
+    fundRescueLaunch, startRescueFlight, receiveRescue,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -18,6 +18,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .replaceArk: "Enlirin custodians / review the one reserved ark launch"
     case .fundRescueLaunch: "Cevilis custodian / review original rescue fuel allocation"
     case .startRescueFlight: "Cevilis custodian / review original marked-launch escort"
+    case .receiveRescue: "Enmadan reception / review original survivors and recorder return"
     case .progress: "Senn / current induction records"
     }
   }
@@ -109,7 +110,8 @@ extension Game {
       issues.append("The actual owned carrier and fitting must be available.")
     }
     if action != .receive && action != .service && action != .launchArk && action != .receiveArk
-      && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight,
+      && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight
+      && action != .receiveRescue,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -123,6 +125,7 @@ extension Game {
     case .replaceArk: issues += inductionArkReplacementIssues()
     case .fundRescueLaunch: issues += inductionRescueFundingIssues()
     case .startRescueFlight: issues += inductionRescueFlightIssues()
+    case .receiveRescue: issues += inductionRescueReceivingIssues()
     case .progress: break
     }
     return issues
@@ -242,6 +245,10 @@ extension Game {
     if quote.action == .startRescueFlight {
       try candidate.confirmInductionRescueFlight(dock: dock, carrier: carrier, revision: revision)
     }
+    if quote.action == .receiveRescue {
+      try candidate.confirmInductionRescueReceiving(
+        dock: dock, carrier: carrier, revision: revision)
+    }
     self = candidate
   }
 
@@ -278,7 +285,7 @@ extension Game {
               "Original rescue launch NPC fuel escrow: %.1f CR remaining / initial1000CR. Source SH029: 13LY tank, 9LY drive, 12s spool. This is separate from player cash and both seed-ark accounts.",
             Double(account.remainingCredits) / 10))
         lines.append(
-          "Real native route hops use the same launch's retained drive/fuel after separate Cevilis escort review. The original launch uses native aperture docking and its own paid needed-hop fuel from the same persistent station reserve as seed arks. Enmadan survivor/recorder receiving remains next; no extra station stock, arrival fuel or stage9 credit is granted."
+          "Real native route hops use the same launch's retained drive/fuel after separate Cevilis escort review. The original launch uses native aperture docking and its own paid needed-hop fuel from the same persistent station reserve as seed arks. Enmadan receiving needs that same launch actually berthed with both original crew alive and its original recorder on your actual docked carrier. Confirm returns people, recorder and unused custodian funds together; no extra station stock or arrival fuel is granted."
         )
         lines.append(
           "One uncrewed Burro and separate future1000CR funding are reserved. Replacement cannot create people or a recorder: only the same original two surviving crew in actual supported custody may transfer after real rebrief/launch. The replacement branch remains unavailable."

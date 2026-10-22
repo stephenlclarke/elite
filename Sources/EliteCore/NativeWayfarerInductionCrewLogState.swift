@@ -107,8 +107,9 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
   var rescueFuel: NativeRescueFuelEscrow?
   var rescueReserve: NativeRescueLaunchReserve?
   var flight: NativeRescueFlightState?
+  var rescueReception: NativeInductionRescueReception?
   var livingCrew: [UUID] {
-    admission != nil && !losses.contains(where: { $0.role == "launch" })
+    admission != nil && rescueReception == nil && !losses.contains(where: { $0.role == "launch" })
       ? authorization.manifest.crew : []
   }
   func shapeValid(parent: NativeWayfarerInductionState) -> Bool {
@@ -145,7 +146,27 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
         rescueFuel.refusal.map({ flight.serviceRequestFitsRoute($0.request) }) ?? true
       else { return false }
     }
-    guard let admission else { return losses.isEmpty && capture == nil && flight == nil }
+    guard rescueReception == parent.rescueReception else { return false }
+    if let receipt = rescueReception {
+      guard let capture, let flight, let rescueFuel,
+        receipt.valid(permission: parent.permission, original: capture),
+        receipt.registration == authorization.operation,
+        receipt.flight == flight.authorization.operation,
+        receipt.crew == authorization.manifest.crew,
+        receipt.launchDock == flight.dockedContact,
+        receipt.sequence > flight.authorization.sequence,
+        receipt.physicalTime >= flight.authorization.physicalTime,
+        receipt.flightSeconds >= flight.authorization.flightSeconds,
+        receipt.playerDock.sequence > flight.authorization.dock.sequence,
+        rescueFuel.closure?.receiving == receipt.operation,
+        !losses.contains(where: { $0.role == "launch" })
+      else { return false }
+    } else if rescueFuel?.closure != nil {
+      return false
+    }
+    guard let admission else {
+      return losses.isEmpty && capture == nil && flight == nil && rescueReception == nil
+    }
     if let capture {
       guard let reception = parent.seedReception,
         capture.valid(permission: parent.permission, reception: reception),

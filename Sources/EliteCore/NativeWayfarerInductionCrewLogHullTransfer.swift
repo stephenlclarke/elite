@@ -56,7 +56,7 @@ extension NativeWayfarerInductionState {
   )
     throws -> NativeWayfarerInductionState
   {
-    guard valid, let crewLog, crewLogLoss == nil,
+    guard valid, let crewLog, crewLogLoss == nil, rescueReception == nil,
       previous.owner == permission.owner, current.owner == permission.owner,
       previous.activeHull == crewLogCarrier, previous.activeHull != current.activeHull,
       previous.revision >= (crewLogInventoryRevision ?? UInt64.max),
@@ -89,7 +89,7 @@ extension Commander {
     }
     for id in scriptState.instances.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
       guard var parent = scriptState.instances[id], let leaf = parent.savedWayfarerInduction,
-        leaf.crewLog != nil, leaf.crewLogLoss == nil
+        leaf.crewLog != nil, leaf.crewLogLoss == nil, leaf.rescueReception == nil
       else { continue }
       guard parent.revision < UInt64(Int64.max) - 1 else { throw SaveError.invalidCommander }
       parent.savedWayfarerInduction = try leaf.transferringCrewLog(from: previous, to: current)

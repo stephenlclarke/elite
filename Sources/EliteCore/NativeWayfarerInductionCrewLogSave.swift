@@ -1,10 +1,13 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 93
-  static let alienVersion = 94
-  static func supportsRescueService(_ schema: Int?) -> Bool {
+  static let version = 95
+  static let alienVersion = 96
+  static func supportsRescueReceiving(_ schema: Int?) -> Bool {
     schema == version || schema == alienVersion
+  }
+  static func supportsRescueService(_ schema: Int?) -> Bool {
+    supportsRescueReceiving(schema) || schema == 93 || schema == 94
   }
   static func supportsRescueFlight(_ schema: Int?) -> Bool {
     supportsRescueService(schema) || schema == 91 || schema == 92
@@ -55,7 +58,9 @@ enum NativeInductionCrewLogSave {
         child.digest == NativeInductionCrewLogPack.digest,
         child.outcome == .active, child.contract == nil, child.completionReceipt == nil,
         child.dialogue == nil, child.payloads.isEmpty, child.gearIssues.isEmpty,
-        child.milestones == (state.capture == nil ? [] : [0]), child.data == .object([:]),
+        child.milestones
+          == (state.capture == nil ? [] : state.rescueReception == nil ? [0] : [0, 1]),
+        child.data == .object([:]),
         child.campaignParent == nil,
         child.campaignChildren.isEmpty,
         child.timers.keys.allSatisfy({ $0 == NativeInductionCrewLogPack.timer }),
@@ -77,7 +82,7 @@ enum NativeInductionCrewLogSave {
         }
       }
       if let capture = state.capture {
-        if leaf.crewLogLoss == nil {
+        if leaf.crewLogLoss == nil && leaf.rescueReception == nil {
           guard leaf.crewLogCarrier == commander.hullInstanceID,
             let revision = commander.equipmentInventory?.revision,
             revision >= (leaf.crewLogInventoryRevision ?? UInt64.max)
@@ -91,10 +96,12 @@ enum NativeInductionCrewLogSave {
         else { return false }
       }
     }
-    // A parent cannot claim a recorder pickup without its original source job and actual unit.
+    // A parent cannot claim pickup or receiving without the same original source job and receipt.
     return engine.instances.values.allSatisfy { parent in
       guard let capture = parent.savedWayfarerInduction?.crewLog else { return true }
-      return engine.instances[capture.job]?.savedNativeCrewLog?.capture == capture
+      guard let source = engine.instances[capture.job]?.savedNativeCrewLog else { return false }
+      return source.capture == capture
+        && source.rescueReception == parent.savedWayfarerInduction?.rescueReception
     }
   }
 

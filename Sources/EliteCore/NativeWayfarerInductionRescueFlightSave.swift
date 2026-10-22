@@ -19,6 +19,7 @@ enum NativeRescueFlightSave {
       commander.nativeStations?.mainStations.contains(a.dock.station) == true,
       a.dock.sequence < (commander.nativeStations?.nextMainDockSequence ?? 0),
       a.dock.actor.visit <= commander.flightSimulation.visit,
+      receivingClaimsValid(state, parent: parent, child: child, commander: commander),
       let actor = child.ownedEncounters[NativeInductionCrewLogPack.encounter]?.actors["launch"]
     else { return false }
     guard serviceBoundsValid(flight, bank: bank, commander: commander) else { return false }
