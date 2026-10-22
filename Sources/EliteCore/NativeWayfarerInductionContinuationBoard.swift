@@ -3,7 +3,8 @@ import Foundation
 extension NativeWayfarerInductionAction {
   var station: SystemIdentity {
     switch self {
-    case .accept, .progress, .pooledCharter, .protectedCharter, .allocateCharterCapacity:
+    case .accept, .progress, .pooledCharter, .protectedCharter, .allocateCharterCapacity,
+      .auditCharter, .certifyNetwork, .accredit:
       NativeWayfarerInduction.source
     case .clinicConsent, .releaseClinicCapacity, .issueClinicStock, .viewClinicStock,
       .acceptClinicSample, .cancelClinicSample:
@@ -15,6 +16,10 @@ extension NativeWayfarerInductionAction {
       .receiveWorkshopUnit, .cancelWorkshopBooking, .cancelHeldWorkshopUnit, .returnWorkshopUnit:
       NativeWayfarerInduction.workshop
     case .serviceWorkshopUnit: NativeWayfarerInduction.clinic
+    case .issueSeedStock, .viewSeedStock, .acceptSeedLot, .cancelSeedBooking,
+      .pickupSeedLot, .cancelHeldSeedLot, .returnSeedLot, .retrySeedExpiry:
+      NativeWayfarerInduction.seedSource
+    case .receiveSeedLot: NativeWayfarerInduction.seedReceiver
     case .workshopConsent, .releaseWorkshopCapacity: NativeWayfarerInduction.workshop
     case .seedConsent, .releaseSeedCapacity: NativeWayfarerInduction.seedSource
     case .pickup: NativeWayfarerInduction.clinic

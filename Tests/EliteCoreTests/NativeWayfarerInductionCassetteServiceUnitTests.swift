@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-struct InductionCassetteServiceFixture {
+final class InductionCassetteServiceFixture {
   let helpers: InductionContinuationFixture
   let carried: NativeWayfarerInductionState
   init() throws {

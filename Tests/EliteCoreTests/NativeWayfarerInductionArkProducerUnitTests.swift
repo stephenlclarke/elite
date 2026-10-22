@@ -3,13 +3,15 @@ import Testing
 
 @testable import EliteCore
 
-struct InductionArkProducerFixture {
+final class InductionArkProducerFixture {
+  let originalSale: NativeFirstCommoditySale
   let key: NativeInductionVaultKeyLoan
   let parent: NativeWayfarerInductionState
   let source: NativeInductionArkSource
   let authorization: NativeArkLaunchAuthorization
   init(escortReach: Double = 7) throws {
     let f = try InductionVaultKeyFixture()
+    originalSale = f.helpers.helpers.originalSale
     key = try f.key()
     parent = try f.serviced.borrowingVaultKey(key, freeTonnes: 1)
     source = try .init(
