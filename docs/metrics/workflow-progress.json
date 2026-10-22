@@ -4829,6 +4829,17 @@
       "unit_status": "pending",
       "source_review": "queued MBA",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Inventory complete presentation source pushed with three selected focused methods",
+      "head": "ff3c272f53ec1b9d4eac82de47826b81c51a8ef5",
+      "base": "409d042c3a242330c9ae6c71b2316b3678f09180",
+      "ledger_parent": "M02.P05.inventory",
+      "handoff_at": "2026-10-22T06:34:13Z",
+      "github_run": 39734735571,
+      "source_review": "queuedMBA",
+      "unit_status": "running",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -4892,7 +4903,8 @@
         "correction_unit_run": 39733300232,
         "correction_handoff_at": "2026-10-22T06:21:00Z",
         "source_complete_head": "409d042c3a242330c9ae6c71b2316b3678f09180",
-        "source_complete_evidence": "Author commit and handoff6334295039; not independent qualification"
+        "source_complete_evidence": "Author commit and handoff6334295039; not independent qualification",
+        "correction_unit_status": "FAILURE at2c38/39733300232; MBA inspecting existing artifact; remaining cause/counts unknown"
       },
       {
         "id": "M02.P04/F06",
@@ -4906,19 +4918,19 @@
         "start_evidence": "G3 active thread5416f3c1-d481-4bdb-a92b-4292e55ae0f8 cursor3 and direct assignment acceptance; exact start timestamp not recorded",
         "first_push_observed_at": "2026-10-22T05:59:27Z",
         "push_timestamp_source": "PR48 creation; observation of push, not exact push event",
-        "head": "382664d131016207aec3e2c41418b62dceef7a25",
+        "head": "57ed2b19044a1c363527a6c9f1222312facb6f18",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
         "source_state": "G3 composed G1fixture correction; independent final-head review/actual corrected qualification pending",
         "first_push_observed_elapsed_seconds": 224,
         "source_review_result": "MBA382664d1 final composition clean; showroom source/3methods/234selector unchanged; hosted correction outcome pending",
         "source_review_time_reported": "2026-10-22 06:02 UTC (minute precision)",
-        "handoff_at": "2026-10-22T06:21:20Z",
+        "handoff_at": "2026-10-22T06:27:02Z",
         "source_review_latency_seconds_reported": 88,
         "source_review_evidence": "MBA direct completion message and outcome posted on PR48; existing39731164624 excludes the three methods",
         "base": "1523b3ee2394d74e576645451ad6606925a01488",
-        "handoff_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6334220973",
-        "unit_run": 39733402267,
-        "unit_status": "pending; composed49/50corrections, unchanged3showroom methods",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6334303912",
+        "unit_run": 39733979125,
+        "unit_status": "pending244methods after actual shared-selection conflict composition; predecessor corrected382 run active",
         "original_source_handoff_at": "2026-10-22T06:00:41Z",
         "source_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333946221",
         "queue_delay_note": "Obsolete unselected39731164624 cancelled06:11:18Z; existing correct39731489668 running from06:11:22Z",
@@ -4936,7 +4948,8 @@
           "crash": false,
           "aggregate": "FAILURE;only known49/50fixturefailures",
           "qualification": "Unchanged showroom-method execution evidence only; corrected final-head aggregate still pending"
-        }
+        },
+        "moving_head_note": "57 merges409 for actual selector-count conflict. Freeze current head unless another actual dependency/conflict/up-to-date gate/correction requires change."
       },
       {
         "id": "M02.P05.inventory",
@@ -4946,7 +4959,15 @@
         "source_complete_at": null,
         "merged_at": null,
         "playable_at": null,
-        "dependency": "Independent from pending showroom PR; canonical409d042c base"
+        "dependency": "Independent from pending showroom PR; canonical409d042c base",
+        "head": "ff3c272f53ec1b9d4eac82de47826b81c51a8ef5",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/51",
+        "first_push_observed_at": "2026-10-22T06:33:57Z",
+        "handoff_at": "2026-10-22T06:34:13Z",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6334409306",
+        "unit_run": 39734735571,
+        "unit_status": "running244methods;3newInventoryGrouping selected",
+        "source_state": "Source pushed; MBA review/actual hosted qualification pending"
       }
     ],
     "model_settings": {
