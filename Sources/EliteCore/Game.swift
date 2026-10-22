@@ -610,13 +610,11 @@ public struct Game: Sendable {
       storage.baseAddress!.pointee.galaxy
     }
   }
-  /// Synchronous read-only access; the storage borrow and pointer never escape this call.
+  /// Synchronous read-only access through the checked array element borrow.
   func withReadOnlyCommander<Result>(
     _ read: (borrowing Commander) throws -> Result
   ) rethrows -> Result {
-    try commanderStorage.withUnsafeBufferPointer { storage in
-      try read(storage.baseAddress!.pointee)
-    }
+    try read(commanderStorage[0])
   }
   /// Native station reads borrow current storage without an owned Game receiver temporary.
   /// The synchronous buffer borrow and pointer cannot escape this call.

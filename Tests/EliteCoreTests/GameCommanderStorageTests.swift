@@ -279,5 +279,21 @@ struct GameCommanderStorageTests {
     let decoded = try JSONDecoder().decode(Commander.self, from: bytes)
     #expect(decoded.scriptState.nextEvent == 7)
     #expect(decoded.flightSimulation.pose.position.x == 25)
+
+    enum ReadFailure: Error { case expected }
+    var calls = 0
+    var observedEvent = UInt64.max
+    #expect(throws: ReadFailure.expected) {
+      try original.withReadOnlyCommander { commander -> Int in
+        calls += 1
+        observedEvent = commander.scriptState.nextEvent
+        throw ReadFailure.expected
+      }
+    }
+    #expect(calls == 1 && observedEvent == 7)
+    #expect(original.withReadOnlyCommander { $0.scriptState.nextEvent } == 7)
+    original.commander.scriptState.nextEvent = 11
+    #expect(original.withReadOnlyCommander { $0.scriptState.nextEvent } == 11)
+    #expect(retained.withReadOnlyCommander { $0.scriptState.nextEvent } == 4)
   }
 }
