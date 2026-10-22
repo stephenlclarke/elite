@@ -1,9 +1,14 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 85
-  static let alienVersion = 86
-  static func supportsPickup(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
+  static let version = 87
+  static let alienVersion = 88
+  static func supportsHullCustody(_ schema: Int?) -> Bool {
+    schema == version || schema == alienVersion
+  }
+  static func supportsPickup(_ schema: Int?) -> Bool {
+    supportsHullCustody(schema) || schema == 85 || schema == 86
+  }
   static func contains(_ schema: Int?) -> Bool {
     supportsPickup(schema) || schema == 83 || schema == 84
   }
@@ -48,6 +53,12 @@ enum NativeInductionCrewLogSave {
         actorClaimsValid(child, state: state, source: source, commander: commander)
       else { return false }
       if let capture = state.capture {
+        if leaf.crewLogLoss == nil {
+          guard leaf.crewLogCarrier == commander.hullInstanceID,
+            let revision = commander.equipmentInventory?.revision,
+            revision >= (leaf.crewLogInventoryRevision ?? UInt64.max)
+          else { return false }
+        }
         guard capture.sequence <= engine.nextEvent,
           child.hasAcknowledged(capture.sequence), parent.hasAcknowledged(capture.sequence),
           capture.actor.visit <= commander.flightSimulation.visit,

@@ -248,7 +248,7 @@ struct NativeWayfarerInductionCrewLogProducerUnitTests {
       #expect(
         NativeInductionArkSave.contains(schema) && NativeInductionArkSave.supportsReserve(schema))
     }
-    for schema in [75, 76, 79, 80, 81, 82, 87] {
+    for schema in [75, 76, 79, 80, 81, 82, Int.max] {
       #expect(throws: (any Error).self) {
         try NativeInductionCrewLogSave.validateFields(bytes(leaf), part: .missions, schema: schema)
       }

@@ -144,6 +144,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let seedReception: NativeInductionSeedReception?
   let crewLog: NativeCrewLogCapture?
   let crewLogLoss: NativeInductionCrateLoss?
+  let crewLogHullCustody: NativeCrewLogHullCustody?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
@@ -151,7 +152,8 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     cassetteService: NativeInductionCassetteService? = nil,
     seedKey: NativeInductionVaultKeyLoan? = nil, seedKeyLoss: NativeInductionCrateLoss? = nil,
     ark: NativeInductionArkLink? = nil, seedReception: NativeInductionSeedReception? = nil,
-    crewLog: NativeCrewLogCapture? = nil, crewLogLoss: NativeInductionCrateLoss? = nil
+    crewLog: NativeCrewLogCapture? = nil, crewLogLoss: NativeInductionCrateLoss? = nil,
+    crewLogHullCustody: NativeCrewLogHullCustody? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -166,6 +168,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.seedReception = seedReception
     self.crewLog = crewLog
     self.crewLogLoss = crewLogLoss
+    self.crewLogHullCustody = crewLogHullCustody
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
@@ -173,7 +176,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.cassetteLoss == rhs.cassetteLoss && lhs.cassetteService == rhs.cassetteService
       && lhs.seedKey == rhs.seedKey && lhs.seedKeyLoss == rhs.seedKeyLoss && lhs.ark == rhs.ark
       && lhs.seedReception == rhs.seedReception && lhs.crewLog == rhs.crewLog
-      && lhs.crewLogLoss == rhs.crewLogLoss
+      && lhs.crewLogLoss == rhs.crewLogLoss && lhs.crewLogHullCustody == rhs.crewLogHullCustody
   }
   var valid: Bool {
     let p = permission
@@ -217,8 +220,13 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     if let crewLog {
       guard let seedReception, crewLog.valid(permission: permission, reception: seedReception)
       else { return false }
+      if let crewLogHullCustody {
+        guard crewLogHullCustody.valid(capture: crewLog, owner: permission.owner) else {
+          return false
+        }
+      }
       if let crewLogLoss {
-        guard crewLogLoss.facts.valid, crewLogLoss.carrier == crewLog.carrier,
+        guard crewLogLoss.facts.valid, crewLogLoss.carrier == crewLogCarrier,
           crewLogLoss.facts.sequence > crewLog.sequence,
           crewLogLoss.physicalTime.isFinite,
           (crewLog.physicalTime...1e12).contains(crewLogLoss.physicalTime),
@@ -226,7 +234,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
           crewLogLoss.facts.context.flightSeconds >= crewLog.flightSeconds
         else { return false }
       }
-    } else if crewLogLoss != nil {
+    } else if crewLogLoss != nil || crewLogHullCustody != nil {
       return false
     }
     return continuationValid && seedKeyValid
@@ -260,7 +268,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
         permission: permission, crate: crate, loss: loss, reception: reception,
         cassette: cassette, cassetteLoss: cassetteLoss, cassetteService: cassetteService,
         seedKey: seedKey, seedKeyLoss: seedKeyLoss, ark: ark, seedReception: seedReception,
-        crewLog: crewLog, crewLogLoss: fact)
+        crewLog: crewLog, crewLogLoss: fact, crewLogHullCustody: crewLogHullCustody)
     } else if seedKey != nil {
       next = Self(
         permission: permission, crate: crate, reception: reception, cassette: cassette,

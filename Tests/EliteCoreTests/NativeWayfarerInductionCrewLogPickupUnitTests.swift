@@ -56,7 +56,8 @@ private struct CrewLogPickupFixture {
   func commander() throws -> Commander {
     var commander = Commander()
     commander.savedEquipmentInventory = try .init(
-      owner: f.source.manifest.owner, activeHull: capture.carrier)
+      owner: f.source.manifest.owner, activeHull: capture.carrier,
+      revision: capture.inventoryRevision)
     for _ in 0..<30 {
       commander.flightSimulation.enter(NativeInductionCrewLogSource.location, arriving: true)
     }
@@ -104,6 +105,110 @@ private struct CrewLogPickupFixture {
 }
 
 struct NativeWayfarerInductionCrewLogPickupUnitTests {
+  @Test func legitimatePortableHullExchangeKeepsPickupHistoryAndAllowsBothLaterLossCauses() throws {
+    let f = try CrewLogPickupFixture()
+    var commander = try f.commander()
+    let previous = try #require(commander.equipmentInventory)
+    let performance = try #require(ShipCatalogue.ship("SH001")?.game)
+    let nextHull = UUID()
+    let context = EquipmentRuntimeCatalog.context(
+      owner: previous.owner, hull: nextHull, performance: performance)
+    let transferred = try previous.transferringPortableItems(to: context)
+    #expect(transferred.revision == previous.revision + 1)
+    commander.savedEquipmentInventory = transferred
+    #expect(!NativeInductionCrewLogSave.validateClaims(commander))
+    try commander.transferInductionCrewLog(from: previous, to: transferred)
+    #expect(NativeInductionCrewLogSave.validateClaims(commander))
+    let parentID = f.f.parent.permission.mission
+    let moved = try #require(commander.scriptState.instances[parentID]?.savedWayfarerInduction)
+    #expect(moved.crewLog == f.capture && moved.crewLogCarrier == nextHull)
+    #expect(moved.crewLog?.carrier == previous.activeHull)
+    #expect(moved.crewLogHullCustody?.previousHull == previous.activeHull)
+    #expect(moved.payloads == [NativeWayfarerInduction.crewLogPayload: 1])
+    #expect(moved.seedReception == f.f.parent.seedReception && moved.seedKey == f.f.parent.seedKey)
+    let event = ScriptEventContext(
+      galaxy: 0, system: 211, docked: false, mainStation: false,
+      revision: 1, frameSeconds: 0.1, localSeconds: 10_001, flightSeconds: 10_001,
+      calendarSeconds: 100_001, transitSeconds: 0, playerPosition: .init(0, 0, 0))
+    for cause in [WayfarerColdChainLossCause.shipDestroyed, .escapePod] {
+      let loss = NativeInductionCrateLoss(
+        carrier: nextHull, physicalTime: 20_002,
+        facts: .init(
+          cause: cause, sequence: 102, context: event,
+          energy: cause == .shipDestroyed ? 0 : 100, visit: 30))
+      let lost = try moved.losing(loss)
+      #expect(lost.valid && lost.payloads.isEmpty && lost.crewLogLoss == loss)
+      #expect(lost.crewLog == f.capture && lost.crewLogHullCustody == moved.crewLogHullCustody)
+      #expect(lost.seedKeyLoss == nil && lost.seedReception == moved.seedReception)
+      var after = commander
+      after.scriptState.instances[parentID]?.savedWayfarerInduction = lost
+      after.scriptState.instances[parentID]?.payloads = lost.payloads
+      after.scriptState.instances[parentID]?.acknowledge(102)
+      after.scriptState.instances[parentID]?.revision += 1
+      after.scriptState.nextEvent = 102
+      #expect(NativeInductionCrewLogSave.validateClaims(after))
+      let later = try transferred.transferringPortableItems(
+        to: EquipmentRuntimeCatalog.context(
+          owner: transferred.owner, hull: UUID(), performance: performance))
+      after.savedEquipmentInventory = later
+      try after.transferInductionCrewLog(from: transferred, to: later)
+      #expect(
+        after.scriptState.instances[parentID]?.savedWayfarerInduction?.crewLogHullCustody
+          == moved.crewLogHullCustody)
+      #expect(NativeInductionCrewLogSave.validateClaims(after))
+      let restored = try JSONDecoder().decode(
+        NativeWayfarerInductionState.self, from: JSONEncoder().encode(lost))
+      #expect(restored == lost && restored.payloads.isEmpty)
+    }
+  }
+
+  @Test func unrelatedHullOrOwnerCannotClaimRecorderCustodyAndOldSchemasRejectTransferClaims()
+    throws
+  {
+    let f = try CrewLogPickupFixture()
+    let held = try f.parent()
+    let previous = try OwnedEquipmentInventory(
+      owner: f.f.source.manifest.owner,
+      activeHull: f.capture.carrier, revision: f.capture.inventoryRevision)
+    let destination = try OwnedEquipmentInventory(
+      owner: previous.owner, activeHull: UUID(), revision: previous.revision + 1)
+    let unrelated = try OwnedEquipmentInventory(
+      owner: previous.owner, activeHull: UUID(), revision: previous.revision)
+    #expect(throws: (any Error).self) {
+      try held.transferringCrewLog(from: unrelated, to: destination)
+    }
+    let foreign = try OwnedEquipmentInventory(
+      owner: UUID(), activeHull: destination.activeHull, revision: destination.revision)
+    #expect(throws: (any Error).self) { try held.transferringCrewLog(from: previous, to: foreign) }
+    let moved = try held.transferringCrewLog(from: previous, to: destination)
+    let event = ScriptEventContext(
+      galaxy: 0, system: 211, docked: false, mainStation: false,
+      revision: 1, frameSeconds: 0.1, localSeconds: 10_001, flightSeconds: 10_001,
+      calendarSeconds: 100_001, transitSeconds: 0, playerPosition: .init(0, 0, 0))
+    let unrelatedLoss = NativeInductionCrateLoss(
+      carrier: unrelated.activeHull, physicalTime: 20_002,
+      facts: .init(cause: .shipDestroyed, sequence: 102, context: event, energy: 0, visit: 30))
+    #expect(throws: (any Error).self) { try moved.losing(unrelatedLoss) }
+    let parent = try JSONSerialization.jsonObject(with: JSONEncoder().encode(moved))
+    let data = try JSONSerialization.data(withJSONObject: [
+      "instances": [
+        f.f.parent.permission.mission.uuidString: [
+          "definition": NativeWayfarerInduction.stateID, "digest": NativeWayfarerInduction.digest,
+          "savedWayfarerInduction": parent,
+        ]
+      ]
+    ])
+    for schema in [85, 86] {
+      #expect(throws: (any Error).self) {
+        try NativeInductionCrewLogSave.validateFields(data, part: .missions, schema: schema)
+      }
+    }
+    for schema in [87, 88] {
+      try ScriptSaveJSONPreflight.validateRepairLoopFields(data, part: .missions, schema: schema)
+    }
+    #expect(NativeInductionArkSave.isAlien(86) && NativeInductionArkSave.isAlien(88))
+  }
+
   @Test func originalPickupReservesExactlyOneTonneAndOnlyStageEightWithoutBoardingOrReward() throws
   {
     let f = try CrewLogPickupFixture()
@@ -269,7 +374,7 @@ struct NativeWayfarerInductionCrewLogPickupUnitTests {
       try ScriptSaveJSONPreflight.validateRepairLoopFields(
         bytes(child, parent: parent), part: .missions, schema: schema)
     }
-    for schema in [81, 82, 83, 84, 87] {
+    for schema in [81, 82, 83, 84, Int.max] {
       #expect(throws: (any Error).self) {
         try NativeInductionCrewLogSave.validateFields(bytes(child), part: .missions, schema: schema)
       }

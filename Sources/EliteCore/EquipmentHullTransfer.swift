@@ -33,6 +33,7 @@ extension Commander {
     candidate.savedEquipmentInventory = transferred
     // Quotes reuse the current hull identity and must not create transfer history.
     if inventory.activeHull != hullID {
+      try candidate.transferInductionCrewLog(from: inventory, to: transferred)
       try candidate.transferAlienFittings(from: inventory.activeHull, to: hullID)
     }
     candidate.mirrorFittedEquipment()
