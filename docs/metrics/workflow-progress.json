@@ -5295,6 +5295,23 @@
       "t03_cause": "pending actual MBA log/XML classification",
       "t03_owner": "G4",
       "no_new_campaign": true
+    },
+    {
+      "event": "T03 production compile failure92 assigned; G1 confirms separate release88 repair before C01 corrections; G11 compile correction review clean",
+      "date": "2026-10-22",
+      "t03_issue": 92,
+      "t03_run": 39771248644,
+      "t03_failure_stage": "production compilation",
+      "t03_correction_scope": "explicit permission-only state initializer; private live authority remains private",
+      "g1_priority": [
+        88,
+        89,
+        90
+      ],
+      "g1_audit_source_preserved": true,
+      "g11_corrected_head": "89ef0ccaec2f488cb7395a65c21125fadcfa163e",
+      "g11_correction_review": "clean",
+      "g11_execution_qualified": false
     }
   ],
   "two_developer_phase": {
