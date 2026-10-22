@@ -282,7 +282,8 @@ struct NativeWayfarerInductionCharterAuditUnitTests {
     ])
     for schema in [119, 120, 121, 122] {
       try NativeInductionCrewLogSave.validateFields(bytes, part: .missions, schema: schema)
-      try NativeWayfarerInductionSave.validateFields(bytes, part: .missions, schema: schema)
+      try NativeWayfarerInductionSave.validateFields(
+        bytes, part: .missions, schema: NativeInductionArkSave.lowerSchema(schema))
       #expect(
         NativeInductionCrewLogSave.supportsSeed(schema)
           && NativeInductionCrewLogSave.supportsWorkshop(schema))
@@ -308,7 +309,8 @@ struct NativeWayfarerInductionCharterAuditUnitTests {
       "instances": [mission.id.uuidString: altered]
     ])
     #expect(throws: (any Error).self) {
-      try NativeWayfarerInductionSave.validateFields(unknown, part: .missions, schema: 119)
+      try NativeWayfarerInductionSave.validateFields(
+        unknown, part: .missions, schema: NativeInductionArkSave.lowerSchema(119))
     }
     let misplaced = try JSONSerialization.data(withJSONObject: ["charterAudit": raw])
     #expect(throws: (any Error).self) {
