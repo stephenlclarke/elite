@@ -24,6 +24,12 @@ METHODS = {
         "storingDriveRevokesCapabilityAndStaleOrUndockedRefitDoesNothing",
         "fittedAlienDriveRetainsFuelElectricalAndOrdinaryDriveGates",
     ),
+    "NativeIsolationProgrammerUnitTests": (
+        "actualCanonicalLoanOccupiesOneTonneAndReturnRemovesOnlyTheOriginal",
+        "fullRealHoldRefusesBeforeCreatingProgrammerOrObligation",
+        "matchingLabelForeignSerialOrChangedSourceCannotSupplyOriginalCustody",
+        "acquisitionOnlyDefinitionHasNoFittingOrShopOffer",
+    ),
     "WantedDossierNameUnitTests": (
         "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
         "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
