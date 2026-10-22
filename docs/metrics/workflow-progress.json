@@ -4829,15 +4829,21 @@
         "start_evidence": "G3 active thread5416f3c1-d481-4bdb-a92b-4292e55ae0f8 cursor3 and direct assignment acceptance; exact start timestamp not recorded",
         "first_push_observed_at": "2026-10-22T05:59:27Z",
         "push_timestamp_source": "PR48 creation; observation of push, not exact push event",
-        "head": "1b5c07aa136840b759cee87b0e766307c26ec8ad",
+        "head": "40159bbacafc55414e19d86ea6e073869bb9301b",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
-        "source_state": "Compact comparison fix and three focused tests pushed; MBA source review assigned, hosted selection pending",
+        "source_state": "Original display source clean at1b5; final composition/selector review and actual hosted qualification pending",
         "first_push_observed_elapsed_seconds": 224,
         "source_review_result": "MBA bounded source review clean at1b5c07aa; final-head/three-method execution pending",
         "source_review_time_reported": "2026-10-22 06:02 UTC (minute precision)",
-        "handoff_at": "2026-10-22T06:00:41Z",
+        "handoff_at": "2026-10-22T06:02:37Z",
         "source_review_latency_seconds_reported": 88,
-        "source_review_evidence": "MBA direct completion message and outcome posted on PR48; existing39731164624 excludes the three methods"
+        "source_review_evidence": "MBA direct completion message and outcome posted on PR48; existing39731164624 excludes the three methods",
+        "base": "1523b3ee2394d74e576645451ad6606925a01488",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333947172",
+        "unit_run": 39731489668,
+        "unit_status": "pending;234 maintained methods includes3ShowroomComparison and10ClinicAcceptance",
+        "original_source_handoff_at": "2026-10-22T06:00:41Z",
+        "source_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333946221"
       }
     ],
     "model_settings": {
