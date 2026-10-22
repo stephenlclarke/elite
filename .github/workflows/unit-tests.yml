@@ -1,0 +1,53 @@
+name: Isolated Unit Tests
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'Sources/**'
+      - 'Tests/**'
+      - 'Package.swift'
+      - 'Package.resolved'
+      - 'Tools/CI/isolated_units.py'
+      - 'Tools/CI/test_isolated_units.py'
+      - '.github/workflows/unit-tests.yml'
+      - 'Makefile'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: isolated-units-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  isolated-units:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Identify Swift toolchain
+        id: toolchain
+        shell: bash
+        run: |
+          swift --version
+          printf 'key=%s\n' "$(swift --version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Restore incremental Swift build
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .build
+          key: isolated-units-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.key }}-${{ hashFiles('Package.swift', 'Package.resolved') }}-${{ github.sha }}
+          restore-keys: |
+            isolated-units-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.key }}-${{ hashFiles('Package.swift', 'Package.resolved') }}-
+      - name: Verify isolated report checks
+        run: python3 -m unittest discover -s Tools/CI -p 'test_isolated_units.py'
+      - name: Run maintained isolated units
+        run: make unit-ci
+      - name: Upload exact-commit unit results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: isolated-units-${{ github.sha }}
+          path: reports/isolated-units/
+          if-no-files-found: warn
