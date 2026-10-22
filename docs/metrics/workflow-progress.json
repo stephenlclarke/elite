@@ -4392,9 +4392,13 @@
       "selection_methods": 132,
       "new_methods": 5,
       "source_review": "MBA completed; no actionable source finding",
-      "unit_status": "existing hosted active; artifact pending",
+      "unit_status": "MBA verified exact-head hosted PASS",
       "next_assigned": "C08.P04.B.runtime",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verified_methods": 132,
+      "verified_expanded_cases": 164,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329646699",
+      "qualification_scope": "Source facts/initial poses only; no native admission/pickup/custody or stage8/9 progress"
     }
   ]
 }
