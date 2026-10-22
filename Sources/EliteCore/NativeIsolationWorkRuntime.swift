@@ -71,7 +71,7 @@ extension Game {
     child.savedIsolationWork = state
     child.revision += 1
     child.acknowledge(sequence)
-    parent.revision += 1
+    if parent.outcome == .active { parent.revision += 1 }
     parent.acknowledge(sequence)
     commander.scriptState.instances[parent.id] = parent
     commander.scriptState.nextEvent = sequence
@@ -97,7 +97,7 @@ extension Game {
     child.savedIsolationWork = state
     child.revision += 1
     child.acknowledge(sequence)
-    parent.revision += 1
+    if parent.outcome == .active { parent.revision += 1 }
     parent.acknowledge(sequence)
     commander.scriptState.nextEvent = sequence
     commander.scriptState.instances[child.id] = child
@@ -150,7 +150,7 @@ extension Game {
     child.savedIsolationWork = state
     child.revision += 1
     child.acknowledge(sequence)
-    parent.revision += 1
+    if parent.outcome == .active { parent.revision += 1 }
     parent.acknowledge(sequence)
     commander.scriptState.instances[parent.id] = parent
     commander.scriptState.nextEvent = sequence

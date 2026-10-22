@@ -35,6 +35,7 @@ enum NativeIsolationWorkSave {
         child.digest == NativeIsolationWorkPack.digest,
         child.outcome == .active, child.contract == nil, child.completionReceipt == nil,
         child.dialogue == nil, child.payloads.isEmpty, child.gearIssues.isEmpty,
+        child.choiceReceipts.isEmpty,
         child.milestones.isEmpty, child.data == .object([:]), child.campaignParent == nil,
         child.campaignChildren.isEmpty,
         child.timers.keys.allSatisfy({ $0 == NativeIsolationWorkPack.timer }),
@@ -56,6 +57,7 @@ enum NativeIsolationWorkSave {
         actorClaims(child: child, state: state, commander: commander)
       else { return false }
       let cutoff = primitive.cutoff
+      let ended = primitive.terminal?.facts
       for module in state.modules {
         if let admission = module.admission {
           guard
@@ -70,6 +72,7 @@ enum NativeIsolationWorkSave {
             segment.authority.inventoryRevision >= state.permission.inventoryRevision
           else { return false }
           if let cutoff, segment.last > cutoff.physicalTime { return false }
+          if let ended, segment.last > ended.physicalTime { return false }
         }
         if let opening = module.opening {
           guard
@@ -79,6 +82,11 @@ enum NativeIsolationWorkSave {
           if let cutoff {
             guard opening.sequence < cutoff.sequence, opening.meter.end <= cutoff.physicalTime
             else { return false }
+          }
+          if let ended {
+            guard opening.sequence < ended.sequence, opening.meter.end <= ended.physicalTime else {
+              return false
+            }
           }
         }
         if let verification = module.verification {
@@ -90,6 +98,11 @@ enum NativeIsolationWorkSave {
           if let cutoff {
             guard verification.sequence < cutoff.sequence,
               verification.last.end <= cutoff.physicalTime
+            else { return false }
+          }
+          if let ended {
+            guard verification.sequence < ended.sequence,
+              verification.last.end <= ended.physicalTime
             else { return false }
           }
         }

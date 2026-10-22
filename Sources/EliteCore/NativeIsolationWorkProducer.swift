@@ -68,7 +68,8 @@ extension Game {
     if isolationWorkRuntime.arm != nil && end?.endpoint == nil {
       interruptIsolationWork()
     }
-    guard let publish, isolationWorkRuntime.dirty else { return }
+    let failed = isolationWorkFailure != nil
+    guard let publish, isolationWorkRuntime.dirty || failed else { return }
     let time = commander.flightSimulation.physicalTime
     let checkpoint =
       time - isolationWorkRuntime.publishedTime >= 0.5
@@ -82,9 +83,10 @@ extension Game {
         && (module.opening == nil && abs(module.history.seconds(.work) - 20) < 1e-8
           || module.opening != nil && abs(module.history.seconds(.observation) - 1) < 1e-8)
     }
-    guard checkpoint || transition else { return }
+    guard checkpoint || transition || failed else { return }
     let attempt = NativeIsolationWorkAttempt(self)
     do {
+      try attempt.game.failIsolationWorkIfNeeded()
       if transition, let measured { try attempt.game.stageIsolationWorkTransition(at: measured) }
       attempt.game.persistScriptActors()
       guard attempt.game.commander.valid else { throw SaveError.invalidCommander }

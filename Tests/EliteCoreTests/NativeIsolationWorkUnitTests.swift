@@ -5,7 +5,7 @@ import Testing
 
 /// Real native acceptance/issue followed by a test scene at the fixed Renas source.
 /// The scene setup is not claimed as a flown journey. Admission, queries, ticks and writes are real.
-private final class IsolationWorkFixture {
+final class IsolationWorkFixture {
   var game: Game
   let primitive: NativeIsolationWorkParentPrimitive
   init() async throws {
@@ -95,6 +95,40 @@ private final class IsolationWorkFixture {
 
   func state() throws -> NativeIsolationWorkState {
     try #require(game.isolationWorkChild?.savedIsolationWork)
+  }
+
+  static func returnToAvenor(_ runtime: GameRuntime) async throws {
+    await runtime.key("escape")
+    await runtime.key("0")
+    try await runtime.scriptCommand { candidate in
+      var pose = candidate.commander.flightSimulation.pose
+      pose.position = pose.position + pose.orientation.x * 20_000
+      NativeStationTestFixture.reframe(&candidate, to: pose)
+    }
+    let departure = await runtime.snapshot()
+    await runtime.selectSystem(x: Double(departure.systems[7].x), y: Double(departure.systems[7].y))
+    await runtime.key("h")
+    try #require(await runtime.snapshot().jumpCountdown != nil)
+    for _ in 0..<200 {
+      if await runtime.snapshot().jumpCountdown == nil { break }
+      _ = await runtime.advance(delta: 0.1)
+    }
+    try #require(await runtime.snapshot().commander.system == 7)
+    // Framing grants no dock receipt; ordinary swept native entry must mint it.
+    try await runtime.scriptCommand { candidate in
+      let station = try #require(candidate.bodies.first { $0.id == 0 && $0.hull == .station })
+      let old = candidate.commander.flightSimulation.pose
+      var pose = ShipPose()
+      pose.position = old.systemPoint(station.entrancePosition + station.entranceNormal * 2)
+      pose.orientation.y = old.orientation.apply(station.entranceUp)
+      pose.orientation.z = old.orientation.apply(station.entranceNormal) * -1
+      pose.orientation.x = pose.orientation.y.cross(pose.orientation.z)
+      NativeStationTestFixture.reframe(&candidate, to: pose)
+      candidate.speed = 3
+      for _ in 0..<100 where !candidate.docked { candidate.tick(delta: 0.1) }
+    }
+    let arrived = await runtime.snapshot()
+    try #require(arrived.docked && arrived.nativeMainStationDockEvidenceIsCurrent)
   }
 }
 
@@ -327,6 +361,46 @@ struct NativeIsolationWorkUnitTests {
     #expect(
       restored.isolationWorkChild?.savedIsolationWork?.modules.compactMap(\.verification)
         == receipts)
+    try await IsolationWorkFixture.returnToAvenor(runtime)
+    let beforeReception = await runtime.snapshot()
+    let pointer = try Data(contentsOf: files.save)
+    let backup = files.save.appendingPathExtension("receiving-backup")
+    try FileManager.default.moveItem(at: files.save, to: backup)
+    try FileManager.default.createDirectory(at: files.save, withIntermediateDirectories: false)
+    await #expect(throws: (any Error).self) {
+      try await runtime.scriptCommand { candidate in
+        let dock = try #require(candidate.commander.nativeStations?.currentMainDock)
+        let arrival = try #require(candidate.nativeMainStationArrivalContext(for: dock.station))
+        try candidate.receiveIsolationWork(at: arrival)
+      }
+    }
+    #expect(await runtime.snapshot().commander == beforeReception.commander)
+    try FileManager.default.removeItem(at: files.save)
+    try FileManager.default.moveItem(at: backup, to: files.save)
+    #expect(try Data(contentsOf: files.save) == pointer)
+    try await runtime.scriptCommand { candidate in
+      try candidate.confirmIsolationWorkParent(candidate.isolationWorkParentReview(.receive))
+    }
+    let received = await runtime.snapshot()
+    let parent = try #require(received.isolationWorkParentMission)
+    #expect(parent.outcome == .complete && parent.contract?.settlementAmount == 9700)
+    #expect(received.commander.credits == beforeReception.commander.credits + 9700)
+    #expect(received.commander.cargoTonnes == beforeReception.commander.cargoTonnes - 1)
+    #expect(
+      received.commander.scriptState.savedClueJournal?.awards[NativeIsolationWorkParent.stateID]?
+        .clueID == "isolation-work-family-trace")
+    #expect(OriginalServiceReservationPolicy.activeCount(received.commander.scriptState) == 0)
+    try await runtime.scriptCommand { candidate in
+      let dock = try #require(candidate.commander.nativeStations?.currentMainDock)
+      let arrival = try #require(candidate.nativeMainStationArrivalContext(for: dock.station))
+      try candidate.receiveIsolationWork(at: arrival)
+    }
+    #expect(await runtime.snapshot().commander == received.commander)
+    let completedBytes = try Data(contentsOf: files.save)
+    let (completedCold, _) = try ScriptSaveStore.read(completedBytes, from: files.save)
+    #expect(
+      completedCold.scriptState.instances[parent.id]?.completionReceipt == parent.completionReceipt)
+    #expect(NativeIsolationContractSave.validateClaims(completedCold))
   }
 
   @Test func cullingPauseAndWrongViewCannotCreditTimeOrLeaveAnArmedEndpoint() async throws {

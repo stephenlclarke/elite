@@ -597,8 +597,8 @@ extension Game {
         return
       }
       if let action = contractBoard.selected?.isolationWorkParent {
-        guard action == .accept, contractBoard.action == .accept,
-          let quote = contractBoard.isolationWorkParentQuote
+        guard contractBoard.action == .accept,
+          let quote = contractBoard.isolationWorkParentQuote, quote.action == action
         else { throw MissionPackError("Review Lerr's commission; Back preserves it.") }
         try confirmIsolationWorkParent(quote)
         refreshContractRows()

@@ -17,14 +17,19 @@ enum NativeIsolationWorkParentSave {
     guard parents.count <= 1 else { return false }
     for parent in parents {
       guard (try? NativeIsolationWorkParent.primitive(parent: parent, commander: commander)) != nil,
-        parent.outcome == .active, parent.contract?.settled == false,
-        parent.completionReceipt == nil,
-        parent.milestones == [0], parent.data == .object([:]),
+        parent.data == .object([:]),
         parent.timers.isEmpty, parent.dialogue == nil,
+        parent.choiceReceipts.isEmpty,
         parent.ownedEncounters.isEmpty, parent.campaignParent == nil,
         parent.campaignChildren.isEmpty
       else { return false }
-      if case .returned? = parent.savedIsolationWorkParent?.cutoff { return false }
+      if parent.savedIsolationWorkParent?.terminal == nil {
+        guard parent.outcome == .active, parent.contract?.settled == false,
+          parent.completionReceipt == nil, parent.milestones == [0],
+          parent.savedIsolationWorkParent?.cutoff == nil
+        else { return false }
+        if case .returned? = parent.savedIsolationWorkParent?.cutoff { return false }
+      }
       guard let proof = parent.savedIsolationWorkParent,
         let child = commander.scriptState.instances[
           NativeIsolationWorkPack.instance(source: proof.source)],
@@ -73,6 +78,9 @@ enum NativeIsolationWorkParentSave {
           let decoded = try JSONDecoder().decode(
             NativeIsolationWorkParentState.self, from: JSONSerialization.data(withJSONObject: value)
           )
+          if mission["outcome"] as? String != ScriptOutcome.active.rawValue {
+            guard decoded.terminal != nil else { throw SaveError.invalidCommander }
+          }
           guard
             (value as NSDictionary).isEqual(
               try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))

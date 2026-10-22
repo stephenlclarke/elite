@@ -173,6 +173,13 @@ extension Game {
     }
     _ = try NativeIsolationWorkParent.primitive(parent: parent, commander: staged)
     commander = staged
+    if var terminalParent = isolationWorkParentMission,
+      terminalParent.savedIsolationWorkParent?.terminal != nil
+    {
+      refreshIsolationContractReceipt(&terminalParent)
+      commander.scriptState.instances[terminalParent.id] = terminalParent
+    }
+    try failIsolationWorkIfNeeded()
   }
 }
 

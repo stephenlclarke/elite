@@ -587,6 +587,7 @@ struct NativeIsolationWorkState: Codable, Equatable, Sendable {
     guard permission.valid, source == NativeIsolationWorkSource(owner: permission.owner).id,
       job == NativeIsolationWorkPack.instance(source: source), modules.count == 2,
       Set(modules.map(\.role)) == Set(NativeIsolationWorkRole.allCases),
+      modules.map(\.role) == NativeIsolationWorkRole.allCases,
       Set(modules.map(\.module)).count == 2, producerSequence < UInt64(Int64.max),
       localSeconds.isFinite, (0...1e12).contains(localSeconds),
       localSeconds <= Double(producerSequence) * 0.100001 + 1e-7,

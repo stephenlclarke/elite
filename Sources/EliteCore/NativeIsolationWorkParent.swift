@@ -52,6 +52,7 @@ struct NativeIsolationWorkParentState: Codable, Equatable, Sendable {
   let terms: String
   let issue: NativeIsolationWorkParentIssue
   var cutoff: NativeIsolationWorkParentCutoff?
+  var terminal: NativeIsolationContractTerminal?
 }
 
 /// Validated historical inputs for the provider's sole opaque authority factory.
@@ -67,6 +68,7 @@ struct NativeIsolationWorkParentPrimitive: Equatable, Sendable {
   let sequence: UInt64
   let physicalTime: Double
   let cutoff: NativeIsolationWorkParentCutoff?
+  let terminal: NativeIsolationContractTerminal?
 }
 
 enum NativeIsolationWorkParent {
@@ -187,9 +189,16 @@ enum NativeIsolationWorkParent {
         throw SaveError.invalidCommander
       }
     }
+    if let terminal = p.terminal {
+      guard terminal.shapeValid(proof: p), terminal.facts.outcome == parent.outcome,
+        terminal.facts.sequence <= commander.scriptState.nextEvent,
+        parent.hasAcknowledged(terminal.facts.sequence),
+        terminal.facts.physicalTime <= commander.flightSimulation.physicalTime
+      else { throw SaveError.invalidCommander }
+    }
     return .init(
       parentID: parent.id, parentDigest: digest, authorization: p.authorization,
       owner: owner, issuer: p.issuer, acceptance: p.acceptance, issueOperation: p.issue.operation,
-      sequence: p.sequence, physicalTime: p.physicalTime, cutoff: p.cutoff)
+      sequence: p.sequence, physicalTime: p.physicalTime, cutoff: p.cutoff, terminal: p.terminal)
   }
 }
