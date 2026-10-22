@@ -4426,11 +4426,13 @@
       "github_run": 39701855449,
       "selection_methods": 147,
       "new_methods": 8,
-      "source_review": "MBA assigned",
+      "source_review": "MBA found actionable custody/loss issue40; remaining bounded review complete",
       "unit_status": "existing hosted active; artifact pending",
       "next_assigned": "C08.P05.A",
       "usable_build_delivered": false,
-      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329930577"
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329930577",
+      "finding": "https://github.com/stephenlclarke/elite/issues/40",
+      "correction_owner": "G1 at natural packet boundary"
     }
   ]
 }
