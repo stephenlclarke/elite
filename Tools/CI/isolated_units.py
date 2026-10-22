@@ -336,6 +336,11 @@ METHODS = {
         "returningToALargerHullDoesNotRefitStoredSparesOrRecreateSoldBoundItems",
         "foreignOwnerUnknownNodeAndExhaustedRevisionRefuseWithoutChangingSource",
     ),
+    "PlanetNightTechnologyUnitTests": (
+        "originalWorldNightProfilesRetainEveryAuthoredTechnologyLevel",
+        "matchedOriginalEconomyAndGovernmentKeepIncreasingNightDevelopmentAboveFifteen",
+        "explicitLegacyNightProfilesKeepTheirExistingCoefficientsAndBounds",
+    ),
     "FlightControlAuthorityUnitTests": (
         "allSharedFlightBindingsRoundTripWithoutFunctionKeys",
         "targetSelectionAndFilterInterruptTheHeldToolWithoutBecomingFire",
