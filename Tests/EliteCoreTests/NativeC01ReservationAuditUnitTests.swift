@@ -136,6 +136,11 @@ struct NativeC01ReservationAuditUnitTests {
         $0.physicalTime == source.terms.epoch && mission.hasAcknowledged($0.sequence)
       })
     #expect(state.readings.isEmpty && state.surveyor == nil && state.losses.isEmpty)
+    #expect(NativeC01SurveyorSave.valid(mission, commander: f.game.commander))
+    var orphan = mission
+    orphan.ownedEncounters[NativeC01Surveyor.encounter] = .init(
+      id: NativeC01Surveyor.encounter, galaxy: 0, system: 164, actors: [:])
+    #expect(!NativeC01SurveyorSave.valid(orphan, commander: f.game.commander))
     #expect(
       !f.game.glassMeridianAuditDetail(.auditReservations).contains { $0.hasPrefix("Findings:") })
     #expect(f.game.glassMeridianReview(.auditReservations).auditPin == nil)
