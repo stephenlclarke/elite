@@ -4382,6 +4382,19 @@
       "verified_methods": 127,
       "verified_expanded_cases": 159,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329386801"
+    },
+    {
+      "event": "Cevilis recorder source prerequisite pushed; native runtime assigned",
+      "head": "61995c8ce37ac45c50e5be4317996ee138321d78",
+      "base": "c8d98dde2e878332e4cb5a9c2aa117102b754921",
+      "ledger_parent": "C08.P04.B.source",
+      "github_run": 39698634409,
+      "selection_methods": 132,
+      "new_methods": 5,
+      "source_review": "MBA assigned",
+      "unit_status": "existing hosted active; artifact pending",
+      "next_assigned": "C08.P04.B.runtime",
+      "usable_build_delivered": false
     }
   ]
 }
