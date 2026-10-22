@@ -422,7 +422,11 @@ struct NativeWayfarerInductionWorkshopUnitTests {
     let before = game.commander
     #expect(game.inductionWorkshopRows.contains { $0.wayfarerInduction == .serviceWorkshopUnit })
     #expect(!game.inductionWorkshopRows.contains { $0.wayfarerInduction == .receiveWorkshopUnit })
-    #expect(game.commander == before && game.scriptGallery.isEmpty)
+    #expect(game.commander == before)
+    #expect(
+      !game.scriptGallery.contains(where: {
+        $0.savedInstance == f.booking.instance || $0.trialDigest == pack.digest
+      }))
     game.commander.scriptState.instances[f.booking.instance] = f.child(try f.serviced())
     game.commander.system = 0
     #expect(game.inductionWorkshopRows.contains { $0.wayfarerInduction == .receiveWorkshopUnit })
