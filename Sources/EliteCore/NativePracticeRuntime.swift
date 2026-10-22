@@ -13,6 +13,7 @@ extension Game {
       let consent = instance.choiceReceipts[NativePracticeSource.consentGroup],
       consent.valid(for: instance, engine: commander.scriptState),
       consent.choice == NativePracticeSource.consentChoice,
+      let owner = commander.equipmentOwnerID,
       let carrier = commander.hullInstanceID,
       let player = commander.flightSimulation.player,
       commander.scriptState.instances.values.allSatisfy({
@@ -25,7 +26,7 @@ extension Game {
     else { throw NativePracticeError.staleContext }
     var flight = commander.flightSimulation
     let permission = NativePracticePermission(
-      mission: id, owner: commander.equipmentOwnerID, carrier: carrier, lesson: lesson,
+      mission: id, owner: owner, carrier: carrier, lesson: lesson,
       digest: instance.digest, consent: consent, player: player,
       frame: flight.pose, begunAt: flight.physicalTime)
     let practice = try NativePracticeState.prepare(permission: permission, flight: &flight)
@@ -57,7 +58,8 @@ extension Game {
   mutating func endNativePractice(instance id: UUID) throws {
     guard var instance = commander.scriptState.instances[id],
       var practice = instance.savedNativePractice, practice.valid,
-      practice.endedAt == nil, practice.permission.owner == commander.equipmentOwnerID
+      let owner = commander.equipmentOwnerID,
+      practice.endedAt == nil, practice.permission.owner == owner
     else { throw NativePracticeError.invalidSource }
     practice.endedAt = commander.flightSimulation.physicalTime
     guard practice.valid else { throw NativePracticeError.staleContext }
@@ -103,14 +105,15 @@ extension Game {
   }
 
   func nativePracticeCurrent(_ practice: NativePracticeState, instance: ScriptInstance) -> Bool {
-    NativePracticeSave.valid(
+    guard let owner = commander.equipmentOwnerID else { return false }
+    return NativePracticeSave.valid(
       practice, instance: instance, engine: commander.scriptState,
-      owner: commander.equipmentOwnerID, flight: commander.flightSimulation)
+      owner: owner, flight: commander.flightSimulation)
       && practice.endedAt == nil && instance.outcome == .active
       && instance.suspension == nil && instance.id == practice.permission.mission
       && instance.definition == practice.permission.lesson.rawValue
       && instance.digest == practice.permission.digest && scriptPack(for: instance) != nil
-      && practice.permission.owner == commander.equipmentOwnerID
+      && practice.permission.owner == owner
       && practice.permission.carrier == commander.hullInstanceID
       && practice.permission.player == commander.flightSimulation.player
       && instance.choiceReceipts[NativePracticeSource.consentGroup] == practice.permission.consent
@@ -120,13 +123,14 @@ extension Game {
   /// This lookup cannot grant immunity through a mission label or through an ordinary actor.
   func nativePracticeReservation(_ body: SpaceBody) -> NativePracticeState? {
     guard body.hull == .cargo, let physical = body.physical,
-      physical.population == .mission, physical.spawnIdentity?.producer == .provider
+      physical.population == .mission, physical.spawnIdentity?.producer == .provider,
+      let owner = commander.equipmentOwnerID
     else { return nil }
     for instance in commander.scriptState.instances.values {
       if let practice = instance.savedNativePractice, practice.reserves(body),
         NativePracticeSave.valid(
           practice, instance: instance, engine: commander.scriptState,
-          owner: commander.equipmentOwnerID, flight: commander.flightSimulation)
+          owner: owner, flight: commander.flightSimulation)
       {
         return practice
       }

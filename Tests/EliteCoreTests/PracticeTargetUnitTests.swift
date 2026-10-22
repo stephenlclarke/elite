@@ -84,14 +84,21 @@ struct PracticeTargetUnitTests {
 
   @Test func plainCommanderLoadRefusesPracticeWithoutChangingTheExistingCommanderOrScene() throws {
     let f = try fixture()
+    var legacy = Commander()
+    #expect(legacy.equipmentOwnerID == nil)
+    #expect(NativePracticeSave.validateClaims(legacy))
+    legacy.scriptState = f.engine
+    legacy.flightSimulation = f.flight
+    #expect(!NativePracticeSave.validateClaims(legacy))
     var game = Game(executive: false)
     let before = game.commander
     let beforeBodies = game.bodies
     let revision = game.gameplayRevision
     var supplied = before
     try supplied.prepareEquipment()
+    let owner = try #require(supplied.equipmentOwnerID)
     let ownerPermission = try replacing(
-      f.state.permission, key: "owner", with: supplied.equipmentOwnerID.uuidString)
+      f.state.permission, key: "owner", with: owner.uuidString)
     let permission = try replacing(
       ownerPermission, key: "carrier", with: try #require(supplied.hullInstanceID).uuidString)
     let practice = NativePracticeState(permission: permission, beacons: f.state.beacons)

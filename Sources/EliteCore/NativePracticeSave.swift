@@ -59,10 +59,10 @@ enum NativePracticeSave {
     else { return false }
     for instance in engine.instances.values {
       guard let practice = instance.savedNativePractice else { continue }
-      guard
+      guard let owner = commander.equipmentOwnerID,
         valid(
           practice, instance: instance, engine: engine,
-          owner: commander.equipmentOwnerID, flight: flight)
+          owner: owner, flight: flight)
       else { return false }
     }
     return true
