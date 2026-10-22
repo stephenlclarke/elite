@@ -70,7 +70,7 @@ extension Game {
     }
   }
 
-  private static func modelPose(of body: borrowing SpaceBody, player: ShipPose) -> ShipPose {
+  static func modelPose(of body: borrowing SpaceBody, player: ShipPose) -> ShipPose {
     var basis = Basis3()
     basis.x = player.orientation.apply(body.modelVector(.init(1, 0, 0)))
     basis.y = player.orientation.apply(body.modelVector(.init(0, 1, 0)))

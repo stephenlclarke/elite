@@ -1,4 +1,4 @@
-"""One unmerged diagnostic replay of the exact retained 392e coverage image; never build."""
+"""One unmerged diagnostic replay of the exact retained 52ce coverage image; never build."""
 import hashlib
 import json
 import os
@@ -14,10 +14,10 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'reports/m01-retained-replay'
-SOURCE = '392e9ccaf873f8709cb7ae083dea91ac8ca8ca99'
-IMAGE_SHA = '6ae4f34f3fd89a324da5235a5c3aff04db35097636aa94f8a4380241631bb83b'
-UUID = 'D78E8DCF-647F-3135-B499-1D0BE369B76D'
-FILTER_SHA = 'b5b88d858f2e9dd30f56c40c88f3c77b4e48d1aa0729e5ebb73662d813778b0b'
+SOURCE = '52ce90170e314c1ac070f71bf5d4d4436f8cedb1'
+IMAGE_SHA = '6bf5c2489a14563ee3040df141ff957677f6e8520f2c82fec4ad22830d60efeb'
+UUID = 'E97D806C-28C7-32C9-A102-313DC07DEE89'
+FILTER_SHA = 'bc897adf7c0d8d82ff54d92b855a8b43dd40de2b13633a0838c82a06896f19b4'
 DEVELOPER = Path('/Applications/Xcode_16.4.app/Contents/Developer')
 HELPER = DEVELOPER / 'Toolchains/XcodeDefault.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper'
 IMAGE = ROOT / '.build/arm64-apple-macosx/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests'
@@ -94,16 +94,16 @@ def prepare():
                     'Package.resolved', 'Tools/CI/isolated_units.py', 'Tools/CI/crash_artifacts.py',
                     'Tools/CI/isolated_crash_evidence.py'], cwd=ROOT, check=True)
     upstream = json.loads((OUT / 'upstream-run.json').read_text())
-    require(upstream['id'] == 39812579729 and upstream['head_sha'] == SOURCE
+    require(upstream['id'] == 39839922136 and upstream['head_sha'] == SOURCE
             and upstream['conclusion'] == 'failure', 'Wrong upstream run.')
     original = ROOT / '.build/m01-replay-original'
     result = json.loads((original / 'result.json').read_text())
     require(result['commit'] == SOURCE and result['status'] == 'failed', 'Wrong original result.')
     units = runpy.run_path(str(ROOT / 'Tools/CI/isolated_units.py'))
     expression = result['command'][result['command'].index('--filter') + 1]
-    require(expression == units['selection']() and sum(map(len, units['METHODS'].values())) == 341
+    require(expression == units['selection']() and sum(map(len, units['METHODS'].values())) == 344
             and hashlib.sha256(expression.encode()).hexdigest() == FILTER_SHA,
-            'Original 341-method selection differs.')
+            'Original 344-method selection differs.')
     records = json.loads((original / 'failure-evidence/native-images.json').read_text())
     require(len(records) == 1, 'Expected exactly one retained test image.')
     record = records[0]
@@ -167,10 +167,10 @@ def prepare():
     runtime_closure(frameworks, libraries)
     write('resources.json', inventory)
     write('launch.json', {'source': SOURCE, 'diagnosticCommit': checked('git', 'rev-parse', 'HEAD'),
-        'diagnosticOnly': True, 'originalRun': 39812579729, 'originalMethods': 341,
+        'diagnosticOnly': True, 'originalRun': 39839922136, 'originalMethods': 344,
         'imageSHA256': IMAGE_SHA, 'imageUUID': UUID, 'swiftVersion': version,
         'arguments': arguments, 'filterSHA256': FILTER_SHA, 'helper': str(HELPER),
-        'coverageInstrumentedImage': True, 'parallelism': 3, 'executionLimitSeconds': 300,
+        'coverageInstrumentedImage': True, 'parallelism': 3, 'executionLimitSeconds': 180,
         'environment': {'DYLD_FRAMEWORK_PATH': ':'.join(map(str, frameworks)),
                         'DYLD_LIBRARY_PATH': ':'.join(map(str, libraries)),
                         'SWIFT_BACKTRACE': units['runtime_child_environment']({})['SWIFT_BACKTRACE'],
@@ -219,7 +219,7 @@ def capture(debugger):
         debugger.SetAsync(True)
         error = process.Continue()
         require(not error.Fail(), str(error))
-        while time.monotonic() - started < 300:
+        while time.monotonic() - started < 180:
             state = process.GetState()
             if state == lldb.eStateExited:
                 result.update(status='diagnostic-target-exited', exitCode=process.GetExitStatus())
@@ -228,6 +228,8 @@ def capture(debugger):
                 result['status'] = 'diagnostic-stop-captured'
                 result['threads'] = [{'id': t.GetThreadID(), 'reason': t.GetStopReason(),
                     'data': [t.GetStopReasonDataAtIndex(i) for i in range(t.GetStopReasonDataCount())],
+                    'registers': {name: t.GetFrameAtIndex(0).FindRegister(name).GetValue()
+                                  for name in ['pc', 'lr', 'sp', 'fp'] + ['x' + str(i) for i in range(29)]},
                     'frames': [{'pc': hex(f.GetPC()), 'function': f.GetFunctionName(),
                                 'file': str(f.GetLineEntry().GetFileSpec()),
                                 'line': f.GetLineEntry().GetLine()} for f in list(t)[:64]]}

@@ -59,15 +59,19 @@ extension Display {
   /// Use the identical projection, hidden-face and clipping path as front-view rendering.
   static func visibleInFront(_ body: SpaceBody, game: borrowing Game, layout: CockpitLayout) -> Bool
   {
-    var front = copy game
-    front.screen = .front
-    // Resolve authorized geometry before entering the renderer with its owned Game frame.
-    let mesh = front.scriptNPCMesh(body) ?? front.gameplayMesh(for: body)
+    // Front visibility uses the normal renderer without copying simulation state.
+    let mesh: Mesh
+    if let scripted = game.scriptNPCMesh(body) {
+      mesh = scripted
+    } else {
+      mesh = game.gameplayMesh(for: body)
+    }
     var frame = Frame()
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: layout.width, height: layout.height)
     frame.flightClip = layout.flightClip
-    draw(body, game: front, into: &frame, projection: layout.projection, mesh: mesh)
+    draw(
+      body, game: game, into: &frame, projection: layout.projection, mesh: mesh, screen: .front)
     return !frame.shipLines.isEmpty || frame.hasShipSurfaces
   }
 }

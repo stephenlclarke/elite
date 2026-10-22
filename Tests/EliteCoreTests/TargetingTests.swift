@@ -374,3 +374,53 @@ func frontVisibilityPreservesGenuineNativeStationGeometryAndRevokedAuthority(
     #expect(game.screen == .left && afterStyle == style)
   }
 }
+
+private final class FrontVisibilityRenderFixture {
+  var game = Game(executive: false)
+}
+
+struct FrontVisibilityRenderUnitTests {
+  @Test(
+    arguments: [Screen.front, .rear, .left, .right, .demo, .title], ShipDisplayStyle.allCases)
+  func frontRenderOverridePreservesOutputAndCallerState(screen: Screen, style: ShipDisplayStyle) {
+    let fixture = FrontVisibilityRenderFixture()
+    fixture.game.screen = .front
+    fixture.game.commander.shipDisplayStyle = style
+    let body = SpaceBody(id: 906, hull: .cobra, position: .init(0, 0, 1000))
+    let layout = CockpitLayout(game: fixture.game, width: 512, height: 518)
+    func emptyFrame() -> Frame {
+      var frame = Frame()
+      frame.rasterizeGraphics = false
+      frame.canvas = .init(x: 0, y: 0, width: layout.width, height: layout.height)
+      frame.flightClip = layout.flightClip
+      return frame
+    }
+    var expected = emptyFrame()
+    Display.draw(body, game: fixture.game, into: &expected, projection: layout.projection)
+    let expectedVisibility = !expected.shipLines.isEmpty || expected.hasShipSurfaces
+    #expect(expectedVisibility)
+
+    fixture.game.screen = screen
+    let originalTime = fixture.game.time
+    var actual = emptyFrame()
+    Display.draw(
+      body, game: fixture.game, into: &actual, projection: layout.projection, screen: .front)
+    #expect(actual == expected)
+    #expect(Display.visibleInFront(body, game: fixture.game, layout: layout) == expectedVisibility)
+    #expect(fixture.game.screen == screen && fixture.game.time == originalTime)
+    #expect(fixture.game.withReadOnlyCommander { $0.shipDisplayStyle } == style)
+
+    if screen == .demo || screen == .title {
+      // Ordinary startup drawing still forces panels without changing the saved flight preference.
+      var startup = emptyFrame()
+      Display.draw(body, game: fixture.game, into: &startup, projection: layout.projection)
+      #expect(fixture.game.withReadOnlyCommander { $0.shipDisplayStyle } == style)
+      fixture.game.screen = .front
+      fixture.game.commander.shipDisplayStyle = .shadedPanels
+      var shaded = emptyFrame()
+      Display.draw(body, game: fixture.game, into: &shaded, projection: layout.projection)
+      #expect(startup == shaded && startup.hasShipSurfaces)
+    }
+  }
+
+}

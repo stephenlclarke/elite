@@ -67,10 +67,16 @@ extension Game {
 
 extension Display {
   static func drawScriptBeams(
-    _ body: SpaceBody, game: Game, into frame: inout Frame,
-    projection: FlightProjection
+    _ body: SpaceBody, game: borrowing Game, into frame: inout Frame,
+    projection: FlightProjection, screen: Screen? = nil
   ) {
     guard let npc = body.scriptNPC else { return }
+    let view: Screen
+    if let screen {
+      view = screen
+    } else {
+      view = game.screen
+    }
     func beam(
       _ weapon: ScriptNPCWeapon, state: ScriptNPCGunState?, position: Vector3,
       orientation: Basis3, scale: Double
@@ -81,7 +87,9 @@ extension Display {
       let start = position + orientation.apply(weapon.muzzle * scale)
       let end = start + orientation.apply(state.aim ?? weapon.direction) * range
       guard
-        let line = project(game.viewPosition(start), game.viewPosition(end), projection: projection)
+        let line = project(
+          Game.viewPosition(start, screen: view), Game.viewPosition(end, screen: view),
+          projection: projection)
       else { return }
       let length = hypot(line.2 - line.0, line.3 - line.1)
       guard length > 1e-9 else { return }

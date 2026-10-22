@@ -1,7 +1,8 @@
-# The current station-unit failure lacks an attributable stack
+<!-- markdownlint-disable MD013 -->
+# Diagnostic-only retained-image capture for #106
 
-[Issue 88](https://github.com/stephenlclarke/elite/issues/88) remains open after exact source 392e9ccaf873f8709cb7ae083dea91ac8ca8ca99 compiled in hosted run 39812579729 (751.73 seconds), then exited with signal 4 and zero completed method PASS records. Its artifact has no matching crash reports and invalid 52-byte XML. Previous a561 fault evidence does not attribute this current failure.
+The current source 52ce90170e314c1ac070f71bf5d4d4436f8cedb1 compiled in run 39839922136, then isolated execution ended with signal4, zero completed PASS methods, no matched crash report and invalid 52-byte XML. Its arm64 image and matching dSYM have UUID E97D806C-28C7-32C9-A102-313DC07DEE89. Current compiled inspection confirms the old renderer-owned Game copies are gone; no current fault frame was retained, so another product correction is not justified.
 
-Earlier a561 source passed its original station regression once under local Swift 6.4.1 without coverage. The subsequent original-runtime retained-image replay captured a fault in station-state validation; the bounded 392e correction passed independent source review but has no current attributed failure stack. Neither historical result qualifies the current Swift 6.1.2 coverage-enabled 341-method run.
+Root approved one retained-binary launch using the existing held diagnostic entrypoint, original 344-method selector, jobs3, coverage instrumentation, runtime closure and resource bytes. Pin source, upstream run, image SHA and UUID, symbols and filter. Stop before launch on any prerequisite mismatch. Capture the first actual fault with all-thread frames and registers, then clean up the owned process. The limit is 180 seconds and there is no retry or rebuild. Diagnostic evidence is not qualification.
 
-The current retained coverage image and matching symbols permit one configured replay without compiling product or tests. See [the diagnostic plan](PR-M01-retained-fault-replay.md). All earlier evidence is preserved. No new product fix or runtime acceptance is claimed.
+This branch must never merge. The previous a561/392e captures remain historical evidence; they do not attribute the current failure. No source, test, oracle, save, state, stack-size or shared crash-capture authority change is part of this packet.
