@@ -5006,8 +5006,8 @@
   "two_developer_phase": {
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
-      "G1": "C08 actual Avenor charter audit;seedPR57review/unitsasync",
-      "G3": "M06.P03 appearance data joins;retainsPR51/56qualification/merge",
+      "G1": "C08Veilcertification;seedfailureMBAtriage/auditreviewasync",
+      "G3": "M07.P01legal/observedscannerfacts;retainsPR51/56/58qualification/merge",
       "G4": "T02.P01.provider native uncrewed practice targets/harmless native hits"
     },
     "reviewer": "MBA/G2",
@@ -5152,13 +5152,13 @@
         "merged_at": null,
         "playable_at": null,
         "dependency": "Independent from pending showroom PR; canonical409d042c base",
-        "head": "93cb9aa0fa694af7c2e57607599db1e84eebafc1",
+        "head": "85e675900808cd7fab5ccfe23b8d731c51c9e5a3",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/51",
         "first_push_observed_at": "2026-10-22T06:33:57Z",
         "handoff_at": "2026-10-22T07:17:59Z",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6335617582",
-        "unit_run": 39743064126,
-        "unit_status": "Current93existing259jobpending;old03113SUCCESSscopepreserved",
+        "unit_run": 39745584513,
+        "unit_status": "Necessaryfd9composition261jobactive;old93cb259SUCCESSmetadataretained/notnewheadpass",
         "source_state": "93cbfinalassertion/suite/259selectorhandoffposted;MBAreview/executionpending",
         "source_review_result": "MBA93cbCLEAN;protected/fitted/heldassertions,EnergyBombidentity/provenance/Status/immutabilityretained;259=258+1",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
@@ -5272,7 +5272,7 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/57",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/57#issuecomment-6335771730",
         "unit_run": 39744222656,
-        "unit_status": "Existing271jobactive",
+        "unit_status": "39744222656FAILURE08:13:03;MBAexistingartifactclassificationpending",
         "new_methods": 14,
         "source_review_result": "MBA235719f0completefeature/14fixtures CLEAN;closed117/118reversejoins and271selectorverified",
         "source_review_completed_at": "2026-10-22T08:01:32Z",
@@ -5342,12 +5342,12 @@
         "credited_behavior": "Authenticated17-good prices/finite stock,stableIDs,quote/revision checks,once-debit,cargo/cash bounds;source/existingtests only",
         "source_state": "Marketordercomplete source pushed with3selectedmethods;solehandoff/review/executionpending",
         "outstanding_separate": "U03authored14baseequipmentprice/TLprecedence;notrebalancedhere",
-        "head": "0aac86588b71477884bee10f021cd8a63e6b0ed1",
+        "head": "5da5ae1a982bd6889a5952ede51e4a461646bc6b",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/56",
         "first_push_observed_at": "2026-10-22T07:48:15Z",
         "source_review_result": "MBA0aacCLEAN;shared17IDprojection/render/click/2arrowhunks;stableprices/stock/cargoIDs;3fixturesread;255+3=258",
-        "unit_run": 39743069456,
-        "unit_status": "Existing258jobactive;actualexecutionpending"
+        "unit_run": 39745589259,
+        "unit_status": "Necessaryfd9composition260jobactive;old0aac258SUCCESSmetadataretained/notnewheadpass"
       },
       {
         "id": "M04.P01.fleet-catalogue",
@@ -5425,10 +5425,14 @@
         "initial_authoring": "RootexplicitnewL337three6mcubes/frozenplayerposeoffsets1500\u20132100m/650mvolume;unsafeadmissionrefuses;notrecoveredpredecessorspec",
         "reserved_shared_hunks": [
           "GameplayOrdnance verified contact before applyCombatHit",
-          "GameplayCombat refuse unscoped beacon damage without practice receipt"
+          "GameplayCombat refuse unscoped beacon damage without practice receipt",
+          "GameplayCombat recordCombat registeredbeacontargetguard",
+          "NativeMissionImpact missionDamagePlan unscopedbeaconrefusal",
+          "GameplayWeapons applyAttributedEnergyBomb exactbeaconskip"
         ],
         "state_scope": "G1approvedoptionalpracticeproperty/init+ScriptPersistencepracticehunks+optionalAlienSave.contains;seed117118,audit119120,practice121122fixed/precedence",
-        "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support"
+        "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support",
+        "format_precedence": "Highestrequiredfeaturewins:practice121122,network123124,terminal125126;earlierformatsnotwidened"
       },
       {
         "id": "C08.commit-charter.audit",
@@ -5439,7 +5443,11 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "Newaudittypes/narrowG1mission-board-savejoins;separatedependentbranch",
-        "limits": "Actual3signatures+finitecapacityrefusal;nofabricatedreservations/noearlyreward"
+        "limits": "Actual3signatures+finitecapacityrefusal;nofabricatedreservations/noearlyreward",
+        "head": "1f95e7378e7b40e5e0dc741fff73922af604ee6a",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/59",
+        "source_state": "Completestage12auditpushed;8new/279selection;MBAreview/hostedpending",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336051526"
       },
       {
         "id": "M06.P03.appearance",
@@ -5451,8 +5459,32 @@
         "playable_at": null,
         "ownership": "PlanetLightingoriginal-systeminitializer+focusedhighTL/minmax/legacyunits/notes",
         "limits": "Nophysicalmechanics/meshbackend/newart/research/visualcampaign",
-        "source_state": "G3implementingPlanetLightingoriginal-systemtechboundsjoin",
-        "credited_behavior": "Existingbelt/orestablematerialjoinscorrect;nochangeneeded"
+        "source_state": "Originaltechfixpushed;3new/260selection;MBAreview/hostedpending",
+        "credited_behavior": "Existingbelt/orestablematerialjoinscorrect;nochangeneeded",
+        "head": "fa28096334f6d55ba3dfae938d1bb7944fe4f8ee",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/58"
+      },
+      {
+        "id": "C08.certify-network",
+        "owner": "G1",
+        "assigned_at": "2026-10-22T08:16:51.454428+00:00",
+        "phase_entry_state": "G1beginsnextalreadyassignedVeilcertificationafterauditpush",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "G1C08mission/board/save123124;noG3/G4paths",
+        "limits": "Actualoriginalrecords/capacityaudit;nofabricatedproof/terminalreward"
+      },
+      {
+        "id": "M07.P01.legal-facts",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:16:51.454428+00:00",
+        "phase_entry_state": "Boundedactuallegal/scannerprojectiongapimplementationassigned",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "WantedBoard/NPCResources/purelegal-factprojections/tests/notes",
+        "limits": "NoG1Game/mission/saveorG4combat/scoop;no fabricatedtraffic/cargo/routes"
       }
     ],
     "model_settings": {
