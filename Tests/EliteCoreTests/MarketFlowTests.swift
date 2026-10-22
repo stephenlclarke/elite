@@ -61,7 +61,9 @@ import Testing
   #expect(!summary.contains("Equipment - fitted and held") && !summary.contains("Energy Bomb"))
   game.screen = .inventory
   let inventory = game.informationRows.map(\.0)
-  #expect(inventory.contains("Equipment - fitted and held") && inventory.contains("Energy Bomb"))
+  #expect(inventory.contains("Protected property - not ordinary trade cargo"))
+  #expect(inventory.contains("Equipment - fitted") && inventory.contains("Equipment - held"))
+  #expect(inventory.contains("Energy Bomb"))
   #expect(inventory.contains("Fitted Energy bomb - Granted"))
   #expect(game.commander.fittedEquipment(at: .utility(.energyBomb)) != nil)
   #expect(!inventory.contains { $0.hasPrefix("Legal status:") })
