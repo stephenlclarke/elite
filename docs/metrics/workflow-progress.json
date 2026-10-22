@@ -4987,7 +4987,7 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08 complete seed-service loop on feature/wayfarer-seed-service; ready workshop findings at packet boundary",
-      "G3": "M02.P05 inventory grouping; author-owned PR51 qualification and merge"
+      "G3": "M02.P05 station navigation clarity; retain PR51 qualification/correction/merge ownership"
     },
     "reviewer": "MBA/G2",
     "merge_owner": "Feature author; no separate integrator",
@@ -5185,12 +5185,21 @@
         "source_review_result": "MBA clean",
         "source_review_completed_at": "2026-10-22T07:15:12Z",
         "unit_run": 39738732938,
-        "unit_status": "FAILURE completed2026-10-22T07:24:26Z; MBA artifact classification pending; no passing aggregate claimed",
+        "unit_status": "FAILURE:255methods/287cases completed,254/286PASS,one assertion failure,zeroerrors/skips,no crash",
         "unit_selection_methods": 255,
         "new_methods": 11,
         "merged_at": null,
         "playable_at": null,
-        "source_state": "Last legacy direct shared-branch source packet; not independently qualified or included in candidate1.4.901"
+        "source_state": "Last legacy direct shared-branch source packet; not independently qualified or included in candidate1.4.901",
+        "compile_seconds": 671.56,
+        "execution_seconds": 45.702,
+        "ready_findings": [
+          53
+        ],
+        "finding_owner": "G1",
+        "finding_kind": "Overbroad whole-Gallery fixture assertion; scope to exact workshop child; retain unrelated recovery entries",
+        "passed_methods": 254,
+        "passed_expanded_cases": 286
       },
       {
         "id": "C08.P06.B.seed",
@@ -5201,6 +5210,16 @@
         "merged_at": null,
         "playable_at": null,
         "next_ready_scope": "C08 commit-charter actual Avenor audit, then certify-network and once-only terminal; no premature stage/reward credit"
+      },
+      {
+        "id": "M02.P05.station-navigation",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T07:30:59.554804+00:00",
+        "phase_entry_state": "Bounded actual-gap implementation assigned; first credit compliant existing numbered-screen/footer behavior",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "ScreenNavigation numbered-screen/title/projection hunks; StationDisplay docked footer; pure UI tests and paired notes; no G1 simulation/help mission hunks"
       }
     ],
     "model_settings": {
@@ -5230,7 +5249,7 @@
       "model": null,
       "active_assignment": null
     },
-    "qualification_queue_note": "Workshop39738732938 FAILURE, MBA inspecting existing artifact; inventoryfinal39739511461 active;52CLOSED; no source-review backlog",
+    "qualification_queue_note": "53ready routine G1fixture correction; inventoryfinal39739511461active may inherit samefinding; no duplicateissue; MBA source reviews complete",
     "complete_features_merged": 1,
     "merged_feature_count_scope": "Shared development branch complete featurePR48 only; source qualification/individual packets do not add counts",
     "new_usable_build_deliveries": 0,
