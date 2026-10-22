@@ -4455,10 +4455,14 @@
       "github_run": 39705325737,
       "selection_methods": 156,
       "new_methods": 7,
-      "source_review": "MBA assigned",
-      "unit_status": "existing hosted active; artifact pending",
+      "source_review": "MBA completed; no actionable source finding",
+      "unit_status": "MBA verified exact-head hosted PASS",
       "next_assigned": "C08.P05.A.runtime",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verified_methods": 156,
+      "verified_expanded_cases": 188,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6330521419",
+      "qualification_scope": "Pure funding/route/source/schema units only; actual native travel, dock service, receiving and unused-fund return remain assigned; no playable delivery"
     }
   ]
 }
