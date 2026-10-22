@@ -5472,24 +5472,23 @@
         "playable_at": null,
         "ownership": "Newaudittypes/narrowG1mission-board-savejoins;separatedependentbranch",
         "limits": "Actual3signatures+finitecapacityrefusal;nofabricatedreservations/noearlyreward",
-        "head": "ff6dd4ea5a888f706c620254a88d2c087da64d32",
+        "head": "8d9e39d8ae81cf0b050dd747911b8ad7ab4e3eea",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/59",
         "source_state": "63fixturecorrectionpushed;production/assertions279selectionunchanged;MBAverificationpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336051526",
         "source_review_result": "MBA1f95new8fixtures/actualfinitecharterrefusalCLEAN;inheritedseed60unqualified",
         "unit_status": "Correction64 actual hosted run active; no PASS yet",
-        "ready_findings": [
-          67
-        ],
+        "ready_findings": [],
         "finding_owner": "G1routinefixtureprereqcorrection;63awaitingverification",
         "finding_kind": "Original sale/historical station prerequisites64 and release dock chronology67; source fixtures only, crash60 remains unattributed",
         "correction_handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336473875",
         "awaiting_verification_findings": [
           63,
-          64
+          64,
+          67
         ],
         "correction_source_review": "MBA currentff6dd/849 exact original sale/historical stations correction clean; retained full CrewLog/utility child graph remains necessary within64; actual execution pending",
-        "unit_run": 39751565047
+        "unit_run": 39752022225
       },
       {
         "id": "M06.P03.appearance",
@@ -5527,14 +5526,14 @@
         "playable_at": null,
         "ownership": "G1C08mission/board/save123124;noG3/G4paths",
         "limits": "Actualoriginalrecords/capacityaudit;nofabricatedproof/terminalreward",
-        "head": "849e940f6e508528e16c834ef8e40e9bc3eab7cf",
+        "head": "60c9ad7f88177f8a8e1df83dc974de7c072f4de9",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/62",
-        "source_state": "63audit+certfixturecorrectionpushed;production/assertions285selectionunchanged;MBAverificationpending",
+        "source_state": "Complete original Crew/utility child graph fixture correction pushed;285 selection unchanged; MBA source/execution pending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/62#issuecomment-6336216114",
         "source_review_result": "MBA342newdelta/6fixtures/closed123124CLEAN;actual285executionpending/inherited60unqualified",
         "ready_findings": [],
         "finding_owner": "G1routinefixtureprereqcorrection;63awaitingverification",
-        "unit_run": 39751604071,
+        "unit_run": 39752046045,
         "unit_status": "Correction64 actual hosted run active; no PASS yet",
         "correction_handoff_url": "https://github.com/stephenlclarke/elite/pull/62#issuecomment-6336474435",
         "awaiting_verification_findings": [
@@ -5560,7 +5559,7 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/61",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/61#issuecomment-6336183894",
         "unit_run": 39746993767,
-        "unit_status": "MBAverified259methods291casesALLPASSincl2Wanted;zeroerrors/skips/crash",
+        "unit_status": "Final currentc641269 run39750261589 GitHub SUCCESS; MBA actual artifact verification pending",
         "verified_methods": 259,
         "verified_expanded_cases": 291,
         "compile_seconds": 778.63,
@@ -5641,7 +5640,7 @@
         "merged_at": null,
         "playable_at": null,
         "disposition": "G3 credits ordinary foundation; actual missing alien salvage/owned fitting route escalated",
-        "qualification_scope": "Source/existing test definitions only; no new execution",
+        "qualification_scope": "Formatter/lint20Python/Markdown/diff pass; no local Swift/native execution",
         "base": "a0f4608f7d8e6e8b51d9f700cf82a197b9e48a00",
         "reserved_shared_hunks": [
           "AlienModuleDefinition typed drive kind/supportsUpgrade/initialContribution",
@@ -5652,7 +5651,10 @@
           "Game.beginHyperspace necessary stale comment only; existing immediate path preserved",
           "Tools/CI additive six AlienHyperspaceDriveUnitTests and exact expected count; existing push-triggered workflow only"
         ],
-        "compatibility_scope": "Human waives old-save compatibility; no legacy deterministic-plan replay fallback authorized"
+        "compatibility_scope": "Human waives old-save compatibility; no legacy deterministic-plan replay fallback authorized",
+        "head": "0b16780d38d55a233bfdf8d3d1ee193892eed039",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/68",
+        "source_state": "Source pushed six focused methods;273 maintained union; automatic hosted qualification and MBA review pending"
       },
       {
         "id": "M08.P04.mining-control",
@@ -5678,14 +5680,15 @@
       },
       {
         "id": "M08.P06.plugh-fitting",
-        "owner": "Mission Coder1 queued after drive",
-        "assigned_at": "2026-10-22T08:57:07.689475+00:00",
+        "owner": "Mission Coder1",
+        "assigned_at": "2026-10-22T09:07:05.775255+00:00",
         "ownership": "Existing recovered equipment and alien missile reverse-engineering finite purchase policy; focused tests/notes",
         "limits": "Alien drive Mission Coder1; no G1 central Game/mission/save or G4 practice hooks; no generic framework/local compilation/native/integration",
         "merged_at": null,
         "playable_at": null,
         "disposition": "Existing PLUGH module fitting and1.25x missile tuning/mesh credited; actual recipe-to-owned-ammunition purchase/load/consume loop missing",
-        "qualification_scope": "Source/existing unit definitions only; no execution"
+        "qualification_scope": "Source/existing unit definitions only; no execution",
+        "source_state": "Now active successor after drive push; exact shared ammunition/transaction/state proposal before edits"
       },
       {
         "id": "K04.P01.person-care",
@@ -5751,10 +5754,21 @@
       },
       {
         "id": "M10.P04.crimbo-habitat",
-        "owner": "G3",
+        "owner": "G1 queued after M01 with convoy production integration",
         "assigned_at": "2026-10-22T09:05:43.236728+00:00",
         "ownership": "Readonly original world appearance and exact SH150SH151 habitat/provider definition preflight",
         "limits": "Do not enable Crimbo lifecycle gate; no inferred C39completion or new physical calibration; pure actual gap only",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Exact seven original ships/planet-relative admission/loadout conservation correct; real high-value birth cargo manifest missing, source gate still off",
+        "qualification_scope": "Source/existing unit definitions only; manually supplied gold fixture not production cargo proof"
+      },
+      {
+        "id": "G11.P01.isolation-provider",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:07:37.915718+00:00",
+        "ownership": "Bounded actual two-component isolation source/proof policy preflight; proposed narrow NativeIsolationWork types/tests",
+        "limits": "No fabricated flag/tool/receipt; exact source producer must exist; shared mission/save hunks reserved before edit; no reward/terminal in provider slice",
         "merged_at": null,
         "playable_at": null
       }
@@ -5810,7 +5824,7 @@
       "authority": "Latest human instruction: use Mission Coder1 for difficult things",
       "policy": "Named necessary blocker only; no standing implementation stream; independent MBA review",
       "model": null,
-      "active_assignment": "M08.P03.drive actual alien salvage-to-PLUGH-fit capability; exact central reservations before edits"
+      "active_assignment": "M08.P06 alien missile actual owned recipe/purchase/load/consume; drive68 author retains asynchronous corrections/merge"
     },
     "qualification_queue_note": "56 merged after267/299 PASS;61 final269 pending;65 actual provider review/units pending;59/62 corrected-head failures retained,64 ready G1 and60 unattributed.",
     "complete_features_merged": 5,
