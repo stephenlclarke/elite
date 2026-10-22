@@ -10,6 +10,8 @@ Recent maintained-unit GitHub jobs spent roughly thirteen to fifteen minutes com
 
 Use an isolated local macOS runner for Stephen's internal pushes. Keep external PR jobs hosted, preserve all test selection and report checks, match Swift 6.1.2 and SDK 15.5, and retain incremental objects across failures. Keep the MBA reviewing GitHub evidence. Do not add a separate benchmark campaign or change final protected merge/release gates.
 
+The initial prepared design linked `.build` outside the checkout. Source inspection showed that this conflicts with the existing crash collector's confinement contract. The corrected design keeps a physical in-checkout build cache and cleans all other ignored/untracked inputs. It does not relax the collector or allow external image paths.
+
 ## Validation
 
 Focused Python tests cover trust and cache preservation boundaries. Workflow lint must pass. Actual readiness requires VM boot, pinned compiler/SDK, runner registration and online state. Measure the next required jobs, keeping cold and warm timings distinct.

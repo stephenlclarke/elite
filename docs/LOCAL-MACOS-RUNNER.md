@@ -12,9 +12,9 @@ The VM uses macOS Sequoia and Xcode 16.4. Local preflight requires an Apple Sili
 
 ## Persistent build cache
 
-The checkout's `.build` is a symlink into the guest user's `Library/Caches/elite-ci-builds/<fingerprint>`. Checkout cleanup can remove the link without deleting the cache. Preflight restores the link. Failed jobs retain compiled objects too; there is no dependency on a successful cache-upload post-step.
+The checkout's `.build` stays a physical directory inside the guest workspace. This preserves the existing crash collector's strict path-confinement checks. The local checkout skips the action's blanket cleanup; verified local preflight runs `git clean -ffdx -e /.build/` to remove other untracked or ignored inputs. Tracked files still come from the action's forced checkout. Failed jobs retain compiled objects too; there is no dependency on a successful cache-upload post-step.
 
-The fingerprint includes the full Swift version, SDK, architecture, package manifest/resolution and the existing three-job coverage mode. Source changes use SwiftPM's normal incremental dependency tracking. A foreign `.build` directory or link is preserved and rejected rather than deleted. A new fingerprint starts a separate cache.
+The fingerprint includes the full Swift version, SDK, architecture, package manifest/resolution and the existing three-job coverage mode. Source changes use SwiftPM's normal incremental dependency tracking. The runner writes an explicit ownership/fingerprint marker inside `.build`. A changed fingerprint clears only this owned disposable cache. A foreign directory, malformed identity, file or symlink is preserved and rejected rather than deleted.
 
 The cache stays inside the VM. Do not point it at a developer's `.build`, share it with untrusted jobs, copy it between compilers, or change stack sizes or test selection to make the local job pass.
 
@@ -32,6 +32,6 @@ Set `ELITE_LOCAL_RUNNER_ENABLED=false` before stopping the runner. New pushes th
 
 ## Validation and limits
 
-`make local-runner-check` checks rejected events/actors/forks, incompatible build inputs, wrong machine/compiler/SDK rejection and cache survival across checkout cleanup without deleting foreign data. Run `actionlint .github/workflows/unit-tests.yml` after routing changes.
+`make local-runner-check` checks rejected events/actors/forks, incompatible build inputs, wrong machine/compiler/SDK rejection, removal of stale source inputs, physical-cache survival across checkout cleanup and compatibility with the existing crash collector's confinement function. It also checks that foreign data is preserved and only an owned incompatible cache is rebuilt. Run `actionlint .github/workflows/unit-tests.yml` after routing changes.
 
 These checks prove the routing/cache helper's boundaries. A usable runner also requires actual VM boot, registration, an online GitHub state and a completed exact-head job. Do not claim a speedup from setup checks or compare a warm local compile with an unrelated cold hosted build.
