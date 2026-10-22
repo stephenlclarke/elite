@@ -5544,6 +5544,19 @@
       "native_journey_accepted": false,
       "published_release": false,
       "slack_posted": false
+    },
+    {
+      "event": "G11 current fixture-corrected run failed on concrete native-actor bridge Tab stack path; bounded repair assigned",
+      "date": "2026-10-22",
+      "head": "239583aa1d3ce75d1f34ccdf438f9ad0f905ff24",
+      "run": 39774626467,
+      "conclusion": "failure",
+      "observed_compile_seconds": 739.38,
+      "fault": "signal10 ___chkstk at ScriptInstance.definition.read / retainedMissionActorDescriptor / isolation contact Tab / runtime key",
+      "artifact_classification": "pending MBA exact partial-scope qualification",
+      "author": "Mission Coder1",
+      "scope": "readonly descriptor lookup/value lifetime; complete authority unchanged; no generic cache/probe",
+      "full_feature_qualified": false
     }
   ],
   "two_developer_phase": {
