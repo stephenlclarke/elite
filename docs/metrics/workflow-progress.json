@@ -5266,6 +5266,22 @@
       "t03_head": "63e69148e0bf8e8688e309ecd42c896d603cadd2",
       "t03_authored_methods": 20,
       "t03_qualified": false
+    },
+    {
+      "event": "Actual C01 fixture/sweep and G11 compile failures classified with deduplicated issues and author ownership",
+      "date": "2026-10-22",
+      "c01_run": 39767872407,
+      "c01_compile_seconds": 709.88,
+      "c01_issues": [
+        89,
+        90
+      ],
+      "c01_qualified_methods": 0,
+      "g11_run": 39770168281,
+      "g11_issue": 91,
+      "g11_failure_stage": "test compilation",
+      "g11_qualified_methods": 0,
+      "priority": "G1 issue88 first, then89/90; MC1 narrow91 correction; no added diagnostic campaign"
     }
   ],
   "two_developer_phase": {
