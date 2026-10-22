@@ -48,6 +48,86 @@ private func inventoryActionDisplayRecoveredLot() throws -> SalvageLedger {
   return ledger
 }
 
+struct InventoryGroupingUnitTests {
+  @Test func mixedTradeAndReservedCargoStayInDistinctSectionsWithoutChangingQuantities() throws {
+    var game = try inventoryActionDisplayGame()
+    // Presentation-only input: no acceptance, save validity or mission authority is asserted.
+    game.commander.missionProgress["display.reserved"] = .init(
+      version: "1.0.0", digest: String(repeating: "a", count: 64), stage: "carrying",
+      payloads: ["parcel": 2])
+    let before = game.commander
+    for width in [512.0, 1512] {
+      let rows = game.inventoryInformationRows(width: width)
+      let trade = try #require(rows.firstIndex { $0.text == "Trade cargo and hold totals" })
+      let protected = try #require(
+        rows.firstIndex { $0.text == "Protected property - not ordinary trade cargo" })
+      let equipment = try #require(rows.firstIndex { $0.text == "Equipment ownership" })
+      let commodity = try #require(
+        rows.firstIndex { $0.text == Commodity.all[0].name + ": 1 " + Commodity.all[0].unit })
+      let parcel = try #require(
+        rows.firstIndex { $0.text == "Reserved Missing pack: parcel 2t" })
+      #expect(trade < commodity && commodity < protected)
+      #expect(protected < parcel && parcel < equipment)
+      #expect(rows.contains { $0.text.hasPrefix("Cargo: \(before.cargoTonnes) tonnes") })
+      #expect(rows[parcel].subject == nil && rows[parcel].preview == nil)
+      #expect(!rows.contains { $0.text == "Equipment - fitted and held" })
+      #expect(rows == game.inventoryInformationRows(width: width))
+    }
+    #expect(game.commander == before)
+  }
+
+  @Test func fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce() throws {
+    let game = try inventoryActionDisplayGame()
+    let before = game.commander
+    let inventory = try #require(before.equipmentInventory)
+    try #require(inventory.items.contains { $0.location == nil })
+    try #require(inventory.items.contains { $0.location?.slot == .laser(.front) })
+    for width in [512.0, 1512] {
+      let rows = game.inventoryInformationRows(width: width)
+      let fitted = try #require(rows.firstIndex { $0.text == "Equipment - fitted" })
+      let held = try #require(rows.firstIndex { $0.text == "Equipment - held" })
+      #expect(fitted < held)
+      for item in inventory.items {
+        let subject = InventorySubject.equipment(item)
+        let indices = rows.indices.filter { rows[$0].subject == subject }
+        try #require(indices.count == 1)
+        let index = indices[0]
+        #expect(rows[index].preview == game.inventoryActionPreview(for: subject))
+        if item.location == nil {
+          #expect(index > held)
+        } else {
+          #expect(index > fitted && index < held)
+        }
+      }
+      #expect(rows.compactMap(\.subject).count == inventory.items.count)
+    }
+    #expect(game.commander == before)
+  }
+
+  @Test func emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody() throws {
+    var game = try inventoryActionDisplayGame()
+    let inventory = try #require(game.commander.equipmentInventory)
+    game.commander.savedEquipmentInventory = try OwnedEquipmentInventory(
+      owner: inventory.owner, activeHull: inventory.activeHull, revision: inventory.revision,
+      items: inventory.items.filter { $0.location != nil })
+    let before = game.commander
+    let ownedRows = game.inventoryInformationRows(width: 1512)
+    let held = try #require(ownedRows.firstIndex { $0.text == "Equipment - held" })
+    #expect(ownedRows[held + 1].text == "None")
+    #expect(game.commander == before)
+
+    let legacy = Game(executive: false)
+    try #require(legacy.commander.equipmentInventory == nil)
+    let rows = legacy.inventoryInformationRows(width: 1512)
+    #expect(rows.contains { $0.text == "Equipment - fitted (legacy acquisition unknown)" })
+    for laser in legacy.commander.laserMountSummary {
+      #expect(rows.contains { $0.text == laser })
+    }
+    #expect(rows.contains { $0.text == "No owned-item storage records in this legacy fit." })
+    #expect(rows.allSatisfy { $0.subject == nil && $0.preview == nil })
+  }
+}
+
 struct InventoryActionDisplayTests {
   @Test func visibleButtonsRetainBuilderCommandsAndWrappedRowsAtCompactAndWideSizes() throws {
     var game = try inventoryActionDisplayGame()

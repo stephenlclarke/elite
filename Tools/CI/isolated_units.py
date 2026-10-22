@@ -369,6 +369,14 @@ METHODS = {
     "BundledScriptPackTests": (
         "bundledMeasuredExtractionDeclaresActualTwentyTonneSourceAndClosedTwelveTonneRecipe",
     ),
+    "MarketInventoryProjectionUnitTests": (
+        "statusSummaryAndInventoryHaveDistinctResponsibilities",
+    ),
+    "InventoryGroupingUnitTests": (
+        "mixedTradeAndReservedCargoStayInDistinctSectionsWithoutChangingQuantities",
+        "fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce",
+        "emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody",
+    ),
     "NativeUtilityCustodyTests": (
         "explicitWorldActivationOwnsEightMaterialsWithoutTargetDockAuthority",
         "strictCurrentUtilitySchemaRejectsUnjoinedOrInventedClaims",
