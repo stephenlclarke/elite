@@ -49,15 +49,24 @@ extension Game {
       case .inferredLocal: .inferredLocal
       }
     }
+    let retainedRoute = TargetTransitRouteProjection.route(
+      for: body, legs: commander.scriptState.wormholeTransit?.legs ?? [:])
+    let recordedRoute = retainedRoute.flatMap {
+      OriginalWorldJourneyContext.production(for: $0, in: self)?.route
+    }
     return .init(
       cargo: npc?.cargoProvenance == nil || npc?.cargoProvenance == .inferredLocal
         ? nil : npc?.ordinaryCargo,
-      origin: route.flatMap { provenance in
-        npc.map { .init(identity: $0.origin, provenance: provenance) }
-      },
-      destination: route.flatMap { provenance in
-        npc.map { .init(identity: $0.destination, provenance: provenance) }
-      },
+      origin: recordedRoute.map { .init(identity: $0.origin.location, provenance: .recorded) }
+        ?? route.flatMap { provenance in
+          npc.map { .init(identity: $0.origin, provenance: provenance) }
+        },
+      destination: recordedRoute.map {
+        .init(identity: $0.destination.location, provenance: .recorded)
+      }
+        ?? route.flatMap { provenance in
+          npc.map { .init(identity: $0.destination, provenance: provenance) }
+        },
       legal: npc?.legalProvenance == nil ? nil : npc?.legal,
       hostile: body.hostile,
       resources: npc?.resources?.valid == true ? npc?.resources?.telemetry : nil)
