@@ -5453,9 +5453,11 @@
         "source_state": "Correction66 assigned; full MBA source review continues",
         "head": "502ff3810db64eab062d261e58893963409f4ac5",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/65",
-        "ready_findings": [],
+        "ready_findings": [
+          70
+        ],
         "finding_owner": "G4",
-        "unit_status": "Actual corrected502 run39751691960 FAILURE; MBA one-artifact triage pending; no PASS inferred",
+        "unit_status": "MBA actual502run39751691960 compilefailure3mutating fixture calls inside Testing macros; no Swift execution/XML/PASS;70concrete,66stillawaiting",
         "awaiting_verification_findings": [
           66
         ],
@@ -5589,7 +5591,12 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "G1C08terminal125126+exactScriptCompletion.valid/C08cluematcherhunks",
-        "limits": "Once7600/accreditation/clue;preserveheldcontracts;nogenericreceiptloosening/forgedrevisionacceptance"
+        "limits": "Once7600/accreditation/clue;preserveheldcontracts;nogenericreceiptloosening/forgedrevisionacceptance",
+        "head": "a7f337da68f1e78a09804d293a455da91a2f0944",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/69",
+        "source_state": "Complete terminal source+8methods pushed; actualDIRTY requires single currentbase composition",
+        "composition_policy": "Expected305actualsetunion269base+14seed+8audit+6network+8terminal; earlier57/59/62supersedeonlyaftermerge/inclusionproof",
+        "qualification_scope": "Author Core/declarations/Python/docs checks only; actual finalhead GitHub/MBA qualification pending"
       },
       {
         "id": "M07.P03.emp-electrical",
@@ -5655,7 +5662,9 @@
         "compatibility_scope": "Human waives old-save compatibility; no legacy deterministic-plan replay fallback authorized",
         "head": "0b16780d38d55a233bfdf8d3d1ee193892eed039",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/68",
-        "source_state": "Source pushed six focused methods;273 maintained union; automatic hosted qualification and MBA review pending"
+        "source_state": "Source pushed six focused methods;273 maintained union; automatic hosted qualification and MBA review pending",
+        "source_review_result": "MBA full0b16780d bug/performance/style source review clean; exact273=267+6; existing hosted39752811646 pending",
+        "unit_run": 39752811646
       },
       {
         "id": "M08.P04.mining-control",
@@ -5837,10 +5846,21 @@
       },
       {
         "id": "M15.P01.thermal-reservoir",
-        "owner": "G3",
+        "owner": "Root exact C07 producer/transfer design queue",
         "assigned_at": "2026-10-22T09:12:44.685369+00:00",
         "ownership": "Bounded finite reservoir/ordinary cabin thermal resource policy preflight and pure tests if concrete defect",
         "limits": "Actual conserved energy/overdraw/heat-life-support; no mission battery/scripted rescue/new framework/shared edits without reservation",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Ordinary finite fuel/energy/thermal source correct; missing owner-bound external C07 reservoir transfer debit/credit and causal life-support/thermal receipt",
+        "qualification_scope": "Readonly source/existing unit definitions only; no edits/execution"
+      },
+      {
+        "id": "M17.P02.fabrication",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:14:10.527855+00:00",
+        "ownership": "Bounded actual earned blueprint\u2192paid finite native fabrication quote/transaction source preflight",
+        "limits": "Preserve hull activation/gating SH163U05/SH171finale; no inventedprices/resources/blueprints/shipfit; shared state edits needreservation",
         "merged_at": null,
         "playable_at": null
       }
