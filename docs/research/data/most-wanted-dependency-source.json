@@ -1,0 +1,216 @@
+{
+  "package_id": "P16-dependency-BountySystem",
+  "source_url": "https://wiki.alioth.net/img_auth.php/5/5d/BountySystem.oxz",
+  "access_date": "2026-10-13",
+  "archive_sha256": "6944dad56c675205eb8e849bb4285ab1f889b853ee695b035d06a04e4bf4b6b0",
+  "bytes": 84242,
+  "files": [
+    {
+      "path": "Config/descriptions.plist",
+      "sha256": "8fc2c7651657dc758ec8101eed4df4b2d24bf09d9b992dc4e511739a33e13954",
+      "bytes": 14225
+    },
+    {
+      "path": "Config/equipment.plist",
+      "sha256": "77b53348e39c0a63ce76fb55ee19f5bb7bfcf3ba677b183264a6427bff187525",
+      "bytes": 3529
+    },
+    {
+      "path": "Config/missiontext.plist",
+      "sha256": "c04b14cba581db6c3b72bfd7f7fd5e6dc34c98f1e0a8f33db96d02507b3da9c3",
+      "bytes": 11227
+    },
+    {
+      "path": "Config/world-scripts.plist",
+      "sha256": "eb664be36b0f7c7c988cee2644162b8263915f83df54581a66af2e933643866b",
+      "bytes": 153
+    },
+    {
+      "path": "Scripts/bountysystem_book.js",
+      "sha256": "f48619778fc61b56b010bec1d8764ce161b12c1a6598aa7d043d92c964b85559",
+      "bytes": 1555
+    },
+    {
+      "path": "Scripts/bountysystem_conditions.js",
+      "sha256": "b9efd37e9615f1b79590f1c36719ed88a8f467b3838f6acf1bc8d6534a8199e7",
+      "bytes": 865
+    },
+    {
+      "path": "Scripts/bountysystem_core.js",
+      "sha256": "a208bb851bbc9f42ae3087153dcbf3697fbe16f6b1b17710ddd97ecdc5f1e158",
+      "bytes": 120505
+    },
+    {
+      "path": "Scripts/bountysystem_deferred.js",
+      "sha256": "619fbf255f1ec2c2f22a653878e035dbc1260ba21ab75541600b4c81fbd458d2",
+      "bytes": 4498
+    },
+    {
+      "path": "Scripts/bountysystem_npcscan.js",
+      "sha256": "e18458e18da23c148d311562f9365b981b8c5b955dab51fd8a9aa01276d01a0d",
+      "bytes": 12153
+    },
+    {
+      "path": "Scripts/bountysystem_scanner.js",
+      "sha256": "d950b5349130c29177211ab6fc690ec34d7890ca5eca750702e609226b84a5ca",
+      "bytes": 35852
+    },
+    {
+      "path": "manifest.plist",
+      "sha256": "6b187a6da35550d9838725ce357851203189d77f9c58685b2e6794ada0ced02c",
+      "bytes": 637
+    },
+    {
+      "path": "readme.txt",
+      "sha256": "d0eaae5951972577d35e604f6c952a96f017a8164e2ca85f00f23716f7c0ddc3",
+      "bytes": 19378
+    }
+  ],
+  "note": "Current Bounty System dependency recovered separately, not assumed identical to historical minimum0.4.4; factual selected contracts only.",
+  "equipment": [
+    [
+      "6",
+      "25700",
+      "Warrant Scanner",
+      "EQ_WARRANT_SCANNER",
+      {
+        "source_text_omitted": true,
+        "sha256": "77ae9ad1f74141af4501fd8dfa67c88555fdac84aa05a044a720d08851dfc218"
+      },
+      {
+        "script": "bountysystem_scanner.js",
+        "script_info": {
+          "scan_range": "0.6",
+          "npc_scan_frequency": "10",
+          "equipment_weight": "1.0",
+          "scan_time": "10",
+          "equipment_space": "1.0"
+        },
+        "incompatible_with": "EQ_WARRANT_SCANNER_PASSIVE",
+        "available_to_player": "yes",
+        "visible": "yes",
+        "condition_script": "bountysystem_conditions.js",
+        "available_to_all": "yes",
+        "requires_clean": "yes",
+        "available_to_NPCs": "yes",
+        "damage_probability": "1.0"
+      }
+    ],
+    [
+      "6",
+      "25700",
+      "Warrant Scanner",
+      "EQ_WARRANT_SCANNER_PASSIVE",
+      {
+        "source_text_omitted": true,
+        "sha256": "f8d57a2dcddef8e0200a483df287b0f82cb69b1c624996e5ad460fa2e1141ddd"
+      },
+      {
+        "script_info": {
+          "scan_range": "0.6",
+          "npc_scan_frequency": "10",
+          "equipment_weight": "1.0",
+          "scan_time": "10",
+          "equipment_space": "1.0"
+        },
+        "incompatible_with": "EQ_WARRANT_SCANNER",
+        "available_to_player": "yes",
+        "visible": "yes",
+        "condition_script": "bountysystem_conditions.js",
+        "available_to_all": "yes",
+        "requires_clean": "yes",
+        "available_to_NPCs": "yes",
+        "damage_probability": "1.0"
+      }
+    ],
+    [
+      "12",
+      "836900",
+      "Police Warrant Scanner",
+      "EQ_WARRANT_SCANNER_POLICE",
+      {
+        "source_text_omitted": true,
+        "sha256": "e3fbf7b0d55f61484cc151b409c2a52167bb70de587f0b4ec5a4b24060623113"
+      },
+      {
+        "script": "bountysystem_scanner.js",
+        "script_info": {
+          "scan_range": "0.8",
+          "npc_scan_frequency": "8",
+          "equipment_weight": "1.0",
+          "scan_time": "8",
+          "equipment_space": "1.0"
+        },
+        "incompatible_with": "EQ_WARRANT_SCANNER_POLICE_PASSIVE",
+        "available_to_player": "no",
+        "visible": "yes",
+        "available_to_all": "yes",
+        "available_to_NPCs": "yes",
+        "damage_probability": "1.0"
+      }
+    ],
+    [
+      "12",
+      "836900",
+      "Police Warrant Scanner",
+      "EQ_WARRANT_SCANNER_POLICE_PASSIVE",
+      {
+        "source_text_omitted": true,
+        "sha256": "7be8985c709af49adbe53a51f0fe940e4df35399a151a21fd45f9d527b488fb9"
+      },
+      {
+        "script_info": {
+          "scan_range": "0.8",
+          "npc_scan_frequency": "8",
+          "equipment_weight": "1.0",
+          "scan_time": "8",
+          "equipment_space": "1.0"
+        },
+        "incompatible_with": "EQ_WARRANT_SCANNER_POLICE",
+        "available_to_player": "no",
+        "visible": "yes",
+        "condition_script": "bountysystem_conditions.js",
+        "available_to_all": "yes",
+        "available_to_NPCs": "yes",
+        "damage_probability": "1.0"
+      }
+    ],
+    [
+      "0",
+      "3000",
+      "Remove Warrant Scanner",
+      "EQ_WARRANT_SCANNER_REMOVAL",
+      {
+        "source_text_omitted": true,
+        "sha256": "2673bd5e125366c192422a06c563b52c5f61a3f00b12e063a4a6481961af78e9"
+      },
+      {
+        "visible": "no",
+        "installation_time": "0.0",
+        "available_to_all": "yes",
+        "requires_any_equipment": [
+          "EQ_WARRANT_SCANNER",
+          "EQ_WARRANT_SCANNER_POLICE",
+          "EQ_WARRANT_SCANNER_PASSIVE",
+          "EQ_WARRANT_SCANNER_POLICE_PASSIVE"
+        ],
+        "available_to_player": "yes"
+      }
+    ]
+  ],
+  "selected_contracts": {
+    "hq_systems_by_zero_based_galaxy": [
+      7,
+      33,
+      26,
+      49,
+      102,
+      85,
+      202,
+      7
+    ],
+    "bonus": "floor(realBounty*(roleBase+accuracy/50)); roleBase trader.05,hunter.10,pirate.20,assassin.15",
+    "integration_gap": "No inspected P16 or BountySystem0.19 script appends a target to _completed. Claim handler only reads and clears the array. Project explicit unique receipt repair required.",
+    "warrant_scan": "10seconds,range0.6*scannerRange; police8seconds/0.8;validity/range/hidden-bounty once rules in source spec"
+  }
+}

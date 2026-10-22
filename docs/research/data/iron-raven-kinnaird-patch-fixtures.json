@@ -1,0 +1,264 @@
+{
+  "profile_id": "P19-KINNAIRD-NARROW-PATCH-v1",
+  "scope": "Executes actual main JS after seven exact occurrence-checked source edits to preserve/reopen pending selector and consume it on confirmed branch/dismissal. Native save engine, unique strand receipt validation, atomic dialogs, orbital text and runtime gallery remain separate acceptance requirements. Reload cases serialize VM variables and reconstruct lexical script, not a claim of native save parity.",
+  "source": {
+    "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+    "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+  },
+  "patched_sha256": "8bc2b984292bdf2d0b3363635c437ea12c4910354c98f626aa7e140f9c1ed8ee",
+  "edits": [
+    {
+      "before": "missionVariables.IR_status == \"IR_IBANEZ_4\" && missionVariables.IR_quest_count == 4",
+      "after": "missionVariables.IR_status == \"IR_IBANEZ_4\" && (missionVariables.IR_quest_count == 4 || missionVariables.IR_followup_pending == \"TRUE\")"
+    },
+    {
+      "before": "missionVariables.IR_quest_count = null;",
+      "after": "missionVariables.IR_followup_pending = \"TRUE\";"
+    },
+    {
+      "before": "if (choice == \"IR_IBANEZ_A_weiss\") {",
+      "after": "if (choice == \"IR_IBANEZ_A_weiss\") { missionVariables.IR_followup_pending = null; missionVariables.IR_quest_count = null;"
+    },
+    {
+      "before": "if (choice == \"IR_IBANEZ_B_kinnaird\") {",
+      "after": "if (choice == \"IR_IBANEZ_B_kinnaird\") { missionVariables.IR_followup_pending = null; missionVariables.IR_quest_count = null;"
+    },
+    {
+      "before": "if (choice == \"IR_IBANEZ_C_moreinfo\") {",
+      "after": "if (choice == \"IR_IBANEZ_C_moreinfo\") { missionVariables.IR_followup_pending = null; missionVariables.IR_quest_count = null;"
+    },
+    {
+      "before": "missionVariables.IR_status = \"IR_completed\";\r\n\t\t\t\t\t\tthis._setInstructionsKey(null);",
+      "after": "missionVariables.IR_status = \"IR_completed\"; missionVariables.IR_followup_pending = null; missionVariables.IR_quest_count = null;\r\n\t\t\t\t\t\tthis._setInstructionsKey(null);"
+    },
+    {
+      "before": "missionVariables.IR_status = \"IR_completed\";\r\n\t\t\t\t\t\tthis._setInstructionsKey(null);",
+      "after": "missionVariables.IR_status = \"IR_completed\"; missionVariables.IR_followup_pending = null; missionVariables.IR_quest_count = null;\r\n\t\t\t\t\t\tthis._setInstructionsKey(null);"
+    }
+  ],
+  "total": 13,
+  "passed": 13,
+  "cases": [
+    {
+      "name": "Dismissed selector stays pending and reopens undefined",
+      "passed": true,
+      "duration_ms": 3.810667,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_followup_pending": "TRUE"
+        },
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_IBANEZ_5"
+        ]
+      }
+    },
+    {
+      "name": "Dismissed selector stays pending and reopens BACK",
+      "passed": true,
+      "duration_ms": 0.634458,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_followup_pending": "TRUE"
+        },
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_IBANEZ_5"
+        ]
+      }
+    },
+    {
+      "name": "Dismissed selector stays pending and reopens INVALID",
+      "passed": true,
+      "duration_ms": 0.497833,
+      "result": {
+        "vars": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_quest_count": 4,
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_followup_pending": "TRUE"
+        },
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_IBANEZ_5"
+        ]
+      }
+    },
+    {
+      "name": "Confirmed lead clears pending once IR_IBANEZ_A_weiss",
+      "passed": true,
+      "duration_ms": 0.583916,
+      "result": {
+        "vars": {
+          "IR_status": "IR_WEISS_1",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110
+        },
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_weiss_1"
+        ]
+      }
+    },
+    {
+      "name": "Confirmed lead clears pending once IR_IBANEZ_B_kinnaird",
+      "passed": true,
+      "duration_ms": 0.495417,
+      "result": {
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110
+        },
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_kinnaird_1"
+        ]
+      }
+    },
+    {
+      "name": "Confirmed lead clears pending once IR_IBANEZ_C_moreinfo",
+      "passed": true,
+      "duration_ms": 0.433334,
+      "result": {
+        "vars": {
+          "IR_status": "IR_LEXICON_1",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_LEXICON_deadline": 115
+        },
+        "messages": [
+          "IR_IBANEZ_5",
+          "IR_LEXICON_1"
+        ]
+      }
+    },
+    {
+      "name": "Reload restores pending even when legacy count already cleared",
+      "passed": true,
+      "duration_ms": 1.238667,
+      "result": {
+        "saved": {
+          "IR_status": "IR_IBANEZ_4",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110,
+          "IR_followup_pending": "TRUE"
+        },
+        "vars": {
+          "IR_status": "IR_KINNAIRD_1",
+          "IR_shipment_quest": "COMPLETED",
+          "IR_tipoff_deadline": 110
+        }
+      }
+    },
+    {
+      "name": "Dismissal remains terminal and retires selector {\"IR_shipment_quest_method\":\"YOKOHAMA_AMBUSH\"}",
+      "passed": true,
+      "duration_ms": 0.897917,
+      "result": {
+        "vars": {
+          "IR_status": "IR_completed",
+          "IR_tipoff_deadline": 110
+        },
+        "messages": [
+          "IR_IBANEZ_5a",
+          "IR_theend"
+        ]
+      }
+    },
+    {
+      "name": "Dismissal remains terminal and retires selector {\"IR_shipment_quest\":\"FAILED\"}",
+      "passed": true,
+      "duration_ms": 0.461542,
+      "result": {
+        "vars": {
+          "IR_status": "IR_completed",
+          "IR_tipoff_deadline": 110
+        },
+        "messages": [
+          "IR_IBANEZ_5b",
+          "IR_theend"
+        ]
+      }
+    },
+    {
+      "name": "Serialized source phase continues once IR_KINNAIRD_1",
+      "passed": true,
+      "duration_ms": 0.522708,
+      "result": {
+        "saved": {
+          "IR_status": "IR_KINNAIRD_1"
+        },
+        "vars": {
+          "IR_status": "IR_KINNAIRD_2",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_kinnaird_2"
+        ]
+      }
+    },
+    {
+      "name": "Serialized source phase continues once IR_KINNAIRD_2",
+      "passed": true,
+      "duration_ms": 0.421084,
+      "result": {
+        "saved": {
+          "IR_status": "IR_KINNAIRD_2"
+        },
+        "vars": {
+          "IR_status": "IR_KINNAIRD_3",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_kinnaird_3"
+        ]
+      }
+    },
+    {
+      "name": "Serialized source phase continues once IR_KINNAIRD_3",
+      "passed": true,
+      "duration_ms": 0.420125,
+      "result": {
+        "saved": {
+          "IR_status": "IR_KINNAIRD_3"
+        },
+        "vars": {
+          "IR_status": "IR_KINNAIRD_4",
+          "IR_quest_count": 0
+        },
+        "messages": [
+          "IR_kinnaird_4a",
+          "IR_kinnaird_4b"
+        ]
+      }
+    },
+    {
+      "name": "Serialized source phase continues once IR_KINNAIRD_4",
+      "passed": true,
+      "duration_ms": 0.4875,
+      "result": {
+        "saved": {
+          "IR_status": "IR_KINNAIRD_4"
+        },
+        "vars": {
+          "IR_status": "IR_IBANEZ_5",
+          "IR_quest_count": 0,
+          "IR_cherkasova_deadline": 120
+        },
+        "messages": [
+          "IR_IBANEZ_5_debrief"
+        ]
+      }
+    }
+  ]
+}

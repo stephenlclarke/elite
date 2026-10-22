@@ -1,0 +1,184 @@
+{
+  "date": "2026-10-13",
+  "package_id": "P21",
+  "bindings": [
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 17,
+      "name": "ESARXEVE",
+      "x": 45,
+      "y": 211
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 73,
+      "name": "ORRAMAOR",
+      "x": 29,
+      "y": 125
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 89,
+      "name": "MAEDREBE",
+      "x": 10,
+      "y": 98
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 151,
+      "name": "ARBERI",
+      "x": 40,
+      "y": 128
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 178,
+      "name": "XEONAR",
+      "x": 39,
+      "y": 181
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 192,
+      "name": "BELERE",
+      "x": 57,
+      "y": 180
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 194,
+      "name": "TIARED",
+      "x": 21,
+      "y": 124
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_id": 229,
+      "name": "ARTICESO",
+      "x": 3,
+      "y": 137
+    }
+  ],
+  "independent_C_and_Swift_agree": true,
+  "corridors": [
+    {
+      "origin": 194,
+      "helper_destination": 89,
+      "final_destination": 229,
+      "first_leg_ly": 6.8,
+      "forced_misjump_midpoint_xy": [
+        15.5,
+        111.0
+      ],
+      "second_leg_from_midpoint_ly": 7.2,
+      "project_byte_midpoint_xy": [
+        15,
+        111
+      ],
+      "project_second_leg_ly": 6.8,
+      "project_elapsed_hours": 80.92,
+      "project_elapsed_seconds": 291312
+    },
+    {
+      "origin": 89,
+      "helper_destination": 194,
+      "final_destination": 229,
+      "first_leg_ly": 6.8,
+      "forced_misjump_midpoint_xy": [
+        15.5,
+        111.0
+      ],
+      "second_leg_from_midpoint_ly": 7.2,
+      "project_byte_midpoint_xy": [
+        15,
+        111
+      ],
+      "project_second_leg_ly": 6.8,
+      "project_elapsed_hours": 80.92,
+      "project_elapsed_seconds": 291312
+    },
+    {
+      "origin": 17,
+      "helper_destination": 178,
+      "final_destination": 192,
+      "first_leg_ly": 6.4,
+      "forced_misjump_midpoint_xy": [
+        42.0,
+        196.0
+      ],
+      "second_leg_from_midpoint_ly": 6.8,
+      "project_byte_midpoint_xy": [
+        42,
+        196
+      ],
+      "project_second_leg_ly": 6.8,
+      "project_elapsed_hours": 76.96,
+      "project_elapsed_seconds": 277056
+    },
+    {
+      "origin": 178,
+      "helper_destination": 17,
+      "final_destination": 192,
+      "first_leg_ly": 6.4,
+      "forced_misjump_midpoint_xy": [
+        42.0,
+        196.0
+      ],
+      "second_leg_from_midpoint_ly": 6.8,
+      "project_byte_midpoint_xy": [
+        42,
+        196
+      ],
+      "project_second_leg_ly": 6.8,
+      "project_elapsed_hours": 76.96,
+      "project_elapsed_seconds": 277056
+    }
+  ],
+  "component_sizes": {
+    "Orramaor": 229,
+    "Articeso": 27
+  },
+  "Articeso_to_Esarxeve_ordinary_reachable": true,
+  "Belere_to_Orramaor_ordinary_reachable": true,
+  "ordinary_Articeso_to_Orramaor_reachable": false,
+  "source_c_reference_sha256": "2064ce3f63cc835dce9fc5ce4ffc04db2997c1bafec6e09e2a5fef2d9b8d238f",
+  "project_universe_sha256": "ebb57698aa8db1ddc8fa33bc3fd436419faaa7e883ef70b86d0563ddd4ee4344",
+  "limits": "Current project quantized distance graph and halfway misjump interpretation; not original Oolite1.75 binary coordinate/fuel/timing parity.",
+  "selected_project_repair": "Floor midpoint chart coordinates to byte indices before the second hop; outbound7.2LY precision edge becomes6.8LY. Labelled compatibility choice, not measured Oolite1.75 behaviour.",
+  "equipment": [
+    [
+      "99",
+      "0",
+      "LINKG7 *** Classified *** Auto Jumper",
+      "EQ_LINKG7_GREATRIFT_AUTOJUMPER",
+      {
+        "source_text_omitted": true,
+        "sha256": "ea669c0e2f784c27b72a86cdb9ea899a7922384bde01583f29646fb964777954"
+      },
+      {
+        "script": "linkG7_autoJumper.js",
+        "available_to_all": "1"
+      }
+    ]
+  ],
+  "shipdata": {
+    "LR-python": {
+      "bounty": "0",
+      "likely_cargo": "0",
+      "roles": "LRSpython",
+      "ai_type": "nullAI.plist",
+      "laser_color": "magentaColor",
+      "like_ship": "cobra3-trader",
+      "name": "LongRange Cobra"
+    }
+  },
+  "borrowed_engine_reference": {
+    "url": "https://raw.githubusercontent.com/OoliteProject/oolite/574ca848c91a067178416216523e8d09c1e9282a/src/Core/Entities/WormholeEntity.m",
+    "sha256": "60fa9ea697f526358d14cefb2494d76d8fa92bbb046e06710f0af1f54eb651f5",
+    "default_fraction": 0.5,
+    "misjump_time_hours": "0.75*d_first^2 for halfway",
+    "normal_time_hours": "d_second^2"
+  },
+  "project_orramaor_technology_index": 2,
+  "prototype_shop_repair": "Dedicated zero-price mission installation at Orramaor bypasses incompatible generic tech index14; source catalogue starts99 and changes14 globally."
+}
