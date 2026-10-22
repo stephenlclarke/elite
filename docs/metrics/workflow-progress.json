@@ -4765,13 +4765,23 @@
       "github_run": 39731389269,
       "selection_methods": 231,
       "new_methods": 10,
-      "unit_status": "FAILURE; completed06:13:56Z, actual cause/counts pending MBA artifact review; no pass claimed",
+      "unit_status": "FAILURE;231methods263cases executed,228methods260casesPASS,3failures,0errors/skips,no crash;7/10new methodsPASS",
       "source_review": "MBA source review clean",
       "usable_build_delivered": false,
       "source_review_completed_at": "2026-10-22T06:05:57Z",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333935985",
       "handoff_to_source_review_seconds": 245,
-      "unit_run_completed_at": "2026-10-22T06:13:56Z"
+      "unit_run_completed_at": "2026-10-22T06:13:56Z",
+      "executed_methods": 231,
+      "executed_expanded_cases": 263,
+      "passed_methods": 228,
+      "passed_expanded_cases": 260,
+      "failed_methods": 3,
+      "issues": [
+        49,
+        50
+      ],
+      "qualification_scope": "Complete isolated report; two fixture root causes, guards retained; aggregate failed, no usable/build/merge claim"
     },
     {
       "event": "Requested cancellation of superseded showroom run that excluded all new methods and blocked correct same-branch job",
@@ -4830,13 +4840,18 @@
         "latest_packet_pushed_at": "2026-10-22T06:01:24Z",
         "latest_packet": "Clinic acceptance/reservation/cancel and uncollected loss closures",
         "unit_run": 39731389269,
-        "unit_status": "FAILURE at1523b3ee/39731389269; MBA checking existing artifact, cause/counts unverified",
+        "unit_status": "FAILURE;231methods263cases executed,228methods260casesPASS,3failures,0errors/skips,no crash;7/10new methodsPASS",
         "source_state": "Acceptance packet pushed; actual pickup/integrity/receiving/payment/held-return needed for complete clinic loop",
         "source_review_result": "MBA acceptance source review clean at1523b3ee; actual hosted qualification pending",
         "source_review_completed_at": "2026-10-22T06:05:57Z",
         "latest_handoff_at": "2026-10-22T06:01:52Z",
         "source_review_latency_seconds": 245,
-        "source_review_scope": "10 acceptance methods, actual Confirm/cancel, attained exit/source loss publication, stock/window/child reverse joins, aggregate slots/hold and closed111/112"
+        "source_review_scope": "10 acceptance methods, actual Confirm/cancel, attained exit/source loss publication, stock/window/child reverse joins, aggregate slots/hold and closed111/112",
+        "ready_findings": [
+          49,
+          50
+        ],
+        "finding_owner": "G1; routine positive fixture corrections; no MC1 escalation"
       },
       {
         "id": "M02.P04/F06",
