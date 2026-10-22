@@ -5040,6 +5040,18 @@
       "provider_owner": "Mission Coder1",
       "scope": "Real native Avenor acceptance and atomic original1t issue/return, existing custody and actual issueoperationUUID; later settlement requires actual provider receipts",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Provider65 exact70c0 compile failure deduplicated under64; author notified",
+      "date": "2026-10-22",
+      "github_run": 39758251921,
+      "scope": "Missing originalSale/receivingFixture fields and assignments in UtilitySourceFixture; no XML or Swift unit execution",
+      "owner": "G4",
+      "issues_still_pending": [
+        64,
+        66
+      ],
+      "new_jobs_started": 0
     }
   ],
   "two_developer_phase": {
@@ -6123,7 +6135,10 @@
       "retained_missile_methods": 275,
       "retained_missile_cases": 307,
       "final_head_qualification": "pending",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "final_head": "5095037228cda687dd7e27ad2a58ffb29018e756",
+      "source_review": "MBA combined interactions and285union clean",
+      "final_github_run": 39759461966
     },
     "media_fingerprint_correction": {
       "issue": 75,
@@ -6142,7 +6157,8 @@
       "qualification": "pending",
       "provider_dependency_pr": 65,
       "merged": false,
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "source_review": "MBA full production and16methods clean"
     }
   }
 }
