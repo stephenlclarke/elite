@@ -5451,13 +5451,15 @@
         "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support",
         "format_precedence": "Highestrequiredfeaturewins:practice121122,network123124,terminal125126;earlierformatsnotwidened",
         "source_state": "Correction66 assigned; full MBA source review continues",
-        "head": "805c7f999c6f1016d565157209b268406cb1092d",
+        "head": "502ff3810db64eab062d261e58893963409f4ac5",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/65",
-        "ready_findings": [
+        "ready_findings": [],
+        "finding_owner": "G4",
+        "unit_status": "Correction66 actual hosted run active; no PASS yet",
+        "awaiting_verification_findings": [
           66
         ],
-        "finding_owner": "G4",
-        "unit_status": "39749973411 compile failed; optional actual equipmentOwnerID at four practice boundaries; no units/XML"
+        "unit_run": 39751691960
       },
       {
         "id": "C08.commit-charter.audit",
@@ -5469,22 +5471,24 @@
         "playable_at": null,
         "ownership": "Newaudittypes/narrowG1mission-board-savejoins;separatedependentbranch",
         "limits": "Actual3signatures+finitecapacityrefusal;nofabricatedreservations/noearlyreward",
-        "head": "3d7f5e3196d708661eebb540d3953a053a677108",
+        "head": "ff6dd4ea5a888f706c620254a88d2c087da64d32",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/59",
         "source_state": "63fixturecorrectionpushed;production/assertions279selectionunchanged;MBAverificationpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336051526",
         "source_review_result": "MBA1f95new8fixtures/actualfinitecharterrefusalCLEAN;inheritedseed60unqualified",
-        "unit_status": "MBAactualcompile751.10PASSthenSIGNAL4;zeroPASS/invalidXML/nostack;dedup60",
+        "unit_status": "Correction64 actual hosted run active; no PASS yet",
         "ready_findings": [
-          64
+          67
         ],
         "finding_owner": "G1routinefixtureprereqcorrection;63awaitingverification",
-        "finding_kind": "PartialUtilityfixturelosesoriginalsaleandNavidorhistoricalstation;notcrashattribution",
+        "finding_kind": "Original sale/historical station prerequisites64 and release dock chronology67; source fixtures only, crash60 remains unattributed",
         "correction_handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336473875",
         "awaiting_verification_findings": [
-          63
+          63,
+          64
         ],
-        "correction_source_review": "MBA63loweredpositive+unknownnegativecallsCLEAN;upperstrictassertions/production/279285selectionsunchanged;affectedexecutionpending"
+        "correction_source_review": "MBA63loweredpositive+unknownnegativecallsCLEAN;upperstrictassertions/production/279285selectionsunchanged;affectedexecutionpending",
+        "unit_run": 39751565047
       },
       {
         "id": "M06.P03.appearance",
@@ -5522,20 +5526,19 @@
         "playable_at": null,
         "ownership": "G1C08mission/board/save123124;noG3/G4paths",
         "limits": "Actualoriginalrecords/capacityaudit;nofabricatedproof/terminalreward",
-        "head": "472ddc1fdfed1f141e6aa65d610358a5b1fdbabe",
+        "head": "849e940f6e508528e16c834ef8e40e9bc3eab7cf",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/62",
         "source_state": "63audit+certfixturecorrectionpushed;production/assertions285selectionunchanged;MBAverificationpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/62#issuecomment-6336216114",
         "source_review_result": "MBA342newdelta/6fixtures/closed123124CLEAN;actual285executionpending/inherited60unqualified",
-        "ready_findings": [
-          64
-        ],
+        "ready_findings": [],
         "finding_owner": "G1routinefixtureprereqcorrection;63awaitingverification",
-        "unit_run": 39747200952,
-        "unit_status": "MBAactual39747200952compile458.96PASSthenSIGNAL4/zeroPASS/invalidXML/nostack;actual63+64fixturefindings,60unattributed",
+        "unit_run": 39751604071,
+        "unit_status": "Correction64 actual hosted run active; no PASS yet",
         "correction_handoff_url": "https://github.com/stephenlclarke/elite/pull/62#issuecomment-6336474435",
         "awaiting_verification_findings": [
-          63
+          63,
+          64
         ],
         "finding_kind": "PartialUtilityfixturelosesoriginalsaleandNavidorhistoricalstation;notcrashattribution",
         "correction_source_review": "MBA63loweredpositive+unknownnegativecallsCLEAN;upperstrictassertions/production/279285selectionsunchanged;affectedexecutionpending"
@@ -5632,11 +5635,20 @@
         "phase_entry_state": "Bounded modular/alien drive gap assignment",
         "ownership": "HyperspaceDriveDefinition/HyperspaceDriveRuntime/narrow recovered fitting pure tests and notes",
         "requirements": "10/5/1second activation;100/80/60percent mass lock; earned owned alien drive instant/no lock at PLUGH",
-        "limits": "First reserve exact shared representation/save hunks with G1; no fake policy grant or generic framework",
+        "limits": "No new Commander fields/root save schemas; no ordinary scalar or RNG outcome drift; exact source/authentic PLUGH custody required; G1 C08 and G4 practice preserved",
         "merged_at": null,
         "playable_at": null,
         "disposition": "G3 credits ordinary foundation; actual missing alien salvage/owned fitting route escalated",
-        "qualification_scope": "Source/existing test definitions only; no new execution"
+        "qualification_scope": "Source/existing test definitions only; no new execution",
+        "base": "a0f4608f7d8e6e8b51d9f700cf82a197b9e48a00",
+        "reserved_shared_hunks": [
+          "AlienModuleDefinition typed drive kind/supportsUpgrade/initialContribution",
+          "SalvageDefinitions typed alien drive effect/catalogue and existing rare alien artefact roll",
+          "NativeSalvageCollectionMutation/NativeSalvageImport/AlienStorageRecords/AlienAttachmentLedger exact initial contribution dispatch",
+          "HyperspaceDriveRuntime validated actual active-hull fitted drive policy",
+          "InventoryInformation narrow drive ability/source identity",
+          "Game.beginHyperspace necessary stale comment only; existing immediate path preserved"
+        ]
       },
       {
         "id": "M08.P04.mining-control",
@@ -5662,10 +5674,21 @@
       },
       {
         "id": "M08.P06.plugh-fitting",
-        "owner": "G3",
+        "owner": "Mission Coder1 queued after drive",
         "assigned_at": "2026-10-22T08:57:07.689475+00:00",
         "ownership": "Existing recovered equipment and alien missile reverse-engineering finite purchase policy; focused tests/notes",
         "limits": "Alien drive Mission Coder1; no G1 central Game/mission/save or G4 practice hooks; no generic framework/local compilation/native/integration",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Existing PLUGH module fitting and1.25x missile tuning/mesh credited; actual recipe-to-owned-ammunition purchase/load/consume loop missing",
+        "qualification_scope": "Source/existing unit definitions only; no execution"
+      },
+      {
+        "id": "K04.P01.person-care",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:58:34.634551+00:00",
+        "ownership": "PassengerCustody and narrow native care/pause-aware policy, pure tests/notes",
+        "limits": "No central G1 mission/save or G4 practice hunks without reservation; preserve existing cabin grades/consent/contracts; no new capacity estimates/local compilation/integration",
         "merged_at": null,
         "playable_at": null
       }
