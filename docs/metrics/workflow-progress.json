@@ -4513,10 +4513,12 @@
       "github_run": 39710164853,
       "selection_methods": 174,
       "new_methods": 6,
-      "source_review": "MBA assigned exact delta and necessary custody/account callers",
-      "unit_status": "existing hosted active; prior two signal10 runs remain unqualified",
+      "source_review": "MBA exact delta and necessary receiving callers clean",
+      "unit_status": "FAILED after646.82s compilation; signal10,174 starts/zero verified passes,truncated XML",
       "next_assigned": "C08.P05.B.source",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331210067",
+      "finding": "https://github.com/stephenlclarke/elite/issues/41"
     },
     {
       "event": "Issue41 next-run bounded crash evidence capture assigned",
