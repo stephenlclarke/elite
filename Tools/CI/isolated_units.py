@@ -16,6 +16,27 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeDefensiveFlightUnitTests": (
+        "receivingCandidateIsZeroCashOnceAndProtectedCommandRefusalRetainsAttainedProof",
+        "exactBundledPinUsesOnlyTheExistingFamilyClueAndFirstReceiptIsRetained",
+        "acquisitionUsesTheOriginalCentreAndFiveDegreeActualNoseAlignment",
+        "gatesRequireMeasuredHullFitActualSpeedAndTheRequestedSignedLateralMotion",
+        "withdrawalRequiresBehindTheRangeBeyond1100FacingAwayAndActualSeparation",
+        "rotatedFrozenFrameKeepsTheSamePhysicalGateAndVelocityMeaning",
+        "actualStarterHullFitsThePublishedCourseWithoutRescaling",
+        "foreignPlayerEarlierTimeNonfinitePoseAndTheOtherLessonCannotSupplyReadings",
+        "nativeCentreDirectedMeshQueryNeedsNoComputerAndOrdinaryOcclusionStaysOrdinary",
+        "observationRefusesMissingOriginalsForeignBodyLabelsAndAutomatedOrCameraCredit",
+        "corridorClearanceUsesFullOrdinaryMeshBoundsAndRefusesUnknownSceneBodies",
+        "ordinaryAcceptedHarmKeepsNormalLawAndSealedBreakoffEndsTheFailureScope",
+        "orderedActualIntervalsNeedGateEntriesCrossingAndASealedWithdrawal",
+        "startingInsideAGateOrAssigningAPoseDoesNotSupplyItsNativeEntry",
+        "pauseColdRestoreGapsOcclusionAndIntrusionCannotInventActiveTime",
+        "measuredNearPassFailsOnlyThisExerciseAndDischargeFailureCannotBeReplaced",
+        "sealedBreakoffRequiresRetiredProviderAndActualLaterOwnerCarrierReception",
+        "reorderedForeignErasedAndInventedDurationProofsCannotBecomeReady",
+        "closed135136RejectEarlierEmbeddedUnknownAndMissingNativeProofs",
+    ),
     "NativeSafeGunneryUnitTests": (
         "bundledLessonUsesTheExactCompiledProductionPinAndZeroCashReceptionEvent",
         "changedQuietCounterOrTerminalFieldsCannotSupplyMissingNativeTimeOrFailure",
