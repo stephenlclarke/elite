@@ -5151,6 +5151,16 @@
       "delivery_pr": 76,
       "expected_final_union": 350,
       "usable_build_delivered": false
+    },
+    {
+      "event": "ConsolidatedG11functionalownershipunderMC1; G3assignedindependentboundedissue18projection",
+      "date": "2026-10-22",
+      "preserved_g3_source": "48db39be93868dcfeb0a3c96d49cdd591fa89c74",
+      "g3_source_qualified": false,
+      "g11_owner": "Mission Coder1",
+      "g3_next": "M07.P01.I18.cargo-route",
+      "reason": "Avoid cross-author dependency/signature loops without an integrator",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -6213,7 +6223,7 @@
       "new_source_archive": "archive/recovered-equipment-20261022-50950372"
     },
     "g11_parent_bridge": {
-      "owner": "G3",
+      "owner": "Mission Coder1",
       "state": "implementing accepted native parent and original programmer issue/return adapter",
       "design_owner": "UX",
       "dependency": "Actual native parent acceptance and original issue/return authority; not a mock flag",
@@ -6251,7 +6261,10 @@
       ],
       "latest_snapshot": "48db39be93868dcfeb0a3c96d49cdd591fa89c74",
       "latest_snapshot_tag": "archive/g3-isolation-parent-loss-unqualified-20261022-48db39be",
-      "latest_snapshot_qualification": "UNQUALIFIEDactualprovider/mixedcodec/failureterminal dependencies"
+      "latest_snapshot_qualification": "UNQUALIFIEDactualprovider/mixedcodec/failureterminal dependencies",
+      "original_author": "G3",
+      "ownership_state": "completecoherentG11source/qualification/corrections/merge transferredtoMC1",
+      "g3_source_state": "authored nineunitsUNRUN/unqualified48snapshot, no furtherG11edits"
     },
     "recovered_equipment_composition": {
       "owner": "Mission Coder1",
@@ -6444,6 +6457,13 @@
       "qualification": "finalcompositionpending",
       "developer_activity": "T03 source continues; no waiting",
       "usable_build_delivered": false
+    },
+    "npc_target_projection": {
+      "id": "M07.P01.I18.cargo-route",
+      "owner": "G3",
+      "state": "assignedsourcepreflightandconcreteprojectionfix",
+      "scope": "Actual typedNPCcargo/origin/destination, Pirate/Military readonlyprojectionandpureunits",
+      "limits": "No simulation/save/hardware/mapdiscoverychange/fabricateddata; full18backend/deliveryacceptance remainsopen"
     }
   }
 }
