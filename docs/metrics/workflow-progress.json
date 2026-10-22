@@ -4794,6 +4794,23 @@
       "status": "Terminal CANCELLED at06:11:18Z; authoritative39731489668 started06:11:22Z",
       "pass_claim": false,
       "new_test_dispatches": 0
+    },
+    {
+      "event": "G1 clinic fixture corrections pushed; G3 independently composed into own showroom PR",
+      "head": "2c38cdbba55d86523ff53e5e9e7cc0a0fcf342a2",
+      "issues": [
+        49,
+        50
+      ],
+      "issue_state": "awaiting-mba;not closed",
+      "showroom_head": "382664d131016207aec3e2c41418b62dceef7a25",
+      "showroom_run": 39733402267,
+      "integration_handoff_required": false,
+      "usable_build_delivered": false,
+      "handoff_at": "2026-10-22T06:21:00Z",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6334216242",
+      "github_run": 39733300232,
+      "unit_status": "existing correction run in_progress"
     }
   ],
   "two_developer_phase": {
@@ -4847,11 +4864,15 @@
         "latest_handoff_at": "2026-10-22T06:01:52Z",
         "source_review_latency_seconds": 245,
         "source_review_scope": "10 acceptance methods, actual Confirm/cancel, attained exit/source loss publication, stock/window/child reverse joins, aggregate slots/hold and closed111/112",
-        "ready_findings": [
+        "ready_findings": [],
+        "finding_owner": "G1; routine positive fixture corrections; no MC1 escalation",
+        "awaiting_verification_findings": [
           49,
           50
         ],
-        "finding_owner": "G1; routine positive fixture corrections; no MC1 escalation"
+        "correction_head": "2c38cdbba55d86523ff53e5e9e7cc0a0fcf342a2",
+        "correction_unit_run": 39733300232,
+        "correction_handoff_at": "2026-10-22T06:21:00Z"
       },
       {
         "id": "M02.P04/F06",
@@ -4865,19 +4886,19 @@
         "start_evidence": "G3 active thread5416f3c1-d481-4bdb-a92b-4292e55ae0f8 cursor3 and direct assignment acceptance; exact start timestamp not recorded",
         "first_push_observed_at": "2026-10-22T05:59:27Z",
         "push_timestamp_source": "PR48 creation; observation of push, not exact push event",
-        "head": "40159bbacafc55414e19d86ea6e073869bb9301b",
+        "head": "382664d131016207aec3e2c41418b62dceef7a25",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
-        "source_state": "Original display source clean at1b5; final composition/selector review and actual hosted qualification pending",
+        "source_state": "G3 composed G1fixture correction; independent final-head review/actual corrected qualification pending",
         "first_push_observed_elapsed_seconds": 224,
         "source_review_result": "MBA final40159bba composition/selector clean; actual3-method execution pending",
         "source_review_time_reported": "2026-10-22 06:02 UTC (minute precision)",
-        "handoff_at": "2026-10-22T06:02:37Z",
+        "handoff_at": "2026-10-22T06:21:20Z",
         "source_review_latency_seconds_reported": 88,
         "source_review_evidence": "MBA direct completion message and outcome posted on PR48; existing39731164624 excludes the three methods",
         "base": "1523b3ee2394d74e576645451ad6606925a01488",
-        "handoff_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333947172",
-        "unit_run": 39731489668,
-        "unit_status": "pending;234 maintained methods includes3ShowroomComparison and10ClinicAcceptance",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6334220973",
+        "unit_run": 39733402267,
+        "unit_status": "pending; composed49/50corrections, unchanged3showroom methods",
         "original_source_handoff_at": "2026-10-22T06:00:41Z",
         "source_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333946221",
         "queue_delay_note": "Obsolete unselected39731164624 cancelled06:11:18Z; existing correct39731489668 running from06:11:22Z"
