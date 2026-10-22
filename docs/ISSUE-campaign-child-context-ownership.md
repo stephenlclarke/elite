@@ -1,9 +1,0 @@
-# Child preparation retains large values through event-context anchor reads
-
-On `6f9293c151af8c22ac527194e207509e836cca21`, the six-method/eleven-case populated/malformed campaign selection in run 511 faulted during actual child creation in `fifthCampaignLinkIsRefusedWithoutAHiddenOrPartiallyCreatedChild`. All outcomes remain unknown with zero issues. Its matched path is first-index selection, the existing anchor resolver, event context, child preparation and the native campaign command. Exact proof `/tmp/elite-native-journeys-focused-511/agent-game-test-verification-511.json` has SHA256 `9d76b1cd158e108dc4f81014ea604675f257025ae6d1d098e9d609b0516f0557`; owned IPS `swiftpm-testing-helper-2026-10-19-002430.ips` in that directory has SHA256 `6ac785a376c6e4024af3423d930ade120a556b18276fde17858c3ce87f8cf3b9`, PID 46421.
-
-Child preparation retains guard/lookup receivers and a whole projected ScriptInstance while constructing context. The context initializer retains preceding Commander receiver storage and later native receipt/body temporaries across its anchor call. The anchor algorithm itself already passed both actual variants in 470; this new caller chain does not justify changing its first-match, energy, identity or saved-frame rules.
-
-Use borrowed Game/parent inputs, keep complete ordered child validation before context, and snapshot only the revision needed from the projected parent. Separate scalar reads, exact anchor position and later native facts. Preserve active/existing-child/capability/pin/capacity/depth/lineage/identity refusals, deterministic identity/seed, clock/pose/receipt snapshots and private child installation order. Do not bypass the fifth-link or empty paths, skip anchors, change tests/schema/stacks/concurrency or rewrite the resolved anchor algorithm.
-
-[PR-campaign-child-context-ownership.md](PR-campaign-child-context-ownership.md).

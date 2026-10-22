@@ -1,5 +1,0 @@
-# test: bind recovered flight transaction to durable storage
-
-Only the flight tail of the recovered-source concurrency test now uses an isolated directory and actual runtime save destination. It retains the original preview, 0.02-second advance, captured command, and applied-result assertion. Added checks require consumed source inventory, one upgrade receipt bound to the exact source lot, unchanged cash and purchase history, preserved equipment owner/hull/item count, and one inventory revision. The genuine schema-21 reader verifies saved source ledger, owned equipment, history, and cash against the committed runtime. Cleanup removes all generations. See [the missing precondition](ISSUE-recovered-flight-save-fixture.md).
-
-The earlier concurrent exact-once half and all no-destination negative tests are unchanged. No production authority or writer rule changes. Source formatting, Markdown lint, and whitespace checks cover the isolated change; focused and full execution remain pending with the canonical validation owner. No build, test, native, or media jobs were run.

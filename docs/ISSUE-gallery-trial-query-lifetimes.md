@@ -1,5 +1,0 @@
-# Gallery trial queries reserve isolated worlds during catalogue lookup
-
-The exact thread-sanitized binary stopped on a guard-page access in a memory-copy interceptor while the original campaign preview-alias test handled Escape. The captured path reaches capability lookup through the catalogue, selected campaign root, trial availability and page identity. No recursive call cycle or race report has been established, and this separately observed debugger stop is not asserted equivalent to the earlier signal without a matched OS report.
-
-Both trial availability getters declare isolated whole-Game values after earlier catalogue/root lookup guards. Their emitted stack storage is reserved before those guards finish, increasing overlapping lifetimes along the observed path. Separate those read phases while preserving every guard, isolated empty script state, durability setting, capability, acceptance and campaign-content check. Preserve the original test and its proof/Commander assertions. See [implementation](PR-gallery-trial-query-lifetimes.md).

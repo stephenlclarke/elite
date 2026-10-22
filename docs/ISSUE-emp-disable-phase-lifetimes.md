@@ -1,5 +1,0 @@
-# Source custody overlaps completed EMP preflight and future record buffers
-
-Exact-binary diagnostic 285 stopped in real EMP source custody during the unchanged disabled-hostile weapon regression. The disable helper occupied 176,240 bytes, source claim 32,912 bytes and the original test caller 145,920 bytes. The stack pointer was in the mapped guard `[0x16b59c000,0x16b5a0000)`. The preceding context change removed the old nested context frame, but the broader batch still failed; no aggregate acceptance follows. Exact binary `b6d1892bcfc837adaed0f7e6c68b53ef14df2d75217f059ef29a7e876910936a`, diagnostic raw SHA256 `17873f76337bdd6527cfcefaddd620cd865878779f3ca78117b5b3157114d2ed`.
-
-Eligibility checks, full source claim and final record construction currently retain each other's complete body/NPC/ship/record temporaries. Separate those synchronous phases while keeping the same authoritative preflight facts, transition order and all-or-nothing pulse. See [implementation](PR-emp-disable-phase-lifetimes.md).

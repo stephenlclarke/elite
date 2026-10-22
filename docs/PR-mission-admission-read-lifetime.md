@@ -1,9 +1,0 @@
-# Isolate actual-Game admission reads before nested work
-
-Private non-inlined Game helpers now perform the existing Commander source-value, installed-owner, installed-world-job and visit reads. The source-value helper delegates to the unchanged Commander method and returns the same immutable COW dictionaries and scalar location. Owner/job helpers return the same selected optional values; the visit helper returns only its scalar. Every call remains at its original synchronous read point, including world-job and visit guard short-circuit positions. No fact is supplied by a caller or retained in a cache.
-
-There are six call-site substitutions across source validation, prepared-source construction, authority, template-source construction and native preparation. Removing the four new helpers and reversing those substitutions recovers both original source files byte-for-byte. Installed owner/revision/digest, mode/retention, world-job/pulse/alive-owner, profile/geometry, context/visit, template, capacity and publication checks retain their exact predicates and order. No admission phase is extracted; encounter/event dispatch, native staging/commit, tests and the passing timer paths are unchanged.
-
-Source correspondence, strict Swift formatting, scoped Markdown lint and whitespace checks are the author validation. No compiler, native, test, CI, debugger, renderer or probing job runs in this source-only assignment. G1 independently reviews and integrates the frozen source, compiles once and first runs only the unchanged two-argument anchor regression. Admission authority and retention/refusal coverage follows its result. Run 463's passing original timers remain qualified unless a changed-path reason requires them. This patch does not establish a runtime pass, reduced compiled frames, aggregate stack peak or full CI acceptance.
-
-[ISSUE-mission-admission-read-lifetime.md](ISSUE-mission-admission-read-lifetime.md).

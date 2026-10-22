@@ -1,7 +1,0 @@
-# Install original worlds in native gameplay and station trading
-
-The approved world and initial-market catalogues were bundled but inactive. Native flight, charts, distance, stock regeneration and production navigation/trade bindings still used predecessor behavior. Install the existing original authority across those actual consumers, preserve exact coordinates and all world fields, distinguish ask from bid, and retain commander-owned changed stock. No second world registry, alias conversion or old-save migration is permitted. See the [implementation](PR-original-world-production.md) and [runtime scope](ORIGINAL-WORLD-RUNTIME.md).
-
-Independent world review identified three actual boundaries: BCR productivity was projected into a display labelled MCR with the wrong multiplier; original one-based world technology was compared directly against zero-based equipment definitions; and closed failed-loss history could control new practice availability. The follow-up must preserve exact source units, use one equipment-level conversion at all native shop boundaries, and retain closed records while excluding them from live endpoint selection. Focused regressions must use actual original worlds and existing actual loss evidence.
-
-The independent market review also found that remote route-trade estimates still read pristine seeds after real stock depletion and departure. Remote and current route nodes must use the same commander-owned stock authority, preserving existing cargo, room, cash and scoring assumptions.

@@ -1,9 +1,0 @@
-# Capture the actual native save transition before fixing callers
-
-One diagnostic method with flight, docked and absent-salvage cases reuses the existing private NPC fixture and original absent-ledger setup. It records real preparation, docking, actor initialization, saving, official file reading and loading stages; complete Commander equality remains unchanged. Supplemental JSON field deltas and schema keys explain changes without supplying authority or normalizing the oracle. The official versioned reader is selected only after the actual file decodes as a versioned pointer.
-
-The three original methods and every original assertion remain byte-for-byte unchanged. Diagnostics use isolated temporary saves and optional test evidence output; no user files, production hooks or logging change. The exact validation-316 binary and 695 compiled artifacts are preserved under `/tmp/elite-native-crimbo-lifecycle-focused-316/tsan-snapshot`.
-
-Source parse/format/Markdown/whitespace validation and source review precede one focused TSan execution, with the original 600-second limit and default concurrency. Validation 317 reproduced the diagnostic assertions in 78.306 seconds with no unexpected signal: docked/absent saves are valid schema-26 files, official read/load preserve the whole saved Commander and bytes, and the only semantic first-save additions are current mining policy and calendar. The flight fixture has an invalid world body highwater (10 versus original body 40) and the real save refuses it. Exact artifacts and all 2028 tracked inputs, protected files and owned process exits were verified. The [caller repair](PR-native-save-callers.md) uses this evidence; full CI, native activation and release acceptance remain pending. The separately failing convoy relaunch belongs to the other coder; 44 completed passing scopes are retained.
-
-[ISSUE-native-save-caller-diagnostics.md](ISSUE-native-save-caller-diagnostics.md).

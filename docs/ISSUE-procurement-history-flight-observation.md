@@ -1,9 +1,0 @@
-# Observe genuine procurement history flight deaths
-
-The completed source-574 focused cohort at `d38070f7c0c971bbaba5d537c5b7ce04f96d5937` has 31 methods / 55 cases passed and one historical-proof method failed with eight issues across its twelve completed arguments. The partial and abandoned stages each fail all four forgery arguments at the existing `ScriptProcurementFixture.dock` survival requirement, before forged history is constructed. The failed method does not establish individual argument passes. The reviewed idle-trigger repair and actual defence/input regressions did not remove these setup deaths.
-
-All stages use the same fixed ordinary paid equipment preparation; procurement permits no loan or mission equipment, and abandonment settles zero without a debit or defensive-fit removal. Partial uses the fixed row-one route and one ordinary purchased commodity; complete uses row zero; abandoned skips purchase/travel at origin. Every stage then performs another real launch/redock to create a genuinely later receipt. The retained failure headers identify neither the failing flight phase nor attack, collision, heat or invalid-energy causality. Changing proof guards or switching pilots from that evidence would be speculative.
-
-This leaf only wires the existing bounded test diagnostic into two labelled cases. It is not a setup repair, historical-proof acceptance, runtime pass or broad CI claim. The parent is `aa011081883daff11cd49ce47725a177c2c39f15`; its Sources/Tests match the observed d380 source. Retained evidence is `/tmp/elite-freight-focused-574/agent-game-test-verification-574.json`, SHA-256 `c64999401c972c9bcf317a4147e732c3011fcabe48656f9fa46cce96cd4c43db`.
-
-[PR-procurement-history-flight-observation.md](PR-procurement-history-flight-observation.md) records the bounded observation and unchanged security assertions.

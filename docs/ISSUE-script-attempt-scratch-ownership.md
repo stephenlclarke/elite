@@ -1,9 +1,0 @@
-# Common transaction ancestors reserve most of the mission task stack
-
-At `1a2a40bd5bd401883e7489d6cb5422a7488c8393`, actual 517/519/520 stack faults persisted after narrow lifetime repairs. The authoritative observation `/tmp/elite-cumulative-frame-observation-516/cumulative-qualification.json`, SHA256 `7fd84e341ccf1aae5504707e859998853658c379a8ed5d7cf01359c51975c3e3`, combines the retained offline symbol inventory with the approved read-only 524 capture. Native SP/CFA differences were 177,504 bytes in event draining and 77,840 in encounter handling, alongside 144,160 in the unchanged test and 39,952 in its fixture. The eight captured synchronous frames total 482,272 bytes before a later fault path; this is an earlier authority check in the same ancestor family, not the exact fault-stack total.
-
-The observed 9,392-byte Commander and 336-byte engine values are rounded metadata allocation spills at that capture, not a general field-layout census. SBType byte size zero was unavailable information, not a zero-sized model. Fixed prologues understated dynamic storage. This supports removing retained candidate/instance/proposal and branch-call buffers from common ancestors rather than another small getter wrapper or a global Commander representation change.
-
-Dispatch must preserve its bounded event snapshot, complete preflight/evaluator/policy/command order, original candidate/next copies, refusal acknowledgment and once-only publication. Acceptance must retain private candidate isolation through nested draining. Encounter preparation/staging must keep fresh authority, exact identity/pose/custody/equality checks and geometry rollback. All temporary owners must remain synchronous and local: no shared mutable authority, Sendable callback capture, actor/reentrancy, persistent/schema/model/anchor/test/stack/concurrency change or increased budget.
-
-[PR-script-attempt-scratch-ownership.md](PR-script-attempt-scratch-ownership.md).

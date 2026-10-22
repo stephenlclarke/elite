@@ -1,5 +1,0 @@
-# Calendar day-timer fixture requires an edge absent from its starting world
-
-Affected batch 687 on `a3985f61086be35ae2ad2d3f7b4ea485aecd8a86` reports that `calendarTimersObserveRealTravelBeforeFiringAndDoNotFastForwardPhysicalClocks` cannot find a destination. The fixed starting world G01-S007 has exactly one authentic neighbor within seven light-years, G01-S185 at 3.364975176728651 LY. The test deliberately requires a single jump longer than five LY so the unchanged quadratic calendar charge crosses its one-day timer. There is no such edge from that starting world.
-
-Preserve the actual jump, one-day deadline, native travel guards and local/flight clock bounds. Select a genuine fresh origin before mission admission that has the required edge, instead of shortening the timer, widening jump reach, moving worlds or advancing clocks directly. The first catalogue-ordered qualifying pair is G01-S000 to G01-S069, at 5.858591443341994 LY. Its source-coordinate squared-distance charge is more than one day. This is selection for a timer contract, not for quiet traffic or an observed runtime outcome. See [the repair](PR-calendar-original-world-travel-witness.md).

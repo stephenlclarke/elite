@@ -1,9 +1,0 @@
-# Report bounded retained threats without changing the flight scenario
-
-Only the existing failed `continuingFlight` diagnostic invokes a private test helper. It encodes the already-owned `CrimeLedger`, decodes just the attack-window fields needed for observation, filters to the actual player identity and reports at most four latest windows. Each report includes owner identity, last attack time, unlawful and authority-action flags, plus the matching current body's role, spawn producer and position when still present. Equal-time windows have a stable actor-entity tie break. Encoding and decoding occur outside assertion macros; any diagnostic error returns an unavailable label and cannot replace the original liveness assertion.
-
-The report is explicitly retained threat evidence. The ledger does not retain a complete per-hit damage or weapon-kind history, so these windows cannot alone certify the fatal hit. No full Commander or game dump, new collision query, cache update, world mutation, hardware grant, health adjustment, clock change, steering change, tick change or frame-budget change is introduced. Successful flight never enters this diagnostic. All original Cobra and police method bodies, travel ordering, conservation, law, reload and save oracles remain unchanged.
-
-Source formatting, Markdown lint, whitespace and exact reversal checks precede review. Reversing only the new helper/types and the one failure-message extension recovers the full original test file. The parent is preserved `ce2633288d8f38cf4c797a94deeef18d916aced9`; all other source and test files remain unchanged. No compiler, test, native or renderer job runs for this isolated leaf. A separately reviewed single affected Cobra execution is needed to obtain the actual observation. Full quality gates, native cutter completion and release acceptance remain outstanding.
-
-[Issue](ISSUE-emp-travel-threat-evidence.md).

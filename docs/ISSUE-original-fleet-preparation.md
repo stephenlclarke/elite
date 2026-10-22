@@ -1,3 +1,0 @@
-# Integrate reviewed original fleet preparation without activating incomplete hulls
-
-The independently reviewed MBA handoffs contain an authenticated original texture bundle and native UV route (A/B), its required SwiftPM resource registration (D), a complete raw reference exporter (C), and immutable typed definitions for 171 current original specifications (E). Leaving these reviewed pieces outside the integration tree creates avoidable future build churn. Integrate their exact files and resources together while preserving source conflicts and explicit runtime blockers. Do not replace the active catalogue, invent missing meshes, normalize authored values or claim native validation from source review. See the [integration note](PR-original-fleet-preparation.md).

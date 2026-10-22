@@ -1,5 +1,0 @@
-# test(ui): verify durable recovered fitting and refused replay
-
-Only the final obsolete raw-file equality in each of two native recovered-equipment methods is replaced. All original painted double-clicks and gameplay/source/conservation assertions remain. A shared MainActor helper reads the actual schema-21 save and checks exact salvage, equipment, purchase history, cash, fuel, missiles, native station and script state against committed runtime state. Ordinary disk NPC bindings are intentionally not compared directly with live bindings. See [the file-boundary problem](ISSUE-native-recovered-versioned-save-fixture.md).
-
-The helper replays the captured original command through the actual actor transaction, requires stale-context refusal, full before/after Commander equality and exact pointer plus recursive relative-path/file-byte conservation, including generation files. No production code, native authority, writer or fixture initialization changes. Whole-file reversal reconstructs the original file. Independent source and Markdown review is clean; focused/full execution remains pending while frozen 222 completes; no runtime acceptance is claimed.

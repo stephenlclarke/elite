@@ -1,7 +1,0 @@
-# Native police departures do not obstruct the measured entry course
-
-The bounded1058 observation retained the original SH025 scene and original failing assertion. At that exact frame both real police departures are behind the player and laterally outside the forward course. The existing native course query returns clear=true/bodyCourseRefused=false, and both real material assessments are clear. Production movingEntryAllowed=true is correct; the regression’s assumed obstruction is stale. No new actor position, phase, timer, hull or controller behavior is justified.
-
-The fixed two-case regression first independently proves complete effective-hull sphere separation behind and beside the forward corridor, before querying guidance. Its clear-course branch must retain genuine final entry, make real inward progress under the same acceleration budget and complete the original native docking outcome within180frames, preserving target identity, finite ammunition and legal state. The joined cargo unsafe-stop branch keeps every original refusal, phase and budget assertion. Existing finite-braking and actual discrete-NPC-motion regressions are unchanged. No conditional mirror oracle, skipped case, synthetic dock or production change is added.
-
-The independent source review found a duplicate local snapshot name before compilation. The correction renames only the later clear-entry velocity snapshot and its two uses; the earlier snapshot, predicates, scene and assertions are unchanged. No build or runtime was attempted on the rejected source.

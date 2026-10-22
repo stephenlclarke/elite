@@ -1,5 +1,0 @@
-# Integrate reviewed bounded route search and original-world route preparation
-
-Applied the reviewed I revision 2 and J frozen patches; two overlong Swift lines received whitespace-only formatting, verified against the frozen source. NavigationGraph.path delegates to one bounded synchronous kernel while preserving its caller weights, first-leg fuel policy and ties. OriginalWorldNavigation reuses that kernel with explicit visibility, original identities, Cartesian light-year distances, first-leg fuel, later-refuelling assumptions and hostile-fraction scoring. It creates no second world registry and installs no player route or market state.
-
-The eight authored Swift methods and existing affected navigation cases remain unrun until the next coherent compile and focused validation. No measured performance improvement, available refuelling, live original-world integration, coverage or release acceptance is claimed. Current model correctness remains required; predecessor compatibility is outside scope. See the [issue](ISSUE-original-world-route-kernel.md).

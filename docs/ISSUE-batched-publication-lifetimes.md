@@ -1,9 +1,0 @@
-# Two genuine publication paths retain dormant preparation storage
-
-At `2e09e687d374c8ef79ffc49d9ddb85d3ef3d974e`, unchanged EMP run 486 faulted on a 544 KiB cooperative stack in Foundation JSON encoding through synthesized EMP custody/hull/state encoding. The save caller is `publishValidated` at the typed commander-header chunk encode. That source frame also contains the deliberate full Commander header copy, other chunk encodes, size checks, I/O and pointer construction. The matched report is `/tmp/elite-native-journeys-focused-486/swiftpm-testing-helper-2026-10-18-232139.ips`, SHA256 `07bf22a2b2210a7c1844a0213b251a89822739f1bc90920283a6f3eb74f1e62d`.
-
-Independent mission/admission run 487 faulted on the same stack size entering terminal-child suspension from prepublication preparation during the genuine bridge fixture in `retentionPatchStagesOnlyAddressesAndRefusesStaleOwnerWithoutPublishing`. Its caller retains earlier receipt/resource receiver storage and later queue/encoding temporaries. The matched report is `/tmp/elite-native-journeys-focused-487/swiftpm-testing-helper-2026-10-18-232154.ips`, SHA256 `2ac87c0f52754b14523a7e98df6ee61b4481e8b8e61c672ce6390aa5574d3aff`. All fifteen group outcomes remain unknown with zero issues. Both actual source/report paths were inspected once; no new object/profiling audit was run.
-
-Separate these cumulative lifetimes as one bounded batch while preserving the original JSON encoders/schema, typed header, generation/budgets/atomic I/O and complete terminal-child, clue, resource, custody and queue semantics. Do not replace synthesized EMP encoding, change serialized content, cache trusted facts, introduce extra Game/Commander copies, skip guards or change tests/stacks/concurrency/budgets. The traces establish real failing paths, not that the synthesized encoder alone is the root cause.
-
-[PR-batched-publication-lifetimes.md](PR-batched-publication-lifetimes.md).

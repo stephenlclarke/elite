@@ -1,9 +1,0 @@
-# Replay compares different station namespaces and the gallery assumes an absent waystation
-
-Actual full-CI attempt 683 on source 1f9098a910aefa17655f3aeadbb59df03257b64e reports two replay equality issues and an RRS custody fixture invalidState. These are observed failures before the separate native-wormhole stack crash; this source task does not establish broader CI outcomes.
-
-A quote/bracket-aware parse of the complete retained replay dumps compares dictionary keys and Set members without depending on printed order. It finds nine changed body leaves: the RRS body's scene ID, actor entity and spawn sequence, and those three fields for each of two subsequent projectiles. The six script-state differences are exactly the same projectile address fields. Receipt Set ordering is not a semantic difference. Shot UUIDs, attribution, physical values, stocks, weapon results and all other printed semantics match. Public load deliberately calls rebindNativeStationsAfterLoad, which allocates a fresh native RRS binding and advances the scene/actor/spawn allocators. An untouched live branch therefore cannot match those transient addresses after future firing.
-
-The custody fixture calls NativeStationTestFixture.approach, whose launch helper insists on exactly two RRS bodies at G01-S237. The current original world is Mamanar with governmentID 0 (Anarchy). NativeStationSource.hasWaystation rejects that government, while the genuine headquarters remains registered at 237. The two-body fixture guard throws invalidState before entry or custody. The gallery needs the real headquarters, not a fabricated waystation.
-
-See [the bounded authority-aligned fixtures](PR-script-replay-rrs-gallery-current-authority.md). No production binding, save, shot, resource, geometry or authority rules should be weakened.

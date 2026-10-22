@@ -1,5 +1,0 @@
-# Avoid repeated station-token temporary arrays
-
-A controlled sample of the incomplete affected TSan run showed repeated native-station validity checks inside the original flight/docking loops. The token predicate used range calls and a three-element array inside a UTF-8 closure. Preserve its exact nonempty, 80-byte ASCII grammar and all canonical-source, owner, pose, receipt, counter and capacity checks while removing avoidable per-byte temporary work.
-
-The baseline timing helper linked the preserved compiled `0488f2c61e85d5ccc1ea6dbfefff6b79702b2c7a` TSan objects while the checkout held composed source `6da874cb219565733b33d09688ce80ca94f296fd`. Its fixed fresh world had 372 records. Three warmups and seven samples measured medians of 0.042562 seconds for 20 passes over all identity validators and 0.043869 seconds for three whole-world validations. The complete world-input hash is `6380125f4e14407130495f4dc973cc3ee5b6c45ddd95aca03b1c5e8aca0b759d`. These are component timings, not game frame rates or a completed sanitizer gate.

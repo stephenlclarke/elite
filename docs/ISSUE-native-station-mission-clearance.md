@@ -1,7 +1,0 @@
-# Real example encounters are refused by rescue-station bounding spheres
-
-Maintained CI 667 at `f5e3421e029b6f2fffbbd91f5ed91c3f43335e72` found missing live mission actors, an actor-owned job refused, and patrol completion unable to acquire its assigned targets. The retained patrol event reported native capacity or unobstructed placement pending. Current system 7 is Avenor, a Corporate State with an authentic rescue waystation. Its position is `(468.805498, -112.641649, 3727.986255)` and its full structural bounding radius is `786.209260`.
-
-Both examples retain their authored lead position `(0, 0, 3000)`. It leaves only `86.963532` metres outside the waystation's sphere, below the unchanged actor-radius-plus-64 requirement. However, the complete assembled source station occupies local z from -500 to 500. The genuine lead sphere clears that source support plane by more than 153 metres for the profiled hull and 180 metres for the classic Sidewinder. The sphere refusal is conservative: it does not establish a real mesh collision. Moving the mission or weakening clearance would hide this distinction.
-
-Keep authored coordinates, formation, fits, combat and rewards intact. Refine only current authenticated rescue-station clearance with a conservative proof covering its complete rigid source geometry. Unknown, stale, malformed or missing station facts must remain refused before any geometric fast pass.

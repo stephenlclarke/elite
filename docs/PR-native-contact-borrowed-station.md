@@ -1,5 +1,0 @@
-# fix(physics): look up borrowed contact station inertia without capture
-
-AsteroidContactFrame.init uses if-let station to perform the same nativeStations inertia lookup and assigns false when the identity is absent. This replaces only the optional map closure over borrowed Game. Snapshot data, meshes, station admission, collision/refusal budgets and contact behavior are unchanged; no Game or station world copy is introduced.
-
-Actual compiler diagnostics and unchanged-source/process/artifact evidence are retained under /tmp/elite-launch-compile-648. No tests ran; its mixed artifacts are unusable for current-source runtime acceptance. Scoped Swift formatting, Markdown and whitespace checks validate the source; corrected central compilation and already-authored native station contact/refusal/save regressions remain pending. No full CI, coverage percentage, sanitizer, leak or release acceptance is claimed. No GitHub issue or PR exists for this leaf. See the [issue](ISSUE-native-contact-borrowed-station.md).

@@ -1,7 +1,0 @@
-# Distinguish migration, persistence and combat failures in the central gate
-
-The complete central 021 gate failed with 76 assertions across 29 methods. Fourteen assertions across eight methods belong to the runtime/save/combat group audited here. They have separate causes: unconditional publication of an unchanged default salvage ledger, comparisons against pre-migration Commander values, a global empty-scene expectation despite an independently generated wreck, and a missile attribution fixture whose actual targeted launch enables counterfire before impact.
-
-The salvage publication defect has a separate [source fix and regression handoff](PR-salvage-pose-no-op.md). Save and startup tests must distinguish authorized equipment migration from later gameplay changes without discarding money, cargo, fuel, property, identity or rollback checks. A despawn test must identify its own distant actor. Missile attribution must exercise actual physical ordnance while preserving the separate full-flight interception scenario and the existing crime and retaliation rules.
-
-No complete gate, coverage, sanitizer or leak result can be inferred from these source corrections. Preserve the failed run and require focused execution followed by the complete integrated gate. See the [implementation handoff](PR-central-runtime-fixtures-021.md) and [021 failure evidence](CENTRAL-MATERIAL-GATE-ATTEMPT-021.json).

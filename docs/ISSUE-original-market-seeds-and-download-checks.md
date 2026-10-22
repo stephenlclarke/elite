@@ -1,3 +1,0 @@
-# Integrate reviewed market seed resources and README download validation
-
-Reviewed original market preparation and README download-link checks are ready for the next coherent candidate. The market payload preserves 2,048 original world joins and 34,816 initial quotes without duplicating the world catalogue or changing active trading. The download checker must inspect actual Markdown release links while ignoring fenced and indented examples, and distinguish public reachability from signature/notarization/install proof. Integrate exact reviewed source and data, including the required resource registration, without waiting for unrelated runtime activation. See the [integration note](PR-original-market-seeds-and-download-checks.md).

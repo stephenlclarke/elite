@@ -1,9 +1,0 @@
-# Six native fixture assumptions fail the hosted 5f release checkpoint
-
-Required quality39488530671 on5f64600d23ff55dea9c2f5e09304cf87b6354d53 records four located singleton failures and five parameter reports across two more methods. The assigned union is six methods/nine reports, not four issues. G1 owns full artifact/crash disposition; this batch establishes no SIGBUS cause or whole-suite result.
-
-Source proves stale premises in an actual-player centre ray, a cabin equipment budget and shop technology, an unchanged-name assertion, a smaller-tank pledge hull exchange, fresh native-station actor bindings after cold load, and an all-feasible procurement route pool. The independent source diagnosis is /tmp/elite-g2-5f64600d-six-method-triage/SIX-METHOD-SOURCE-TRIAGE.json, SHA25617aea5d42c9d749a115976783ba795cfa02fc022bfe9377693d3aafc8b3d12c4. Actual failures remain retained; no production defect is established by these fixture mismatches.
-
-M01 assignment: G2 owns the six selected test methods and at most one private sole-use campaign cold expectation helper in a separate exact5f isolate, plus this pair. Root coordinates the central ledger/review, G1 runs one matching focused qualification after the G10 executor lease. The assignment was recorded before edits at /tmp/elite-g2-hosted-5f-native-fixtures/ASSIGNMENT.json. No canonical ledger, production, generic fixture, G10 source or runtime/probe work is included. See [implementation and validation](PR-hosted-5f-fixtures.md).
-
-The independent eight-path review identified a P1 borrowed-parameter capture in the new cold expectation helper. Its scene facts must be projected before filter closures and Testing autoclosures; this is a compiler correction, with the full expected Commander and allocation/rebinding policy unchanged.

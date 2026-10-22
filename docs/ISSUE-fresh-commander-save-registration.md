@@ -1,5 +1,0 @@
-# Fresh native commanders have no durable save destination
-
-The app creates its runtime without a writer and binds one only after a successful restore or manual save. A fresh installation has no startup file; Start New after a failed restore also leaves the writer absent. Genuine launch creates station and calendar state requiring durability, so later equipment and station actions can refuse despite otherwise valid ownership. This gap was established by source inspection, not a native reproduction.
-
-Register a safe new destination before the interactive loop without writing Commander JSON or recording a successful save. Never reuse an invalid or missing previously selected path for a new commander. The first publication must atomically refuse a destination that appears after registration; preferences may acknowledge only a real successful write. Preserve existing restore, explicit file operations, Gallery isolation and actor ownership. See [the correction](PR-fresh-commander-save-registration.md).

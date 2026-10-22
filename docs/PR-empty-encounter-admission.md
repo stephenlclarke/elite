@@ -1,7 +1,0 @@
-# Return immediately when an encounter has no spawn requests
-
-Game.admitEncounterPlan returns an empty receipt list before actor adoption when every batch contains no requests. The physical tick retains its original adoption/initialization phases; every nonempty request runs the unchanged complete admission path. Intent execution remains with the existing native traffic owner. No station validity, context, collision, capacity, source or durable-save check for actual work is removed or cached unchecked.
-
-New tests require empty plans, including an explicit empty batch, to preserve the whole Commander, existing bodies, allocator/revision, notices, audio and runtime epoch without adopting an unrelated bare actor. A real nonempty request must still initialize and adopt the original scene, admit a physical actor, and reject a stale visit unchanged. The original complete patrol/docking test and existing native admission regressions remain the relevant integration checks.
-
-Source parsing/strict formatting and documentation lint precede review and execution. The previous 490.748-second test is an instrumented, briefly sampled baseline; it is not native rendering performance or a deadlock diagnosis. The same full flight and original test budget must be used after this change. This optimization was authored after validation 306 closed; its affected tests have not run yet, and no timing improvement is claimed before they complete.

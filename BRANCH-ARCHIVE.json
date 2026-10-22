@@ -1,0 +1,3356 @@
+{
+  "created_at": "2026-10-22T08:09:46.121478+00:00",
+  "purpose": "Preserve all pre-cleanup refs and non-ignored worktree source without mutating developer indexes or checkouts",
+  "refs": [
+    {
+      "ref": "refs/heads/archive/alias-focused-1172",
+      "sha": "0d6868ac2f7d8c39ffa41f0e0594a6573b57c9f7"
+    },
+    {
+      "ref": "refs/heads/archive/assisted-station-semantic-1257",
+      "sha": "3fa2e34da98fc2f8f5cdb80eb472ef1e1c96010c"
+    },
+    {
+      "ref": "refs/heads/archive/collection-context-positive-1209",
+      "sha": "6e85be0e6d16ba3b7a74818753e4f45953f49075"
+    },
+    {
+      "ref": "refs/heads/archive/controller-alias-renderer-1183",
+      "sha": "3d84f5d8fc22d018b758a674e8754bd3080f288e"
+    },
+    {
+      "ref": "refs/heads/archive/event-context-semantic-1266",
+      "sha": "d2818db81e386c7f0619c7bec873763a6847d96d"
+    },
+    {
+      "ref": "refs/heads/archive/final-G12-positive-1199",
+      "sha": "d5d0ac0999481efacb40bb814b34889ea78551e0"
+    },
+    {
+      "ref": "refs/heads/archive/g12-context-1175",
+      "sha": "eb45f35e3b58d59852c055a62ce491e86f035fa5"
+    },
+    {
+      "ref": "refs/heads/archive/g12-positive-1170",
+      "sha": "7eee3b0d943a4c9dc34f10df8587689b86e93288"
+    },
+    {
+      "ref": "refs/heads/archive/g12-reason-1187",
+      "sha": "b7a8ba73afe0c8229eddda355f389336f7d23f9f"
+    },
+    {
+      "ref": "refs/heads/archive/hull-row-reuse-semantic-1248",
+      "sha": "1463514461f0ac9d5f6920deca2bf852feaaea5a"
+    },
+    {
+      "ref": "refs/heads/archive/hull-vertex-basis-semantic-1253",
+      "sha": "922f1cdf5d59b17c2c3e314d814ee31d656c06a5"
+    },
+    {
+      "ref": "refs/heads/archive/identified-alias-semantic-1244",
+      "sha": "6bf70ec2d87c5cfbf01e5695a7eaad5db6e0e4a2"
+    },
+    {
+      "ref": "refs/heads/archive/identified-salvage-facts-semantic-1280",
+      "sha": "d3bdc83a3b969836b7ab715e431234067e7259fa"
+    },
+    {
+      "ref": "refs/heads/archive/moving-original-positive-1202",
+      "sha": "b3fe999546056f17d0c95270aa73411011ef5d1a"
+    },
+    {
+      "ref": "refs/heads/archive/native-ore-spin-positive-1205",
+      "sha": "40beef320da70325ac06448409c5bdff46dea8b3"
+    },
+    {
+      "ref": "refs/heads/archive/native-paged-wreck-base-55d57c4",
+      "sha": "55d57c4f5d1e3a61562cd13c55355d54051a48ad"
+    },
+    {
+      "ref": "refs/heads/archive/native-qualification-1143",
+      "sha": "319fa61d139ee126ab34d129ac5e0068c829e608"
+    },
+    {
+      "ref": "refs/heads/archive/native-qualification-1148",
+      "sha": "ee883306958b9f5d069a8d7a7abe1395ee431050"
+    },
+    {
+      "ref": "refs/heads/archive/ordnance-courier-semantic-1225",
+      "sha": "ec4e1305b1f596118c23f28218fcfbbe137b5915"
+    },
+    {
+      "ref": "refs/heads/archive/original-rescue-facts-semantic-1292",
+      "sha": "5c49fe3dddbe7200a5115e7a96560b665da01dcd"
+    },
+    {
+      "ref": "refs/heads/archive/pledge-preflight-semantic-1213",
+      "sha": "c76928188675704dbca59a7e9acc55cb58d6f44d"
+    },
+    {
+      "ref": "refs/heads/archive/private-G12-admission-fail-1261",
+      "sha": "4bdb18b12b56897441d94b53f393aeea00282606"
+    },
+    {
+      "ref": "refs/heads/archive/private-G12-progress-sample-1241",
+      "sha": "02dacde51e1f3ecced79eb56c7399f6b789c9d88"
+    },
+    {
+      "ref": "refs/heads/archive/private-G12-reserved-fit-1233",
+      "sha": "79c5dbbb012d66745bd3dd216c7683946c06612f"
+    },
+    {
+      "ref": "refs/heads/archive/private-G12-row-timeout-1250",
+      "sha": "e098d5104636f6c398daa4c114a7bcad3841e569"
+    },
+    {
+      "ref": "refs/heads/archive/private-cabin-compiler-fail-1269",
+      "sha": "b70cb3cda2c72589bbe472459553d701f0d1b347"
+    },
+    {
+      "ref": "refs/heads/archive/private-cabin-macro-fail-1273",
+      "sha": "235be191591f6bf8fefa7224beb5fa7b04e9c924"
+    },
+    {
+      "ref": "refs/heads/archive/private-cabin-shortcircuit-fail-1271",
+      "sha": "34c671ccf2408cc98b0c45b90decffbfef3c3b95"
+    },
+    {
+      "ref": "refs/heads/archive/private-cabins-market-fail-1284",
+      "sha": "ccfef9c4879736758b002ac9800c1bca6f306b86"
+    },
+    {
+      "ref": "refs/heads/archive/private-cabins-phase2-fail-1277",
+      "sha": "fa26e5258bd96c0e0763a75d611518f6b876b736"
+    },
+    {
+      "ref": "refs/heads/archive/private-cabins-qualified-1290",
+      "sha": "336541c037f18b1a1b177ce911d16b3b541fa92e"
+    },
+    {
+      "ref": "refs/heads/archive/private-current-release-fixtures-1308",
+      "sha": "853cfb29a29301c82327d22a1d1ce9e76677de2e"
+    },
+    {
+      "ref": "refs/heads/archive/private-g12-oreclock-timeout-1303",
+      "sha": "71bafcde9da1abcf3c12c8bcb4f7daa417eb3a6d"
+    },
+    {
+      "ref": "refs/heads/archive/private-g12-protected-clock-1306",
+      "sha": "50ae1143ca719fb2b4627414beef6a88c3c990d4"
+    },
+    {
+      "ref": "refs/heads/archive/private-qualified-w04-adapter-1318",
+      "sha": "50046eb87044ae8ba416ebddf61bdec330c43c15"
+    },
+    {
+      "ref": "refs/heads/archive/private-release-contact-observation-1314",
+      "sha": "3fe96a3a4aec948a84a17257972037692f7ce0fc"
+    },
+    {
+      "ref": "refs/heads/archive/private-w04-adapter-1312",
+      "sha": "fe6ed5962ca87063df010aac27502f8fdd6bb302"
+    },
+    {
+      "ref": "refs/heads/archive/private-w04-adapter-compile-failure-1309",
+      "sha": "2ef9a74024df99160c67fdcae0705d20a087f9bc"
+    },
+    {
+      "ref": "refs/heads/archive/private-w04-adapter-compile-failure-1310",
+      "sha": "780355537833f54566e85bc580f4402b6a66131c"
+    },
+    {
+      "ref": "refs/heads/archive/private-w04-offer-fit-1316",
+      "sha": "e309efc0cfdf49955b769604e0168dc34baaa9d6"
+    },
+    {
+      "ref": "refs/heads/archive/private-w04-utility-qualified-1301",
+      "sha": "c4a4e2893d5652f4ae539f6409d55a0f7b91ea70"
+    },
+    {
+      "ref": "refs/heads/archive/public-collision-station-1258",
+      "sha": "97f7a20bd9311faaa1ef89ae089a9c38900ab73c"
+    },
+    {
+      "ref": "refs/heads/archive/public-event-context-render-1267",
+      "sha": "e2b85658d0703aab910fb93163762833454be17d"
+    },
+    {
+      "ref": "refs/heads/archive/public-identified-alias-renderer-1245",
+      "sha": "f9694901d6862adc90ded529e782e978ddf82c68"
+    },
+    {
+      "ref": "refs/heads/archive/public-query-ore-renderer-1226",
+      "sha": "fe01a05387815a513f4dc3d04328f3bd4a34b4a3"
+    },
+    {
+      "ref": "refs/heads/archive/public-record-renderer-1236",
+      "sha": "3fcc544ea3e73e6d500ff85ca924b66a604c4385"
+    },
+    {
+      "ref": "refs/heads/archive/public-salvage-facts-render-1281",
+      "sha": "902c53de52b3a29c7366a08d4afb9db23d3fb050"
+    },
+    {
+      "ref": "refs/heads/archive/reader-help-renderer-1191",
+      "sha": "64e031df9a83c9a01e634035f11292e960c98846"
+    },
+    {
+      "ref": "refs/heads/archive/record-selection-semantic-1235",
+      "sha": "f73281db05a0b7d37a6dbb8d9c998cde6647392b"
+    },
+    {
+      "ref": "refs/heads/archive/regular-ore-clock-qualified-1287",
+      "sha": "23a3495bba050dc8009b7d9cfd3964f9b546ce40"
+    },
+    {
+      "ref": "refs/heads/backup/source-20261021T154939Z",
+      "sha": "41c15aed9d2684cc2708077a16f6b8aef576be31"
+    },
+    {
+      "ref": "refs/heads/blackjack-bullion-mission",
+      "sha": "58d2b5890b9248a7ff037843be8f7270a3b6ca41"
+    },
+    {
+      "ref": "refs/heads/chore/fatal-combat-telemetry",
+      "sha": "f6b74c67cc4809321271adc1191afd7beb44a399"
+    },
+    {
+      "ref": "refs/heads/chore/repository-maintenance-readiness",
+      "sha": "1d604d43d17b91272c230d76d186c5b0f32a7b7b"
+    },
+    {
+      "ref": "refs/heads/dependency-maintenance",
+      "sha": "617b56d07f4b5ee8d59e5ed32370d86c28991d3e"
+    },
+    {
+      "ref": "refs/heads/docs/completion-ledger",
+      "sha": "5676341e31e06d27b76440108d427cde32186a99"
+    },
+    {
+      "ref": "refs/heads/docs/completion-ledger-assignment-740",
+      "sha": "1ac3472b5030feda40983c8bfb7381c322bc36da"
+    },
+    {
+      "ref": "refs/heads/docs/completion-ledger-mba-r2",
+      "sha": "0ba92b55540151516fa268adf285eadc17e69032"
+    },
+    {
+      "ref": "refs/heads/docs/completion-ledger-mba05",
+      "sha": "eb1da3c41697cc9cf3300325442b7e0d39eafdb8"
+    },
+    {
+      "ref": "refs/heads/docs/completion-ledger-reconciliation",
+      "sha": "d50c23f47203d62a647f7b48c3b9b6fb773982eb"
+    },
+    {
+      "ref": "refs/heads/docs/mission-engine-completion-assessment",
+      "sha": "52a0d02f2b1c55eda11c0a24808e82b2ac386904"
+    },
+    {
+      "ref": "refs/heads/docs/module-template-check-wording",
+      "sha": "748e44d9bd7d8bccdcc773405d75827cbd103144"
+    },
+    {
+      "ref": "refs/heads/docs/npc-resource-handoff",
+      "sha": "08c878ac2a63dc178a407c1ded091c7e59e34b6c"
+    },
+    {
+      "ref": "refs/heads/docs/verified-frame-cadence-results",
+      "sha": "2216d2a36859e940fae1040531f8a04f541065e5"
+    },
+    {
+      "ref": "refs/heads/feat/alien-attachment-ledger",
+      "sha": "f8e7673d2b74152fe44167a4f6acffe6fe87cbe4"
+    },
+    {
+      "ref": "refs/heads/feat/alien-companion-custody",
+      "sha": "7baf57786a5c1584fdeca6a62345b52b2ac9862a"
+    },
+    {
+      "ref": "refs/heads/feat/alien-missile-silhouette",
+      "sha": "4b914577a114f0b86d7e51461019a9cdfc4bcae5"
+    },
+    {
+      "ref": "refs/heads/feat/alien-module-loot-producer",
+      "sha": "be64d06677500ec9e3ee90f2efa9bc20f18e7b13"
+    },
+    {
+      "ref": "refs/heads/feat/alien-ordinary-fit-boundary",
+      "sha": "5099a8f9a55bfa9a767f7ceaff0ed945a2808280"
+    },
+    {
+      "ref": "refs/heads/feat/alien-storage-pages",
+      "sha": "f8367c3dd21b978496eb3bd261cd7bb58e51d311"
+    },
+    {
+      "ref": "refs/heads/feat/alien-validated-state-cache",
+      "sha": "57855281df722e721b2e079367cd02aa30c54910"
+    },
+    {
+      "ref": "refs/heads/feat/alien-versioned-cache",
+      "sha": "aa82cec45c1087af3dc4d6dc492f14fa6c2080d0"
+    },
+    {
+      "ref": "refs/heads/feat/anarchy-encounter-dispositions",
+      "sha": "99fa69ce373d473d668aa323cb2c0fc25058cdd9"
+    },
+    {
+      "ref": "refs/heads/feat/asteroid-rings",
+      "sha": "a8469a8c47da8450458efdeb15c7adf5f4d0ed26"
+    },
+    {
+      "ref": "refs/heads/feat/asteroid-swept-impacts",
+      "sha": "607050938684de7c0fb7e3086c288b7104c43ca8"
+    },
+    {
+      "ref": "refs/heads/feat/authored-finance-interest",
+      "sha": "78c3133c762923ba57cd878fd00d4d71fc956519"
+    },
+    {
+      "ref": "refs/heads/feat/base-clue-journal",
+      "sha": "e3f0c63ad03532ef5c04785775c14a866e0952a0"
+    },
+    {
+      "ref": "refs/heads/feat/economy-planet-appearance",
+      "sha": "45a01f3e06023f0d1e1fdb413d702c17dc625316"
+    },
+    {
+      "ref": "refs/heads/feat/economy-ring-runtime",
+      "sha": "64c16ec3e2cee4b992d3a34c00243e4e60e30e19"
+    },
+    {
+      "ref": "refs/heads/feat/economy-weighted-ring-presence",
+      "sha": "8e63857f933db90ac8dbcd424c0058800ae015e5"
+    },
+    {
+      "ref": "refs/heads/feat/electrical-emp-runtime",
+      "sha": "6cd135a9aee2a16cbf81f8cba86af9828aa3322f"
+    },
+    {
+      "ref": "refs/heads/feat/emp-pirate-blaster",
+      "sha": "64d26899618259541058c863049ee42e00262ffa"
+    },
+    {
+      "ref": "refs/heads/feat/emp-pulse-profile",
+      "sha": "6d496c2b48a468deab6bf9734347b30800560927"
+    },
+    {
+      "ref": "refs/heads/feat/encounters-mining",
+      "sha": "26370358b53ebb598d59204cf35b7f653d10f2e1"
+    },
+    {
+      "ref": "refs/heads/feat/equipment-actor-boundary",
+      "sha": "7039291983265d88e473b1627a6a432335052e39"
+    },
+    {
+      "ref": "refs/heads/feat/equipment-ownership-ui",
+      "sha": "d25ab7ce4fea851a1fd4b355680f2125cae4d71b"
+    },
+    {
+      "ref": "refs/heads/feat/generated-procurement",
+      "sha": "48895b01c8254a43bd31ef9e4954216e4678411b"
+    },
+    {
+      "ref": "refs/heads/feat/generated-supplied-freight",
+      "sha": "27ec730ed696a25fc566030b9d2cebabe25c13e7"
+    },
+    {
+      "ref": "refs/heads/feat/homebrew-distribution",
+      "sha": "a92d83c104acba2a9e7f9611c51f4e4de75fac1f"
+    },
+    {
+      "ref": "refs/heads/feat/hull-obstacle-clearance",
+      "sha": "6b2f9a72b625f8eb8d92158fc6cdfc1e11f05afa"
+    },
+    {
+      "ref": "refs/heads/feat/hull-placement-validation",
+      "sha": "5c799d35ec7358504c0b0ed38bb46b3a63cea16f"
+    },
+    {
+      "ref": "refs/heads/feat/hull-scene-motion",
+      "sha": "db1fcb2b87627cdf0d3a479b6bbd002e97afb000"
+    },
+    {
+      "ref": "refs/heads/feat/hyperspace-drive-profiles",
+      "sha": "82c511e061551ba28787e9a923b16db69b274e3c"
+    },
+    {
+      "ref": "refs/heads/feat/inventory-action-display",
+      "sha": "46e46d94ecf9a58b5e08fdff80804b0ac42dd299"
+    },
+    {
+      "ref": "refs/heads/feat/l337-startup-defaults",
+      "sha": "a71a13e1170c1c6824a85296933b5b252becd17a"
+    },
+    {
+      "ref": "refs/heads/feat/mission-ledger-impact",
+      "sha": "c68b70770eb84b6a9621e5dc35980e5a82c1d9e8"
+    },
+    {
+      "ref": "refs/heads/feat/mission-pack-input-routing",
+      "sha": "e1a257e78aca69271e3880364dc18ac80e2259dd"
+    },
+    {
+      "ref": "refs/heads/feat/mission-ui-composition",
+      "sha": "58d086b5f38ac528f02f1536942a5058bb240de2"
+    },
+    {
+      "ref": "refs/heads/feat/modular-hyperspace-runtime",
+      "sha": "9010b1e0f279030dd91077bc6420291468d3a7e3"
+    },
+    {
+      "ref": "refs/heads/feat/most-wanted-board",
+      "sha": "7f74523fb6e7bd33b17fa5b3c6804e50436de91e"
+    },
+    {
+      "ref": "refs/heads/feat/native-alien-custody",
+      "sha": "05a2b2fcb0a334c9d5c46e62de6b1af04141ef60"
+    },
+    {
+      "ref": "refs/heads/feat/native-alien-salvage",
+      "sha": "bd2950546a3a7592c68ecb8107a8946b3d87d86b"
+    },
+    {
+      "ref": "refs/heads/feat/native-flight-control-authority",
+      "sha": "c5f27078d4aa42f401f9072aa285eec1461dc3da"
+    },
+    {
+      "ref": "refs/heads/feat/native-npc-wormhole-transit",
+      "sha": "bb0751841df1f7ac93c0a37f187850a9bf260d88"
+    },
+    {
+      "ref": "refs/heads/feat/native-paged-wreck-work",
+      "sha": "317a82ff9f24e58327fa8f5189381d60aa12a70f"
+    },
+    {
+      "ref": "refs/heads/feat/native-station-state",
+      "sha": "94f87742689e2828895a3cfaf551ca16eb466185"
+    },
+    {
+      "ref": "refs/heads/feat/native-work-hold-selection",
+      "sha": "73bea49bebe883bb3a088418292438196f53d15d"
+    },
+    {
+      "ref": "refs/heads/feat/navigation-trade-practice",
+      "sha": "e0f0840cadc359a5b1ad6d05bac14d00702c45f1"
+    },
+    {
+      "ref": "refs/heads/feat/npc-producer-facts",
+      "sha": "efaa500463b78bc9eee172a1689c09583fec0eae"
+    },
+    {
+      "ref": "refs/heads/feat/original-fleet-showroom-models",
+      "sha": "25f03817ccad8946d594dbceb7fc7b1f093fe2d7"
+    },
+    {
+      "ref": "refs/heads/feat/original-world-catalogue",
+      "sha": "77310ea943fc641e2121460c40b09cef76ed7409"
+    },
+    {
+      "ref": "refs/heads/feat/original-world-production",
+      "sha": "f67fac58315a0ea51464391d456c710dc70f9c48"
+    },
+    {
+      "ref": "refs/heads/feat/owned-equipment",
+      "sha": "a8d5844acb6d6ca4fd8cf70c479ddc66ff0a34a7"
+    },
+    {
+      "ref": "refs/heads/feat/passenger-cabin-shop",
+      "sha": "80033b7b1afae9cf53824ce4193544d81bbd902d"
+    },
+    {
+      "ref": "refs/heads/feat/passenger-showroom-facts",
+      "sha": "f5809794cdb34f6b58fc4d40608b34dd8af7d69f"
+    },
+    {
+      "ref": "refs/heads/feat/physical-asteroid-fragments",
+      "sha": "c8a7e2838b684d4c6ef4cf151b6a6947ba7a4094"
+    },
+    {
+      "ref": "refs/heads/feat/planet-native-frame-profile",
+      "sha": "be8658540837c20ce037739eb4b392a0db292236"
+    },
+    {
+      "ref": "refs/heads/feat/planet-night-lighting",
+      "sha": "08877df7e181f650e4a2547205a90a544790be6b"
+    },
+    {
+      "ref": "refs/heads/feat/planet-night-sun",
+      "sha": "fd3a24ea1f3e4986e12a9aaf15b0268010365604"
+    },
+    {
+      "ref": "refs/heads/feat/recovered-feature-devices",
+      "sha": "069159006677b483fe253796b26cf0c23939789e"
+    },
+    {
+      "ref": "refs/heads/feat/relative-work-collection-offset",
+      "sha": "53d89c9a1d594e7b6080a15b3a138993b3d28d01"
+    },
+    {
+      "ref": "refs/heads/feat/relative-work-motion-output",
+      "sha": "9f2b1bee83cd3f4394c074a8a263e572b16ce88a"
+    },
+    {
+      "ref": "refs/heads/feat/rrs-courier-gallery",
+      "sha": "44dbdf62913c4f950cb5e0cfd8e0fcf97e5eab6d"
+    },
+    {
+      "ref": "refs/heads/feat/rrs-native-station-boundary",
+      "sha": "4236c87951893ef09378ae3150cb7c3b10be2982"
+    },
+    {
+      "ref": "refs/heads/feat/salvage-component-effects",
+      "sha": "60dd6686aef0862572155dbe53bc3b11a39f4594"
+    },
+    {
+      "ref": "refs/heads/feat/salvage-wreck-terminal",
+      "sha": "4009a2f16f8cb6a4113fd854d1100e6bca34648e"
+    },
+    {
+      "ref": "refs/heads/feat/scoop-approach-controller",
+      "sha": "ac5956cfb1d46b9844fb9a02a85fc24e0043f5a1"
+    },
+    {
+      "ref": "refs/heads/feat/ship-capital-station-hierarchy",
+      "sha": "454514e0c15bbb3988993f9c5648d103ee518433"
+    },
+    {
+      "ref": "refs/heads/feat/ship-catalogue-blueprint-metadata",
+      "sha": "326e67a0db8286f16a35cd38ba86129f317a2dee"
+    },
+    {
+      "ref": "refs/heads/feat/ship-catalogue-roles-cargo",
+      "sha": "b1ec8d1d215af29c4d83aa39389d740adc0a4aa7"
+    },
+    {
+      "ref": "refs/heads/feat/ship-texture-pixels",
+      "sha": "2a4bb09d8f0c673b80b09a4d34b55bb8a5bcc54d"
+    },
+    {
+      "ref": "refs/heads/feat/startup-metal-panels",
+      "sha": "ede7e04b985b36c4e6cf4f1c779f11306bb752c6"
+    },
+    {
+      "ref": "refs/heads/feat/startup-native-frame-observation",
+      "sha": "932702e22e3770216b2894aaddedd497378d4905"
+    },
+    {
+      "ref": "refs/heads/feat/station-autonomous-defence",
+      "sha": "8ccec4e9bdbfd56dd74f3d955d05eeb776eb7271"
+    },
+    {
+      "ref": "refs/heads/feat/work-target-selection",
+      "sha": "2df7844c028d0ca52a0a8f78dfbe5c5dbb5a442c"
+    },
+    {
+      "ref": "refs/heads/feature/alien-storage-legacy-normalization",
+      "sha": "6b57c7a5a4960d5c82fd7adf77ca28e7f6daee0f"
+    },
+    {
+      "ref": "refs/heads/feature/authored-market-order",
+      "sha": "0aac86588b71477884bee10f021cd8a63e6b0ed1"
+    },
+    {
+      "ref": "refs/heads/feature/cabin-restart-preview",
+      "sha": "5bc1030d3458beb9ae8b0d249416f2a298968db5"
+    },
+    {
+      "ref": "refs/heads/feature/canonical-mission-composition",
+      "sha": "fcf0e348fd3fca74f0f484d3e659cd96aac0a182"
+    },
+    {
+      "ref": "refs/heads/feature/ci955-fixture-qualification",
+      "sha": "02adb9ab09640ea1d977c1335cd6c7b131cc7b03"
+    },
+    {
+      "ref": "refs/heads/feature/equipment-runtime",
+      "sha": "27d8b523276f6387c366450e5ddc2e0228692ef9"
+    },
+    {
+      "ref": "refs/heads/feature/fixture-union-qualification-recovery",
+      "sha": "f44483c7655acb04fb9b346adf3cc6994a34b40b"
+    },
+    {
+      "ref": "refs/heads/feature/freight-save-gates",
+      "sha": "9dc27460e2f5840e04245399eabe72b3d3345d1a"
+    },
+    {
+      "ref": "refs/heads/feature/game-over-start-qualification",
+      "sha": "baf144c7d3403af65371d43ea028c0155e11937d"
+    },
+    {
+      "ref": "refs/heads/feature/gameplay-ecology",
+      "sha": "f74fa53529594126bc393e4b80b952d7f547ba43"
+    },
+    {
+      "ref": "refs/heads/feature/guiding-light-provider-contract",
+      "sha": "a495f33ccd1180eff8ba8f24f90e5a1fd79f3995"
+    },
+    {
+      "ref": "refs/heads/feature/hosted510-native-prerequisites",
+      "sha": "213fa8f1fd8ff5fb291218a2203e7fc9bf57d4cb"
+    },
+    {
+      "ref": "refs/heads/feature/hosted510-police-entry-fixture",
+      "sha": "08a73f46144c09159426eead60c74253bc0cabcd"
+    },
+    {
+      "ref": "refs/heads/feature/inventory-property-groups",
+      "sha": "93cb9aa0fa694af7c2e57607599db1e84eebafc1"
+    },
+    {
+      "ref": "refs/heads/feature/legacy-spawn-fixture",
+      "sha": "30a84e70e6c1ae0e7281a7ef59e6d7235af6d972"
+    },
+    {
+      "ref": "refs/heads/feature/main-station-capacity-qualification",
+      "sha": "8fa5b2e0996bc39afad0992053863673c2f977dc"
+    },
+    {
+      "ref": "refs/heads/feature/main-station-stack-qualification",
+      "sha": "70955984236c2941bede6e43589485e7131850d8"
+    },
+    {
+      "ref": "refs/heads/feature/main-station-start-qualification",
+      "sha": "e439aba53959d7b38d4a82e82d1780c910b173b0"
+    },
+    {
+      "ref": "refs/heads/feature/mission-campaign-gallery",
+      "sha": "644fb9c2de2fc1667268f17e96bb69fd5c8296aa"
+    },
+    {
+      "ref": "refs/heads/feature/mission-canonical-adapters",
+      "sha": "c019f8ced29e502614ea4a0b127ad667308b4047"
+    },
+    {
+      "ref": "refs/heads/feature/mission-canonical-composition",
+      "sha": "3ff13af5ee1350cba85af542023b1ac5f78fa1d6"
+    },
+    {
+      "ref": "refs/heads/feature/mission-couriers",
+      "sha": "d2ec62aa759f68f211e253557f45e910907259c8"
+    },
+    {
+      "ref": "refs/heads/feature/mission-finance-obligations",
+      "sha": "73ca30b5daba33b539e20d027cfd494356013036"
+    },
+    {
+      "ref": "refs/heads/feature/mission-finance-service",
+      "sha": "67a12948f2509c4b2b65a1289d1e58d324c12d9b"
+    },
+    {
+      "ref": "refs/heads/feature/mission-save-continuity-fixtures",
+      "sha": "b638c7efab2566beec294ee3edeb9ad2aeebb231"
+    },
+    {
+      "ref": "refs/heads/feature/mission-station-pledges",
+      "sha": "09e47580fe20a8be6ed5c4eb7cbe1390131175f9"
+    },
+    {
+      "ref": "refs/heads/feature/native-contact-repair-delivery",
+      "sha": "d77fb1dfea26b85a2bf112cdcb1f7f027017a1eb"
+    },
+    {
+      "ref": "refs/heads/feature/native-crimbo-attained-motion",
+      "sha": "f453ab33ccf6fd78d1891ca17670232890622022"
+    },
+    {
+      "ref": "refs/heads/feature/native-crimbo-contact-proof",
+      "sha": "f0b2331d51b451161f983d554de9e7221b3e3619"
+    },
+    {
+      "ref": "refs/heads/feature/native-crimbo-convoy",
+      "sha": "fd311b655d01eaed6fc8eea9106d997932b35fe9"
+    },
+    {
+      "ref": "refs/heads/feature/native-crimbo-lifecycle",
+      "sha": "22f2174e235fa8fb17b614569efe54d340b6874b"
+    },
+    {
+      "ref": "refs/heads/feature/native-crimbo-lifecycle-reviewed",
+      "sha": "22f2174e235fa8fb17b614569efe54d340b6874b"
+    },
+    {
+      "ref": "refs/heads/feature/native-crimbo-metric-observation",
+      "sha": "a403b3b8a539e90df26727c9257e12bb476bd9fd"
+    },
+    {
+      "ref": "refs/heads/feature/native-docking-emp-qualification",
+      "sha": "e01534c9e3e3cff2c210b53656071304132de32a"
+    },
+    {
+      "ref": "refs/heads/feature/native-people-custody",
+      "sha": "9a4ef0ba2680527dd2c607a5adcfcefddd9b23eb"
+    },
+    {
+      "ref": "refs/heads/feature/native-practice-provider",
+      "sha": "235719f0ac4917293e53f566a2f39154fb31001e"
+    },
+    {
+      "ref": "refs/heads/feature/native-rrs-composition",
+      "sha": "3c6cafd27fdbb736dfd6765213da0a4810a5a856"
+    },
+    {
+      "ref": "refs/heads/feature/native-rrs-station-runtime",
+      "sha": "74ac43e4e30b33134cbbaab5263437d8b6c63235"
+    },
+    {
+      "ref": "refs/heads/feature/native-window-fixtures",
+      "sha": "a804f245c4baf3668b22393206a43a048465739a"
+    },
+    {
+      "ref": "refs/heads/feature/naval-fixture-qualification",
+      "sha": "237edda2386ee7fcd35a733840afb368eed0ba77"
+    },
+    {
+      "ref": "refs/heads/feature/navigation-shield-fixture-qualification",
+      "sha": "2782c4f25a9836462fb36f7262f481b674317f13"
+    },
+    {
+      "ref": "refs/heads/feature/npc-resources-persistence",
+      "sha": "5ed23eb968863179068776ba3bf20454542b17d2"
+    },
+    {
+      "ref": "refs/heads/feature/orbit-formation-controller",
+      "sha": "5034b8c4776d20fca2d1b16b4b08aab306ae09fa"
+    },
+    {
+      "ref": "refs/heads/feature/ordnance-equipment-integration",
+      "sha": "8752b10518c64292c2a41778d26edd4151c06b2d"
+    },
+    {
+      "ref": "refs/heads/feature/profit-fixture-qualification",
+      "sha": "8ea1d952b1632a31c7f1845056fe1477cf80db1c"
+    },
+    {
+      "ref": "refs/heads/feature/release-composition",
+      "sha": "987dbda88444be13fdb30feb9baae07cd95068e6"
+    },
+    {
+      "ref": "refs/heads/feature/route-alternatives",
+      "sha": "6929d4b13206023d897452ab2258625e22da8132"
+    },
+    {
+      "ref": "refs/heads/feature/rrs-documents-courier",
+      "sha": "55a3860a72dd4959919ee74c4b2aadb307c3e43a"
+    },
+    {
+      "ref": "refs/heads/feature/script-cash-fixture-qualification",
+      "sha": "f87153352a88729a02a63fc521db8da2261140a6"
+    },
+    {
+      "ref": "refs/heads/feature/scriptable-mission-engine",
+      "sha": "58d707ad7f15a2bd270d854a9d4babdcf67a4628"
+    },
+    {
+      "ref": "refs/heads/feature/showroom-comparison",
+      "sha": "8afe2415bcd47e62bfd1713163dc0e53d3b0dd2d"
+    },
+    {
+      "ref": "refs/heads/feature/station-clear-police-entry-fixture",
+      "sha": "62cdc9bc1e48231b9a73317538afffd10b5ddab8"
+    },
+    {
+      "ref": "refs/heads/feature/station-hull-budget-qualification",
+      "sha": "20d654c30214290b159d60acbd8468c077bfd107"
+    },
+    {
+      "ref": "refs/heads/feature/station-police-course-observation",
+      "sha": "162eadb41f6db18104bd09e93ff3646c78fd5504"
+    },
+    {
+      "ref": "refs/heads/feature/typed-ordnance-runtime",
+      "sha": "a13e490c93de13f67845b0d4d9d791bfea9744da"
+    },
+    {
+      "ref": "refs/heads/feature/wayfarer-charter-audit",
+      "sha": "235719f0ac4917293e53f566a2f39154fb31001e"
+    },
+    {
+      "ref": "refs/heads/feature/wayfarer-record-qualification",
+      "sha": "9794a339048edc72aa6c063ec9f63088d7f6d0e2"
+    },
+    {
+      "ref": "refs/heads/feature/wayfarer-seed-service",
+      "sha": "235719f0ac4917293e53f566a2f39154fb31001e"
+    },
+    {
+      "ref": "refs/heads/feature/worktool-fixture-qualification",
+      "sha": "950e46ec988603930fc1c591d461ad131cd99774"
+    },
+    {
+      "ref": "refs/heads/fix/actor-local-script-attempts",
+      "sha": "21265eb88da26ca64ea872bfe42b44d7b7d282d3"
+    },
+    {
+      "ref": "refs/heads/fix/alien-attachment-source-validation",
+      "sha": "dff73b4a1f5b9467e674d6c10e0adf56f79aa7e3"
+    },
+    {
+      "ref": "refs/heads/fix/alien-missile-relative-strength",
+      "sha": "96c772f9201319f1a93f48d0080d45530afde4d0"
+    },
+    {
+      "ref": "refs/heads/fix/ambient-engagement-after-crime",
+      "sha": "1145cf20a09003ebba585b9ed5e571f9bdf3aa88"
+    },
+    {
+      "ref": "refs/heads/fix/asteroid-contact-fastpath",
+      "sha": "93591f9abba2df43d0cd9876d211243dd779494e"
+    },
+    {
+      "ref": "refs/heads/fix/atomic-dock-preparation",
+      "sha": "11ff22bcc62774cc585277df03760e37b3b51c67"
+    },
+    {
+      "ref": "refs/heads/fix/autotarget-docking-diagnostics",
+      "sha": "b72bc26728d56da16ce2b93ccde490762e775264"
+    },
+    {
+      "ref": "refs/heads/fix/batched-publication-lifetimes",
+      "sha": "929f606a393c99a20910b0ba8f47adb3af61799d"
+    },
+    {
+      "ref": "refs/heads/fix/cabin-fixture-compile",
+      "sha": "3bef372dada6bbf7a4082807d1985b32d6fc5c29"
+    },
+    {
+      "ref": "refs/heads/fix/calendar-identity-fixtures",
+      "sha": "b20922e1d264b05ce76bc94767c7db65e43dbb4e"
+    },
+    {
+      "ref": "refs/heads/fix/campaign-child-acceptance-lifetimes",
+      "sha": "ba29dd0c82d57dfe2dd74561add1ed68b43d7db8"
+    },
+    {
+      "ref": "refs/heads/fix/campaign-child-context-ownership",
+      "sha": "2a257d809c1fa9ada94135be8467bc7d9cb493cf"
+    },
+    {
+      "ref": "refs/heads/fix/campaign-validation-value-inputs",
+      "sha": "2982313a45cfa58f32812886a30efed03d01f4be"
+    },
+    {
+      "ref": "refs/heads/fix/catalogue-query-lifetimes",
+      "sha": "98c84c8f96687f77d2ae597f255d77e31629774a"
+    },
+    {
+      "ref": "refs/heads/fix/commander-cow-storage",
+      "sha": "d0dcf063c19c4a05b21975077956c70bb9cb0b40"
+    },
+    {
+      "ref": "refs/heads/fix/commander-read-forwarding",
+      "sha": "cdec2132ef895d80647e78cf2866e7540df84df3"
+    },
+    {
+      "ref": "refs/heads/fix/committed-ship-profile-events",
+      "sha": "6cae2b9834984f7ab8b759c40a1d6675a3ad3df9"
+    },
+    {
+      "ref": "refs/heads/fix/context-control-hints",
+      "sha": "dcf22e6b7afe5413fc2bf1fa6da3829fe4358ae9"
+    },
+    {
+      "ref": "refs/heads/fix/contract-board-summary-timeout",
+      "sha": "28e2c30ed0779a2ebf56cf58f0e2aaf2c4bea22a"
+    },
+    {
+      "ref": "refs/heads/fix/contract-validation-lifetimes",
+      "sha": "f18741374ceb6a6a49228c53a5ccd43e6403d75a"
+    },
+    {
+      "ref": "refs/heads/fix/craft-aware-docking-cruise",
+      "sha": "117d87517378d471141899e2baf521f279230156"
+    },
+    {
+      "ref": "refs/heads/fix/crimbo-native-entry-fixture",
+      "sha": "b4b4a2ca20e995d7388c1f8704c088d1ad4b8a09"
+    },
+    {
+      "ref": "refs/heads/fix/crimbo-original-cohort-readmission",
+      "sha": "4ac6848cbef26548ff4b39bbccc09cb0a6dc9d57"
+    },
+    {
+      "ref": "refs/heads/fix/crimbo-test-macro-operands",
+      "sha": "7468ff59608f7d9b48c2af82cb3eb8f7de87454e"
+    },
+    {
+      "ref": "refs/heads/fix/current-equipment-preparation-stack",
+      "sha": "af995f778e9bdbc72829ecec1e50b34b0fa03eda"
+    },
+    {
+      "ref": "refs/heads/fix/current-native-restore-fixtures",
+      "sha": "8156f0a2e721cd499d4c57138937c292e741568f"
+    },
+    {
+      "ref": "refs/heads/fix/current-native-restore-phases",
+      "sha": "f661c2dc4958be7f68be0f55a3db754c17a48cf9"
+    },
+    {
+      "ref": "refs/heads/fix/current-save-market-reach-fixtures",
+      "sha": "29d620ebe05e0f363d64803c48fc6d98428f8ebc"
+    },
+    {
+      "ref": "refs/heads/fix/current-wanted-save-bindings",
+      "sha": "c1f7ebad68f3ce187b66ed99e4d954fe87a9a921"
+    },
+    {
+      "ref": "refs/heads/fix/effective-drive-policy-validation",
+      "sha": "37a328d49959890239bfed03624234a9bc4f90c5"
+    },
+    {
+      "ref": "refs/heads/fix/effective-save-calendar-expectation",
+      "sha": "cc5362c3cc953ac5c173112d4e57a2717404a9c3"
+    },
+    {
+      "ref": "refs/heads/fix/effective-test-borrow-captures",
+      "sha": "ff73b7271ae5ac4af4fea53019a55635e41a8f97"
+    },
+    {
+      "ref": "refs/heads/fix/emp-archive-stack",
+      "sha": "f4e419b8ecdcc96ad9e1048ec6c6aa3c5a9ecddc"
+    },
+    {
+      "ref": "refs/heads/fix/emp-capture-branches",
+      "sha": "11004ba758949473d83c07e474d4e1972bfb4ed5"
+    },
+    {
+      "ref": "refs/heads/fix/emp-census-phases",
+      "sha": "630dac46d3244f6dce5b366e1ed4610c1a3b9656"
+    },
+    {
+      "ref": "refs/heads/fix/emp-disable-transition-lifetime",
+      "sha": "814f4f9dfb79ebbe80ab700ba0d3845ad77ec9f1"
+    },
+    {
+      "ref": "refs/heads/fix/emp-disable-weapons-and-threat-cues",
+      "sha": "d80ccce778475231eb9e24f25f8a59b294e6df44"
+    },
+    {
+      "ref": "refs/heads/fix/emp-fixture-reachable-routes",
+      "sha": "22b63ccff5fa2da9e85210e342cd97c281022d7b"
+    },
+    {
+      "ref": "refs/heads/fix/emp-legacy-native-catalogue",
+      "sha": "4689703ce74baa65f8b7eac8cb6653c78934e4bc"
+    },
+    {
+      "ref": "refs/heads/fix/emp-manual-fire-interruption",
+      "sha": "385d935875ca81f3dc2dad77a3114b7b553cb130"
+    },
+    {
+      "ref": "refs/heads/fix/emp-publication-lifetimes",
+      "sha": "88522aebdc62535dcc6de483b5b6584369ca8252"
+    },
+    {
+      "ref": "refs/heads/fix/emp-transaction-ownership",
+      "sha": "8928b50c8409d6613090e615a998eb9f93c2fca9"
+    },
+    {
+      "ref": "refs/heads/fix/emp-validation-stack",
+      "sha": "ffff82161e5ab6d375a0edf126d7bc8109a0b326"
+    },
+    {
+      "ref": "refs/heads/fix/equipment-grant-preparation",
+      "sha": "dc88936513b3678611d6a9fe284065c8ecb1d351"
+    },
+    {
+      "ref": "refs/heads/fix/equipment-heading-alignment",
+      "sha": "53e1a0157a376c95f0915c28753108659db836dc"
+    },
+    {
+      "ref": "refs/heads/fix/equipment-layout-clearance",
+      "sha": "8073ad5cc4a500d148379de8886b269d000bd84d"
+    },
+    {
+      "ref": "refs/heads/fix/equipment-obligation-value-ownership",
+      "sha": "a7b180a073e764de036e76e1cb249d5029c4d0a9"
+    },
+    {
+      "ref": "refs/heads/fix/equipment-runtime-statistics-fixture",
+      "sha": "d8203e6b79a02471ce1437dc3c9c09341d855a4a"
+    },
+    {
+      "ref": "refs/heads/fix/equipment-transaction-review",
+      "sha": "3e20194cf36a6df641ca1c50f2887c4deee175fd"
+    },
+    {
+      "ref": "refs/heads/fix/example-encounter-world-clearance",
+      "sha": "f7d40deb806ff848c6f3706c28c383349337e901"
+    },
+    {
+      "ref": "refs/heads/fix/final-equipment-showroom-fixtures",
+      "sha": "18d918a9bed2f2f254b21c06067d31989d4aa89c"
+    },
+    {
+      "ref": "refs/heads/fix/final-gameplay-fixtures",
+      "sha": "4f915b4262db795e762d2a2ac188cc4e018973e7"
+    },
+    {
+      "ref": "refs/heads/fix/finance-interest-calendar-declaration",
+      "sha": "f59a2c232d2ee3dc6876987c780ce1f86e513b71"
+    },
+    {
+      "ref": "refs/heads/fix/fixed-logical-text-scale",
+      "sha": "cae647e9aebf79cd42b2617cf04c048d3618d185"
+    },
+    {
+      "ref": "refs/heads/fix/four-patrol-report-fixture",
+      "sha": "e05f2a9511e547504801a22862db6da13aad8065"
+    },
+    {
+      "ref": "refs/heads/fix/freight-fixture-premises",
+      "sha": "e78f9b2f9d21577da048a28af38b8bfd45c97d3c"
+    },
+    {
+      "ref": "refs/heads/fix/freight-page-facts-type",
+      "sha": "6897ad06bab5381b10d981cec938ccf0481b575f"
+    },
+    {
+      "ref": "refs/heads/fix/freight-terminal-proof",
+      "sha": "0e5f9073d1087408db5eaccbc8c7f4da72cecb6a"
+    },
+    {
+      "ref": "refs/heads/fix/fresh-commander-save-registration",
+      "sha": "b160e21a709b6859228194fdd7d9357ffcf57796"
+    },
+    {
+      "ref": "refs/heads/fix/g03-paid-flight-preparation",
+      "sha": "d4a004626fb56c115abbf01fb1d8fa1305f33d34"
+    },
+    {
+      "ref": "refs/heads/fix/gallery-context-help",
+      "sha": "a0d23916807d3a78f007822e9fb31e2a2f5c17f5"
+    },
+    {
+      "ref": "refs/heads/fix/gallery-installed-menu-validation",
+      "sha": "b243df4825d92277b0f2660ed7f3115b7dd65560"
+    },
+    {
+      "ref": "refs/heads/fix/gallery-query-scratch-ownership",
+      "sha": "d35cf0917f646affb569d3a3f3fe2b23335165bf"
+    },
+    {
+      "ref": "refs/heads/fix/gallery-trial-query-lifetimes",
+      "sha": "8486b0efe5572f35c4c671d01adc821f0b93e5a0"
+    },
+    {
+      "ref": "refs/heads/fix/gameplay-beam-damage-lifetimes",
+      "sha": "26877e8b3c794b398c29c81dae88dcdf496eea7f"
+    },
+    {
+      "ref": "refs/heads/fix/gameplay-context-lifetimes",
+      "sha": "1c268db549d47d9d9cdad9d68d513b14ad7d7aa7"
+    },
+    {
+      "ref": "refs/heads/fix/gameplay-player-tail",
+      "sha": "6d61044886f6408710423c5e223a5de6ac5a78af"
+    },
+    {
+      "ref": "refs/heads/fix/grouped-equipment-technology-fixture",
+      "sha": "2410863c19889ed033addbafc81bf8322b21d968"
+    },
+    {
+      "ref": "refs/heads/fix/guiding-light-dialog-identifiers",
+      "sha": "721b0622e52e9ceea74c7d9992e86f73ad5952ae"
+    },
+    {
+      "ref": "refs/heads/fix/history-redock-defended-pilot",
+      "sha": "472947daf42c7f9e47511ffc64cbda64f1a08701"
+    },
+    {
+      "ref": "refs/heads/fix/homebrew-release-assets",
+      "sha": "eead720d1459504df8133bbe84e789cc91caa6ad"
+    },
+    {
+      "ref": "refs/heads/fix/idle-flight-trigger-interruption",
+      "sha": "fb9b6e628c822ad8ddf18d99e16d745880a3c497"
+    },
+    {
+      "ref": "refs/heads/fix/initial-main-station-docking",
+      "sha": "049b8f6dc172d6e6ba3ef07d79fc31298171f928"
+    },
+    {
+      "ref": "refs/heads/fix/key-interface-phase-lifetimes",
+      "sha": "e3021859965972b10175c2e9c48783feeea51166"
+    },
+    {
+      "ref": "refs/heads/fix/laser-proof-fixture-stack",
+      "sha": "483e1c6e9bb551fa58502910939dff0552587345"
+    },
+    {
+      "ref": "refs/heads/fix/legacy-npc-intent",
+      "sha": "d20bcb2ba6febedb72d684c83642fb439d05c4d3"
+    },
+    {
+      "ref": "refs/heads/fix/live-root-crash-ownership",
+      "sha": "92a60684e034247630e95c4047dee103bd9d4802"
+    },
+    {
+      "ref": "refs/heads/fix/main-station-universe-capacity",
+      "sha": "9edc790932c268772dd2c90b6e53a4ec2dca31f5"
+    },
+    {
+      "ref": "refs/heads/fix/marked-firearm-handoff",
+      "sha": "6f615b2b38a4a46b34efb91dcd274879e35e82d4"
+    },
+    {
+      "ref": "refs/heads/fix/mining-display-station-fixtures",
+      "sha": "74326243891af7167b93c2721596d841d37f85ae"
+    },
+    {
+      "ref": "refs/heads/fix/mining-ore-motion",
+      "sha": "2bdbbe03d6b3aaf4e67a1118f0b4976a97c6ed23"
+    },
+    {
+      "ref": "refs/heads/fix/mining-work-tool-guards",
+      "sha": "d86db7e3ce09bb8779d2bf8a29b2e47c414bf1ec"
+    },
+    {
+      "ref": "refs/heads/fix/mission-acceptance-phase-lifetimes",
+      "sha": "1af6fd7d549b18bb7ce2126b6c164fa24faf7d7e"
+    },
+    {
+      "ref": "refs/heads/fix/mission-admission-read-lifetime",
+      "sha": "88d4f76e4ad86b71fcbf501e2232c2106573e5d9"
+    },
+    {
+      "ref": "refs/heads/fix/mission-admission-stack",
+      "sha": "ebdb8aa84b9ef7ea1cbc636e5e6fd480b6325539"
+    },
+    {
+      "ref": "refs/heads/fix/mission-admission-values",
+      "sha": "be3713f4bad0f25b4e5eef519a3899ac716e1f2a"
+    },
+    {
+      "ref": "refs/heads/fix/mission-completion-frame-lifetimes",
+      "sha": "12bec2948452359f9d78d0ee5529c396629e5210"
+    },
+    {
+      "ref": "refs/heads/fix/mission-completion-pilot-fixtures",
+      "sha": "b7f33140dc3c2f1a17559b8872a8dae0eb607f31"
+    },
+    {
+      "ref": "refs/heads/fix/mission-construction-lifetimes",
+      "sha": "9c559b5d4e54d32db5fc913c351299529f198827"
+    },
+    {
+      "ref": "refs/heads/fix/mission-economy-review",
+      "sha": "382c1026e95107e075ca6716cb94a03a3501b89c"
+    },
+    {
+      "ref": "refs/heads/fix/mission-event-candidate-joins",
+      "sha": "726fad0847484352e3cdb9321986df971fe82b0a"
+    },
+    {
+      "ref": "refs/heads/fix/mission-event-pipeline-stack",
+      "sha": "ced8d5388c4dd646bc9da2a8c656a55493c38756"
+    },
+    {
+      "ref": "refs/heads/fix/mission-ledger-fixture-lifetimes",
+      "sha": "f045b5fbdb58034015bee32cb85b265399616f53"
+    },
+    {
+      "ref": "refs/heads/fix/mission-ownership-tag-projection",
+      "sha": "365cee5bca33163b174d42eb35d89fbe7fd2e3f1"
+    },
+    {
+      "ref": "refs/heads/fix/mission-pack-validation-errors",
+      "sha": "f3688a657d80ba39af931c60022f571705f61f27"
+    },
+    {
+      "ref": "refs/heads/fix/mission-publication-frame",
+      "sha": "358851480137fb22f2caef90246cdc8a914a6e9a"
+    },
+    {
+      "ref": "refs/heads/fix/mission-template-validation-phases",
+      "sha": "7ffbe33cf9cc9c207fdc4b0160dcfd1db9eb5131"
+    },
+    {
+      "ref": "refs/heads/fix/mission-trial-shop",
+      "sha": "1ddaf5ccf53871bef9a471ea6b5336074c675d20"
+    },
+    {
+      "ref": "refs/heads/fix/modern-equipment-fixtures",
+      "sha": "97054ea13b95d6c96d19d333a1cd10aa7507dcc0"
+    },
+    {
+      "ref": "refs/heads/fix/mounted-laser-test-trigger",
+      "sha": "59b4f7d3d590128e7cf0720a4fcb18db0f004114"
+    },
+    {
+      "ref": "refs/heads/fix/native-admission-check-phases",
+      "sha": "bf1777b80096357927767f5485e01025cca0a941"
+    },
+    {
+      "ref": "refs/heads/fix/native-admission-fixture-boundaries",
+      "sha": "17baf588f8fa75912edae836cef7c7c60b82c121"
+    },
+    {
+      "ref": "refs/heads/fix/native-admission-fixture-phases",
+      "sha": "95f4a0abba96b3e41625d12626e8f44f2c1967a2"
+    },
+    {
+      "ref": "refs/heads/fix/native-arrival-success",
+      "sha": "4a713e1a9f8a456d73c47e4cc9f6718278e41af5"
+    },
+    {
+      "ref": "refs/heads/fix/native-combat-system-projection",
+      "sha": "86148452f0ece749315c5abace837b49979069d0"
+    },
+    {
+      "ref": "refs/heads/fix/native-contact-exit-feature",
+      "sha": "0fd6aa2c156eac09110905893c6b0982b43832df"
+    },
+    {
+      "ref": "refs/heads/fix/native-contact-feature-brackets",
+      "sha": "7df6d977c697ab09cc568eb60500ce3471e80918"
+    },
+    {
+      "ref": "refs/heads/fix/native-control-regression-fixtures",
+      "sha": "226898f75d5bcdb7e4f56f5aabf29a66af67c4ce"
+    },
+    {
+      "ref": "refs/heads/fix/native-crimbo-contact-bus-fixture",
+      "sha": "1224bd0d17894ec17a57b06ba1e9353533245861"
+    },
+    {
+      "ref": "refs/heads/fix/native-debris-contact-admission",
+      "sha": "4815bf2f4d1b5ebf3fe6f61e3f5fd0e1ddb5f67c"
+    },
+    {
+      "ref": "refs/heads/fix/native-ore-contact-certificate",
+      "sha": "eba1f6c0012b17fb9150427f7b1cdef2588ad931"
+    },
+    {
+      "ref": "refs/heads/fix/native-people-demonstration-scene",
+      "sha": "0d7a852a55c46bb0706c99bb5e439c887c43986b"
+    },
+    {
+      "ref": "refs/heads/fix/native-people-trial-free-hold",
+      "sha": "9f393248a85c81eb915ec5eb469bb64ad2d02f30"
+    },
+    {
+      "ref": "refs/heads/fix/native-pod-rescue-protection",
+      "sha": "b56ecf87ea23feed6c22473afabd05f3e90dad1f"
+    },
+    {
+      "ref": "refs/heads/fix/native-reset-persistence",
+      "sha": "93992abf648df1a1b4e310bab5026ab28b7b4573"
+    },
+    {
+      "ref": "refs/heads/fix/native-salvage-cold-phase",
+      "sha": "e7e3d0ef851307c97f94904c220200c531a62d4a"
+    },
+    {
+      "ref": "refs/heads/fix/native-salvage-legacy-parents",
+      "sha": "af0d0527b9fed9c311d3664b8341115f0e332ece"
+    },
+    {
+      "ref": "refs/heads/fix/native-salvage-offers",
+      "sha": "fbbc9dfcf4eabea068acd39a6ed4757ea4fde177"
+    },
+    {
+      "ref": "refs/heads/fix/native-salvage-prepared-cache",
+      "sha": "d23afbe8bc88d6bdd424c439c152b18e02f78c09"
+    },
+    {
+      "ref": "refs/heads/fix/native-station-clock-phase",
+      "sha": "94b032f6b853f81fbd362105200acd9dcb765faf"
+    },
+    {
+      "ref": "refs/heads/fix/native-station-defence",
+      "sha": "ee1a4c895681f9ca71f8402f6dc796eee11f0bbd"
+    },
+    {
+      "ref": "refs/heads/fix/native-station-flythrough",
+      "sha": "b48f1f2ce179ca7888ec6d489797990af06443de"
+    },
+    {
+      "ref": "refs/heads/fix/native-station-mission-clearance",
+      "sha": "3e0137dfa6f9a1906567e1b8c95e8b442c1b5cc0"
+    },
+    {
+      "ref": "refs/heads/fix/native-station-structure",
+      "sha": "a94b8a9f2d5f44c25f770f06f02f1176290e1ed9"
+    },
+    {
+      "ref": "refs/heads/fix/native-transit-attained-cohort",
+      "sha": "76c14ca576c079a6ed81f14a10c6b5b458ee3373"
+    },
+    {
+      "ref": "refs/heads/fix/native-transit-request-validation-lifetime",
+      "sha": "bab13d8e34f88349613ba368be4d294fdd9f3400"
+    },
+    {
+      "ref": "refs/heads/fix/native-transit-stack-boundary",
+      "sha": "28ec58d20b0b007668449f15e8ea384900f36b86"
+    },
+    {
+      "ref": "refs/heads/fix/native-transit-world-source-lifetimes",
+      "sha": "99e2a9a05f865e0098bdd7f01c5f6097414a909c"
+    },
+    {
+      "ref": "refs/heads/fix/native-work-guidance-repeated-proof",
+      "sha": "b7abe2ad83086caee523b60a1559215af45cd1b2"
+    },
+    {
+      "ref": "refs/heads/fix/native-work-readiness-trace",
+      "sha": "42a7482057a7aaa75fc094bcb105cfbcc1ec1901"
+    },
+    {
+      "ref": "refs/heads/fix/navigation-availability-binding-scope",
+      "sha": "96608dc21839cac86dd6b04d78e90be3d7cbb8d6"
+    },
+    {
+      "ref": "refs/heads/fix/navigation-binding-commander-projection",
+      "sha": "f5a51f8977d8f772931b5a69761be32c18539382"
+    },
+    {
+      "ref": "refs/heads/fix/navigation-trading-room",
+      "sha": "1375765c2f3931d6889ae91f7550cec970a00727"
+    },
+    {
+      "ref": "refs/heads/fix/npc-beam-phase-ownership",
+      "sha": "018eec83ac295716ef7c7aa8811313cea39ed540"
+    },
+    {
+      "ref": "refs/heads/fix/npc-mesh-overrides-borrow",
+      "sha": "bef2834277d52e8676a5933421e2f61a893d1e06"
+    },
+    {
+      "ref": "refs/heads/fix/npc-mounted-beam-ray",
+      "sha": "7115db852caebf71c0d835a6fc912d716dffdedf"
+    },
+    {
+      "ref": "refs/heads/fix/numbered-key-launch-lifetimes",
+      "sha": "a38c370c22c567d202ad020033dfb39d44231ed3"
+    },
+    {
+      "ref": "refs/heads/fix/ordinary-combat-descriptor-stack",
+      "sha": "aa7df5d52d51f7fe30a5d0ec1105cd64224a8436"
+    },
+    {
+      "ref": "refs/heads/fix/original-convex-source-support",
+      "sha": "1fe68b58dea460f9d513b4c074919b38c67a2300"
+    },
+    {
+      "ref": "refs/heads/fix/original-night-technology",
+      "sha": "fa28096334f6d55ba3dfae938d1bb7944fe4f8ee"
+    },
+    {
+      "ref": "refs/heads/fix/original-rescue-facts-gate",
+      "sha": "5c49fe3dddbe7200a5115e7a96560b665da01dcd"
+    },
+    {
+      "ref": "refs/heads/fix/original-station-registry-inventory",
+      "sha": "c4646ea131fb643188241c41e0818f80c3c8e759"
+    },
+    {
+      "ref": "refs/heads/fix/original-texture-palette-fidelity",
+      "sha": "2c91240fd5a17e7131d1e03b92ae0b4b771ccc70"
+    },
+    {
+      "ref": "refs/heads/fix/ownership-display-starting-stock",
+      "sha": "578256d6f92a20fc31bafd270e0f0f6f91e9fe9d"
+    },
+    {
+      "ref": "refs/heads/fix/phase-anchored-frame-cadence",
+      "sha": "f03c138f0468d4571a481eed6395c0c80dd2e23c"
+    },
+    {
+      "ref": "refs/heads/fix/plasma-fixture-frame-lifetime",
+      "sha": "d434e4c8f2b3fb7afa48904fa302152387bfe385"
+    },
+    {
+      "ref": "refs/heads/fix/plugh-owned-fourth-round",
+      "sha": "21444223a5df317a4a2c2c0dbd94b3c36963a40b"
+    },
+    {
+      "ref": "refs/heads/fix/plugh-prerequisite-lifetimes",
+      "sha": "1dda8e15d9d653170cb66e99a52062a2857cd438"
+    },
+    {
+      "ref": "refs/heads/fix/prepared-admission-validation-lifetimes",
+      "sha": "b3775728760ea2ff21cdf886fa0b57923a6e60c8"
+    },
+    {
+      "ref": "refs/heads/fix/procurement-deadline-candidates",
+      "sha": "b02319ca6f1b69bd1404149d6455c1f87a6c4ea8"
+    },
+    {
+      "ref": "refs/heads/fix/procurement-history-fixture-live-state",
+      "sha": "bb50a4262cc647f8815de7c0e0d2e5aa3f271087"
+    },
+    {
+      "ref": "refs/heads/fix/procurement-history-proof",
+      "sha": "4a118720995d2dd4b7569f7382f2cb3c390f96d3"
+    },
+    {
+      "ref": "refs/heads/fix/procurement-pilot-native-self-defence",
+      "sha": "f469946bcc991c2fdbb97e26b7d0d7d51b048e98"
+    },
+    {
+      "ref": "refs/heads/fix/procurement-preflight-observation-frame",
+      "sha": "7fbce9f163983094e4bc8dc75d7ae392c6451e63"
+    },
+    {
+      "ref": "refs/heads/fix/provider-ledger-exclusive-access",
+      "sha": "e136f1da3ae74fb39f9249dc173d6c0c163d4c0f"
+    },
+    {
+      "ref": "refs/heads/fix/raw-native-save-authority",
+      "sha": "a86015a62d437864cfad305729075e9e509c6804"
+    },
+    {
+      "ref": "refs/heads/fix/recovered-feature-starting-stock",
+      "sha": "36001e2cd7bf51c32de10704ed6b66a400035c20"
+    },
+    {
+      "ref": "refs/heads/fix/refused-hot-work-control-state",
+      "sha": "e63e361f9d51a4b0d29a3e4fc2c31ded7aa1646d"
+    },
+    {
+      "ref": "refs/heads/fix/release-assertion-fixtures",
+      "sha": "d26f5bce025df43f1a22a5fdacee349124d26f28"
+    },
+    {
+      "ref": "refs/heads/fix/rendering-ui-review",
+      "sha": "f369fff21d70b33b56dffcf8dac740d5dbce7ffb"
+    },
+    {
+      "ref": "refs/heads/fix/restore-expected-screen-encoding",
+      "sha": "6bb0d1e643ffb89c171dd9b8cdbc7d3a671be4da"
+    },
+    {
+      "ref": "refs/heads/fix/retained-manifest-relative-paths",
+      "sha": "db2a6053fea67d5f2741dd135b93d86931caed57"
+    },
+    {
+      "ref": "refs/heads/fix/review-source-guard",
+      "sha": "645a8d81cddc07ad218e6dd0960ed49fddbb477c"
+    },
+    {
+      "ref": "refs/heads/fix/route-media-native-navigation",
+      "sha": "da0108dcd7d612e77428d6608d3fb56a23119b35"
+    },
+    {
+      "ref": "refs/heads/fix/rrs-current-source-fixture",
+      "sha": "7ee73b37a756fd79409fcf38ac2b6e67d49a2a99"
+    },
+    {
+      "ref": "refs/heads/fix/runtime-key-phase-lifetimes",
+      "sha": "48885353ad0a3b69bf41c6d05e193217f9ea55eb"
+    },
+    {
+      "ref": "refs/heads/fix/salvage-persistence-caller-lifetime",
+      "sha": "27d6a6b89a5bf070bfed039abb8f86fa9ed93385"
+    },
+    {
+      "ref": "refs/heads/fix/salvage-work-surface-contract",
+      "sha": "379833bff6b4c32912611a23353f85e543afa389"
+    },
+    {
+      "ref": "refs/heads/fix/save-boundary-value-ownership",
+      "sha": "f00566cb81ed0fc0e6ca6360319a21767c639006"
+    },
+    {
+      "ref": "refs/heads/fix/save-consistency-phases",
+      "sha": "4716bb16cdcdb335950cc589037b43c93f0428e7"
+    },
+    {
+      "ref": "refs/heads/fix/script-anchor-stack",
+      "sha": "67f3d13f89739ca0051336235e77665279b08c0f"
+    },
+    {
+      "ref": "refs/heads/fix/script-director-phase-lifetimes",
+      "sha": "a03fa34e9a554aa7e04bd562d2b5aca50077be3e"
+    },
+    {
+      "ref": "refs/heads/fix/script-replay-rrs-gallery-current-authority",
+      "sha": "b53ea56a91c8612b39517d5515c659c63f5b1107"
+    },
+    {
+      "ref": "refs/heads/fix/script-save-fixture-baselines",
+      "sha": "bfd69a2f871f65950f8d2abcb5c4d33ec2856ed2"
+    },
+    {
+      "ref": "refs/heads/fix/script-save-fixture-baselines-reviewed",
+      "sha": "177609681b920e0402cf4225da3c88d54ef6dd9a"
+    },
+    {
+      "ref": "refs/heads/fix/script-save-mining-policy",
+      "sha": "796ab2138df92a5fcb9d6edc9fcbfddeb0827678"
+    },
+    {
+      "ref": "refs/heads/fix/script-snapshot-stack-lifetime",
+      "sha": "1404ad19b7dbdca14108dca5d567ff27099552eb"
+    },
+    {
+      "ref": "refs/heads/fix/scripted-encounter-fixture-phases",
+      "sha": "c9947cf77a7f2fb2ffd2b6ccd452455aaaeaaf2b"
+    },
+    {
+      "ref": "refs/heads/fix/scripted-equipment-original-route",
+      "sha": "7c249246c283cb84b4782a451dc6e8d3d939efdf"
+    },
+    {
+      "ref": "refs/heads/fix/speech-namespace-cursors",
+      "sha": "84f6a2849b2d5c5b7644f6f0dae6b71ca86c1165"
+    },
+    {
+      "ref": "refs/heads/fix/starfield-pose-motion",
+      "sha": "75411b4d0c622720c633d2e7988db598f6ed0953"
+    },
+    {
+      "ref": "refs/heads/fix/station-auto-beam-pressure",
+      "sha": "ca667f3c4c6be2344ed1822aa729dfb9c0cbd79d"
+    },
+    {
+      "ref": "refs/heads/fix/station-auto-clear-native-pressure-lane",
+      "sha": "12c963680b07606fdfdcd16cf06138a343a217f7"
+    },
+    {
+      "ref": "refs/heads/fix/station-auto-defensive-transit",
+      "sha": "d7ce51f9833f05939d3704a3208694fc5dae8a8e"
+    },
+    {
+      "ref": "refs/heads/fix/station-auto-native-pressure-proof",
+      "sha": "2e46031891f90ecd0862994938e8dfe2af7efb1c"
+    },
+    {
+      "ref": "refs/heads/fix/station-auto-reciprocal-mounted-lane",
+      "sha": "96075005d968b1138ef35a1a1e9513d9a75d338d"
+    },
+    {
+      "ref": "refs/heads/fix/station-auto-safe-moving-entry",
+      "sha": "6569c5cc021454d7ca70a41739aa2fc753b3aa6d"
+    },
+    {
+      "ref": "refs/heads/fix/station-auto-transit-waypoint-speed",
+      "sha": "3ff0953d6dbb8f550683ac2085ab579da7c2420b"
+    },
+    {
+      "ref": "refs/heads/fix/station-auto-weak-bank-heading",
+      "sha": "59c7c10fb5c18b688f33a486647982717d4e9181"
+    },
+    {
+      "ref": "refs/heads/fix/station-catalogue-authoring-test",
+      "sha": "942fc202fe330391f3e5557da07c508ddad54400"
+    },
+    {
+      "ref": "refs/heads/fix/station-defence-docking-handover",
+      "sha": "aa36e3910e453af7c3c454439b700a3911dfd881"
+    },
+    {
+      "ref": "refs/heads/fix/station-defence-response-tracking",
+      "sha": "d654a80b34742b7aa6dc1bd6c83552901317ed31"
+    },
+    {
+      "ref": "refs/heads/fix/station-inertia-borrowed-values",
+      "sha": "4afa541184a374bf3a96e016b3c0f90fa631f0ab"
+    },
+    {
+      "ref": "refs/heads/fix/station-local-clean-commander-defence",
+      "sha": "ae90f6cd677d5392065f352163dc3ec947e109c9"
+    },
+    {
+      "ref": "refs/heads/fix/station-refusal-clock-coherence",
+      "sha": "114ccad82cd57296814b9fe9463b1f5e220ae3e7"
+    },
+    {
+      "ref": "refs/heads/fix/swift-warning-noise",
+      "sha": "043a41f1cc323edce5266b0c47c8263bec19c264"
+    },
+    {
+      "ref": "refs/heads/fix/tab-flight-target-binding",
+      "sha": "72db50eb0b7b50dfcb60b4cda45b3a05b5977695"
+    },
+    {
+      "ref": "refs/heads/fix/target-cycle-reengagement",
+      "sha": "13ad8e4e193c332057ce8aaa224a546af515e561"
+    },
+    {
+      "ref": "refs/heads/fix/targeting-regressions",
+      "sha": "10adf060b6114328e7ba32ee775f5431b6aafa42"
+    },
+    {
+      "ref": "refs/heads/fix/textured-ship-visibility",
+      "sha": "5de4d20163b475797690ee53e8eb4793bd760cc5"
+    },
+    {
+      "ref": "refs/heads/fix/thin-component-containment",
+      "sha": "546652fd83053bb152d6bcd4f85fefa568029788"
+    },
+    {
+      "ref": "refs/heads/fix/thin-hull-preparation",
+      "sha": "42f67d44cba0cd5f3080e19c98c676a4bfee58c3"
+    },
+    {
+      "ref": "refs/heads/fix/transit-owner-history-frame-lifetimes",
+      "sha": "a58fa48b741e8a41403f23929d62b7bf8ab79a2d"
+    },
+    {
+      "ref": "refs/heads/fix/trial-equipment-quote-preparation",
+      "sha": "3ba58c4dc76a92194aecda1957bf0817de9be0ec"
+    },
+    {
+      "ref": "refs/heads/fix/trial-native-input-fixtures",
+      "sha": "920d8070d1d27201a07f7e11cf1a2b4edbbd7312"
+    },
+    {
+      "ref": "refs/heads/fix/trial-publication-normalization",
+      "sha": "a4f599564d3dc07cbc0d74b129c3beb2a838bb4f"
+    },
+    {
+      "ref": "refs/heads/fix/true-destruction-fixture",
+      "sha": "09a6fb390b761ad4f79deacf9e5fd962f7307ec2"
+    },
+    {
+      "ref": "refs/heads/fix/wanted-cull-rebind",
+      "sha": "8dea24fe28ed623d491b1d0bb29f8db3ee9ee0dc"
+    },
+    {
+      "ref": "refs/heads/fix/wanted-testing-macro-compatibility",
+      "sha": "52354af100279dd14e142ed7d866b59f3f7c0b4b"
+    },
+    {
+      "ref": "refs/heads/fix/work-approach-visible-surface-ray",
+      "sha": "389b34a9b9a192769761c16987d56fa934f7c0c7"
+    },
+    {
+      "ref": "refs/heads/fix/work-orientation-frame-reexpression",
+      "sha": "5687a660fd186bbe30e6a4599b001eb4b2e22988"
+    },
+    {
+      "ref": "refs/heads/fix/workshop-gallery-fixture",
+      "sha": "d33daaaebef910985c6d4035b088b7a40307e074"
+    },
+    {
+      "ref": "refs/heads/fix/world-save-consistency-lifetimes",
+      "sha": "cb65f2f368d491f7b41f113f2451c0a1c8345c2c"
+    },
+    {
+      "ref": "refs/heads/fix/xyzzy-current-market-save-fixtures",
+      "sha": "47654a8ad9631043ea01ec5681a16e0133491f79"
+    },
+    {
+      "ref": "refs/heads/fix/xyzzy-grant-fixture",
+      "sha": "5f017932bb1be1bc796cbe220857391aca547012"
+    },
+    {
+      "ref": "refs/heads/keyboard-navigation",
+      "sha": "50451df1d6a2dbbdacbb4542ccecabd8ef488ebd"
+    },
+    {
+      "ref": "refs/heads/liberator-ship",
+      "sha": "96b9d4c1223acffe25bfad034c8a389ef5ca494a"
+    },
+    {
+      "ref": "refs/heads/macos-notarization",
+      "sha": "3f0d6c7fa99bedb134a6f4b8a7dcc3c585260f56"
+    },
+    {
+      "ref": "refs/heads/main",
+      "sha": "bba862c558530ea2d40d634f84fbd490d9cc3401"
+    },
+    {
+      "ref": "refs/heads/mission-packs",
+      "sha": "216f36896e201ec101e0a77141be227a08d2290a"
+    },
+    {
+      "ref": "refs/heads/notarized-download",
+      "sha": "2a7905d60357105d30b5bd5a025ec462cd0f1343"
+    },
+    {
+      "ref": "refs/heads/perf/actor-weapon-display-projection",
+      "sha": "0fd1bbb43cd85f18be86faafaffaf67c52be394b"
+    },
+    {
+      "ref": "refs/heads/perf/catalogue-raw-mesh-cache",
+      "sha": "3217704f506f630f23b21bd2b0d06b8f7b55ea3f"
+    },
+    {
+      "ref": "refs/heads/perf/certify-visited-triangle-pairs",
+      "sha": "3557f21151fda64a90fe923fa559484437aff2cf"
+    },
+    {
+      "ref": "refs/heads/perf/dual-hull-bvh",
+      "sha": "391ed0ecd567965d2bb2433d9cd10d2e98cc43f8"
+    },
+    {
+      "ref": "refs/heads/perf/dual-hull-row-pruning",
+      "sha": "a07aa6071d0b6cc62fca69e375aaadcb6eba4f80"
+    },
+    {
+      "ref": "refs/heads/perf/freight-pure-preflight-work",
+      "sha": "6ab4f1d3e1315f821e17a01e87529ff660290df1"
+    },
+    {
+      "ref": "refs/heads/perf/hull-normal-reuse",
+      "sha": "cbd3a5b90c0a8fdada6f12ca05dd4bae87a122c1"
+    },
+    {
+      "ref": "refs/heads/perf/native-panel-colour-reuse",
+      "sha": "73174c2d8699095e6a9d780c9da5fc5eca3895c7"
+    },
+    {
+      "ref": "refs/heads/perf/native-presentation",
+      "sha": "59c3b0c293596b08b97617860c4f391ccfce0efd"
+    },
+    {
+      "ref": "refs/heads/perf/native-station-validation",
+      "sha": "9ffc6c97df31fb0b7c7f0e85df60bbb9570e255a"
+    },
+    {
+      "ref": "refs/heads/perf/planet-rendering",
+      "sha": "e8191dbc19f588f9c4f31c3252c2f1fca2e89453"
+    },
+    {
+      "ref": "refs/heads/perf/reuse-immutable-sweep-scalars",
+      "sha": "329ff4a212611dab06a13dcfb6ecf9e4124a0839"
+    },
+    {
+      "ref": "refs/heads/perf/skip-empty-admission",
+      "sha": "bf90d9776f9dc3d4e3b8d5501f5846aab3a6c4b1"
+    },
+    {
+      "ref": "refs/heads/perf/startup-panel-containment",
+      "sha": "da2c64c295f15cbc724502a1b75c8488a3e0b694"
+    },
+    {
+      "ref": "refs/heads/perf/sweep-triangle-allocation",
+      "sha": "d3a880261f2f4543933dc4cb4b6f60157230e211"
+    },
+    {
+      "ref": "refs/heads/perf/sweep-triangle-bounds-reuse",
+      "sha": "101faf0d77e164cf9acc84697dbb7ad2f265588f"
+    },
+    {
+      "ref": "refs/heads/quality-polish",
+      "sha": "04dcddbd1664460272186d31ccac8588ad665539"
+    },
+    {
+      "ref": "refs/heads/refactor/alien-planned-source-validation",
+      "sha": "cab11f85a4a81e835136052d652d7733d2e9dff9"
+    },
+    {
+      "ref": "refs/heads/refactor/projectile-impact-validation-lifetime",
+      "sha": "8b7e77a7948751698e948e95c543128efa86a97c"
+    },
+    {
+      "ref": "refs/heads/refactor/salvage-emission-view",
+      "sha": "943c87d6390bc714b75e0cfa09029f4699969c6a"
+    },
+    {
+      "ref": "refs/heads/reference/campaign-parent-map-hypothesis",
+      "sha": "8729a24944a94a3098d6a534370645859af84c7a"
+    },
+    {
+      "ref": "refs/heads/review/native-fixture-corrections-7af",
+      "sha": "7af49659f5f050a4a21d0f45049821db4a12161e"
+    },
+    {
+      "ref": "refs/heads/review/native-paged-wreck-cutting-v1",
+      "sha": "83a90a12f6e8b1e6a4bb86bda3d0068fd5b097be"
+    },
+    {
+      "ref": "refs/heads/review/native-paged-wreck-repair-b290",
+      "sha": "b29094c559ce4a5ee1a078066f8993a30a344d07"
+    },
+    {
+      "ref": "refs/heads/review/native-procurement-before-cold-phase-e6",
+      "sha": "e6f37d9bb1d977e1125c4f67ee6f8cbe0c3de2c4"
+    },
+    {
+      "ref": "refs/heads/review/native-procurement-before-fixtures-a0",
+      "sha": "a0cc2a529ee9903b895718d943a6570e20f52e2c"
+    },
+    {
+      "ref": "refs/heads/review/native-procurement-before-target-6a",
+      "sha": "6a63c8cf86befbc44b00559b621fd0d9e9e69c95"
+    },
+    {
+      "ref": "refs/heads/review/native-procurement-composition-941",
+      "sha": "94131fb5308a42bb705460dda1c7af9cba0aca4b"
+    },
+    {
+      "ref": "refs/heads/review/native-procurement-symbol-9cc",
+      "sha": "9ccf2da10956a569ec6d686ff28065806c4541b1"
+    },
+    {
+      "ref": "refs/heads/right-on-commander-flight-missions",
+      "sha": "c6591d0bbe97561e456bb3701f51d47ba9878c87"
+    },
+    {
+      "ref": "refs/heads/shipyard-ux",
+      "sha": "86243122a5c06dca76eba9615fdf3fec926b55ce"
+    },
+    {
+      "ref": "refs/heads/solar-flight-gameplay",
+      "sha": "2c21ee2d59210e1af71bcc3e37200d975bdaf4cd"
+    },
+    {
+      "ref": "refs/heads/sonar-conditions",
+      "sha": "43c7c414fc566b7485ba22fd15f763ca5f390461"
+    },
+    {
+      "ref": "refs/heads/station-market-ux",
+      "sha": "a9ae94f92e27bcd49b8bd98108ea8752ae3260f7"
+    },
+    {
+      "ref": "refs/heads/test/accommodation-showroom-fixtures",
+      "sha": "918d63e983e41d3592c09f208dd6c285203025e4"
+    },
+    {
+      "ref": "refs/heads/test/authentic-historical-and-refit-fixtures",
+      "sha": "a70ba79081940cfc6c2c20c930c018c3233572b6"
+    },
+    {
+      "ref": "refs/heads/test/cabin-catalogue-preservation",
+      "sha": "dffd9106a235362663fb342c9607a29cb02794df"
+    },
+    {
+      "ref": "refs/heads/test/calendar-original-world-travel-witness",
+      "sha": "0ba34e10d604580b2395728f44bc4e98cf65f3ae"
+    },
+    {
+      "ref": "refs/heads/test/canonical-equipment-fixtures",
+      "sha": "2097e0d8565367bdbdb92d4c5c310e4fa8dd7110"
+    },
+    {
+      "ref": "refs/heads/test/canonical-ring-plasma-fixtures",
+      "sha": "b2de8065b44351d21e068e927d149c6221c3ffd0"
+    },
+    {
+      "ref": "refs/heads/test/canonical-save-fixture-contracts",
+      "sha": "8cec055e95dd5d7dfcbf9fb55d1f311e1f07e5ff"
+    },
+    {
+      "ref": "refs/heads/test/catalogue-capacity-fixtures",
+      "sha": "94e8c2df9934b1d4fc0c59f718ff914a6f6e8b8d"
+    },
+    {
+      "ref": "refs/heads/test/catalogue-fixture-refresh",
+      "sha": "b8fcad0e5fb2ddc37989f06f73b9cbd001524b92"
+    },
+    {
+      "ref": "refs/heads/test/catalogue-save-fixture-migration",
+      "sha": "aaf773a824e98eb2c5491575a65736cf9e139ff2"
+    },
+    {
+      "ref": "refs/heads/test/control-cue-oracles",
+      "sha": "9e745e30d37049aa3365927127bca9000bc5af9b"
+    },
+    {
+      "ref": "refs/heads/test/courier-physical-arrival-evidence",
+      "sha": "cac2bac19d2ffd90fc1f25a499b0a1acbbae6ad6"
+    },
+    {
+      "ref": "refs/heads/test/crossfire-fixture-phases",
+      "sha": "307aa85fe78d4d795b35563ff7ffb5bc81ed59e5"
+    },
+    {
+      "ref": "refs/heads/test/current-market-ecm-oracles",
+      "sha": "5a51e54b6bde2562ebf7fd3f9e772bca7fb53109"
+    },
+    {
+      "ref": "refs/heads/test/current-writer-historical-compatibility",
+      "sha": "a74e6056fee8e24888d261b0415711814236a3d0"
+    },
+    {
+      "ref": "refs/heads/test/defensive-pilot-active-ecm",
+      "sha": "d08de46a651efaea824a89ccbe7ec2900f089a81"
+    },
+    {
+      "ref": "refs/heads/test/ecm-regression-origin-shop",
+      "sha": "2ed86126ecf4070895d5cf57dcdfc9e3670f4b38"
+    },
+    {
+      "ref": "refs/heads/test/emp-authoritative-timing",
+      "sha": "08877df7e181f650e4a2547205a90a544790be6b"
+    },
+    {
+      "ref": "refs/heads/test/emp-boundary-station-phase",
+      "sha": "5ccdc354f4e3b5338217f42b9f8b19444c75a861"
+    },
+    {
+      "ref": "refs/heads/test/emp-charge-outcome-diagnostics",
+      "sha": "c151b3ef9a1d95fc467e6e501cdca342e79d95be"
+    },
+    {
+      "ref": "refs/heads/test/emp-native-flight-diagnostics",
+      "sha": "3694f9f4260467873188bdcd6024e322364cd97f"
+    },
+    {
+      "ref": "refs/heads/test/emp-post-pulse-assertions",
+      "sha": "98a4bda059799c487d49fff311c198d3c2853729"
+    },
+    {
+      "ref": "refs/heads/test/emp-save-refusal-facts",
+      "sha": "670c18b146d475638529e2bf93fce2b892a4f94a"
+    },
+    {
+      "ref": "refs/heads/test/emp-travel-recovery-policy",
+      "sha": "58726fd616b2b64fc743bded0580fa7031bdbe3d"
+    },
+    {
+      "ref": "refs/heads/test/emp-travel-threat-evidence",
+      "sha": "203ffc2d017b5f9b150ffb5203a9d9972513b5fd"
+    },
+    {
+      "ref": "refs/heads/test/escape-pod-cue",
+      "sha": "54e88884f6d1a370d57710d3c1b0595532b3c12e"
+    },
+    {
+      "ref": "refs/heads/test/finite-stock-missile-defence",
+      "sha": "6ee21cd443ee0b23aee1cd4475b1a5f8c928ab2f"
+    },
+    {
+      "ref": "refs/heads/test/freight-expiry-selection-diagnostic",
+      "sha": "6969fa4a2c58e6ad0ac9b8773e2323928304a55b"
+    },
+    {
+      "ref": "refs/heads/test/freight-journey-premises",
+      "sha": "be082f973606242276452f008969db1112077d2e"
+    },
+    {
+      "ref": "refs/heads/test/full-stock-emp-stack-lifetime",
+      "sha": "91ee7560f5199e756dc88bfe1947d54a33781e97"
+    },
+    {
+      "ref": "refs/heads/test/g03-reactive-defensive-pilot",
+      "sha": "12432191215171b3712558bd8ccacdbe4c711fe7"
+    },
+    {
+      "ref": "refs/heads/test/gallery-catalogue-and-fault-premises",
+      "sha": "79b413eb2a29b897e5a6533914a3028a2848ac34"
+    },
+    {
+      "ref": "refs/heads/test/golden-mission-liberator-fixtures",
+      "sha": "f7c495deb4ad421f0c83c0ab54ff8349f0c287c0"
+    },
+    {
+      "ref": "refs/heads/test/historical-save-mirror-observation",
+      "sha": "6ea5ecb6cdfa9c915d8fd61a915726de404ef664"
+    },
+    {
+      "ref": "refs/heads/test/hosted-native-lifetime-diagnostic",
+      "sha": "abc7a95f3f1d8a334919eedf510df9ebe09368a2"
+    },
+    {
+      "ref": "refs/heads/test/hull-exchange-save-fixture",
+      "sha": "aef562b19a0fd8c95b142903364cc550c28c7567"
+    },
+    {
+      "ref": "refs/heads/test/hull-trade-fixtures",
+      "sha": "3a1917f0d9b7de5a780e89a70a6edc72fd6d1400"
+    },
+    {
+      "ref": "refs/heads/test/isolate-compound-patrol-receipts",
+      "sha": "ce3570ba8f56055b5769aeb40f3239cd2d1ea93a"
+    },
+    {
+      "ref": "refs/heads/test/isolate-native-history-auth-scene",
+      "sha": "c2721841e35b555e5111756356f32e8058906bf9"
+    },
+    {
+      "ref": "refs/heads/test/isolate-procurement-expiry-receipts",
+      "sha": "91bacbe6df8052fd5986de3760f5133f8ba6c313"
+    },
+    {
+      "ref": "refs/heads/test/launch-equipment-oracle",
+      "sha": "c15b6378a8e63c5a6c67877f3d6ac7ab223db963"
+    },
+    {
+      "ref": "refs/heads/test/legacy-intent-macro-allocation",
+      "sha": "88058aa7595ac19ec84f5b0c2ce5ca3c01bb01e2"
+    },
+    {
+      "ref": "refs/heads/test/legacy-station-stock-migration",
+      "sha": "e1f952b1ebdbf7373ffeade0c2a7ecf84c9ca0a3"
+    },
+    {
+      "ref": "refs/heads/test/m01-release-assertions",
+      "sha": "472f29c5212239bd37a3537af145f482e2471d01"
+    },
+    {
+      "ref": "refs/heads/test/mission-cohort-and-laser-fixtures",
+      "sha": "37a580ea69159559c492692fe8b652f2fc77505d"
+    },
+    {
+      "ref": "refs/heads/test/mission-contact-preparation-phase",
+      "sha": "07e564ff0b06c7af85924e6329a1aebe4324e3c9"
+    },
+    {
+      "ref": "refs/heads/test/mission-dock-refusal-context",
+      "sha": "1f5afa88a1d7218db68e20d1a0f5b9d0998de09b"
+    },
+    {
+      "ref": "refs/heads/test/mission-gallery-station-tab-input",
+      "sha": "761d9c22228cba7f13fc1eb66bc0cde420d3418b"
+    },
+    {
+      "ref": "refs/heads/test/mission-reload-diagnostic",
+      "sha": "038b2ec58b68ec36da0ab44f37c7ae23219faf55"
+    },
+    {
+      "ref": "refs/heads/test/mission-stack-layout",
+      "sha": "acbb99e952157ca3564f2d82adcd4880376eb0bc"
+    },
+    {
+      "ref": "refs/heads/test/module-template-directional-benefits",
+      "sha": "81aca5a8a28fb8be9bee9c6145947a447716fc93"
+    },
+    {
+      "ref": "refs/heads/test/native-admission-exclusive-access",
+      "sha": "c1218aa9164d844b428286c07c41e295ec8eaa0e"
+    },
+    {
+      "ref": "refs/heads/test/native-capacity-save-fixtures",
+      "sha": "5433624b4fd8ca02eee081734cc5b512e0c840fc"
+    },
+    {
+      "ref": "refs/heads/test/native-crimbo-macro-inputs",
+      "sha": "8e861ba19efec39d7858949d5b0ecca2c6793b02"
+    },
+    {
+      "ref": "refs/heads/test/native-emp-persistence-and-full-stock",
+      "sha": "b447d31b16b5592d7047a9f9cdd4be65dc630d90"
+    },
+    {
+      "ref": "refs/heads/test/native-emp-real-charge-timeline",
+      "sha": "c287cf8bb965bfd1fbc20a5365d1c910f7310191"
+    },
+    {
+      "ref": "refs/heads/test/native-equipment-bootstrap-policy",
+      "sha": "db04b9b4b7323cf186a7b89bffa5e26895907c88"
+    },
+    {
+      "ref": "refs/heads/test/native-equipment-fixture-authority",
+      "sha": "f0e57ba8cdbfba92b21627213f31d5ec29da77f1"
+    },
+    {
+      "ref": "refs/heads/test/native-equipment-painted-keys",
+      "sha": "1a3be8bfae06e532f82e16da126363f2a84b10df"
+    },
+    {
+      "ref": "refs/heads/test/native-equipment-publication-oracles",
+      "sha": "67cd278835c7df2cc6147ab3812302b0d3382daf"
+    },
+    {
+      "ref": "refs/heads/test/native-equipment-relative-save-paths",
+      "sha": "27e0652fbc8a0524efb54cba8a369ca4468d461f"
+    },
+    {
+      "ref": "refs/heads/test/native-equipment-view",
+      "sha": "e0aecf532938eb906f95d72dba4515be0fa559ad"
+    },
+    {
+      "ref": "refs/heads/test/native-legacy-refusal-premises",
+      "sha": "1cfd17de33c75e8aec47ba4ab8a1e569b27b1961"
+    },
+    {
+      "ref": "refs/heads/test/native-lifetime-diagnostic",
+      "sha": "0f597dff64e71955a68c8e419cc64e5df549f902"
+    },
+    {
+      "ref": "refs/heads/test/native-old-parent-safe-emission",
+      "sha": "61fa69b2ae2a2fe0e79cedb3d4807861e8c2e67a"
+    },
+    {
+      "ref": "refs/heads/test/native-population-control-oracles",
+      "sha": "d40c2d92292bda1f0671d6f9c193821809ba88ab"
+    },
+    {
+      "ref": "refs/heads/test/native-salvage-fixture-corrections",
+      "sha": "3ed729d939bc360ac4bafe2e3be39bcdf5530fa6"
+    },
+    {
+      "ref": "refs/heads/test/native-salvage-real-target-engagement",
+      "sha": "e8de240a9f18c79963772ecbde7ea340644586ef"
+    },
+    {
+      "ref": "refs/heads/test/native-save-caller-diagnostics",
+      "sha": "345bfe2651d803704119cecd16a586ab22f1642d"
+    },
+    {
+      "ref": "refs/heads/test/native-save-callers",
+      "sha": "274b35e4a9f6b55f1e6e90fb3db7896175cfa8ef"
+    },
+    {
+      "ref": "refs/heads/test/native-save-lifecycles",
+      "sha": "7d08e8dde613b367312a701541a0a76067f3a976"
+    },
+    {
+      "ref": "refs/heads/test/native-shared-release-snapshot",
+      "sha": "3048f7eceb0122636473f8217272296d0617ff5f"
+    },
+    {
+      "ref": "refs/heads/test/native-station-autodock-controls",
+      "sha": "babc17816882c934f9c7c8e528133ef63162f718"
+    },
+    {
+      "ref": "refs/heads/test/native-station-service-contracts",
+      "sha": "7a0af48cd44bdc2c781243dc6481ae62bf5f24fc"
+    },
+    {
+      "ref": "refs/heads/test/native-work-guidance",
+      "sha": "ba09cb033d99902545542439ff1a89cba22aca73"
+    },
+    {
+      "ref": "refs/heads/test/native-work-sweep-diagnostic",
+      "sha": "82ce8a735440fd085a0174b8e0651634905fe7fe"
+    },
+    {
+      "ref": "refs/heads/test/native-writer-observation-frame",
+      "sha": "9c368594dea130c77514ffde3a764326906d4105"
+    },
+    {
+      "ref": "refs/heads/test/naval-mission-fixtures",
+      "sha": "82171d8833bae33dba312340811f67365e2bd5f0"
+    },
+    {
+      "ref": "refs/heads/test/old-salvage-clearance-facts",
+      "sha": "d30feff24029ba79edb434e77bc03a99c3eacc6c"
+    },
+    {
+      "ref": "refs/heads/test/old-salvage-genuine-readmission",
+      "sha": "221f97ff721a8c37f4abccbf8e2fbf42e464c952"
+    },
+    {
+      "ref": "refs/heads/test/original-navigation-practice-reload",
+      "sha": "a14f7127392e5b24e0c2b464bbf7686d59eb53d8"
+    },
+    {
+      "ref": "refs/heads/test/original-world-fixture-provenance",
+      "sha": "6dbb9899dde720574a0e3e7053ae66b5a4fa020b"
+    },
+    {
+      "ref": "refs/heads/test/original-world-navigation-fixtures",
+      "sha": "b77631e726b4e90a5139aee50f02e955e76c4f3e"
+    },
+    {
+      "ref": "refs/heads/test/owned-equipment-ui-fixtures",
+      "sha": "72da35b90f92e0017c3106c89b1a64bd3b73e55c"
+    },
+    {
+      "ref": "refs/heads/test/painted-courier-one-hop-witness",
+      "sha": "0a5e1a3045bd0b127733a83221040ebe351e4796"
+    },
+    {
+      "ref": "refs/heads/test/parked-solar-and-courier-braking",
+      "sha": "ffebedb5ce7e87dff780b15a05181970ffa54618"
+    },
+    {
+      "ref": "refs/heads/test/planet-frame-baseline",
+      "sha": "85da3230e5057d06bf667081f0298c3025877308"
+    },
+    {
+      "ref": "refs/heads/test/portrait-textured-surface-invariants",
+      "sha": "77282a071a715cb80d19b5f53ff2c58c1164f1dd"
+    },
+    {
+      "ref": "refs/heads/test/procurement-back-and-flight-diagnostic",
+      "sha": "ec73e99161e8bab997fda7615916b326a3f2e81a"
+    },
+    {
+      "ref": "refs/heads/test/procurement-defensive-preflight",
+      "sha": "231d39443e42c597ab0d1c77d5a5e88eb9b25ed5"
+    },
+    {
+      "ref": "refs/heads/test/procurement-feasible-candidate-pools",
+      "sha": "7d9bea49a7ca634719c7d02305b21c8e19fd97d8"
+    },
+    {
+      "ref": "refs/heads/test/procurement-history-flight-diagnostics",
+      "sha": "bc0e105810397939cdd49d8b44aa6380890caceb"
+    },
+    {
+      "ref": "refs/heads/test/procurement-missile-diagnostic-counts",
+      "sha": "b25c8c68dda308e955719f45975980c63f47addb"
+    },
+    {
+      "ref": "refs/heads/test/procurement-preflight-refusal-facts",
+      "sha": "cbbbf5002fce3b13298b94324e9f3855daf8f7de"
+    },
+    {
+      "ref": "refs/heads/test/procurement-targeting-purchases",
+      "sha": "b59c5ebf4191f6a72c37ea12d333e57cd6a77392"
+    },
+    {
+      "ref": "refs/heads/test/provider-reward-types",
+      "sha": "2d372643e702c35cf7d2c04cf45c3e2209d4ec99"
+    },
+    {
+      "ref": "refs/heads/test/range-aware-defended-pilot",
+      "sha": "79d706fc71070475e1d87988494414a4cf37e382"
+    },
+    {
+      "ref": "refs/heads/test/recovered-flight-save-fixture",
+      "sha": "d651903e3ef94c6aa8ab5728237f0c1088a8cde3"
+    },
+    {
+      "ref": "refs/heads/test/residual-current-save-restore",
+      "sha": "d9bbd1c08a952b0040067297c70cf1c94bfccd4e"
+    },
+    {
+      "ref": "refs/heads/test/retained-salvage-continuation",
+      "sha": "c7997c0b4a7b9dbcc2f07058a0353d422c3c61c7"
+    },
+    {
+      "ref": "refs/heads/test/retaliation-owned-ammo-fixture",
+      "sha": "6a485401e78df20b3f3956b41d082a773bf28a51"
+    },
+    {
+      "ref": "refs/heads/test/route-rendering-current-fixture",
+      "sha": "c988c3deccb6cefbd39cba65ebc128c8a7ab0b7d"
+    },
+    {
+      "ref": "refs/heads/test/salvage-engagement-oracle",
+      "sha": "6e0ae38c3201d437a151b8c7fc72883967126eae"
+    },
+    {
+      "ref": "refs/heads/test/scene-and-help-fixture-inputs",
+      "sha": "021c45c84ace5b5531b0cb8d00c30ba96718328b"
+    },
+    {
+      "ref": "refs/heads/test/scene-canonical-equipment-baseline",
+      "sha": "a7a0462f1b738bf97bcd907e37e93bca4875c763"
+    },
+    {
+      "ref": "refs/heads/test/script-cash-fixtures",
+      "sha": "d0ab85285bbdbcc4b0ce6406e69c60b84b758c9f"
+    },
+    {
+      "ref": "refs/heads/test/script-refusal-stage-diagnostic",
+      "sha": "bafeb93c33971e31dd3875cff0c25f492a268dca"
+    },
+    {
+      "ref": "refs/heads/test/script-scene-refusal-diagnostic",
+      "sha": "55c1205a98827d6356bfd5187645fb0296c96ca7"
+    },
+    {
+      "ref": "refs/heads/test/scripted-patrol-native-controls",
+      "sha": "642349314f2ac71eaf600a299581c936d27b820e"
+    },
+    {
+      "ref": "refs/heads/test/security-emp-custody-and-full-shields",
+      "sha": "c0e4d8de5db29b336ff8b7be79113efa010c2ad5"
+    },
+    {
+      "ref": "refs/heads/test/shield-equipment-fixtures",
+      "sha": "b40b573a9ba84a90f92a50e5b384ae10410b969d"
+    },
+    {
+      "ref": "refs/heads/test/shield-equipment-order",
+      "sha": "1db270d57df4ae66c26cf7ae355036e6f689e3a0"
+    },
+    {
+      "ref": "refs/heads/test/showroom-explicit-fixtures",
+      "sha": "2f8c29f5a0afb4a2afde6ddfd4fae061f73e8c3f"
+    },
+    {
+      "ref": "refs/heads/test/solar-crew-calendar-boundaries",
+      "sha": "f0a194f57729b19e91abf9a09f5f95cdcc88db65"
+    },
+    {
+      "ref": "refs/heads/test/solar-equipment-comparison-ordering",
+      "sha": "12d00710bfc435c53cb3369a7f985bfd6ea4df61"
+    },
+    {
+      "ref": "refs/heads/test/station-auto-authentic-mounted-pressure",
+      "sha": "8be5d1aa762cb9ef956c889a3a52e942cfed4a81"
+    },
+    {
+      "ref": "refs/heads/test/station-auto-mounted-pressure",
+      "sha": "9e66efc8fc5dd5220916f3fbb3ca9a8780d7e3c4"
+    },
+    {
+      "ref": "refs/heads/test/station-auto-native-attacker-energy",
+      "sha": "d7d3553a99294d881c28a78f21300c1e8add9b80"
+    },
+    {
+      "ref": "refs/heads/test/station-defence-observability",
+      "sha": "c05573b02aa5dfd7fd0670963a7dc5cc6c9682fe"
+    },
+    {
+      "ref": "refs/heads/test/station-tab-cycle-tail-bound",
+      "sha": "6f194eaa6e471e402e5ddcb6faa59c0184b6da7b"
+    },
+    {
+      "ref": "refs/heads/test/station-tab-filter-selection",
+      "sha": "1a6a4f912f0af9a808880a69d1c060775ead3cb9"
+    },
+    {
+      "ref": "refs/heads/test/terminal-stale-fixture-premises",
+      "sha": "810afd1de4e637c67b3af0320c7710a3866e2ca4"
+    },
+    {
+      "ref": "refs/heads/test/thin-bridge-explicit-return",
+      "sha": "adcf5b9f9095e3623bc91e6cf3a610cb3ce63bd0"
+    },
+    {
+      "ref": "refs/heads/test/thin-hull-budget-premises",
+      "sha": "ae5b61b6d4af55af5d12c1f86b48cb6086e1ec9e"
+    },
+    {
+      "ref": "refs/heads/test/trial-quote-availability",
+      "sha": "8118ca5bc57b54a6c514ac01af8ce8d4bec8e158"
+    },
+    {
+      "ref": "refs/heads/test/trial-quote-availability-diagnostic",
+      "sha": "9d15285b27ba718ed6ca18d9df763c43d160b9f8"
+    },
+    {
+      "ref": "refs/heads/test/validate-cohort-before-later-forgery",
+      "sha": "9422b2c0df4b813d9211f8a19c6bcf159d305aa8"
+    },
+    {
+      "ref": "refs/heads/test/worktool-fixture-hulls",
+      "sha": "71fc55af0dc269608f7812e97ca09d0026eb441c"
+    },
+    {
+      "ref": "refs/remotes/origin/HEAD",
+      "sha": "bba862c558530ea2d40d634f84fbd490d9cc3401"
+    },
+    {
+      "ref": "refs/remotes/origin/backup/source-20261021T154939Z",
+      "sha": "41c15aed9d2684cc2708077a16f6b8aef576be31"
+    },
+    {
+      "ref": "refs/remotes/origin/dependency-maintenance",
+      "sha": "617b56d07f4b5ee8d59e5ed32370d86c28991d3e"
+    },
+    {
+      "ref": "refs/remotes/origin/docs/developer-reviewer-workflow",
+      "sha": "b991da197da2750e06e71896f213aef3f8a58298"
+    },
+    {
+      "ref": "refs/remotes/origin/feature/authored-market-order",
+      "sha": "5da5ae1a982bd6889a5952ede51e4a461646bc6b"
+    },
+    {
+      "ref": "refs/remotes/origin/feature/canonical-mission-composition",
+      "sha": "fd9cf425f5598833ff67f8acb929a86fd56de848"
+    },
+    {
+      "ref": "refs/remotes/origin/feature/inventory-property-groups",
+      "sha": "85e675900808cd7fab5ccfe23b8d731c51c9e5a3"
+    },
+    {
+      "ref": "refs/remotes/origin/feature/native-contact-repair-delivery",
+      "sha": "d77fb1dfea26b85a2bf112cdcb1f7f027017a1eb"
+    },
+    {
+      "ref": "refs/remotes/origin/feature/npc-resources-persistence",
+      "sha": "a804f245c4baf3668b22393206a43a048465739a"
+    },
+    {
+      "ref": "refs/remotes/origin/feature/wayfarer-seed-service",
+      "sha": "235719f0ac4917293e53f566a2f39154fb31001e"
+    },
+    {
+      "ref": "refs/remotes/origin/fix/contract-board-summary-timeout",
+      "sha": "28e2c30ed0779a2ebf56cf58f0e2aaf2c4bea22a"
+    },
+    {
+      "ref": "refs/remotes/origin/fix/homebrew-release-assets",
+      "sha": "eead720d1459504df8133bbe84e789cc91caa6ad"
+    },
+    {
+      "ref": "refs/remotes/origin/fix/live-root-crash-ownership",
+      "sha": "92a60684e034247630e95c4047dee103bd9d4802"
+    },
+    {
+      "ref": "refs/remotes/origin/fix/original-night-technology",
+      "sha": "fa28096334f6d55ba3dfae938d1bb7944fe4f8ee"
+    },
+    {
+      "ref": "refs/remotes/origin/fix/swift-warning-noise",
+      "sha": "043a41f1cc323edce5266b0c47c8263bec19c264"
+    },
+    {
+      "ref": "refs/remotes/origin/integration/completed-game-candidate",
+      "sha": "730f9f45b31bebaf49ee44d8f696eabe38b36517"
+    },
+    {
+      "ref": "refs/remotes/origin/main",
+      "sha": "bba862c558530ea2d40d634f84fbd490d9cc3401"
+    },
+    {
+      "ref": "refs/remotes/origin/test/hosted-native-lifetime-diagnostic",
+      "sha": "abc7a95f3f1d8a334919eedf510df9ebe09368a2"
+    }
+  ],
+  "worktree_heads": [
+    {
+      "worktree": "/Users/sclarke/github/elite",
+      "HEAD": "bba862c558530ea2d40d634f84fbd490d9cc3401",
+      "branch": "refs/heads/main"
+    },
+    {
+      "worktree": "/private/tmp/elite-MBA-G12-production-source-20261021",
+      "HEAD": "7c5dae53fbf1aa2c60bbf2f562e6026ecb0ac3e9",
+      "detached": ""
+    },
+    {
+      "worktree": "/private/tmp/elite-MBA-help-consistency-source-20261021",
+      "HEAD": "45ef97884405f80a30b5857a499ea691bcda130f",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/assisted-station-native-fixture/elite",
+      "HEAD": "c43bc407ca2373a7491d9d5c3d9f8dffe2c443a0",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/cabin-catalogue-preservation/elite",
+      "HEAD": "dffd9106a235362663fb342c9607a29cb02794df",
+      "branch": "refs/heads/test/cabin-catalogue-preservation"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/canonical-integration-recovery/elite",
+      "HEAD": "235719f0ac4917293e53f566a2f39154fb31001e",
+      "branch": "refs/heads/feature/wayfarer-charter-audit"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/ci-minimal-fault-format/elite",
+      "HEAD": "73455ce16e06ab1d74e47d6aece3d2b60cf30124",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/ci-owned-fault-stack/elite",
+      "HEAD": "1fbf26924773080c085174771209aee7000fb24f",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/commander-query-borrow/elite",
+      "HEAD": "b972c9f5aff97a3a9333bb398cb842cb3d9e4e63",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/contract-board-compiler/elite",
+      "HEAD": "0205c3fc8199530dfc1953c032012f7267bb116d",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/controls-consistency/elite",
+      "HEAD": "b897da4e3dffec1636b9c00c04e472c72c15b54e",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/courier-contact-fixture/elite",
+      "HEAD": "aad07b4ec4bedaeaad13e7d9bdf58d0983e4d07c",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/critically-damped-work-approach/elite",
+      "HEAD": "afc931ffeab9da078de80d72978fac91967d9aec",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/db650-native-fixture-prerequisites/elite",
+      "HEAD": "5e5c9590d508ea4c66e1cf7605edf007cf92a8e9",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/direct-runtime-backtrace/elite",
+      "HEAD": "f63a647475927d9f51b40df4ab9b5b51ec276a0b",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/display-vertex-stack/elite",
+      "HEAD": "d42b9af12f86e5a958af21cf9c537e7c8ccc3bad",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/encounters-mining/elite",
+      "HEAD": "26370358b53ebb598d59204cf35b7f653d10f2e1",
+      "branch": "refs/heads/feat/encounters-mining"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/event-context-commander-borrow/elite",
+      "HEAD": "d2818db81e386c7f0619c7bec873763a6847d96d",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/freight-native-hold-precondition/elite",
+      "HEAD": "f3bc60ca9ad8d9b3c787fa3adad9566c04c7adf9",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/front-visibility-reader-lifetime/elite",
+      "HEAD": "8dd42d6e4532f21844942fac62fcdc30319c0898",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-automatic-progress/elite",
+      "HEAD": "203410eab046a9507e076a8d7dab815869cddb90",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-automatic-recovery-boundary/elite",
+      "HEAD": "ec6bd1d74eb1f29d04e7458fc50fbae02c40fcde",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-automatic-twelve-journey/elite",
+      "HEAD": "e07fd3694b9fb0acc2cc0d1676ca918d81063fe4",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-capture-context-correction/elite",
+      "HEAD": "9bb36b32676c4df2512907766f8e47e7e69bcf64",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-clearance-reason/elite",
+      "HEAD": "48fe9914fa49de07dd21a9ee60457907bbe86f52",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-collection-assertion-context/elite",
+      "HEAD": "9d7aaba681dcc4192be8f9a61a1cb4ec03838d7e",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-collection-comment-compiler/elite",
+      "HEAD": "5bfc71a5ed8bc8421f538c34e9835fbc9a3ba033",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-first-clearance-packet/elite",
+      "HEAD": "cb23a5ccca89975e9703320437e6f8bfed4b7723",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-manual-intake-handoff/elite",
+      "HEAD": "081a90489762f56e4c68322c824c50ed5420332d",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-moving-original-provenance/elite",
+      "HEAD": "ddc0fe84aa84ccf4b5de82ee23b7d602d133dcb1",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/G12-reserved-recovery-fit/elite",
+      "HEAD": "79c5dbbb012d66745bd3dd216c7683946c06612f",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/game-over-startup/elite",
+      "HEAD": "35b068f733391bb8bb513b6381840ea3b0d40fd7",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted-5f-native-fixtures/elite",
+      "HEAD": "637b20258a7688d819950feaa9ae9fea2b98377f",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted-crash-artifacts/elite",
+      "HEAD": "0c11149e039a49585c5a26ed029a3dc86264c5b6",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted-native-cold-reference/elite",
+      "HEAD": "9a064cdf238437651799a9a88c6659a9045e5415",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted-native-ray-fixtures/elite",
+      "HEAD": "177c9d3fab4de383d2045865342ac7dec8d6c349",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted399-collision-boundaries/elite",
+      "HEAD": "26a9ab8688ba1b70e4f9af5a053bb594a9620ec4",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted399-native-prerequisites/elite",
+      "HEAD": "89900d1b78c1aa95b44c696b553ac7453c1f9e54",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted399-startup-market-expectations/elite",
+      "HEAD": "fe04d1290b639aa440311949a7b1fdd91e0b706a",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted399-station-pressure-lane/elite",
+      "HEAD": "607da473fb0baa0431ac1a60cd6762ed25c4cf41",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted510-native-docking-frames/elite",
+      "HEAD": "07eb208777e37634338ca8497bc9354f86fbc9aa",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted510-native-fixture-batch/elite",
+      "HEAD": "621a08929614c0decf85ad21a87b7da7d16a1bee",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted510-native-prerequisites/elite",
+      "HEAD": "213fa8f1fd8ff5fb291218a2203e7fc9bf57d4cb",
+      "branch": "refs/heads/feature/hosted510-native-prerequisites"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hosted510-police-entry-fixture/elite",
+      "HEAD": "08a73f46144c09159426eead60c74253bc0cabcd",
+      "branch": "refs/heads/feature/hosted510-police-entry-fixture"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hostile-docking-acceptance/elite",
+      "HEAD": "9e175cd0130d77eb785955a7fcab1e4d75ffe8f5",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hull-sweep-row-reuse/elite",
+      "HEAD": "4c910e42d226f68fa005c177d636667fcf7c288f",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/hull-sweep-vertex-basis/elite",
+      "HEAD": "922f1cdf5d59b17c2c3e314d814ee31d656c06a5",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/identified-alias-body-gate/elite",
+      "HEAD": "d1dc3faebbd52c801aeeff04171f99dffe1026c1",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/identified-alias-copy-compiler/elite",
+      "HEAD": "6bf70ec2d87c5cfbf01e5695a7eaad5db6e0e4a2",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/identified-alias-source-borrow/elite",
+      "HEAD": "96aa3640da4240c1c635ce60dcdaa4c11e6e3417",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/identified-salvage-alias-stack/elite",
+      "HEAD": "c05e95709943fb4a78d0bc65d6bac961f0ae38b9",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/identified-salvage-facts-borrow/elite",
+      "HEAD": "d3bdc83a3b969836b7ab715e431234067e7259fa",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/inventory-help-composition/elite",
+      "HEAD": "85e675900808cd7fab5ccfe23b8d731c51c9e5a3",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/liberator-ship/elite",
+      "HEAD": "43c7c414fc566b7485ba22fd15f763ca5f390461",
+      "branch": "refs/heads/sonar-conditions"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/m01-fixture-qualification-recovery/elite",
+      "HEAD": "d77fb1dfea26b85a2bf112cdcb1f7f027017a1eb",
+      "branch": "refs/heads/feature/native-contact-repair-delivery"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/main-station-capacity-fixture/elite",
+      "HEAD": "2a0c3057c6e7292de1bbf39518dc9e29d67ef902",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/main-station-startup/elite",
+      "HEAD": "572b021ecb360110779b55d631ff69278749785e",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/market-help-composition/elite",
+      "HEAD": "5da5ae1a982bd6889a5952ede51e4a461646bc6b",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/measured-extraction-clue-assertion/elite",
+      "HEAD": "95edbd97f88f395ed70bf29d697d86471c3d8fce",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/mining-ore-supported-fixture/elite",
+      "HEAD": "104cef26bf536da4a2eafaf563c5c8a86ac1f561",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/mission-acceptance-phase-lifetimes/elite",
+      "HEAD": "1af6fd7d549b18bb7ce2126b6c164fa24faf7d7e",
+      "branch": "refs/heads/fix/mission-acceptance-phase-lifetimes"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-contact-save-observation/elite",
+      "HEAD": "5cd68862cc5ac8844fac6a349044a8296259db85",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-ore-assertion-compiler/elite",
+      "HEAD": "19db9d1021dc828041a07b330b93b1ee138c7ed9",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-ore-recovery-capacity/elite",
+      "HEAD": "22eba0c2dd75b4079ac4b792f064a86d8a10f2e8",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-ore-release/elite",
+      "HEAD": "8af7380469310dc66f36ae9936153afc16807e39",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-ore-spin-mining-fixture/elite",
+      "HEAD": "fdb077b5b3f3b4b669cea867f82fecfd0b546ad2",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-ore-spin-old-fixtures/elite",
+      "HEAD": "56bdbb187e7c287c24979c7b5760f4af36c3cbf4",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-ore-spin/elite",
+      "HEAD": "a38ee5bb991644ddeacced1d2c8d01ab94f37549",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-practice-provider/elite",
+      "HEAD": "235719f0ac4917293e53f566a2f39154fb31001e",
+      "branch": "refs/heads/feature/native-practice-provider"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-save-binding-expectation/elite",
+      "HEAD": "50ebfa74ca630c0f68c638acedc73c278beb75e3",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-save-field-diagnostics/elite",
+      "HEAD": "1bb63ab975b00b19638c9b77e66c47ffb10bdd1a",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-station-budget-fixtures/elite",
+      "HEAD": "aa24dfc341ccaf62c5d59ef971892047daff80c2",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-station-service-fixtures/elite",
+      "HEAD": "864fd24c28547f57bf3b8dbb6fb0d372fa931d41",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/navigation-availability-binding-scope/elite",
+      "HEAD": "96608dc21839cac86dd6b04d78e90be3d7cbb8d6",
+      "branch": "refs/heads/fix/navigation-availability-binding-scope"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/navigation-binding-commander-projection/elite",
+      "HEAD": "f5a51f8977d8f772931b5a69761be32c18539382",
+      "branch": "refs/heads/fix/navigation-binding-commander-projection"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/navigation-stock-hull-fixture/elite",
+      "HEAD": "6716e5626c40563ab28a79c495a97dd29a55ccdb",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/oblique-work-clearance/elite",
+      "HEAD": "65a842062b00b9a3ec58da7bf1f222dad006d548",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/ordnance-classic-fixture/elite",
+      "HEAD": "e89cb436138e18a07c9d95ad1e28c93cbbf25b25",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/original-night-technology/elite",
+      "HEAD": "fa28096334f6d55ba3dfae938d1bb7944fe4f8ee",
+      "branch": "refs/heads/fix/original-night-technology"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/original-rescue-facts-gate/elite",
+      "HEAD": "5c49fe3dddbe7200a5115e7a96560b665da01dcd",
+      "branch": "refs/heads/fix/original-rescue-facts-gate"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/package-resource-layout/elite",
+      "HEAD": "8c375b7a0a0c27470e5f8277315fa48815906a87",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/passenger-cabin-grades/elite",
+      "HEAD": "aff15ba9a1a3afee61f3b126f21a7c053d60b356",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/planet-performance/elite",
+      "HEAD": "e8191dbc19f588f9c4f31c3252c2f1fca2e89453",
+      "branch": "refs/heads/perf/planet-rendering"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/pledge-assets-borrow/elite",
+      "HEAD": "343b8fa10bd0f027817a9787823c3790dbf84eed",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/pledge-preflight-lifetime/elite",
+      "HEAD": "753bfce7a121e9e9c4c8b92a3afc1b3ac970b081",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/profit-authentic-market-witnesses/elite",
+      "HEAD": "76b7022a56a3a8b3cc8187670629426df37084b3",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/qualified-clinic-showroom-candidate/elite",
+      "HEAD": "8b30a3112d1af0c5130cd01d8fed582c029a2913",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/record-alias-stack/elite",
+      "HEAD": "bcaa428048c386b37ff0823b93222ab3fbde3b82",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/record-selection-borrow/elite",
+      "HEAD": "f73281db05a0b7d37a6dbb8d9c998cde6647392b",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/regular-ore-motion-clock/elite",
+      "HEAD": "dd503d59771cdb18183260079b4b0892521d29de",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/release-contact-observation/elite",
+      "HEAD": "3fe96a3a4aec948a84a17257972037692f7ce0fc",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/repair-loop-composition/elite",
+      "HEAD": "ad586747ae7a3cd5394f9f6d5be7a07e524d0f2b",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/rescue-metadata-stack/elite",
+      "HEAD": "a1621fab0a17240719cd77c0322a7af8031041e0",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/review-source-guard/elite",
+      "HEAD": "0ba34e10d604580b2395728f44bc4e98cf65f3ae",
+      "branch": "refs/heads/test/calendar-original-world-travel-witness"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/route-alternatives/elite",
+      "HEAD": "6929d4b13206023d897452ab2258625e22da8132",
+      "branch": "refs/heads/feature/route-alternatives"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/salvage-save-binding-expectations/elite",
+      "HEAD": "4ee148124cf31e5e80018561bed11045f4b80216",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/seed-transfer-composition/elite",
+      "HEAD": "939c191c34f4a020474713db59f2c3379dd79da8",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/ship-appearance-import/elite",
+      "HEAD": "12d00710bfc435c53cb3369a7f985bfd6ea4df61",
+      "branch": "refs/heads/test/solar-equipment-comparison-ordering"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/solar-flight-gameplay/elite",
+      "HEAD": "2c21ee2d59210e1af71bcc3e37200d975bdaf4cd",
+      "branch": "refs/heads/solar-flight-gameplay"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/startup-fixes/elite",
+      "HEAD": "acbb99e952157ca3564f2d82adcd4880376eb0bc",
+      "branch": "refs/heads/test/mission-stack-layout"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/station-clear-entry-fixture/elite",
+      "HEAD": "62cdc9bc1e48231b9a73317538afffd10b5ddab8",
+      "branch": "refs/heads/feature/station-clear-police-entry-fixture"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/station-police-course-observation/elite",
+      "HEAD": "162eadb41f6db18104bd09e93ff3646c78fd5504",
+      "branch": "refs/heads/feature/station-police-course-observation"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/swift-warning-remediation/elite",
+      "HEAD": "92a60684e034247630e95c4047dee103bd9d4802",
+      "branch": "refs/heads/fix/live-root-crash-ownership"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/swift61-test-expressions/elite",
+      "HEAD": "40e8ba66d57438548df8187d1bc98bc2fb09ba5c",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/texture-packing-compiler/elite",
+      "HEAD": "9d4517c36b15fb4952d57ac099b0d66e5740b3be",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/trackpad-native-hull/elite",
+      "HEAD": "b59ce5697b0534fc5c493848c1ce2cf0e32e4c8c",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/typed-ordnance-runtime/elite",
+      "HEAD": "8752b10518c64292c2a41778d26edd4151c06b2d",
+      "branch": "refs/heads/feature/ordnance-equipment-integration"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/unattributed-helper-diagnostic/elite",
+      "HEAD": "4a57b58cce9e42f4aa16da473dde132a07d63465",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/wayfarer-seed-transfer-native/elite",
+      "HEAD": "2881c61837fe141709ae5c3355d6f5c810891129",
+      "detached": ""
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/workshop-gallery-fixture/elite",
+      "HEAD": "d33daaaebef910985c6d4035b088b7a40307e074",
+      "branch": "refs/heads/fix/workshop-gallery-fixture"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/xyzzy-current-market-save-fixtures/elite",
+      "HEAD": "47654a8ad9631043ea01ec5681a16e0133491f79",
+      "branch": "refs/heads/fix/xyzzy-current-market-save-fixtures"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/xyzzy-grant-fixture/elite",
+      "HEAD": "0a5e1a3045bd0b127733a83221040ebe351e4796",
+      "branch": "refs/heads/test/painted-courier-one-hop-witness"
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/xyzzy-profit-scan/elite",
+      "HEAD": "93c5138a31bc93a21585a78e0ee3e8a372236eb7",
+      "detached": ""
+    }
+  ],
+  "snapshots": [
+    {
+      "worktree": "/Users/sclarke/github/elite",
+      "branch": "refs/heads/main",
+      "original_head": "bba862c558530ea2d40d634f84fbd490d9cc3401",
+      "snapshot": "ae1ba6f8ca00f0bf7de12e23ce04574eb2cb0d3a",
+      "paths": [
+        "AGENTS.md",
+        "docs/NPC-TARGET-TELEMETRY-DESIGN.json",
+        "docs/STATION-FINANCE-DESIGN.md",
+        "docs/research/README.md",
+        "docs/research/academy-mission-specifications.md",
+        "docs/research/aliens.md",
+        "docs/research/almanac-mission-specifications.md",
+        "docs/research/aquatics-mission-specifications.md",
+        "docs/research/archive/README-before-scope-change.md",
+        "docs/research/archive/README.md",
+        "docs/research/archive/assassins-mission-specifications-before-scope-change.md",
+        "docs/research/archive/coverage-before-scope-change.md",
+        "docs/research/archive/data/assassins-mission-profile-full-source.json",
+        "docs/research/archive/data/assassins-source-fixtures-full-source.json",
+        "docs/research/archive/data/ffe-journal-index.json",
+        "docs/research/archive/data/ffe-reference-sources.json",
+        "docs/research/archive/data/ffe-scenario-state.json",
+        "docs/research/archive/data/ffe-script-graph.json",
+        "docs/research/archive/data/guardian-historical-sites.json",
+        "docs/research/archive/data/guardian-logs.json",
+        "docs/research/archive/data/guardian-ruins.json",
+        "docs/research/archive/data/operations-project-profiles.json",
+        "docs/research/archive/ffe-journal-and-save-profiles.md",
+        "docs/research/archive/first-encounters-source-notes.md",
+        "docs/research/archive/guardian-mission-data.md",
+        "docs/research/archive/mission-specifications-before-scope-change.md",
+        "docs/research/archive/missions-before-scope-change.md",
+        "docs/research/archive/operations-evidence.md",
+        "docs/research/archive/operations-project-specifications.md",
+        "docs/research/archive/versions-before-scope-change.md",
+        "docs/research/assassins-mission-specifications.md",
+        "docs/research/black-sunspot-mission-specifications.md",
+        "docs/research/blackjack-mission-specifications.md",
+        "docs/research/cataclysm-mission-specifications.md",
+        "docs/research/classic-port-profiles.md",
+        "docs/research/classic-project-specifications.md",
+        "docs/research/commies-selected-ship-specifications.md",
+        "docs/research/coverage.md",
+        "docs/research/crew-and-passenger-specifications.md",
+        "docs/research/data/almanac-source-fixtures.json",
+        "docs/research/data/assassins-mission-profile.json",
+        "docs/research/data/assassins-source-fixtures.json",
+        "docs/research/data/black-sunspot-source-fixtures.json",
+        "docs/research/data/cataclysm-mechanics.json",
+        "docs/research/data/cataclysm-source-fixtures.json",
+        "docs/research/data/challenge-route-bindings.json",
+        "docs/research/data/classic-project-profiles.json",
+        "docs/research/data/classic-route-derivation.json",
+        "docs/research/data/commies-multiweapon-verification.json",
+        "docs/research/data/commies-selected-ship-mechanics.json",
+        "docs/research/data/crew-source-evidence.json",
+        "docs/research/data/crew-source-verification.json",
+        "docs/research/data/elite-a-courier-fixtures.json",
+        "docs/research/data/elite-a-ship-specifications.json",
+        "docs/research/data/elite-dangerous-outfitting.json",
+        "docs/research/data/escort-source-fixtures.json",
+        "docs/research/data/feudal-source-fixtures.json",
+        "docs/research/data/gba-ship-specifications.json",
+        "docs/research/data/generated-space-project-profiles.json",
+        "docs/research/data/implementation-scope.json",
+        "docs/research/data/iron-raven-analysis.json",
+        "docs/research/data/iron-raven-att1-legacy-source.json",
+        "docs/research/data/iron-raven-cherkasova-mechanics.json",
+        "docs/research/data/iron-raven-cherkasova-missile-fixtures.json",
+        "docs/research/data/iron-raven-cherkasova-numerical-verification.json",
+        "docs/research/data/iron-raven-cherkasova-patch-fixtures.json",
+        "docs/research/data/iron-raven-cherkasova-route-bindings.json",
+        "docs/research/data/iron-raven-cherkasova-source-fixtures.json",
+        "docs/research/data/iron-raven-defences-mechanics.json",
+        "docs/research/data/iron-raven-defences-numerical-verification.json",
+        "docs/research/data/iron-raven-defences-patch-fixtures.json",
+        "docs/research/data/iron-raven-defences-route-bindings.json",
+        "docs/research/data/iron-raven-defences-source-fixtures.json",
+        "docs/research/data/iron-raven-dependency-pirate-correction.json",
+        "docs/research/data/iron-raven-dependency-sources.json",
+        "docs/research/data/iron-raven-finance-mechanics.json",
+        "docs/research/data/iron-raven-finance-numerical-verification.json",
+        "docs/research/data/iron-raven-finance-project-fixtures.json",
+        "docs/research/data/iron-raven-kinnaird-mechanics.json",
+        "docs/research/data/iron-raven-kinnaird-patch-fixtures.json",
+        "docs/research/data/iron-raven-kinnaird-route-bindings.json",
+        "docs/research/data/iron-raven-kinnaird-source-fixtures.json",
+        "docs/research/data/iron-raven-lexicon-mechanics.json",
+        "docs/research/data/iron-raven-lexicon-numerical-verification.json",
+        "docs/research/data/iron-raven-lexicon-patch-fixtures.json",
+        "docs/research/data/iron-raven-lexicon-priority-fixtures.json",
+        "docs/research/data/iron-raven-lexicon-route-bindings.json",
+        "docs/research/data/iron-raven-lexicon-source-fixtures.json",
+        "docs/research/data/iron-raven-loa-mechanics.json",
+        "docs/research/data/iron-raven-loa-numerical-verification.json",
+        "docs/research/data/iron-raven-loa-patch-fixtures.json",
+        "docs/research/data/iron-raven-loa-priority-fixtures.json",
+        "docs/research/data/iron-raven-loa-route-bindings.json",
+        "docs/research/data/iron-raven-loa-source-fixtures.json",
+        "docs/research/data/iron-raven-maenes-mechanics.json",
+        "docs/research/data/iron-raven-maenes-numerical-verification.json",
+        "docs/research/data/iron-raven-maenes-patch-fixtures.json",
+        "docs/research/data/iron-raven-maenes-police-evidence.json",
+        "docs/research/data/iron-raven-maenes-priority-fixtures.json",
+        "docs/research/data/iron-raven-maenes-source-fixtures.json",
+        "docs/research/data/iron-raven-prelude-mechanics.json",
+        "docs/research/data/iron-raven-prelude-patch-fixtures.json",
+        "docs/research/data/iron-raven-prelude-route-bindings.json",
+        "docs/research/data/iron-raven-prelude-source-fixtures.json",
+        "docs/research/data/iron-raven-sdf-mechanics.json",
+        "docs/research/data/iron-raven-sdf-patch-fixtures.json",
+        "docs/research/data/iron-raven-sdf-route-bindings.json",
+        "docs/research/data/iron-raven-sdf-source-fixtures.json",
+        "docs/research/data/iron-raven-shipment-closure-fixtures.json",
+        "docs/research/data/iron-raven-shipment-mechanics.json",
+        "docs/research/data/iron-raven-shipment-route-bindings.json",
+        "docs/research/data/iron-raven-shipment-source-fixtures.json",
+        "docs/research/data/iron-raven-source-fixtures.json",
+        "docs/research/data/iron-raven-weiss-mechanics.json",
+        "docs/research/data/iron-raven-weiss-numerical-verification.json",
+        "docs/research/data/iron-raven-weiss-patch-fixtures.json",
+        "docs/research/data/iron-raven-weiss-route-bindings.json",
+        "docs/research/data/iron-raven-weiss-source-fixtures.json",
+        "docs/research/data/legacy-expansion-resources.json",
+        "docs/research/data/legacy-mission-fixtures.json",
+        "docs/research/data/legacy-source-recovery.json",
+        "docs/research/data/linkg7-route-bindings.json",
+        "docs/research/data/linkg7-source-fixtures.json",
+        "docs/research/data/localhero-mechanics.json",
+        "docs/research/data/localhero-source-fixtures.json",
+        "docs/research/data/most-wanted-dependency-source.json",
+        "docs/research/data/most-wanted-source-fixtures.json",
+        "docs/research/data/msx-object-resources.json",
+        "docs/research/data/navy-dependency-resources.json",
+        "docs/research/data/navy-source-fixtures.json",
+        "docs/research/data/navy-source-recovery.json",
+        "docs/research/data/oolite-collector-choices.json",
+        "docs/research/data/oolite-combat-resources.json",
+        "docs/research/data/oolite-dependency-sources.json",
+        "docs/research/data/oolite-expansion-resources.json",
+        "docs/research/data/oolite-pack-sources.json",
+        "docs/research/data/oolite-script-rule-index.json",
+        "docs/research/data/oolite-ship-specifications.json",
+        "docs/research/data/oric-ship-resources.json",
+        "docs/research/data/p30-inherited-fuel-corrections.json",
+        "docs/research/data/player-ship-adaptation.json",
+        "docs/research/data/primary-source-files.json",
+        "docs/research/data/rescue-astromine-mechanics.json",
+        "docs/research/data/rescue-astromine-project-fixtures.json",
+        "docs/research/data/rescue-astromine-route-bindings.json",
+        "docs/research/data/rescue-astromine-source-fixtures.json",
+        "docs/research/data/rescue-astromine-wormhole-verification.json",
+        "docs/research/data/rescue-blackbox-mechanics.json",
+        "docs/research/data/rescue-blackbox-project-fixtures.json",
+        "docs/research/data/rescue-blackbox-route-bindings.json",
+        "docs/research/data/rescue-blackbox-source-fixtures.json",
+        "docs/research/data/rescue-courier-mechanics.json",
+        "docs/research/data/rescue-courier-source-fixtures.json",
+        "docs/research/data/rescue-emergency-mechanics.json",
+        "docs/research/data/rescue-emergency-project-fixtures.json",
+        "docs/research/data/rescue-emergency-source-fixtures.json",
+        "docs/research/data/rescue-family1-mechanics.json",
+        "docs/research/data/rescue-family1-source-fixtures.json",
+        "docs/research/data/rescue-framework-source-fixtures.json",
+        "docs/research/data/rescue-materials-mechanics.json",
+        "docs/research/data/rescue-materials-numerical-verification.json",
+        "docs/research/data/rescue-materials-project-fixtures.json",
+        "docs/research/data/rescue-materials-route-bindings.json",
+        "docs/research/data/rescue-materials-source-fixtures.json",
+        "docs/research/data/rescue-medical-location-bindings.json",
+        "docs/research/data/rescue-medical-mechanics.json",
+        "docs/research/data/rescue-medical-numerical-verification.json",
+        "docs/research/data/rescue-medical-project-fixtures.json",
+        "docs/research/data/rescue-medical-route-bindings.json",
+        "docs/research/data/rescue-medical-source-fixtures.json",
+        "docs/research/data/rescue-model-source.json",
+        "docs/research/data/rescue-personnel-mechanics.json",
+        "docs/research/data/rescue-personnel-route-bindings.json",
+        "docs/research/data/rescue-personnel-source-fixtures.json",
+        "docs/research/data/rescue-project-repair-fixtures.json",
+        "docs/research/data/rescue-returning-mechanics.json",
+        "docs/research/data/rescue-returning-numerical-verification.json",
+        "docs/research/data/rescue-returning-project-fixtures.json",
+        "docs/research/data/rescue-returning-source-fixtures.json",
+        "docs/research/data/rescue-route-bindings.json",
+        "docs/research/data/rescue-slaver-discovery-fixtures.json",
+        "docs/research/data/rescue-slaver-mechanics.json",
+        "docs/research/data/rescue-slaver-project-fixtures.json",
+        "docs/research/data/rescue-slaver-route-bindings.json",
+        "docs/research/data/rescue-solar-mechanics.json",
+        "docs/research/data/rescue-solar-project-fixtures.json",
+        "docs/research/data/rescue-solar-source-fixtures.json",
+        "docs/research/data/rescue-solar-thermal-verification.json",
+        "docs/research/data/resistance-source-fixtures.json",
+        "docs/research/data/rrs-contract-board-profile.json",
+        "docs/research/data/runtime-mission-pack-schema-reference.json",
+        "docs/research/data/scriptable-mission-engine-requirements.json",
+        "docs/research/data/secondary-oxp-source-fixtures.json",
+        "docs/research/data/ship-crew-profiles.json",
+        "docs/research/data/shrews-mission-graph.json",
+        "docs/research/data/spectrum-object-resources.json",
+        "docs/research/data/taxi-source-fixtures.json",
+        "docs/research/data/tcat-mechanics.json",
+        "docs/research/data/tcat-source-fixtures.json",
+        "docs/research/data/transporter-refit-correction.json",
+        "docs/research/data/trident-dependency-sources.json",
+        "docs/research/data/trident-mechanics.json",
+        "docs/research/data/trident-source-fixtures.json",
+        "docs/research/data/trident-source-graph.json",
+        "docs/research/data/vector-arn-mechanics.json",
+        "docs/research/data/vector-arn-source-fixtures.json",
+        "docs/research/data/vector-dependency-fixtures.json",
+        "docs/research/data/vector-dependency-source.json",
+        "docs/research/data/vector-route-bindings.json",
+        "docs/research/data/vector-services-mechanics.json",
+        "docs/research/data/vector-services-source-fixtures.json",
+        "docs/research/data/vector-station-source-fixtures.json",
+        "docs/research/data/xeptatl-source-fixtures.json",
+        "docs/research/elite-a-courier-specifications.md",
+        "docs/research/escort-mission-specifications.md",
+        "docs/research/examples/scriptable-maenes.lua",
+        "docs/research/examples/scriptable-maenes.toml",
+        "docs/research/feudal-mission-specifications.md",
+        "docs/research/generated-space-project-specifications.md",
+        "docs/research/grand-tour-specifications.md",
+        "docs/research/illegal-goods-mission-specifications.md",
+        "docs/research/implementation-scope.md",
+        "docs/research/iron-raven-analysis-notes.md",
+        "docs/research/iron-raven-cherkasova-specifications.md",
+        "docs/research/iron-raven-defences-specifications.md",
+        "docs/research/iron-raven-finance-specifications.md",
+        "docs/research/iron-raven-kinnaird-specifications.md",
+        "docs/research/iron-raven-lexicon-specifications.md",
+        "docs/research/iron-raven-loa-specifications.md",
+        "docs/research/iron-raven-maenes-analysis-notes.md",
+        "docs/research/iron-raven-maenes-specifications.md",
+        "docs/research/iron-raven-prelude-specifications.md",
+        "docs/research/iron-raven-sdf-specifications.md",
+        "docs/research/iron-raven-shipment-analysis-notes.md",
+        "docs/research/iron-raven-shipment-specifications.md",
+        "docs/research/iron-raven-weiss-specifications.md",
+        "docs/research/linkg7-mission-specifications.md",
+        "docs/research/localhero-mission-specifications.md",
+        "docs/research/mission-handoffs.md",
+        "docs/research/mission-specifications.md",
+        "docs/research/missions.md",
+        "docs/research/most-wanted-mission-specifications.md",
+        "docs/research/navy-mission-specifications.md",
+        "docs/research/oohaul-mission-specifications.md",
+        "docs/research/oolite-coordinate-contract.md",
+        "docs/research/oolite-expansion-specifications.md",
+        "docs/research/oric-mission-specifications.md",
+        "docs/research/player-shipyard-design.md",
+        "docs/research/project-estimates.md",
+        "docs/research/rescue-astromine-analysis-notes.md",
+        "docs/research/rescue-astromine-mission-specifications.md",
+        "docs/research/rescue-blackbox-mission-specifications.md",
+        "docs/research/rescue-courier-mission-specifications.md",
+        "docs/research/rescue-emergency-mission-specifications.md",
+        "docs/research/rescue-escort-mission-specifications.md",
+        "docs/research/rescue-inspector-ship-specifications.md",
+        "docs/research/rescue-materials-analysis-notes.md",
+        "docs/research/rescue-materials-mission-specifications.md",
+        "docs/research/rescue-medical-analysis-notes.md",
+        "docs/research/rescue-medical-mission-specifications.md",
+        "docs/research/rescue-personnel-analysis-notes.md",
+        "docs/research/rescue-personnel-mission-specifications.md",
+        "docs/research/rescue-returning-analysis-notes.md",
+        "docs/research/rescue-returning-mission-specifications.md",
+        "docs/research/rescue-slaver-mission-specifications.md",
+        "docs/research/rescue-solar-analysis-notes.md",
+        "docs/research/rescue-solar-mission-specifications.md",
+        "docs/research/resistance-mission-specifications.md",
+        "docs/research/right-on-commander-rules.md",
+        "docs/research/rrs-contract-board-specifications.md",
+        "docs/research/runner-g5-specifications.md",
+        "docs/research/runtime-pack-handoff-contract.md",
+        "docs/research/scriptable-mission-engine-design.md",
+        "docs/research/ship-crew-list.md",
+        "docs/research/ship-specifications.md",
+        "docs/research/ships.md",
+        "docs/research/shrews-mission-specifications.md",
+        "docs/research/sources.md",
+        "docs/research/station-handoff-specifications.md",
+        "docs/research/taxi-mission-specifications.md",
+        "docs/research/to-catch-thargoid-mission-specifications.md",
+        "docs/research/trident-down-specifications.md",
+        "docs/research/vector-analysis-notes.md",
+        "docs/research/vector-arn-mission-specifications.md",
+        "docs/research/vector-salvage-inspection-specifications.md",
+        "docs/research/vector-station-specifications.md",
+        "docs/research/versions.md",
+        "docs/research/victim11-mission-specifications.md",
+        "docs/research/xeptatl-mission-specifications.md",
+        "docs/research/z80-port-profiles.md",
+        "docs/ship-hull-audit/additional-lookalikes.png",
+        "docs/ship-hull-audit/catalogue-1.png",
+        "docs/ship-hull-audit/catalogue-2.png",
+        "docs/ship-hull-audit/catalogue-3.png",
+        "docs/ship-hull-audit/catalogue-4.png",
+        "docs/ship-hull-audit/catalogue-5.png",
+        "docs/ship-hull-audit/catalogue-6.png",
+        "error.log"
+      ]
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/canonical-integration-recovery/elite",
+      "branch": "refs/heads/feature/wayfarer-charter-audit",
+      "original_head": "235719f0ac4917293e53f566a2f39154fb31001e",
+      "snapshot": "ce4707e5beffa7d709145a2626e290e6a8444b4c",
+      "paths": [
+        "Sources/EliteCore/ContractBoard.swift",
+        "Sources/EliteCore/NativeWayfarerInduction.swift",
+        "Sources/EliteCore/NativeWayfarerInductionArkSave.swift",
+        "Sources/EliteCore/NativeWayfarerInductionBoard.swift",
+        "Sources/EliteCore/NativeWayfarerInductionCharterBoard.swift",
+        "Sources/EliteCore/NativeWayfarerInductionCharterSignature.swift",
+        "Sources/EliteCore/NativeWayfarerInductionClinicQuote.swift",
+        "Sources/EliteCore/NativeWayfarerInductionClinicSource.swift",
+        "Sources/EliteCore/NativeWayfarerInductionClinicStock.swift",
+        "Sources/EliteCore/NativeWayfarerInductionContinuation.swift",
+        "Sources/EliteCore/NativeWayfarerInductionContinuationBoard.swift",
+        "Sources/EliteCore/NativeWayfarerInductionCrewLogCodec.swift",
+        "Sources/EliteCore/NativeWayfarerInductionCrewLogSave.swift",
+        "Sources/EliteCore/NativeWayfarerInductionSave.swift",
+        "Sources/EliteCore/NativeWayfarerInductionSeedQuote.swift",
+        "Sources/EliteCore/NativeWayfarerInductionSeedSource.swift",
+        "Sources/EliteCore/NativeWayfarerInductionSeedStock.swift",
+        "Sources/EliteCore/NativeWayfarerInductionWorkshopQuote.swift",
+        "Sources/EliteCore/NativeWayfarerInductionWorkshopSource.swift",
+        "Sources/EliteCore/PlayerHelp.swift",
+        "Sources/EliteCore/WayfarerColdChainCommands.swift",
+        "Sources/EliteCore/WayfarerRepairLoopCommands.swift",
+        "Tests/EliteCoreTests/NativeWayfarerInductionSeedUnitTests.swift",
+        "docs/COMPLETION-LEDGER.md",
+        "docs/DEVELOPMENT-WORKFLOW.md",
+        "docs/WORKFLOW-METRICS.md",
+        "docs/metrics/workflow-progress.json",
+        "Sources/EliteCore/NativeWayfarerInductionCharterAudit.swift",
+        "Sources/EliteCore/NativeWayfarerInductionCharterAuditBoard.swift",
+        "Sources/EliteCore/NativeWayfarerInductionCharterAuditSave.swift",
+        "Tests/EliteCoreTests/NativeWayfarerInductionCharterAuditUnitTests.swift"
+      ]
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/m01-fixture-qualification-recovery/elite",
+      "branch": "refs/heads/feature/native-contact-repair-delivery",
+      "original_head": "d77fb1dfea26b85a2bf112cdcb1f7f027017a1eb",
+      "snapshot": "0081df4770fdb2fac0f1dbde0aefe133cbefd04c",
+      "paths": [
+        "Makefile",
+        "README.md",
+        "docs/COMPLETION-LEDGER.md",
+        "docs/DEVELOPMENT-WORKFLOW.md",
+        "docs/MBA-TEST-QUEUE.md",
+        ".github/workflows/unit-tests.yml",
+        "Tools/CI/isolated_units.py",
+        "Tools/CI/test_isolated_units.py",
+        "docs/ISSUE-developer-reviewer-workflow.md",
+        "docs/ISSUE-isolated-unit-ci.md",
+        "docs/PR-developer-reviewer-workflow.md",
+        "docs/PR-isolated-unit-ci.md"
+      ]
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/native-practice-provider/elite",
+      "branch": "refs/heads/feature/native-practice-provider",
+      "original_head": "235719f0ac4917293e53f566a2f39154fb31001e",
+      "snapshot": "907a882e2fcd423543271544797e909f936ba62c",
+      "paths": [
+        "Sources/EliteCore/CargoScooping.swift",
+        "Sources/EliteCore/GameplayCombat.swift",
+        "Sources/EliteCore/GameplayOrdnance.swift",
+        "Sources/EliteCore/ScriptMissionState.swift",
+        "Sources/EliteCore/NativePracticeHit.swift",
+        "Sources/EliteCore/NativePracticeRuntime.swift",
+        "Sources/EliteCore/NativePracticeSave.swift",
+        "Sources/EliteCore/NativePracticeSource.swift",
+        "Sources/EliteCore/NativePracticeState.swift"
+      ]
+    },
+    {
+      "worktree": "/Users/sclarke/.codex/worktrees/qualified-clinic-showroom-candidate/elite",
+      "branch": null,
+      "original_head": "8b30a3112d1af0c5130cd01d8fed582c029a2913",
+      "snapshot": "add3e505788a094e5f8fcbbc876e2f3d7ba46583",
+      "paths": [
+        "releases/macos/Elite-1.4.901-universal.json",
+        "releases/macos/Elite-1.4.901-universal.sha256"
+      ]
+    }
+  ],
+  "external_build_artifacts": [
+    {
+      "original": "/Users/sclarke/.codex/worktrees/qualified-clinic-showroom-candidate/elite/releases/macos/Elite-1.4.901-universal.zip",
+      "durable_copy": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.901-8b30a311/Elite-1.4.901-universal.zip",
+      "sha256": "7a5e075d57508e6e5c76f7128060bdb4670d74d3542d8a9572b9bf88dbfda676",
+      "reason": "Existing verified binary preserved outside Git history; source/manifest/checksum archived"
+    }
+  ],
+  "warning": "Recovery state includes unfinished work and must not be merged as a game feature"
+}

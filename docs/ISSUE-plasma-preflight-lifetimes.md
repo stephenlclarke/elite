@@ -1,5 +1,0 @@
-# Plasma readiness and preflight retain earlier Game buffers
-
-Full 198 on `026f5f4ef7c1aaf673010d0c8a24d5d86df6712d` failed with signal 10 before a completed test or assertion issue. Its exact preserved coverage binary is `59730266cd9b44b851b54a8d3913f8ad453a64d8211896259aa6cd60b4a7f514`. The separate no-rebuild debugger 199 stopped in the real profiled-patrol frame loop: NPC plasma admission resolves retained actor/weapon data before Foundation identifier validation reaches its stack probe. No matching original OS report establishes equivalence to the unobserved 198 signal.
-
-The independent linked-binary audit records one Game-sized SP reservation in the weapon entry point and three in the plasma helper. Earlier readonly copies are destroyed before later work, but their reserved space remains until their containing functions return. Readiness uses only the body array. Binding and event-capacity preflight can finish in a separate inout phase before projectile admission. Preserve all actual authority checks, fallible operation order, launch judgement, admission, debit and firing events. See [the repair](PR-plasma-preflight-lifetimes.md).

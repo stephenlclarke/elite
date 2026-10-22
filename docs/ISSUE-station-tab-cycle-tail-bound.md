@@ -1,7 +1,0 @@
-# One scene-count scan can stop before the main station after cycle reconciliation
-
-Qualification 702 confirms that main station zero remains a current, unique, finite, living and eligible docking candidate after P. The observed six selections are [11,12,10,11,1,12]. The earlier claim that stable eligible membership alone guarantees acquisition within one scene count was incorrect: preserved visited history need not be a prefix of a fresh order after the preceding flight frame changes membership or ordering.
-
-The controller source intentionally preserves visited history on disengagement. An independently authored direct scenario starts with ordered eligible [1,0,10] and visits 1 then 0. Two nearer ordinary ships are admitted before reengagement, giving fresh order [11,1,12,0,10]. Membership reconciliation excludes the already visited {1,0}, so the pending tail is [11,12,10]. Only then does a fresh cycle start [11,1,12,0,10]. Its first six selections exactly match 702; zero is seventh even though the scene has six bodies including an ineligible rock. This establishes a valid source-level explanation without claiming unrecorded per-body geometry from the qualification log.
-
-The fixture must cover the pending tail and one fresh cycle. It must retain authentic traffic, installed hardware, exact station-zero docking, cancellation and the original flight budget. Production cycle-history semantics are intentional and require no change.

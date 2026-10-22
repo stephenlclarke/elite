@@ -1,9 +1,0 @@
-# Current native save fixture admission
-
-The beam-audio and original plans-reward tests prepare current owned hardware but attempt successful restoration through the historical raw Commander route. That route explicitly refuses modular-drive ownership. These failures do not establish an audio or reward regression.
-
-Use the actual authenticated version 26 writer, strict reader and actor loader for these two current fixtures. Preserve the beam firing cadence, refusal and audio-reset checks, and the original mission reward provenance, hardware identity and duplicate-delivery checks. Keep production admission rules unchanged. The solar test remains separate because raw legacy loading docks while versioned loading restores its saved flight world.
-
-The initial source-only adapter incorrectly assumed both inputs were bodyless and already eligible for script durability. The actual audio launch creates a calendar, native station world and ordinary NPC custody; its original ticks can repopulate live stations after the test clears bodies. These originals must survive. The actual plans reward is separate native mission progress, so actor initialization retains its missing calendar and genuine mission-dialog screen. The writer adds current mining/calendar storage later; the loader maps the saved mission screen to status. Independent expectations must distinguish initialization, live publication, disk-only NPC binding/offer reset and loaded scene reconciliation.
-
-A pre-execution serialization correction applies the same nonflight-to-status projection to the typed expected world before encoding its object. This avoids attempting to parse a top-level Screen string with Foundation’s object-only JSON parser. The expected values, actual save/load path, full comparisons and all original caller oracles remain unchanged; no fragment-parser policy is widened.

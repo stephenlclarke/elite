@@ -1,7 +1,0 @@
-# fix: admit unpriced never-purchase hulls contextually
-
-Exact base b12260f22aa2ef4c9334779a761972430ab0b865. Default ShipPerformance.valid remains strict. A contextual path used by the actual loader permits a zero minimum only for authoritative never policy, preserving the price upper bound and every other performance predicate. Metadata validation stays independent.
-
-The actual quote refuses nonpositive listed prices as unpriced/not for sale. Positive-price computations and all existing purchase, fit, resource and trade guards remain intact. The property delegates to an internal selected-record method so source tests can quote a privately loaded fixture without mutating the global catalogue. Confirmation still recomputes the actual quote and requires quote.allowed before the existing transaction guard. No broader sale-policy changes, Newt support, authored edits, activation or runtimeReady changes.
-
-Staging receives authoritative spec policy for price conflict derivation and preserves raw values. Python tests cover policy/value/type boundaries, strict default behavior, five retained capability conflicts and byte-identical staged specs. Authored Swift tests cover contextual/default bounds, actual TOML admission/refusal and actual quote refusal versus positive-price allowance with unchanged Commander. Swift/compiler/native/GPU/GUI/CI qualification remains UNRUN. See ISSUE-unpriced-never-validation.md and validation.json.

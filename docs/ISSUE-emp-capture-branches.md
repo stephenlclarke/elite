@@ -1,9 +1,0 @@
-# Nested EMP archive capture still exhausts the cooperative stack
-
-After the validation lifetime leaf and coherent build 477, the unchanged two-argument `empArchiveNestedTimerSavePublishesAndReplaysOnce(archive:)` reproducer in run 478 crashed on a 544 KiB cooperative thread. Both arguments started and one unidentified case ended; neither argument may be inferred to have passed. The exact report is `/tmp/elite-native-journeys-focused-478/swiftpm-testing-helper-2026-10-18-231100.ips`, SHA256 `0d37b75f04f62062f41cbb1dd79f475087bee73df6548ec3e898ac712890828a`, helper PID 47002, start 23:10:45. The fault enters `captureEMPArchiveRecord` beneath archive/state persistence, salvage persistence, native save preparation and script timer publication. Earlier validity getters are no longer this report's fault boundary; this is not overall runtime acceptance.
-
-G1's exact retained-477 observations are `/tmp/elite-native-journeys-focused-478/archive-capture-compiled-observation.json`. The record dispatcher has 22 probe GOT relocations, one Game copy witness, one Commander copy witness and three Commander reads; archive-state capture and scene validation have additional allocation/read sites. Counts are allocation-site observations, not aggregate peak bytes. The separate salvage caller also has dormant Game-copy/body/ledger work; G2 owns that disjoint caller repair.
-
-Archive capture must preserve current reads, pose-before-time order, record and pod order, recovered behavior, hull death/census rules, current per-person ownership, binding/energy guards, both full state validity guards, discard on refusal and sole final publication. No schema, equality, ownership, stack, concurrency or budget shortcut is authorized. Existing qualified scopes 463, 470 and 474 remain separately recorded.
-
-[Repair and qualification handoff](PR-emp-capture-branches.md).

@@ -1,5 +1,0 @@
-# Completed actor adoption overlaps native station admission
-
-Exact-binary diagnostic 281 stopped during first launch in the original legacy people-schedule regression. Native station admission called the system identity getter with its stack pointer in a mapped guard. Adjacent physical frame sizes included `ensurePhysicalActors` at 51,184 bytes, station admission at 79,616 bytes and the system getter at 16,752 bytes. The exact binary `060b6492d896e35db816a808b95e63ec215f1b82d13c62bdd4a5b84545ec63c9` had separately passed the nineteen-check focused batch; the broader seventy-check execution failed with signal 4 and no completed summary. The diagnostic establishes its observed stack fault, without proving original signal equivalence.
-
-The native-body adoption loop finishes before station geometry admission begins, yet its temporary flight/body buffers remain in the parent frame. Separate these existing phases while preserving the complete original operations. See [the source change](PR-native-adoption-phase-lifetimes.md).

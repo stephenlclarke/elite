@@ -1,7 +1,0 @@
-# Publish actual hull and fitting observations
-
-Hull exchange now emits `ship.changed` with the previous and committed hull IDs after the copied equipment transfer has completed. Native equipment store/refit success emits `equipment.changed` with the actual item UUID and fitted flag. A shared bounded event-capacity check precedes physical publication. The existing actor transaction includes observations and handler results in its durable commit and restores them with the commander when its writer fails.
-
-Native comparison profiles include loaded missiles from the active hull's owned pylons and fitted lasers from actual mount custody. Stored items and available mount capacity remain separate. Unmigrated commanders retain their existing fitted mirrors; reading a profile never initializes equipment. The occupied-cabin fixture uses the current zero-hold SH033, preserving its people, cabins and owned equipment on refusal.
-
-The original preview, observer, fitting and ammunition assertions remain. Added regression sources cover stored weapon counts, actual event UUID/flags, cancellation and five refusal conditions, queue/allocator exhaustion, and real actor writer success/reload/once-only behavior plus complete commander/file rollback on failure. Formatting, strict formatting lint, Markdown lint and whitespace checks pass. Compiler and runtime checks remain pending the orchestrator's validation lease; no full CI or release acceptance is claimed. See [the requirement](ISSUE-committed-ship-profile-events.md).

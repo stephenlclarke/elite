@@ -1,9 +1,0 @@
-# Cumulative EMP validation frames exhaust a nested timer save stack
-
-Affected batch 475 at `156e5493892dd4566674b5077e8ac8aee216879f` reported "Thread stack size exceeded" on a 544 KiB cooperative thread. The matched PID 27092 report is `/tmp/elite-native-journeys-focused-475/swiftpm-testing-helper-2026-10-18-225526.ips`, SHA256 `8e7c34c6a4f4bc25bb7b1b00e30f9fb8b8a074a2a46e9693a3f4be44703e6bd1`. Its chain runs through stored-object, source-custody, hull-record and state validation under death registration, native save preparation and script timer publication. The identified test is the unchanged `empArchiveNestedTimerSavePublishesAndReplaysOnce(archive:)`; the report does not identify which Boolean case was active.
-
-G1's exact retained-473 observations are `/tmp/elite-native-journeys-focused-475/emp-validation-stack-compiled-observation.json`. Stored-object, hull-record, custody and death-registration functions have dynamic probes; custody and death registration also have stored-object/record copy-witness sites. The state validator has a small fixed entry reservation. These observations describe compiled allocation sites, not aggregate peak stack bytes. Existing passing timer 463, anchor 470 and prepared-NPC 474 scopes remain separately qualified.
-
-Death/body/candidate temporaries must finish before full state validation. Early custody/original/hull checks must finish before later source, equipment, catalogue, recovery and pod branch temporaries reserve their frames. Preserve every identity, finite-bound, resource, equipment, custody, census and compatibility predicate in its existing short-circuit order. A present archive must still receive full validation even when no deaths occurred. No save, rollback, equality, stack-size, concurrency or budget policy changes are authorized.
-
-[Source repair and qualification handoff](PR-emp-validation-stack.md).

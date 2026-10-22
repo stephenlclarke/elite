@@ -1,9 +1,0 @@
-# Separate PLUGH prerequisite traversal from its real purchase checks
-
-The recursive helper retains the original node lookup, prerequisite order, predecessor lookup, standard-foundation skip and recursive call. It then invokes a private synchronous inout purchase helper containing the original paid-history check, selection, cash/price reads, actual game.purchase call and cash/receipt assertions. An already-paid predecessor returns from that helper, exactly replacing the original parent-loop continue.
-
-Inlining the helper and restoring that loop continue reproduces the original source byte-for-byte. Traversal still visits already-paid predecessors' ancestors before checking payment; no sorting, pruning, deduplication, fabricated receipt, fixture stock change or test assertion is introduced. Every original test body remains unchanged. Core purchase guards, writer, actor rules, compiler options, stack limits and test scheduling are untouched.
-
-The observed stop is retained at `/tmp/elite-debug-crash-170/actual-stopped-thread.json`, for exact binary `4d201c21b979404c282eed79455f5219304a7fc6f197937667ee1a3a565fcf88`. The independent audit at `/tmp/elite-g2-stack-170-offline-audit/measurement.json` records five observed helper frames, each reserving one Game-sized and two Commander-sized buffers before recursion, with 3104 bytes of fixed allocation and separate callee-save storage. These are old emitted observations, not total-stack, new compiled storage or equivalence to the prior unobserved signal.
-
-Source formatting, strict lint, scoped Markdown lint, whitespace checks and exact traversal/purchase preservation are worker validation. Compilation, new emitted storage, the original PLUGH regression under thread sanitizer, equipment compatibility and full CI remain pending with the orchestrator. No worker build, native process or debugger runs. No GitHub issue or PR exists yet. See [motivation](ISSUE-plugh-prerequisite-lifetimes.md).

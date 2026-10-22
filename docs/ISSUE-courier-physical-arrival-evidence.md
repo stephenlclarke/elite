@@ -1,7 +1,0 @@
-# Retain the original courier physical-arrival failure
-
-Validation 355 reached the corrected Tab station selection but the first original courier route ended after 618 approach frames with `APPROACHING` and `GAME OVER`. The original physical arrival assertion failed. Only pre-approach screenshots and that terminal message were recorded; neither fatal cause nor final crew/law/motion can be reconstructed from them.
-
-The generic game-over message follows energy depletion and can overwrite prior docking collision messages. Real station impact and real weapon damage must remain separate possibilities until actual final state is captured. Preserve the unchanged physical path, traffic, celestial bodies, controls, time steps, original approach budget and all delivery/custody oracles.
-
-The observer also retains at most 32 actual damage/contact transitions from the existing consecutive loop snapshots. Each pair contains health, cabin heat, world pose, speed/velocity, autopilot phase, target range, gameplay/station-impact revisions, actual message, existing voice-event IDs/text/epoch and ECM duration, plus at most 16 nearby shot identities/positions/origins. A transition is retained only for net health/shield loss or changed station-impact revision. No additional actor read or advance is made. This bounded net-transition history is not a complete per-hit log or fatal-hit attribution; final snapshot and actual observed transitions are evidence for the subsequent investigation.

@@ -1,7 +1,0 @@
-# A transient police obstruction destroys an already validated entry course
-
-Actual 717 allows genuine entry at 125.2, then a newly launched police Viper makes the next full-course check refuse at 125.3. The existing controller immediately switches to its far cover goal, turns away from station alignment and loses the opportunity to re-evaluate the Viper after native steering changes its pose. The subsequent freight row-zero death is not a docking collision.
-
-The reviewed geometry refinement distinguishes actual material obstruction from overlapping enclosing radii. A real transient obstruction must still revoke entry. Preserve a previously validated approach only while fresh, known, non-ordnance facts prove a finite stop plus a complete upcoming physics step safe. Brake under the existing single thrust budget while maintaining door alignment and spin; ready and final entry remain false. Revoke at zero inward speed or proof loss instead of holding indefinitely. A fresh full entry proof is required to resume.
-
-Keep route, police traffic, gear, law, unknown/ordnance refusals and independent full-hull native crossing unchanged. Regressions must exercise actual native police admission and steering between the allowed, blocked, braking and clear states, then genuine docking, plus corresponding refusal cases. No new planner, traffic schedule, diagnostic probe or stationary exposure timer is introduced.

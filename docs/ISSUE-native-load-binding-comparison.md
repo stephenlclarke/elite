@@ -1,5 +1,0 @@
-# Restored native scene bindings can trigger an unnecessary save generation
-
-The native writer deliberately clears current ordinary NPC bindings and wanted-career bindings on its disk Commander while retaining them in the live Game. Public load restores genuine bindings from the saved world, then compares the live Commander directly with the disk Commander. A binding-only difference can therefore trigger a fresh generation even though the persisted Commander facts would be unchanged. Genuine changes such as station actor reallocation must still be written.
-
-The interrupted655 PLUGH regression also compares against a snapshot captured before save, although persistNPCStates may publish real NPC facts during that first save. Use the actual versioned saved Commander and post-save live snapshot as independent current-format oracles. Keep the full Commander equality and exact pointer-byte assertion; do not hide the failure by disabling publication on this ordinary public load. See [the change and validation limits](PR-native-load-binding-comparison.md).

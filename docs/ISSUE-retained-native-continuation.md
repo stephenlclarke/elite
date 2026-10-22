@@ -1,9 +1,0 @@
-# The remaining native second-cycle stage is unobserved after timeout
-
-Run 542's original 600-second test timed out without a method terminal. Its retained save proves the first release at physical time 19.28, a partial second cycle at 19.30, and the post-observer generation `28AF80F2-AE6D-4616-A34F-3ED9A19DD281`. That stage has one release, 0.02 work seconds, next serial 8, eight pending ledger lots and five actual bodies. The precision defect has a separate source repair and five passing focused checks. No later held-work, clock or completion values were retained, so neither a late blockage nor sufficient wall throughput is established.
-
-A second full replay of the roughly 265-second first cycle is unnecessary for an independent later-stage diagnostic. The existing versioned runtime loader can authenticate a byte-identical temporary copy of the actual retained save. The latest generation already contains the observer pose, so moving it again would change the stage. Transient guidance and actor authority must be reacquired through the real existing Tab/Return path; they cannot be copied from a serialized token or manufactured hot session.
-
-Use one explicitly gated test method, ordinary runtime/fixture helpers and bounded observations from existing returned snapshots. Preserve the private original artifact, existing test methods, work budgets, controls, assertions and production semantics. This diagnostic cannot establish a fresh end-to-end test pass, replay the original observer precision invariant, or normalize the historical pose already present in the retained data.
-
-Compiler integration keeps the restoration predicates in their original order as sequential comparisons. This avoids capturing borrowed `Game` in short-circuit autoclosures without copying the game or changing which mismatch is reported.

@@ -1,5 +1,0 @@
-# Native trial fixtures use retired save and menu paths
-
-The full run reports no donated pledge receipt and no accepted courier instance in two native trial flows. Their successful confirmation paths queue selection and confirmation from one painted frame. They also inject the retired raw `commander-save-default` packet and validate mission menu items through the legacy AppDelegate rather than their installed `NativeMissionMenu` target.
-
-Use the actual typed native save intent and installed menu validator. Make successful trial confirmation explicit: process selection, require the real Accept state, repaint it, require the actual painted proof to match the actor page and then confirm. Preserve deliberate stale-input tests and every trial namespace, save, reload, restart, return and live-state assertion. Runtime validation must establish whether this staged flow resolves the reported failures; source inspection alone does not prove their cause. See [implementation](PR-trial-native-input-fixtures.md).

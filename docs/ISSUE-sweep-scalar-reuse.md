@@ -1,9 +1,0 @@
-# Exact held-work geometry repeats immutable fast-kernel arithmetic
-
-Run 552 demonstrated stable holding and real credit in the retained second-cycle stage. The last complete checkpoint was iteration 809, phase wall time 287.5390608334 seconds, physical time 35.5, holding true and work 12.699999999999818 with one release, serial 8, pending 8 and no damage. The owned diagnostic stopped at its unchanged 330-second ceiling without a test terminal. There is no later observed state. The retained owned copy is only the pre-loop save at physical time 19.30/work 0.02; it does not persist the hot 12.7-second checkpoint.
-
-Existing 499 CPU samples locate the active work path in exact triangle/dual-mesh geometry, including ray and point-triangle kernels. They predate this leaf and do not measure its performance. Source 36660200 already caches transformed player bounds and triangles per distance query, as well as each triangle's fast normal and squared normal. Those caches must not be duplicated or replaced with a cross-frame collision proof.
-
-Three pure arithmetic repetitions remain. Fast ray calls repeatedly take the same immutable triangle edge lengths and multiply the same first two determinant-threshold factors. Interior point-triangle queries repeatedly take the square root of the same squared normal, although triangle construction already computes that exact length. Each such point query also repeats its unchanged point-to-plane dot product for the return value after using it for projection.
-
-Reuse those exact scalars while preserving operation grouping, all geometry queries, conditioning/support fallbacks, outward certificates, traversal, work charges, budgets and control semantics. No global collision result cache, skipped validation, smaller clearance, work/deadline waiver or speculative scene simplification is justified.
