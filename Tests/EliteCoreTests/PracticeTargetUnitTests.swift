@@ -19,8 +19,9 @@ struct PracticeTargetUnitTests {
       Dictionary(uniqueKeysWithValues: bodies.map { ($0.id, NativePracticeSource.mesh()) })
     }
     mutating func origin() throws -> AttackOrigin {
-      .init(
-        emissionID: try #require(flight.allocateEmission()),
+      let emission = flight.allocateEmission()
+      return .init(
+        emissionID: try #require(emission),
         owner: try #require(flight.player), emittedAt: flight.physicalTime,
         ownerLegalAtEmission: .init())
     }
@@ -108,7 +109,8 @@ struct PracticeTargetUnitTests {
     supplied.scriptState.instances[instance.id] = instance
     supplied.flightSimulation = f.flight
     #expect(supplied.valid && NativePracticeSave.validateClaims(supplied))
-    #expect(!game.load(supplied))
+    let loaded = game.load(supplied)
+    #expect(!loaded)
     #expect(game.commander == before && game.bodies == beforeBodies)
     #expect(game.gameplayRevision == revision)
   }
@@ -390,7 +392,8 @@ struct PracticeTargetUnitTests {
     var f = try fixture()
     let laserOrigin = try f.origin()
     let laserReceipt = try f.shoot(laserOrigin)
-    let projectile = try #require(f.flight.allocateActor())
+    let allocatedProjectile = f.flight.allocateActor()
+    let projectile = try #require(allocatedProjectile)
     let origin = AttackOrigin(
       emissionID: laserOrigin.emissionID, owner: laserOrigin.owner, ordnance: projectile,
       emittedAt: 10, ownerLegalAtEmission: .init())
