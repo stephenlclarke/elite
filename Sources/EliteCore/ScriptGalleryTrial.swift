@@ -59,7 +59,9 @@ extension Game {
   }
   // Keep isolated trial storage out of the selected-entry/catalogue lookup frame.
   private func isolatedMissionTrialAvailable(_ pack: ScriptPack) -> Bool {
-    guard pack.manifest.stateID != NativeInductionClinicPack.stateID,
+    guard pack.manifest.stateID != NativeInductionWorkshopPack.stateID,
+      pack.digest != NativeInductionWorkshopPack.digest,
+      pack.manifest.stateID != NativeInductionClinicPack.stateID,
       pack.digest != NativeInductionClinicPack.digest
     else { return false }
     guard pack.manifest.stateID != NativeInductionUtilityPack.stateID,

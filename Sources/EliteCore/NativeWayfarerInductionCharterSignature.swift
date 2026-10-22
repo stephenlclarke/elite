@@ -94,7 +94,7 @@ extension NativeWayfarerInductionState {
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice,
       charterCapacity: charterCapacity, charterSignatures: signatures,
-      charterClinicSource: charterClinicSource)
+      charterClinicSource: charterClinicSource, charterWorkshopSource: charterWorkshopSource)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }
@@ -114,7 +114,7 @@ extension NativeWayfarerInductionState {
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice,
       charterCapacity: capacity, charterSignatures: charterSignatures,
-      charterClinicSource: charterClinicSource)
+      charterClinicSource: charterClinicSource, charterWorkshopSource: charterWorkshopSource)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }

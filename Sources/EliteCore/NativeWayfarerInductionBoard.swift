@@ -8,7 +8,9 @@ enum NativeWayfarerInductionAction: String, Sendable {
     releaseSeedCapacity, issueClinicStock, viewClinicStock, acceptClinicSample, cancelClinicSample,
     pickupClinicSample, receiveClinicSample, cancelHeldClinicSample, returnClinicSample,
     retryClinicExpiry,
-    progress
+    issueWorkshopStock, viewWorkshopStock, acceptWorkshopUnit, pickupWorkshopUnit,
+    serviceWorkshopUnit, receiveWorkshopUnit, cancelWorkshopBooking, cancelHeldWorkshopUnit,
+    returnWorkshopUnit, progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
     switch self {
@@ -45,6 +47,15 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .cancelHeldClinicSample: "Clinic sample / cancel delivery and retain return custody"
     case .returnClinicSample: "Renas clinic / return cancelled original sample"
     case .retryClinicExpiry: "Clinic sample / retry original pending integrity expiry"
+    case .issueWorkshopStock: "Enmadan workshop / issue six original failed serials"
+    case .viewWorkshopStock: "Enmadan workshop / original stock and complete route quote"
+    case .acceptWorkshopUnit: "Enmadan workshop / reserve original serial and window"
+    case .pickupWorkshopUnit: "Enmadan workshop / collect original failed serial"
+    case .serviceWorkshopUnit: "Renas service desk / repair original workshop serial"
+    case .receiveWorkshopUnit: "Enmadan workshop / receive serviced original and pay quote"
+    case .cancelWorkshopBooking: "Workshop booking / cancel before pickup"
+    case .cancelHeldWorkshopUnit: "Workshop serial / cancel and retain original return custody"
+    case .returnWorkshopUnit: "Enmadan workshop / receive cancelled original serial"
     case .progress: "Senn / current induction records"
     }
   }
@@ -67,6 +78,10 @@ struct NativeWayfarerInductionReview: Sendable {
   var clinicReference: UUID? = nil
   var clinicWindow: NativeInductionCapacityReservation? = nil
   var clinicChildRevision: UInt64? = nil
+  var workshopReference: UUID? = nil
+  var workshopQuote: NativeInductionWorkshopQuote? = nil
+  var workshopWindow: NativeInductionCapacityReservation? = nil
+  var workshopChildRevision: UInt64? = nil
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
 }
@@ -84,7 +99,7 @@ extension Game {
           reason: wayfarerInductionReview(action).issues.first, wayfarerInduction: action)
       }
     }
-    let operatorRows = inductionCharterOperatorRows + inductionClinicRows
+    let operatorRows = inductionCharterOperatorRows + inductionClinicRows + inductionWorkshopRows
     if !operatorRows.isEmpty { return operatorRows }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
@@ -135,11 +150,17 @@ extension Game {
 
   func wayfarerInductionReview(
     _ action: NativeWayfarerInductionAction, capacityUnit: UUID? = nil,
-    prepareClinicQuote: Bool = false, clinicReference: UUID? = nil
+    prepareClinicQuote: Bool = false, clinicReference: UUID? = nil,
+    prepareWorkshopQuote: Bool = false, workshopReference: UUID? = nil
   ) -> NativeWayfarerInductionReview {
     let unit =
       action.isCapacityRelease
       ? (capacityUnit ?? contractBoard.selected?.inductionCapacityUnit) : nil
+    let workshopReference = workshopReference ?? contractBoard.selected?.inductionWorkshopReference
+    let workshopQuote =
+      prepareWorkshopQuote && (action == .viewWorkshopStock || action == .acceptWorkshopUnit)
+      ? try? inductionWorkshopReadOnlyQuote(unit: workshopReference) : nil
+    let workshopWindow = workshopQuote.flatMap { try? inductionWorkshopWindow(quote: $0) }
     let clinicReference = clinicReference ?? contractBoard.selected?.inductionClinicReference
     let clinicQuote =
       prepareClinicQuote && (action == .viewClinicStock || action == .acceptClinicSample)
@@ -161,6 +182,16 @@ extension Game {
     }
     if action.isClinicCustodyAction {
       actionIssues += inductionClinicCustodyIssues(action, instance: clinicReference)
+    }
+    if action.isWorkshopAction {
+      actionIssues += inductionWorkshopActionIssues(action, reference: workshopReference)
+      if action == .acceptWorkshopUnit && prepareWorkshopQuote
+        && (workshopQuote == nil || workshopWindow == nil)
+      {
+        actionIssues.append(
+          "No current reachable complete workshop quote or eligible same-owner window; review again."
+        )
+      }
     }
     let trade =
       action == .accept
@@ -184,7 +215,14 @@ extension Game {
       capacityUnit: unit,
       clinicQuote: clinicQuote,
       issues: actionIssues, clinicReference: clinicReference, clinicWindow: clinicWindow,
-      clinicChildRevision: clinicReference.flatMap { commander.scriptState.instances[$0]?.revision }
+      clinicChildRevision: clinicReference.flatMap {
+        commander.scriptState.instances[$0]?.revision
+      },
+      workshopReference: workshopReference, workshopQuote: workshopQuote,
+      workshopWindow: workshopWindow,
+      workshopChildRevision: workshopReference.flatMap {
+        commander.scriptState.instances[$0]?.revision
+      }
     )
   }
 
@@ -197,7 +235,7 @@ extension Game {
     if paused { issues.append("Resume before confirming the induction action.") }
     let expected = action.station
     if !nativeMainStationDockEvidenceIsCurrent
-      || (!action.isClinicAnyBerthAction && systemIdentity != expected)
+      || (!action.isInductionAnyBerthAction && systemIdentity != expected)
     {
       issues.append("Use the actual registered main orbital berth for " + action.title + ".")
     }
@@ -210,7 +248,7 @@ extension Game {
       && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight
       && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility
       && action.charterPolicy == nil && action != .allocateCharterCapacity
-      && action.capacityOperator == nil && !action.isClinicStockAction,
+      && action.capacityOperator == nil && !action.isClinicStockAction && !action.isWorkshopAction,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -239,6 +277,10 @@ extension Game {
       ]
     case .acceptClinicSample, .cancelClinicSample, .pickupClinicSample, .receiveClinicSample,
       .cancelHeldClinicSample, .returnClinicSample, .retryClinicExpiry:
+      break
+    case .issueWorkshopStock, .viewWorkshopStock, .acceptWorkshopUnit, .pickupWorkshopUnit,
+      .serviceWorkshopUnit, .receiveWorkshopUnit, .cancelWorkshopBooking, .cancelHeldWorkshopUnit,
+      .returnWorkshopUnit:
       break
     case .progress: break
     }
@@ -274,7 +316,8 @@ extension Game {
 
   mutating func confirmWayfarerInduction(_ quote: NativeWayfarerInductionReview) throws {
     let current = wayfarerInductionReview(
-      quote.action, prepareClinicQuote: quote.action == .acceptClinicSample)
+      quote.action, prepareClinicQuote: quote.action == .acceptClinicSample,
+      prepareWorkshopQuote: quote.action == .acceptWorkshopUnit)
     guard quote.allowed, current.allowed, quote.dock == current.dock,
       quote.carrier == current.carrier, quote.inventoryRevision == current.inventoryRevision,
       quote.trade == current.trade, quote.epoch == current.epoch,
@@ -285,6 +328,10 @@ extension Game {
       quote.capacityUnit == current.capacityUnit,
       quote.clinicReference == current.clinicReference,
       quote.clinicChildRevision == current.clinicChildRevision,
+      quote.workshopReference == current.workshopReference,
+      quote.workshopChildRevision == current.workshopChildRevision,
+      quote.workshopWindow == current.workshopWindow,
+      quote.workshopQuote?.offer.id == current.workshopQuote?.offer.id,
       quote.clinicWindow == current.clinicWindow,
       quote.clinicQuote?.offer.id == current.clinicQuote?.offer.id,
       let owner = commander.equipmentOwnerID, let dock = current.dock,
@@ -420,10 +467,38 @@ extension Game {
       default: throw SaveError.invalidCommander
       }
     }
+    if quote.action.isWorkshopAction {
+      switch quote.action {
+      case .issueWorkshopStock:
+        try candidate.confirmInductionWorkshopIssue(dock: dock, carrier: carrier, fit: revision)
+      case .acceptWorkshopUnit:
+        guard let workshop = current.workshopQuote, let window = current.workshopWindow else {
+          throw SaveError.invalidCommander
+        }
+        try candidate.confirmInductionWorkshopBooking(quote: workshop, window: window)
+      default:
+        guard let id = current.workshopReference else { throw SaveError.invalidCommander }
+        switch quote.action {
+        case .pickupWorkshopUnit: try candidate.confirmInductionWorkshopPickup(id)
+        case .serviceWorkshopUnit: try candidate.confirmInductionWorkshopService(id)
+        case .receiveWorkshopUnit: try candidate.finishInductionWorkshop(id, kind: .returned)
+        case .cancelWorkshopBooking:
+          try candidate.finishInductionWorkshop(id, kind: .cancelledBeforePickup)
+        case .cancelHeldWorkshopUnit: try candidate.confirmInductionWorkshopHeldCancellation(id)
+        case .returnWorkshopUnit: try candidate.finishInductionWorkshop(id, kind: .cancelledHeld)
+        default: throw SaveError.invalidCommander
+        }
+      }
+    }
     self = candidate
   }
 
   func wayfarerInductionDetail() -> [String] {
+    if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
+      .isWorkshopAction == true
+    {
+      return inductionWorkshopDetail
+    }
     if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
       .isClinicStockAction == true
     {

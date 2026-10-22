@@ -8,7 +8,7 @@ Updated 22 October 2026. This is the current workflow authority; older process i
 
 G1/MBP (GPT-6.1 Sol Medium) is the primary developer and release publisher. There is no separate integrator or integration queue. Each explicitly assigned developer owns its feature through implementation, meaningful unit tests, reviewer corrections, conflict resolution and its own PR merge after the required checks, MBA review and approvals pass. At each coherent packet boundary, take ready actionable reviewer issues first; otherwise take the next ready ledger item, M01 first. Skip a genuinely unavailable dependency and record it briefly. Do not wait for tests, reviews, Sonar, packaging, an empty issue queue or Orchestrator acknowledgement.
 
-Keep one development branch/PR and small complete packets where practical. Preserve other owners' edits; never rewrite published work. Use necessary short local checks to resolve authoring uncertainty; routine isolated-unit execution belongs to GitHub. Update the existing ledger row at assignment and push, without a separate handoff dossier.
+Keep a small PR for each complete independent feature. Keep its head stable during qualification: import another developer's unrelated base changes only for an actual dependency, a conflict blocking merge, a required up-to-date check, or an actionable correction. Do not restart the finish line on every canonical push. Preserve other owners' edits; never rewrite published work. Use necessary short local checks to resolve authoring uncertainty; routine isolated-unit execution belongs to GitHub. Update the existing ledger row at assignment and push, without a separate handoff dossier.
 
 After each source push, post one comment on the PR that contains the actual head:
 

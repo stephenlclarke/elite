@@ -151,6 +151,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let charterCapacity: NativeInductionCapacityState?
   let charterSignatures: [NativeInductionCharterSignature]?
   let charterClinicSource: NativeInductionClinicSource?
+  let charterWorkshopSource: NativeInductionWorkshopSource?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
@@ -165,7 +166,8 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     charterChoice: NativeInductionCharterChoice? = nil,
     charterCapacity: NativeInductionCapacityState? = nil,
     charterSignatures: [NativeInductionCharterSignature]? = nil,
-    charterClinicSource: NativeInductionClinicSource? = nil
+    charterClinicSource: NativeInductionClinicSource? = nil,
+    charterWorkshopSource: NativeInductionWorkshopSource? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -187,6 +189,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.charterCapacity = charterCapacity
     self.charterSignatures = charterSignatures
     self.charterClinicSource = charterClinicSource
+    self.charterWorkshopSource = charterWorkshopSource
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
@@ -199,6 +202,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.charterChoice == rhs.charterChoice && lhs.charterCapacity == rhs.charterCapacity
       && lhs.charterSignatures == rhs.charterSignatures
       && lhs.charterClinicSource == rhs.charterClinicSource
+      && lhs.charterWorkshopSource == rhs.charterWorkshopSource
   }
   var valid: Bool {
     let p = permission
@@ -291,7 +295,10 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     if let charterCapacity {
       for event in charterCapacity.events {
         guard case .released(let release) = event else {
-          guard charterClinicSource?.ownsWindowEvent(event) == true else { return false }
+          guard
+            charterClinicSource?.ownsWindowEvent(event) == true
+              || charterWorkshopSource?.ownsWindowEvent(event) == true
+          else { return false }
           continue
         }
         guard
@@ -305,6 +312,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       }
     }
     if let charterClinicSource, !charterClinicSource.valid(parent: self) { return false }
+    if let charterWorkshopSource, !charterWorkshopSource.valid(parent: self) { return false }
     return continuationValid && seedKeyValid
   }
   var payloads: [String: Int] {

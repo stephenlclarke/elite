@@ -14,7 +14,7 @@ enum NativeInductionCharterConsentSave {
           if case .released(let release) = event {
             clock = (release.sequence, release.physicalTime, release.flightSeconds)
           } else {
-            clock = parent.charterClinicSource?.windowEventClock(event)
+            clock = parent.charterCapacityEventClock(event)
           }
           guard let clock else { return false }
           return clock.0 < signature.sequence && clock.1 <= signature.physicalTime
@@ -46,7 +46,7 @@ enum NativeInductionCharterConsentSave {
       if case .released(let release) = event {
         clock = (release.sequence, release.physicalTime, release.flightSeconds)
       } else {
-        clock = mission.savedWayfarerInduction?.charterClinicSource?.windowEventClock(event)
+        clock = mission.savedWayfarerInduction?.charterCapacityEventClock(event)
       }
       guard let clock, clock.0 > previous.0, clock.1 >= previous.1, clock.2 >= previous.2 else {
         return false
@@ -54,8 +54,9 @@ enum NativeInductionCharterConsentSave {
       previous = clock
       guard case .released(let release) = event else {
         guard let parent = mission.savedWayfarerInduction,
-          let source = parent.charterClinicSource, source.ownsWindowEvent(event),
-          let clock = source.windowEventClock(event),
+          parent.charterClinicSource?.ownsWindowEvent(event) == true
+            || parent.charterWorkshopSource?.ownsWindowEvent(event) == true,
+          let clock = parent.charterCapacityEventClock(event),
           clock.0 <= commander.scriptState.nextEvent, mission.hasAcknowledged(clock.0),
           clock.1 <= commander.flightSimulation.physicalTime,
           clock.2 <= commander.scriptState.flightSeconds

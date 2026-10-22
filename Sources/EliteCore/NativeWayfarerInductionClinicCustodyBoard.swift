@@ -7,8 +7,11 @@ extension NativeWayfarerInductionAction {
       .retryClinicExpiry,
     ].contains(self)
   }
-  var isClinicAnyBerthAction: Bool {
-    [.cancelClinicSample, .cancelHeldClinicSample, .retryClinicExpiry].contains(self)
+  var isInductionAnyBerthAction: Bool {
+    [
+      .cancelClinicSample, .cancelHeldClinicSample, .retryClinicExpiry, .cancelWorkshopBooking,
+      .cancelHeldWorkshopUnit,
+    ].contains(self)
   }
 }
 
