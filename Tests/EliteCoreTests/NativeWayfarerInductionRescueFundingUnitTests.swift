@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Financial/route/graph fixtures only. No native flight, dock, supply transfer or receiving is executed.
-struct RescueFinanceFixture {
+final class RescueFinanceFixture {
   let f: CrewLogProducerFixture
   let parent: NativeWayfarerInductionState
   let funding: NativeRescueFuelFunding

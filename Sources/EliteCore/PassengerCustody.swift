@@ -169,6 +169,11 @@ extension Commander {
   }
   var requiresContractFit: Bool {
     for state in scriptState.instances.values {
+      if state.savedNativeInductionSeed != nil
+        && (state.outcome == .active || state.payloads.values.contains { $0 > 0 })
+      {
+        return true
+      }
       if state.savedNativeInductionWorkshop != nil
         && (state.outcome == .active || state.payloads.values.contains { $0 > 0 })
       {

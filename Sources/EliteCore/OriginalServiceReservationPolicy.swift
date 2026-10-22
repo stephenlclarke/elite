@@ -18,6 +18,9 @@ enum OriginalServiceReservationPolicy {
     if case .some = state.savedWayfarerRepairLoop {
       return state.definition == WayfarerRepairLoopDefinition.stateID
     }
+    if case .some = state.savedNativeInductionSeed {
+      return state.definition == NativeInductionSeedPack.stateID
+    }
     if case .some = state.savedNativeInductionWorkshop {
       return state.definition == NativeInductionWorkshopPack.stateID
     }

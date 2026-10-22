@@ -179,7 +179,7 @@ final class WayfarerRepairLoopCustody: Codable, Sendable, Equatable {
       && a.returned == b.returned && a.loss == b.loss
   }
 }
-public struct WayfarerRepairLoopOffer: Sendable {
+public struct WayfarerRepairLoopOffer: Codable, Sendable, Equatable {
   public let id: UUID
   public let sourceID: String
   public let stockUnit: UUID

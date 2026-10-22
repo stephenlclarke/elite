@@ -85,6 +85,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedIsolationWork: NativeIsolationWorkState?
   var savedNativeInductionClinic: NativeInductionClinicContract?
   var savedNativeInductionWorkshop: NativeInductionWorkshopContract?
+  var savedNativeInductionSeed: NativeInductionSeedContract?
   var savedWayfarerInduction: NativeWayfarerInductionState?
   var savedFlightReception: NativeFlightReceptionState?
   var savedMeasuredExtraction: NativeMeasuredExtractionState?
@@ -240,6 +241,10 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   var savedNativeCrewLog: NativeInductionCrewLogState? {
     _read { yield storage[0].savedNativeCrewLog }
     _modify { yield &storage[0].savedNativeCrewLog }
+  }
+  var savedNativeInductionSeed: NativeInductionSeedContract? {
+    _read { yield storage[0].savedNativeInductionSeed }
+    _modify { yield &storage[0].savedNativeInductionSeed }
   }
   var savedNativeInductionWorkshop: NativeInductionWorkshopContract? {
     _read { yield storage[0].savedNativeInductionWorkshop }
@@ -573,6 +578,9 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
           state.ark == recovery.replacement
         else { return false }
       }
+    }
+    if NativeInductionSeedPack.marked(instance) || instance.savedNativeInductionSeed != nil {
+      guard NativeInductionSeedSave.shapeValid(instance) else { return false }
     }
     if NativeInductionWorkshopPack.marked(instance) || instance.savedNativeInductionWorkshop != nil
     {

@@ -119,6 +119,10 @@ struct ScriptClueTrustCatalog: Sendable {
       version: NativeIsolationWorkParent.version, digest: NativeIsolationWorkParent.digest,
       terminalEvents: ["mission.receipted"]),
     .init(
+      sourceID: "l337.wayfarer-exchange", definition: NativeWayfarerInduction.stateID,
+      version: NativeWayfarerInduction.version, digest: NativeWayfarerInduction.digest,
+      terminalEvents: ["mission.receipted"]),
+    .init(
       sourceID: NativeFlightReception.stateID, definition: NativeFlightReception.stateID,
       version: NativeFlightReception.version, digest: NativeFlightReception.digest,
       terminalEvents: ["mission.receipted"]),

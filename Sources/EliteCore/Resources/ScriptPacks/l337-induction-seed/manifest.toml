@@ -1,0 +1,23 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.induction-consignment"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2"]
+priority = 616
+source = "Closed native C08 original Enlirin seed consignment family. One actual owner issue records six new unique3t original lots per charter epoch. Actual pickup and Lareria receiving remain distinct; no generic W03 source substitution, old induction/ark property, stock refill or remote pickup."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "seed"
+title = "Original Enlirin charter seed consignments"
+briefing = "Enlirin G01-S162 retains six new unique3t original seed lots for actual Lareria G01-S091 receiving. Currently reachable complete source-to-receiver routes set payment. Only separate actual pickup starts each7200 qualifying-flight-second integrity allowance."
+destination = "Lareria G01-S091 actual original seed receiver"
+reward = "510+95L CR only on actual qualifying original reception; no induction payment or clue."
+milestones = ["Original seed lot received"]
+
+[[handlers]]
+event = "timer.fired"
+function = "expire"

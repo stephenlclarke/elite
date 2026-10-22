@@ -155,6 +155,19 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.stateID == NativeInductionSeedPack.stateID
+      || pack.digest == NativeInductionSeedPack.digest
+    {
+      guard NativeInductionSeedPack.matches(pack) else {
+        return "Restore the original Enlirin seed family content."
+      }
+      guard
+        commander.scriptState.instances.values.contains(where: {
+          $0.definition == NativeInductionSeedPack.stateID && $0.digest == pack.digest
+            && $0.savedNativeInductionSeed != nil
+        })
+      else { return "Use the original seed custodian's actual Enlirin batch and booking review." }
+    }
     if pack.manifest.stateID == NativeInductionWorkshopPack.stateID
       || pack.digest == NativeInductionWorkshopPack.digest
     {
@@ -432,7 +445,9 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
-    guard pack.manifest.stateID != NativeInductionWorkshopPack.stateID,
+    guard pack.manifest.stateID != NativeInductionSeedPack.stateID,
+      pack.digest != NativeInductionSeedPack.digest,
+      pack.manifest.stateID != NativeInductionWorkshopPack.stateID,
       pack.digest != NativeInductionWorkshopPack.digest,
       pack.manifest.stateID != NativeInductionClinicPack.stateID,
       pack.digest != NativeInductionClinicPack.digest
@@ -1522,6 +1537,11 @@ extension Game {
         $1.manifest.priority, $1.manifest.id, $1.digest
       )
     }) {
+      if pack.manifest.stateID == NativeInductionSeedPack.stateID
+        || pack.digest == NativeInductionSeedPack.digest
+      {
+        continue
+      }
       if pack.manifest.stateID == NativeInductionWorkshopPack.stateID
         || pack.digest == NativeInductionWorkshopPack.digest
       {

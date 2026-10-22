@@ -147,7 +147,9 @@ extension NativeWayfarerInductionState {
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice, charterCapacity: charterCapacity,
       charterSignatures: charterSignatures, charterClinicSource: source,
-      charterWorkshopSource: charterWorkshopSource)
+      charterWorkshopSource: charterWorkshopSource, charterSeedSource: charterSeedSource,
+      charterAudit: charterAudit, networkCertification: networkCertification,
+      accreditation: accreditation)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }
