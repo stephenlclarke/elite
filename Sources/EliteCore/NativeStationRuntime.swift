@@ -1605,21 +1605,52 @@ extension Game {
   func nativeInductionArkDockWitness(
     state: NativeInductionArkState, sample: NativeWormholeMotionSample
   ) -> NativeArkDockWitness? {
+    guard state.admission != nil, state.loss == nil, state.dockedContact == nil,
+      state.fuelContacts.count < 128,
+      let profile = try? NativeInductionArkSource.profile(),
+      let physical = try? OriginalHullPhysicalContract.haflinger.get()
+    else { return nil }
+    return nativeCustodianDockWitness(
+      sample: sample, job: state.authorization.job,
+      actor: state.authorization.actor, mission: state.authorization.parent,
+      vessel: state.authorization.registeredArk, nextContact: UInt64(state.fuelContacts.count + 1),
+      profile: profile, source: physical)
+  }
+
+  func nativeInductionRescueDockWitness(
+    state: NativeInductionCrewLogState, sample: NativeWormholeMotionSample
+  ) -> NativeArkDockWitness? {
+    guard let flight = state.flight, state.livingCrew.count == 2, flight.dockedContact == nil,
+      flight.fuelContacts.count < 128,
+      let profile = try? NativeInductionCrewLogSource.flightProfile.get(),
+      let physical = try? OriginalHullPhysicalContract.burro.get()
+    else { return nil }
+    return nativeCustodianDockWitness(
+      sample: sample, job: state.authorization.job,
+      actor: flight.authorization.actor, mission: state.authorization.manifest.mission,
+      vessel: state.authorization.manifest.launch,
+      nextContact: UInt64(flight.fuelContacts.count + 1),
+      profile: profile, source: physical)
+  }
+
+  /// The sealed result still requires the same attained full-hull/native facility proof.
+  private func nativeCustodianDockWitness(
+    sample: NativeWormholeMotionSample, job: UUID,
+    actor: UUID, mission: UUID, vessel: UUID, nextContact: UInt64,
+    profile: ScriptNPCDefinition, source: OriginalHullPhysicalContract
+  ) -> NativeArkDockWitness? {
     let flight = commander.flightSimulation
     let delta = flight.physicalTime - sample.physicalTime
     guard !docked, sample.system == systemIdentity, sample.visit == flight.visit,
       delta.isFinite, delta > 0, delta <= 0.100001,
-      state.admission != nil, state.loss == nil, state.dockedContact == nil,
-      state.fuelContacts.count < 128,
-      let body = bodies.first(where: { $0.missionActorID == state.authorization.actor }),
-      body.energy > 0, body.missionInstanceID == state.authorization.job,
-      body.scriptNPC?.fit.definition == (try? NativeInductionArkSource.profile()),
+      let body = bodies.first(where: { $0.missionActorID == actor }),
+      body.energy > 0, body.missionInstanceID == job,
+      body.scriptNPC?.fit.definition == profile,
       let physical = body.physical,
       let beforeBody = sample.bodies.first(where: { $0.physical?.identity == physical.identity }),
       let station = bodies.first(where: { $0.id == 0 && $0.hull == .station && $0.energy > 0 }),
       let stationActor = station.physical?.identity,
       let beforeStation = sample.bodies.first(where: { $0.physical?.identity == stationActor }),
-      let source = try? OriginalHullPhysicalContract.haflinger.get(),
       case .living(let facility) = nativeOriginalMainStationDestination,
       facility.observation.actor == stationActor,
       let current = currentNativeMainStationAnchor(at: flight.physicalTime),
@@ -1643,9 +1674,9 @@ extension Game {
         sample: sample, radius: source.envelope.clearanceRadius)
     else { return nil }
     let contact = NativeArkFuelContact(
-      mission: state.authorization.parent, ark: state.authorization.registeredArk,
+      mission: mission, ark: vessel,
       station: facility.identity, stationActor: stationActor, arkActor: physical.identity,
-      sequence: UInt64(state.fuelContacts.count + 1), physicalTime: flight.physicalTime)
+      sequence: nextContact, physicalTime: flight.physicalTime)
     guard contact.valid else { return nil }
     return .init(contact: contact, body: body)
   }

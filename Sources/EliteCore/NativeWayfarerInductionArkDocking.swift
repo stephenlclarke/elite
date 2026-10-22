@@ -19,6 +19,16 @@ extension Game {
       needsInductionArkDock(state, body: body), delta.isFinite, delta > 0, delta <= 0.1,
       let physical = try? OriginalHullPhysicalContract.haflinger.get()
     else { return nil }
+    return nativeCustodianDockGuidance(
+      body, profile: profile, delta: delta, station: station, physical: physical)
+  }
+
+  /// Geometry/steering only; each known custodian source retains its own dock eligibility.
+  func nativeCustodianDockGuidance(
+    _ body: SpaceBody, profile: ScriptNPCDefinition,
+    delta: Double, station: SpaceBody,
+    physical: OriginalHullPhysicalContract
+  ) -> NativeArkDockGuidance {
     let port = MainStationGeometry.docking
     let normal = station.modelVector(port.outward).unit
     let up = station.modelVector(port.up).unit
@@ -95,8 +105,7 @@ extension Game {
 extension Game {
   /// Retain the native motion refusal policy; an unsafe proposed sweep cannot pass a solid wall.
   mutating func resolveInductionArkDockMotion(before: [SpaceBody], delta: Double) {
-    guard let station = bodies.first(where: { $0.id == 0 && $0.hull == .station }),
-      let physical = try? OriginalHullPhysicalContract.haflinger.get()
+    guard let station = bodies.first(where: { $0.id == 0 && $0.hull == .station })
     else { return }
     let current = modelPose(of: station)
     var previous = current
@@ -113,9 +122,20 @@ extension Game {
     for index in bodies.indices {
       let body = bodies[index]
       guard let profile = body.scriptNPC?.fit.definition,
-        inductionArkDockGuidance(body, profile: profile, delta: delta) != nil,
         let old = before.first(where: { $0.physical?.identity == body.physical?.identity })
       else { continue }
+      let physical: OriginalHullPhysicalContract
+      if inductionArkDockGuidance(body, profile: profile, delta: delta) != nil,
+        let source = try? OriginalHullPhysicalContract.haflinger.get()
+      {
+        physical = source
+      } else if inductionRescueDockGuidance(body, profile: profile, delta: delta) != nil,
+        let source = try? OriginalHullPhysicalContract.burro.get()
+      {
+        physical = source
+      } else {
+        continue
+      }
       if !nativeInductionArkHullSweepIsClear(
         physical.physicalMesh,
         from: modelPose(of: old), to: modelPose(of: body),

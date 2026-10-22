@@ -168,7 +168,10 @@ extension Game {
     for index in source.actors.indices {
       let actorID = source.actors[index].actorID
       if source.authority == .retained,
-        withReadOnlyCommander({ NativeInductionArkPack.facilityHolds(actorID, commander: $0) })
+        withReadOnlyCommander({
+          NativeInductionArkPack.facilityHolds(actorID, commander: $0)
+            || NativeInductionCrewLogPack.facilityHolds(actorID, commander: $0)
+        })
       {
         continue
       }

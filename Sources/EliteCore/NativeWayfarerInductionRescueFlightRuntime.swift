@@ -7,14 +7,19 @@ private final class NativeRescueFlightAttempt {
 
 extension Game {
   /// Only the ordinary native producer can depart/admit this same launch. This requests one real hop.
-  mutating func advanceInductionRescueFlight(publish: ScriptPublisher?) {
+  mutating func advanceInductionRescueFlight(
+    from sample: NativeWormholeMotionSample?, publish: ScriptPublisher?
+  ) {
+    observeInductionRescueDock(from: sample)
     guard let publish, !paused, !isMissionTrial,
       let child = inductionCrewLogChild, child.suspension == nil,
       child.savedNativeCrewLog?.flight != nil
     else { return }
     let attempt = NativeRescueFlightAttempt(self)
     do {
-      guard try attempt.game.prepareInductionRescueFlight() else { return }
+      let changed = try attempt.game.prepareInductionRescueFlight()
+      guard changed || inductionRescueDockPublicationPending else { return }
+      attempt.game.inductionRescueDockPublicationPending = false
       attempt.game.persistScriptActors()
       guard attempt.game.commander.valid else { throw SaveError.invalidCommander }
       try publish(&attempt.game)
@@ -41,6 +46,7 @@ extension Game {
       commander.scriptState.instances[child.id] = child
       return true
     }
+    if flight.dockedContact != nil { return try serviceInductionRescue(child.id) }
     guard !docked, screen.isFlight,
       wayfarerInductionMission?.savedWayfarerInduction?.crewLogLoss == nil,
       state.livingCrew.count == 2, actor.presence == .present,

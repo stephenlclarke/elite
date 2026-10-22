@@ -68,12 +68,19 @@ extension NativeInductionCrewLogSave {
         }
         if leaf.keys.contains("flight") {
           guard supportsRescueFlight(schema) else { throw SaveError.invalidCommander }
+          if let flight = leaf["flight"] as? [String: Any],
+            !Set(flight.keys).isDisjoint(with: [
+              "savedFuelContacts", "dockedContact", "savedExits", "savedBindings", "serviceWait",
+            ])
+          {
+            guard supportsRescueService(schema) else { throw SaveError.invalidCommander }
+          }
         }
         let bytes = try JSONSerialization.data(withJSONObject: leaf)
         guard supportsPickup(schema) || leaf["capture"] == nil else {
           throw SaveError.invalidCommander
         }
-        guard bytes.count <= 65_536 else { throw SaveError.invalidCommander }
+        guard bytes.count <= 524_288 else { throw SaveError.invalidCommander }
         let decoded = try JSONDecoder().decode(NativeInductionCrewLogState.self, from: bytes)
         guard
           (leaf as NSDictionary).isEqual(

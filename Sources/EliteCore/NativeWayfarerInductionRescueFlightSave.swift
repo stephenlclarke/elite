@@ -21,17 +21,19 @@ enum NativeRescueFlightSave {
       a.dock.actor.visit <= commander.flightSimulation.visit,
       let actor = child.ownedEncounters[NativeInductionCrewLogPack.encounter]?.actors["launch"]
     else { return false }
-    return legsValid(flight, source: source, actor: actor, engine: commander.scriptState)
+    guard serviceBoundsValid(flight, bank: bank, commander: commander) else { return false }
+    return legsValid(
+      flight, source: source, actor: actor, engine: commander.scriptState, bank: bank)
   }
 
   static func legsValid(
     _ flight: NativeRescueFlightState, source: NativeInductionCrewLogSource,
-    actor: ScriptOwnedActor, engine: borrowing ScriptEngineState
+    actor: ScriptOwnedActor, engine: borrowing ScriptEngineState,
+    bank: NativeRescueFuelEscrow? = nil
   ) -> Bool {
     let a = flight.authorization
     var previous: NativeRescueHopReference?
     var previousLeg: NativeWormholeLeg?
-    var fuel = a.initialFuelLY
     for reference in flight.legs {
       guard reference.valid(authorization: a),
         let leg = engine.wormholeTransit?.legs[reference.leg], leg.valid,
@@ -64,16 +66,15 @@ enum NativeRescueFlightSave {
           departure.body.physical?.population == .mission,
           departure.body.physical?.npc?.role == .mission,
           leg.driveTerms == source.ship.drive, departure.physicalTime >= a.physicalTime,
-          departure.fuelBefore == fuel,
-          departure.fuelAfter == fuel - a.route.distancesLY[reference.hop]
+          departure.fuelAfter == departure.fuelBefore - a.route.distancesLY[reference.hop]
         else { return false }
-        fuel = departure.fuelAfter
       }
       previous = reference
       previousLeg = leg
     }
     let all = engine.wormholeTransit?.legs.values.filter { $0.instance == a.job } ?? []
-    return all.count == flight.legs.count && actor.body.scriptNPC?.fuel == fuel
+    guard all.count == flight.legs.count else { return false }
+    return fuelHistoryValid(flight, bank: bank, actor: actor, engine: engine)
   }
 
   static func actorValid(
@@ -96,10 +97,22 @@ enum NativeRescueFlightSave {
       native.ordnance == nil, native.rock == nil, native.salvage == nil,
       native.empSource == nil, native.empCrewPod == nil
     else { return false }
+    if let contact = flight.dockedContact {
+      guard actor.presence == .unloaded, actor.body.energy > 0,
+        native.identity == contact.arkActor, expected == contact.station.system,
+        npc.velocity == .init(0, 0, 0), npc.intent == nil
+      else { return false }
+    }
     if let intent = npc.intent {
       if intent.request == "native-rescue-workarea-exit" {
         guard latest == nil, intent.mode == .approach, intent.target == nil, !intent.player,
           intent.offset == NativeInductionCrewLogRole.launch.offset + Vector3(0, 0, 1200),
+          intent.speed == min(1, 144 / npc.fit.definition.speed), intent.tolerance == 50
+        else { return false }
+      } else if intent.request == "native-rescue-berth-exit" {
+        guard flight.dockedContact == nil, let exit = flight.exits.last,
+          exit.actor == native.identity, intent.mode == .approach,
+          intent.target == nil, !intent.player, intent.offset.finite,
           intent.speed == min(1, 144 / npc.fit.definition.speed), intent.tolerance == 50
         else { return false }
       } else if !flight.legs.contains(where: { $0.request == intent.request }) {

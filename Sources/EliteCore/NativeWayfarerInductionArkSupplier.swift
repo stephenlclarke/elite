@@ -73,13 +73,17 @@ extension NativeInductionArkSave {
   static func supplierClaimsValid(_ commander: borrowing Commander) -> Bool {
     let banks = commander.scriptState.instances.values.compactMap { $0.savedNativeArk }
     let supplies = commander.nativeStations?.arkFuel ?? []
-    let purchases = banks.flatMap { $0.fuel.purchases }
+    let rescues = commander.scriptState.instances.values.compactMap { $0.savedNativeCrewLog }
+    let purchases =
+      banks.flatMap { $0.fuel.purchases }
+      + rescues.flatMap { $0.rescueFuel?.purchases ?? [] }
+    let contacts = banks.flatMap(\.fuelContacts) + rescues.flatMap { $0.flight?.fuelContacts ?? [] }
     guard supplies.allSatisfy(\.valid),
       Set(supplies.flatMap { $0.purchases.map(\.operation) }) == Set(purchases.map(\.operation)),
       supplies.reduce(0, { $0 + $1.purchases.count }) == purchases.count
     else { return false }
     for supply in supplies {
-      guard banks.contains(where: { $0.fuelContacts.contains(supply.openingContact) }),
+      guard contacts.contains(supply.openingContact),
         supply.purchases.allSatisfy({ purchases.contains($0) })
       else { return false }
     }

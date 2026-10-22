@@ -728,6 +728,7 @@ public struct Game: Sendable {
   var pendingNativeSalvageCollections: [NativeSalvageCollectionObservation] = []
   var pendingNativeStationDock: NativeStationEntryProof?
   var inductionArkDockPublicationPending = false
+  var inductionRescueDockPublicationPending = false
   var nativeStationDockEvidence: NativeStationDockEvidence?
   var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
   public var scriptPacks: [ScriptPack] = []
@@ -2610,7 +2611,9 @@ public actor GameRuntime {
     return (
       wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced,
       startPhysicalTime, startPlayer,
-      flightActive && (game.hasNativeWormholeMotionObservers || game.hasInductionArkMotionObserver)
+      flightActive
+        && (game.hasNativeWormholeMotionObservers || game.hasInductionArkMotionObserver
+          || game.hasInductionRescueMotionObserver)
         ? NativeWormholeMotionSample(game) : nil,
       game.commander.scriptState.transitSeconds
     )
@@ -2675,7 +2678,7 @@ public actor GameRuntime {
     if localActive {
       game.advanceInductionArk(from: transitSample, publish: scriptPublisher())
       game.advanceInductionCrewLog(publish: scriptPublisher())
-      game.advanceInductionRescueFlight(publish: scriptPublisher())
+      game.advanceInductionRescueFlight(from: transitSample, publish: scriptPublisher())
     }
     game.advanceScriptWorldJobs(delta: delta, publish: scriptPublisher())
   }

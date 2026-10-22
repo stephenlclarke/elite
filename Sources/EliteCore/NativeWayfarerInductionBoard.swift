@@ -262,7 +262,7 @@ extension Game {
       "At Renas repair desk, Confirm service of the same original cassette and its owner's receiving record. This releases its tonne and pays nothing.",
       "At Enlirin, review the seed custodians' consent before Confirm borrows their unique one-tonne vault key for Lareria's receiving cradle. The key stays their property; the seed travels aboard the ark.",
       "The loan is untimed, needs one free tonne and cannot be sold, fitted or released as personal equipment. At Enlirin, separately review and Confirm the one original ark registration; no extra player cargo space is required.",
-      "The registered ark uses actual native aperture docking and its own custodian escrow for needed-hop fuel. Each real main station has a separate finite 100-LY ark-service reserve. Saving, revisiting or reopening never refills stock or funds; actual Lareria receiving and original key return need their separate Confirm review.",
+      "The registered ark uses actual native aperture docking and its own custodian escrow for needed-hop fuel. Each real main station has one finite 100-LY custodian-service reserve shared by seed arks and the original rescue launch. Saving, revisiting or reopening never refills stock or funds; actual Lareria receiving and original key return need their separate Confirm review.",
       "Original escort terms: one custodian Haflinger, forty unique seed tonnes and six living crew, with its own finite 1000 CR fuel escrow. Its authored tank is 13 LY, drive 9 LY per hop and spool 12 seconds; your separate original vault key occupies one tonne.",
       "One initial reserve holds a distinct Haflinger, forty distinct seed tonnes, six distinct crew and a separate 1000 CR fuel issue. Only proved original-ark destruction and fresh Enlirin custodian consent can release it once. The same original key must still be aboard. Unused prior escrow returns to its custodian; no payment or progress is awarded.",
       "The destroyed hull, seed and crew remain lost. Station fuel stock stays depleted. After the single reserve is consumed, no further launch or new key is available without a separate real authored source.",
@@ -278,7 +278,7 @@ extension Game {
               "Original rescue launch NPC fuel escrow: %.1f CR remaining / initial1000CR. Source SH029: 13LY tank, 9LY drive, 12s spool. This is separate from player cash and both seed-ark accounts.",
             Double(account.remainingCredits) / 10))
         lines.append(
-          "Real native route hops use the same launch's retained drive/fuel after separate Cevilis escort review. Needed intermediate dock/paid service and Enmadan survivor/recorder receiving remain next; no extra station stock, arrival fuel or stage9 credit is granted."
+          "Real native route hops use the same launch's retained drive/fuel after separate Cevilis escort review. The original launch uses native aperture docking and its own paid needed-hop fuel from the same persistent station reserve as seed arks. Enmadan survivor/recorder receiving remains next; no extra station stock, arrival fuel or stage9 credit is granted."
         )
         lines.append(
           "One uncrewed Burro and separate future1000CR funding are reserved. Replacement cannot create people or a recorder: only the same original two surviving crew in actual supported custody may transfer after real rebrief/launch. The replacement branch remains unavailable."

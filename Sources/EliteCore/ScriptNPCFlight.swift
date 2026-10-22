@@ -71,7 +71,9 @@ extension Game {
           definition.energy, bodies[index].energy + definition.recharge * delta)
       }
       var desired = Vector3(0, 0, 0)
-      if let guidance = inductionArkDockGuidance(bodies[index], profile: definition, delta: delta) {
+      if let guidance = inductionArkDockGuidance(bodies[index], profile: definition, delta: delta)
+        ?? inductionRescueDockGuidance(bodies[index], profile: definition, delta: delta)
+      {
         bodies[index].orientation = guidance.orientation
         desired = guidance.desired
       } else {

@@ -118,8 +118,11 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
     if let rescueFuel {
       guard rescueFuel.valid, rescueFuel.funding.valid(authorization: authorization),
         rescueReserve?.valid(authorization: authorization) == true,
-        // Actual dock/service publication joins are introduced with the normal flight provider.
-        rescueFuel.purchases.isEmpty, rescueFuel.refusal == nil
+        rescueFuel.purchases.allSatisfy({
+          flight?.fuelContacts.contains($0.request.offer.contact) == true
+        }),
+        rescueFuel.refusal.map({ flight?.fuelContacts.contains($0.request.offer.contact) == true })
+          ?? true
       else { return false }
       if let dock = rescueFuel.funding.legacyRebriefDock {
         guard let reception = parent.seedReception, let capture,
@@ -137,7 +140,9 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
       guard let rescueFuel, capture != nil,
         let source = try? NativeInductionCrewLogSource(parent: parent),
         flight.shapeValid(
-          root: authorization, funding: rescueFuel.funding, parent: parent, source: source)
+          root: authorization, funding: rescueFuel.funding, parent: parent, source: source),
+        rescueFuel.purchases.allSatisfy({ flight.serviceRequestFitsRoute($0.request) }),
+        rescueFuel.refusal.map({ flight.serviceRequestFitsRoute($0.request) }) ?? true
       else { return false }
     }
     guard let admission else { return losses.isEmpty && capture == nil && flight == nil }

@@ -78,13 +78,29 @@ struct NativeRescueHopReference: Codable, Sendable, Equatable {
 struct NativeRescueFlightState: Codable, Sendable, Equatable {
   let authorization: NativeRescueFlightAuthorization
   var legs: [NativeRescueHopReference] = []
+  // Optional histories retain pre-service flight saves without inventing attained contacts.
+  var savedFuelContacts: [NativeArkFuelContact]?
+  var dockedContact: NativeArkFuelContact?
+  var savedExits: [NativeArkBerthExit]?
+  var savedBindings: [NativeArkAdmission]?
+  var serviceWait: NativeArkServiceWait?
+  var fuelContacts: [NativeArkFuelContact] { savedFuelContacts ?? [] }
+  var exits: [NativeArkBerthExit] { savedExits ?? [] }
+  var bindings: [NativeArkAdmission] { savedBindings ?? [] }
+
+  mutating func recordBinding(_ actor: ActorIdentity, at physicalTime: Double) {
+    guard bindings.last?.actor != actor else { return }
+    savedBindings = bindings + [.init(actor: actor, physicalTime: physicalTime)]
+  }
+
   func shapeValid(
     root: NativeCrewLogAuthorization, funding: NativeRescueFuelFunding,
     parent: NativeWayfarerInductionState, source: NativeInductionCrewLogSource
   ) -> Bool {
     guard authorization.valid(root: root, funding: funding, parent: parent, source: source),
       legs.count <= 128, Set(legs.map(\.leg)).count == legs.count,
-      legs.allSatisfy({ $0.valid(authorization: authorization) })
+      legs.allSatisfy({ $0.valid(authorization: authorization) }),
+      serviceShapeValid(root: root)
     else { return false }
     var previous: NativeRescueHopReference?
     for leg in legs {

@@ -39,6 +39,14 @@ extension Game {
         return
           "Original rescue launch destroyed; original crew are lost without actual supported surviving-person custody. No replacement people, receiving or stage9 credit is granted."
       }
+      if let contact = flight.dockedContact {
+        return
+          "Original rescue launch berthed at G\(contact.station.system.galaxy + 1)-S\(contact.station.system.system) / two original crew aboard / "
+          + (flight.serviceWait?.rawValue
+            ?? (nextInductionRescueHop(flight) == nil
+              ? "Enmadan original survivor/recorder receiving remains next"
+              : "needed-hop paid fuel and native berth exit"))
+      }
       if let last = flight.legs.last,
         let leg = commander.scriptState.wormholeTransit?.legs[last.leg]
       {
@@ -52,7 +60,7 @@ extension Game {
         }
         if last.hop == flight.authorization.route.distancesLY.count - 1 && leg.phase == .arrived {
           return
-            "Original marked launch actually admitted at Enmadan. Actual berth/survivor/recorder receiving still remains unavailable; no stage9 credit granted."
+            "Original marked launch actually admitted at Enmadan and approaching its real station berth. Survivor/recorder receiving remains next; no stage9 credit granted."
         }
       }
       if let hop = nextInductionRescueHop(flight),
@@ -61,7 +69,7 @@ extension Game {
         npc.fuel < flight.authorization.route.distancesLY[hop.hop]
       {
         return
-          "Original marked launch needs actual intermediate dock/fuel service. No arrival-time refill or escrow debit is invented; service provider remains next."
+          "Original marked launch approaching the real main-orbital berth for needed-hop fuel. Its own finite escrow and the station's shared finite stock govern paid service; no arrival-time refill."
       }
       return
         "Original marked-launch escort registered with the same two crew and retained fuel. Depart Cevilis and approach its real source; it clears the work area through ordinary flight before native hops."
