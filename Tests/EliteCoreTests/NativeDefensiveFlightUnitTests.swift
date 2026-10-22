@@ -727,6 +727,27 @@ struct NativeDefensiveFlightUnitTests {
     let schema = alien ? 136 : 135
     try NativeDefensiveFlightSave.validateArchiveFields(
       bytes(raw), part: .missions, schema: schema, alien: alien)
+    let surveyor = try trainingSurveyorArchiveFixture()
+    let lesson = try NativeSafeGunneryUnitTests().archiveFixture()
+    var entries: [String: Any] = [
+      instance.id.uuidString: raw, surveyor.id.uuidString: try object(surveyor),
+      lesson.id.uuidString: try object(lesson),
+    ]
+    let mixed = try JSONSerialization.data(withJSONObject: ["instances": entries])
+    try NativeDefensiveFlightSave.validateArchiveFields(
+      mixed, part: .missions, schema: schema, alien: alien)
+    var changedSurveyor = try object(surveyor)
+    var changedOpening = try #require(changedSurveyor["savedGlassMeridian"] as? [String: Any])
+    var changedSource = try #require(changedOpening["surveyor"] as? [String: Any])
+    changedSource["inventedCompletion"] = true
+    changedOpening["surveyor"] = changedSource
+    changedSurveyor["savedGlassMeridian"] = changedOpening
+    entries[surveyor.id.uuidString] = changedSurveyor
+    let mixedUnknown = try JSONSerialization.data(withJSONObject: ["instances": entries])
+    #expect(throws: (any Error).self) {
+      try NativeDefensiveFlightSave.validateArchiveFields(
+        mixedUnknown, part: .missions, schema: schema, alien: alien)
+    }
     for earlier in [nil, 121, 127, 129, 131, 133, 134] as [Int?] {
       #expect(throws: (any Error).self) {
         try NativeDefensiveFlightSave.validateFields(bytes(raw), part: .missions, schema: earlier)

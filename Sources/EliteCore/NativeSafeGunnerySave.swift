@@ -169,7 +169,7 @@ enum NativeSafeGunnerySave {
         let leaf = instance["savedSafeGunnery"]
         guard pinned == (leaf != nil) else { throw SaveError.invalidCommander }
         if let leaf {
-          guard contains(schema), !embedded,
+          guard contains(schema) || NativeC01SurveyorSave.contains(schema), !embedded,
             instance["definition"] as? String == NativeSafeGunnery.stateID,
             let object = leaf as? [String: Any]
           else { throw SaveError.invalidCommander }

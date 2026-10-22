@@ -1,0 +1,9 @@
+# Training delivery: native gunnery and defensive flight
+
+The practice provider alone cannot authorize lesson success. T02 requires actual Avenor consent, three distinct retained native weapon intersections, safe ceasefire and separate reception. T03 requires a separate non-firing original source, front-view acquisition, ordered manual evasion and measured safe breakoff before later reception. Labels, counters, missing bodies, camera changes and unrelated encounters cannot supply those facts.
+
+PR87 is the combined delivery of the same author's reviewed provider/T02/T03 work, composed with actual C01 deliveryd731b79859dddffd3533c20360280c7c27825009. Earlier PR65/PR76 remain preserved until PR87 actually qualifies and merges with inclusion/archive proof. This avoids separate repeated training composition runs. All335 delivered methods,30 T02/provider/mixed-codec methods and20 T03 methods remain:385 total, derived from the exact AST union.
+
+The real new interaction is closed persistence. C01 owns129/130, T02 owns127/128 and T03 owns135/136. Publication must choose the highest present family; every present native leaf must use its closed validator before lower-family mapping. Training claims can coexist under129/130, and C01 must remain strict under135/136. Unrelated absent families stay optional. Earlier/embedded/unknown claims remain refused.
+
+Existing issues remain criterion-specific. Issue86 is closed for verified compilation. Issue92 is closed after T03 compiled, but issue93's front-view semantic cases have not completed. Issue95 records unattributed T02 signal4 failures with no completed PASS methods or owned fault stack. The actual C01 delivery is qualified335methods/372cases; it is not evidence that the new composition fixes the same signal or passes385 methods. Final automatic execution, applicable review/checks and author merge remain pending. No diagnostic/native/integration campaign or unchanged retry is requested.

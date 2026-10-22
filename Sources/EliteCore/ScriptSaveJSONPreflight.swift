@@ -52,14 +52,18 @@ extension ScriptSaveJSONPreflight {
   static func validateRepairLoopFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
   ) throws {
-    try NativeInductionCrewLogSave.validateFields(data, part: part, schema: schema)
-    try NativeInductionArkSave.validateFields(data, part: part, schema: schema)
-    let arkSchema = NativeInductionArkSave.lowerSchema(schema)
+    try NativeC01SurveyorSave.validateFields(data, part: part, schema: schema)
+    let surveyorSchema = NativeC01SurveyorSave.lowerSchema(schema)
+    try NativeInductionCrewLogSave.validateFields(data, part: part, schema: surveyorSchema)
+    try NativeInductionArkSave.validateFields(data, part: part, schema: surveyorSchema)
+    let arkSchema = NativeInductionArkSave.lowerSchema(surveyorSchema)
     try NativeWayfarerInductionSave.validateFields(data, part: part, schema: arkSchema)
     let inductionSchema = NativeWayfarerInductionSave.lowerSchema(arkSchema)
     try NativeFirstCommoditySaleSave.validateFields(data, part: part, schema: inductionSchema)
     let commerceSchema = NativeFirstCommoditySaleSave.lowerSchema(inductionSchema)
-    try NativeGlassMeridianSave.validateFields(data, part: part, schema: commerceSchema)
+    try NativeGlassMeridianSave.validateFields(
+      data, part: part, schema: commerceSchema,
+      supportsSurveyor: NativeC01SurveyorSave.contains(schema))
     let glassSchema = NativeGlassMeridianSave.lowerSchema(commerceSchema)
     try NativeFleetDiscoverySave.validateFields(data, part: part, schema: glassSchema)
     let fleetSchema = NativeFleetDiscoverySave.lowerSchema(glassSchema)

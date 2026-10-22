@@ -303,8 +303,7 @@ struct NativeSafeGunneryUnitTests {
         owner: state.permission.owner, carrier: UUID()))
   }
 
-  @Test(arguments: [false, true])
-  func closedLessonEnvelopeRejectsEarlyEmbeddedUnknownAndMissingNativeClaims(alien: Bool) throws {
+  func archiveFixture() throws -> ScriptInstance {
     let f = try fixture()
     let state = try lesson(f)
     var instance = ScriptInstance(
@@ -312,6 +311,12 @@ struct NativeSafeGunneryUnitTests {
       version: NativeSafeGunnery.version, digest: NativeSafeGunnery.digest)
     instance.savedSafeGunnery = state
     instance.savedNativePractice = f.provider
+    return instance
+  }
+
+  @Test(arguments: [false, true])
+  func closedLessonEnvelopeRejectsEarlyEmbeddedUnknownAndMissingNativeClaims(alien: Bool) throws {
+    let instance = try archiveFixture()
     let object = try JSONSerialization.jsonObject(with: JSONEncoder().encode(instance))
     func bytes(_ raw: Any) throws -> Data {
       try JSONSerialization.data(withJSONObject: ["instances": ["lesson": raw]])
@@ -319,6 +324,17 @@ struct NativeSafeGunneryUnitTests {
     let schema = alien ? 128 : 127
     try NativeSafeGunnerySave.validateArchiveFields(
       bytes(object), part: .missions, schema: schema, alien: alien)
+    let surveyor = try trainingSurveyorArchiveFixture()
+    let surveyorObject = try JSONSerialization.jsonObject(with: JSONEncoder().encode(surveyor))
+    let mixed = try JSONSerialization.data(withJSONObject: [
+      "instances": [instance.id.uuidString: object, surveyor.id.uuidString: surveyorObject]
+    ])
+    try NativeDefensiveFlightSave.validateArchiveFields(
+      mixed, part: .missions, schema: alien ? 130 : 129, alien: alien)
+    #expect(throws: (any Error).self) {
+      try NativeDefensiveFlightSave.validateArchiveFields(
+        mixed, part: .missions, schema: schema, alien: alien)
+    }
     for earlier in [nil, 59, 121, 122, 125, 126] as [Int?] {
       #expect(throws: (any Error).self) {
         try NativeSafeGunnerySave.validateFields(bytes(object), part: .missions, schema: earlier)
@@ -435,4 +451,26 @@ struct NativeSafeGunneryUnitTests {
     }
     #expect(progress.hits.isEmpty && !progress.threeDistinctHits)
   }
+}
+
+/// Reuse the delivered C01 reading fixtures for closed-field coexistence, not a native journey.
+func trainingSurveyorArchiveFixture() throws -> ScriptInstance {
+  let opening = NativeGlassMeridianUnitTests()
+  var state = try opening.fixture()
+  state.readings = [
+    try opening.sealed(state, ordinal: 0), try opening.sealed(state, ordinal: 1, start: 22),
+  ]
+  var native = FlightSimulationState()
+  for _ in 0..<3 { native.enter(NativeC01Surveyor.location, arriving: true) }
+  state.surveyor = .init(
+    source: .init(
+      mission: state.permission.mission, permission: state.permission.operation,
+      anchors: try #require(native.anchors), reference: .init(), visit: 3, physicalTime: 40))
+  try #require(NativeC01Surveyor.shapeValid(state))
+  var mission = ScriptInstance(
+    id: state.permission.mission, definition: NativeGlassMeridian.stateID,
+    version: NativeGlassMeridian.version, digest: NativeGlassMeridian.digest)
+  mission.savedGlassMeridian = state
+  mission.milestones = [0, 1]
+  return mission
 }

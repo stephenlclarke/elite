@@ -114,14 +114,32 @@ extension Game {
       "Use a fitted targeting computer in front view, within 2 degrees and 250-1500 surface units.",
       "Keep clear nearest-hit sight for 12 continuous native seconds. Pause freezes the reading.",
       "Completed target readings survive saves. Interrupted or loaded unfinished dwell restarts.",
-      "Only the first two authored stages are delivered. No opening payment or final clue is available.",
+      "After both clocks, travel to Navidor to recover the original flight recorder. No payment or final clue is available.",
     ]
     if let state = glassMeridianMission?.savedGlassMeridian {
       for ordinal in 0..<2 {
         let done = state.readings.contains { $0.reading.ordinal == ordinal }
         lines.append(NativeGlassMeridian.targets[ordinal] + (done ? ": verified" : ": unread"))
       }
-      if state.readings.count == 2 { lines.append(NativeGlassMeridian.laterStages) }
+      if state.readings.count == 2 {
+        lines.append("Navidor: disabled Harrier, 25km above the planet surface toward the star.")
+        lines.append(
+          "The original recorder is detached 80m to the Harrier's right; fitted Fuel Scoops recover it on a slow, centred underside approach."
+        )
+        lines.append(
+          "It occupies 8kg protected cargo, combined with actual stored mass before tonne rounding."
+        )
+        lines.append(
+          "Destruction or loss of the original ends this attempt; changing visits never replaces it."
+        )
+        if state.surveyor?.loss != nil {
+          lines.append("Original recorder lost: this attempt has failed.")
+        } else if state.surveyor?.held == true {
+          lines.append("Original recorder aboard. Stage four audit remains unavailable.")
+        } else {
+          lines.append(NativeGlassMeridian.laterStages)
+        }
+      }
     }
     lines += (contractBoard.glassMeridianQuote ?? glassMeridianReview(.accept)).issues
     return lines

@@ -589,16 +589,22 @@ enum ScriptSaveStore {
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
       schemaVersion: (NativeDefensiveFlightSave.hasClaims(commander)
+        || NativeC01SurveyorSave.hasClaims(commander)
         || NativeSafeGunnerySave.hasClaims(commander)
         || NativePracticeSave.hasClaims(commander)
         || NativeInductionCrewLogSave.hasClaims(commander))
-        ? (NativeDefensiveFlightSave.publicationVersion(
-          defensive: NativeDefensiveFlightSave.hasClaims(commander),
-          lesson: NativeSafeGunnerySave.hasClaims(commander),
-          practice: NativePracticeSave.hasClaims(commander),
-          crewLog: NativeInductionCrewLogSave.hasClaims(commander), alien: alienPublication != nil)
-          ?? (alienPublication != nil
-            ? NativeInductionCrewLogSave.alienVersion : NativeInductionCrewLogSave.version))
+        ? max(
+          NativeDefensiveFlightSave.publicationVersion(
+            defensive: NativeDefensiveFlightSave.hasClaims(commander),
+            lesson: NativeSafeGunnerySave.hasClaims(commander),
+            practice: NativePracticeSave.hasClaims(commander),
+            crewLog: NativeInductionCrewLogSave.hasClaims(commander), alien: alienPublication != nil
+          )
+            ?? (alienPublication != nil
+              ? NativeInductionCrewLogSave.alienVersion : NativeInductionCrewLogSave.version),
+          NativeC01SurveyorSave.hasClaims(commander)
+            ? (alienPublication != nil
+              ? NativeC01SurveyorSave.alienVersion : NativeC01SurveyorSave.version) : 0)
         : NativeInductionArkSave.hasClaims(commander)
           ? (alienPublication != nil
             ? NativeInductionArkSave.alienVersion : NativeInductionArkSave.version)
@@ -721,13 +727,14 @@ enum ScriptSaveStore {
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
     // The closed current service envelope admits W02, W03 or both after feature validation.
     let defensiveFlightEnvelope = NativeDefensiveFlightSave.contains(pointer.schemaVersion)
+    let surveyorEnvelope = NativeC01SurveyorSave.contains(pointer.schemaVersion)
     let safeGunneryEnvelope = NativeSafeGunnerySave.contains(pointer.schemaVersion)
     let practiceEnvelope = NativePracticeSave.contains(pointer.schemaVersion)
     let crewLogEnvelope = NativeInductionCrewLogSave.contains(pointer.schemaVersion)
     let arkEnvelope = NativeInductionArkSave.contains(pointer.schemaVersion)
     let inductionEnvelope =
-      defensiveFlightEnvelope || safeGunneryEnvelope || practiceEnvelope || arkEnvelope
-      || NativeWayfarerInductionSave.contains(pointer.schemaVersion)
+      defensiveFlightEnvelope || surveyorEnvelope || safeGunneryEnvelope || practiceEnvelope
+      || arkEnvelope || NativeWayfarerInductionSave.contains(pointer.schemaVersion)
     let commerceEnvelope = NativeFirstCommoditySaleSave.contains(pointer.schemaVersion)
     let glassEnvelope = NativeGlassMeridianSave.contains(pointer.schemaVersion)
     let fleetEnvelope = NativeFleetDiscoverySave.contains(pointer.schemaVersion)
@@ -757,6 +764,7 @@ enum ScriptSaveStore {
       || NativeInductionArkSave.isAlien(pointer.schemaVersion)
       || NativeWayfarerInductionSave.isAlien(pointer.schemaVersion)
       || pointer.schemaVersion == NativeFirstCommoditySaleSave.alienVersion
+      || pointer.schemaVersion == NativeC01SurveyorSave.alienVersion
       || pointer.schemaVersion == NativeGlassMeridianSave.alienVersion
       || pointer.schemaVersion == NativeFleetDiscoverySave.alienVersion
       || pointer.schemaVersion == NativeFlightReceptionSave.alienVersion
@@ -1056,16 +1064,18 @@ enum ScriptSaveStore {
         || stationJourney
         || supply == OriginalConsentedFreightSupplySave.hasClaims(commander),
       defensiveFlightEnvelope == NativeDefensiveFlightSave.hasClaims(commander),
-      defensiveFlightEnvelope || safeGunneryEnvelope == NativeSafeGunnerySave.hasClaims(commander),
-      defensiveFlightEnvelope || safeGunneryEnvelope
+      defensiveFlightEnvelope || surveyorEnvelope == NativeC01SurveyorSave.hasClaims(commander),
+      defensiveFlightEnvelope || surveyorEnvelope
+        || safeGunneryEnvelope == NativeSafeGunnerySave.hasClaims(commander),
+      defensiveFlightEnvelope || surveyorEnvelope || safeGunneryEnvelope
         || (pointer.schemaVersion == 123 || pointer.schemaVersion == 124
           || pointer.schemaVersion == 125 || pointer.schemaVersion == 126)
         || practiceEnvelope == NativePracticeSave.hasClaims(commander),
-      defensiveFlightEnvelope || safeGunneryEnvelope || practiceEnvelope
+      defensiveFlightEnvelope || surveyorEnvelope || safeGunneryEnvelope || practiceEnvelope
         || crewLogEnvelope == NativeInductionCrewLogSave.hasClaims(commander),
-      defensiveFlightEnvelope || safeGunneryEnvelope || practiceEnvelope
+      defensiveFlightEnvelope || surveyorEnvelope || safeGunneryEnvelope || practiceEnvelope
         || arkEnvelope == NativeInductionArkSave.hasClaims(commander),
-      defensiveFlightEnvelope || safeGunneryEnvelope || practiceEnvelope
+      defensiveFlightEnvelope || surveyorEnvelope || safeGunneryEnvelope || practiceEnvelope
         || inductionEnvelope == NativeWayfarerInductionSave.hasClaims(commander),
       inductionEnvelope || commerceEnvelope == NativeFirstCommoditySaleSave.hasClaims(commander),
       inductionEnvelope || commerceEnvelope

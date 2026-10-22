@@ -150,8 +150,19 @@ enum NativeDefensiveFlightSave {
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?, alien: Bool
   ) throws {
     try validateFields(data, part: part, schema: schema)
-    try NativeSafeGunnerySave.validateArchiveFields(
-      data, part: part, schema: contains(schema) ? (alien ? 128 : 127) : schema, alien: alien)
+    let lessonSchema = contains(schema) ? (alien ? 128 : 127) : schema
+    try NativeSafeGunnerySave.validateFields(data, part: part, schema: lessonSchema)
+    let practiceSchema =
+      NativeSafeGunnerySave.contains(lessonSchema) ? (alien ? 122 : 121) : lessonSchema
+    try NativePracticeSave.validateFields(data, part: part, schema: practiceSchema)
+    // C01's closed leaf must see its own namespace before any older-family lowering.
+    let predecessor =
+      contains(schema)
+      ? (alien ? NativeC01SurveyorSave.alienVersion : NativeC01SurveyorSave.version)
+      : NativePracticeSave.contains(practiceSchema)
+        ? (alien ? NativeInductionCrewLogSave.alienVersion : NativeInductionCrewLogSave.version)
+        : practiceSchema
+    try ScriptSaveJSONPreflight.validateRepairLoopFields(data, part: part, schema: predecessor)
   }
 
   static func validateFields(_ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?)

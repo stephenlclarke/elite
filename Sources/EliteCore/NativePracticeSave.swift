@@ -7,6 +7,7 @@ enum NativePracticeSave {
 
   static func supportsPractice(_ schema: Int?) -> Bool {
     contains(schema) || schema == 123 || schema == 124 || schema == 125 || schema == 126
+      || NativeC01SurveyorSave.contains(schema)
   }
 
   static func publicationVersion(practice: Bool, crewLog: Bool, alien: Bool) -> Int? {
