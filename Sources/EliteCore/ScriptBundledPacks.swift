@@ -327,6 +327,12 @@ extension ScriptPackLibrary {
     } catch {
       library.errors.append("Bundled original Enmadan workshop: " + error.localizedDescription)
     }
+    do {
+      let seed = try read(bundledInductionSeedDirectory)
+      if !library.packs.contains(where: { $0.digest == seed.digest }) { library.packs.append(seed) }
+    } catch {
+      library.errors.append("Bundled original Enlirin seed: " + error.localizedDescription)
+    }
     return library
   }
 }

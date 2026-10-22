@@ -33,6 +33,11 @@ extension Commander {
         guard !reserved.overflow else { return nil }
         total = reserved.partialValue
       }
+      let seedTonnes = instance.savedNativeInductionSeed?.reservedCargoTonnes ?? 0
+      guard (0...3).contains(seedTonnes) else { return nil }
+      let seed = total.addingReportingOverflow(seedTonnes)
+      guard !seed.overflow else { return nil }
+      total = seed.partialValue
       let workshopTonnes = instance.savedNativeInductionWorkshop?.reservedCargoTonnes ?? 0
       guard (0...2).contains(workshopTonnes) else { return nil }
       let workshop = total.addingReportingOverflow(workshopTonnes)

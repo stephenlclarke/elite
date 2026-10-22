@@ -337,7 +337,7 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
         }
       }
       if item.node.family == EquipmentRuntimeCatalog.ammunitionFamily {
-        guard item.node == EquipmentRuntimeCatalog.standardMissile, item.component == nil,
+        guard AlienMissileDefinition.profile(for: item.node) != nil, item.component == nil,
           item.boundHull == nil
         else { throw OwnedEquipmentError.invalidStructure }
       }

@@ -47,6 +47,7 @@ extension Game {
       case .technology(let definition, _, _) = lot.content
     else { return false }
     return AlienModuleDefinition.isAttachmentDefinition(definition)
+      || AlienMissileDefinition.isResearchSource(lot)
   }
 
   /// Shared scoop geometry and guidance checks run before this producer is called.

@@ -1,10 +1,23 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 115
-  static let alienVersion = 116
+  static let version = 125
+  static let alienVersion = 126
+  static func supportsAccreditation(_ schema: Int?) -> Bool {
+    schema == version || schema == alienVersion || schema == 127 || schema == 128
+  }
+  static func supportsNetworkCertification(_ schema: Int?) -> Bool {
+    supportsAccreditation(schema) || schema == 123 || schema == 124
+  }
+  static func supportsCharterAudit(_ schema: Int?) -> Bool {
+    supportsNetworkCertification(schema) || schema == 119 || schema == 120 || schema == 121
+      || schema == 122
+  }
+  static func supportsSeed(_ schema: Int?) -> Bool {
+    supportsCharterAudit(schema) || schema == 117 || schema == 118
+  }
   static func supportsWorkshop(_ schema: Int?) -> Bool {
-    schema == version || schema == alienVersion
+    supportsSeed(schema) || schema == 115 || schema == 116
   }
   static func supportsClinicCustody(_ schema: Int?) -> Bool {
     supportsWorkshop(schema) || schema == 113 || schema == 114
@@ -58,6 +71,8 @@ enum NativeInductionCrewLogSave {
     commander.scriptState.instances.values.contains {
       NativeInductionCrewLogPack.marked($0) || NativeInductionUtilityPack.marked($0)
         || $0.savedWayfarerInduction?.charterClinicSource != nil
+        || $0.savedWayfarerInduction?.charterSeedSource != nil
+        || NativeInductionSeedPack.marked($0) || $0.savedNativeInductionSeed != nil
         || $0.savedWayfarerInduction?.charterWorkshopSource != nil
         || NativeInductionWorkshopPack.marked($0) || $0.savedNativeInductionWorkshop != nil
         || NativeInductionClinicPack.marked($0) || $0.savedNativeInductionClinic != nil
@@ -135,7 +150,8 @@ enum NativeInductionCrewLogSave {
     // A parent cannot claim pickup or receiving without the same original source job and receipt.
     guard NativeInductionUtilitySave.validateClaims(commander),
       NativeInductionClinicSave.validateClaims(commander),
-      NativeInductionWorkshopSave.validateClaims(commander)
+      NativeInductionWorkshopSave.validateClaims(commander),
+      NativeInductionSeedSave.validateClaims(commander)
     else { return false }
     return engine.instances.values.allSatisfy { parent in
       guard let capture = parent.savedWayfarerInduction?.crewLog else { return true }

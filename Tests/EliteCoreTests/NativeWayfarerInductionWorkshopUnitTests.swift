@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Typed original stock/condition/ownership fixtures, not a native player journey.
-private final class InductionWorkshopFixture {
+final class InductionWorkshopFixture {
   let f: InductionClinicAcceptanceFixture
   let signature: NativeInductionCharterSignature
   let issue: NativeInductionWorkshopIssue

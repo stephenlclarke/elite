@@ -17,7 +17,7 @@ final class RescueReceivingFixture {
     contact = .init(
       mission: f.f.parent.permission.mission, ark: f.f.f.source.manifest.launch,
       station: dock.station, stationActor: dock.actor,
-      arkActor: .init(system: dock.station.system, visit: visit, entity: 3), sequence: 1,
+      arkActor: .init(system: dock.station.system, visit: visit, entity: 3), sequence: 2,
       physicalTime: 999_999)
   }
   func receipt(
@@ -44,19 +44,78 @@ final class RescueReceivingFixture {
   }
   func state(receipt: NativeInductionRescueReception) throws -> NativeInductionCrewLogState {
     var state = f.state()
-    state.flight?.savedFuelContacts = [contact]
+    let service = try interhopService()
+    state.flight?.savedFuelContacts = [service.contact, contact]
+    state.flight?.savedExits = [service.exit]
+    state.flight?.recordBinding(service.contact.arkActor, at: service.contact.physicalTime - 1)
+    state.flight?.recordBinding(service.exit.actor, at: service.exit.physicalTime)
     state.flight?.dockedContact = contact
     state.flight?.recordBinding(contact.arkActor, at: 999_998)
-    let bank = try #require(state.rescueFuel)
-    state.rescueFuel = try bank.closing(at: receipt)
+    state.rescueFuel = try service.bank.closing(at: receipt)
     state.rescueReception = receipt
     return state
+  }
+  /// One finite supplier debit at the first hop the original tank cannot cover.
+  /// These are typed ledger fixtures, not evidence of an executed native journey.
+  func interhopService() throws -> (
+    hop: Int, contact: NativeArkFuelContact, exit: NativeArkBerthExit,
+    bank: NativeRescueFuelEscrow, supply: NativeArkStationFuel
+  ) {
+    let plan = f.authorization.route
+    var fuel = f.authorization.initialFuelLY
+    for hop in plan.distancesLY.indices {
+      let distance = plan.distancesLY[hop]
+      if fuel >= distance {
+        fuel -= distance
+        continue
+      }
+      try #require(hop > 0)
+      let world = try Universe.originalWorlds.world(key: plan.worldKeys[hop])
+      let visit = UInt64(32 + hop)
+      let dock = NativeWayfarerInductionUnitTests().dock(
+        owner: f.f.f.source.manifest.owner, system: world.system,
+        visit: visit, sequence: visit)
+      let physical = 50_000 + Double(hop) * 1000
+      let contact = NativeArkFuelContact(
+        mission: f.f.parent.permission.mission, ark: f.f.f.source.manifest.launch,
+        station: dock.station, stationActor: dock.actor,
+        arkActor: .init(system: dock.station.system, visit: visit, entity: 3),
+        sequence: 1, physicalTime: physical - 30)
+      let supply = try NativeArkStationFuel(contact: contact)
+      let request = NativeArkFuelRequest(
+        offer: .init(
+          contact: contact, supplierRevision: supply.revision,
+          availableTenthsLY: supply.remainingTenthsLY,
+          pricePerTenth: Equipment.base[0].price,
+          quotedAtPhysicalTime: physical - 29),
+        before: fuel, nextHopLY: distance)
+      let original = try #require(f.state().rescueFuel)
+      let bank = try original.purchasing(original.quote(request), current: request)
+      let purchase = try #require(bank.purchases.last)
+      let depleted = try supply.dispensing(purchase)
+      try #require(bank.funding == original.funding && bank.purchases.count == 1)
+      try #require(
+        bank.remainingCredits == original.remainingCredits - purchase.billedTenths
+          * Equipment.base[0].price)
+      try #require(depleted.remainingTenthsLY == supply.remainingTenthsLY - purchase.billedTenths)
+      return (
+        hop, contact,
+        .init(
+          contactSequence: contact.sequence,
+          actor: .init(system: dock.station.system, visit: visit, entity: 4),
+          physicalTime: physical - 20),
+        bank, depleted
+      )
+    }
+    throw SaveError.invalidCommander
   }
   func routeLegs() throws -> [(NativeRescueHopReference, NativeWormholeLeg)] {
     let systems = Universe.galaxy()
     let catalogue = Universe.originalWorlds
     let plan = f.authorization.route
     var result: [(NativeRescueHopReference, NativeWormholeLeg)] = []
+    let service = try interhopService()
+    var fuel = f.authorization.initialFuelLY
     for hop in plan.distancesLY.indices {
       let reference = f.reference(hop: hop)
       let origin = try catalogue.world(key: plan.worldKeys[hop])
@@ -69,7 +128,16 @@ final class RescueReceivingFixture {
         destination: .init(
           worldID: destination.key, galaxy: 0, system: systems[destination.system]),
         distanceLightYears: plan.distancesLY[hop], exit: exit.pose)
-      let native = ActorIdentity(system: route.origin.location, visit: UInt64(32 + hop), entity: 3)
+      let native = ActorIdentity(
+        system: route.origin.location, visit: UInt64(32 + hop),
+        entity: hop == service.hop ? service.exit.actor.entity : 3)
+      if hop == service.hop {
+        let purchase = try #require(service.bank.purchases.last)
+        try #require(purchase.request.before == fuel)
+        fuel = purchase.fuelAfter
+      }
+      let after = fuel - route.distanceLightYears
+      try #require(after >= 0)
       let time = 200_000 + Double(hop) * 1_000_000
       let physical = 50_000 + Double(hop) * 1000
       var actor = try f.f.f.prepared(.launch)
@@ -78,7 +146,7 @@ final class RescueReceivingFixture {
         identity: native, population: .mission,
         npc: .init(
           role: .mission, origin: route.origin.location, destination: route.destination.location))
-      actor.body.scriptNPC?.fuel = 13 - route.distanceLightYears
+      actor.body.scriptNPC?.fuel = after
       let opening = NativeWormholeOpening(
         id: ScriptIdentity.uuid("native-wormhole-v1:\(reference.leg)"),
         leg: reference.leg, route: route, sourceActor: native,
@@ -99,7 +167,7 @@ final class RescueReceivingFixture {
       leg.departure = .init(
         hole: opening.id, nativeActor: native,
         calendarSeconds: time + 1, physicalTime: physical + 1, revision: 1,
-        fuelBefore: 13, fuelAfter: 13 - route.distanceLightYears, body: actor.body)
+        fuelBefore: fuel, fuelAfter: after, body: actor.body)
       leg.arrival = .init(
         nativeActor: .init(
           system: route.destination.location,
@@ -107,6 +175,7 @@ final class RescueReceivingFixture {
       leg.phase = .arrived
       try #require(leg.valid)
       result.append((reference, leg))
+      fuel = after
     }
     return result
   }
@@ -189,6 +258,19 @@ struct NativeWayfarerInductionRescueReceivingUnitTests {
     let parent = try f.f.f.parent.receivingOriginalRescue(receipt)
     var state = try f.state(receipt: receipt)
     #expect(state.shapeValid(parent: parent) && state.livingCrew.isEmpty)
+    let paid = try #require(state.rescueFuel)
+    let purchase = try #require(paid.purchases.last)
+    #expect(paid.purchases.count == 1 && purchase.request.before < purchase.request.nextHopLY)
+    #expect(
+      purchase.billedTenths
+        == Int(ceil((purchase.request.nextHopLY - purchase.request.before) * 10)))
+    #expect(
+      paid.closure?.returnedCredits == NativeRescueFuelEscrow.initialCredits - purchase.billedTenths
+        * Equipment.base[0].price)
+    #expect(paid.closure?.recipient == paid.funding.custodian)
+    let service = try f.interhopService()
+    #expect(service.supply.purchases == paid.purchases && service.supply.valid)
+    #expect(try NativeRescueFuelEscrow.decodeClosed(JSONEncoder().encode(paid)) == paid)
     #expect(state.rescueReception?.crew == state.authorization.manifest.crew)
     #expect(state.capture == parent.crewLog && state.flight?.dockedContact == f.contact)
     state.rescueFuel = f.f.f.state.rescueFuel

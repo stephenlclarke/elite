@@ -178,20 +178,47 @@ extension Game {
       append("No owned-item storage records in this legacy fit.", .cyan)
     }
     if let native = commander.alienStorageState?.current {
+      for (storage, held) in native.salvage.storedTechnology.sorted(by: {
+        $0.key.uuidString < $1.key.uuidString
+      }) {
+        guard case .technology(let definition, _, _, _) = held.item.content,
+          definition == AlienMissileDefinition.recipe.requiredDefinitionID,
+          held.item.provenance == .alien
+        else { continue }
+        append("Recovered alien artefact " + storage.uuidString.prefix(8), .white)
+        action(.alienResearch(storage))
+      }
       append("Alien modules - separate physical fittings", .yellow)
       for kind in AlienModuleKind.allCases {
         let summary = commander.fittedAlienSummary(kind)
         let label = SalvageDefinitions.definition(id: kind.definitionID)?.label ?? kind.rawValue
-        append(
-          String(format: "%@: %d fitted; +%.2f%%", label, summary.count, summary.percent), .cyan)
+        if kind == .hyperspaceDrive {
+          append(label + ": " + String(summary.count) + " fitted; immediate, no mass lock", .cyan)
+        } else {
+          append(
+            String(format: "%@: %d fitted; +%.2f%%", label, summary.count, summary.percent), .cyan)
+        }
       }
+      let sources = Dictionary(uniqueKeysWithValues: native.snapshot.sources.map { ($0.id, $0) })
       for item in native.snapshot.attachments.sorted(by: { $0.id.uuidString < $1.id.uuidString }) {
         if case .retired = item.disposition { continue }
         let label =
           SalvageDefinitions.definition(id: item.kind.definitionID)?.label ?? item.kind.rawValue
         append(label + " " + item.id.uuidString.prefix(8), .white)
-        append(
-          String(format: "Contribution +%.2f%%", Double(item.contributionBasisPoints) / 100), .cyan)
+        if item.kind == .hyperspaceDrive {
+          append("Immediate hyperspace; no hyperspace mass lock", .cyan)
+        } else {
+          append(
+            String(format: "Contribution +%.2f%%", Double(item.contributionBasisPoints) / 100),
+            .cyan)
+        }
+        if item.kind == .hyperspaceDrive, let source = sources[item.source] {
+          let section = source.lot.identity.section
+          let wreck = section.wreck
+          append(
+            "Recovery: G\(wreck.system.galaxy + 1) system \(wreck.system.system), wreck \(wreck.site), section \(section.section), lot \(source.lot.identity.lot)",
+            .cyan)
+        }
         action(.alienAttachment(item.id))
       }
       for item in native.snapshot.upgrades.sorted(by: { $0.id.uuidString < $1.id.uuidString }) {

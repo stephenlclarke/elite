@@ -16,6 +16,56 @@ public enum PlayerHelp {
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
     if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction == .accredit
+    {
+      pages.insert(
+        .init(
+          title: "SENN FINAL ACCREDITATION",
+          rows: [
+            "RETURN - REVIEW / CONFIRM - RECEIVE ONCE", "BACK / ESC - CHANGE NOTHING",
+            "7600CR / CHOSEN CHARTER / ONE CLUE", "SAME RECEIPT OPENS ADVANCED SERVICES",
+            "EXISTING CONTRACTS / GLOBAL3 LIMIT STAY",
+          ]), at: 0)
+    }
+    if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction == .certifyNetwork
+    {
+      pages.insert(
+        .init(
+          title: "VEIL NETWORK CERTIFICATION",
+          rows: [
+            "RETURN - REVIEW ORIGINAL RECEIVING RECORDS", "CONFIRM - CERTIFY NETWORK ONCE",
+            "BACK / ESC - KEEP RECORDS UNCHANGED", "AVENOR / ACTUAL ORIGINAL NETWORK PROOFS",
+            "STAGE13 / NO PAYMENT OR ACCREDITATION", "SENN FINAL RECEIVING IS SEPARATE",
+          ]), at: 0)
+    }
+    if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction == .auditCharter
+    {
+      pages.insert(
+        .init(
+          title: "AVENOR CHARTER AUDIT",
+          rows: [
+            "ARROWS - SELECT AUDIT / RETURN - REVIEW", "CONFIRM - RECORD REAL CAPACITY REFUSAL",
+            "BACK / ESC - KEEP ALL RECORDS UNCHANGED", "ALL THREE OWNER SIGNATURES REQUIRED",
+            "ISSUED AVAILABLE LOT / OWNER DELEGATION", "NO STOCK / WINDOW / CARGO / CASH MOVES",
+            "STAGE12 ONLY / VEIL CERTIFICATION NEXT",
+          ]), at: 0)
+    }
+    if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction?.isSeedStockAction == true
+    {
+      pages.insert(
+        .init(
+          title: "ORIGINAL SEED LOT",
+          rows: [
+            "ARROWS - SELECT EXACT LOT / OPERATION", "RETURN - REVIEW; CONFIRM IS SEPARATE",
+            "BACK / ESC - KEEP ORIGINAL CUSTODY", "ENLIRIN: ISSUE / BOOK / PICKUP / RETURN",
+            "LARERIA: RECEIVE ORIGINAL / FROZEN PAY", "3T / SAME OWNER WINDOW / GLOBAL3 LIMIT",
+            "7200 FLIGHT SECONDS FROM ACTUAL PICKUP", "AFTER PICKUP CANCEL: OWNER RETURN",
+          ]), at: 0)
+    }
+    if screen == .contracts,
       contextGame.contractBoard.selected?.wayfarerInduction?.isWorkshopAction == true
     {
       pages.insert(
