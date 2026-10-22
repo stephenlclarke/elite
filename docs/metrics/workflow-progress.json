@@ -5756,6 +5756,27 @@
         97,
         98
       ]
+    },
+    {
+      "event": "Homebrew published 1.4.0 installation delivered by authorized tap merge",
+      "date": "2026-10-22",
+      "repo": "stephenlclarke/homebrew-tap",
+      "pr": 9,
+      "qualified_head": "61560d7756b24e1c2a8a59a115c6f0a3bb80a7ab",
+      "merge_commit": "3f48163b25d907572e826ab1ae18cfdf94b5262e",
+      "merged_at": "2026-10-22T13:59:20Z",
+      "checks": [
+        "Elite Cask SUCCESS",
+        "Formula Syntax SUCCESS"
+      ],
+      "head_behind_main": 0,
+      "independent_review": "G3/Root/MBA clean; retained actual installer/security evidence",
+      "authorization": "Fresh explicit human one-time admin merge PR9 only",
+      "branch_protection_unchanged": true,
+      "tap_issue8_closed": true,
+      "installed_release": "1.4.0",
+      "new_game_release_published": false,
+      "new_current_development_build_delivered": false
     }
   ],
   "two_developer_phase": {
