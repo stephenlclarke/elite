@@ -5549,22 +5549,23 @@
         "assigned_at": "2026-10-22T08:16:51.454428+00:00",
         "phase_entry_state": "ActualPLUGHfactprojectiongap confirmed;WantedBoard-onlyfixapproved",
         "source_complete_at": null,
-        "merged_at": null,
+        "merged_at": "2026-10-22T09:08:52Z",
         "playable_at": null,
         "ownership": "WantedBoardtwofactlookups+2puredossierunits/notes",
         "limits": "NoG1Game/mission/saveorG4combat/scoop;no fabricatedtraffic/cargo/routes",
-        "source_state": "Domain qualified; final necessary269 selector union pushed; actual final-head verification pending",
+        "source_state": "Author merged after final current269/301ALLPASS and clean review; no new app/release",
         "credited_behavior": "Nativelegal/bounty/resource mechanics unchanged;no fabricatedtarget/cargo/travelfacts",
         "head": "c6410d6237eb561b2c07399ca5565afe3db6a58f",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/61",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/61#issuecomment-6336183894",
-        "unit_run": 39746993767,
-        "unit_status": "Final currentc641269 run39750261589 GitHub SUCCESS; MBA actual artifact verification pending",
-        "verified_methods": 259,
-        "verified_expanded_cases": 291,
-        "compile_seconds": 778.63,
-        "execution_seconds": 55.139,
-        "composition_source_review": "MBA currentc641 exact269 union clean; actual execution pending"
+        "unit_run": 39750261589,
+        "unit_status": "MBA verified finalc641269methods301casesALLPASS;0failureerror/skips/crash; author merge ready",
+        "verified_methods": 269,
+        "verified_expanded_cases": 301,
+        "compile_seconds": 493.55,
+        "execution_seconds": 46.538,
+        "composition_source_review": "MBA currentc641 exact269 union clean; actual execution pending",
+        "merge_commit": "be4b781b1328da4a8bda804a4b018b387c8e7198"
       },
       {
         "id": "M07.P02.ordnance-attribution",
@@ -5683,12 +5684,25 @@
         "owner": "Mission Coder1",
         "assigned_at": "2026-10-22T09:07:05.775255+00:00",
         "ownership": "Existing recovered equipment and alien missile reverse-engineering finite purchase policy; focused tests/notes",
-        "limits": "Alien drive Mission Coder1; no G1 central Game/mission/save or G4 practice hooks; no generic framework/local compilation/native/integration",
+        "limits": "No new Commander fields/boolean unlock/free ammo; finite shared pylons; G4 observer hunks preserved; no local compiler/native/integration",
         "merged_at": null,
         "playable_at": null,
         "disposition": "Existing PLUGH module fitting and1.25x missile tuning/mesh credited; actual recipe-to-owned-ammunition purchase/load/consume loop missing",
         "qualification_scope": "Source/existing unit definitions only; no execution",
-        "source_state": "Now active successor after drive push; exact shared ammunition/transaction/state proposal before edits"
+        "source_state": "Now active successor after drive push; exact shared ammunition/transaction/state proposal before edits",
+        "authoring_decision": "Existing artefact recipe/service15000tenths unaffected by shop discount; repeat alien round base600tenths, actual PLUGH75percent shop multiplier450tenths",
+        "reserved_shared_hunks": [
+          "EquipmentRuntimeCatalog distinct alienSeeker ammo node/closed profile",
+          "Game.Equipment and EquipmentGroups PLUGH researched offer",
+          "SalvageLedger readonly exact research settlement query",
+          "Commander exact research settlement/paid receipt validation join",
+          "OwnedEquipmentInventory closed standard/alien ammo nodes",
+          "StandardAmmunitionTransactions actual load/consume round identity",
+          "EquipmentMutations and InventoryInteraction ammo fit recognition",
+          "CommanderEquipment/EquipmentTransactions/NativeShipValues actual both-profile mirror",
+          "GameplayOrdnanceRuntime actual consumed profile/default standard admission argument only",
+          "Shop quote/availability actual owner research and PLUGH context"
+        ]
       },
       {
         "id": "K04.P01.person-care",
@@ -5716,7 +5730,12 @@
           "ScriptMissionState savedSafeGunnery optional field/accessor/shape",
           "Exact bundled pack registration and existing clue pin",
           "ScriptPersistence closed127128 joins, highest required feature format",
-          "Necessary practice-only live-frame/discharge/projectile observer; exact symbols before edit"
+          "Necessary practice-only live-frame/discharge/projectile observer; exact symbols before edit",
+          "Game.advance exact consented provider start/post-native ceasefire observer",
+          "GameplayWeapons.fireLaser admitted playerdischarge/contact observer",
+          "GameplayOrdnanceRuntime.admitGameplayMissile and GameplayOrdnance.advanceOrdnance launch/impact observer",
+          "FlightWorkTools.fireSelectedFlightTool actual discharge observer",
+          "NativePracticeRuntime.handleNativePracticeContact retained receipt lesson sync"
         ]
       },
       {
@@ -5765,10 +5784,32 @@
       },
       {
         "id": "G11.P01.isolation-provider",
-        "owner": "G3",
+        "owner": "Root design/production scope queued after M01",
         "assigned_at": "2026-10-22T09:07:37.915718+00:00",
         "ownership": "Bounded actual two-component isolation source/proof policy preflight; proposed narrow NativeIsolationWork types/tests",
         "limits": "No fabricated flag/tool/receipt; exact source producer must exist; shared mission/save hunks reserved before edit; no reward/terminal in provider slice",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Missing exact original two-component physical resource isolation/work observation provider; existing induction three-module repair cannot substitute",
+        "qualification_scope": "Source/existing utility foundation definitions only; no fresh execution"
+      },
+      {
+        "id": "M13.P01.debris-station",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:08:55.903912+00:00",
+        "ownership": "Bounded AsteroidDebrisContact/AsteroidFragmentation/native station damage policy preflight",
+        "limits": "Actual mass/momentum conserved, less than5percent collectible; no G4 impact hooks or central G1 mission/save changes without reservation; no nativejobs",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Existing immutable birth mass/strict yield/finite custody and certified continuing station collision momentum foundation credited; no concrete gap/no edits",
+        "qualification_scope": "Source/existing unit definitions only; no fresh execution"
+      },
+      {
+        "id": "M13.P02.allied-response",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:10:14.235581+00:00",
+        "ownership": "Bounded readonly actual station warning/reception and finite neighbour response source preflight",
+        "limits": "No projected marker warning/fictional responders/missionterminal; shared changes require reservation; no localnativejobs",
         "merged_at": null,
         "playable_at": null
       }
@@ -5827,8 +5868,8 @@
       "active_assignment": "M08.P06 alien missile actual owned recipe/purchase/load/consume; drive68 author retains asynchronous corrections/merge"
     },
     "qualification_queue_note": "56 merged after267/299 PASS;61 final269 pending;65 actual provider review/units pending;59/62 corrected-head failures retained,64 ready G1 and60 unattributed.",
-    "complete_features_merged": 5,
-    "merged_feature_count_scope": "Shared development PR48 showroom, PR55 hints, PR51 inventory, PR56 market order and night technology; fixture54 excluded; source merge distinct from usable build.",
+    "complete_features_merged": 6,
+    "merged_feature_count_scope": "Shared development showroom48/help55/inventory51/market+night56/Wanted61; fixes/helpers excluded; not six usable builds.",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
     "accessible_unit_qualified_candidates_delivered": 1,
