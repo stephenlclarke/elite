@@ -5131,14 +5131,14 @@
         "merged_at": null,
         "playable_at": null,
         "dependency": "Independent from pending showroom PR; canonical409d042c base",
-        "head": "e4772060e3ec4ebe3b1142204b56f37e8ee52e6f",
+        "head": "93cb9aa0fa694af7c2e57607599db1e84eebafc1",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/51",
         "first_push_observed_at": "2026-10-22T06:33:57Z",
         "handoff_at": "2026-10-22T07:17:59Z",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6335090954",
         "unit_run": 39741604031,
-        "unit_status": "Prior03113existing258runactive;notfinale477qualification",
-        "source_state": "DirectlyaffectedMarketFlowheadingassertion corrected;finalselector/handoff pending;productionunchanged",
+        "unit_status": "Prior03113run39741604031SUCCESSawaitingartifactverification;notnew93cbheadqualification",
+        "source_state": "AffectedMarketFlowmethodnowexplicitlyselected;finalhandoff/review/executionpending",
         "source_review_result": "MBA03113a74finalcomposition CLEAN;onlyexactreviewed53test+2notes changed;inventoryproduction/tests/258selectorunchanged",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
@@ -5192,7 +5192,7 @@
           "inventory_methods_passed": 3
         },
         "affected_method": "MarketFlowTests/statusSummaryAndInventoryHaveDistinctResponsibilities",
-        "affected_method_status": "Previouslyunselected;mustselectordinarypushedheadbeforequalification"
+        "affected_method_status": "Explicitlyselectedon93cb;actualexecutionpending"
       },
       {
         "id": "C08 workshop loop",
@@ -5221,7 +5221,7 @@
         "correction_pr": 54,
         "correction_review": "MBA CLEAN; exact-instance/digest exclusion and immutability/history preserved; production unchanged",
         "correction_unit_run": 39741278033,
-        "correction_unit_status": "Existing job active; no verified passing correction aggregate yet",
+        "correction_unit_status": "d33own39741278033SUCCESS;MBAaffectedartifactverificationpending",
         "awaiting_verification_findings": [
           53
         ]
@@ -5234,7 +5234,8 @@
         "source_complete_at": null,
         "merged_at": null,
         "playable_at": null,
-        "next_ready_scope": "C08 commit-charter actual Avenor audit, then certify-network and once-only terminal; no premature stage/reward credit"
+        "next_ready_scope": "C08 commit-charter actual Avenor audit, then certify-network and once-only terminal; no premature stage/reward credit",
+        "source_state": "Authorreportsloopcompilesandlifecycle/threeoperatorunitswritten;notyetpushed/independentlyreviewed/executed"
       },
       {
         "id": "M02.P05.station-navigation",
@@ -5291,8 +5292,11 @@
         "ownership": "PureauthoreddisplayIDprojection;StationDisplay market;MarketInteractionclick;ONLYGame.keymarketup/down1060\u20131079;puretests/notes",
         "numeric_policy": "Preservecurrentcatalogueprecedence/modularmechanics;noU03rebalance",
         "credited_behavior": "Authenticated17-good prices/finite stock,stableIDs,quote/revision checks,once-debit,cargo/cash bounds;source/existingtests only",
-        "source_state": "G3assignedactualordercorrection;G1notifiedexactsharedGamehunks",
-        "outstanding_separate": "U03authored14baseequipmentprice/TLprecedence;notrebalancedhere"
+        "source_state": "Marketordercomplete source pushed with3selectedmethods;solehandoff/review/executionpending",
+        "outstanding_separate": "U03authored14baseequipmentprice/TLprecedence;notrebalancedhere",
+        "head": "0aac86588b71477884bee10f021cd8a63e6b0ed1",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/56",
+        "first_push_observed_at": "2026-10-22T07:48:15Z"
       }
     ],
     "model_settings": {
