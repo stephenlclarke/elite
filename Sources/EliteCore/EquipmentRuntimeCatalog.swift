@@ -37,7 +37,7 @@ enum EquipmentRuntimeCatalog {
     return .init(
       revision: modular.revision + 1,
       nodes: modular.nodes + HyperspaceDriveDefinition.purchaseGraph.nodes + lasers + utilityNodes
-        + [storage, ammunition],
+        + [storage, ammunition, NativeIsolationProgrammerDefinition.purchaseNode],
       aliases: modular.aliases + [
         .init(alias: .init(family: ammunitionFamily, key: "Missile"), canonical: standardMissile)
       ])
