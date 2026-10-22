@@ -39,10 +39,14 @@ private final class IsolationWorkFixture {
     try #require(game.beginGameplayVisit(arriving: true))
     let previous = game.commander.flightSimulation.pose
     var pose = previous
-    pose.position = .init(66000, 24000, -103)
+    pose.position = .init(66000, 24000, -1000)
     for index in game.bodies.indices {
       game.bodies[index].position = pose.shipPoint(
         previous.systemPoint(game.bodies[index].position))
+    }
+    for index in game.celestials.indices {
+      game.celestials[index].position = pose.shipPoint(
+        previous.systemPoint(game.celestials[index].position))
     }
     game.commander.flightSimulation.pose = pose
     game.speed = 0
@@ -54,14 +58,30 @@ private final class IsolationWorkFixture {
       NativeIsolationWorkPack.encounter, pack: pack, state: &child)
     try #require(result.0 == "encounter.admitted")
     game.commander.scriptState.instances[child.id] = child
+    // Admission retains ordinary player clearance. The test scene then places the player in
+    // the work envelope without moving either enclosure or claiming a flown approach.
+    let admittedPose = game.commander.flightSimulation.pose
+    var workPose = admittedPose
+    workPose.position = .init(66000, 24000, -103)
+    for index in game.bodies.indices {
+      game.bodies[index].position = workPose.shipPoint(
+        admittedPose.systemPoint(game.bodies[index].position))
+    }
+    for index in game.celestials.indices {
+      game.celestials[index].position = workPose.shipPoint(
+        admittedPose.systemPoint(game.celestials[index].position))
+    }
+    game.commander.flightSimulation.pose = workPose
     game.persistScriptActors()
     try #require(NativeIsolationWorkSave.validateClaims(game.commander))
   }
 
   func arm() throws {
     try #require(game.cycleIsolationWorkContact())
+    let idle = game.scriptPagePresentation
     game.key("return")
     try #require(game.isolationWorkRuntime.review != nil && game.isolationWorkRuntime.arm == nil)
+    try #require(game.scriptPagePresentation != idle)
     game.key("return")
     try #require(game.isolationWorkRuntime.review == nil && game.isolationWorkRuntime.arm != nil)
     try #require(game.isolationWorkEndpoint() != nil)
@@ -123,6 +143,9 @@ struct NativeIsolationWorkUnitTests {
       fixture.game.currentIsolationWorkParentAuthority?.issueOperation
         == fixture.primitive.issueOperation)
     #expect(NativeIsolationWorkSave.validateClaims(fixture.game.commander))
+    let sourcePack = try #require(fixture.game.nativeIsolationWorkPack)
+    #expect(throws: (any Error).self) { _ = try fixture.game.acceptScriptMission(sourcePack) }
+    #expect(fixture.game.commander == before)
     fixture.game.commander.scriptState.instances.removeValue(forKey: fixture.primitive.parentID)
     #expect(fixture.game.currentIsolationWorkParentAuthority == nil)
     #expect(!NativeIsolationWorkSave.validateClaims(fixture.game.commander))
@@ -247,7 +270,12 @@ struct NativeIsolationWorkUnitTests {
     let openModule = try #require(opened.isolationWorkChild?.savedIsolationWork?.modules.first)
     #expect(openModule.opening != nil && openModule.verification == nil)
     #expect(openModule.history.seconds(.observation) == 0)
-    for _ in 0..<21 { _ = await runtime.advance(delta: 0.05) }
+    for _ in 0..<21 {
+      let current = await runtime.advance(delta: 0.05)
+      if current.isolationWorkChild?.savedIsolationWork?.modules.first?.verification != nil {
+        break
+      }
+    }
     let verified = await runtime.snapshot()
     let module = try #require(verified.isolationWorkChild?.savedIsolationWork?.modules.first)
     #expect(module.verification != nil && abs(module.history.seconds(.observation) - 1) < 1e-8)
@@ -255,6 +283,50 @@ struct NativeIsolationWorkUnitTests {
     let verification = try #require(module.verification)
     let opening = try #require(openModule.opening)
     #expect(verification.first.sequence > opening.meter.sequence)
+    try await runtime.scriptCommand { candidate in
+      let previous = candidate.commander.flightSimulation.pose
+      var pose = previous
+      pose.position = .init(66300, 24000, -103)
+      for index in candidate.bodies.indices {
+        candidate.bodies[index].position = pose.shipPoint(
+          previous.systemPoint(candidate.bodies[index].position))
+      }
+      for index in candidate.celestials.indices {
+        candidate.celestials[index].position = pose.shipPoint(
+          previous.systemPoint(candidate.celestials[index].position))
+      }
+      candidate.commander.flightSimulation.pose = pose
+    }
+    await runtime.key("tab")
+    await runtime.key("return")
+    await runtime.key("return")
+    for _ in 0..<422 {
+      let current = await runtime.advance(delta: 0.05)
+      if current.isolationWorkChild?.savedIsolationWork?.modules.allSatisfy({
+        $0.verification != nil
+      }) == true {
+        break
+      }
+    }
+    let both = await runtime.snapshot()
+    let pair = try #require(both.isolationWorkChild?.savedIsolationWork)
+    let receipts = pair.modules.compactMap(\.verification)
+    #expect(receipts.count == 2 && Set(receipts.map(\.operation)).count == 2)
+    #expect(pair.modules[0].accounts == module.accounts)
+    let saved = try Data(contentsOf: files.save)
+    let (cold, _) = try ScriptSaveStore.read(saved, from: files.save)
+    let job = NativeIsolationWorkPack.instance(source: verification.authority.source)
+    #expect(
+      cold.scriptState.instances[job]?.savedIsolationWork
+        == pair)
+    try await runtime.load(from: files.save, persistMigrations: false)
+    let restored = await runtime.snapshot()
+    #expect(restored.isolationWorkRuntime.arm == nil && restored.isolationWorkRuntime.review == nil)
+    #expect(
+      restored.isolationWorkChild?.savedIsolationWork?.modules.first?.accounts == module.accounts)
+    #expect(
+      restored.isolationWorkChild?.savedIsolationWork?.modules.compactMap(\.verification)
+        == receipts)
   }
 
   @Test func cullingPauseAndWrongViewCannotCreditTimeOrLeaveAnArmedEndpoint() async throws {

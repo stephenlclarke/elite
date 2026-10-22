@@ -1,6 +1,40 @@
 import Foundation
 
 extension Game {
+  /// Preserve the actual system pose through the existing retained-actor capture boundary.
+  /// Generic station-relative persistence may follow a later moving station; this source must not.
+  func captureIsolationWorkPose(_ body: SpaceBody, in child: inout ScriptInstance) {
+    guard NativeIsolationWorkPack.marked(child), var state = child.savedIsolationWork,
+      let index = state.modules.firstIndex(where: {
+        body.missionActorID == NativeIsolationWorkPack.actor(job: child.id, role: $0.role)
+      }), state.modules[index].admission != nil
+    else { return }
+    state.modules[index].retainedPose = modelPose(of: body)
+    child.savedIsolationWork = state
+  }
+
+  /// Reproject the saved actual world pose for ordinary retained admission. Native placement,
+  /// complete-cohort capacity and collision checks still own the admission decision.
+  func isolationWorkRetainedActor(_ actor: ScriptOwnedActor, in child: borrowing ScriptInstance)
+    throws -> ScriptOwnedActor
+  {
+    guard NativeIsolationWorkPack.marked(child) else { return actor }
+    guard let state = child.savedIsolationWork,
+      let role = NativeIsolationWorkRole(rawValue: actor.alias),
+      let module = state.modules.first(where: { $0.role == role }),
+      let pose = module.retainedPose, let anchor = scriptAnchor,
+      pose.position.finite, pose.orientation.validRotation
+    else { throw SaveError.invalidCommander }
+    let player = commander.flightSimulation.pose
+    var projected = actor
+    projected.body.position = anchor.orientation.inverse(
+      player.shipPoint(pose.position) - anchor.position)
+    projected.body.orientation = pose.orientation.relative(to: player.orientation).relative(
+      to: anchor.orientation)
+    projected.body.rotation = 0
+    return projected
+  }
+
   /// Facility life uses the original registered native resources, including outside render range.
   /// A currently visible station/service dialog is not a prerequisite for work at the remote spur.
   var isolationWorkStationsAlive: Bool {
@@ -109,6 +143,7 @@ extension Game {
         source: original.id, role: role, logicalActor: retained.identity, actor: native.identity,
         station: anchor, pose: expected, geometry: try NativeIsolationWorkSource.geometryHash,
         sequence: sequence, physicalTime: time)
+      state.modules[index].retainedPose = expected
       state.modules[index].binding = native.identity
     }
     guard state.shapeValid else { throw SaveError.invalidCommander }
@@ -131,7 +166,7 @@ extension Game {
     guard let child = isolationWorkChild, child.suspension == nil,
       child.definition == NativeIsolationWorkPack.stateID,
       child.digest == NativeIsolationWorkPack.digest,
-      let state = child.savedIsolationWork,
+      let state = child.savedIsolationWork, state.stationLoss == nil,
       nativeIsolationWorkPack != nil
     else { return nil }
     guard

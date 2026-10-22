@@ -48,7 +48,7 @@ extension Game {
   func isolationWorkRole(_ body: SpaceBody) -> NativeIsolationWorkRole? {
     guard !isMissionTrial, systemIdentity == NativeIsolationWorkSource.location,
       let child = isolationWorkChild, child.suspension == nil,
-      let state = child.savedIsolationWork, state.stationLoss == nil,
+      let state = child.savedIsolationWork,
       body.missionInstanceID == child.id, body.energy > 0,
       let native = body.physical, native.identity.system == systemIdentity,
       native.identity.visit == commander.flightSimulation.visit,
@@ -108,7 +108,7 @@ extension Game {
       systemIdentity == NativeIsolationWorkSource.location
     else { return false }
     return isolationWorkRuntime.review != nil || isolationWorkRuntime.arm != nil
-      || isolationWorkContactBody != nil
+      || (currentIsolationWorkParentAuthority != nil && isolationWorkContactBody != nil)
   }
 
   mutating func interruptIsolationWork() {

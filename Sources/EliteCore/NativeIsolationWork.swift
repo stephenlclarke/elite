@@ -468,6 +468,7 @@ struct NativeIsolationWorkModule: Codable, Equatable, Sendable {
   var contact = NativeIsolationContact.connected
   var history = NativeIsolationWorkHistory()
   var admission: NativeIsolationWorkAdmission?
+  var retainedPose: ShipPose?
   var binding: ActorIdentity?
   var lastMeter: NativeIsolationMeterEvidence?
   var observationFirst: NativeIsolationMeterEvidence?
@@ -507,11 +508,15 @@ struct NativeIsolationWorkModule: Codable, Equatable, Sendable {
     }
     if let admission {
       guard admission.role == role, admission.valid(source: source, permission: permission),
+        let retainedPose, retainedPose.position.finite, retainedPose.position.length <= 1e9,
+        retainedPose.orientation.validRotation,
         history.segments.allSatisfy({
           $0.first >= admission.physicalTime && $0.authority.actor.visit >= admission.actor.visit
         })
       else { return false }
-    } else if binding != nil || !history.segments.isEmpty || lastMeter != nil || loss != nil {
+    } else if binding != nil || retainedPose != nil || !history.segments.isEmpty || lastMeter != nil
+      || loss != nil
+    {
       return false
     }
     if let lastMeter {
@@ -592,6 +597,16 @@ struct NativeIsolationWorkState: Codable, Equatable, Sendable {
     else { return false }
     let bindings = modules.compactMap(\.binding)
     guard Set(bindings).count == bindings.count else { return false }
+    let meters = modules.compactMap(\.lastMeter)
+    if meters.count == 2 {
+      guard meters[0].sequence == meters[1].sequence,
+        meters[0].start == meters[1].start, meters[0].end == meters[1].end,
+        meters[0].actor == meters[1].peer, meters[1].actor == meters[0].peer,
+        modules[0].binding == meters[0].actor, modules[1].binding == meters[1].actor
+      else { return false }
+    } else if !meters.isEmpty {
+      return false
+    }
     if let stationLoss {
       guard stationLoss.station.world == permission.owner,
         [NativeIsolationWorkSource.location, NativeIsolationWorkSource.issuerLocation].contains(

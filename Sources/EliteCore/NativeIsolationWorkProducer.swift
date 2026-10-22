@@ -35,9 +35,8 @@ extension Game {
   @inline(never)
   func isolationWorkSample() -> NativeIsolationWorkSample? {
     guard !paused, !docked, !isMissionTrial, screen.isFlight,
-      isolationWorkStationsAlive,
       let child = isolationWorkChild, child.suspension == nil,
-      let state = child.savedIsolationWork, state.stationLoss == nil,
+      let state = child.savedIsolationWork,
       state.modules.count == 2
     else { return nil }
     var actors: [ActorIdentity] = []

@@ -29,6 +29,7 @@ enum NativeIsolationWorkSave {
         let parent = engine.instances[state.permission.parent],
         let primitive = try? NativeIsolationWorkParent.primitive(
           parent: parent, commander: commander),
+        let accepted = parent.savedIsolationWorkParent,
         child.id == state.job, child.definition == NativeIsolationWorkPack.stateID,
         child.version == NativeIsolationWorkPack.version,
         child.digest == NativeIsolationWorkPack.digest,
@@ -43,6 +44,9 @@ enum NativeIsolationWorkSave {
         state.permission.issueOperation == primitive.issueOperation,
         state.permission.owner == primitive.owner, state.permission.issuer == primitive.issuer,
         state.permission.acceptance == primitive.acceptance,
+        state.permission.carrier == accepted.carrier,
+        accepted.inventoryRevision < UInt64(Int64.max) - 1,
+        state.permission.inventoryRevision == accepted.inventoryRevision + 1,
         state.permission.owner == commander.equipmentOwnerID,
         state.permission.sequence > primitive.sequence,
         state.permission.physicalTime == primitive.physicalTime,
@@ -62,7 +66,8 @@ enum NativeIsolationWorkSave {
         }
         for segment in module.history.segments {
           guard segment.last <= physicalTime,
-            segment.first >= state.permission.physicalTime
+            segment.first >= state.permission.physicalTime,
+            segment.authority.inventoryRevision >= state.permission.inventoryRevision
           else { return false }
           if let cutoff, segment.last > cutoff.physicalTime { return false }
         }

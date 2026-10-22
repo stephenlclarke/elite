@@ -384,6 +384,7 @@ enum ScriptSaveStore {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid, ScriptFreightVersionedSave.validateClaims(commander),
       NativeIsolationWorkParentSave.validateClaims(commander),
+      NativeIsolationWorkSave.validateClaims(commander),
       NativeInductionCrewLogSave.validateClaims(commander),
       NativeInductionArkSave.validateClaims(commander),
       NativeWayfarerInductionSave.validateClaims(commander),
@@ -684,6 +685,15 @@ enum ScriptSaveStore {
       generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
+    let providerPointer =
+      NativeIsolationWorkSave.hasClaims(commander)
+      ? ScriptSavePointer(
+        format: lowerPointer.format,
+        schemaVersion: alienPublication != nil
+          ? NativeIsolationWorkSave.alienVersion : NativeIsolationWorkSave.version,
+        generation: lowerPointer.generation, hashes: lowerPointer.hashes,
+        scope: lowerPointer.scope, valueCodec: lowerPointer.valueCodec)
+      : lowerPointer
     let pointer =
       NativeIsolationWorkParentSave.hasClaims(commander)
       ? ScriptSavePointer(
@@ -692,7 +702,7 @@ enum ScriptSaveStore {
           ? NativeIsolationWorkParentSave.alienVersion : NativeIsolationWorkParentSave.version,
         generation: lowerPointer.generation, hashes: lowerPointer.hashes,
         scope: lowerPointer.scope, valueCodec: lowerPointer.valueCodec)
-      : lowerPointer
+      : providerPointer
     let bytes = try encoder.encode(pointer)
     try CommanderSavePublication.write(bytes, to: url, exclusive: exclusive)
     return alienPublication
@@ -716,6 +726,8 @@ enum ScriptSaveStore {
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
     // The closed current service envelope admits W02, W03 or both after feature validation.
     let isolationParentEnvelope = NativeIsolationWorkParentSave.contains(pointer.schemaVersion)
+    let isolationProviderEnvelope = NativeIsolationWorkSave.contains(pointer.schemaVersion)
+    let isolationEnvelope = isolationParentEnvelope || isolationProviderEnvelope
     let crewLogEnvelope = NativeInductionCrewLogSave.contains(pointer.schemaVersion)
     let arkEnvelope = NativeInductionArkSave.contains(pointer.schemaVersion)
     let inductionEnvelope =
@@ -743,6 +755,7 @@ enum ScriptSaveStore {
       || pointer.schemaVersion == ScriptFreightVersionedSave.alienVersion
     let alien =
       pointer.schemaVersion == NativeIsolationWorkParentSave.alienVersion
+      || pointer.schemaVersion == NativeIsolationWorkSave.alienVersion
       || pointer.schemaVersion == 27
       || NativeInductionArkSave.isAlien(pointer.schemaVersion)
       || NativeWayfarerInductionSave.isAlien(pointer.schemaVersion)
@@ -778,7 +791,7 @@ enum ScriptSaveStore {
         || flightReceptionEnvelope
         || fieldReliefEnvelope
         || measuredExtractionEnvelope
-        || recordRecoveryEnvelope || isolationParentEnvelope,
+        || recordRecoveryEnvelope || isolationEnvelope,
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -827,7 +840,7 @@ enum ScriptSaveStore {
         try ScriptSaveJSONPreflight.validateRepairLoopFields(
           data, part: nativePart, schema: pointer.schemaVersion)
         // Both service profiles were checked against the actual envelope before lower gates run.
-        if isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+        if isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
           || fleetEnvelope
           || flightReceptionEnvelope
           || fieldReliefEnvelope
@@ -849,7 +862,7 @@ enum ScriptSaveStore {
       if name == "commander.json" {
         // This helper's >=27 branch describes Alien storage, not every newer envelope.
         let alienHeaderSchema =
-          isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+          isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
             || fleetEnvelope
             || flightReceptionEnvelope
             || fieldReliefEnvelope
@@ -968,7 +981,7 @@ enum ScriptSaveStore {
       throw SaveError.invalidCommander
     }
     guard
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -982,7 +995,7 @@ enum ScriptSaveStore {
         || coldChain || clues
         || navigation
         || freight == commander.usesFreightNativeSaveVersion,
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -996,7 +1009,7 @@ enum ScriptSaveStore {
         || coldChain
         || navigation
         || clues == (commander.scriptState.savedClueJournal != nil),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1009,7 +1022,7 @@ enum ScriptSaveStore {
         || serviceEnvelope
         || coldChain
         || navigation == ScriptNavigationTradeSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1021,7 +1034,7 @@ enum ScriptSaveStore {
         || stationJourney || supply
         || serviceEnvelope
         || coldChain == WayfarerColdChainSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1039,7 +1052,7 @@ enum ScriptSaveStore {
       ScriptNavigationTradeSave.validateClaims(commander, binding: navigationBinding),
       WayfarerColdChainSave.validateClaims(commander),
       WayfarerRepairLoopSave.validateClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1051,42 +1064,43 @@ enum ScriptSaveStore {
         || stationJourney
         || supply == OriginalConsentedFreightSupplySave.hasClaims(commander),
       isolationParentEnvelope == NativeIsolationWorkParentSave.hasClaims(commander),
-      isolationParentEnvelope || crewLogEnvelope == NativeInductionCrewLogSave.hasClaims(commander),
-      isolationParentEnvelope || arkEnvelope == NativeInductionArkSave.hasClaims(commander),
-      isolationParentEnvelope
+      isolationEnvelope == NativeIsolationWorkSave.hasClaims(commander),
+      isolationEnvelope || crewLogEnvelope == NativeInductionCrewLogSave.hasClaims(commander),
+      isolationEnvelope || arkEnvelope == NativeInductionArkSave.hasClaims(commander),
+      isolationEnvelope
         || inductionEnvelope == NativeWayfarerInductionSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope
+      isolationEnvelope || inductionEnvelope
         || commerceEnvelope == NativeFirstCommoditySaleSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope
         || glassEnvelope == NativeGlassMeridianSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope == NativeFleetDiscoverySave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope == NativeFlightReceptionSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope == WayfarerFieldReliefSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
         || measuredExtractionEnvelope == NativeMeasuredExtractionSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
         || measuredExtractionEnvelope
         || recordRecoveryEnvelope == WayfarerRecordRecoverySave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
         || measuredExtractionEnvelope
         || recordRecoveryEnvelope
         || identifiedSalvageEnvelope == NativeIdentifiedSalvageSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1094,7 +1108,7 @@ enum ScriptSaveStore {
         || recordRecoveryEnvelope
         || identifiedSalvageEnvelope
         || survey == NativeOriginalSurveySave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1102,7 +1116,7 @@ enum ScriptSaveStore {
         || recordRecoveryEnvelope
         || identifiedSalvageEnvelope || survey
         || evacuation == NativeOriginalEvacuationSave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1111,7 +1125,7 @@ enum ScriptSaveStore {
         || identifiedSalvageEnvelope || survey
         || evacuation
         || originalRescue == NativeOriginalRescueJourneySave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1120,7 +1134,7 @@ enum ScriptSaveStore {
         || identifiedSalvageEnvelope || survey
         || evacuation || originalRescue
         || outlook == NativeOrbitalOutlookJourneySave.hasClaims(commander),
-      isolationParentEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
+      isolationEnvelope || inductionEnvelope || commerceEnvelope || glassEnvelope
         || fleetEnvelope
         || flightReceptionEnvelope
         || fieldReliefEnvelope
@@ -1131,6 +1145,7 @@ enum ScriptSaveStore {
         || outlook
         || stationJourney == NativeStationPassengerJourneySave.hasClaims(commander),
       NativeIsolationWorkParentSave.validateClaims(commander),
+      NativeIsolationWorkSave.validateClaims(commander),
       NativeInductionCrewLogSave.validateClaims(commander),
       NativeInductionArkSave.validateClaims(commander),
       NativeWayfarerInductionSave.validateClaims(commander),

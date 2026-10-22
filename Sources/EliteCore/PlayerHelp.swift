@@ -65,6 +65,20 @@ public enum PlayerHelp {
             "NO STAGE12 UNTIL ACTUAL SOURCE AUDIT",
           ]), at: 0)
     }
+    if contextGame.isolationWorkUsesReturn {
+      pages.insert(
+        .init(
+          title: "RENAS FEEDER ISOLATION",
+          rows: [
+            "TAB - SELECT ORIGINAL FEEDER CONTACT",
+            "RETURN - REVIEW; FRESH RETURN - ARM",
+            "FRONT SURFACE 50-150m; AIM <=2deg",
+            "RELATIVE SPEED <=1m/s; 20s WORK",
+            "CONTACT OPENS ONLY AFTER SAVING",
+            "KEEP VIEW: 1s LATER ZERO-FLOW READING",
+            "Q / ESC - STOP; PARTIAL WORK STAYS",
+          ]), at: 0)
+    }
     if contextGame.inductionUtilityUsesReturn {
       pages.insert(
         .init(

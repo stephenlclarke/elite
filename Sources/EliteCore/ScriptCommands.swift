@@ -8,6 +8,16 @@ extension Game {
     guard let fields = command.object, let op = fields["op"]?.string else {
       throw MissionPackError("Invalid script command.")
     }
+    if NativeIsolationWorkPack.marked(state)
+      || pack.manifest.stateID == NativeIsolationWorkPack.stateID
+    {
+      guard NativeIsolationWorkPack.matches(pack), state.savedIsolationWork != nil,
+        ["journal.append", "timer.ensure", "timer.cancel", "encounter.activate"].contains(op)
+      else {
+        throw MissionPackError(
+          "Only native measured work can alter original Renas isolation contacts.")
+      }
+    }
     if NativeIsolationWorkParent.marked(state)
       || pack.manifest.stateID == NativeIsolationWorkParent.stateID
     {
