@@ -15,6 +15,25 @@ public enum PlayerHelp {
     var contextGame = game
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
+    if (screen.isFlight && contextGame.activeDefensiveFlight != nil)
+      || (screen == .contracts && contextGame.contractBoard.selected?.defensiveFlight != nil)
+    {
+      pages.insert(
+        .init(
+          title: "DEFENSIVE FLIGHT PRACTICE",
+          rows: [
+            "AVENOR / REVIEW THEN CONFIRM / ZERO CASH",
+            "MANUAL CENTRE REFERENCE / NO LOCK NEEDED",
+            "ACQUIRE2S / RIGHT A0.5S / LEFT B0.5S",
+            "WITHDRAW3S / NOSE AWAY / NO FIRING",
+            "Q - RELEASE GUIDANCE FOR MANUAL FLIGHT",
+            "ESC IN FLIGHT - LEAVE ONLY THIS PRACTICE",
+            "K / ESC IN HELP - NORMAL CLOSE / BACK",
+            "PAUSE / OFFLINE - NO PRACTICE TIME",
+            "SEALED BREAKOFF - RETURN TO AVENOR",
+            "SEPARATE RECEIVING CONFIRM / ONE TRACE",
+          ]), at: 0)
+    }
     if screen == .contracts,
       contextGame.contractBoard.selected?.wayfarerInduction == .accredit
     {
