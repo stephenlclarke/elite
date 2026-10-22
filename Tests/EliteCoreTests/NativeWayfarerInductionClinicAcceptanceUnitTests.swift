@@ -254,8 +254,9 @@ struct NativeWayfarerInductionClinicAcceptanceUnitTests {
     if commander.nativeStations?.mainStations.contains(signature.dock.station) != true {
       commander.nativeStations?.mainStations.append(signature.dock.station)
     }
+    let previousDockSequence = commander.nativeStations?.nextMainDockSequence ?? 0
     commander.nativeStations?.nextMainDockSequence = max(
-      commander.nativeStations?.nextMainDockSequence ?? 0, signature.dock.sequence + 1)
+      previousDockSequence, signature.dock.sequence + 1)
     let parent = try #require(commander.scriptState.instances[f.booking.parent])
     #expect(
       NativeInductionCharterConsentSave.signaturesValid(
