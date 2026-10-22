@@ -1,0 +1,11 @@
+# chore(ci): prepare one retained M01 fault capture
+
+This is a manual-only, unmerged diagnostic variant of the existing unit workflow, based on exact a561cc578e767b3e0d269282885567af8ecf0893. It must not replace the required unit workflow in a product branch or merge into main. [Issue 88](ISSUE-M01-retained-fault-replay.md) needs the current fault location.
+
+The workflow downloads the existing failed run 39804454932 artifact and validates its upstream SHA, retained image hash and matching arm64 UUID/dSYM. It requires the original macOS 15.7.9/24G830, arm64 and Xcode 16.4/Swift 6.1.2 runtime and the original baked workspace path. All product, test, package and existing runner/evidence sources must match a561. Runtime dependency resolution fails closed before launch. No build, installation, existing observer-policy change or product/test assertion change occurs.
+
+The exact original result command supplies the 341-method filter, independently matched to the unchanged source selection and pinned hash. The original process observer's shlex-normalized metadata stripped regex backslashes; only that field is restored from the authoritative command. All other helper arguments, three-job parallelism and the original coverage image remain. The image and symbols are copied to their original paths. The 522 exact source resource files use the existing packager's copied/processed layout, with only normal generated bundle metadata synthesized; the byte inventory is retained.
+
+A single LLDB launch has a 300-second bound and no retry. Fatal stops retain signal/exception data, bounded thread frames with function/source/PC, registers and image UUIDs. Raw output, exact arguments, runtime checks and cleanup outcome are retained. A timeout or setup error is diagnostic interruption. Even a complete passing replay is diagnostic evidence, not a replacement required-check qualification or permission to close issue 88.
+
+Static Python compilation, existing-artifact image/filter/341-method checks, resource mapping without flattening collisions, workflow lint and whitespace checks are required before review. Independent MBA review must complete before manual dispatch. No diagnostic replay or new production CI run has occurred while preparing this variant.
