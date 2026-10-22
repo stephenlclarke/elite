@@ -11,3 +11,7 @@ Replace only the private one-element-array COW backing of `ScriptInstance` with 
 ## Acceptance
 
 A focused regression must prove copy/snapshot isolation, nested mutation, independently decoded value equality and unchanged flat JSON. Keep actual Tab review/arm and writer-refusal regressions. Compose only actual delivered C01, preserve every selected method and qualify the final head through independent review and its existing automatic workflow. No local Swift execution or new diagnostic campaign is authorized.
+
+## Actual follow-up evidence
+
+Head `e399275a` compiled in 803.25 seconds in automatic run `39778352147`, then crashed with signal 10 / bus error at `ScriptInstance.id.read` on the same actual runtime Tab path. No method completed PASS, and XML is truncated. The reference box still stored one aggregate `value`; `yield storage.value.id` still projected that aggregate. The follow-up removes this intermediate aggregate entirely: the private COW class directly owns the same 53 declared fields and defaults. Its reference-copy initializer and bounded value-equality groups explicitly cover all 53 fields in original order. All 49 unique-before-yield accessors, public value semantics, exact Codable keys and real native input remain. This source correction remains unproven until actual execution.
