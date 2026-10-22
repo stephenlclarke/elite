@@ -23,14 +23,18 @@ def snapshot():
     return rows
 
 
-def observe_descendants(rows, root, known, history):
-    """Only currently identity-matched owned parents may confer child ownership."""
+def observe_descendants(rows, root, known, history, *, root_alive):
+    """Match owned parents strictly; only a live root may exec at the same start."""
     selected = {pid for pid, record in known.items()
-                if same_process(record, rows.get(pid))}
-    if root not in known and root in rows:
-        selected.add(root)
+                if pid != root and same_process(record, rows.get(pid))}
+    if root_alive and root in rows:
+        previous = known.get(root)
+        # Only the live Popen root may exec while retaining its original start identity.
+        if previous is None or previous['start'] == rows[root]['start']:
+            selected.add(root)
     while True:
-        children = {pid for pid, row in rows.items() if row['parent'] in selected}
+        children = {pid for pid, row in rows.items()
+                    if pid != root and row['parent'] in selected}
         if children <= selected:
             break
         selected |= children
@@ -60,8 +64,8 @@ class IsolatedCrashEvidence:
         self.stop = threading.Event()
         self.watcher = None
 
-    def observe(self, rows, root):
-        observe_descendants(rows, root, self.known, self.history)
+    def observe(self, rows, root, *, root_alive):
+        observe_descendants(rows, root, self.known, self.history, root_alive=root_alive)
         # Compiler command lines can be enormous. Keep only live ancestry and the actual
         # test/helper/symbol identities needed by the existing failure collector.
         for pid in list(self.history):
@@ -77,6 +81,7 @@ class IsolatedCrashEvidence:
                 self.history[pid] = kept
             else:
                 del self.history[pid]
+        # Keep the original root start anchor even after exit; it grants no authority alone.
         self.known = {pid: record for pid, record in self.known.items()
                       if pid == root or same_process(record, rows.get(pid))}
 
@@ -85,14 +90,12 @@ class IsolatedCrashEvidence:
             try:
                 # The live Popen root is the sole initial authority; retain descendants by identity.
                 if process.poll() is None:
-                    self.observe(self.read_snapshot(), process.pid)
+                    rows = self.read_snapshot()
+                    self.observe(rows, process.pid, root_alive=process.poll() is None)
                 while not self.stop.wait(0.1):
                     rows = self.read_snapshot()
-                    # An exited/reused root PID must never become a new initial authority.
-                    if process.pid not in self.known:
-                        if process.poll() is not None:
-                            continue
-                    self.observe(rows, process.pid)
+                    # Recheck Popen liveness after every snapshot, including a known root.
+                    self.observe(rows, process.pid, root_alive=process.poll() is None)
             except (OSError, ValueError, subprocess.SubprocessError) as error:
                 self.errors.append({'type': type(error).__name__, 'detail': str(error)[:2048]})
         self.watcher = threading.Thread(target=observe, daemon=True)
