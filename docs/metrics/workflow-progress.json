@@ -5063,6 +5063,22 @@
       "issue_closed": false,
       "assets_generated": false,
       "usable_build_delivered": false
+    },
+    {
+      "event": "C08 exact305/337 qualified; three findings closed, provider correction remains separate",
+      "date": "2026-10-22",
+      "github_run": 39757431475,
+      "head": "b0bfda8ad2aa3b7b51f63879c6e2fb3f2d0bb7f4",
+      "verified_methods": 305,
+      "verified_expanded_cases": 337,
+      "issues_closed": [
+        60,
+        63,
+        67
+      ],
+      "issue64_still_open_for_pr": 65,
+      "merge_pending": true,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -6100,16 +6116,16 @@
       "delivery_pr": 25,
       "delivery_base": "main",
       "issues_closed": [
+        60,
+        63,
+        67,
         70,
         71,
         74
       ],
       "verification_pending": [
-        60,
-        63,
         64,
-        66,
-        67
+        66
       ],
       "delivery_acceptance_open": [
         15,
@@ -6157,7 +6173,7 @@
     "media_fingerprint_correction": {
       "issue": 75,
       "owner": "G4",
-      "state": "source pushed PR77; MBA review pending; genuine assets pending",
+      "state": "actual generation running onSteveMBA",
       "scope": "Truthful ship renderer input dependency hash and Python regression units",
       "limits": "No forged manifests, dropped renderer dependencies, generated-media edits or native/fullCI execution",
       "pr": 77,
@@ -6165,7 +6181,12 @@
       "focused_python_tests_passed": 7,
       "required_renderer_gifs": 171,
       "assets_generated": false,
-      "asset_owner": "MBA on physical SteveMBA, resource coordination pending"
+      "asset_owner": "MBA on physical SteveMBA, resource coordination pending",
+      "source_review": "MBAclean",
+      "renderer_session": 76232,
+      "renderer_checkout": "/Users/sclarke/Projects/elite-ship-media",
+      "renderer_source": "f8090b77fb004469e24d6968d8b64e713cc57c0a",
+      "renderer_jobs": 2
     },
     "safe_gunnery_lesson": {
       "owner": "G4",
@@ -6184,8 +6205,28 @@
       "head": "b0bfda8ad2aa3b7b51f63879c6e2fb3f2d0bb7f4",
       "github_run": 39757431475,
       "github_check": "SUCCESS",
-      "actual_artifact_qualification": "MBA pending",
-      "merge": "pending"
+      "actual_artifact_qualification": "MBA305methods337expandedALLPASS",
+      "merge": "pending",
+      "verified_methods": 305,
+      "verified_expanded_cases": 337,
+      "compile_seconds": 890.26,
+      "test_seconds": 79.263,
+      "issues_closed": [
+        60,
+        63,
+        67
+      ],
+      "issue64_scope": "G1 verified; provider65 correction remains pending",
+      "composition_selection": 309
+    },
+    "defensive_flight_tutorial": {
+      "id": "T03.P01",
+      "owner": "G4",
+      "design_owner": "UX",
+      "state": "bounded source preflight and concrete design assigned",
+      "dependency": "Actual uncrewed practice provider source; missing safe acquisition/evasion/disengagement terms",
+      "scope": "NativeDefensiveFlight policy/runtime and focused units, no ordinary-ship replacement or hardware grant",
+      "usable_build_delivered": false
     }
   }
 }
