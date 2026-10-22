@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Typed native receipts and ownership joins. No fixture performs a native player journey.
-private final class InductionClinicAcceptanceFixture {
+final class InductionClinicAcceptanceFixture {
   let f: InductionClinicFixture
   let available: NativeWayfarerInductionState
   let booking: NativeInductionClinicBooking
@@ -49,6 +49,10 @@ private final class InductionClinicAcceptanceFixture {
   }
   func commander() throws -> Commander {
     var commander = try f.f.f.f.work.f.commander()
+    let inventory = try #require(commander.equipmentInventory)
+    commander.savedEquipmentInventory = try .init(
+      owner: inventory.owner, activeHull: inventory.activeHull,
+      revision: booking.inventoryRevision, items: inventory.items)
     while commander.flightSimulation.visit < f.issue.dock.actor.visit {
       commander.flightSimulation.enter(
         NativeInductionCapacityOperator.clinic.station, arriving: true)
@@ -244,6 +248,14 @@ struct NativeWayfarerInductionClinicAcceptanceUnitTests {
     var commander = try f.commander()
     commander.scriptState.instances[f.booking.parent]?.savedWayfarerInduction = next
     commander.scriptState.instances[f.booking.parent]?.acknowledge(162)
+    while commander.flightSimulation.visit < signature.dock.actor.visit {
+      commander.flightSimulation.enter(signature.dock.actor.system, arriving: true)
+    }
+    if commander.nativeStations?.mainStations.contains(signature.dock.station) != true {
+      commander.nativeStations?.mainStations.append(signature.dock.station)
+    }
+    commander.nativeStations?.nextMainDockSequence = max(
+      commander.nativeStations?.nextMainDockSequence ?? 0, signature.dock.sequence + 1)
     let parent = try #require(commander.scriptState.instances[f.booking.parent])
     #expect(
       NativeInductionCharterConsentSave.signaturesValid(
