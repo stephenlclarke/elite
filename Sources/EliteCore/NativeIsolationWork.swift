@@ -70,7 +70,7 @@ struct NativeIsolationWorkParentAuthority: Equatable, Sendable {
 /// These accounts are local utility energy, separate from hull integrity and player resources.
 struct NativeIsolationEnergyAccounts: Codable, Equatable, Sendable {
   static let capacity = 10000.0
-  private(set) var remainingSupply = capacity
+  private(set) var remainingSupply = NativeIsolationEnergyAccounts.capacity
   private(set) var deliveredLoad = 0.0
   var headroom: Double { Self.capacity - deliveredLoad }
   var valid: Bool {
