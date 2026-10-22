@@ -1,0 +1,107 @@
+import Foundation
+
+extension NativeWayfarerInductionAction {
+  var charterPolicy: NativeInductionCharterPolicy? {
+    switch self {
+    case .pooledCharter: .pooledWindows
+    case .protectedCharter: .protectedReservations
+    default: nil
+    }
+  }
+}
+
+extension Game {
+  func inductionCharterChoiceIssues() -> [String] {
+    guard let mission = wayfarerInductionMission, mission.outcome == .active,
+      mission.suspension == nil, let state = mission.savedWayfarerInduction,
+      state.utilityReception != nil, state.charterChoice == nil,
+      NativeInductionCrewLogSave.validateClaims(commander)
+    else {
+      return [
+        "Complete Enron's original three-handoff receiving first; an existing charter choice cannot be replaced."
+      ]
+    }
+    guard let dock = commander.nativeStations?.currentMainDock,
+      nativeMainStationDockEvidenceIsCurrent,
+      dock.station.system == NativeWayfarerInduction.source,
+      case .living(let facility) = nativeOriginalMainStationDestination,
+      facility.identity == dock.station, facility.observation.actor == dock.actor
+    else { return ["Use the actual living Avenor main orbital to review both charter policies."] }
+    return []
+  }
+
+  mutating func confirmInductionCharterChoice(
+    _ policy: NativeInductionCharterPolicy,
+    dock: NativeMainStationDockReceipt, carrier: UUID, revision: UInt64
+  ) throws {
+    guard inductionCharterChoiceIssues().isEmpty,
+      commander.nativeStations?.currentMainDock == dock, commander.hullInstanceID == carrier,
+      commander.equipmentInventory?.revision == revision,
+      var mission = wayfarerInductionMission, let state = mission.savedWayfarerInduction,
+      let utility = state.utilityReception, mission.revision < UInt64(Int64.max) - 1,
+      commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+    else { throw SaveError.invalidCommander }
+    let time = commander.flightSimulation.physicalTime
+    let clock = commander.scriptState.flightSeconds
+    let sequence = commander.scriptState.nextEvent + 1
+    let epoch = NativeInductionCharterChoice.epoch(
+      owner: state.permission.owner,
+      parent: mission.id, utility: utility.operation)
+    let terms = NativeInductionCharterTerms.original(epoch: epoch)
+    let operation = try NativeInductionCharterChoice.identity(
+      utility: utility.operation,
+      policy: policy, terms: terms, dock: dock, carrier: carrier, revision: revision,
+      time: time, flightSeconds: clock, sequence: sequence)
+    let receipt = NativeInductionCharterChoice(
+      operation: operation, sequence: sequence,
+      owner: state.permission.owner, parent: mission.id, utility: utility.operation,
+      policy: policy, terms: terms, dock: dock, carrier: carrier, inventoryRevision: revision,
+      physicalTime: time, flightSeconds: clock)
+    let next = try state.choosingCharter(receipt)
+    mission.savedWayfarerInduction = next
+    mission.milestones = next.milestones
+    mission.revision += 1
+    mission.acknowledge(sequence)
+    mission.journal.append(
+      "Avenor recorded the separately confirmed " + policy.rawValue
+        + " charter choice. Each clinic/workshop/seed operator has six service-window units with protected minimum two in the same persistent epoch. "
+        + policy.consequence
+        + " Choice alone supplies no signatures, stage12 receipt, money or accreditation.")
+    commander.scriptState.nextEvent = sequence
+    commander.scriptState.instances[mission.id] = mission
+    notify("CHARTER CHOSEN: " + policy.title.uppercased() + " - OPERATOR SIGNATURES NEXT")
+  }
+
+  var inductionCharterDetail: [String] {
+    guard let state = wayfarerInductionMission?.savedWayfarerInduction,
+      state.utilityReception != nil
+    else { return [] }
+    let policy =
+      contractBoard.wayfarerInductionQuote?.action.charterPolicy
+      ?? contractBoard.selected?.wayfarerInduction?.charterPolicy
+      ?? state.charterChoice?.policy
+    var lines = [
+      "Avenor charter choice: compare both policies before Confirm. Back/Escape changes nothing.",
+      "Clinic, workshop and seed custodians each retain six indivisible service-window units for the same persistent charter epoch; protected minimum two each, eighteen total.",
+      "One unit authorizes one concurrent independently quoted consignment. It is separate from ship cargo, tools, passenger space and the three-active-contract limit.",
+      "POOLED WINDOWS: only each owner's free surplus above two can enter the pool (at most four per owner / twelve total); protected minimums cannot be borrowed.",
+      "PROTECTED RESERVATIONS: no unit enters the pool until its original owner signs release of that exact free surplus unit. At most four per owner may release; the protected two stay unavailable.",
+      "Saving, loading and revisiting cannot reset the epoch or replenish capacity. Completion/cancellation must return the same reservation to its original owner and selected policy.",
+    ]
+    if let policy {
+      lines.insert(
+        "SELECTED POLICY: " + policy.title.uppercased() + ". " + policy.consequence, at: 0)
+    }
+    if let choice = state.charterChoice {
+      lines.append(
+        "Stage11 choice recorded: " + choice.policy.title
+          + ". Operator reservation/release and selected-branch signatures remain unavailable; choice alone pays nothing and grants no accreditation or clue."
+      )
+    } else {
+      lines.append(
+        "Confirm commits only this one policy and its fixed terms. Separate real operator reservation/release and signatures are required for stage12; these actions remain unavailable."
+      )
+    }
+    return lines
+  }
+}

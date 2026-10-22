@@ -71,6 +71,7 @@ extension NativeWayfarerInductionState {
     if crewLog != nil { result.insert(7) }
     if rescueReception != nil { result.insert(8) }
     if utilityReception != nil { result.insert(9) }
+    if charterChoice != nil { result.insert(10) }
     return result
   }
 

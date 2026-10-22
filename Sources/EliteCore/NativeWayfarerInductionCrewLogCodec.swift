@@ -62,6 +62,14 @@ extension NativeInductionCrewLogSave {
           mission["digest"] as? String == NativeWayfarerInduction.digest
         else { throw SaveError.invalidCommander }
       }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("charterChoice")
+      {
+        guard supportsCharterChoice(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
       if own {
         guard contains(schema), !embedded,
           let leaf = mission["savedNativeCrewLog"] as? [String: Any],

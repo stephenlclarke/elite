@@ -3,7 +3,7 @@ import Foundation
 extension NativeWayfarerInductionAction {
   var station: SystemIdentity {
     switch self {
-    case .accept, .progress: NativeWayfarerInduction.source
+    case .accept, .progress, .pooledCharter, .protectedCharter: NativeWayfarerInduction.source
     case .pickup: NativeWayfarerInduction.clinic
     case .receive: NativeWayfarerInduction.receiver
     case .service: NativeWayfarerInduction.clinic
@@ -61,6 +61,11 @@ extension Game {
       return
         "Review Senn's induction at Avenor after an ordinary delivery or native commodity sale."
     }
+    if state.utilityReception != nil {
+      return state.charterChoice == nil
+        ? "At Avenor, compare Pooled windows and Protected reservations; separately Confirm one charter policy. No operator signature is granted by this choice."
+        : "Charter policy recorded. Actual operator reservation/release and selected-branch signatures remain next; no accreditation or final payment yet."
+    }
     if let status = inductionUtilitySourceStatus { return status }
     if let status = inductionCrewLogStatus { return status }
     if state.loss != nil || state.cassetteLoss != nil || state.seedKeyLoss != nil {
@@ -91,6 +96,11 @@ extension Game {
 
   var wayfarerInductionDestination: String {
     let state = wayfarerInductionMission?.savedWayfarerInduction
+    if state?.utilityReception != nil {
+      return state?.charterChoice == nil
+        ? "Avenor main orbital G01-S007 / compare and Confirm charter policy"
+        : "Charter operator signatures / unavailable until actual reservation and release support"
+    }
     if state?.rescueReception != nil {
       return "Enron G01-S190 / original utility handoff maintenance authorization"
     }

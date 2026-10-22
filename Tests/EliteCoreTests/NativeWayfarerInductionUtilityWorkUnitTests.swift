@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Typed receipt/policy fixtures only; they do not execute or qualify a native maintenance journey.
-private final class InductionUtilityWorkFixture {
+final class InductionUtilityWorkFixture {
   let f: InductionUtilityFixture
   init() throws { f = try .init() }
   func arm(_ role: NativeInductionUtilityRole, attempt: Int = 0) throws -> NativeInductionUtilityArm
@@ -191,7 +191,7 @@ struct NativeWayfarerInductionUtilityWorkUnitTests {
     let wrong = try fixture.receipt(state, repairs: [UUID(), UUID(), UUID()])
     let foreign = try fixture.f.parent.receivingUtilityRoute(wrong)
     #expect(!state.shapeValid(parent: foreign))
-    #expect(NativeWayfarerInduction.laterStages.contains("11-14"))
+    #expect(NativeWayfarerInduction.laterStages.contains("12-14"))
   }
 
   @Test func workAndReceivingClaimsNeedOwningAcknowledgementsClockAndReverseSourceJoin() throws {

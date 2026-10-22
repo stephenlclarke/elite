@@ -115,6 +115,11 @@ enum NativeWayfarerInductionSave {
         capture.actor.visit <= commander.flightSimulation.visit
       else { return false }
     }
+    if let choice = state.charterChoice,
+      !NativeInductionCharterSave.claimsValid(choice, mission: mission, commander: commander)
+    {
+      return false
+    }
     for loss in [state.loss, state.cassetteLoss, state.seedKeyLoss, state.crewLogLoss].compactMap({
       $0
     }) {

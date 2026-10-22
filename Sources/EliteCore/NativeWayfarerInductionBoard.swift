@@ -3,6 +3,7 @@ import Foundation
 enum NativeWayfarerInductionAction: String, Sendable {
   case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, replaceArk,
     fundRescueLaunch, startRescueFlight, receiveRescue, authorizeUtility, receiveUtility,
+    pooledCharter, protectedCharter,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -21,6 +22,8 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .receiveRescue: "Enmadan reception / review original survivors and recorder return"
     case .authorizeUtility: "Enron utility crew / review original handoff maintenance authorization"
     case .receiveUtility: "Enron utility crew / review all three repaired handoffs"
+    case .pooledCharter: "Avenor charter / review Pooled windows"
+    case .protectedCharter: "Avenor charter / review Protected reservations"
     case .progress: "Senn / current induction records"
     }
   }
@@ -44,6 +47,16 @@ struct NativeWayfarerInductionReview: Sendable {
 extension Game {
   var wayfarerInductionRows: [ContractBoardRow] {
     guard !isMissionTrial, wayfarerInductionPack != nil else { return [] }
+    if let state = wayfarerInductionMission?.savedWayfarerInduction,
+      systemIdentity == NativeWayfarerInduction.source, state.utilityReception != nil,
+      state.charterChoice == nil
+    {
+      return [NativeWayfarerInductionAction.pooledCharter, .protectedCharter].map { action in
+        .init(
+          board: action.key, offer: nil, title: action.title,
+          reason: wayfarerInductionReview(action).issues.first, wayfarerInduction: action)
+      }
+    }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
       if systemIdentity == NativeInductionUtilitySource.location, state.rescueReception != nil,
@@ -124,7 +137,8 @@ extension Game {
     }
     if action != .receive && action != .service && action != .launchArk && action != .receiveArk
       && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight
-      && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility,
+      && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility
+      && action.charterPolicy == nil,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -141,6 +155,7 @@ extension Game {
     case .receiveRescue: issues += inductionRescueReceivingIssues()
     case .authorizeUtility: issues += inductionUtilityAuthorizationIssues()
     case .receiveUtility: issues += inductionUtilityReceivingIssues()
+    case .pooledCharter, .protectedCharter: issues += inductionCharterChoiceIssues()
     case .progress: break
     }
     return issues
@@ -273,10 +288,19 @@ extension Game {
       try candidate.confirmInductionUtilityReceiving(
         dock: dock, carrier: carrier, revision: revision)
     }
+    if let policy = quote.action.charterPolicy {
+      try candidate.confirmInductionCharterChoice(
+        policy, dock: dock, carrier: carrier, revision: revision)
+    }
     self = candidate
   }
 
   func wayfarerInductionDetail() -> [String] {
+    if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
+      .charterPolicy != nil
+    {
+      return inductionCharterDetail
+    }
     var lines = [
       "SENN: These routes belong to the clinics, workshops and crews using them.",
       "Accept at Avenor after one ordinary delivery or actual native commodity sale.",
@@ -300,6 +324,7 @@ extension Game {
       "These stages pay nothing and grant no accreditation or clue. "
         + NativeWayfarerInduction.laterStages,
     ]
+    lines += inductionCharterDetail
     if let status = inductionCrewLogStatus { lines.append(status) }
     if let status = inductionUtilitySourceStatus { lines.append(status) }
     if let state = inductionCrewLogChild?.savedNativeCrewLog {

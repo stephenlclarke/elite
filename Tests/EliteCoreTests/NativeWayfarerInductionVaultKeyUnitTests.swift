@@ -77,7 +77,7 @@ struct NativeWayfarerInductionVaultKeyUnitTests {
     #expect(carried.action(at: NativeWayfarerInduction.seedReceiver) == .progress)
     #expect(throws: (any Error).self) { try carried.borrowingVaultKey(key, freeTonnes: 100) }
     #expect(NativeWayfarerInduction.seedConsentTarget == "enlirin-seed-consent")
-    #expect(NativeWayfarerInduction.laterStages.contains("11-14"))
+    #expect(NativeWayfarerInduction.laterStages.contains("12-14"))
   }
 
   @Test(arguments: [false, true])
