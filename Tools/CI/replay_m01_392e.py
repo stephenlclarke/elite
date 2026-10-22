@@ -1,4 +1,4 @@
-"""One unmerged diagnostic replay of the exact retained a561 coverage image; never build."""
+"""One unmerged diagnostic replay of the exact retained 392e coverage image; never build."""
 import hashlib
 import json
 import os
@@ -14,9 +14,9 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'reports/m01-retained-replay'
-SOURCE = 'a561cc578e767b3e0d269282885567af8ecf0893'
-IMAGE_SHA = '3aff5d3a1aa7e199fcede6844d6b147146ab308c0fa9f85199665ce83b1a8d73'
-UUID = 'EA5907C5-2B49-38F6-AEF2-C7B089187444'
+SOURCE = '392e9ccaf873f8709cb7ae083dea91ac8ca8ca99'
+IMAGE_SHA = '6ae4f34f3fd89a324da5235a5c3aff04db35097636aa94f8a4380241631bb83b'
+UUID = 'D78E8DCF-647F-3135-B499-1D0BE369B76D'
 FILTER_SHA = 'b5b88d858f2e9dd30f56c40c88f3c77b4e48d1aa0729e5ebb73662d813778b0b'
 DEVELOPER = Path('/Applications/Xcode_16.4.app/Contents/Developer')
 HELPER = DEVELOPER / 'Toolchains/XcodeDefault.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper'
@@ -94,7 +94,7 @@ def prepare():
                     'Package.resolved', 'Tools/CI/isolated_units.py', 'Tools/CI/crash_artifacts.py',
                     'Tools/CI/isolated_crash_evidence.py'], cwd=ROOT, check=True)
     upstream = json.loads((OUT / 'upstream-run.json').read_text())
-    require(upstream['id'] == 39804454932 and upstream['head_sha'] == SOURCE
+    require(upstream['id'] == 39812579729 and upstream['head_sha'] == SOURCE
             and upstream['conclusion'] == 'failure', 'Wrong upstream run.')
     original = ROOT / '.build/m01-replay-original'
     result = json.loads((original / 'result.json').read_text())
@@ -167,7 +167,7 @@ def prepare():
     runtime_closure(frameworks, libraries)
     write('resources.json', inventory)
     write('launch.json', {'source': SOURCE, 'diagnosticCommit': checked('git', 'rev-parse', 'HEAD'),
-        'diagnosticOnly': True, 'originalRun': 39804454932, 'originalMethods': 341,
+        'diagnosticOnly': True, 'originalRun': 39812579729, 'originalMethods': 341,
         'imageSHA256': IMAGE_SHA, 'imageUUID': UUID, 'swiftVersion': version,
         'arguments': arguments, 'filterSHA256': FILTER_SHA, 'helper': str(HELPER),
         'coverageInstrumentedImage': True, 'parallelism': 3, 'executionLimitSeconds': 300,

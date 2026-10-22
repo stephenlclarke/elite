@@ -5,7 +5,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: m01-retained-a561-diagnostic
+  group: m01-retained-392e-diagnostic
   cancel-in-progress: false
 jobs:
   retained-fault:
@@ -24,21 +24,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p reports/m01-retained-replay
-          gh api repos/stephenlclarke/elite/actions/runs/39804454932 > reports/m01-retained-replay/upstream-run.json
-          gh run download 39804454932 --repo stephenlclarke/elite --name isolated-units-a561cc578e767b3e0d269282885567af8ecf0893 --dir .build/m01-replay-original
+          gh api repos/stephenlclarke/elite/actions/runs/39812579729 > reports/m01-retained-replay/upstream-run.json
+          gh run download 39812579729 --repo stephenlclarke/elite --name isolated-units-392e9ccaf873f8709cb7ae083dea91ac8ca8ca99 --dir .build/m01-replay-original
       - name: Verify source, runtime, original selection, image and resources
-        run: python3 Tools/CI/replay_m01_a561.py prepare
+        run: python3 Tools/CI/replay_m01_392e.py prepare
       - name: One retained-image LLDB launch (300 seconds, diagnostic only)
         run: |
           xcrun lldb --no-lldbinit --batch \
-            -o 'command script import Tools/CI/replay_m01_a561.py' \
-            -o 'script replay_m01_a561.capture(lldb.debugger)' \
+            -o 'command script import Tools/CI/replay_m01_392e.py' \
+            -o 'script replay_m01_392e.capture(lldb.debugger)' \
             > reports/m01-retained-replay/lldb.log 2>&1
-          python3 Tools/CI/replay_m01_a561.py outcome
+          python3 Tools/CI/replay_m01_392e.py outcome
       - name: Upload diagnostic evidence (never a qualification report)
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: m01-a561-retained-fault-${{ github.run_id }}
+          name: m01-392e-retained-fault-${{ github.run_id }}
           path: reports/m01-retained-replay/
           if-no-files-found: error
