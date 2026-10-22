@@ -51,6 +51,14 @@ struct NativeInductionCrewLogSource: Sendable {
   let recorder: ScriptNPCDefinition
   let recorderDesign: ShipDesign
 
+  static let flightProfile: Result<ScriptNPCDefinition, any Error> = Result {
+    guard let performance = OriginalFleetDefinitionData.definition(for: hull)?.nativePerformance,
+      performance.valid
+    else { throw SaveError.invalidCommander }
+    return shipProfile(
+      physical: try OriginalHullPhysicalContract.burro.get(), performance: performance)
+  }
+
   init(parent: NativeWayfarerInductionState) throws {
     guard parent.valid, parent.seedReception != nil,
       let performance = OriginalFleetDefinitionData.definition(for: Self.hull)?.nativePerformance,

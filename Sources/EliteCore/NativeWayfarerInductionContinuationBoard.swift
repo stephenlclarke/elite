@@ -9,6 +9,7 @@ extension NativeWayfarerInductionAction {
     case .service: NativeWayfarerInduction.clinic
     case .keyLoan, .launchArk, .replaceArk: NativeWayfarerInduction.seedSource
     case .receiveArk: NativeWayfarerInduction.seedReceiver
+    case .fundRescueLaunch: NativeInductionCrewLogSource.location
     case .cassette: NativeWayfarerInduction.workshop
     }
   }

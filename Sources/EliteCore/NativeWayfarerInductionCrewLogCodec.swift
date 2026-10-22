@@ -51,6 +51,21 @@ extension NativeInductionCrewLogSave {
           let crew = manifest["crew"] as? [Any], crew.count == 2,
           let losses = leaf["losses"] as? [Any], losses.count <= 3
         else { throw SaveError.invalidCommander }
+        if leaf.keys.contains("rescueFuel") || leaf.keys.contains("rescueReserve") {
+          guard supportsRescueFunding(schema),
+            let rawBank = leaf["rescueFuel"] as? [String: Any],
+            let rawReserve = leaf["rescueReserve"] as? [String: Any]
+          else { throw SaveError.invalidCommander }
+          _ = try NativeRescueFuelEscrow.decodeClosed(
+            JSONSerialization.data(withJSONObject: rawBank))
+          let reserveBytes = try JSONSerialization.data(withJSONObject: rawReserve)
+          guard reserveBytes.count <= 8192 else { throw SaveError.invalidCommander }
+          let reserve = try JSONDecoder().decode(NativeRescueLaunchReserve.self, from: reserveBytes)
+          guard
+            (rawReserve as NSDictionary).isEqual(
+              try JSONSerialization.jsonObject(with: JSONEncoder().encode(reserve)))
+          else { throw SaveError.invalidCommander }
+        }
         let bytes = try JSONSerialization.data(withJSONObject: leaf)
         guard supportsPickup(schema) || leaf["capture"] == nil else {
           throw SaveError.invalidCommander

@@ -4436,7 +4436,16 @@
       "verified_methods": 147,
       "verified_expanded_cases": 179,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6330066898",
-      "qualification_scope": "Pure fixture pass does not cover legitimate hull-transfer loss defect40; not clean acceptance or playable delivery"
+      "qualification_scope": "Pure fixture pass does not cover legitimate hull-transfer loss defect40; not clean acceptance or playable delivery",
+      "correction_sha": "3a7aeff855c9f0dd07366be5a656e884a6244345",
+      "correction_run": 39703512214,
+      "correction_selection_methods": 149,
+      "correction_new_methods": 2,
+      "correction_review": "MBA source and exact-head hosted verified;40 closed",
+      "correction_verified_methods": 149,
+      "correction_verified_expanded_cases": 181,
+      "correction_verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6330265717",
+      "source_finding_status": "40 closed on corrected descendant; original finding evidence retained"
     }
   ]
 }

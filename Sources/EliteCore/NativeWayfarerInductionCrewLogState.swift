@@ -95,6 +95,8 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
   var admission: NativeCrewLogAdmission?
   var losses: [NativeCrewLogActorLoss] = []
   var capture: NativeCrewLogCapture?
+  var rescueFuel: NativeRescueFuelEscrow?
+  var rescueReserve: NativeRescueLaunchReserve?
   var livingCrew: [UUID] {
     admission != nil && !losses.contains(where: { $0.role == "launch" })
       ? authorization.manifest.crew : []
@@ -103,6 +105,24 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
     guard authorization.valid(parent: parent), losses.count <= 3,
       Set(losses.map(\.role)).count == losses.count
     else { return false }
+    if let rescueFuel {
+      guard rescueFuel.valid, rescueFuel.funding.valid(authorization: authorization),
+        rescueReserve?.valid(authorization: authorization) == true,
+        // Actual dock/service publication joins are introduced with the normal flight provider.
+        rescueFuel.purchases.isEmpty, rescueFuel.refusal == nil
+      else { return false }
+      if let dock = rescueFuel.funding.legacyRebriefDock {
+        guard let reception = parent.seedReception, let capture,
+          rescueFuel.funding.sequence > capture.sequence,
+          rescueFuel.funding.physicalTime >= capture.physicalTime,
+          rescueFuel.funding.flightSeconds >= capture.flightSeconds,
+          dock.sequence > reception.playerDock.sequence,
+          dock.calendarSeconds >= reception.playerDock.calendarSeconds
+        else { return false }
+      }
+    } else if rescueReserve != nil {
+      return false
+    }
     guard let admission else { return losses.isEmpty && capture == nil }
     if let capture {
       guard let reception = parent.seedReception,

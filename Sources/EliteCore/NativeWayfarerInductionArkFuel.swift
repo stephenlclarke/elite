@@ -186,30 +186,12 @@ final class NativeArkFuelEscrow: Codable, Sendable, Equatable {
   private func calculate(_ request: NativeArkFuelRequest, balance: Int)
     throws -> NativeArkFuelCalculation
   {
-    guard request.offer.valid, let profile = try? NativeInductionArkSource.profile(),
-      let drive = profile.drive, request.before.isFinite,
-      (0...profile.fuel).contains(request.before), request.nextHopLY.isFinite,
-      request.nextHopLY > 0, request.nextHopLY <= drive.rangeLightYears
-    else { throw NativeArkFuelRefusal.invalidInput }
-    let contact = request.offer.contact
-    guard contact.station.world == owner, contact.mission == mission, contact.ark == ark,
-      contact.station.system.galaxy == NativeWayfarerInduction.seedSource.galaxy
-    else {
-      throw NativeArkFuelRefusal.foreignDock
-    }
-    let missing = request.nextHopLY - request.before
-    guard missing > 0 else { throw NativeArkFuelRefusal.noFuelNeeded }
-    let units = Int(ceil(missing * 10))
-    guard units <= request.offer.availableTenthsLY else {
-      throw NativeArkFuelRefusal.unavailableStock
-    }
-    let (cost, overflow) = units.multipliedReportingOverflow(by: request.offer.pricePerTenth)
-    guard !overflow, cost <= balance else { throw NativeArkFuelRefusal.insufficientEscrow }
-    let after = request.before + Double(units) / 10
-    guard after.isFinite, after <= profile.fuel, after >= request.nextHopLY else {
+    guard let profile = try? NativeInductionArkSource.profile() else {
       throw NativeArkFuelRefusal.invalidInput
     }
-    return .init(billedTenths: units, cost: cost, after: after)
+    return try NativeCustodianFuelMath.calculate(
+      request, balance: balance, owner: owner, mission: mission, vessel: ark,
+      galaxy: NativeWayfarerInduction.seedSource.galaxy, profile: profile)
   }
 
   private func purchase(_ request: NativeArkFuelRequest, balance: Int, revision: Int)

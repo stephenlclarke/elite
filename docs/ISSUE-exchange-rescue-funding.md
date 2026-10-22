@@ -1,0 +1,5 @@
+# C08.P05.A: finite original rescue-launch fuel and route prerequisites
+
+Normal stage9 needs the same marked SH029 launch and its two original crew to travel from Cevilis to Enmadan through actual native hops, dock service and receiving. Its fuel, ownership and funding cannot be borrowed from the seed ark or player, and a route quote cannot stand in for a journey.
+
+The explicit Orchestrator design allocates a separate finite1000CR original rescue fuel escrow at actual source registration. Existing unfunded sources receive that still-unissued allocation only through actual Cevilis rebrief/Confirm. One uncrewed SH029 reserve and a distinct future1000CR issue are planned; they cannot create crew or a recorder. Actual service shares the existing depleted100LY station programme, with no new reserve issue or arrival fuel. Prepare the exact source-bound finance and original-world route, retaining actual travel/receiving and any survivor replacement branch as subsequent joins. See the [ledger](COMPLETION-LEDGER.md) and [PR notes](PR-exchange-rescue-funding.md).

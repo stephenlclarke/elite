@@ -56,12 +56,16 @@ extension Game {
       var issued = ScriptInstance(
         id: job, definition: NativeInductionCrewLogPack.stateID,
         version: NativeInductionCrewLogPack.version, digest: pack.digest)
-      issued.savedNativeCrewLog = .init(authorization: authorization)
+      let funding = NativeRescueFuelFunding(authorization: authorization)
+      guard funding.valid(authorization: authorization) else { throw SaveError.invalidCommander }
+      issued.savedNativeCrewLog = .init(
+        authorization: authorization,
+        rescueFuel: try .init(funding: funding), rescueReserve: .init(authorization: authorization))
       issued.acknowledge(sequence)
       parent.acknowledge(sequence)
       parent.revision += 1
       parent.journal.append(
-        "Cevilis's custodian source is registered once: one empty mechanically disabled Burro tender, a separate marked Burro launch holding its two original crew, and their original one-tonne custody recorder. Recover only the recorder; no hull, equipment or player cabin transfer is authorized."
+        "Cevilis's custodian source is registered once: one empty mechanically disabled Burro tender, a separate marked Burro launch holding its two original crew, and their original one-tonne custody recorder. Recover only the recorder; no hull, equipment or player cabin transfer is authorized. Its original rescue launch has a separate finite1000CR custodian fuel escrow; one uncrewed Burro reserve and a separate future1000CR allocation are planned, with no replacement people."
       )
       commander.scriptState.nextEvent = sequence
       commander.scriptState.instances[parent.id] = parent

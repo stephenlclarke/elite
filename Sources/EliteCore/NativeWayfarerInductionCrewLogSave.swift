@@ -1,10 +1,13 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 87
-  static let alienVersion = 88
-  static func supportsHullCustody(_ schema: Int?) -> Bool {
+  static let version = 89
+  static let alienVersion = 90
+  static func supportsRescueFunding(_ schema: Int?) -> Bool {
     schema == version || schema == alienVersion
+  }
+  static func supportsHullCustody(_ schema: Int?) -> Bool {
+    supportsRescueFunding(schema) || schema == 87 || schema == 88
   }
   static func supportsPickup(_ schema: Int?) -> Bool {
     supportsHullCustody(schema) || schema == 85 || schema == 86
@@ -52,6 +55,19 @@ enum NativeInductionCrewLogSave {
         child.timers.keys.allSatisfy({ $0 == NativeInductionCrewLogPack.timer }),
         actorClaimsValid(child, state: state, source: source, commander: commander)
       else { return false }
+      if let funding = state.rescueFuel?.funding {
+        guard funding.sequence <= engine.nextEvent,
+          parent.hasAcknowledged(funding.sequence), child.hasAcknowledged(funding.sequence),
+          funding.physicalTime <= commander.flightSimulation.physicalTime,
+          funding.flightSeconds <= engine.flightSeconds
+        else { return false }
+        if let dock = funding.legacyRebriefDock {
+          guard commander.nativeStations?.mainStations.contains(dock.station) == true,
+            dock.sequence < (commander.nativeStations?.nextMainDockSequence ?? 0),
+            dock.actor.visit <= commander.flightSimulation.visit
+          else { return false }
+        }
+      }
       if let capture = state.capture {
         if leaf.crewLogLoss == nil {
           guard leaf.crewLogCarrier == commander.hullInstanceID,

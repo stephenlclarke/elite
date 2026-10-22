@@ -34,6 +34,12 @@ extension Game {
       return
         "Original custody recorder lost with its carrier. Its pickup history remains; no replacement or rescue receiving is invented."
     }
+    if parent.crewLog != nil, let state = inductionCrewLogChild?.savedNativeCrewLog,
+      state.rescueFuel == nil
+    {
+      return
+        "Original crew recorder protected aboard / 1t. At Cevilis main orbital, review the still-unissued original rescue fuel allocation. Loading/reopening grants no funds. Stage9 actual travel/receiving remains unavailable."
+    }
     if parent.crewLog != nil {
       return
         "Stage8: original crew custody recorder protected aboard / 1t. Its two original crew remain in the marked launch; stage9 actual launch escort and Enmadan receiving are not yet available."

@@ -2,6 +2,7 @@ import Foundation
 
 enum NativeWayfarerInductionAction: String, Sendable {
   case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, replaceArk,
+    fundRescueLaunch,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -15,6 +16,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .launchArk: "Enlirin seed custodians / review original ark launch"
     case .receiveArk: "Lareria cradle / review original ark receiving and key return"
     case .replaceArk: "Enlirin custodians / review the one reserved ark launch"
+    case .fundRescueLaunch: "Cevilis custodian / review original rescue fuel allocation"
     case .progress: "Senn / current induction records"
     }
   }
@@ -28,6 +30,7 @@ struct NativeWayfarerInductionReview: Sendable {
   let epoch: UUID
   let missionRevision: UInt64?
   let arkRevision: UInt64?
+  let rescueRevision: UInt64?
   let issues: [String]
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
@@ -38,7 +41,13 @@ extension Game {
     guard !isMissionTrial, wayfarerInductionPack != nil else { return [] }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
-      if systemIdentity == NativeWayfarerInduction.seedSource, let link = state.ark,
+      if systemIdentity == NativeInductionCrewLogSource.location,
+        state.crewLog != nil, state.crewLogLoss == nil,
+        inductionCrewLogChild?.savedNativeCrewLog?.rescueFuel == nil,
+        inductionCrewLogChild != nil
+      {
+        action = .fundRescueLaunch
+      } else if systemIdentity == NativeWayfarerInduction.seedSource, let link = state.ark,
         state.seedReception == nil,
         commander.scriptState.instances[link.job]?.savedNativeArk?.loss != nil
       {
@@ -73,6 +82,7 @@ extension Game {
       arkRevision: wayfarerInductionMission?.savedWayfarerInduction?.ark.flatMap {
         commander.scriptState.instances[$0.job]?.revision
       },
+      rescueRevision: inductionCrewLogChild?.revision,
       issues: action == .progress ? [] : inductionActionIssues(action, trade: trade))
   }
 
@@ -92,7 +102,7 @@ extension Game {
       issues.append("The actual owned carrier and fitting must be available.")
     }
     if action != .receive && action != .service && action != .launchArk && action != .receiveArk
-      && action != .replaceArk,
+      && action != .replaceArk && action != .fundRescueLaunch,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -104,6 +114,7 @@ extension Game {
     case .launchArk: issues += inductionArkLaunchIssues()
     case .receiveArk: issues += inductionArkReceivingIssues()
     case .replaceArk: issues += inductionArkReplacementIssues()
+    case .fundRescueLaunch: issues += inductionRescueFundingIssues()
     case .progress: break
     }
     return issues
@@ -142,6 +153,7 @@ extension Game {
       quote.carrier == current.carrier, quote.inventoryRevision == current.inventoryRevision,
       quote.trade == current.trade, quote.epoch == current.epoch,
       quote.missionRevision == current.missionRevision, quote.arkRevision == current.arkRevision,
+      quote.rescueRevision == current.rescueRevision,
       let owner = commander.equipmentOwnerID, let dock = current.dock,
       let carrier = current.carrier, let revision = current.inventoryRevision,
       let pack = wayfarerInductionPack
@@ -216,6 +228,9 @@ extension Game {
     if quote.action == .replaceArk {
       try candidate.confirmInductionArkReplacement(dock: dock, carrier: carrier, revision: revision)
     }
+    if quote.action == .fundRescueLaunch {
+      try candidate.confirmInductionRescueFunding(dock: dock)
+    }
     self = candidate
   }
 
@@ -244,6 +259,25 @@ extension Game {
         + NativeWayfarerInduction.laterStages,
     ]
     if let status = inductionCrewLogStatus { lines.append(status) }
+    if let state = inductionCrewLogChild?.savedNativeCrewLog {
+      if let account = state.rescueFuel {
+        lines.append(
+          String(
+            format:
+              "Original rescue launch NPC fuel escrow: %.1f CR remaining / initial1000CR. Source SH029: 13LY tank, 9LY drive, 12s spool. This is separate from player cash and both seed-ark accounts.",
+            Double(account.remainingCredits) / 10))
+        lines.append(
+          "Future real dock service shares the existing depleted100LY main-station reserve with seed arks; no extra station stock or arrival fuel is granted. Native route travel and Enmadan survivor/recorder receiving remain unavailable until their actual provider joins are complete."
+        )
+        lines.append(
+          "One uncrewed Burro and separate future1000CR funding are reserved. Replacement cannot create people or a recorder: only the same original two surviving crew in actual supported custody may transfer after real rebrief/launch. The replacement branch remains unavailable."
+        )
+      } else {
+        lines.append(
+          "This existing source has no rescue fuel issue. After recovering its original recorder, use actual Cevilis custodian rebrief and Confirm the still-unissued finite1000CR allocation. Loading, reopening or revisiting does not grant funds."
+        )
+      }
+    }
     if let status = inductionArkStatus { lines.append(status) }
     if wayfarerInductionMission?.savedWayfarerInduction?.seedReception != nil {
       lines += [
