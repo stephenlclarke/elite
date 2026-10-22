@@ -24,6 +24,10 @@ METHODS = {
         "coldCurrentSaveRetainsResearchAfterPrototypeConsumptionAndRejectsForgedPayment",
         "standardUnlimitedLaunchNeverFabricatesAlienRoundsOrSpendsLoadedOriginal",
     ),
+    "WantedDossierNameUnitTests": (
+        "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
+        "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
+    ),
     "MarketDisplayOrderUnitTests": (
         "authoredOrderKeepsEachStableCommodityIDAndCargoIndex",
         "arrowSelectionFollowsAuthoredOrderWithoutTradingOrChangingModes",

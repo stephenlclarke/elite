@@ -8,6 +8,12 @@ enum AlienMissileDefinition {
   static let repeatPriceTenths = 600
   static var recipe: SalvageAlienRecipe { SalvageAlienDefinitions.recipe(.seekerMissile) }
 
+  static func isResearchSource(_ lot: SalvageLot) -> Bool {
+    guard case .technology(let definition, _, _) = lot.content else { return false }
+    return definition == recipe.requiredDefinitionID && lot.loot?.provenance == .alien
+      && lot.loot?.effect == .researchAndSale
+  }
+
   static func profile(for node: EquipmentNodeID) -> OrdnanceProfile? {
     if node == EquipmentRuntimeCatalog.standardMissile { return .standardMissile }
     if node == self.node { return .alienSeeker }

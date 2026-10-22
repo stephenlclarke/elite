@@ -121,7 +121,7 @@ struct AlienMissileServiceUnitTests {
     let state = try #require(projectile.physical?.ordnance)
     #expect(state.profile == .alienSeeker)
     #expect(state.origin.playerAmmunition == .physical(item: prototype))
-    #expect(state.velocity.length == OrdnanceProfile.standardMissile.speed * 1.25)
+    #expect(abs(state.velocity.length - OrdnanceProfile.standardMissile.speed * 1.25) < 1e-9)
     #expect(state.profile.damage == OrdnanceProfile.standardMissile.damage * 1.25)
     #expect(game.commander.equipmentInventory?.items.contains { $0.id == prototype } == false)
     #expect(game.commander.missiles == before.missiles - 1 && game.commander.valid)
