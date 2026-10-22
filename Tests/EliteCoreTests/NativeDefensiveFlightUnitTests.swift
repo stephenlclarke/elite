@@ -339,6 +339,9 @@ struct NativeDefensiveFlightUnitTests {
         yaw: -gate.direction * .pi / 2)
       #expect(
         NativeDefensiveFlightGeometry.insideGate(gate, reading: valid, measuredHullRadius: 10))
+      let withoutAcquisitionContact = NativeDefensiveFlightSample(
+        reading: valid, manual: true, clear: true, centreContact: nil)
+      #expect(withoutAcquisitionContact.qualifies(phase: gate == .positive ? 1 : 2, radius: 10))
       #expect(
         !NativeDefensiveFlightGeometry.insideGate(gate, reading: valid, measuredHullRadius: 100))
       let backwards = try reading(
@@ -439,9 +442,29 @@ struct NativeDefensiveFlightUnitTests {
     game.dockingComputer = true
     #expect(game.defensiveFlightSample()?.manual == false)
     game.dockingComputer = false
-    let front = try #require(game.defensiveFlightSample())
-    game.screen = .rear
-    #expect(game.defensiveFlightSample()?.reading == front.reading)
+    let radius = try #require(game.activeDefensiveFlight?.state.hullRadius)
+    let pose = game.commander.flightSimulation.pose
+    for view in [Screen.rear, .left, .right] {
+      game.screen = .front
+      let front = try #require(game.defensiveFlightSample())
+      #expect(front.qualifies(phase: 0, radius: radius))
+      game.screen = view
+      let alternate = try #require(game.defensiveFlightSample())
+      #expect(alternate.reading == front.reading)
+      #expect(alternate.manual == front.manual && alternate.clear == front.clear)
+      #expect(alternate.centreContact == nil && !alternate.qualifies(phase: 0, radius: radius))
+      // Fresh native observations bracket actual clock advancement with unchanged zero-speed
+      // physical pose and sight. More than two seconds in each other view must earn nothing.
+      game.advanceDefensiveFlight(before: nil, delta: 0.1)
+      for _ in 0..<25 {
+        let before = try #require(game.defensiveFlightObservation())
+        game.commander.flightSimulation.advancePhysicalTime(0.1)
+        game.advanceDefensiveFlight(before: before, delta: 0.1)
+      }
+      let state = try #require(game.activeDefensiveFlight?.state)
+      #expect(state.windows.isEmpty && state.pending == nil && state.failure == nil)
+      #expect(game.commander.flightSimulation.pose == pose)
+    }
     game.screen = .front
     game.bodies[1].hostile = true
     #expect(game.defensiveFlightSample() == nil)
@@ -677,6 +700,15 @@ struct NativeDefensiveFlightUnitTests {
   func closed135136RejectEarlierEmbeddedUnknownAndMissingNativeProofs(alien: Bool) throws {
     let provider = try fixture()
     let value = try state(provider)
+    let initial = NativeDefensiveFlightState(permission: value.permission)
+    #expect(initial.valid && initial.permission == value.permission && !initial.ready)
+    #expect(initial.original == nil && initial.attemptPlayer == nil && initial.hullRadius == nil)
+    #expect(initial.windows.isEmpty && initial.pending == nil && initial.previous == nil)
+    #expect(initial.positiveEntry == nil && initial.negativeEntry == nil && initial.crossing == nil)
+    #expect(initial.failure == nil && initial.disengagedCalendar == nil)
+    #expect(
+      initial.terminalOperation == nil && initial.terminalDock == nil
+        && initial.terminalOutcome == nil)
     var instance = ScriptInstance(
       id: provider.permission.mission, definition: NativeDefensiveFlight.stateID,
       version: NativeDefensiveFlight.version, digest: NativeDefensiveFlight.digest)
@@ -689,6 +721,8 @@ struct NativeDefensiveFlightUnitTests {
     func bytes(_ raw: [String: Any]) throws -> Data {
       try JSONSerialization.data(withJSONObject: ["instances": [instance.id.uuidString: raw]])
     }
+    let initialRaw = try object(initial)
+    #expect(!initialRaw.keys.contains("liveEndpoint"))
     let raw = try object(instance)
     let schema = alien ? 136 : 135
     try NativeDefensiveFlightSave.validateArchiveFields(

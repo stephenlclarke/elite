@@ -180,7 +180,7 @@ extension Game {
     mission.acknowledge(sequence)
     let consent = ScriptChoiceReceipt(
       instance: mission.id, group: NativePracticeSource.consentGroup,
-      choice: NativePracticeSource.consentChoice, label: "Begin safe gunnery practice",
+      choice: NativePracticeSource.consentChoice, label: "Begin defensive flight practice",
       dialogue: "native-defensive-flight-review", sequence: sequence, revision: mission.revision,
       cause: cause, committed: scriptEventContext(mission))
     mission.choiceReceipts[NativePracticeSource.consentGroup] = consent
@@ -197,7 +197,7 @@ extension Game {
   func defensiveFlightDetail(_ action: NativeDefensiveFlightAction) -> [String] {
     var rows = [
       "Actual Avenor acceptance and separate reception. Zero fee, deposit and cash reward.",
-      "Manual practice reference: original centre beacon. No targeting hardware is required or granted.",
+      "Front-view manual practice reference: original centre beacon. No targeting hardware is required or granted.",
       "Approach: x/y within50m, z350-500m behind centre, range350-500m, speed<=5m/s, nose5deg; unobstructed sight for2s.",
       "Gate A (+180,0,-450), then B (-180,0,-450): centre within40m for0.5s each, speed5-30m/s, lateral>=3m/s right then left, nose30deg of velocity. Cross x=0 between them.",
       "Exit: x within250m, y within150m, z450-1450m behind centre. Beyond1100m, separate>=5m/s at5-30m/s with nose150deg away for3s.",

@@ -41,7 +41,7 @@ extension Game {
     let pose = commander.flightSimulation.pose
     let toCentre = pose.shipVector(provider.permission.position(1) - pose.position)
     var centreContact: ActorIdentity?
-    if toCentre.length > 1e-9,
+    if screen == .front, toCentre.length > 1e-9,
       let hit = try? nearestMissionCollision(
         from: .init(0, 0, 0), direction: toCentre.unit, range: toCentre.length + 6,
         radius: 0, includePlayer: false),

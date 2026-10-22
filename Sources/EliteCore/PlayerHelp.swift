@@ -23,7 +23,7 @@ public enum PlayerHelp {
           title: "DEFENSIVE FLIGHT PRACTICE",
           rows: [
             "AVENOR / REVIEW THEN CONFIRM / ZERO CASH",
-            "MANUAL CENTRE REFERENCE / NO LOCK NEEDED",
+            "FRONT - MANUAL CENTRE / NO LOCK NEEDED",
             "ACQUIRE2S / RIGHT A0.5S / LEFT B0.5S",
             "WITHDRAW3S / NOSE AWAY / NO FIRING",
             "Q - RELEASE GUIDANCE FOR MANUAL FLIGHT",

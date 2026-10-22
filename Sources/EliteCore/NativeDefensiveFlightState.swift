@@ -109,6 +109,10 @@ struct NativeDefensiveFlightState: Codable, Sendable, Equatable {
   var terminalDock: NativeMainStationDockReceipt?
   var terminalOutcome: ScriptOutcome?
 
+  init(permission: NativeDefensiveFlightPermission) {
+    self.permission = permission
+  }
+
   static let durations = [2.0, 0.5, 0.5, 3.0]
   var workVerified: Bool { failure == nil && windows.count == 4 && crossing != nil }
   var ready: Bool { valid && terminalOutcome == nil && workVerified && disengagedCalendar != nil }
