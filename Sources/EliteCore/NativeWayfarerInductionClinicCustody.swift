@@ -213,7 +213,7 @@ struct NativeInductionClinicCustody: Codable, Sendable, Equatable {
           receiver: Game.worldResourceIdentity(
             "main-station-v1:" + booking.terms.receiver.resourceKey), timerID: timer.id),
       cancellation?.valid(pickup: pickup) ?? true,
-      cancellation.map { $0.contact.context.flightSeconds < timer.due } ?? true,
+      cancellation.map({ $0.contact.context.flightSeconds < timer.due }) ?? true,
       integrity.matchesNativeState(
         timer: timer, allowance: booking.terms.flightAllowance,
         issueSequence: pickup.contact.sequence,
