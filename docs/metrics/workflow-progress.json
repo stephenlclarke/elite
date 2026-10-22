@@ -4741,11 +4741,16 @@
       "github_run": 39728009204,
       "selection_methods": 221,
       "new_methods": 9,
-      "source_review": "assigned MBA",
-      "unit_status": "existing hosted run active",
+      "source_review": "MBA independent clinic source/quote review clean",
+      "unit_status": "SUCCESS; MBA verified221methods253casesPASS,0failures/errors/skips,no crash",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333479179",
       "next_assigned": "C08.P06.B.clinic.accept",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verified_methods": 221,
+      "verified_expanded_cases": 253,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333643137",
+      "verified_at": "2026-10-22T05:40:10Z",
+      "qualification_scope": "All9ClinicSource and retained6Consent/7Capacity/6Charter/9UtilityWork/3Binding PASS; actual pack-loader digest matches; source/readonly-quote only, no native journey or usable delivery"
     }
   ]
 }
