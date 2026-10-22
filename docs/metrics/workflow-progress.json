@@ -5007,7 +5007,7 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08Veilcertification;seedfailureMBAtriage/auditreviewasync",
-      "G3": "M07.P01legal/observedscannerfacts;retainsPR51/56/58qualification/merge",
+      "G3": "M07.P02 native ordnance/attribution;retainsPR51/56/58/61finalqualification/merge",
       "G4": "T02.P01.provider native uncrewed practice targets/harmless native hits"
     },
     "reviewer": "MBA/G2",
@@ -5160,7 +5160,7 @@
         "unit_run": 39745584513,
         "unit_status": "Necessaryfd9composition261jobactive;old93cb259SUCCESSmetadataretained/notnewheadpass",
         "source_state": "93cbfinalassertion/suite/259selectorhandoffposted;MBAreview/executionpending",
-        "source_review_result": "MBA93cbCLEAN;protected/fitted/heldassertions,EnergyBombidentity/provenance/Status/immutabilityretained;259=258+1",
+        "source_review_result": "MBA85necessaryfd9compositionCLEAN;domaincode/testsunchanged;exact261",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
         "latest_composition_review_seconds_reported": 119,
@@ -5345,14 +5345,18 @@
         "ownership": "PureauthoreddisplayIDprojection;StationDisplay market;MarketInteractionclick;ONLYGame.keymarketup/down1060\u20131079;puretests/notes",
         "numeric_policy": "Preservecurrentcatalogueprecedence/modularmechanics;noU03rebalance",
         "credited_behavior": "Authenticated17-good prices/finite stock,stableIDs,quote/revision checks,once-debit,cargo/cash bounds;source/existingtests only",
-        "source_state": "Marketordercomplete source pushed with3selectedmethods;solehandoff/review/executionpending",
+        "source_state": "Source/unitqualified;G3ownmergeafterfinalgates;notnewapp/release",
         "outstanding_separate": "U03authored14baseequipmentprice/TLprecedence;notrebalancedhere",
         "head": "5da5ae1a982bd6889a5952ede51e4a461646bc6b",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/56",
         "first_push_observed_at": "2026-10-22T07:48:15Z",
-        "source_review_result": "MBA0aacCLEAN;shared17IDprojection/render/click/2arrowhunks;stableprices/stock/cargoIDs;3fixturesread;255+3=258",
+        "source_review_result": "MBA5danecessaryfd9compositionCLEAN;domaincode/testsunchanged;exact260",
         "unit_run": 39745589259,
-        "unit_status": "Necessaryfd9composition260jobactive;old0aac258SUCCESSmetadataretained/notnewheadpass"
+        "unit_status": "MBAverifiedactual260methods292casesALLPASS;all3new+2Help;zeroerrors/skips/crash",
+        "verified_methods": 260,
+        "verified_expanded_cases": 292,
+        "compile_seconds": 553.0,
+        "execution_seconds": 52.708
       },
       {
         "id": "M04.P01.fleet-catalogue",
@@ -5452,7 +5456,8 @@
         "head": "1f95e7378e7b40e5e0dc741fff73922af604ee6a",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/59",
         "source_state": "Completestage12auditpushed;8new/279selection;MBAreview/hostedpending",
-        "handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336051526"
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336051526",
+        "source_review_result": "MBA1f95new8fixtures/actualfinitecharterrefusalCLEAN;inheritedseed60unqualified"
       },
       {
         "id": "M06.P03.appearance",
@@ -5464,10 +5469,17 @@
         "playable_at": null,
         "ownership": "PlanetLightingoriginal-systeminitializer+focusedhighTL/minmax/legacyunits/notes",
         "limits": "Nophysicalmechanics/meshbackend/newart/research/visualcampaign",
-        "source_state": "Originaltechfixpushed;3new/260selection;MBAreview/hostedpending",
+        "source_state": "Source/unitqualified;G3ownmergeafterfinalgates;notnewapp/release",
         "credited_behavior": "Existingbelt/orestablematerialjoinscorrect;nochangeneeded",
         "head": "fa28096334f6d55ba3dfae938d1bb7944fe4f8ee",
-        "pr_url": "https://github.com/stephenlclarke/elite/pull/58"
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/58",
+        "source_review_result": "MBAfa280original1..20/legacy0..15/all3fixtures/exact260CLEAN",
+        "unit_run": 39745315408,
+        "unit_status": "MBAverifiedactual260methods292casesALLPASS;all3new+2Help;zeroerrors/skips/crash",
+        "verified_methods": 260,
+        "verified_expanded_cases": 292,
+        "compile_seconds": 665.61,
+        "execution_seconds": 47.88
       },
       {
         "id": "C08.certify-network",
@@ -5490,8 +5502,22 @@
         "playable_at": null,
         "ownership": "WantedBoardtwofactlookups+2puredossierunits/notes",
         "limits": "NoG1Game/mission/saveorG4combat/scoop;no fabricatedtraffic/cargo/routes",
-        "source_state": "G3implementingobservedlocation/destinationresolvercorrection",
-        "credited_behavior": "Nativelegal/bounty/resource mechanics unchanged;no fabricatedtarget/cargo/travelfacts"
+        "source_state": "WantedBoardfixpushed;2puremethods/259selection;MBAreview/actualexecutionpending",
+        "credited_behavior": "Nativelegal/bounty/resource mechanics unchanged;no fabricatedtarget/cargo/travelfacts",
+        "head": "72f27b77ecd0a75a68aef88b0e09313d1e148509",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/61",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/61#issuecomment-6336183894"
+      },
+      {
+        "id": "M07.P02.ordnance-attribution",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:22:46.953867+00:00",
+        "phase_entry_state": "Boundedactualfiniteordnance/ECM/obstruction/creditgapimplementationassigned",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "ScriptNPCWeapons/NativeMissionProjectile/narrowpurepolicies/tests/notes",
+        "limits": "NoG4combat/impact/scooporG1Game/mission/save;noscriptedkill/newAI/weapontypes"
       }
     ],
     "model_settings": {
