@@ -152,6 +152,9 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let charterSignatures: [NativeInductionCharterSignature]?
   let charterClinicSource: NativeInductionClinicSource?
   let charterWorkshopSource: NativeInductionWorkshopSource?
+  let accreditation: NativeInductionAccreditation?
+  let networkCertification: NativeInductionNetworkCertification?
+  let charterAudit: NativeInductionCharterAudit?
   let charterSeedSource: NativeInductionSeedSource?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
@@ -169,7 +172,10 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     charterSignatures: [NativeInductionCharterSignature]? = nil,
     charterClinicSource: NativeInductionClinicSource? = nil,
     charterWorkshopSource: NativeInductionWorkshopSource? = nil,
-    charterSeedSource: NativeInductionSeedSource? = nil
+    charterSeedSource: NativeInductionSeedSource? = nil,
+    charterAudit: NativeInductionCharterAudit? = nil,
+    networkCertification: NativeInductionNetworkCertification? = nil,
+    accreditation: NativeInductionAccreditation? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -192,6 +198,9 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.charterSignatures = charterSignatures
     self.charterClinicSource = charterClinicSource
     self.charterWorkshopSource = charterWorkshopSource
+    self.accreditation = accreditation
+    self.networkCertification = networkCertification
+    self.charterAudit = charterAudit
     self.charterSeedSource = charterSeedSource
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
@@ -206,6 +215,9 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.charterSignatures == rhs.charterSignatures
       && lhs.charterClinicSource == rhs.charterClinicSource
       && lhs.charterWorkshopSource == rhs.charterWorkshopSource
+      && lhs.accreditation == rhs.accreditation
+      && lhs.networkCertification == rhs.networkCertification
+      && lhs.charterAudit == rhs.charterAudit
       && lhs.charterSeedSource == rhs.charterSeedSource
   }
   var valid: Bool {
@@ -319,6 +331,9 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     if let charterClinicSource, !charterClinicSource.valid(parent: self) { return false }
     if let charterWorkshopSource, !charterWorkshopSource.valid(parent: self) { return false }
     if let charterSeedSource, !charterSeedSource.valid(parent: self) { return false }
+    if let charterAudit, !charterAudit.valid(parent: self) { return false }
+    if let networkCertification, !networkCertification.valid(parent: self) { return false }
+    if let accreditation, !accreditation.valid(parent: self) { return false }
     return continuationValid && seedKeyValid
   }
   var payloads: [String: Int] {
@@ -384,7 +399,7 @@ enum NativeWayfarerInduction {
   static let clinic = SystemIdentity(galaxy: 0, system: 185)
   static let receiver = SystemIdentity(galaxy: 0, system: 164)
   static let laterStages =
-    "Stages 12-14, charter signatures and final accreditation are not yet available."
+    "Stages 12-14 are separate reviews: actual selected-charter audit, Veil network certification, then Senn's final accreditation. Each requires its own actual original receiving and separate Confirm; final accreditation pays once."
   static func mission(owner: UUID) -> UUID {
     ScriptIdentity.uuid("wayfarer-induction-v1:\(owner)")
   }

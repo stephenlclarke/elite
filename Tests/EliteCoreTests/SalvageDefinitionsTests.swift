@@ -64,7 +64,9 @@ struct SalvageDefinitionsTests {
 
   @Test func scalarFitsRequireOneValidAxisAndRealLaser() throws {
     let alienIDs = Set(
-      AlienModuleKind.allCases.flatMap { [$0.definitionID, $0.upgradeDefinitionID] })
+      AlienModuleKind.allCases.filter(\.supportsUpgrade).flatMap {
+        [$0.definitionID, $0.upgradeDefinitionID]
+      })
     var checkedAlien: Set<String> = []
     var checkedOrdinary: Set<String> = []
     for item in SalvageDefinitions.all {

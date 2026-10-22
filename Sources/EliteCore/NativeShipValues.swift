@@ -45,7 +45,7 @@ extension Commander {
     let fittedMissiles =
       equipmentInventory.map { inventory in
         inventory.items.filter { item in
-          guard item.node == EquipmentRuntimeCatalog.standardMissile,
+          guard AlienMissileDefinition.profile(for: item.node) != nil,
             item.location?.hullInstanceID == inventory.activeHull,
             case .missilePylon = item.location?.slot
           else { return false }

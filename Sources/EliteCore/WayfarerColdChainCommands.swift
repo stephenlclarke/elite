@@ -238,7 +238,7 @@ final class WayfarerColdChainCustody: Codable, Sendable, Equatable {
   }
 }
 
-public struct WayfarerColdChainOffer: Sendable {
+public struct WayfarerColdChainOffer: Codable, Sendable, Equatable {
   public let id: UUID
   public let sourceID: String
   public let stockUnit: UUID

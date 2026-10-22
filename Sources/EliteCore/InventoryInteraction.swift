@@ -14,6 +14,7 @@ public enum InventorySubject: Sendable, Equatable {
   case recovered(SalvageLot)
   case alienAttachment(UUID)
   case alienUpgrade(UUID)
+  case alienResearch(UUID)
 }
 
 public struct InventoryInformationRow: Sendable, Equatable {
@@ -34,6 +35,7 @@ public struct InventoryInformationRow: Sendable, Equatable {
 
 public struct InventoryCommand: Sendable, Equatable {
   enum Action: Sendable, Equatable {
+    case alienMissileResearch(UUID, service: NativeMainStationArrivalContext)
     case alienRelocate(
       UUID, fit: Bool, revision: UInt64, worldRevision: UInt64,
       service: NativeMainStationArrivalContext)
@@ -100,6 +102,8 @@ extension Game {
     }
     do {
       switch subject {
+      case .alienResearch(let id):
+        return alienMissileResearchPreview(storage: id, inventory: inventory)
       case .alienAttachment(let id):
         return nativeAlienInventoryPreview(id, upgrade: false, inventory: inventory)
       case .alienUpgrade(let id):
@@ -228,6 +232,9 @@ extension Game {
     var candidate = self
     do {
       switch command.action {
+      case .alienMissileResearch(let storage, let service):
+        try candidate.applyAlienMissileResearch(
+          storage: storage, service: service, expectedWorldRevision: command.sourceRevision)
       case .alienRelocate, .alienApplyUpgrade:
         try candidate.applyNativeAlienFitting(command.action)
       case .fit(let item, let slot):
@@ -277,7 +284,7 @@ extension Game {
   }
 
   private func inventoryFitSlot(_ node: EquipmentNodeID) throws -> ComponentFittingSlot {
-    if node == EquipmentRuntimeCatalog.standardMissile {
+    if AlienMissileDefinition.profile(for: node) != nil {
       guard
         let pylon = (0..<commander.missileCapacity).first(where: {
           commander.fittedEquipment(at: .missilePylon($0)) == nil

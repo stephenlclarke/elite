@@ -72,6 +72,9 @@ extension NativeWayfarerInductionState {
     if rescueReception != nil { result.insert(8) }
     if utilityReception != nil { result.insert(9) }
     if charterChoice != nil { result.insert(10) }
+    if charterAudit != nil { result.insert(11) }
+    if networkCertification != nil { result.insert(12) }
+    if accreditation != nil { result.insert(13) }
     return result
   }
 
@@ -144,5 +147,5 @@ extension NativeWayfarerInduction {
   // Keep the accepted opening pack's bytes/pin stable. This native projection describes the
   // now-supported continuation instead of changing historical acceptance or pickup evidence.
   static let currentBriefing =
-    "SENN: Accept the Avenor induction after an ordinary delivery or recorded native sale. Keep one free tonne. Collect Renas's unique sealed clinic crate, then Confirm intact reception at Navidor before its original 1800 armed-flight-second allowance expires. At Enmadan, collect the original failed workshop cassette. At Renas, Confirm service of that original and its owner's receiving record. At Enlirin, review the seed custodians' consent and Confirm the original one-tonne vault-key loan for Lareria's receiving cradle. The seed itself stays aboard the ark. These six stages pay nothing and grant no accreditation or clue. Stages 7-14 remain unavailable."
+    "SENN: Accept the Avenor induction after an ordinary delivery or recorded native sale. Keep one free tonne. Collect Renas's unique sealed clinic crate, then Confirm intact reception at Navidor before its original 1800 armed-flight-second allowance expires. At Enmadan, collect the original failed workshop cassette. At Renas, Confirm service of that original and its owner's receiving record. At Enlirin, review the seed custodians' consent and Confirm the original one-tonne vault-key loan for Lareria's receiving cradle. The seed itself stays aboard the ark. These six stages pay nothing and grant no accreditation or clue. Continue through original ark receiving, recorder/rescue receiving and Enron utility repairs, then choose the charter, obtain each actual owner signature and return to Avenor for the real capacity audit and Veil certification. Final Senn receiving remains separate."
 }

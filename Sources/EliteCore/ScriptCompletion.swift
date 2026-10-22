@@ -64,7 +64,11 @@ public struct ScriptCompletionReceipt: Codable, Sendable, Equatable {
       && digest == state.digest && outcome == state.outcome && outcome != .active
       && sequence > 0 && sequence <= engine.nextEvent && state.hasAcknowledged(sequence)
       && ScriptCapabilities.events.contains(causeKind) && committed.valid
-      && revision > 0 && revision == state.revision && committed.revision == revision
+      && revision > 0
+      && (definition == NativeWayfarerInduction.stateID
+        ? NativeInductionAccreditationSave.validCompletion(self, state: state, engine: engine)
+        : revision == state.revision)
+      && committed.revision == revision
       && (cause.map { $0.valid && $0.revision < revision } ?? true)
       && committed.localSeconds <= engine.localSeconds
       && committed.flightSeconds <= engine.flightSeconds

@@ -51,9 +51,11 @@ enum NativeWayfarerInductionSave {
     guard mission.definition == NativeWayfarerInduction.stateID,
       mission.digest == NativeWayfarerInduction.digest,
       mission.version == NativeWayfarerInduction.version,
-      mission.outcome == .active, mission.contract == nil, mission.completionReceipt == nil,
+      mission.contract == nil,
       mission.dialogue == nil, mission.timers.isEmpty, mission.ownedEncounters.isEmpty,
       mission.gearIssues.isEmpty, let state = mission.savedWayfarerInduction, state.valid,
+      mission.outcome == (state.accreditation == nil ? .active : .complete),
+      state.accreditation != nil || mission.completionReceipt == nil,
       state.permission.mission == mission.id, mission.payloads == state.payloads,
       mission.milestones == state.milestones,
       let owner = commander.equipmentOwnerID, owner == state.permission.owner,
@@ -128,6 +130,23 @@ enum NativeWayfarerInductionSave {
     if let signatures = state.charterSignatures,
       !NativeInductionCharterConsentSave.signaturesValid(
         signatures, mission: mission, commander: commander)
+    {
+      return false
+    }
+    if let audit = state.charterAudit,
+      !NativeInductionCharterAuditSave.claimsValid(audit, mission: mission, commander: commander)
+    {
+      return false
+    }
+    if let receipt = state.networkCertification,
+      !NativeInductionNetworkCertificationSave.claimsValid(
+        receipt, mission: mission, commander: commander)
+    {
+      return false
+    }
+    if let terminal = state.accreditation,
+      !NativeInductionAccreditationSave.claimsValid(
+        terminal, mission: mission, commander: commander)
     {
       return false
     }

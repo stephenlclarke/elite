@@ -14,6 +14,10 @@ extension NativeInductionCrewLogSave {
       !root.keys.contains("nativeInductionWorkshop"),
       !root.keys.contains("charterWorkshopSource"),
       !root.keys.contains("nativeInductionWorkshopSource"),
+      !root.keys.contains("accreditation"), !root.keys.contains("nativeAccreditation"),
+      !root.keys.contains("networkCertification"),
+      !root.keys.contains("nativeNetworkCertification"),
+      !root.keys.contains("charterAudit"), !root.keys.contains("nativeCharterAudit"),
       !root.keys.contains("charterSeedSource"), !root.keys.contains("nativeInductionSeedSource"),
       !root.keys.contains("savedNativeInductionSeed"), !root.keys.contains("nativeInductionSeed"),
       !root.keys.contains("charterClinicSource"), !root.keys.contains("nativeInductionClinicSource")
@@ -37,7 +41,11 @@ extension NativeInductionCrewLogSave {
     }
     for entry in instances {
       guard let mission = entry as? [String: Any] else { throw SaveError.invalidCommander }
-      guard !mission.keys.contains("charterSeedSource"),
+      guard !mission.keys.contains("accreditation"), !mission.keys.contains("nativeAccreditation"),
+        !mission.keys.contains("networkCertification"),
+        !mission.keys.contains("nativeNetworkCertification"),
+        !mission.keys.contains("charterAudit"), !mission.keys.contains("nativeCharterAudit"),
+        !mission.keys.contains("charterSeedSource"),
         !mission.keys.contains("nativeInductionSeedSource"),
         !mission.keys.contains("nativeInductionSeed"),
         !mission.keys.contains("nativeInductionWorkshop"),
@@ -102,6 +110,30 @@ extension NativeInductionCrewLogSave {
           || ((parent["charterCapacity"] as? [String: Any])?["events"] as? [Any])?.isEmpty == false
       {
         guard supportsCharterConsent(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("charterAudit")
+      {
+        guard supportsCharterAudit(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("networkCertification")
+      {
+        guard supportsNetworkCertification(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("accreditation")
+      {
+        guard supportsAccreditation(schema), !embedded,
           mission["definition"] as? String == NativeWayfarerInduction.stateID,
           mission["digest"] as? String == NativeWayfarerInduction.digest
         else { throw SaveError.invalidCommander }
