@@ -35,8 +35,16 @@ extension Game {
 
   /// Exact current native address and owning retained alias, never a selected name or serial alone.
   func inductionCrewLogRecorder(_ body: SpaceBody) -> ScriptOwnedActor? {
-    guard NativeInductionCrewLogPack.marker(body, commander: commander),
-      let child = inductionCrewLogChild, child.outcome == .active, child.suspension == nil,
+    guard withReadOnlyCommander({ NativeInductionCrewLogPack.marker(body, commander: $0) }) else {
+      return nil
+    }
+    return inductionCrewLogRecorderAfterMarker(body)
+  }
+
+  // Ordinary targets must reject before reserving the full present-validation frame.
+  @inline(never)
+  private func inductionCrewLogRecorderAfterMarker(_ body: SpaceBody) -> ScriptOwnedActor? {
+    guard let child = inductionCrewLogChild, child.outcome == .active, child.suspension == nil,
       let state = child.savedNativeCrewLog, state.admission != nil, state.capture == nil,
       !state.losses.contains(where: { $0.role == "recorder" }),
       let group = child.ownedEncounters[NativeInductionCrewLogPack.encounter], group.admitted,

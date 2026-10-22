@@ -1,4 +1,4 @@
-"""One unmerged diagnostic replay of the exact retained 52ce coverage image; never build."""
+"""One unmerged diagnostic replay of the exact retained eed9 coverage image; never build."""
 import hashlib
 import json
 import os
@@ -14,10 +14,10 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'reports/m01-retained-replay'
-SOURCE = '52ce90170e314c1ac070f71bf5d4d4436f8cedb1'
-IMAGE_SHA = '6bf5c2489a14563ee3040df141ff957677f6e8520f2c82fec4ad22830d60efeb'
-UUID = 'E97D806C-28C7-32C9-A102-313DC07DEE89'
-FILTER_SHA = 'bc897adf7c0d8d82ff54d92b855a8b43dd40de2b13633a0838c82a06896f19b4'
+SOURCE = 'eed9dae5b7a1fae098a85a57a996d555f55f3b2b'
+IMAGE_SHA = '9081c826d5dc55d78dc649e8b99d3400ffb10406c1db1342f85cc3fce0785059'
+UUID = 'B50DBAA9-2482-375C-8867-1037424B648B'
+FILTER_SHA = '48afd0a198777bcaed1a18350fde67792d5f835d25c33ec1fb2e3c1fc469dd6e'
 DEVELOPER = Path('/Applications/Xcode_16.4.app/Contents/Developer')
 HELPER = DEVELOPER / 'Toolchains/XcodeDefault.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper'
 IMAGE = ROOT / '.build/arm64-apple-macosx/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests'
@@ -94,16 +94,16 @@ def prepare():
                     'Package.resolved', 'Tools/CI/isolated_units.py', 'Tools/CI/crash_artifacts.py',
                     'Tools/CI/isolated_crash_evidence.py'], cwd=ROOT, check=True)
     upstream = json.loads((OUT / 'upstream-run.json').read_text())
-    require(upstream['id'] == 39839922136 and upstream['head_sha'] == SOURCE
+    require(upstream['id'] == 39845001834 and upstream['head_sha'] == SOURCE
             and upstream['conclusion'] == 'failure', 'Wrong upstream run.')
     original = ROOT / '.build/m01-replay-original'
     result = json.loads((original / 'result.json').read_text())
     require(result['commit'] == SOURCE and result['status'] == 'failed', 'Wrong original result.')
     units = runpy.run_path(str(ROOT / 'Tools/CI/isolated_units.py'))
     expression = result['command'][result['command'].index('--filter') + 1]
-    require(expression == units['selection']() and sum(map(len, units['METHODS'].values())) == 344
+    require(expression == units['selection']() and sum(map(len, units['METHODS'].values())) == 346
             and hashlib.sha256(expression.encode()).hexdigest() == FILTER_SHA,
-            'Original 344-method selection differs.')
+            'Original 346-method selection differs.')
     records = json.loads((original / 'failure-evidence/native-images.json').read_text())
     require(len(records) == 1, 'Expected exactly one retained test image.')
     record = records[0]
@@ -167,7 +167,7 @@ def prepare():
     runtime_closure(frameworks, libraries)
     write('resources.json', inventory)
     write('launch.json', {'source': SOURCE, 'diagnosticCommit': checked('git', 'rev-parse', 'HEAD'),
-        'diagnosticOnly': True, 'originalRun': 39839922136, 'originalMethods': 344,
+        'diagnosticOnly': True, 'originalRun': 39845001834, 'originalMethods': 346,
         'imageSHA256': IMAGE_SHA, 'imageUUID': UUID, 'swiftVersion': version,
         'arguments': arguments, 'filterSHA256': FILTER_SHA, 'helper': str(HELPER),
         'coverageInstrumentedImage': True, 'parallelism': 3, 'executionLimitSeconds': 180,

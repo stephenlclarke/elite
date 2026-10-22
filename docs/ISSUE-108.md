@@ -1,0 +1,8 @@
+<!-- markdownlint-disable MD013 -->
+# Crew-log recorder lookup frame during target cycling
+
+[Issue #108](https://github.com/stephenlclarke/elite/issues/108) follows [#106](https://github.com/stephenlclarke/elite/issues/106) and [PR #107](https://github.com/stephenlclarke/elite/pull/107). Current52ce compiled in run39839922136, then execution ended with signal4 and no attributed crash report. Its single approved retained-image capture39843168323 stopped after102.347seconds with one launch and successful owned cleanup. This diagnostic stop is not qualification or proof that the original signal4 has the same exception identity.
+
+The captured stack is chkstk, inductionCrewLogRecorder, inductionCrewLogFacts, workTargetCandidate, real Tab target cycling and the unchanged original station-hazard test. It contains no Display.draw or visibleInFront frame. Image/dSYM UUID E97D806C-28C7-32C9-A102-313DC07DEE89 matches the retained current image. The recorder's LR+1660 maps to return0x1d5a3e4 immediately after stack-probe call0x1d5a3e0. The preceding metadata/size load is NativeInductionCrewLogState; captured x8 is4871bytes, aligned4880. This is a prologue allocation before the source's leading marker rejection. No memory-region map was captured, so a stack-guard region is not separately proved for this stop.
+
+Ordinary non-mission targets must reject without entering that large present-validation frame. Keep the same marker predicate once, then call a noninline helper for the unchanged full owning-child/recorder/physical/profile authority checks. Preserve returned alias/identity/body semantics and all state/save/selection behavior. See [the repair note](PR-crew-recorder-marker-boundary.md).
