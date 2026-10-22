@@ -32,6 +32,10 @@ METHODS = {
         "contextualSeedRowsAndCapturedQuoteKeepPickupReceivingReturnAndHelpSeparate",
         "closedSeedSchemaPreservesEarlierOperatorsAndRejectsEarlyEmbeddedUnknownOrOrphanClaims",
     ),
+    "ContextControlHintUnitTests": (
+        "systemScrollHintsFollowActualViewportAndHelpReturnContext",
+        "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
+    ),
     "NativeWayfarerInductionWorkshopUnitTests": (
         "originalBatchKeepsSixDistinctFailedSerialsSeparateFromClinicCargoAndAllWindows",
         "wholeReachableOutAndReturnItinerarySetsExactFrozenPriceWithoutGenericW03Weakening",
