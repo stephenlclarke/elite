@@ -5817,7 +5817,7 @@
         "playable_at": null,
         "disposition": "Missing exact original two-component physical resource isolation/work observation provider; existing induction three-module repair cannot substitute",
         "qualification_scope": "Source/existing utility foundation definitions only; no fresh execution",
-        "source_state": "Exact UX physical source/work design imported and Root approved; new provider implementation assigned",
+        "source_state": "Preserved while author handles newly attributable544KiBfixturestackguard60; no fake parent authority; G11P02producerdependency explicit",
         "design_path": "docs/gameplay-design/G11-P01-TWO-COMPONENT-ISOLATION-PROVIDER.md",
         "design_sha256": "3d8bdebb4179375c84d0901125db86ae3e12984430e0c5176a17d4b21e90447f",
         "reserved_format_pair": [
@@ -5903,10 +5903,13 @@
         "reserved_shared_hunks": [
           "EquipmentRuntimeCatalog.graph exact acquisitionOnly programmer node",
           "OwnedGearKind.valid exact typed programmer resource",
-          "CommanderCargoValidation.checkedCargoTonnes actual canonical programmer count*1t including held under fitbudget"
+          "CommanderCargoValidation.checkedCargoTonnes actual canonical programmer count*1t including held under fitbudget",
+          "ScriptEquipment.applyScriptGearCommand refuse canonical programmer node generic Lua issue/release/refit",
+          "Tools/CI actual programmer method additions/count, no infrastructure"
         ],
         "interface": "NativeIsolationProgrammerBinding from existing gearIssues/receipts, typed parent sealed permission/ID/digest/issuer/serial/currentowner/hull/revision/issued status",
-        "production_dependency": "Genuine G11P02 parent acceptance/caller required; no mocked authorization or availability claim"
+        "production_dependency": "Genuine G11P02 parent acceptance/caller required; no mocked authorization or availability claim",
+        "source_state": "Definition/custody/one-tonne/generic bypass guard foundation authoring; actual nativecontact adapter remains open pending genuine P02authority"
       }
     ],
     "model_settings": {
@@ -5952,6 +5955,12 @@
         "started_at": "2026-10-22T08:54:38.254725+00:00",
         "reason": "Concrete missing runtime ownership/fitting capability exceeds bounded G3 scope",
         "scope": "One authenticated recovered alien-drive capability; central hunks require G1 reservation"
+      },
+      {
+        "issue": 60,
+        "session": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "reason": "NEWmatched60c9IPS544KiBstackguard during nested fixture construction; separate actual negative fuel64 G1-owned",
+        "scope": "Source-proven fixture construction/ownership hunk proposal, no artifact duplicate/probe/local execution"
       }
     ],
     "escalation_reserve": {
@@ -5960,7 +5969,7 @@
       "authority": "Latest human instruction: use Mission Coder1 for difficult things",
       "policy": "Named necessary blocker only; no standing implementation stream; independent MBA review",
       "model": null,
-      "active_assignment": null
+      "active_assignment": "Issue60 newly attributable fixture construction stack exhaustion; exact source-only repair; G11WIP frozen"
     },
     "qualification_queue_note": "56 merged after267/299 PASS;61 final269 pending;65 actual provider review/units pending;59/62 corrected-head failures retained,64 ready G1 and60 unattributed.",
     "complete_features_merged": 6,
