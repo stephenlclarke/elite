@@ -4946,6 +4946,19 @@
       "scope": "Enlirin162-Lareria091 finite6originals,3t,510+95L,7200flightseconds; complete acceptance/pickup/receiving/cancel-return/loss loop",
       "source_pushed": false,
       "usable_build_delivered": false
+    },
+    {
+      "event": "Complete workshop source pushed; missing single PR handoff requested; seed moves to own feature branch",
+      "at": "2026-10-22T07:10:54Z",
+      "head": "fcf0e348fd3fca74f0f484d3e659cd96aac0a182",
+      "base": "8b30a3112d1af0c5130cd01d8fed582c029a2913",
+      "ledger_parent": "C08.P06.B.workshop",
+      "github_run": 39738732938,
+      "new_methods_reported": 11,
+      "handoff_status": "Missing atauthoritativePRcommentread; Rootrequestedsolecomment",
+      "source_review": "queuedMBA",
+      "unit_status": "active",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -5182,6 +5195,7 @@
         "Unmerged inventory grouping",
         "Unfinished workshop loop"
       ]
-    }
+    },
+    "branch_policy": "Both authors use feature branches/PRs for new work; seed branches fromfcf, no unreviewed directsharedpush; fcf lastlegacydirectpacket. No history rewrite/integrator."
   }
 }

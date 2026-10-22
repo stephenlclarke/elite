@@ -22,7 +22,7 @@ Base <SHA> -> head <SHA>; isolated units <selection>; known gap <if any>
 
 ## Two independent feature streams
 
-G1 owns the complete clinic loop. G3 owns M02.P04/F06 showroom comparison, using its existing session01a13ff4-1a89-7711-befa-15701182d113 and an isolated branch/worktree from81d54e74. Each developer owns its PR and merge after MBA review/checks/approvals; showroom targets feature/canonical-mission-composition. No central integration queue. MBA takes ready corrections first, then the oldest ready feature. Root flags review backlog above two ready packets or an oldest source review older than30minutes; this is an orchestration signal, not a developer wait gate.
+G1 owns the complete clinic loop. G3 owns M02.P04/F06 showroom comparison, using its existing session01a13ff4-1a89-7711-befa-15701182d113 and an isolated branch/worktree from81d54e74. Each developer owns its PR and merge after MBA review/checks/approvals; showroom targets feature/canonical-mission-composition. Both developers use feature branches for new work; G1 seed source must not go directly onto the shared branch before review/qualification. Workshopfcf is the final legacy direct source packet on sharedcanonical. Keep current edits intact while branching; no published-history rewrite or integrator handoff. No central integration queue. MBA takes ready corrections first, then the oldest ready feature. Root flags review backlog above two ready packets or an oldest source review older than30minutes; this is an orchestration signal, not a developer wait gate.
 
 ## Difficult-work escalation only when needed
 
