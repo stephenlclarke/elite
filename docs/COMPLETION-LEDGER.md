@@ -1,6 +1,6 @@
 # L337 completion ledger
 
-Updated 21 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; G1 alone integrates canonical source and publishes. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
+Updated 21 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
 ## Player-facing milestone roadmap
 
@@ -14,7 +14,7 @@ Updated 21 October 2026. This is the current delivery guide, not a content-compl
 
 **Current workflow:** [Developer/reviewer workflow](DEVELOPMENT-WORKFLOW.md) is authoritative. PR25 contains the current source handoffs and MBA review evidence; linked GitHub findings hold corrective work. Issue23 is a closed historical tracker, not an active queue. Generic review-service errors do not block independent MBA review. Older ownership and validation instructions below are retained history, not active gates.
 
-**Roles:** MBP/G1 (GPT-6.1 Sol High) implements ledger features and unit tests, pushes every coherent packet, then addresses ready MBA findings. MBA/G2 reviews pushed diffs, reviews GitHub isolated-unit results, files issues with suggested fixes and verifies corrections before closure; it may also create explicitly requested graphics assets. Root may activate a second MBP coder only for an actual GitHub issue backlog, with disjoint ownership and no ledger work. No developer waits for review or acknowledgement; take the next ready ledger item.
+**Roles:** MBP/G1 (GPT-6.1 Sol High) implements ledger features and unit tests, pushes every coherent packet, then addresses ready MBA findings. Each explicitly assigned developer owns its feature through corrections and merge once MBA review, final-head checks and applicable approvals pass; completed work does not wait for a central integrator. G1 remains the release publisher. MBA/G2 reviews pushed diffs, reviews GitHub isolated-unit results, files issues with suggested fixes and verifies corrections before closure; it may also create explicitly requested graphics assets. Root may activate a second MBP coder only for an actual GitHub issue backlog, with disjoint ownership and no ledger work. No developer waits for review or acknowledgement; take the next ready ledger item.
 
 **Development phase:** No integration testing, native gameplay journeys, GUI/system/performance campaigns or broad `make ci`. Keep required PR-merge safeguards distinct from source pushes. Record implementation, review, unit, usable-build and release states separately. Update this ledger at assignment and meaningful completion/delivery transitions, not at every poll.
 
