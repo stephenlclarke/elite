@@ -4417,6 +4417,20 @@
       "verified_expanded_cases": 171,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329819723",
       "qualification_scope": "Source/admission pure structural units; no native journey/refusal execution or playable delivery"
+    },
+    {
+      "event": "Protected recorder pickup pushed; original survivor receiving assigned",
+      "head": "25e6f859534b55113c5224f77568b9f61e0618c8",
+      "base": "5903b6fbbd7905c9204f109cd6102691445cbbd6",
+      "ledger_parent": "C08.P04.B.pickup",
+      "github_run": 39701855449,
+      "selection_methods": 147,
+      "new_methods": 8,
+      "source_review": "MBA assigned",
+      "unit_status": "existing hosted active; artifact pending",
+      "next_assigned": "C08.P05.A",
+      "usable_build_delivered": false,
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329930577"
     }
   ]
 }
