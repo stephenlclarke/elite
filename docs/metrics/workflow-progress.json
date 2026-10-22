@@ -6100,6 +6100,25 @@
       "retained_missile_cases": 307,
       "final_head_qualification": "pending",
       "usable_build_delivered": false
+    },
+    "media_fingerprint_correction": {
+      "issue": 75,
+      "owner": "G4",
+      "state": "assigned after PR76 coherent source push",
+      "scope": "Truthful ship renderer input dependency hash and Python regression units",
+      "limits": "No forged manifests, dropped renderer dependencies, generated-media edits or native/fullCI execution"
+    },
+    "safe_gunnery_lesson": {
+      "owner": "G4",
+      "pr": 76,
+      "head": "dfb006e2",
+      "focused_methods": 16,
+      "selection_methods": 316,
+      "github_run": 39759361090,
+      "qualification": "pending",
+      "provider_dependency_pr": 65,
+      "merged": false,
+      "usable_build_delivered": false
     }
   }
 }
