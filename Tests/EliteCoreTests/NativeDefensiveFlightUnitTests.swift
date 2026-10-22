@@ -61,13 +61,15 @@ struct NativeDefensiveFlightUnitTests {
         worldVelocity: practice.permission.frame.orientation.apply(velocity), time: time))
   }
 
-  private func state(_ provider: NativePracticeState) throws -> NativeDefensiveFlightState {
+  private func state(_ provider: NativePracticeState, radius: Double = 10) throws
+    -> NativeDefensiveFlightState
+  {
     let p = provider.permission
     var value = NativeDefensiveFlightState(
       permission: .init(
         mission: p.mission, owner: p.owner, carrier: p.carrier,
         dock: try #require(p.consent.committed.nativeMainDock), consent: p.consent, acceptedAt: 0))
-    try value.begin(provider, radius: 10)
+    try value.begin(provider, radius: radius)
     return value
   }
 
@@ -98,10 +100,10 @@ struct NativeDefensiveFlightUnitTests {
   }
 
   /// Component interval reducer only. No Game.tick, native journey or terminal is executed.
-  private func completedWindows(_ provider: NativePracticeState) throws
+  private func completedWindows(_ provider: NativePracticeState, radius: Double = 10) throws
     -> NativeDefensiveFlightState
   {
-    var value = try state(provider)
+    var value = try state(provider, radius: radius)
     var current = try acquiring(provider, state: &value, steps: 21)
     try #require(value.windows.count == 1)
     func move(to position: Vector3, velocity: Vector3, yaw: Double) throws {
@@ -175,6 +177,111 @@ struct NativeDefensiveFlightUnitTests {
       provider.body(for: $0.element, id: 50 + $0.offset, pose: flight.pose)
     }
     return game
+  }
+
+  /// Actual command helpers with component course receipts; no Game.tick, native journey or disk store.
+  private func receivingGame() throws -> Game {
+    var game = Game(executive: false)
+    try game.commander.prepareEquipment()
+    let owner = try #require(game.commander.equipmentOwnerID)
+    let carrier = try #require(game.commander.hullInstanceID)
+    let system = NativeDefensiveFlight.location
+    game.commander.system = system.system
+    game.commander.flightSimulation.enter(system, arriving: false)
+    let station = NativeMainStationIdentity(
+      world: owner, system: system,
+      resource: Game.worldResourceIdentity("main-station-v1:main-orbital:0:7"))
+    let dock = NativeMainStationDockReceipt(
+      station: station, actor: .init(system: system, visit: 1, entity: 1),
+      commanderOwner: owner, sequence: 1, calendarSeconds: 0)
+    var world = try NativeStationWorld(owner: owner)
+    world.mainStations = [station]
+    world.currentMainDock = dock
+    world.nextMainDockSequence = 2
+    game.commander.nativeStations = world
+    game.nativeMainStationDockEvidence = .init(
+      receipt: dock, runtimeEpoch: game.nativeStationRuntimeEpoch)
+    game.docked = true
+    game.dockedAtMainStation = true
+    game.scriptDurabilityAvailable = true
+    game.scriptPacks = [
+      try ScriptPackLibrary.read(ScriptPackLibrary.bundledDefensiveFlightDirectory)
+    ]
+    let review = game.defensiveFlightReview(.accept)
+    try #require(review.allowed)
+    try game.confirmDefensiveFlight(review)
+    let active = try #require(game.activeDefensiveFlight)
+    var flight = game.commander.flightSimulation
+    flight.enter(system, arriving: false)
+    flight.pose.position = .init(20000, 0, 0)
+    flight.physicalTime = 10
+    let provider = try NativePracticeState.prepare(
+      permission: .init(
+        mission: active.instance.id, owner: owner, carrier: carrier, lesson: .defensiveFlight,
+        digest: NativeDefensiveFlight.digest, consent: active.state.permission.consent,
+        player: try #require(flight.player), frame: flight.pose, begunAt: 10), flight: &flight)
+    let radius = try #require(game.commander.playerMesh.vertices.map(\.length).max())
+    let complete = try completedWindows(provider, radius: radius)
+    flight.physicalTime = try #require(complete.windows.last?.last.reading.time) + 1
+    var retired = provider
+    retired.endedAt = flight.physicalTime
+    var mission = active.instance
+    mission.savedDefensiveFlight = complete
+    mission.savedNativePractice = retired
+    mission.milestones = complete.milestones
+    game.commander.flightSimulation = flight
+    game.commander.scriptState.instances[mission.id] = mission
+    game.commander.scriptState.calendarSeconds = 501
+    let arrival = NativeMainStationDockReceipt(
+      station: station, actor: .init(system: system, visit: flight.visit, entity: 1),
+      commanderOwner: owner, sequence: 2, calendarSeconds: 501)
+    game.commander.nativeStations?.currentMainDock = arrival
+    game.commander.nativeStations?.nextMainDockSequence = 3
+    game.nativeMainStationDockEvidence = .init(
+      receipt: arrival, runtimeEpoch: game.nativeStationRuntimeEpoch)
+    try #require(NativeDefensiveFlightSave.validateClaims(game.commander))
+    return game
+  }
+
+  @Test func receivingCandidateIsZeroCashOnceAndProtectedCommandRefusalRetainsAttainedProof()
+    async throws
+  {
+    let game = try receivingGame()
+    let id = try #require(game.activeDefensiveFlight?.instance.id)
+    let credits = game.commander.credits
+    var received = game
+    try received.confirmDefensiveFlight(received.defensiveFlightReview(.receive))
+    let terminal = try #require(received.commander.scriptState.instances[id])
+    #expect(terminal.outcome == .complete && terminal.contract?.settlementAmount == 0)
+    #expect(received.commander.credits == credits)
+    #expect(received.commander.scriptState.savedClueJournal?.awards.count == 1)
+    #expect(
+      received.commander.scriptState.savedClueJournal?.awards[NativeDefensiveFlight.stateID]?.clueID
+        == "defensive-flight-family-trace")
+    #expect(NativeDefensiveFlightSave.validateClaims(received.commander))
+    let frozen = received.commander
+    #expect(throws: (any Error).self) { try received.finishDefensiveFlight(.complete) }
+    #expect(received.commander == frozen)
+
+    let runtime = GameRuntime(game: game)
+    let before = await runtime.snapshot()
+    do {
+      try await runtime.defensiveFlightReceivingComponent { _ in
+        throw DefensiveFlightWriteRefusal.refused
+      }
+      Issue.record("The injected publication refusal must reach the protected command.")
+    } catch DefensiveFlightWriteRefusal.refused {}
+    let refused = await runtime.snapshot()
+    #expect(refused.commander == before.commander)
+    #expect(refused.activeDefensiveFlight?.state.ready == true)
+    #expect(refused.commander.scriptState.savedClueJournal == nil)
+    try await runtime.defensiveFlightReceivingComponent { _ in
+      // Successful in-memory publisher fixture; disk-store integration is outside this unit.
+    }
+    let retried = await runtime.snapshot()
+    #expect(retried.commander.scriptState.instances[id]?.outcome == .complete)
+    #expect(retried.commander.scriptState.savedClueJournal?.awards.count == 1)
+    #expect(retried.commander.credits == credits)
   }
 
   @Test func exactBundledPinUsesOnlyTheExistingFamilyClueAndFirstReceiptIsRetained() throws {
@@ -583,4 +690,22 @@ struct NativeDefensiveFlightUnitTests {
     }
   }
 
+}
+
+private enum DefensiveFlightWriteRefusal: Error { case refused }
+
+extension GameRuntime {
+  /// Exercise the existing command rollback with a bounded injected publisher, without a disk store.
+  fileprivate func defensiveFlightReceivingComponent(publish: ScriptPublisher) throws {
+    try scriptCommand { candidate in
+      guard let dock = candidate.commander.nativeStations?.currentMainDock else {
+        throw SaveError.invalidCommander
+      }
+      candidate.scriptDurabilityAvailable = true
+      candidate.nativeMainStationDockEvidence = .init(
+        receipt: dock, runtimeEpoch: candidate.nativeStationRuntimeEpoch)
+      try candidate.confirmDefensiveFlight(candidate.defensiveFlightReview(.receive))
+      try publish(&candidate)
+    }
+  }
 }
