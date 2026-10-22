@@ -66,6 +66,8 @@ extension Game {
       observeNativeTransitSpool(bodies[index])
       guard bodies[index].energy > 0, var npc = bodies[index].scriptNPC else { continue }
       let definition = npc.fit.definition
+      // C01's native inertia already moved inside the physical sweep; no powered second pass.
+      if c01SurveyorActor(bodies[index]) != nil { continue }
       if bodies[index].physical?.npc?.resources?.profile != .nativeHull {
         bodies[index].energy = min(
           definition.energy, bodies[index].energy + definition.recharge * delta)

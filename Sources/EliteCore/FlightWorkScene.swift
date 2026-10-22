@@ -128,7 +128,7 @@ extension Game {
       advanceCanonicalModelSpin(at: index, delta: delta)
       if let physical = bodies[index].physical, physical.spawnIdentity != nil,
         physical.ordnance == nil, bodies[index].scriptShot == nil,
-        bodies[index].scriptNPC == nil
+        bodies[index].scriptNPC == nil || c01SurveyorActor(bodies[index]) != nil
       {
         bodies[index].position = bodies[index].position + end.shipVector(physical.velocity) * delta
       }
