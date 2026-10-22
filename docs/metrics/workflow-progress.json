@@ -4567,11 +4567,24 @@
       "issue": 43,
       "source_review": "MBA source clean; focused author14+2 synthetic evidence accepted",
       "authoring_validation": "14 collector +2 attribution Python tests PASS; two primary regressions failold/passnew",
-      "integration_status": "ready for G1 exact bounded composition; not yet observed",
+      "integration_status": "composed on canonical as670aad0490896faabad4f1c5205405f78a2514ec atop17432742; no usable delivery",
       "helper_status": "stopped after bounded correction",
       "usable_build_delivered": false,
       "github_run": 39713282582,
       "unit_status": "existing hosted active; actual ancestry evidence pending for43 closure"
+    },
+    {
+      "event": "Recorder frame and stale assertions corrected; reviewed collector composed",
+      "head": "670aad0490896faabad4f1c5205405f78a2514ec",
+      "correction_head": "174327421615faaa0e21ab8b1956da22a19bab2c",
+      "base": "7068555f9c0d85191bce27b0a8947782e2409894",
+      "ledger_parent": "M01.I41/I42/I43",
+      "github_run": 39713632774,
+      "selection_methods": 174,
+      "source_review": "MBA assigned combined correction; prior collector review reused",
+      "unit_status": "existing hosted active; crash resolution and issue closure unproved",
+      "next_assigned": "C08.P05.B.source",
+      "usable_build_delivered": false
     }
   ]
 }
