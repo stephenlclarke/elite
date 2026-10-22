@@ -4865,7 +4865,10 @@
       ],
       "cancellation_basis": "Exact unchanged fixture blob from verified compiler-failed2c38; corrected successors already dispatched by ordinary sourcepush",
       "new_test_dispatches_by_orchestrator": 0,
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "source_review": "MBA clean, reused across showroom/inventory compositions",
+      "source_review_completed_at": "2026-10-22T06:40:31Z",
+      "handoff_to_source_review_seconds": 153
     }
   ],
   "two_developer_phase": {
@@ -4937,7 +4940,10 @@
         "feature_handoff_to_source_review_seconds": 631,
         "feature_review_scope": "All10Custody methods, actual pickup/frozen receiving/payment/held return/timer dispatcher/retry/completion/loss/stock/window/hold/save113/114",
         "feature_review_result": "No additional production finding; inherited fixture compile50 remains blocking; actual execution/finalhead qualification pending",
-        "review_latency_caveat": "Includes priority2c38 failed-artifact interruption, not pure review CPU time"
+        "review_latency_caveat": "Includes priority2c38 failed-artifact interruption, not pure review CPU time",
+        "correction_source_review_result": "MBA c680 clean; source issue50 overlap removed,49 retained; actual affectedPASS pending",
+        "correction_source_review_completed_at": "2026-10-22T06:40:31Z",
+        "correction_handoff_to_source_review_seconds": 153
       },
       {
         "id": "M02.P04/F06",
@@ -4955,7 +4961,7 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
         "source_state": "G3 composed G1fixture correction; independent final-head review/actual corrected qualification pending",
         "first_push_observed_elapsed_seconds": 224,
-        "source_review_result": "Prior feature source clean; fixture-only c680 composition review pending",
+        "source_review_result": "MBA8afe final composition clean; unchanged showroom3/code/244selector; hosted qualification pending",
         "source_review_time_reported": "2026-10-22 06:02 UTC (minute precision)",
         "handoff_at": "2026-10-22T06:27:02Z",
         "source_review_latency_seconds_reported": 88,
@@ -4982,7 +4988,8 @@
           "aggregate": "FAILURE;only known49/50fixturefailures",
           "qualification": "Unchanged showroom-method execution evidence only; corrected final-head aggregate still pending"
         },
-        "moving_head_note": "57 merges409 for actual selector-count conflict. Freeze current head unless another actual dependency/conflict/up-to-date gate/correction requires change."
+        "moving_head_note": "57 merges409 for actual selector-count conflict. Freeze current head unless another actual dependency/conflict/up-to-date gate/correction requires change.",
+        "latest_composition_review_seconds_reported": 120
       },
       {
         "id": "M02.P05.inventory",
@@ -5000,7 +5007,12 @@
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6334409306",
         "unit_run": 39735189170,
         "unit_status": "existing corrected244methodrunpending; oldffknown-bad cancellationrequested",
-        "source_state": "Source pushed; MBA review/actual hosted qualification pending"
+        "source_state": "Source pushed; MBA review/actual hosted qualification pending",
+        "source_review_result": "MBAff-to-afba source clean, exact3projectionmethods/244selector unchanged; actual execution pending",
+        "source_review_completed_at": "2026-10-22T06:40:31Z",
+        "handoff_to_source_review_seconds": 378,
+        "latest_composition_review_seconds_reported": 119,
+        "review_latency_caveat": "Includes priority compiler-correction review, not pure source-review CPU time"
       }
     ],
     "model_settings": {
@@ -5030,6 +5042,6 @@
       "model": null,
       "active_assignment": null
     },
-    "qualification_queue_note": "2c38 correction and382 showroom composition source clean, execution pending;409 complete clinic source queued for review and hosted execution. Three heads are not three distinct unreviewed features."
+    "qualification_queue_note": "All current source reviews clear: complete clinic409 plus c680fix, showroom8afe, inventoryafba. Existing corrected jobs determine actual qualification;49/50 remainopen awaiting execution."
   }
 }
