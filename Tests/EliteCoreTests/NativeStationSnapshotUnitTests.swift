@@ -48,6 +48,46 @@ struct NativeStationSnapshotUnitTests {
     #expect(NativeStationSnapshot.matches(expected, in: [unrelated, expected]))
   }
 
+  @Test func inPlaceStationMeshReadPreservesGeometryAndRejectsMissingOrForeignActors() throws {
+    let fixture = NativeStationMeshReaderFixture()
+    let station = try #require(fixture.game.bodies.first { $0.nativeStationIdentity != nil })
+    let original = fixture.game.gameplayMesh(for: station)
+    let inPlace = fixture.game.nativeStationApproachGameplayMesh(for: station)
+    #expect(!inPlace.vertices.isEmpty)
+    Self.expectSameMesh(original, inPlace)
+
+    var missing = station
+    missing.physical = nil
+    let missingCurrent = fixture.game.nativeStationApproachBodyIsCurrent(missing)
+    let missingMesh = fixture.game.nativeStationApproachGameplayMesh(for: missing)
+    #expect(!missingCurrent && missingMesh.vertices.isEmpty && missingMesh.faces.isEmpty)
+
+    var foreign = station
+    let physical = try #require(station.physical)
+    foreign.physical = .init(
+      identity: .init(
+        system: physical.identity.system, visit: physical.identity.visit + 1,
+        entity: physical.identity.entity), population: physical.population, npc: physical.npc)
+    let foreignCurrent = fixture.game.nativeStationApproachBodyIsCurrent(foreign)
+    let foreignMesh = fixture.game.nativeStationApproachGameplayMesh(for: foreign)
+    #expect(!foreignCurrent && foreignMesh.vertices.isEmpty && foreignMesh.faces.isEmpty)
+
+    let ordinary = SpaceBody(id: 9999, hull: .cobra, position: .init(0, 0, 500))
+    let oldOrdinary = fixture.game.gameplayMesh(for: ordinary)
+    let newOrdinary = fixture.game.nativeStationApproachGameplayMesh(for: ordinary)
+    #expect(!newOrdinary.vertices.isEmpty)
+    Self.expectSameMesh(oldOrdinary, newOrdinary)
+  }
+
+  private static func expectSameMesh(_ expected: Mesh, _ actual: Mesh) {
+    #expect(actual.vertices == expected.vertices)
+    #expect(actual.faces == expected.faces)
+    #expect(actual.details == expected.details)
+    #expect(actual.materials == expected.materials)
+    #expect(actual.faceMaterials == expected.faceMaterials)
+    #expect(actual.faceTextures == expected.faceTextures)
+  }
+
   @Test func authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget() async throws {
     // Keep the complete existing crash-path assertions through the actor-owned tick.
     try await stationAutoAuthenticEntryAttackUsesMountedGunAndPhysicalEvasionWithOneBudget()
@@ -84,5 +124,15 @@ private final class NativeStationSnapshotFixture {
       world: UUID(), system: .init(galaxy: 0, system: 0), definition: "rescue_station",
       version: "1.5.4", key: "station")
     self.body = body
+  }
+}
+
+private final class NativeStationMeshReaderFixture {
+  var game = Game(executive: false)
+
+  init() {
+    game.commander.system = 237
+    game.screen = .status
+    game.launch()
   }
 }

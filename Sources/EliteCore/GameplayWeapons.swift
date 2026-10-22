@@ -290,6 +290,22 @@ extension Game {
       else { return .init(vertices: [], faces: []) }
       return source.geometry.mesh
     }
+    return gameplayMeshAfterNativeStation(for: body)
+  }
+
+  @inline(never)
+  mutating func nativeStationApproachGameplayMesh(for body: borrowing SpaceBody) -> Mesh {
+    if body.physical?.ordnance?.profile == .alienSeeker { return AlienMissileMesh.mesh }
+    if let identity = body.nativeStationIdentity {
+      guard nativeStationApproachBodyIsCurrent(body),
+        let source = NativeStationSource.binding(for: identity)
+      else { return .init(vertices: [], faces: []) }
+      return source.geometry.mesh
+    }
+    return gameplayMeshAfterNativeStation(for: body)
+  }
+
+  private func gameplayMeshAfterNativeStation(for body: SpaceBody) -> Mesh {
     if body.hull == .station { return MainStationGeometry.mesh }
     if let payload = body.physical?.payload, case .salvage(let identity) = payload,
       let lot = salvageLotForGeometry(identity)

@@ -149,6 +149,22 @@ extension Game {
   }
 }
 
+extension SpaceBody {
+  /// Checked payload access follows the existing flight-state read coroutine pattern.
+  /// No mutation or suspension can invalidate the presence check before projection.
+  fileprivate var nativeStationPhysicalIdentity: ActorIdentity? {
+    _read {
+      if case .some = physical {
+        let identity: ActorIdentity? = physical!.identity
+        yield identity
+      } else {
+        let absent: ActorIdentity? = nil
+        yield absent
+      }
+    }
+  }
+}
+
 extension Commander {
   var nativeStationStateValid: Bool {
     Self.nativeStationStateIsValid(self)
@@ -338,6 +354,10 @@ extension Game {
   }
 
   private func nativeStationRadius(_ mesh: Mesh) -> Double {
+    Self.nativeStationMeshRadius(mesh)
+  }
+
+  private static func nativeStationMeshRadius(_ mesh: Mesh) -> Double {
     mesh.vertices.map(\.length).max() ?? .infinity
   }
 
@@ -402,10 +422,18 @@ extension Game {
     }
   }
 
+  @inline(never)
+  mutating func nativeStationApproachBodyIsCurrent(_ body: SpaceBody) -> Bool {
+    withNativeStationReadOnlyCommander { commander in
+      Self.nativeStationBodyIsCurrent(body, commander: commander)
+    }
+  }
+
   private static func nativeStationBodyIsCurrent(
     _ body: borrowing SpaceBody, commander: borrowing Commander
   ) -> Bool {
-    guard let identity = body.nativeStationIdentity, let physicalIdentity = body.physical?.identity,
+    guard let identity = body.nativeStationIdentity,
+      let physicalIdentity = body.nativeStationPhysicalIdentity,
       let world = commander.nativeStations, Commander.nativeStationStateIsValid(commander),
       let record = world.ledger.records.first(where: { $0.identity == identity })
     else { return false }
@@ -1037,8 +1065,8 @@ extension Game {
     }
     guard body.id != stationID else { return true }
     guard
-      let inputs = Self.nativeStationApproachBodyInputs(
-        in: self, body: body, from: start, to: end, refineCourse: refineCourse)
+      let inputs = nativeStationApproachBodyInputs(
+        body, from: start, to: end, refineCourse: refineCourse)
     else { return false }
     let (point, distance, mesh, bodyRadius) = inputs
     if refineCourse {
@@ -1086,21 +1114,20 @@ extension Game {
   }
 
   @inline(never)
-  private static func nativeStationApproachBodyInputs(
-    in game: borrowing Game, body: borrowing SpaceBody, from start: Vector3,
-    to end: Vector3, refineCourse: Bool
+  private mutating func nativeStationApproachBodyInputs(
+    _ body: borrowing SpaceBody, from start: Vector3, to end: Vector3, refineCourse: Bool
   ) -> (point: Vector3, distance: Double, mesh: Mesh, bodyRadius: Double)? {
-    let pose = game.withReadOnlyCommander { $0.flightSimulation.pose }
+    let pose = withNativeStationReadOnlyCommander { $0.flightSimulation.pose }
     let point = pose.systemPoint(body.position)
-    let distance = game.distanceFromNativeSegment(point, start: start, end: end)
+    let distance = Self.nativeStationSegmentDistance(point, start: start, end: end)
     let mesh: Mesh
     if refineCourse, body.scriptNPC != nil {
-      guard let source = game.scriptNPCMesh(body) else { return nil }
+      guard let source = scriptNPCMesh(body) else { return nil }
       mesh = source
     } else {
-      mesh = game.gameplayMesh(for: body)
+      mesh = nativeStationApproachGameplayMesh(for: body)
     }
-    let bodyRadius = game.nativeStationRadius(mesh)
+    let bodyRadius = Self.nativeStationMeshRadius(mesh)
     return (point, distance, mesh, bodyRadius)
   }
 
@@ -1518,6 +1545,12 @@ extension Game {
   }
 
   func distanceFromNativeSegment(_ point: Vector3, start: Vector3, end: Vector3) -> Double {
+    Self.nativeStationSegmentDistance(point, start: start, end: end)
+  }
+
+  private static func nativeStationSegmentDistance(
+    _ point: Vector3, start: Vector3, end: Vector3
+  ) -> Double {
     let segment = end - start
     let denominator = segment.dot(segment)
     guard denominator > 0 else { return (point - start).length }
