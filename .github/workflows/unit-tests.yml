@@ -9,6 +9,9 @@ on:
       - 'Package.resolved'
       - 'Tools/CI/isolated_units.py'
       - 'Tools/CI/test_isolated_units.py'
+      - 'Tools/CI/isolated_crash_evidence.py'
+      - 'Tools/CI/test_isolated_crash_evidence.py'
+      - 'Tools/CI/crash_artifacts.py'
       - '.github/workflows/unit-tests.yml'
       - 'Makefile'
       - 'config/flight-controls.json'
@@ -44,7 +47,7 @@ jobs:
           restore-keys: |
             isolated-units-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.key }}-${{ hashFiles('Package.swift', 'Package.resolved') }}-
       - name: Verify isolated report checks
-        run: python3 -m unittest discover -s Tools/CI -p 'test_isolated_units.py'
+        run: python3 -m unittest discover -s Tools/CI -p 'test_isolated*.py'
       - name: Verify shared control authority
         run: make flight-controls-check
       - name: Run maintained isolated units

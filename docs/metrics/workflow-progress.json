@@ -4497,9 +4497,33 @@
       "github_run": 39709047303,
       "selection_methods": 168,
       "new_methods": 6,
-      "source_review": "MBA assigned exact delta and shared authority callers",
-      "unit_status": "existing hosted active; prior flight crash remains unqualified",
+      "source_review": "MBA exact delta and necessary shared callers reviewed; no actionable defect",
+      "unit_status": "FAILED after successful592.88s compilation; signal10, truncated XML, no verified method passes",
       "next_assigned": "C08.P05.A.receiving",
+      "usable_build_delivered": false,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331046027",
+      "finding": "https://github.com/stephenlclarke/elite/issues/41",
+      "qualification_scope": "All168 methods START, none verified PASS; same crash signature not proof of same cause; receiving continues"
+    },
+    {
+      "event": "Original rescue receiving pushed; three Enron utility sources assigned",
+      "head": "fa634d8a141a53403b80da24627dbae77cd0790b",
+      "base": "3313596f146637d148436bd8baadf2fffc6ad3c8",
+      "ledger_parent": "C08.P05.A.receiving",
+      "github_run": 39710164853,
+      "selection_methods": 174,
+      "new_methods": 6,
+      "source_review": "MBA assigned exact delta and necessary custody/account callers",
+      "unit_status": "existing hosted active; prior two signal10 runs remain unqualified",
+      "next_assigned": "C08.P05.B.source",
+      "usable_build_delivered": false
+    },
+    {
+      "event": "Issue41 next-run bounded crash evidence capture assigned",
+      "ledger_parent": "C08.P05.A.I41",
+      "owner": "G1 at normal source boundary",
+      "reviewer": "MBA",
+      "scope": "Existing hosted unit failure artifact only; no new run, assertions or failure status changes",
       "usable_build_delivered": false
     }
   ]

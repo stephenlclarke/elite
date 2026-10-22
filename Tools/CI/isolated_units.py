@@ -11,6 +11,9 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
+from crash_artifacts import runtime_child_environment
+from isolated_crash_evidence import IsolatedCrashEvidence
+
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
     "NativeWayfarerInductionRescueReceivingUnitTests": (
@@ -314,12 +317,15 @@ def main() -> int:
         "--enable-code-coverage", "--xunit-output", str(xml), "--filter", selection(),
     ]
     result = {"commit": sha, "command": command, "status": "failed"}
+    evidence = IsolatedCrashEvidence(ROOT, report / "failure-evidence")
     try:
         with (report / "output.log").open("w", encoding="utf-8") as log:
             with subprocess.Popen(
                 command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 text=True, encoding="utf-8", errors="replace",
+                env=runtime_child_environment(os.environ),
             ) as process:
+                evidence.start(process)
                 assert process.stdout is not None
                 for line in process.stdout:
                     print(line, end="", flush=True)
@@ -340,6 +346,10 @@ def main() -> int:
         print(str(error), file=sys.stderr)
         return 1
     finally:
+        try:
+            result["failure_evidence"] = evidence.finish(sha, failed=result["status"] != "passed")
+        except (OSError, ValueError, subprocess.SubprocessError) as error:
+            result["failure_evidence"] = {"captureError": type(error).__name__ + ": " + str(error)}
         result_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
 
 
