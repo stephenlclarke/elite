@@ -13,3 +13,7 @@ The work-item owner is responsible for implementation, focused unit tests and en
 ## Pull request review
 
 Request `@codex review` once per pushed packet as the existing handoff. The MBA independently reviews the actual project/tap PR for bugs, performance and style, raises actionable GitHub issues, verifies corrected code and relevant hosted unit results, and answers/resolves actual review threads. Latest human direction: ignore generic Codex review-service errors; they are neither code findings nor a clean automated result and do not block proceeding on a clean independent MBA review of the coherent final PR head. Do not retry or investigate those service errors. Actual automated code findings still require disposition and correction/review. Reuse completed reviews and unaffected unit evidence; cover remaining changed code and interactions once. Required GitHub checks and any required independent approval must pass for the final PR head before a protected merge. Do not use administrator bypass or weaken branch protections to merge.
+
+## Branch hygiene
+
+Keep branches tied to active assigned work, open PRs or required delivery lines. Follow `docs/BRANCH-HYGIENE.md`: preserve and remotely verify unique source before retiring inactive references, check worker/worktree ownership, close demonstrably superseded PRs and keep automatic remote head deletion enabled. Never remove another owner's managed checkout, index, unfinished files or required build cache as branch cleanup. Root owns retirement and records the result.

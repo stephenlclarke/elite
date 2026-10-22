@@ -4981,6 +4981,26 @@
       "merged": false,
       "usable_build_delivered": false,
       "new_final_run": 39739511461
+    },
+    {
+      "type": "repository_hygiene",
+      "date": "2026-10-22",
+      "local_before": 577,
+      "local_after": 36,
+      "remote_before": 17,
+      "remote_after": 12,
+      "local_refs_retired": 541,
+      "superseded_prs_closed": [
+        32,
+        36,
+        44
+      ],
+      "remote_heads_removed": 5,
+      "archive_tag": "archive/branch-cleanup-20261022T080946Z",
+      "archive_commit": "c303ca529a3c38c15fa3f192890c1cedea393c5b",
+      "dirty_source_snapshots_preserved": 5,
+      "feature_throughput_count": 0,
+      "scope": "Recoveryverified;noactiveworktree/index/source/cachemodified;notgamefeature/release"
     }
   ],
   "two_developer_phase": {
