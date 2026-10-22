@@ -5461,7 +5461,12 @@
         "source_state": "Completestage12auditpushed;8new/279selection;MBAreview/hostedpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336051526",
         "source_review_result": "MBA1f95new8fixtures/actualfinitecharterrefusalCLEAN;inheritedseed60unqualified",
-        "unit_status": "39746078950FAILURE08:27:36;MBAartifactclassificationpending"
+        "unit_status": "MBAactualcompile751.10PASSthenSIGNAL4;zeroPASS/invalidXML/nostack;dedup60",
+        "ready_findings": [
+          63
+        ],
+        "finding_owner": "G1routinefixturecorrection",
+        "finding_kind": "Source-provenpositive/unknownnegativefixturewronglowered-schemavalidator;notcrashattribution"
       },
       {
         "id": "M06.P03.appearance",
@@ -5499,7 +5504,13 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/62",
         "source_state": "Completestage13sourcepushed;6new/285selection;MBAreview/actualexecutionpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/62#issuecomment-6336216114",
-        "source_review_result": "MBA342newdelta/6fixtures/closed123124CLEAN;actual285executionpending/inherited60unqualified"
+        "source_review_result": "MBA342newdelta/6fixtures/closed123124CLEAN;actual285executionpending/inherited60unqualified",
+        "ready_findings": [
+          63
+        ],
+        "finding_owner": "G1sameboundedfixturecorrection",
+        "unit_run": 39747200952,
+        "unit_status": "GitHubFAILURE;actualartifactclassificationpending;sourceproven63notclaimedexecuted"
       },
       {
         "id": "M07.P01.legal-facts",
