@@ -84,13 +84,14 @@ extension Game {
     instance: borrowing ScriptInstance, geometry: borrowing [String: ShipDesign]
   ) -> Bool {
     guard let npcID = declared.npc else {
-      return declared.hull == body.hull && body.scriptNPC == nil && retained.body.scriptNPC == nil
+      guard declared.hull == body.hull else { return false }
+      guard case .none = body.scriptNPC else { return false }
+      guard case .none = retained.body.scriptNPC else { return false }
+      return true
     }
     guard let npc = body.scriptNPC, npc.valid,
       npc.fit == retained.body.scriptNPC?.fit,
-      npc.components.allSatisfy({ alias, component in
-        retained.body.scriptNPC?.components[alias]?.identity == component.identity
-      }),
+      missionActorComponentsMatch(npc.components, retained: retained),
       let definition = NativeC01Surveyor.profiles(pack: pack, state: instance).first(where: {
         $0.id == npcID
       }),
@@ -104,6 +105,21 @@ extension Game {
       else { return false }
       return installed == retained
     }
+  }
+
+  @inline(never)
+  private static func missionActorComponentsMatch(
+    _ components: borrowing [String: ScriptNPCComponentState],
+    retained: borrowing ScriptOwnedActor
+  ) -> Bool {
+    // Copy only the COW collection for iteration; the complete retained actor stays borrowed.
+    let current = copy components
+    for (alias, component) in current {
+      guard retained.body.scriptNPC?.components[alias]?.identity == component.identity else {
+        return false
+      }
+    }
+    return true
   }
 
   /// The simulation supplies its actual transformed aim; this joins the authored weapon and muzzle.
