@@ -6413,7 +6413,7 @@
     },
     "c01_stage4_design": {
       "owner": "UX",
-      "state": "boundedacceptedstage4designassigned",
+      "state": "fullcontractreceivedapprovedstored, designaheadonly",
       "implementation_owner": "G1 after acceptedcontract/currentpacket",
       "scope": "Actualnativeaudit-reservationproof afteroriginalrecorderrecovery; no stage3rewrite or prematureaward",
       "proposed_source": "Finitegenuinecommission-boundcapacity/payment/claimcorpus, beforeoriginalclock/recordercreation",
@@ -6422,7 +6422,20 @@
         138
       ],
       "stage4_authority": "ReadonlyactualheldoriginalandindependentEnmadanledger; no retrofill/reward/clue",
-      "implementation": "notassigned"
+      "implementation": "notassigned",
+      "path": "docs/gameplay-design/C01-P02-B-ENMADAN-RESERVATION-AUDIT.md",
+      "sha256": "8ced99c893c676463409b12dd9c4e404566406809191a9d11ee740d6e2ce8764",
+      "initial_customer_tenths": [
+        500,
+        500
+      ],
+      "contractor_initial_tenths": 0,
+      "conserved_total_tenths": 1000,
+      "actual_overlap_seconds": 30,
+      "clock_offset_seconds": [
+        0,
+        60
+      ]
     },
     "next_candidate_boundary": "Afterqualified69integration/currentC01coherenthandoff; cleanlatestqualifiedsource, no waitG11T03, no newintegrationcampaign; artifactnotyetexists",
     "c01_stage3_source": {
@@ -6461,9 +6474,13 @@
     "npc_target_projection": {
       "id": "M07.P01.I18.cargo-route",
       "owner": "G3",
-      "state": "assignedsourcepreflightandconcreteprojectionfix",
+      "state": "concretereadonlyrouteomissionimplementation",
       "scope": "Actual typedNPCcargo/origin/destination, Pirate/Military readonlyprojectionandpureunits",
-      "limits": "No simulation/save/hardware/mapdiscoverychange/fabricateddata; full18backend/deliveryacceptance remainsopen"
+      "limits": "No simulation/save/hardware/mapdiscoverychange/fabricateddata; full18backend/deliveryacceptance remainsopen",
+      "source": "NativeWormholeLeg actualactor-boundroute; NPClegacyfields remaininferredLocal",
+      "shared_symbol": "Game.telemetryFacts(for:) inNPCResourceRuntime.swift",
+      "preserve": "Existinggenerated/recordedroutes,cargo,provenance,Pirate/Militarytiers",
+      "hud_performance_limit": "No wholeCommander/fullsave/fullengine validation or speculativecache"
     }
   }
 }
