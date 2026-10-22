@@ -4937,6 +4937,15 @@
       "published_release": false,
       "homebrew_updated": false,
       "slack_posted": false
+    },
+    {
+      "event": "Next complete seed-service loop assigned after workshop coherent push boundary",
+      "at": "2026-10-22T07:11:58+00:00",
+      "owner": "G1",
+      "ledger_parent": "C08.P06.B.seed",
+      "scope": "Enlirin162-Lareria091 finite6originals,3t,510+95L,7200flightseconds; complete acceptance/pickup/receiving/cancel-return/loss loop",
+      "source_pushed": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
