@@ -4732,6 +4732,20 @@
       "verified_expanded_cases": 244,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333087491",
       "qualification_scope": "All6Consent/7Capacity/6Charter/9Work/3Binding pass; no native owner-visit/release/stock/booking/audit/stage12/playable/release claim"
+    },
+    {
+      "event": "Original clinic finite stock and read-only quote source pushed; MBA review assigned",
+      "head": "81d54e74919c106381e3b4d3cc66652001ffb218",
+      "base": "eb0fdf58354240d0816ca5a95d6b0ddfb05f7caa",
+      "ledger_parent": "C08.P06.B.quote.clinic",
+      "github_run": 39728009204,
+      "selection_methods": 221,
+      "new_methods": 9,
+      "source_review": "assigned MBA",
+      "unit_status": "existing hosted run active",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333479179",
+      "next_assigned": "C08.P06.B.clinic.accept",
+      "usable_build_delivered": false
     }
   ]
 }
