@@ -148,6 +148,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let rescueReception: NativeInductionRescueReception?
   let utilityReception: NativeInductionUtilityReception?
   let charterChoice: NativeInductionCharterChoice?
+  let charterCapacity: NativeInductionCapacityState?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
@@ -159,7 +160,8 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     crewLogHullCustody: NativeCrewLogHullCustody? = nil,
     rescueReception: NativeInductionRescueReception? = nil,
     utilityReception: NativeInductionUtilityReception? = nil,
-    charterChoice: NativeInductionCharterChoice? = nil
+    charterChoice: NativeInductionCharterChoice? = nil,
+    charterCapacity: NativeInductionCapacityState? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -178,6 +180,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.rescueReception = rescueReception
     self.utilityReception = utilityReception
     self.charterChoice = charterChoice
+    self.charterCapacity = charterCapacity
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
@@ -187,7 +190,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.seedReception == rhs.seedReception && lhs.crewLog == rhs.crewLog
       && lhs.crewLogLoss == rhs.crewLogLoss && lhs.crewLogHullCustody == rhs.crewLogHullCustody
       && lhs.rescueReception == rhs.rescueReception && lhs.utilityReception == rhs.utilityReception
-      && lhs.charterChoice == rhs.charterChoice
+      && lhs.charterChoice == rhs.charterChoice && lhs.charterCapacity == rhs.charterCapacity
   }
   var valid: Bool {
     let p = permission
@@ -263,6 +266,9 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       guard let utilityReception,
         charterChoice.valid(permission: permission, utility: utilityReception)
       else { return false }
+    }
+    if let charterCapacity {
+      guard let charterChoice, charterCapacity.valid(choice: charterChoice) else { return false }
     }
     return continuationValid && seedKeyValid
   }

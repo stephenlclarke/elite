@@ -16,7 +16,8 @@ enum NativeInductionArkSave {
     supportsService(schema) || schema == 75 || schema == 76
   }
   static func isAlien(_ schema: Int?) -> Bool {
-    schema == NativeInductionCrewLogSave.alienVersion || schema == 102 || schema == 100 || schema == 98 || schema == 96
+    schema == NativeInductionCrewLogSave.alienVersion || schema == 104 || schema == 102
+      || schema == 100 || schema == 98 || schema == 96
       || schema == 94
       || schema == 92
       || schema == 90

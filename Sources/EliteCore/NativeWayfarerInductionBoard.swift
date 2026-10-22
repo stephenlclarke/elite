@@ -3,7 +3,7 @@ import Foundation
 enum NativeWayfarerInductionAction: String, Sendable {
   case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, replaceArk,
     fundRescueLaunch, startRescueFlight, receiveRescue, authorizeUtility, receiveUtility,
-    pooledCharter, protectedCharter,
+    pooledCharter, protectedCharter, allocateCharterCapacity,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -24,6 +24,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .receiveUtility: "Enron utility crew / review all three repaired handoffs"
     case .pooledCharter: "Avenor charter / review Pooled windows"
     case .protectedCharter: "Avenor charter / review Protected reservations"
+    case .allocateCharterCapacity: "Avenor charter / review still-unissued original capacity"
     case .progress: "Senn / current induction records"
     }
   }
@@ -59,7 +60,12 @@ extension Game {
     }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
-      if systemIdentity == NativeInductionUtilitySource.location, state.rescueReception != nil,
+      if systemIdentity == NativeWayfarerInduction.source, state.charterChoice != nil,
+        state.charterCapacity == nil
+      {
+        action = .allocateCharterCapacity
+      } else if systemIdentity == NativeInductionUtilitySource.location,
+        state.rescueReception != nil,
         inductionUtilityChild == nil
       {
         action = .authorizeUtility
@@ -138,7 +144,7 @@ extension Game {
     if action != .receive && action != .service && action != .launchArk && action != .receiveArk
       && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight
       && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility
-      && action.charterPolicy == nil,
+      && action.charterPolicy == nil && action != .allocateCharterCapacity,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -156,6 +162,7 @@ extension Game {
     case .authorizeUtility: issues += inductionUtilityAuthorizationIssues()
     case .receiveUtility: issues += inductionUtilityReceivingIssues()
     case .pooledCharter, .protectedCharter: issues += inductionCharterChoiceIssues()
+    case .allocateCharterCapacity: issues += inductionCapacityAllocationIssues()
     case .progress: break
     }
     return issues
@@ -292,12 +299,18 @@ extension Game {
       try candidate.confirmInductionCharterChoice(
         policy, dock: dock, carrier: carrier, revision: revision)
     }
+    if quote.action == .allocateCharterCapacity {
+      try candidate.confirmInductionCapacityAllocation(
+        dock: dock, carrier: carrier, revision: revision)
+    }
     self = candidate
   }
 
   func wayfarerInductionDetail() -> [String] {
     if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
       .charterPolicy != nil
+      || (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)
+        == .allocateCharterCapacity
     {
       return inductionCharterDetail
     }

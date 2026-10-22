@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Choice/terms/receipt fixtures; no actual station journey, signatures or reservations are executed.
-private final class InductionCharterFixture {
+final class InductionCharterFixture {
   let work: InductionUtilityWorkFixture
   let parent: NativeWayfarerInductionState
   let utility: NativeInductionUtilityReception

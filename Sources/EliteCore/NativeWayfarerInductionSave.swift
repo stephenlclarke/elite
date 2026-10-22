@@ -120,6 +120,11 @@ enum NativeWayfarerInductionSave {
     {
       return false
     }
+    if let capacity = state.charterCapacity,
+      !NativeInductionCapacitySave.claimsValid(capacity, mission: mission, commander: commander)
+    {
+      return false
+    }
     for loss in [state.loss, state.cassetteLoss, state.seedKeyLoss, state.crewLogLoss].compactMap({
       $0
     }) {
@@ -169,7 +174,9 @@ enum NativeWayfarerInductionSave {
             let leaf = mission["savedWayfarerInduction"] as? [String: Any]
           else { throw SaveError.invalidCommander }
           let bytes = try JSONSerialization.data(withJSONObject: leaf)
-          guard bytes.count <= 32_768 else { throw SaveError.invalidCommander }
+          guard bytes.count <= (leaf.keys.contains("charterCapacity") ? 1_048_576 : 32_768) else {
+            throw SaveError.invalidCommander
+          }
           let decoded = try JSONDecoder().decode(NativeWayfarerInductionState.self, from: bytes)
           guard
             supportsContinuation(schema)

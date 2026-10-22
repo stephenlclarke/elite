@@ -57,7 +57,11 @@ extension Game {
       owner: state.permission.owner, parent: mission.id, utility: utility.operation,
       policy: policy, terms: terms, dock: dock, carrier: carrier, inventoryRevision: revision,
       physicalTime: time, flightSeconds: clock)
-    let next = try state.choosingCharter(receipt)
+    let chosen = try state.choosingCharter(receipt)
+    let allocation = try NativeInductionCapacityAllocation(
+      choice: receipt, dock: dock, carrier: carrier,
+      revision: revision, time: time, flightSeconds: clock, sequence: sequence)
+    let next = try chosen.allocatingCharterCapacity(.init(allocation: allocation))
     mission.savedWayfarerInduction = next
     mission.milestones = next.milestones
     mission.revision += 1
@@ -91,6 +95,15 @@ extension Game {
     if let policy {
       lines.insert(
         "SELECTED POLICY: " + policy.title.uppercased() + ". " + policy.consequence, at: 0)
+    }
+    if let capacity = state.charterCapacity, let slots = try? capacity.projection() {
+      lines.append(
+        "Original persistent capacity: \(capacity.units.count) units / \(slots.filter { capacity.eligible($0) }.count) eligible free surplus / ledger revision\(capacity.revision). Owner signatures and actual booking/release consumers remain separate."
+      )
+    } else if state.charterChoice != nil {
+      lines.append(
+        "This earlier choice has no capacity allocation. At actual Avenor, separately review/Confirm the still-unissued original ledger. Loading never issues units."
+      )
     }
     if let choice = state.charterChoice {
       lines.append(
