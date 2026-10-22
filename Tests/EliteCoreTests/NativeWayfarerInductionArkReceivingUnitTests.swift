@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Structural receipt/route fixture only; it neither executes a native journey nor admits actors.
-private struct ArkReceivingFixture {
+struct ArkReceivingFixture {
   let f: InductionArkProducerFixture
   let dock: NativeMainStationDockReceipt
   let contact: NativeArkFuelContact
