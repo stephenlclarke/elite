@@ -36,7 +36,8 @@ final class IsolationWorkFixture {
     game.commander.system = 185
     game.commander.nativeStations?.currentMainDock = nil
     game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 16000))]
-    try #require(game.beginGameplayVisit(arriving: true))
+    let entered = game.beginGameplayVisit(arriving: true)
+    try #require(entered)
     let previous = game.commander.flightSimulation.pose
     var pose = previous
     pose.position = .init(66000, 24000, -1000)
@@ -77,7 +78,8 @@ final class IsolationWorkFixture {
   }
 
   func arm() throws {
-    try #require(game.cycleIsolationWorkContact())
+    let selected = game.cycleIsolationWorkContact()
+    try #require(selected)
     let idle = game.scriptPagePresentation
     game.key("return")
     try #require(game.isolationWorkRuntime.review != nil && game.isolationWorkRuntime.arm == nil)
@@ -153,8 +155,8 @@ struct NativeIsolationWorkUnitTests {
     let profile = NativeIsolationWorkSource.profile
     #expect(profile.valid && profile.energy == 100 && profile.recharge == 0 && profile.speed == 0)
     #expect(
-      profile.drive == nil && profile.missiles == 0 && profile.lasers.isEmpty
-        && profile.components.isEmpty)
+      profile.drive == nil && profile.missiles == 0 && profile.lasers == []
+        && profile.components == [])
     #expect(
       NativeIsolationWorkRole.reserve.offset - NativeIsolationWorkRole.primary.offset
         == .init(300, 0, 0))
@@ -450,11 +452,13 @@ struct NativeIsolationWorkUnitTests {
     }
     fixture.game.missileArmed = false
     let automaticArm = fixture.game.isolationWorkRuntime.arm
-    #expect(!fixture.game.fireMissile(retaliating: true))
+    let retaliated = fixture.game.fireMissile(retaliating: true)
+    #expect(!retaliated)
     #expect(fixture.game.isolationWorkRuntime.arm == automaticArm)
     fixture.game.ecm(automatic: true)
     #expect(fixture.game.isolationWorkRuntime.arm == automaticArm)
-    #expect(!fixture.game.fireMissile())
+    let refusedManual = fixture.game.fireMissile()
+    #expect(!refusedManual)
     #expect(fixture.game.isolationWorkRuntime.arm == nil)
     #expect(try fixture.state() == before)
     fixture.game.key("return")
@@ -467,7 +471,8 @@ struct NativeIsolationWorkUnitTests {
     let attained = try fixture.state()
     let inventory = fixture.game.commander.equipmentInventory
     var launch = fixture.game
-    try #require(launch.fireMissile())
+    let launched = launch.fireMissile()
+    try #require(launched)
     #expect(launch.bodies.count > fixture.game.bodies.count)
     #expect(launch.commander.equipmentInventory == inventory)
     let files = try ScriptFreightFixture()
