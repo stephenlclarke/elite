@@ -261,6 +261,11 @@ METHODS = {
         "missingUnitsForeignIdentityAndChangedSourceCannotBecomePhysicalAuthority",
         "offCentreOriginRequiresLargerClearanceThanNormalisedOrCentredHalfExtents",
     ),
+    "ShowroomComparisonUnitTests": (
+        "compactAndWideSpecsShowBothCurrentAndPinnedModelsWithoutChangingBrowseMode",
+        "bothRenderedPreviewsKeepTheSamePitchRollAndYawThroughRotationAndPause",
+        "comparisonMatchesQuotedPriceAndActualTransferredFitWithHonestRatings",
+    ),
     "ShipComparisonPrecisionUnitTests": (
         "equalDisplayedTenthsIncludingHalfwayValuesAlwaysReceiveSameRating",
         "visibleDifferencesKeepTheCorrectBenefitDirectionWithoutSubtractionOverflow",
