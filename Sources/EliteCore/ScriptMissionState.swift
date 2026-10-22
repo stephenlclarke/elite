@@ -614,7 +614,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       guard let opening = instance.savedGlassMeridian,
         opening.permission.mission == instance.id, instance.payloads.isEmpty,
         NativeGlassMeridian.readingsValid(opening), NativeGlassMeridian.lossesValid(opening),
-        NativeC01Surveyor.shapeValid(opening)
+        NativeC01Surveyor.shapeValid(opening), NativeC01ReservationAuditSave.shapeValid(opening)
       else { return false }
     } else if instance.savedGlassMeridian != nil {
       return false

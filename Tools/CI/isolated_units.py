@@ -16,6 +16,18 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeC01ReservationAuditUnitTests": (
+        "freshNativeCommissionCreatesOneCapacityTwoPaidClaimsBeforeAnyObservation",
+        "originalContentsComputeConcealedOverlapWithoutChangingLedgerOrCreatingASecondUnit",
+        "nativeClockArithmeticKeepsThirtySecondFindingAcrossBinaryExponentBoundaries",
+        "foreignClockRecorderAndAlteredOriginalPaymentsCannotSupplyFindings",
+        "nativeSorelConfirmationRecordsOnlyStageFourAndRetainsTheSameProtectedRecorder",
+        "staleOrUnattainedNativeInputsCannotGrantSorelAudit",
+        "refusedWriterRollsBackAuditAndAcknowledgementThenFreshRetryCommitsOnce",
+        "actualLaterCarrierLossRetainsAuditedHistoryAndPublishesOneOrderedObservation",
+        "newCorpusUsesClosed137And138AndNeverHydratesAnOlderUnboundCommission",
+        "unreadReplacementUsesPreassignedLineageButAliasOrForeignScanCannotReadContents",
+    ),
     "NativeWayfarerInductionAccreditationUnitTests": (
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
         "repeatedSennConfirmationCannotPayOrGrantAnotherClueOrDiscardExistingBookings",

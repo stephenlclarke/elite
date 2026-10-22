@@ -4,15 +4,24 @@ import Testing
 @testable import EliteCore
 
 /// Component records only: these tests never claim an executed Navidor recovery journey.
-private final class C01SurveyorFixture {
+final class C01SurveyorFixture {
   let state: NativeGlassMeridianState
   let player: ActorIdentity
   let marker: ScriptOwnedActor
-  init() throws {
+  init(commission: NativeGlassMeridianState? = nil) throws {
     let opening = NativeGlassMeridianUnitTests()
-    var state = try opening.fixture()
+    var state = try commission ?? opening.fixture()
+    let scanner =
+      try state.permission.fit.first { $0.location?.slot == "targeting.core" }
+      ?? EquipmentPurchaseItem(
+        id: UUID(),
+        node: #require(
+          EquipmentRuntimeCatalog.node(for: TargetingTier.identification.equipmentName)),
+        location: .init(hull: state.permission.carrier, slot: "targeting.core"),
+        provenance: .grant("C01 component historical scanner"))
     state.readings = [
-      try opening.sealed(state, ordinal: 0), try opening.sealed(state, ordinal: 1, start: 22),
+      try opening.sealed(state, ordinal: 0, scanEquipment: scanner),
+      try opening.sealed(state, ordinal: 1, start: 22, scanEquipment: scanner),
     ]
     var native = FlightSimulationState()
     for _ in 0..<3 { native.enter(NativeC01Surveyor.location, arriving: true) }

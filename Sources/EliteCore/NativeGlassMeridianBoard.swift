@@ -1,11 +1,16 @@
 import Foundation
 
 enum NativeGlassMeridianAction: String, Sendable {
-  case accept, progress
+  case accept, progress, ledgerEntries, recorderCalibration, auditReservations
   var key: String { NativeGlassMeridian.stateID + "/" + rawValue }
   var title: String {
-    self == .accept
-      ? "Venn / review Glass Meridian commission" : "Venn / current lane investigation"
+    switch self {
+    case .accept: "Venn / review Glass Meridian commission"
+    case .progress: "Venn / current lane investigation"
+    case .ledgerEntries: "Sorel / Ledger entries"
+    case .recorderCalibration: "Sorel / Recorder calibration"
+    case .auditReservations: "Sorel / Record findings"
+    }
   }
 }
 struct NativeGlassMeridianReview: Sendable {
@@ -16,7 +21,10 @@ struct NativeGlassMeridianReview: Sendable {
   let epoch: UUID
   let issues: [String]
   let reviewToken = UUID()
-  var allowed: Bool { action == .accept && issues.isEmpty }
+  var auditPin: NativeC01ReservationReadPin? = nil
+  var allowed: Bool {
+    issues.isEmpty && (action == .accept || (action == .auditReservations && auditPin != nil))
+  }
 }
 
 extension Game {
@@ -24,13 +32,27 @@ extension Game {
     guard glassMeridianPack != nil else { return [] }
     let action: NativeGlassMeridianAction = glassMeridianMission == nil ? .accept : .progress
     guard action != .accept || contractStation == NativeGlassMeridian.source else { return [] }
-    return [
+    var rows: [ContractBoardRow] = [
       .init(
         board: action.key, offer: nil, title: action.title,
         reason: glassMeridianReview(action).issues.first, glassMeridian: action)
     ]
+    if systemIdentity == .init(galaxy: 0, system: 0),
+      glassMeridianMission?.savedGlassMeridian?.reservationCase != nil
+    {
+      for action in [
+        NativeGlassMeridianAction.ledgerEntries, .recorderCalibration, .auditReservations,
+      ] {
+        rows.append(
+          .init(
+            board: action.key, offer: nil, title: action.title,
+            reason: glassMeridianAuditReview(action).issues.first, glassMeridian: action))
+      }
+    }
+    return rows
   }
   func glassMeridianReview(_ action: NativeGlassMeridianAction) -> NativeGlassMeridianReview {
+    if action != .accept && action != .progress { return glassMeridianAuditReview(action) }
     if action == .progress {
       return .init(
         action: action, dock: commander.nativeStations?.currentMainDock,
@@ -40,9 +62,18 @@ extension Game {
     }
     var issues: [String] = []
     if paused { issues.append("Resume before confirming the commission.") }
-    if !nativeMainStationDockEvidenceIsCurrent || contractStation != NativeGlassMeridian.source {
-      issues.append("Use Captain Venn's actual Avenor main orbital berth.")
+    if trialTitle != nil || isMissionTrial {
+      issues.append("Use the actual commander outside an isolated trial.")
     }
+    let sourceBerth: Bool
+    if let dock = commander.nativeStations?.currentMainDock {
+      sourceBerth =
+        nativeMainStationArrivalContext(for: dock.station) != nil
+        && contractStation == NativeGlassMeridian.source
+    } else {
+      sourceBerth = false
+    }
+    if !sourceBerth { issues.append("Use Captain Venn's actual living Avenor main orbital berth.") }
     if !scriptDurabilityAvailable { issues.append("Choose a writable commander save first.") }
     if glassMeridianPack == nil { issues.append("Restore the approved Glass Meridian opening.") }
     if action == .accept {
@@ -51,6 +82,11 @@ extension Game {
       }
       if commander.scriptState.instances.count >= 128 {
         issues.append("The mission record capacity is full.")
+      }
+      if commander.scriptState.pendingEvents.count >= 4096
+        || commander.scriptState.nextEvent >= UInt64(Int64.max) - 10
+      {
+        issues.append("The native commission event capacity is full.")
       }
       let visited = commander.nativeStations?.mainStations ?? []
       if Set(visited.map(\.system)).count < 3 {
@@ -71,12 +107,17 @@ extension Game {
   }
 
   mutating func confirmGlassMeridian(_ quote: NativeGlassMeridianReview) throws {
+    if quote.action == .auditReservations {
+      try confirmGlassMeridianReservationAudit(quote)
+      return
+    }
     let current = glassMeridianReview(quote.action)
     guard quote.allowed, current.allowed, quote.dock == current.dock,
       quote.carrier == current.carrier, quote.inventoryRevision == current.inventoryRevision,
       quote.epoch == current.epoch, let pack = glassMeridianPack,
       let owner = commander.equipmentOwnerID, let dock = current.dock,
       let hull = current.carrier, let revision = current.inventoryRevision,
+      let arrival = nativeMainStationArrivalContext(for: dock.station), arrival.receipt == dock,
       let inventory = try? commander.purchaseSnapshot(),
       let discovery = commander.scriptState.savedFleetDiscovery
     else {
@@ -88,6 +129,9 @@ extension Game {
       discovery.owner == owner
     else { throw SaveError.invalidCommander }
     let missionID = ScriptIdentity.uuid("glass-meridian-commission-v1:\(owner)")
+    guard commander.scriptState.instances[missionID] == nil else {
+      throw SaveError.invalidCommander
+    }
     var candidate = self
     var mission = ScriptInstance(
       id: missionID, definition: NativeGlassMeridian.stateID,
@@ -99,6 +143,16 @@ extension Game {
         owner: owner, dock: dock, carrier: hull, inventoryRevision: revision, fit: inventory.items,
         visited: visited.sorted { $0.key < $1.key }, identified: identified,
         physicalTime: commander.flightSimulation.physicalTime))
+    guard let state = mission.savedGlassMeridian, state.readings.isEmpty, state.losses.isEmpty,
+      state.surveyor == nil, state.reservationCase == nil, mission.ownedEncounters.isEmpty,
+      candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 10,
+      candidate.commander.scriptState.pendingEvents.count < 4096, trialTitle == nil, !isMissionTrial
+    else { throw SaveError.invalidCommander }
+    let source = try NativeC01ReservationSource(
+      permission: state.permission, firstSequence: candidate.commander.scriptState.nextEvent + 1)
+    mission.savedGlassMeridian?.reservationCase = .init(source: source)
+    for event in source.events { mission.acknowledge(event.sequence) }
+    candidate.commander.scriptState.nextEvent = source.lastSequence
     mission.milestones = [0]
     candidate.commander.scriptState.instances[missionID] = mission
     candidate.emitScriptEvent("mission.accepted", only: missionID)
@@ -107,6 +161,10 @@ extension Game {
   }
 
   func glassMeridianDetail() -> [String] {
+    if let action = contractBoard.glassMeridianQuote?.action, action != .accept, action != .progress
+    {
+      return glassMeridianAuditDetail(action)
+    }
     var lines = [
       "VENN: Three crews nearly died without either pilot making a navigation error.",
       "I need measurements, not a convenient suspect. Your survey data occupies no cargo hold.",
@@ -130,14 +188,33 @@ extension Game {
           "It occupies 8kg protected cargo, combined with actual stored mass before tonne rounding."
         )
         lines.append(
-          "Destruction or loss of the original ends this attempt; changing visits never replaces it."
+          state.reservationCase?.audit == nil
+            ? "Destruction or loss of the original ends this attempt; changing visits never replaces it."
+            : "Later recorder loss never replaces the original and does not erase Sorel's recorded audit."
         )
-        if state.surveyor?.loss != nil {
+        if state.reservationCase?.audit != nil {
+          lines.append(
+            "Sorel verified the original reservation audit. The recorded findings survive later genuine recorder loss."
+          )
+          lines.append("Next: recover-standard at Enlirin. That later stage remains unavailable.")
+        } else if state.surveyor?.loss != nil {
           lines.append("Original recorder lost: this attempt has failed.")
         } else if state.surveyor?.held == true {
-          lines.append("Original recorder aboard. Stage four audit remains unavailable.")
+          if state.reservationCase != nil {
+            lines.append(
+              "Original recorder aboard. Visit Captain Orin Sorel at the actual Enmadan main orbital for the reservation audit."
+            )
+          } else {
+            lines.append(
+              "Original recorder aboard. This older unbound commission has no original reservation corpus; the audit remains unavailable."
+            )
+          }
         } else {
-          lines.append(NativeGlassMeridian.laterStages)
+          lines.append(
+            state.reservationCase == nil
+              ? NativeGlassMeridian.laterStages
+              : "Recover the original recorder at Navidor, then visit Captain Orin Sorel at Enmadan. Stages 5-9 remain unavailable."
+          )
         }
       }
     }
