@@ -4557,6 +4557,19 @@
       "reviewer": "MBA",
       "scope": "No ledger features for helper or new Swift/native execution; normal correction-head GitHub qualification",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Issue43 isolated two-file correction pushed and assigned MBA review",
+      "head": "92a60684e034247630e95c4047dee103bd9d4802",
+      "base": "7068555f9c0d85191bce27b0a8947782e2409894",
+      "ledger_parent": "M01.I43",
+      "pr": 44,
+      "issue": 43,
+      "source_review": "MBA assigned; open awaiting-mba",
+      "authoring_validation": "14 collector +2 attribution Python tests PASS; two primary regressions failold/passnew",
+      "integration_status": "not composed; G1 sole integrator",
+      "helper_status": "stopped after bounded correction",
+      "usable_build_delivered": false
     }
   ]
 }
