@@ -24,8 +24,11 @@ IMAGE = ROOT / '.build/arm64-apple-macosx/debug/ElitePackageTests.xctest/Content
 
 
 def digest(path):
+    checksum = hashlib.sha256()
     with Path(path).open('rb') as stream:
-        return hashlib.file_digest(stream, 'sha256').hexdigest()
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            checksum.update(block)
+    return checksum.hexdigest()
 
 
 def write(name, value):
