@@ -44,7 +44,8 @@ enum NativeGlassMeridianSave {
       let world = commander.nativeStations,
       let discovery = commander.scriptState.savedFleetDiscovery,
       state.permission.owner == owner, discovery.owner == owner,
-      NativeGlassMeridian.readingsValid(state), NativeGlassMeridian.lossesValid(state)
+      NativeGlassMeridian.readingsValid(state), NativeGlassMeridian.lossesValid(state),
+      NativeC01SurveyorSave.valid(mission, commander: commander)
     else { return false }
     let p = state.permission
     guard p.mission == mission.id,
@@ -70,8 +71,13 @@ enum NativeGlassMeridianSave {
         discovery.entries[$0.ship]?.identification == $0
           && $0.physicalTime <= p.physicalTime && $0.actor.visit <= p.dock.actor.visit
       }),
-      mission.milestones == (state.readings.count == 2 ? Set([0, 1]) : Set([0])),
-      Set(mission.ownedEncounters.keys).isSubset(of: Set(NativeGlassMeridian.encounters))
+      mission.milestones
+        == (state.surveyor?.capture != nil
+          ? Set([0, 1, 2]) : state.readings.count == 2 ? Set([0, 1]) : Set([0])),
+      Set(mission.ownedEncounters.keys).isSubset(
+        of: Set(
+          NativeGlassMeridian.encounters
+            + (state.surveyor == nil ? [] : [NativeC01Surveyor.encounter])))
     else { return false }
     for sealed in state.readings {
       let r = sealed.reading
@@ -108,7 +114,10 @@ enum NativeGlassMeridianSave {
     return true
   }
 
-  static func validateFields(_ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?)
+  static func validateFields(
+    _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?,
+    supportsSurveyor: Bool = false
+  )
     throws
   {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -151,6 +160,7 @@ enum NativeGlassMeridianSave {
           else {
             throw SaveError.invalidCommander
           }
+          if value.keys.contains("surveyor"), !supportsSurveyor { throw SaveError.invalidCommander }
           let decoded = try JSONDecoder().decode(
             NativeGlassMeridianState.self,
             from: JSONSerialization.data(withJSONObject: value))

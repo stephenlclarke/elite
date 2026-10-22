@@ -5,6 +5,7 @@ extension Game {
   /// native snapshots and wreck motion without translating the body a second time.
   mutating func synchronizeScriptNPCPhysicalVelocities() {
     for index in bodies.indices {
+      if c01SurveyorActor(bodies[index]) != nil { continue }
       guard let velocity = bodies[index].scriptNPC?.velocity else { continue }
       let worldVelocity = commander.flightSimulation.pose.orientation.apply(velocity)
       bodies[index].physical?.velocity = worldVelocity

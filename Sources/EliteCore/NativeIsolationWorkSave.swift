@@ -10,7 +10,7 @@ enum NativeIsolationWorkSave {
   static func lowerSchema(_ schema: Int?) -> Int? {
     guard contains(schema) else { return schema }
     return schema == alienVersion
-      ? NativeInductionCrewLogSave.alienVersion : NativeInductionCrewLogSave.version
+      ? NativeC01SurveyorSave.alienVersion : NativeC01SurveyorSave.version
   }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
     let instances = commander.scriptState.instances

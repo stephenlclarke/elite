@@ -113,265 +113,429 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var randomState: UInt64 = 0x45_4c49_5445
 }
 
+/// Private COW backing. Only ScriptInstance can mutate it, after establishing unique ownership.
+/// Readers project a stored field directly, without a whole array-element value on their stack.
+private final class ScriptInstanceStorage: @unchecked Sendable {
+  var value: ScriptInstanceValue
+  init(_ value: consuming ScriptInstanceValue) { self.value = value }
+  init(copying original: ScriptInstanceStorage) { value = original.value }
+}
+
 /// One copy-on-write value; Codable forwards the original instance object without an envelope.
 public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
-  private var storage: [ScriptInstanceValue]
+  private var storage: ScriptInstanceStorage
 
   public init(id: UUID, definition: String, version: String, digest: String) {
-    storage = [.init(id: id, definition: definition, version: version, digest: digest)]
+    storage = .init(.init(id: id, definition: definition, version: version, digest: digest))
   }
 
   public init(from decoder: any Decoder) throws {
-    storage = [try ScriptInstanceValue(from: decoder)]
+    storage = .init(try ScriptInstanceValue(from: decoder))
   }
 
   public func encode(to encoder: any Encoder) throws {
-    try storage[0].encode(to: encoder)
+    try storage.value.encode(to: encoder)
+  }
+
+  public static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.storage === rhs.storage || lhs.storage.value == rhs.storage.value
+  }
+
+  @inline(never)
+  private mutating func ensureUniqueStorage() {
+    if !isKnownUniquelyReferenced(&storage) { storage = .init(copying: storage) }
   }
 
   public var id: UUID {
-    _read { yield storage[0].id }
+    _read { yield storage.value.id }
   }
 
   public var definition: String {
-    _read { yield storage[0].definition }
+    _read { yield storage.value.definition }
   }
 
   public var version: String {
-    _read { yield storage[0].version }
+    _read { yield storage.value.version }
   }
 
   public var digest: String {
-    _read { yield storage[0].digest }
+    _read { yield storage.value.digest }
   }
 
   public var data: ScriptValue {
-    _read { yield storage[0].data }
-    _modify { yield &storage[0].data }
+    _read { yield storage.value.data }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.data
+    }
   }
 
   public var savedCollections: [String: ScriptCollection]? {
-    _read { yield storage[0].savedCollections }
-    _modify { yield &storage[0].savedCollections }
+    _read { yield storage.value.savedCollections }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedCollections
+    }
   }
 
   public var savedCampaignChildren: [String: ScriptChildBinding]? {
-    _read { yield storage[0].savedCampaignChildren }
-    _modify { yield &storage[0].savedCampaignChildren }
+    _read { yield storage.value.savedCampaignChildren }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedCampaignChildren
+    }
   }
 
   public var campaignParent: ScriptChildBinding? {
-    _read { yield storage[0].campaignParent }
-    _modify { yield &storage[0].campaignParent }
+    _read { yield storage.value.campaignParent }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.campaignParent
+    }
   }
 
   public var savedCampaignReceiptScopes: [String: String]? {
-    _read { yield storage[0].savedCampaignReceiptScopes }
-    _modify { yield &storage[0].savedCampaignReceiptScopes }
+    _read { yield storage.value.savedCampaignReceiptScopes }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedCampaignReceiptScopes
+    }
   }
 
   public var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]? {
-    _read { yield storage[0].savedConversationReceipts }
-    _modify { yield &storage[0].savedConversationReceipts }
+    _read { yield storage.value.savedConversationReceipts }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedConversationReceipts
+    }
   }
 
   public var savedChoiceReceipts: [String: ScriptChoiceReceipt]? {
-    _read { yield storage[0].savedChoiceReceipts }
-    _modify { yield &storage[0].savedChoiceReceipts }
+    _read { yield storage.value.savedChoiceReceipts }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedChoiceReceipts
+    }
   }
 
   public var completionReceipt: ScriptCompletionReceipt? {
-    _read { yield storage[0].completionReceipt }
-    _modify { yield &storage[0].completionReceipt }
+    _read { yield storage.value.completionReceipt }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.completionReceipt
+    }
   }
 
   var savedProviderContract: ScriptProviderContractState? {
-    _read { yield storage[0].savedProviderContract }
-    _modify { yield &storage[0].savedProviderContract }
+    _read { yield storage.value.savedProviderContract }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedProviderContract
+    }
   }
 
   var savedOwnedCargo: ScriptOwnedCargoState? {
-    _read { yield storage[0].savedOwnedCargo }
-    _modify { yield &storage[0].savedOwnedCargo }
+    _read { yield storage.value.savedOwnedCargo }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedOwnedCargo
+    }
   }
 
   var savedWayfarerColdChain: WayfarerColdChainCustody? {
-    _read { yield storage[0].savedWayfarerColdChain }
-    _modify { yield &storage[0].savedWayfarerColdChain }
+    _read { yield storage.value.savedWayfarerColdChain }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedWayfarerColdChain
+    }
   }
 
   var savedWayfarerRepairLoop: WayfarerRepairLoopCustody? {
-    _read { yield storage[0].savedWayfarerRepairLoop }
-    _modify { yield &storage[0].savedWayfarerRepairLoop }
+    _read { yield storage.value.savedWayfarerRepairLoop }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedWayfarerRepairLoop
+    }
   }
 
   var savedNavigationTrade: ScriptNavigationTradeState? {
-    _read { yield storage[0].savedNavigationTrade }
-    _modify { yield &storage[0].savedNavigationTrade }
+    _read { yield storage.value.savedNavigationTrade }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedNavigationTrade
+    }
   }
   var savedOriginalSurvey: NativeOriginalSurveyState? {
-    _read { yield storage[0].savedOriginalSurvey }
-    _modify { yield &storage[0].savedOriginalSurvey }
+    _read { yield storage.value.savedOriginalSurvey }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedOriginalSurvey
+    }
   }
   var savedFieldRelief: WayfarerFieldReliefCustody? {
-    _read { yield storage[0].savedFieldRelief }
-    _modify { yield &storage[0].savedFieldRelief }
+    _read { yield storage.value.savedFieldRelief }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedFieldRelief
+    }
   }
   var savedIsolationWorkParent: NativeIsolationWorkParentState? {
-    _read { yield storage[0].savedIsolationWorkParent }
-    _modify { yield &storage[0].savedIsolationWorkParent }
+    _read { yield storage.value.savedIsolationWorkParent }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedIsolationWorkParent
+    }
   }
 
   var savedGlassMeridian: NativeGlassMeridianState? {
-    _read { yield storage[0].savedGlassMeridian }
-    _modify { yield &storage[0].savedGlassMeridian }
+    _read { yield storage.value.savedGlassMeridian }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedGlassMeridian
+    }
   }
   var savedArkReserve: NativeInductionArkReserve? {
-    _read { yield storage[0].savedArkReserve }
-    _modify { yield &storage[0].savedArkReserve }
+    _read { yield storage.value.savedArkReserve }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedArkReserve
+    }
   }
   var savedArkRecovery: NativeArkRecoveryReceipt? {
-    _read { yield storage[0].savedArkRecovery }
-    _modify { yield &storage[0].savedArkRecovery }
+    _read { yield storage.value.savedArkRecovery }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedArkRecovery
+    }
   }
   var savedNativeArk: NativeInductionArkState? {
-    _read { yield storage[0].savedNativeArk }
-    _modify { yield &storage[0].savedNativeArk }
+    _read { yield storage.value.savedNativeArk }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedNativeArk
+    }
   }
   var savedNativeCrewLog: NativeInductionCrewLogState? {
-    _read { yield storage[0].savedNativeCrewLog }
-    _modify { yield &storage[0].savedNativeCrewLog }
+    _read { yield storage.value.savedNativeCrewLog }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedNativeCrewLog
+    }
   }
   var savedNativeInductionSeed: NativeInductionSeedContract? {
-    _read { yield storage[0].savedNativeInductionSeed }
-    _modify { yield &storage[0].savedNativeInductionSeed }
+    _read { yield storage.value.savedNativeInductionSeed }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedNativeInductionSeed
+    }
   }
   var savedNativeInductionWorkshop: NativeInductionWorkshopContract? {
-    _read { yield storage[0].savedNativeInductionWorkshop }
-    _modify { yield &storage[0].savedNativeInductionWorkshop }
+    _read { yield storage.value.savedNativeInductionWorkshop }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedNativeInductionWorkshop
+    }
   }
   var savedNativeInductionClinic: NativeInductionClinicContract? {
-    _read { yield storage[0].savedNativeInductionClinic }
-    _modify { yield &storage[0].savedNativeInductionClinic }
+    _read { yield storage.value.savedNativeInductionClinic }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedNativeInductionClinic
+    }
   }
   var savedNativeInductionUtility: NativeInductionUtilityState? {
-    _read { yield storage[0].savedNativeInductionUtility }
-    _modify { yield &storage[0].savedNativeInductionUtility }
+    _read { yield storage.value.savedNativeInductionUtility }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedNativeInductionUtility
+    }
   }
   var savedIsolationWork: NativeIsolationWorkState? {
-    _read { yield storage[0].savedIsolationWork }
-    _modify { yield &storage[0].savedIsolationWork }
+    _read { yield storage.value.savedIsolationWork }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedIsolationWork
+    }
   }
   var savedWayfarerInduction: NativeWayfarerInductionState? {
-    _read { yield storage[0].savedWayfarerInduction }
-    _modify { yield &storage[0].savedWayfarerInduction }
+    _read { yield storage.value.savedWayfarerInduction }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedWayfarerInduction
+    }
   }
   var savedFlightReception: NativeFlightReceptionState? {
-    _read { yield storage[0].savedFlightReception }
-    _modify { yield &storage[0].savedFlightReception }
+    _read { yield storage.value.savedFlightReception }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedFlightReception
+    }
   }
   var savedMeasuredExtraction: NativeMeasuredExtractionState? {
-    _read { yield storage[0].savedMeasuredExtraction }
-    _modify { yield &storage[0].savedMeasuredExtraction }
+    _read { yield storage.value.savedMeasuredExtraction }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedMeasuredExtraction
+    }
   }
 
   var savedRecordRecovery: WayfarerRecordRecoveryState? {
-    _read { yield storage[0].savedRecordRecovery }
-    _modify { yield &storage[0].savedRecordRecovery }
+    _read { yield storage.value.savedRecordRecovery }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedRecordRecovery
+    }
   }
   var savedIdentifiedSalvage: NativeIdentifiedSalvageState? {
-    _read { yield storage[0].savedIdentifiedSalvage }
-    _modify { yield &storage[0].savedIdentifiedSalvage }
+    _read { yield storage.value.savedIdentifiedSalvage }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedIdentifiedSalvage
+    }
   }
 
   public var courier: ScriptCourierCustody? {
-    _read { yield storage[0].courier }
-    _modify { yield &storage[0].courier }
+    _read { yield storage.value.courier }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.courier
+    }
   }
 
   public var pledgeReceiptID: UUID? {
-    _read { yield storage[0].pledgeReceiptID }
-    _modify { yield &storage[0].pledgeReceiptID }
+    _read { yield storage.value.pledgeReceiptID }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.pledgeReceiptID
+    }
   }
 
   public var receiptJoins: [String: [UUID]]? {
-    _read { yield storage[0].receiptJoins }
-    _modify { yield &storage[0].receiptJoins }
+    _read { yield storage.value.receiptJoins }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.receiptJoins
+    }
   }
 
   public var outcome: ScriptOutcome {
-    _read { yield storage[0].outcome }
-    _modify { yield &storage[0].outcome }
+    _read { yield storage.value.outcome }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.outcome
+    }
   }
 
   public var suspension: String? {
-    _read { yield storage[0].suspension }
-    _modify { yield &storage[0].suspension }
+    _read { yield storage.value.suspension }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.suspension
+    }
   }
 
   public var revision: UInt64 {
-    _read { yield storage[0].revision }
-    _modify { yield &storage[0].revision }
+    _read { yield storage.value.revision }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.revision
+    }
   }
 
   public var acknowledgedEvents: Set<UInt64> {
-    _read { yield storage[0].acknowledgedEvents }
-    _modify { yield &storage[0].acknowledgedEvents }
+    _read { yield storage.value.acknowledgedEvents }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.acknowledgedEvents
+    }
   }
 
   public var acknowledgedThrough: UInt64? {
-    _read { yield storage[0].acknowledgedThrough }
-    _modify { yield &storage[0].acknowledgedThrough }
+    _read { yield storage.value.acknowledgedThrough }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.acknowledgedThrough
+    }
   }
 
   public var receipts: Set<String> {
-    _read { yield storage[0].receipts }
-    _modify { yield &storage[0].receipts }
+    _read { yield storage.value.receipts }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.receipts
+    }
   }
 
   public var milestones: Set<Int> {
-    _read { yield storage[0].milestones }
-    _modify { yield &storage[0].milestones }
+    _read { yield storage.value.milestones }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.milestones
+    }
   }
 
   public var payloads: [String: Int] {
-    _read { yield storage[0].payloads }
-    _modify { yield &storage[0].payloads }
+    _read { yield storage.value.payloads }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.payloads
+    }
   }
 
   public var timers: [String: ScriptTimer] {
-    _read { yield storage[0].timers }
-    _modify { yield &storage[0].timers }
+    _read { yield storage.value.timers }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.timers
+    }
   }
 
   public var dialogue: ScriptDialogue? {
-    _read { yield storage[0].dialogue }
-    _modify { yield &storage[0].dialogue }
+    _read { yield storage.value.dialogue }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.dialogue
+    }
   }
 
   public var journal: [String] {
-    _read { yield storage[0].journal }
-    _modify { yield &storage[0].journal }
+    _read { yield storage.value.journal }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.journal
+    }
   }
 
   public var contract: ScriptContractJob? {
-    _read { yield storage[0].contract }
-    _modify { yield &storage[0].contract }
+    _read { yield storage.value.contract }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.contract
+    }
   }
 
   private var savedGearIssues: [String: ScriptGearIssue]? {
-    _read { yield storage[0].savedGearIssues }
-    _modify { yield &storage[0].savedGearIssues }
+    _read { yield storage.value.savedGearIssues }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedGearIssues
+    }
   }
 
   private var savedOwnedEncounters: [String: ScriptOwnedEncounter]? {
-    _read { yield storage[0].savedOwnedEncounters }
-    _modify { yield &storage[0].savedOwnedEncounters }
+    _read { yield storage.value.savedOwnedEncounters }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.savedOwnedEncounters
+    }
   }
 
   public var randomState: UInt64 {
-    _read { yield storage[0].randomState }
-    _modify { yield &storage[0].randomState }
+    _read { yield storage.value.randomState }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.value.randomState
+    }
   }
 
   public var choiceReceipts: [String: ScriptChoiceReceipt] {
@@ -640,7 +804,8 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     if instance.definition == NativeGlassMeridian.stateID {
       guard let opening = instance.savedGlassMeridian,
         opening.permission.mission == instance.id, instance.payloads.isEmpty,
-        NativeGlassMeridian.readingsValid(opening), NativeGlassMeridian.lossesValid(opening)
+        NativeGlassMeridian.readingsValid(opening), NativeGlassMeridian.lossesValid(opening),
+        NativeC01Surveyor.shapeValid(opening)
       else { return false }
     } else if instance.savedGlassMeridian != nil {
       return false

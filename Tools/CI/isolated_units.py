@@ -23,6 +23,7 @@ METHODS = {
         "sameBirthIncompleteSourceAndForgedTerminalCannotSupplySuccessfulReception",
     ),
     "NativeIsolationWorkUnitTests": (
+        "instanceStorageKeepsValueSnapshotsAndOriginalClosedEncoding",
         "combatIntentDisarmsEvenWhenNoInventoryRevisionChanges",
         "exactPackOwnsTwoPassiveSixMetreEnclosuresAndStableFiniteAccounts",
         "genuineParentIssueReservesOnePairAndIdempotenceCannotRefillOrIssueAgain",
@@ -391,6 +392,18 @@ METHODS = {
         "rotatingSilhouetteKeepsProjectedHullButRevealsNoMaterialsTexturesOrInternalEdges",
         "silhouetteClipsNearPlaneAndViewportAndRefusesNonFiniteProjectionInputs",
     ),
+    "NativeC01SurveyorUnitTests": (
+        "unchangedOriginalContactFrameCompletesWithTheSameClosedC01Geometry",
+        "passiveOriginalInertiaMovesOnceInsideManualAndWorkSweeps",
+        "harrierKeepsEveryVisualFaceAt65MetresAndUsesClosedConservativeCollision",
+        "convexEnvelopeRejectsNonfiniteFlatAndDegenerateGeometry",
+        "originalSourceUsesActualPlanetStarFrameAndDetached80MetreRecorderWithoutGrantingCustody",
+        "captureRequiresOriginalNativeRecorderFittedScoopsAndMeasuredSafeIngress",
+        "protectedRecorderUsesEightKilogramsAndNoFabricatedMissionTonne",
+        "recorderDestructionIsTerminalAndHarrierLossAfterSeparationDoesNotDuplicateRecorder",
+        "currentRecorderFormatsRejectEarlierEmbeddedUnknownAndExtraClaims",
+        "stageThreeRetainsBothReadingsAndHasNoStageFourRewardClueOrTerminalReceipt",
+    ),
     "NativeGlassMeridianUnitTests": (
         "unacceptedOpeningRoutesToTheActualBoardAndRejectsChangedPackPins",
         "entryRequiresThreeDistinctActualWorldsAndTwoIdentifiedTypesFromTheSameOwner",
@@ -456,6 +469,10 @@ METHODS = {
         "explicitLifecycleResetStillClearsRejectionAndActiveContacts",
     ),
     "AsteroidDebrisContactTests": (
+        "fastThinCrossingRequiresARealMeshWitnessDespiteClearEndpoints",
+        "nearMissIsContinuouslyClearAndExhaustedWorkNeverMeansContactOrAbsence",
+        "thinFirstFeatureCannotBeLostBetweenBoundedLeafSamples",
+        "sealedFrontierRequiresTheExactPairPoseAndOneUse",
         "aMaterialCornerResponseSeparatesAllCertifiedFacesWithoutAddingEnergy",
         "aThreeFaceResponseRetainsAuthoredRestitutionAndMomentum",
         "aContinuedContactInsideTheFirstLeafAdvancesItsCertifiedFrontier",

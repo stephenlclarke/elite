@@ -337,7 +337,9 @@ struct MissionActorRetentionPatch: Sendable {
 
 extension MissionActorAdmissionSource {
   /// Only the native preparation supplies new scene addresses; no historical address is reused.
-  func prepareRetentionPatch(sceneBodyIDs: [UUID: Int]) throws -> MissionActorRetentionPatch {
+  func prepareRetentionPatch(sceneBodyIDs: [UUID: Int], nativeBodies: [SpaceBody] = []) throws
+    -> MissionActorRetentionPatch
+  {
     var eligible = Set<UUID>()
     for index in actors.indices {
       if actors[index].presence != .destroyed, actors[index].canonicalBody.energy > 0 {
@@ -364,6 +366,20 @@ extension MissionActorAdmissionSource {
       case .inductionArkBerth, .inductionRescueBerth:
         actor.body = actors[index].canonicalBody
       default: break
+      }
+      if definition == NativeGlassMeridian.stateID, packDigest == NativeGlassMeridian.digest,
+        encounterID == NativeC01Surveyor.encounter
+      {
+        guard
+          let admitted = nativeBodies.first(where: {
+            $0.missionActorID == actorID && $0.missionInstanceID == instanceID && $0.id == bodyID
+          }), let physical = admitted.physical,
+          NativeC01Surveyor.passiveFit(admitted),
+          NativeC01Surveyor.nativeValid(
+            physical, recorder: actor.alias == NativeC01Surveyor.aliases[1])
+        else { throw NativeMissionActorAdmissionError.invalidCondition }
+        // These are the actual staged native addresses and conserved inertia, before any commit.
+        actor.body.physical = physical
       }
       actor.body.id = bodyID
       actor.presence = .present
@@ -649,7 +665,8 @@ extension Game {
           && $0.digest == ownerDigest
       }),
       encounter.valid,
-      let definition = pack.manifest.encounters?.first(where: { $0.id == encounter.id }),
+      let definition = NativeC01Surveyor.encounterDefinition(
+        pack: pack, state: state, id: encounter.id),
       definition.valid, definition.galaxy == encounter.galaxy,
       definition.system == encounter.system,
       Set(definition.actors.map(\.id)) == Set(encounter.actors.keys),
@@ -711,15 +728,18 @@ extension Game {
         actor = try original.isolationWorkRetainedActor(actor, in: state)
       }
       let template = try Self.missionActorAdmissionTemplate(
-        actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
-        installedModels: pack.models, geometry: geometry,
+        actor, specification: spec,
+        npcDefinitions: NativeC01Surveyor.profiles(pack: pack, state: state),
+        installedModels: NativeC01Surveyor.designs(pack: pack, state: state), geometry: geometry,
         legacy: legacy?.actors[spec.id],
         initialNativeCondition: mode == .prepared
           ? try Self.preparedNativeMissionResources(state: state, actor: actor) : nil)
       if mode == .prepared {
         try Self.validatePreparedMissionActorCondition(
           actor, spec: spec, template: template, legacy: legacy,
-          mechanicallyDisabled: NativeInductionCrewLogPack.mechanicallyDisabled(actor, state: state)
+          mechanicallyDisabled: NativeInductionCrewLogPack.mechanicallyDisabled(
+            actor, state: state),
+          preparedOrientation: NativeC01Surveyor.preparedOrientation(state: state, actor: actor)
         )
       }
       templates.append(template)
@@ -797,9 +817,10 @@ extension Game {
   private static func validatePreparedMissionActorCondition(
     _ actor: ScriptOwnedActor, spec: ScriptActorDefinition,
     template: MissionActorAdmissionTemplate, legacy: LegacyMissionEncounterProvenance?,
-    mechanicallyDisabled: Bool = false
+    mechanicallyDisabled: Bool = false, preparedOrientation: Basis3? = nil
   ) throws {
-    try validatePreparedMissionActorPose(actor, spec: spec)
+    try validatePreparedMissionActorPose(
+      actor, spec: spec, orientation: preparedOrientation ?? Basis3())
     if legacy != nil {
       try validatePreparedMissionActorLegacy(actor, spec: spec, legacy: legacy)
     } else {
@@ -815,11 +836,11 @@ extension Game {
 
   @inline(never)
   private static func validatePreparedMissionActorPose(
-    _ actor: borrowing ScriptOwnedActor, spec: ScriptActorDefinition
+    _ actor: borrowing ScriptOwnedActor, spec: ScriptActorDefinition, orientation: Basis3
   ) throws {
     guard actor.body.id == -1, actor.body.physical == nil,
       actor.body.position == .init(spec.x, spec.y, spec.z),
-      actor.body.orientation == Basis3(), actor.body.hostile == spec.hostile
+      actor.body.orientation == orientation, actor.body.hostile == spec.hostile
     else {
       throw MissionPackError(
         "A prepared actor must retain its actual authored initial condition.")
@@ -949,7 +970,14 @@ extension Game {
   private static func transformedMissionActorAdmissionMesh(
     _ installed: ShipDesign, scale: Double, offset: Vector3, pose: Basis3
   ) -> Mesh {
-    let raw = installed.rawMesh
+    let raw: Mesh
+    if installed.source.hasSuffix("; C01 mission-only 65m fore-aft uniform calibration"),
+      let geometry = try? NativeC01SurveyorGeometry.harrier.get(), installed == geometry.design
+    {
+      raw = geometry.collision
+    } else {
+      raw = installed.rawMesh
+    }
     return Mesh(
       vertices: raw.vertices.map { offset + pose.apply($0 * scale) }, faces: raw.faces,
       preserveWinding: true)
@@ -1661,5 +1689,20 @@ extension Game {
       mode: .retained, authority: .inductionRescueBerth(id), instance: owner, pack: pack,
       encounter: encounter, definition: definition, actors: [template],
       installedBaseEncounter: encounter)
+  }
+}
+
+extension Game {
+  /// Closed native C01 extension; no caller-supplied body can add another encounter or source.
+  func c01SurveyorAdmissionSource(
+    pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter
+  ) throws -> MissionActorAdmissionSource {
+    guard pack.manifest.stateID == NativeGlassMeridian.stateID,
+      pack.digest == NativeGlassMeridian.digest,
+      NativeC01Surveyor.definition(state, id: encounter.id) != nil,
+      let opening = state.savedGlassMeridian, NativeC01Surveyor.shapeValid(opening),
+      NativeGlassMeridian.readingsValid(opening), NativeGlassMeridian.lossesValid(opening)
+    else { throw NativeMissionActorAdmissionError.invalidTemplate }
+    return try preparedMissionActorAdmissionSource(pack: pack, state: state, encounter: encounter)
   }
 }

@@ -152,6 +152,35 @@ final class IsolationWorkFixture {
 }
 
 struct NativeIsolationWorkUnitTests {
+  @Test func instanceStorageKeepsValueSnapshotsAndOriginalClosedEncoding() async throws {
+    let fixture = try await IsolationWorkFixture()
+    let original = try #require(fixture.game.isolationWorkChild)
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = .sortedKeys
+    let bytes = try encoder.encode(original)
+    var changed = original
+    changed.journal.append("Independent value snapshot")
+    changed.payloads["copy-test"] = 1
+    // An invalid copy must neither damage the original pair nor become live authority.
+    changed.savedIsolationWork?.modules.removeLast()
+    #expect(changed != original && changed.savedIsolationWork?.modules.count == 1)
+    #expect(original.savedIsolationWork?.modules.count == 2 && original.payloads.isEmpty)
+    #expect(try encoder.encode(original) == bytes)
+    #expect(fixture.game.isolationWorkChild == original)
+    let decoded = try JSONDecoder().decode(ScriptInstance.self, from: bytes)
+    let decodedBytes = try encoder.encode(decoded)
+    #expect(decoded == original && decodedBytes == bytes)
+    var decodedCopy = decoded
+    decodedCopy.outcome = .failed
+    #expect(decodedCopy != decoded && decoded == original)
+    let object = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+    #expect(object["definition"] as? String == original.definition)
+    #expect(object["id"] as? String == original.id.uuidString)
+    #expect(object["savedIsolationWork"] != nil)
+    #expect(object["storage"] == nil && object["value"] == nil)
+    #expect(NativeIsolationWorkSave.validateClaims(fixture.game.commander))
+  }
+
   @Test func exactPackOwnsTwoPassiveSixMetreEnclosuresAndStableFiniteAccounts() throws {
     let pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledIsolationWorkDirectory)
     #expect(NativeIsolationWorkPack.matches(pack))
