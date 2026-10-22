@@ -5239,6 +5239,17 @@
       "cause": "pending actual log/artifact classification",
       "candidate902_scope": "local unit-qualified only; not release-qualified",
       "t02_compile_issue": 86
+    },
+    {
+      "event": "T02 compile-fixture correction pushed and source-reviewed clean; M01 crash capture identity being verified",
+      "date": "2026-10-22",
+      "t02_head": "f43476b9fccb5b0480bbda51cea9d799780ef375",
+      "t02_run": 39770919855,
+      "issue": 86,
+      "review": "clean narrow correction",
+      "execution_qualified": false,
+      "m01_quality_build_seconds": 807.12,
+      "m01_observed_failure": "unexpected signal4 during coverage execution; exact capture/source matching pending"
     }
   ],
   "two_developer_phase": {
