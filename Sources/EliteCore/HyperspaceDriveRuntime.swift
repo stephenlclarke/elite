@@ -2,6 +2,7 @@ import Foundation
 
 extension Commander {
   var hyperspaceDrivePolicy: HyperspaceDrivePolicy? {
+    if let alien = fittedAlienHyperspaceDrivePolicy { return alien }
     let ratio = fittedComponent(at: .navigation)?.statistics[.jumpSpool] ?? 1
     return try? HyperspaceDrivePolicy.normal(
       component: fittedComponent(at: .drive),

@@ -73,7 +73,7 @@ public enum SalvageTechnologyEffect: Equatable, Codable, Sendable {
   case scalar(axes: [SalvageUpgradeAxis])
   case missile(SalvageMissileVariant)
   case feature(SalvageFeature)
-  case unlockFacing, addPylon, spareEscapePod, researchAndSale
+  case unlockFacing, addPylon, spareEscapePod, researchAndSale, alienHyperspaceDrive
 }
 
 public struct SalvageTechnologyDefinition: Equatable, Codable, Sendable {
@@ -246,13 +246,18 @@ public enum SalvageDefinitions {
       case .energyRecharge: label = "Alien Energy Recharge Module"
       case .shieldCapacity: label = "Alien Shield Capacity Module"
       case .shieldRecharge: label = "Alien Shield Recharge Module"
+      case .hyperspaceDrive: label = "Alien Hyperspace Drive"
       }
       let category: SalvageTechnologyCategory =
-        kind.isEnergyModule ? .energyTechnology : .shieldTechnology
+        kind == .hyperspaceDrive
+        ? .driveTechnology
+        : kind.isEnergyModule ? .energyTechnology : .shieldTechnology
+      let physical = item(
+        kind.definitionID, category, label, AlienModuleDefinition.massKg,
+        AlienModuleDefinition.halfExtents, 50000, kind.effect, provenance: .alien)
+      guard kind.supportsUpgrade else { return [physical] }
       return [
-        item(
-          kind.definitionID, category, label, AlienModuleDefinition.massKg,
-          AlienModuleDefinition.halfExtents, 50000, .scalar(axes: kind.axes), provenance: .alien),
+        physical,
         item(
           kind.upgradeDefinitionID, category, label + " Upgrade", AlienModuleDefinition.massKg,
           AlienModuleDefinition.halfExtents, 25000, .scalar(axes: kind.axes), provenance: .alien),
@@ -381,7 +386,7 @@ public enum SalvageDefinitions {
         return .refused(.missingTargetingCore)
       }
       return .permitted
-    case .researchAndSale: return .refused(.incompatibleHardware)
+    case .researchAndSale, .alienHyperspaceDrive: return .refused(.incompatibleHardware)
     }
   }
 

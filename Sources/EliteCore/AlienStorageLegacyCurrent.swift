@@ -7,6 +7,7 @@ struct AlienStorageLegacyCurrent: Codable, Sendable, Equatable {
     case pending(lot: SalvageLot, at: Double, offer: SpawnIdentity?, binding: ActorIdentity?)
     case acquired(source: UUID, at: Double)
     case collected(AlienStorageCompanionCollection)
+    case researched(AlienStorageCompanionCollection, AlienMissileResearchReceipt)
     case discarded(at: Double)
     case destroyed(at: Double)
   }
@@ -30,6 +31,10 @@ struct AlienStorageLegacyCurrent: Codable, Sendable, Equatable {
       guard at >= time else { throw AlienStorageError.historyChanged }
     case (.pending(_, let time, _, _), .collected(let receipt)):
       guard receipt.at >= time else { throw AlienStorageError.historyChanged }
+    case (.collected(let oldReceipt), .researched(let receipt, let research)):
+      guard oldReceipt == receipt, research.at >= receipt.at else {
+        throw AlienStorageError.historyChanged
+      }
     default:
       guard self == old else { throw AlienStorageError.historyChanged }
     }

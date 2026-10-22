@@ -64,6 +64,22 @@ METHODS = {
         "systemScrollHintsFollowActualViewportAndHelpReturnContext",
         "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
     ),
+    "AlienMissileServiceUnitTests": (
+        "nativeArtefactResearchPaysOnceConsumesOriginalAndCreatesOneStoredPrototype",
+        "researchedPlughSupplyChargesDiscountedPriceAndSharesFinitePylons",
+        "loadedPrototypeLaunchConsumesExactItemAndUsesAlienProfileAndMesh",
+        "failedResearchWriterAndStaleServiceRetainSourceCashAndPrototypeCount",
+        "coldCurrentSaveRetainsResearchAfterPrototypeConsumptionAndRejectsForgedPayment",
+        "standardUnlimitedLaunchNeverFabricatesAlienRoundsOrSpendsLoadedOriginal",
+    ),
+    "AlienHyperspaceDriveUnitTests": (
+        "alienOnlyLootProducesTypedDriveWithoutScalarUpgradeOrOrdinaryFit",
+        "forgedDriveEvidenceAndReplayCannotCreateOwnedCapability",
+        "pagedDriveCustodyRoundTripKeepsIdentityAndOtherHullIsolation",
+        "actualRecoveryAndPlughFittingSurviveColdSaveAndJumpImmediatelyThroughMassLock",
+        "storingDriveRevokesCapabilityAndStaleOrUndockedRefitDoesNothing",
+        "fittedAlienDriveRetainsFuelElectricalAndOrdinaryDriveGates",
+    ),
     "NativeIsolationProgrammerUnitTests": (
         "actualCanonicalLoanOccupiesOneTonneAndReturnRemovesOnlyTheOriginal",
         "fullRealHoldRefusesBeforeCreatingProgrammerOrObligation",

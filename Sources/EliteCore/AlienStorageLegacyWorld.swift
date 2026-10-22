@@ -47,7 +47,7 @@ enum AlienStorageLegacyWorldValidation {
       case .companion(let lot):
         if case .pending(_, _, let offer, let binding) = lot.state {
           try reserve(offer, binding, offers: &offers, actors: &actors)
-        } else if case .collected(let receipt) = lot.state {
+        } else if let receipt = lot.state.collection {
           guard operations.insert(receipt.operation).inserted else {
             throw AlienStorageError.invalidJoin
           }
@@ -230,9 +230,15 @@ enum AlienStorageLegacyWorldValidation {
       default: throw AlienStorageError.invalidJoin
       }
       return id
-    case .collected(let receipt):
+    case .collected(let receipt), .researched(let receipt, _):
       guard !reserved, validTime(receipt.at), operations.insert(receipt.operation).inserted else {
         throw AlienStorageError.invalidJoin
+      }
+      if case .researched(_, let research) = value.state {
+        try research.validate(item: item, collection: receipt, owner: value.owner)
+        guard operations.insert(research.operation).inserted else {
+          throw AlienStorageError.invalidJoin
+        }
       }
       switch (item.content, receipt.effect) {
       case (.commodity(let original), .cargo(let amount, let before, let after)):
