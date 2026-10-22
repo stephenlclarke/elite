@@ -76,6 +76,9 @@ extension Game {
     guard pack.manifest.wayfarerInduction == nil,
       pack.manifest.stateID != NativeWayfarerInduction.stateID
     else { return false }
+    guard pack.manifest.stateID != NativeIsolationWorkParent.stateID,
+      pack.digest != NativeIsolationWorkParent.digest
+    else { return false }
     guard pack.manifest.glassMeridian == nil, pack.manifest.stateID != NativeGlassMeridian.stateID
     else { return false }
     guard pack.manifest.flightReception == nil,

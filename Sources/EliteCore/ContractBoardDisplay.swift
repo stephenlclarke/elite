@@ -33,6 +33,8 @@ extension Display {
       rows = game.nativeUtilityDetail
     } else if row.wayfarerInduction != nil {
       rows = game.wayfarerInductionDetail()
+    } else if row.isolationWorkParent != nil {
+      rows = game.isolationWorkParentDetail()
     } else if row.glassMeridian != nil {
       rows = game.glassMeridianDetail()
     } else if let action = row.flightReception {
@@ -177,6 +179,7 @@ extension Display {
         let provider = game.contractBoard.providerQuote
         let survey = game.contractBoard.surveyQuote
         let wayfarerInduction = game.contractBoard.wayfarerInductionQuote
+        let isolationWorkParent = game.contractBoard.isolationWorkParentQuote
         let glassMeridian = game.contractBoard.glassMeridianQuote
         let flightReception = game.contractBoard.flightReceptionQuote
         let measuredExtraction = game.contractBoard.measuredExtractionQuote
@@ -186,6 +189,8 @@ extension Display {
           action == .back
           || (utility != nil && action == .accept && utility?.allowed == true)
           || (wayfarerInduction != nil && action == .accept && wayfarerInduction?.allowed == true)
+          || (isolationWorkParent != nil && action == .accept
+            && isolationWorkParent?.allowed == true)
           || (glassMeridian != nil && action == .accept && glassMeridian?.allowed == true)
           || (flightReception != nil && action == .accept && flightReception?.allowed == true)
           || (measuredExtraction != nil && action == .accept && measuredExtraction?.allowed == true)
@@ -208,7 +213,8 @@ extension Display {
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
             + (action == .accept
-              && (wayfarerInduction != nil || glassMeridian != nil || flightReception != nil
+              && (isolationWorkParent != nil || wayfarerInduction != nil || glassMeridian != nil
+                || flightReception != nil
                 || measuredExtraction != nil
                 || recordRecovery != nil
                 || identifiedSalvage != nil

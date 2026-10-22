@@ -83,6 +83,11 @@ extension ScriptPackLibrary {
       "l337-wayfarer-induction")
   }
 
+  static var bundledIsolationWorkParentDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-isolation-work")
+  }
+
   static var bundledGlassMeridianDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-glass-meridian")
@@ -339,6 +344,15 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled original Enmadan workshop: " + error.localizedDescription)
+    }
+    do {
+      let parent = try read(bundledIsolationWorkParentDirectory)
+      guard NativeIsolationWorkParent.matches(parent) else { throw SaveError.invalidCommander }
+      if !library.packs.contains(where: { $0.digest == parent.digest }) {
+        library.packs.append(parent)
+      }
+    } catch {
+      library.errors.append("Bundled external isolation commission: " + error.localizedDescription)
     }
     return library
   }

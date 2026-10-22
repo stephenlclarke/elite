@@ -8,6 +8,14 @@ extension Game {
     guard let fields = command.object, let op = fields["op"]?.string else {
       throw MissionPackError("Invalid script command.")
     }
+    if NativeIsolationWorkParent.marked(state)
+      || pack.manifest.stateID == NativeIsolationWorkParent.stateID
+    {
+      guard op == "journal.append", NativeIsolationWorkParent.matches(pack) else {
+        throw MissionPackError(
+          "Use Lerr's native isolation, original return and settlement transaction.")
+      }
+    }
     if NativeInductionWorkshopPack.marked(state) || state.savedNativeInductionWorkshop != nil {
       guard op == "journal.append" else {
         throw MissionPackError(
