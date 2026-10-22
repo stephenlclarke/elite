@@ -5777,6 +5777,30 @@
       "installed_release": "1.4.0",
       "new_game_release_published": false,
       "new_current_development_build_delivered": false
+    },
+    {
+      "event": "Compile issue103 closed from completed inner job despite stale parent workflow",
+      "date": "2026-10-22",
+      "issue": 103,
+      "closed_at": "2026-10-22T14:08:26Z",
+      "head": "63ded61c5f8a86a386edd9ce136882d5078024a9",
+      "run": 39787112105,
+      "job": 119853139566,
+      "job_completed_at": "2026-10-22T13:52:56Z",
+      "job_conclusion": "failure",
+      "compile_seconds": 917.4,
+      "runtime_fault": "BUS10 retainedMissionActorDescriptor62 / actual G11Tab path",
+      "completed_pass_methods": 0,
+      "runtime_issues_open": [
+        85,
+        96,
+        97,
+        98
+      ],
+      "monitoring_rule": "Inspect completed jobs and exact logs when parent status lags; retain final-head merge gates",
+      "next_scope": "same ordered prebinding guard frame completes before unchanged fresh native binding check",
+      "next_owner": "Mission Coder1",
+      "runtime_fix_proven": false
     }
   ],
   "two_developer_phase": {
@@ -6836,8 +6860,8 @@
       "newly_retired_pr": 68,
       "new_source_archive": "archive/recovered-equipment-20261022-50950372",
       "branch_count_scope": "Live count includes main, Root docs, delivery and active feature/repair heads; no inactive branch removed without inclusion/archive proof.",
-      "current_open_app_issues": 13,
-      "current_open_mba_findings": 11,
+      "current_open_app_issues": 12,
+      "current_open_mba_findings": 10,
       "current_open_app_prs": 7
     },
     "g11_parent_bridge": {
