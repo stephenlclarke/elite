@@ -4441,7 +4441,11 @@
       "correction_run": 39703512214,
       "correction_selection_methods": 149,
       "correction_new_methods": 2,
-      "correction_review": "MBA assigned; existing hosted evidence pending"
+      "correction_review": "MBA source and exact-head hosted verified;40 closed",
+      "correction_verified_methods": 149,
+      "correction_verified_expanded_cases": 181,
+      "correction_verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6330265717",
+      "source_finding_status": "40 closed on corrected descendant; original finding evidence retained"
     }
   ]
 }
