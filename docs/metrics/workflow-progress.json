@@ -5595,7 +5595,9 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/69",
         "source_state": "Final305-method composition pushed, GitHub mergeState CLEAN; MBA newSenn/composition review and finalhead execution pending",
         "composition_policy": "Exact305=293terminal+269shared-257common, author proved allprior entries retained; supersede57/59/62onlyaftermerge/inclusionproof",
-        "qualification_scope": "Author Core/declarations/Python/docs checks only; actual finalhead GitHub/MBA qualification pending"
+        "qualification_scope": "Author Core/declarations/Python/docs checks only; actual finalhead GitHub/MBA qualification pending",
+        "source_review_result": "MBA full newSennproduction8tests and exact305composition clean; baseUIproduction/tests byteidentical; final actualexecution pending",
+        "unit_run": 39754411274
       },
       {
         "id": "M07.P03.emp-electrical",
@@ -5667,7 +5669,8 @@
         "awaiting_verification_findings": [
           71
         ],
-        "unit_status": "Initial0bcompilefailed borrowingGame helperclosurecapture, no XML/PASS; source correctionffe pushed, actual final273 job pending"
+        "unit_status": "Initial0bcompilefailed borrowingGame helperclosurecapture, no XML/PASS; source correctionffe pushed, actual final273 job pending",
+        "correction_source_review": "MBA exactffe bounded value capture helper correction clean; production273 unchanged;71awaitingactualexecution"
       },
       {
         "id": "M08.P04.mining-control",
@@ -5700,8 +5703,8 @@
         "merged_at": null,
         "playable_at": null,
         "disposition": "Existing PLUGH module fitting and1.25x missile tuning/mesh credited; actual recipe-to-owned-ammunition purchase/load/consume loop missing",
-        "qualification_scope": "Source/existing unit definitions only; no execution",
-        "source_state": "Now active successor after drive push; exact shared ammunition/transaction/state proposal before edits",
+        "qualification_scope": "20Python/strictformatlint/Markdown/diffpass; no localSwift/native execution",
+        "source_state": "Actual native researched custody/PLUGH paid service and finite ammo loop pushed; sixfocusedmethods273union, MBA+hostedpending",
         "authoring_decision": "Existing artefact recipe/service15000tenths unaffected by shop discount; repeat alien round base600tenths, actual PLUGH75percent shop multiplier450tenths",
         "reserved_shared_hunks": [
           "EquipmentRuntimeCatalog distinct alienSeeker ammo node/closed profile",
@@ -5720,7 +5723,9 @@
           "AlienNativeSalvageIndex omit spent technology availability but retain original unique claim",
           "Inventory authenticated artefact row and explicit reverse-engineering action"
         ],
-        "native_custody_scope": "Actual paged technology must transition collected\u2192researched once; immutable original receipt retained, paid PLUGH prototype join; no duplicate research across ordinary/native stores; writer failure rolls back all changes"
+        "native_custody_scope": "Actual paged technology must transition collected\u2192researched once; immutable original receipt retained, paid PLUGH prototype join; no duplicate research across ordinary/native stores; writer failure rolls back all changes",
+        "head": "db41b0429eab25f255660007494b81154709aa3b",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/72"
       },
       {
         "id": "K04.P01.person-care",
@@ -5928,7 +5933,7 @@
       "authority": "Latest human instruction: use Mission Coder1 for difficult things",
       "policy": "Named necessary blocker only; no standing implementation stream; independent MBA review",
       "model": null,
-      "active_assignment": "M08.P06 alien missile actual owned recipe/purchase/load/consume; drive68 author retains asynchronous corrections/merge"
+      "active_assignment": null
     },
     "qualification_queue_note": "56 merged after267/299 PASS;61 final269 pending;65 actual provider review/units pending;59/62 corrected-head failures retained,64 ready G1 and60 unattributed.",
     "complete_features_merged": 6,
