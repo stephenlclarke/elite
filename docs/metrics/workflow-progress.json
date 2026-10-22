@@ -5187,6 +5187,17 @@
       ],
       "g11_remote_head": "e69a8731a2caf59f61556e45f0d3685a4c7ecad1",
       "g11_correction": "unpublished/unqualified manual-combat stop correction; independent review pending"
+    },
+    {
+      "event": "MBA exact PR83 and final PR76 source reviews clean; current hosted results pending",
+      "date": "2026-10-22",
+      "pr83_head": "30830024e72cb2f76d72c5951ed1a2178a75c2c9",
+      "pr83_methods": 325,
+      "pr76_head": "839cb13da4b2a8fd98720d4576e64d9a76f51063",
+      "pr76_test_head": "fa41169c2ba0b95a559d61634530a10f8f156a60",
+      "pr76_methods": 351,
+      "execution_qualified": false,
+      "merged": false
     }
   ],
   "two_developer_phase": {
@@ -6498,6 +6509,13 @@
         "run": 39767055203,
         "head": "b2821428232afdd5bda8b2862156890262147b6c",
         "replacement": 39767872407,
+        "state": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "run": 39767492573,
+        "head": "722b669239e264452464ffb1004c66f7815b4cae",
+        "replacement": 39768632014,
         "state": "completed",
         "conclusion": "cancelled"
       }
