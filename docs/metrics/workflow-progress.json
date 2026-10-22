@@ -4765,12 +4765,13 @@
       "github_run": 39731389269,
       "selection_methods": 231,
       "new_methods": 10,
-      "unit_status": "existing hosted run active",
+      "unit_status": "FAILURE; completed06:13:56Z, actual cause/counts pending MBA artifact review; no pass claimed",
       "source_review": "MBA source review clean",
       "usable_build_delivered": false,
       "source_review_completed_at": "2026-10-22T06:05:57Z",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333935985",
-      "handoff_to_source_review_seconds": 245
+      "handoff_to_source_review_seconds": 245,
+      "unit_run_completed_at": "2026-10-22T06:13:56Z"
     },
     {
       "event": "Requested cancellation of superseded showroom run that excluded all new methods and blocked correct same-branch job",
@@ -4780,7 +4781,7 @@
       "authoritative_run": 39731489668,
       "authoritative_head": "40159bbacafc55414e19d86ea6e073869bb9301b",
       "reason": "Old221 selection contains no new showroom methods; per-ref concurrency holds corrected234 selection pending",
-      "status": "Cancellation requested; old run still in_progress and corrected run pending at observation",
+      "status": "Terminal CANCELLED at06:11:18Z; authoritative39731489668 started06:11:22Z",
       "pass_claim": false,
       "new_test_dispatches": 0
     }
@@ -4829,7 +4830,7 @@
         "latest_packet_pushed_at": "2026-10-22T06:01:24Z",
         "latest_packet": "Clinic acceptance/reservation/cancel and uncollected loss closures",
         "unit_run": 39731389269,
-        "unit_status": "in_progress",
+        "unit_status": "FAILURE at1523b3ee/39731389269; MBA checking existing artifact, cause/counts unverified",
         "source_state": "Acceptance packet pushed; actual pickup/integrity/receiving/payment/held-return needed for complete clinic loop",
         "source_review_result": "MBA acceptance source review clean at1523b3ee; actual hosted qualification pending",
         "source_review_completed_at": "2026-10-22T06:05:57Z",
@@ -4864,7 +4865,7 @@
         "unit_status": "pending;234 maintained methods includes3ShowroomComparison and10ClinicAcceptance",
         "original_source_handoff_at": "2026-10-22T06:00:41Z",
         "source_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333946221",
-        "queue_delay_note": "Correct run39731489668 waits behind superseded unselected39731164624; cancellation requested, terminal outcome not yet observed"
+        "queue_delay_note": "Obsolete unselected39731164624 cancelled06:11:18Z; existing correct39731489668 running from06:11:22Z"
       }
     ],
     "model_settings": {
