@@ -4829,8 +4829,10 @@
       "selection_methods": 241,
       "new_methods": 10,
       "unit_status": "pending",
-      "source_review": "queued MBA",
-      "usable_build_delivered": false
+      "source_review": "No additional production finding; inherited fixture compile50 remains blocking; actual execution/finalhead qualification pending",
+      "usable_build_delivered": false,
+      "source_review_completed_at": "2026-10-22T06:36:56Z",
+      "handoff_to_source_review_seconds": 631
     },
     {
       "event": "Inventory complete presentation source pushed with three selected focused methods",
@@ -4909,7 +4911,12 @@
         "source_complete_evidence": "Author commit and handoff6334295039; not independent qualification",
         "correction_unit_status": "FAILURE compile exit1/noXML/ZEROmethods; overlapping computed nativeStations accesses at257/258 under50",
         "correction_failure_kind": "fixture compiler error, not failed unit execution",
-        "escalation_decision": "G1 routine local-value latch; no MC1needed"
+        "escalation_decision": "G1 routine local-value latch; no MC1needed",
+        "feature_source_review_completed_at": "2026-10-22T06:36:56Z",
+        "feature_handoff_to_source_review_seconds": 631,
+        "feature_review_scope": "All10Custody methods, actual pickup/frozen receiving/payment/held return/timer dispatcher/retry/completion/loss/stock/window/hold/save113/114",
+        "feature_review_result": "No additional production finding; inherited fixture compile50 remains blocking; actual execution/finalhead qualification pending",
+        "review_latency_caveat": "Includes priority2c38 failed-artifact interruption, not pure review CPU time"
       },
       {
         "id": "M02.P04/F06",
