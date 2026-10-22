@@ -5007,7 +5007,7 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08Sennterminal;certification/auditreviewasync;MC1seed60sourceinspection",
-      "G3": "M07.P04-P05 recovery/crew custody;retains267batchand61verification/merges",
+      "G3": "BoundedM08.P02alienstackeffects;retains267/61finalqualification/merges",
       "G4": "T02.P01.provider native uncrewed practice targets/harmless native hits"
     },
     "reviewer": "MBA/G2",
@@ -5440,11 +5440,17 @@
           "GameplayCombat recordCombat registeredbeacontargetguard",
           "NativeMissionImpact missionDamagePlan unscopedbeaconrefusal",
           "GameplayWeapons applyAttributedEnergyBomb exactbeaconskip",
-          "Game.loadCommander practice-only hasClaims plain-load guard"
+          "Game.loadCommander practice-only hasClaims plain-load guard",
+          "GameplayAdmission practice-only measured safety/capacity wrapper",
+          "GameplayWeapons laser verified practice route and exact cube mesh overrides",
+          "WorkTargetRuntime exact beacon recovery exclusion",
+          "GameplayOrdnanceRuntime validated player-beacon launch gate",
+          "Tools/CI additive actual PracticeTarget methods/count"
         ],
         "state_scope": "G1approvedoptionalpracticeproperty/init+ScriptPersistencepracticehunks+optionalAlienSave.contains;seed117118,audit119120,practice121122fixed/precedence",
         "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support",
-        "format_precedence": "Highestrequiredfeaturewins:practice121122,network123124,terminal125126;earlierformatsnotwidened"
+        "format_precedence": "Highestrequiredfeaturewins:practice121122,network123124,terminal125126;earlierformatsnotwidened",
+        "source_state": "Draft+13focusedmethods;allpendingnativeadmission/laser/mesh/missile/recovery/CIhooksnowreserved;authorwiringcontinues"
       },
       {
         "id": "C08.commit-charter.audit",
@@ -5456,17 +5462,21 @@
         "playable_at": null,
         "ownership": "Newaudittypes/narrowG1mission-board-savejoins;separatedependentbranch",
         "limits": "Actual3signatures+finitecapacityrefusal;nofabricatedreservations/noearlyreward",
-        "head": "1f95e7378e7b40e5e0dc741fff73922af604ee6a",
+        "head": "3d7f5e3196d708661eebb540d3953a053a677108",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/59",
-        "source_state": "Completestage12auditpushed;8new/279selection;MBAreview/hostedpending",
+        "source_state": "63fixturecorrectionpushed;production/assertions279selectionunchanged;MBAverificationpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336051526",
         "source_review_result": "MBA1f95new8fixtures/actualfinitecharterrefusalCLEAN;inheritedseed60unqualified",
         "unit_status": "MBAactualcompile751.10PASSthenSIGNAL4;zeroPASS/invalidXML/nostack;dedup60",
         "ready_findings": [
-          63
+          64
         ],
-        "finding_owner": "G1routinefixturecorrection",
-        "finding_kind": "Source-provenpositive/unknownnegativefixturewronglowered-schemavalidator;notcrashattribution"
+        "finding_owner": "G1routinefixtureprereqcorrection;63awaitingverification",
+        "finding_kind": "PartialUtilityfixturelosesoriginalsaleandNavidorhistoricalstation;notcrashattribution",
+        "correction_handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336473875",
+        "awaiting_verification_findings": [
+          63
+        ]
       },
       {
         "id": "M06.P03.appearance",
@@ -5500,17 +5510,22 @@
         "playable_at": null,
         "ownership": "G1C08mission/board/save123124;noG3/G4paths",
         "limits": "Actualoriginalrecords/capacityaudit;nofabricatedproof/terminalreward",
-        "head": "342ca8a5a9753a82d253d08836504d5f09e58434",
+        "head": "472ddc1fdfed1f141e6aa65d610358a5b1fdbabe",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/62",
-        "source_state": "Completestage13sourcepushed;6new/285selection;MBAreview/actualexecutionpending",
+        "source_state": "63audit+certfixturecorrectionpushed;production/assertions285selectionunchanged;MBAverificationpending",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/62#issuecomment-6336216114",
         "source_review_result": "MBA342newdelta/6fixtures/closed123124CLEAN;actual285executionpending/inherited60unqualified",
         "ready_findings": [
+          64
+        ],
+        "finding_owner": "G1routinefixtureprereqcorrection;63awaitingverification",
+        "unit_run": 39747200952,
+        "unit_status": "MBAactual39747200952compile458.96PASSthenSIGNAL4/zeroPASS/invalidXML/nostack;actual63+64fixturefindings,60unattributed",
+        "correction_handoff_url": "https://github.com/stephenlclarke/elite/pull/62#issuecomment-6336474435",
+        "awaiting_verification_findings": [
           63
         ],
-        "finding_owner": "G1sameboundedfixturecorrection",
-        "unit_run": 39747200952,
-        "unit_status": "GitHubFAILURE;actualartifactclassificationpending;sourceproven63notclaimedexecuted"
+        "finding_kind": "PartialUtilityfixturelosesoriginalsaleandNavidorhistoricalstation;notcrashattribution"
       },
       {
         "id": "M07.P01.legal-facts",
@@ -5526,7 +5541,9 @@
         "credited_behavior": "Nativelegal/bounty/resource mechanics unchanged;no fabricatedtarget/cargo/travelfacts",
         "head": "72f27b77ecd0a75a68aef88b0e09313d1e148509",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/61",
-        "handoff_url": "https://github.com/stephenlclarke/elite/pull/61#issuecomment-6336183894"
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/61#issuecomment-6336183894",
+        "unit_run": 39746993767,
+        "unit_status": "SUCCESS08:35:41;MBAactual259artifactverificationpending"
       },
       {
         "id": "M07.P02.ordnance-attribution",
@@ -5574,7 +5591,20 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "EMPState/RecoveryRuntime/VersionedSave/CrewEpisodes/SourceCustody/Salvage exactpolicies/tests/notes",
-        "limits": "NoG1centralGame/mission/saveorG4practicehooks;noinventedpeople/timerrebalance"
+        "limits": "NoG1centralGame/mission/saveorG4practicehooks;noinventedpeople/timerrebalance",
+        "disposition": "Existinglifecyclefoundationcredited;noconcretegap/nochange",
+        "qualification_scope": "Source/existingunitdefinitionsonly;nofreshexecution/nativeacceptance"
+      },
+      {
+        "id": "M08.P02.alien-stacking",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:41:12.107502+00:00",
+        "phase_entry_state": "Boundedactualfourtypealienstack/effect/ownedidentitygapassignment",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "RecoveredEquipmentRuntime/effectivepolicy/narrowownedeffectprojection/tests/notes",
+        "limits": "NoG1Game/mission/saveorG4practice;noinventoryschemaeditwithoutreservation/norebalance/newframework"
       }
     ],
     "model_settings": {
@@ -5585,7 +5615,9 @@
       },
       "G3": {
         "model": "gpt-6.1-sol",
-        "reasoning_effort": "medium"
+        "reasoning_effort": null,
+        "reported_delegation_designation": "Sol Light",
+        "source": "Worker reports user correction; own thread commentary/final confirms designation; no runtime setting read or tool override"
       },
       "MBA": {
         "model": "gpt-6.1-sol",
@@ -5659,6 +5691,12 @@
         "session": "01a16256-13d9-7a00-bd74-07d4dbf942aa",
         "scope": "T02.P01.provider;newNativePracticefiles/tests;existinghunksreservedbeforeedit",
         "comparison_caveat": "Retain baseline/phase history;worker count changed;no causal speedup claim"
+      },
+      {
+        "observed_at": "2026-10-22T08:39:02.210749+00:00",
+        "change": "G3 reports user-corrected Sol Light designation",
+        "scope": "Bounded existing tasks/ownermerges;notcancellation",
+        "comparison_caveat": "Reported designation,notverifiedruntimeeffort;configurationchanged,nocausalcadenceclaim"
       }
     ]
   }
