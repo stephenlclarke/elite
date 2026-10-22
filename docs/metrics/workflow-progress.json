@@ -4536,9 +4536,26 @@
       "github_run": 39711047075,
       "selection_methods": 174,
       "source_review": "MBA completed exact8-path delta and necessary collector callers; no actionable finding",
-      "unit_status": "normal CI-triggered run pending; no crash fix or aggregate pass",
+      "unit_status": "FAILED after565.67s Swift compile;174 starts/zero method passes,incomplete XML",
       "authoring_validation": "10 synthetic crash-evidence Python cases and6 existing report fixtures pass",
       "next_assigned": "C08.P05.B.source",
+      "usable_build_delivered": false,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331420863",
+      "verified_non_swift_checks": "16 Python fixtures and11 shared-control checks PASS",
+      "findings": [
+        41,
+        42,
+        43
+      ],
+      "qualification_scope": "Attributable stack-probe trace; exact cause unproved; no Swift aggregate qualification"
+    },
+    {
+      "event": "Three ready findings assigned with disjoint remediation ownership",
+      "ledger_parent": "M01 / C08.P05.A.I41",
+      "primary_owner": "G1 issues41/42, preserving active utility work",
+      "helper_owner": "existing issue-only MBP helper issue43; two CI collector paths only",
+      "reviewer": "MBA",
+      "scope": "No ledger features for helper or new Swift/native execution; normal correction-head GitHub qualification",
       "usable_build_delivered": false
     }
   ]
