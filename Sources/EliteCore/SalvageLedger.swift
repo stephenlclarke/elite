@@ -778,6 +778,16 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     return .collected(lot)
   }
 
+  /// Native research keeps its original source claim after conversion to owned ammunition.
+  func containsSettlementSource(in identities: Set<SalvageLotIdentity>) -> Bool {
+    settlements.values.contains {
+      if case .committed(let proposal) = $0 {
+        return proposal.items.contains { identities.contains($0.identity) }
+      }
+      return false
+    }
+  }
+
   public func settlementReceipt(for command: UUID) -> SalvageSettlementReceipt? {
     settlements[command]
   }

@@ -111,7 +111,7 @@ public enum StandardAmmunitionTransactions {
         inventory: inventory, context: context, obligations: obligations)
     }
     let rounds = inventory.items.compactMap { item -> (Int, OwnedEquipmentItem)? in
-      guard item.node == EquipmentRuntimeCatalog.standardMissile,
+      guard AlienMissileDefinition.profile(for: item.node) != nil,
         let location = item.location, location.hullInstanceID == inventory.activeHull,
         case .missilePylon(let index) = location.slot
       else { return nil }
@@ -156,7 +156,7 @@ public enum StandardAmmunitionTransactions {
   }
 
   private static func validateRound(_ item: OwnedEquipmentItem) throws {
-    guard item.node == EquipmentRuntimeCatalog.standardMissile,
+    guard AlienMissileDefinition.profile(for: item.node) != nil,
       item.component == nil, item.boundHull == nil
     else {
       throw StandardAmmunitionError.unsupportedProfile

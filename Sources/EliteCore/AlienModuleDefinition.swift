@@ -1,7 +1,7 @@
 import Foundation
 
 enum AlienModuleKind: String, CaseIterable, Codable, Sendable {
-  case energyCapacity, energyRecharge, shieldCapacity, shieldRecharge
+  case energyCapacity, energyRecharge, shieldCapacity, shieldRecharge, hyperspaceDrive
   var definitionID: String { "alien-module-" + rawValue }
   var upgradeDefinitionID: String { "alien-module-upgrade-" + rawValue }
   var axes: [SalvageUpgradeAxis] {
@@ -10,7 +10,13 @@ enum AlienModuleKind: String, CaseIterable, Codable, Sendable {
     case .energyRecharge: [.energyRecharge]
     case .shieldCapacity: [.frontShieldCapacity, .rearShieldCapacity]
     case .shieldRecharge: [.frontShieldRecharge, .rearShieldRecharge]
+    case .hyperspaceDrive: []
     }
+  }
+  var supportsUpgrade: Bool { self != .hyperspaceDrive }
+  var initialContribution: Int { self == .hyperspaceDrive ? 0 : 1000 }
+  var effect: SalvageTechnologyEffect {
+    self == .hyperspaceDrive ? .alienHyperspaceDrive : .scalar(axes: axes)
   }
   var isEnergyModule: Bool { self == .energyCapacity || self == .energyRecharge }
 }
@@ -35,6 +41,7 @@ enum AlienModuleDefinition {
     return kind
   }
   static func upgradeBonus(for lot: SalvageLot, kind: AlienModuleKind) throws -> Int {
+    guard kind.supportsUpgrade else { throw AlienAttachmentError.invalidSource }
     try validate(lot, kind: kind, upgrade: true)
     guard case .technology(_, let quality, _) = lot.content else {
       throw AlienAttachmentError.invalidSource
@@ -42,14 +49,16 @@ enum AlienModuleDefinition {
     return quality.bonusBasisPoints
   }
   static func isAttachmentDefinition(_ id: String) -> Bool {
-    AlienModuleKind.allCases.contains { $0.definitionID == id || $0.upgradeDefinitionID == id }
+    AlienModuleKind.allCases.contains {
+      $0.definitionID == id || ($0.supportsUpgrade && $0.upgradeDefinitionID == id)
+    }
   }
   /// A planned item has no world pose yet. Validate its typed evidence directly, without
   /// manufacturing a positioned source lot or claiming actual recovery/ownership.
   static func validatePlanned(_ item: SalvageLootItem) throws {
     guard case .technology(let id, _, _, _) = item.content,
       let kind = AlienModuleKind.allCases.first(where: {
-        $0.definitionID == id || $0.upgradeDefinitionID == id
+        $0.definitionID == id || ($0.supportsUpgrade && $0.upgradeDefinitionID == id)
       })
     else { throw AlienAttachmentError.invalidSource }
     try validateEvidence(item, kind: kind, upgrade: id == kind.upgradeDefinitionID)
@@ -75,8 +84,8 @@ enum AlienModuleDefinition {
       (0..<8).contains(evidence.identity.section.wreck.system.galaxy),
       (0...256).contains(evidence.identity.section.wreck.system.system),
       evidence.provenance == .alien, evidence.massKg == massKg, evidence.halfExtents == halfExtents,
-      evidence.effect == .scalar(axes: kind.axes),
-      evidence.bonusBasisPoints == (upgrade ? quality.bonusBasisPoints : baseBonusBasisPoints),
+      !upgrade || kind.supportsUpgrade, evidence.effect == kind.effect,
+      evidence.bonusBasisPoints == (upgrade ? quality.bonusBasisPoints : kind.initialContribution),
       !evidence.requiresChunking, !evidence.legality.commodityIllegal,
       (0...255).contains(evidence.legality.sourceLegalValue), evidence.saleValueTenths >= 0,
       upgrade ? axis.map({ kind.axes.contains($0) }) == true : axis == nil
