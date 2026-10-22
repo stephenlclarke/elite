@@ -5001,6 +5001,18 @@
       "dirty_source_snapshots_preserved": 5,
       "feature_throughput_count": 0,
       "scope": "Recoveryverified;noactiveworktree/index/source/cachemodified;notgamefeature/release"
+    },
+    {
+      "event": "Programmer custody prerequisite author-merged after independent final-head source/unit qualification",
+      "at": "2026-10-22T09:53:03Z",
+      "pr": 73,
+      "head": "0f0e7db1f52468bbb08f77f74780e044c09f2723",
+      "merge_commit": "fd6499ccceed9e4e884425c5620cfc1038a240f7",
+      "github_run": 39756499747,
+      "verified_methods": 273,
+      "verified_expanded_cases": 305,
+      "usable_build_delivered": false,
+      "scope": "Original programmer custody prerequisite; genuine G11 native acceptance/issue/return adapter remains unfinished"
     }
   ],
   "two_developer_phase": {
@@ -5971,7 +5983,7 @@
       "model": null,
       "active_assignment": "G11.P01 provider; issue60 source consult complete/no edit, G1 owns combined repair"
     },
-    "qualification_queue_note": "56 merged after267/299 PASS;61 final269 pending;65 actual provider review/units pending;59/62 corrected-head failures retained,64 ready G1 and60 unattributed.",
+    "qualification_queue_note": "Programmer73 custody prerequisite merged after273/305PASS; drive68 final275/307PASS and clean review, author merge pending;69/72/65 actual current jobs active, no new jobs.",
     "complete_features_merged": 6,
     "merged_feature_count_scope": "Shared development showroom48/help55/inventory51/market+night56/Wanted61; fixes/helpers excluded; not six usable builds.",
     "new_usable_build_deliveries": 0,
@@ -6054,6 +6066,13 @@
         18
       ],
       "local_worktrees_indexes_files_unchanged": true
+    },
+    "g11_parent_bridge": {
+      "owner": "G3",
+      "state": "source preflight pending exact UX contract",
+      "design_owner": "UX",
+      "dependency": "Actual native parent acceptance and original issue/return authority; not a mock flag",
+      "supersedes": "M17 fabrication as next G3 assignment"
     }
   }
 }
