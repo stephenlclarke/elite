@@ -5215,7 +5215,7 @@
         "new_methods": 11,
         "merged_at": null,
         "playable_at": null,
-        "source_state": "Completeworkshopsource/unitqualified;PR54authormergepending;notnewapp/nativejourney",
+        "source_state": "Completeworkshopsourcequalifiedandcorrectionauthor-merged;notnewapp/nativejourney/publicrelease",
         "compile_seconds": 730.78,
         "execution_seconds": 53.9,
         "ready_findings": [],
@@ -5233,7 +5233,9 @@
           53
         ],
         "correction_verified_methods": 255,
-        "correction_verified_expanded_cases": 287
+        "correction_verified_expanded_cases": 287,
+        "correction_merged_at": "2026-10-22T07:52:30Z",
+        "correction_merge_commit": "dbd4e2501a37c9316bb5571aa5343330f16da733"
       },
       {
         "id": "C08.P06.B.seed",
