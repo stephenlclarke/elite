@@ -16,6 +16,16 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeWayfarerInductionCharterAuditUnitTests": (
+        "bothSelectedPoliciesRefuseRealOriginalCandidateWithoutChangingAnyStockOrWindow",
+        "missingRealSourceOrSignaturesAndOwnerStationQuotesCannotAdvanceTheCharter",
+        "protectedOwnerReleaseInvalidatesStaleConfirmButPreservesEarlierActualAudit",
+        "forgedProtectedBoundaryOwnerPolicyClockOrUnchangedFingerprintCannotBecomeAnAudit",
+        "allThreeRealDelegatedSourcesRemainEligibleWithoutBypassingThreeActiveContracts",
+        "actualAuditSaveRequiresItsOwnAcknowledgementNativeClockAndHistoricalAvenorContact",
+        "closedAuditFormatsRejectEarlierEmbeddedUnknownAndMisplacedClaimsWhileRetainingOldSources",
+        "auditHelpAndReadOnlyProjectionDoNotCreateRemotePickupOrPrematureCertification",
+    ),
     "NativeWayfarerInductionSeedUnitTests": (
         "sixOriginalThreeTonneLotsAreDistinctFromClinicWorkshopInductionAndGenericW03Stock",
         "currentReachableEnlirinLareriaQuoteUsesExactWholeItineraryPriceAndCannotRelabelGenericSeed",

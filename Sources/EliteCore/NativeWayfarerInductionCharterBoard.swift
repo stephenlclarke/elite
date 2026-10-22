@@ -84,6 +84,13 @@ extension Game {
       contractBoard.wayfarerInductionQuote?.action.charterPolicy
       ?? contractBoard.selected?.wayfarerInduction?.charterPolicy
       ?? state.charterChoice?.policy
+    if let audit = state.charterAudit {
+      return [
+        "Stage12: actual Avenor charter audit recorded under the three matching signatures. The named "
+          + audit.candidate.operatorID.rawValue
+          + " window request was refused without changing capacity or original stock. Veil certification remains next; no payment, accreditation or clue."
+      ]
+    }
     let operatorDetail = inductionCharterOperatorDetail
     var lines =
       operatorDetail + [

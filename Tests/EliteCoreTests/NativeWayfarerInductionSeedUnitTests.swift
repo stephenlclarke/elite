@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Three-operator ownership, custody and native timer receipts only; no native journey is executed.
-private final class InductionSeedFixture {
+final class InductionSeedFixture {
   let f: InductionWorkshopFixture
   let signature: NativeInductionCharterSignature
   let issue: NativeInductionSeedIssue

@@ -3,7 +3,8 @@ import Foundation
 extension NativeWayfarerInductionAction {
   var station: SystemIdentity {
     switch self {
-    case .accept, .progress, .pooledCharter, .protectedCharter, .allocateCharterCapacity:
+    case .accept, .progress, .pooledCharter, .protectedCharter, .allocateCharterCapacity,
+      .auditCharter:
       NativeWayfarerInduction.source
     case .clinicConsent, .releaseClinicCapacity, .issueClinicStock, .viewClinicStock,
       .acceptClinicSample, .cancelClinicSample:

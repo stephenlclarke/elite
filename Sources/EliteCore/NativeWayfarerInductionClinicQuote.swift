@@ -5,7 +5,7 @@ enum NativeInductionClinicQuoteScope: String, Codable, Sendable {
 }
 
 /// Read-only source proposal. This value grants no pickup, reservation, custody or settlement.
-struct NativeInductionClinicQuote: Sendable {
+struct NativeInductionClinicQuote: Codable, Sendable, Equatable {
   let scope: NativeInductionClinicQuoteScope
   let family: String
   let familyDigest: String
@@ -36,7 +36,8 @@ struct NativeInductionClinicQuote: Sendable {
   static func prepare(
     source: NativeInductionClinicSource, parent: NativeWayfarerInductionState,
     unit: UUID, scope: NativeInductionClinicQuoteScope, dock: NativeMainStationDockReceipt,
-    carrier: UUID, revision: UInt64, runtimeEpoch: UUID, firstReachLY: Double, fullReachLY: Double
+    carrier: UUID, revision: UInt64, runtimeEpoch: UUID, firstReachLY: Double, fullReachLY: Double,
+    retainedRoute: NativeInductionClinicRoute? = nil
   ) throws -> Self {
     guard parent.charterClinicSource == source, source.valid(parent: parent),
       let capacity = parent.charterCapacity,
@@ -60,7 +61,12 @@ struct NativeInductionClinicQuote: Sendable {
         source.delegation.scope == NativeInductionClinicAuditDelegation.readOnlyScope
       else { throw SaveError.invalidCommander }
     }
-    let route = try NativeInductionClinicRoute(firstReachLY: firstReachLY, fullReachLY: fullReachLY)
+    let route =
+      try retainedRoute
+      ?? NativeInductionClinicRoute(firstReachLY: firstReachLY, fullReachLY: fullReachLY)
+    guard route.valid, route.firstReachLY == firstReachLY, route.fullReachLY == fullReachLY else {
+      throw SaveError.invalidCommander
+    }
     let terms = try source.issue.profile.terms(epoch: source.issue.epoch, route: route)
     let fingerprint = try capacity.fingerprint
     let id = try Self.identity(
