@@ -400,6 +400,14 @@ METHODS = {
         "strictCurrentUtilitySchemaRejectsUnjoinedOrInventedClaims",
         "targetRequiresUtilityStateAndOtherStationsCannotClaimIt",
     ),
+    "MarketInventoryProjectionUnitTests": (
+        "statusSummaryAndInventoryHaveDistinctResponsibilities",
+    ),
+    "InventoryGroupingUnitTests": (
+        "mixedTradeAndReservedCargoStayInDistinctSectionsWithoutChangingQuantities",
+        "fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce",
+        "emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody",
+    ),
 }
 
 
