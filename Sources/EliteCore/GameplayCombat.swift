@@ -79,6 +79,8 @@ extension Game {
     guard damage.isFinite, damage >= 0, hit.distance.isFinite, hit.distance >= 0,
       hit.point.finite, energyMultiplier.isFinite, energyMultiplier >= 0
     else { return nil }
+    // Practice attribution belongs to the sealed native contact route, never raw damage.
+    if nativePracticeReservedTarget(hit) { return nil }
     ensurePhysicalActors()
     switch hit.target {
     case .body:
