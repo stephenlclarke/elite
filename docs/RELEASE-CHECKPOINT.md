@@ -18,6 +18,12 @@ Archive: `Elite-1.4.904-universal.zip`, 48,431,659 bytes, SHA256 `ba50c5f0745849
 
 The copied historical schema41 checkpoint matched its hashes but normal Open rejected it. Historical development save compatibility is outside this checkpoint. No compatibility fix, grants, altered save state or synthetic receiving receipt was used. The native campaign is closed; another attempt is not implied by this document.
 
+## Subsequent source correction remains pending
+
+[PR #107](https://github.com/stephenlclarke/elite/pull/107) at source `eed9dae5b7a1fae098a85a57a996d555f55f3b2b` addresses the renderer frames in #106 and the separately attributed crew-recorder lookup frame in [#108](https://github.com/stephenlclarke/elite/issues/108). Core and test compilation passed locally; the new recorder checks and unchanged original station-hazard regression passed three methods / 24 cases. These local Swift 6.4 checks do not qualify hosted Swift 6.1 execution.
+
+[Run 39845001834](https://github.com/stephenlclarke/elite/actions/runs/39845001834) is the current exact-head hosted qualification, pending at this document checkpoint. The maintained selection retains all prior 344 methods / 402 expected cases and adds two methods / 19 cases, for 346 / 421 expected. Independent review of the latest six-path correction is pending; prior renderer review is retained. No new full quality run or usable package is implied. Candidate 1.4.904 still contains source9106 and does not contain this later repair.
+
 ## M01 remains open
 
 The remaining acceptance chain is actual original Renas main-station entry, explicit receiving of the same eight original freight units, completed assignment, once-only 730 CR settlement and one G02 first-success clue. Without other transactions, the expected balance is 1,450 CR. Save and cold Continue must retain Renas/docked status, the completed assignment, original cargo disposition, spent source history, cash and the same single clue. Reopening the receipt must not pay again. Existing component tests and simple save loading do not prove this chain.

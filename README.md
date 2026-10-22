@@ -525,6 +525,8 @@ Local candidate **1.4.904** contains development source `9106e701bb33527e564103b
 
 The focused selection passed **342 methods / 379 expanded cases**. The full required quality run failed; current coverage, sanitizer and leak acceptance are not established by those focused results. Current-format freight save loading passed in the native app. Two manual Renas approaches ended in docking collisions and ship loss; actual freight receiving, its once-only 730 CR payment and clue, and Continue of the completed job remain unverified. M01 remains open. These observations do not establish a docking product defect.
 
+Subsequent source repair in PR #107 addresses the attributed renderer and crew-recorder lookup frames (#106/#108). At source `eed9dae5`, focused local checks passed three methods / 24 cases; hosted qualification of the maintained 346-method / 421-case selection is pending. That source is not part of local candidate 1.4.904.
+
 See the [release checkpoint](docs/RELEASE-CHECKPOINT.md) for the exact evidence and remaining review, main-only SonarQube, public packaging and Homebrew gates. Badges describe their linked branch/project, not qualification of this local candidate.
 
 ## Dependency maintenance
