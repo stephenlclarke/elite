@@ -5253,7 +5253,11 @@
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/57#issuecomment-6335771730",
         "unit_run": 39744222656,
         "unit_status": "Existing271jobactive",
-        "new_methods": 14
+        "new_methods": 14,
+        "source_review_result": "MBA235719f0completefeature/14fixtures CLEAN;closed117/118reversejoins and271selectorverified",
+        "source_review_completed_at": "2026-10-22T08:01:32Z",
+        "handoff_at": "2026-10-22T07:58:22Z",
+        "source_review_latency_seconds": 190
       },
       {
         "id": "M02.P05.station-navigation",
@@ -5398,7 +5402,12 @@
         "ownership": "NewNativePracticeprovider/PracticeTargettests;existingnativehunksrequireexactreservation",
         "dependencies": "AcceptedT02/T03authoring;actualnativeadmission/hits;noordinaryharmfacts",
         "limits": "NoG1/G3overlap,no schema changes without decision,no tutorial reward,genericlanguage orlocalintegrationjobs",
-        "initial_authoring": "RootexplicitnewL337three6mcubes/frozenplayerposeoffsets1500\u20132100m/650mvolume;unsafeadmissionrefuses;notrecoveredpredecessorspec"
+        "initial_authoring": "RootexplicitnewL337three6mcubes/frozenplayerposeoffsets1500\u20132100m/650mvolume;unsafeadmissionrefuses;notrecoveredpredecessorspec",
+        "reserved_shared_hunks": [
+          "GameplayOrdnance verified contact before applyCombatHit",
+          "GameplayCombat refuse unscoped beacon damage without practice receipt"
+        ],
+        "state_scope": "One native-onlypracticearchiveapprovedinprinciple;G1exactproperty/init/persistence/formatslotcoordinationpending;G4newcodecontinues"
       },
       {
         "id": "C08.commit-charter.audit",
