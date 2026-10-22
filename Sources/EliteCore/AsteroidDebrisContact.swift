@@ -455,7 +455,9 @@ extension Game {
           body.energy > 0
         else { return refuseDebrisStep(frame, reason: "ACTOR CHANGED") }
         let currentMesh: Mesh
-        if let recorder = recordRecoveryCollision(body) {
+        if let surveyor = c01SurveyorCollision(body) {
+          currentMesh = surveyor.mesh
+        } else if let recorder = recordRecoveryCollision(body) {
           currentMesh = recorder.mesh
         } else if let original = identifiedSalvageCollision(body) {
           currentMesh = original.mesh
@@ -522,7 +524,8 @@ extension Game {
     }
     guard let (source, target, contact) = selected else { return .advanced(nil) }
     if let id = trajectories[target].frame.bodyID,
-      bodies.first(where: { $0.id == id })?.scriptNPC != nil
+      let body = bodies.first(where: { $0.id == id }), body.scriptNPC != nil,
+      c01SurveyorCollision(body) == nil
     {
       return refuseDebrisStep(frame, reason: "MISSION INERTIA AUTHORITY UNAVAILABLE")
     }

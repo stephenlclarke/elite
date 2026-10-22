@@ -300,6 +300,8 @@ METHODS = {
         "silhouetteClipsNearPlaneAndViewportAndRefusesNonFiniteProjectionInputs",
     ),
     "NativeC01SurveyorUnitTests": (
+        "unchangedOriginalContactFrameCompletesWithTheSameClosedC01Geometry",
+        "passiveOriginalInertiaMovesOnceInsideManualAndWorkSweeps",
         "harrierKeepsEveryVisualFaceAt65MetresAndUsesClosedConservativeCollision",
         "convexEnvelopeRejectsNonfiniteFlatAndDegenerateGeometry",
         "originalSourceUsesActualPlanetStarFrameAndDetached80MetreRecorderWithoutGrantingCustody",

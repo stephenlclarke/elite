@@ -118,6 +118,30 @@ private final class C01SurveyorFixture {
     }
     return commander
   }
+  func physicsGame(velocity: Vector3 = .init(0, 0, 0)) throws -> Game {
+    var game = Game(executive: false)
+    game.commander = try commander(state)
+    game.scriptPacks = [try ScriptPackLibrary.read(ScriptPackLibrary.bundledGlassMeridianDirectory)]
+    game.screen = .front
+    game.docked = false
+    game.speed = 0
+    game.messageTime = 10
+    let source = try #require(state.surveyor?.source)
+    var mission = try #require(game.commander.scriptState.instances[source.mission])
+    for (index, alias) in NativeC01Surveyor.aliases.enumerated() {
+      var actor = try #require(mission.ownedEncounters[NativeC01Surveyor.encounter]?.actors[alias])
+      let point = source.position + Vector3(index == 0 ? 0 : 80, 0, 0)
+      actor.body.position = source.reference.shipPoint(point)
+      actor.body.physical?.velocity = velocity
+      mission.ownedEncounters[NativeC01Surveyor.encounter]?.actors[alias] = actor
+      var body = actor.body
+      body.position = game.commander.flightSimulation.pose.shipPoint(point)
+      game.bodies.append(body)
+    }
+    game.nextBodyID = 12
+    game.commander.scriptState.instances[mission.id] = mission
+    return game
+  }
   func mission(_ state: NativeGlassMeridianState) -> ScriptInstance {
     var mission = ScriptInstance(
       id: state.permission.mission, definition: NativeGlassMeridian.stateID,
@@ -184,6 +208,78 @@ struct NativeC01SurveyorUnitTests {
     #expect(patch.updatedEncounter.actors[recorder.alias]?.body.physical == recorder.body.physical)
     #expect(patch.updatedEncounter.actors[harrier.alias]?.body.physical == drifting.physical)
   }
+  @Test func unchangedOriginalContactFrameCompletesWithTheSameClosedC01Geometry() throws {
+    let f = try C01SurveyorFixture()
+    var game = try f.physicsGame()
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let captured = game.beginAsteroidContactStep(delta: 0.1)
+    let frame = try #require(captured)
+    let before = game.bodies
+    let completed = game.completeAsteroidContactStep(frame, delta: 0.1)
+    #expect(completed.admitted && !game.paused && game.bodies == before)
+    var changed = try f.physicsGame()
+    changed.commander.flightSimulation.advancePhysicalTime(0.1)
+    let secondCapture = changed.beginAsteroidContactStep(delta: 0.1)
+    let second = try #require(secondCapture)
+    changed.bodies[0].id += 100
+    let refused = changed.completeAsteroidContactStep(second, delta: 0.1)
+    #expect(!refused.admitted)
+    var remeshed = try f.physicsGame()
+    remeshed.commander.flightSimulation.advancePhysicalTime(0.1)
+    let thirdCapture = remeshed.beginAsteroidContactStep(delta: 0.1)
+    let third = try #require(thirdCapture)
+    remeshed.bodies[0].hull = .viper
+    let wrongGeometry = remeshed.completeAsteroidContactStep(third, delta: 0.1)
+    #expect(!wrongGeometry.admitted)
+  }
+
+  @Test(arguments: [false, true])
+  func passiveOriginalInertiaMovesOnceInsideManualAndWorkSweeps(work: Bool) throws {
+    let f = try C01SurveyorFixture()
+    let drift = Vector3(3, -1, 2)
+    var game = try f.physicsGame(velocity: drift)
+    let original = Dictionary(
+      uniqueKeysWithValues: game.bodies.map { ($0.id, game.modelPose(of: $0).position) })
+    if work {
+      game.workBraking = .init(velocity: .init(100, 0, 0), angularVelocity: .init(0, 0, 0))
+    }
+    let before = game.commander.flightSimulation.physicalTime
+    game.tick(delta: 0.1)
+    #expect(!game.paused && game.screen == .front)
+    #expect(abs(game.commander.flightSimulation.physicalTime - before - 0.1) < 1e-9)
+    if work { #expect(game.workBraking != nil) }
+    for body in game.bodies where body.missionInstanceID == f.state.permission.mission {
+      let start = try #require(original[body.id])
+      let end = game.modelPose(of: body).position
+      #expect((end - start - drift * 0.1).length < 1e-8)
+      #expect(body.physical?.velocity == drift)
+      #expect(body.scriptNPC?.velocity == .init(0, 0, 0))
+    }
+    #expect(game.bodies.filter { $0.missionInstanceID == f.state.permission.mission }.count == 2)
+    // A fast original recorder crosses the Harrier within one step although both endpoints are clear.
+    // The Harrier is encountered first in the cohort, so this also exercises C01 as the NPC target.
+    var crossing = try f.physicsGame()
+    if work {
+      crossing.workBraking = .init(velocity: .init(100, 0, 0), angularVelocity: .init(0, 0, 0))
+    }
+    let moving = try #require(crossing.bodies.firstIndex { $0.missionActorID == f.marker.identity })
+    crossing.bodies[moving].physical?.velocity = .init(-2000, 0, 0)
+    let oldKills = crossing.commander.kills
+    let oldCredits = crossing.commander.credits
+    crossing.tick(delta: 0.1)
+    let recorder = try #require(crossing.bodies.first { $0.missionActorID == f.marker.identity })
+    let harrierID = NativeC01Surveyor.actor(
+      mission: f.state.permission.mission, alias: NativeC01Surveyor.aliases[0])
+    let harrier = try #require(crossing.bodies.first { $0.missionActorID == harrierID })
+    let left = try #require(
+      NativeC01SurveyorGeometry.harrier.get().collision.vertices.map(\.x).min())
+    let recorderEnd = crossing.modelPose(of: recorder).position
+    let harrierEnd = crossing.modelPose(of: harrier).position
+    #expect(crossing.paused || recorder.energy <= 0 || recorderEnd.x >= harrierEnd.x + left - 1e-5)
+    #expect(!crossing.message.contains("MISSION INERTIA AUTHORITY UNAVAILABLE"))
+    #expect(crossing.commander.kills == oldKills && crossing.commander.credits == oldCredits)
+  }
+
   @Test func convexEnvelopeRejectsNonfiniteFlatAndDegenerateGeometry() throws {
     for points in [
       [Vector3(0, 0, 0), .init(1, 0, 0), .init(0, 1, 0), .init(1, 1, 0)],

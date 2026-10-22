@@ -2159,7 +2159,7 @@ public struct Game: Sendable {
         advanceCanonicalModelSpin(at: index, delta: dt)
         if let physical = bodies[index].physical, physical.spawnIdentity != nil,
           physical.ordnance == nil, bodies[index].scriptShot == nil,
-          bodies[index].scriptNPC == nil
+          bodies[index].scriptNPC == nil || c01SurveyorActor(bodies[index]) != nil
         {
           bodies[index].position =
             bodies[index].position
