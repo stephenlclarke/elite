@@ -79,6 +79,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedArkReserve: NativeInductionArkReserve?
   var savedArkRecovery: NativeArkRecoveryReceipt?
   var savedNativeArk: NativeInductionArkState?
+  var savedNativeCrewLog: NativeInductionCrewLogState?
   var savedWayfarerInduction: NativeWayfarerInductionState?
   var savedFlightReception: NativeFlightReceptionState?
   var savedMeasuredExtraction: NativeMeasuredExtractionState?
@@ -225,6 +226,10 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   var savedNativeArk: NativeInductionArkState? {
     _read { yield storage[0].savedNativeArk }
     _modify { yield &storage[0].savedNativeArk }
+  }
+  var savedNativeCrewLog: NativeInductionCrewLogState? {
+    _read { yield storage[0].savedNativeCrewLog }
+    _modify { yield &storage[0].savedNativeCrewLog }
   }
   var savedWayfarerInduction: NativeWayfarerInductionState? {
     _read { yield storage[0].savedWayfarerInduction }
@@ -542,6 +547,14 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
           state.ark == recovery.replacement
         else { return false }
       }
+    }
+    if NativeInductionCrewLogPack.marked(instance) {
+      guard instance.definition == NativeInductionCrewLogPack.stateID,
+        instance.digest == NativeInductionCrewLogPack.digest,
+        instance.version == NativeInductionCrewLogPack.version,
+        let source = instance.savedNativeCrewLog, source.authorization.job == instance.id,
+        instance.payloads.isEmpty
+      else { return false }
     }
     if NativeInductionArkPack.marked(instance) {
       guard instance.definition == NativeInductionArkPack.stateID,

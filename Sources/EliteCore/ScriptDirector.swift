@@ -155,6 +155,19 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.stateID == NativeInductionCrewLogPack.stateID
+      || pack.digest == NativeInductionCrewLogPack.digest
+    {
+      guard NativeInductionCrewLogPack.matches(pack) else {
+        return "Restore the original Cevilis custody source."
+      }
+      guard
+        commander.scriptState.instances.values.contains(where: {
+          $0.definition == NativeInductionCrewLogPack.stateID && $0.digest == pack.digest
+            && $0.savedNativeCrewLog != nil
+        })
+      else { return "Continue the actual Exchange induction at Cevilis." }
+    }
     if pack.manifest.stateID == NativeInductionArkPack.stateID
       || pack.digest == NativeInductionArkPack.digest
     {
@@ -364,6 +377,9 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    guard pack.manifest.stateID != NativeInductionCrewLogPack.stateID,
+      pack.digest != NativeInductionCrewLogPack.digest
+    else { throw MissionPackError("Continue the actual Exchange induction at Cevilis.") }
     guard pack.manifest.stateID != NativeInductionArkPack.stateID,
       pack.digest != NativeInductionArkPack.digest
     else { throw MissionPackError("Use the original custodian launch review at Enlirin.") }
@@ -1431,6 +1447,11 @@ extension Game {
         $1.manifest.priority, $1.manifest.id, $1.digest
       )
     }) {
+      if pack.manifest.stateID == NativeInductionCrewLogPack.stateID
+        || pack.digest == NativeInductionCrewLogPack.digest
+      {
+        continue
+      }
       if pack.manifest.stateID == NativeInductionArkPack.stateID
         || pack.digest == NativeInductionArkPack.digest
       {

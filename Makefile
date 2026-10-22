@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: ci-capture-check help build run test unit-ci coverage coverage-check threads address leaks readme-media induction-ark-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
+.PHONY: ci-capture-check help build run test unit-ci coverage coverage-check threads address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test unit-ci ci-capture-check coverage-check threads address leaks readme-media induction-ark-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
+	@printf '%s\n' 'build run test unit-ci ci-capture-check coverage-check threads address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -29,6 +29,9 @@ readme-media:
 
 induction-ark-model:
 	python3 Tools/export-induction-ark-model.py
+
+induction-crew-log-model:
+	python3 Tools/export-induction-ark-model.py --crew-log
 ships showroom-data:
 	python3 Tools/showroom/ship-reference.py
 ships-check:

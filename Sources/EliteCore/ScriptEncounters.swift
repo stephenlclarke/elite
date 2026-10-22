@@ -710,14 +710,25 @@ extension Game {
         installedModels: pack.models, geometry: geometry,
         legacy: legacy?.actors[spec.id],
         initialNativeCondition: mode == .prepared
-          ? try NativeInductionArkPack.initialCondition(state: state, actor: actor) : nil)
+          ? try Self.preparedNativeMissionResources(state: state, actor: actor) : nil)
       if mode == .prepared {
         try Self.validatePreparedMissionActorCondition(
-          actor, spec: spec, template: template, legacy: legacy)
+          actor, spec: spec, template: template, legacy: legacy,
+          mechanicallyDisabled: NativeInductionCrewLogPack.mechanicallyDisabled(actor, state: state)
+        )
       }
       templates.append(template)
     }
     return templates
+  }
+
+  private static func preparedNativeMissionResources(
+    state: borrowing ScriptInstance, actor: ScriptOwnedActor
+  ) throws -> NPCState? {
+    if NativeInductionCrewLogPack.marked(state) {
+      return try NativeInductionCrewLogPack.initialResources(state: state, actor: actor)
+    }
+    return try NativeInductionArkPack.initialCondition(state: state, actor: actor)
   }
 
   /// Construct the owned result only after per-actor validation and template frames have returned.
@@ -774,13 +785,15 @@ extension Game {
   @inline(never)
   private static func validatePreparedMissionActorCondition(
     _ actor: ScriptOwnedActor, spec: ScriptActorDefinition,
-    template: MissionActorAdmissionTemplate, legacy: LegacyMissionEncounterProvenance?
+    template: MissionActorAdmissionTemplate, legacy: LegacyMissionEncounterProvenance?,
+    mechanicallyDisabled: Bool = false
   ) throws {
     try validatePreparedMissionActorPose(actor, spec: spec)
     if legacy != nil {
       try validatePreparedMissionActorLegacy(actor, spec: spec, legacy: legacy)
     } else {
-      try validatePreparedMissionActorEnergy(actor, template: template)
+      try validatePreparedMissionActorEnergy(
+        actor, template: template, mechanicallyDisabled: mechanicallyDisabled)
       if let resources = preparedMissionActorNPCResources(actor) {
         try validatePreparedMissionActorNPCResources(resources)
       } else {
@@ -815,10 +828,14 @@ extension Game {
 
   @inline(never)
   private static func validatePreparedMissionActorEnergy(
-    _ actor: borrowing ScriptOwnedActor, template: borrowing MissionActorAdmissionTemplate
+    _ actor: borrowing ScriptOwnedActor, template: borrowing MissionActorAdmissionTemplate,
+    mechanicallyDisabled: Bool = false
   ) throws {
     guard actor.body.energy == template.maximumHullEnergy,
-      template.parts.allSatisfy({ $0.energy == $0.maximumEnergy })
+      template.parts.allSatisfy({ part in
+        mechanicallyDisabled && part.alias == "drive"
+          ? part.energy == 0 && !part.solid : part.energy == part.maximumEnergy
+      })
     else {
       throw MissionPackError(
         "A prepared actor must retain its actual authored initial condition.")
@@ -1272,6 +1289,7 @@ extension Game {
         }
         body.missionActorID = identity
         body.missionInstanceID = state.id
+        try NativeInductionCrewLogPack.initialBody(&body, state: state, alias: spec.id)
         actors[spec.id] = ScriptOwnedActor(
           identity: identity, alias: spec.id, body: body, presence: .prepared)
       }

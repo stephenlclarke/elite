@@ -1,0 +1,99 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.induction-crew-log"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2", "profiled-encounters-v2", "mission-calendar-v2", "npc-wormhole-transit-v2"]
+priority = 612
+source = "Closed native C08 Cevilis original tender/marked launch/recorder source. Native source registration owns admission, people, custody and loss. No Lua pickup, rescue, receiving or reward."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "original-crew-log"
+title = "Original Cevilis crew custody recorder"
+briefing = "Internal native provider for the owning Exchange induction. The disabled original Burro tender is empty; its two original living crew are in the separate marked Burro launch. Recover only the original1t custody recorder identifying them and Enmadan shelter. No player cabin, hull or equipment grant."
+destination = "Cevilis G01-S211, then actual Enmadan shelter receiving"
+reward = "No player payment or clue."
+milestones = ["Original custody recorder recovered"]
+
+[[models]]
+id = "induction-original-burro"
+path = "models/burro.json"
+sha256 = "6849e1de018d7c555a5398d33a57c0ac8308950980503abf3733693559894055"
+source = "Original project-authored additive hull construction; no predecessor mesh or bitmap inputs"
+license = "MIT"
+
+[[npcs]]
+id = "induction-cevilis-burro"
+name = "Cevilis custodian service Burro"
+source = "Original SH029 specifications 8f94df2d92f9cd5a93c2a3eb8ee8c057a1093b922235f0ec8c01a2c8c4b3826f"
+basis = "Approved native LOD in authored metres. Existing native conversion: speed/acceleration x18, fuel x0.1 LY. Distinct tender and marked two-person launch identities. Tender propulsion/weapons are mechanically unavailable; no hull or equipment ownership transfers."
+model = "asset:induction-original-burro"
+scale = 1
+energy = 270
+recharge = 3.2
+speed = 712.8000000000001
+acceleration = 190.79999999999998
+pitch = 0.84
+yaw = 0.78
+roll = 0.95
+missiles = 5
+fuel = 13
+ecm = false
+bounty = 0
+lasers = []
+[npcs.drive]
+component = "drive"
+rangeLightYears = 9
+activationSeconds = 12
+massLockScale = 1
+fuelUnit = "native-light-years"
+[[npcs.components]]
+id = "drive"
+model = "asset:induction-original-burro"
+scale = 0.05
+position = {x = 0, y = 0, z = -1}
+orientation = {x = {x = 1, y = 0, z = 0}, y = {x = 0, y = 1, z = 0}, z = {x = 0, y = 0, z = 1}}
+energy = 270
+solid = false
+weapons = []
+
+[[npcs]]
+id = "induction-crew-custody-recorder"
+name = "Original Cevilis crew custody recorder"
+source = "C08 original custodian recorder; shared authenticated physical package only"
+basis = "One protected tonne. Identifies the original two launch occupants and Enmadan shelter. Passive package at W03 physical scale; distinct source, serial and custody. No W03 mission, reward, clue or player cabins."
+model = "catalogue:SH058"
+scale = 0.2
+energy = 100
+recharge = 0
+speed = 0
+acceleration = 0
+pitch = 0
+yaw = 0
+roll = 0
+missiles = 0
+fuel = 0
+ecm = false
+bounty = 0
+lasers = []
+components = []
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "timer.fired"
+function = "deploy"
+[[handlers]]
+event = "encounter.admitted"
+function = "admitted"
+
+[[encounters]]
+id = "cevilis-source"
+galaxy = 0
+system = 211
+profile = "profiled-local-freeze-v1"
+actors = [{id="tender",npc="induction-cevilis-burro",x=60000.0,y=20000.0,z=0.0,hostile=false},{id="launch",npc="induction-cevilis-burro",x=60300.0,y=20000.0,z=0.0,hostile=false},{id="recorder",npc="induction-crew-custody-recorder",x=60000.0,y=20000.0,z=100.0,hostile=false}]

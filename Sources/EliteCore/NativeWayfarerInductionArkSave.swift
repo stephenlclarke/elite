@@ -4,7 +4,7 @@ enum NativeInductionArkSave {
   static let version = 81
   static let alienVersion = 82
   static func supportsReserve(_ schema: Int?) -> Bool {
-    schema == version || schema == alienVersion
+    schema == version || schema == alienVersion || NativeInductionCrewLogSave.contains(schema)
   }
   static func supportsReceiving(_ schema: Int?) -> Bool {
     supportsReserve(schema) || schema == 79 || schema == 80
@@ -16,7 +16,8 @@ enum NativeInductionArkSave {
     supportsService(schema) || schema == 75 || schema == 76
   }
   static func isAlien(_ schema: Int?) -> Bool {
-    schema == alienVersion || schema == 80 || schema == 78 || schema == 76
+    schema == NativeInductionCrewLogSave.alienVersion || schema == alienVersion || schema == 80
+      || schema == 78 || schema == 76
   }
   static func lowerSchema(_ schema: Int?) -> Int? {
     guard contains(schema) else { return schema }

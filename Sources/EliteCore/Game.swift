@@ -456,7 +456,8 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard NativeInductionArkSave.validateClaims(self),
+    guard NativeInductionCrewLogSave.validateClaims(self),
+      NativeInductionArkSave.validateClaims(self),
       NativeWayfarerInductionSave.validateClaims(self),
       NativeFirstCommoditySaleSave.validateClaims(self),
       NativeGlassMeridianSave.validateClaims(self),
@@ -890,6 +891,7 @@ public struct Game: Sendable {
       !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
       value.scriptState.savedFleetDiscovery == nil,
       value.scriptState.firstNativeCommoditySale == nil,
+      !NativeInductionCrewLogSave.hasClaims(value),
       !NativeInductionArkSave.hasClaims(value),
       !NativeWayfarerInductionSave.hasClaims(value),
       value.scriptState.financeLedger == nil, value.scriptState.savedClueJournal == nil,
@@ -2669,6 +2671,7 @@ public actor GameRuntime {
     }
     if localActive {
       game.advanceInductionArk(from: transitSample, publish: scriptPublisher())
+      game.advanceInductionCrewLog(publish: scriptPublisher())
     }
     game.advanceScriptWorldJobs(delta: delta, publish: scriptPublisher())
   }

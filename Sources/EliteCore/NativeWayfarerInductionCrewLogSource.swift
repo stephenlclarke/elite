@@ -55,9 +55,7 @@ struct NativeInductionCrewLogSource: Sendable {
     guard parent.valid, parent.seedReception != nil,
       let performance = OriginalFleetDefinitionData.definition(for: Self.hull)?.nativePerformance,
       performance.valid,
-      let recorderDesign = ShipCatalogue.ship("SH058")?.design,
-      ScriptPackLibrary.hash(try ScriptPackLibrary.canonicalGeometry(recorderDesign))
-        == Self.recorderGeometry
+      let recorderDesign = try? Self.authenticatedRecorder.get()
     else { throw SaveError.invalidCommander }
     let physical = try OriginalHullPhysicalContract.burro.get()
     manifest = .init(permission: parent.permission)
@@ -74,7 +72,7 @@ struct NativeInductionCrewLogSource: Sendable {
 
   /// The two hulls share unchanged source performance. Mechanical failure is retained condition,
   /// not a rewritten hull specification, hostile attack, EMP discharge or kill receipt.
-  private static func shipProfile(
+  static func shipProfile(
     physical: OriginalHullPhysicalContract, performance: ShipPerformance
   ) -> ScriptNPCDefinition {
     .init(
@@ -99,7 +97,7 @@ struct NativeInductionCrewLogSource: Sendable {
       ])
   }
 
-  private static func recorderProfile() -> ScriptNPCDefinition {
+  static func recorderProfile() -> ScriptNPCDefinition {
     .init(
       id: "induction-crew-custody-recorder", name: "Original Cevilis crew custody recorder",
       source: "C08 original custodian recorder; shared authenticated physical package only",
@@ -112,6 +110,13 @@ struct NativeInductionCrewLogSource: Sendable {
 
   var models: [String: ShipDesign] {
     [Self.model: physical.model.nativeDesign, Self.recorderModel: recorderDesign]
+  }
+
+  private static let authenticatedRecorder: Result<ShipDesign, any Error> = Result {
+    guard let design = ShipCatalogue.ship("SH058")?.design,
+      ScriptPackLibrary.hash(try ScriptPackLibrary.canonicalGeometry(design)) == recorderGeometry
+    else { throw SaveError.invalidCommander }
+    return design
   }
 
   private static let authenticatedModels: Result<[String: String], any Error> = Result {

@@ -292,6 +292,14 @@ extension ScriptPackLibrary {
       if !library.packs.contains(where: { $0.digest == ark.digest }) { library.packs.append(ark) }
     } catch { library.errors.append("Bundled registered seed ark: " + error.localizedDescription) }
     do {
+      let source = try read(bundledInductionCrewLogDirectory)
+      if !library.packs.contains(where: { $0.digest == source.digest }) {
+        library.packs.append(source)
+      }
+    } catch {
+      library.errors.append("Bundled Cevilis custody source: " + error.localizedDescription)
+    }
+    do {
       let opening = try read(bundledGlassMeridianDirectory)
       if !library.packs.contains(where: { $0.digest == opening.digest }) {
         library.packs.append(opening)

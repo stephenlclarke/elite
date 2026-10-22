@@ -88,7 +88,7 @@ extension NativeInductionArkSave {
       if let parent = mission["savedWayfarerInduction"] as? [String: Any],
         parent.keys.contains("seedReception")
       {
-        guard !embedded, schema == version || schema == alienVersion || schema == 79 || schema == 80
+        guard !embedded, supportsReceiving(schema)
         else {
           throw SaveError.invalidCommander
         }

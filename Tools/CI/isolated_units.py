@@ -13,6 +13,15 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeWayfarerInductionCrewLogProducerUnitTests": (
+        "sourceGraphNeedsTheSameParentOwnerAcknowledgedIssueAndRetainedMainStation",
+        "registrationBindsOneOwningOriginalManifestActualCevilisVisitAndPriorReceiving",
+        "livingCrewRequiresDistinctActualAdmissionAndLaunchLossCannotBecomeARescue",
+        "mechanicalFailureDisablesOnlyTheOriginalTenderDriveWithoutSpentHullOrEmpCredit",
+        "initialNativeResourcesUseSourceShieldsAndOnlyOneScriptFuelReservoir",
+        "internalPackPinsAllThreePhysicalSourcesAndCannotGrantPickupOrReceivingFromLua",
+        "closedSourceEnvelopeRejectsOldEmbeddedForeignAndUnknownNestedClaims",
+    ),
     "NativeWayfarerInductionCrewLogSourceUnitTests": (
         "exactBurroMetreSourceKeepsOriginalPerformanceAndSeparateMechanicalFailure",
         "oneOriginalRecorderNamesExactlyTwoDistinctLaunchOccupantsAndEnmadanShelter",
