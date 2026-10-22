@@ -4920,6 +4920,23 @@
       "source_review": "MBA f791 bounded correction/final composition CLEAN; production unchanged; four literal indentation expectations only; originalassertionsretained",
       "unit_status": "running",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Accessible signed/notarized local clinic/showroom candidate independently verified",
+      "at": "2026-10-22T07:10:19Z",
+      "version": "1.4.901",
+      "source_revision": "8b30a3112d1af0c5130cd01d8fed582c029a2913",
+      "app_path": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.901-8b30a311/Elite.app",
+      "manifest_and_signed_bundle_match": true,
+      "archive_checksum_verified": true,
+      "strict_deep_signature_pass": true,
+      "staple_valid": true,
+      "gatekeeper_accepted": true,
+      "unit_qualification": "Retained244methods276casesPASS; no new tests",
+      "native_gameplay_acceptance": false,
+      "published_release": false,
+      "homebrew_updated": false,
+      "slack_posted": false
     }
   ],
   "two_developer_phase": {
@@ -4998,7 +5015,10 @@
         ],
         "qualification_artifact_run": 39735189065,
         "qualification_artifact_head": "8afe2415bcd47e62bfd1713163dc0e53d3b0dd2d",
-        "qualification_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6334705280"
+        "qualification_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6334705280",
+        "accessible_candidate_path": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.901-8b30a311/Elite.app",
+        "candidate_verified_at": "2026-10-22T07:10:19Z",
+        "native_playable_acceptance": false
       },
       {
         "id": "M02.P04/F06",
@@ -5053,7 +5073,10 @@
         "unit_verification_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6334705280",
         "final_review_completed_at": "2026-10-22T06:52:55Z",
         "first_push_observed_to_merge_seconds": 3292,
-        "assignment_to_merge_seconds": 3516
+        "assignment_to_merge_seconds": 3516,
+        "accessible_candidate_path": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.901-8b30a311/Elite.app",
+        "candidate_verified_at": "2026-10-22T07:10:19Z",
+        "native_playable_acceptance": false
       },
       {
         "id": "M02.P05.inventory",
@@ -5125,6 +5148,31 @@
     "complete_features_merged": 1,
     "merged_feature_count_scope": "Shared development branch complete featurePR48 only; source qualification/individual packets do not add counts",
     "new_usable_build_deliveries": 0,
-    "new_published_releases": 0
+    "new_published_releases": 0,
+    "accessible_unit_qualified_candidates_delivered": 1,
+    "new_usable_build_delivery_scope": "Requires actual relevant execution/UI evidence; new available unit-qualified notarized candidate recorded separately, no native journey run under coding policy.",
+    "candidate": {
+      "path": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.901-8b30a311/Elite.app",
+      "version": "1.4.901",
+      "source_revision": "8b30a3112d1af0c5130cd01d8fed582c029a2913",
+      "manifest_built_at": "2026-10-22T07:05:57.763664+00:00",
+      "independently_verified_at": "2026-10-22T07:10:19Z",
+      "sha256": "7a5e075d57508e6e5c76f7128060bdb4670d74d3542d8a9572b9bf88dbfda676",
+      "architectures": [
+        "arm64",
+        "x86_64"
+      ],
+      "notarized": true,
+      "gatekeeper_accepted": true,
+      "scope": "Accessible local unit-qualified candidate; no native gameplay/fullM01/publicrelease/Homebrew acceptance",
+      "features_included": [
+        "Complete clinic loop",
+        "Compact showroom comparison"
+      ],
+      "features_excluded": [
+        "Unmerged inventory grouping",
+        "Unfinished workshop loop"
+      ]
+    }
   }
 }
