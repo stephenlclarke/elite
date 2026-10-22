@@ -5524,6 +5524,26 @@
       "training_owner": "G4",
       "training_scope": "preserve actual C01 validator and join T02/T03 save envelopes/selector once",
       "final_quality_gate_retained": true
+    },
+    {
+      "event": "Local candidate1.4.903 independently artifact-verified and delivered, earlier candidates preserved",
+      "date": "2026-10-22",
+      "source": "d731b79859dddffd3533c20360280c7c27825009",
+      "app": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.903-d731b798/Elite.app",
+      "qualified_methods": 335,
+      "expanded_cases": 372,
+      "artifact_checks": [
+        "source/version/manifest",
+        "ZIP bytes/SHA256",
+        "strict deep signature",
+        "hardened runtime/timestamp/DeveloperID",
+        "stapled notarization",
+        "Gatekeeper accepted",
+        "universal architectures"
+      ],
+      "native_journey_accepted": false,
+      "published_release": false,
+      "slack_posted": false
     }
   ],
   "two_developer_phase": {
@@ -6499,12 +6519,12 @@
     "merged_feature_count_scope": "Source delivery: showroom48/help55/inventory51/market+night56/Wanted61, alien drive+missile72, C08career69 and C01original-recorder recovery79 (one stage, not full campaign). Custody/media/fixes excluded; local app and full native acceptance counted separately.",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
-    "accessible_unit_qualified_candidates_delivered": 2,
+    "accessible_unit_qualified_candidates_delivered": 3,
     "new_usable_build_delivery_scope": "Requires actual relevant execution/UI evidence; new available unit-qualified notarized candidate recorded separately, no native journey run under coding policy.",
     "candidate": {
-      "version": "1.4.902",
-      "source": "f88d66e20972d2c6d5a5273bdf5fbb2e9816bc4b",
-      "path": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.902-f88d66e2/Elite.app",
+      "version": "1.4.903",
+      "source": "d731b79859dddffd3533c20360280c7c27825009",
+      "path": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.903-d731b798/Elite.app",
       "root_artifact_verification": "passed",
       "signed": true,
       "notarized": true,
@@ -6513,7 +6533,8 @@
         "arm64",
         "x86_64"
       ],
-      "zip_sha256": "76be1b2f88d69b19be49aacaec2f4505b9bbc3967f272dc7b386f39bcf136a00",
+      "zip_bytes": 48410301,
+      "zip_sha256": "1c66ddf8e751cb81b4b850a7b5e1da22eeaae6d5634f8c6edc6825176e3190e9",
       "published_release": false,
       "homebrew_available": false,
       "native_gameplay_acceptance": false
@@ -6823,7 +6844,7 @@
       "preserve": "Existinggenerated/recordedroutes,cargo,provenance,Pirate/Militarytiers",
       "hud_performance_limit": "No wholeCommander/fullsave/fullengine validation or speculativecache"
     },
-    "accessible_candidate_count_scope": "Distinct local candidates901 and902;902 independently artifact-verified and user notified. No published-release or native-gameplay acceptance claim.",
+    "accessible_candidate_count_scope": "Distinct unit-qualified local candidates901,902,903;903 independently artifact-verified and user notified. No native-journey or public-release acceptance claim.",
     "cancelled_superseded_runs": [
       {
         "run": 39766915942,
@@ -6861,7 +6882,7 @@
         89,
         90
       ],
-      "local_candidate_delivered": false,
+      "local_candidate_delivered": true,
       "full_campaign_complete": false
     }
   }
