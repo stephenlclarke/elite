@@ -4706,9 +4706,23 @@
       "selection_methods": 206,
       "new_methods": 7,
       "source_review": "MBA bounded capacity source clean; actual execution pending",
-      "unit_status": "existing hosted run running and watched",
+      "unit_status": "GitHub SUCCESS; MBA exact artifact verification pending",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332644511",
       "next_assigned": "C08.P06.B.consent",
+      "usable_build_delivered": false
+    },
+    {
+      "event": "Actual operator consent and named-unit release pushed; MBA review queued",
+      "head": "eb0fdf58354240d0816ca5a95d6b0ddfb05f7caa",
+      "base": "aa4ca56c55cf9e4f66b9f357df7677495c0788ae",
+      "ledger_parent": "C08.P06.B.operator-consent",
+      "github_run": 39723616779,
+      "selection_methods": 212,
+      "new_methods": 6,
+      "source_review": "queued MBA",
+      "unit_status": "existing hosted run active",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332863778",
+      "next_assigned": "C08.P06.B.quote.clinic",
       "usable_build_delivered": false
     }
   ]
