@@ -5006,7 +5006,7 @@
   "two_developer_phase": {
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
-      "G1": "C08Veilcertification;seedfailureMBAtriage/auditreviewasync",
+      "G1": "C08Sennterminal;certification/auditreviewasync;MC1seed60sourceinspection",
       "G3": "M07.P02 native ordnance/attribution;retainsPR51/56/58/61finalqualification/merge",
       "G4": "T02.P01.provider native uncrewed practice targets/harmless native hits"
     },
@@ -5149,7 +5149,7 @@
         "assigned_at": "2026-10-22T06:29:40+00:00",
         "phase_entry_state": "Presentation-only categorization; Equipment heading currently precedes protected mission property",
         "source_complete_at": null,
-        "merged_at": null,
+        "merged_at": "2026-10-22T08:24:06Z",
         "playable_at": null,
         "dependency": "Independent from pending showroom PR; canonical409d042c base",
         "head": "85e675900808cd7fab5ccfe23b8d731c51c9e5a3",
@@ -5158,8 +5158,8 @@
         "handoff_at": "2026-10-22T07:17:59Z",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6335617582",
         "unit_run": 39745584513,
-        "unit_status": "Necessaryfd9composition261jobactive;old93cb259SUCCESSmetadataretained/notnewheadpass",
-        "source_state": "93cbfinalassertion/suite/259selectorhandoffposted;MBAreview/executionpending",
+        "unit_status": "MBAverified261methods293casesALLPASS;3Grouping+affectedStatusInventoryPASS;zeroerrors/skips/crash",
+        "source_state": "Author-mergedsource/unitqualifiedfeature;notnewapp/release",
         "source_review_result": "MBA85necessaryfd9compositionCLEAN;domaincode/testsunchanged;exact261",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
@@ -5171,16 +5171,14 @@
         "passed_new_methods": 2,
         "failed_new_methods": 1,
         "verification_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6334812977",
-        "compile_seconds": 705.13,
-        "execution_seconds": 44.327,
-        "awaiting_verification_findings": [
-          53
-        ],
+        "compile_seconds": 633.29,
+        "execution_seconds": 54.576,
+        "awaiting_verification_findings": [],
         "correction_handoff_at": "2026-10-22T07:02:04Z",
         "correction_source_review_result": "MBA f791 bounded correction/final composition CLEAN; production unchanged; four literal indentation expectations only; originalassertionsretained",
         "selector_review": "Finalb3 exact union of f791247 and fcf255 equals258; no missing/unexpected methods",
         "issue_metadata": "52CLOSED after actual correction verification; no ready inventory finding",
-        "merge_blocker": "AffectedMarketFlowselection/finalheadverification plusknown53 correctionverification",
+        "merge_blocker": null,
         "closed_findings": [
           52
         ],
@@ -5219,7 +5217,10 @@
           "head": "e4772060e3ec4ebe3b1142204b56f37e8ee52e6f",
           "state": "TerminalCANCELLED/unqualifiedverifiedviaGitHub",
           "reason": "Actualselectoromitsaffectedmethod;correct93successorjobalreadyexists"
-        }
+        },
+        "merge_commit": "98e1571758ddf570ddb5a2078b77fa6f1cb7333b",
+        "verified_methods": 261,
+        "verified_expanded_cases": 293
       },
       {
         "id": "C08 workshop loop",
@@ -5281,7 +5282,7 @@
         "ready_findings": [
           60
         ],
-        "finding_owner": "MC1boundedsourceinspection;G1featureauthor/correctionownerafterexactreservation",
+        "finding_owner": "G1featureauthor;MC1source-onlyinspectioncomplete/norepairproven;MBAretainsfailureevidence",
         "finding_kind": "Unattributedunitexecutioncrash;rootcauseunknown;notfailedassertionorcompilererror"
       },
       {
@@ -5490,7 +5491,12 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "G1C08mission/board/save123124;noG3/G4paths",
-        "limits": "Actualoriginalrecords/capacityaudit;nofabricatedproof/terminalreward"
+        "limits": "Actualoriginalrecords/capacityaudit;nofabricatedproof/terminalreward",
+        "head": "342ca8a5a9753a82d253d08836504d5f09e58434",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/62",
+        "source_state": "Completestage13sourcepushed;6new/285selection;MBAreview/actualexecutionpending",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/62#issuecomment-6336216114",
+        "source_review_result": "MBA342newdelta/6fixtures/closed123124CLEAN;actual285executionpending/inherited60unqualified"
       },
       {
         "id": "M07.P01.legal-facts",
@@ -5518,6 +5524,17 @@
         "playable_at": null,
         "ownership": "ScriptNPCWeapons/NativeMissionProjectile/narrowpurepolicies/tests/notes",
         "limits": "NoG4combat/impact/scooporG1Game/mission/save;noscriptedkill/newAI/weapontypes"
+      },
+      {
+        "id": "C08.close-case.terminal",
+        "owner": "G1",
+        "assigned_at": "2026-10-22T08:25:52.041772+00:00",
+        "phase_entry_state": "AlreadyassignedSennterminalbeginsaftercertificationpush",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "G1C08terminal125126+exactScriptCompletion.valid/C08cluematcherhunks",
+        "limits": "Once7600/accreditation/clue;preserveheldcontracts;nogenericreceiptloosening/forgedrevisionacceptance"
       }
     ],
     "model_settings": {
@@ -5550,8 +5567,10 @@
         "started_at": "2026-10-22T08:19:36.191982+00:00",
         "reason": "UnattributedSIGNAL4/zeropasses;boundedsource-onlyreviewfreesG1tocontinuecertification",
         "scope": "Exactnewseed14fixtures/validation;noedituntilsourceprovenhunkreservation",
-        "status": "Active source inspection; no actual cause claimed",
-        "new_jobs_started": 0
+        "status": "Source-only review complete; no source-proven cause or repair hunk",
+        "new_jobs_started": 0,
+        "completed_observed_at": "2026-10-22T08:26:51.078034+00:00",
+        "outcome": "All14fixtures/immediateconstructors/validators reviewed;noedits/jobs;issue60stillopen/unattributed"
       }
     ],
     "escalation_reserve": {
@@ -5560,11 +5579,11 @@
       "authority": "Latest human instruction: use Mission Coder1 for difficult things",
       "policy": "Named necessary blocker only; no standing implementation stream; independent MBA review",
       "model": null,
-      "active_assignment": "Issue60 boundedsource-onlyseedcrashreview"
+      "active_assignment": null
     },
     "qualification_queue_note": "PR55mergedfd9after257/289PASS;PR54GitHubmarkedmerged;PR51/56actualcurrentheadspending;MBA reviewqueueclear",
-    "complete_features_merged": 2,
-    "merged_feature_count_scope": "DistinctcompletefeaturePR48showroomandPR55controlhints/shareddevelopment;53fixturecorrectionnotanewfeature",
+    "complete_features_merged": 3,
+    "merged_feature_count_scope": "ShareddevelopmentPR48showroom,PR55controlhints,PR51inventory;nohelper/fix-onlydoublecount",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
     "accessible_unit_qualified_candidates_delivered": 1,
