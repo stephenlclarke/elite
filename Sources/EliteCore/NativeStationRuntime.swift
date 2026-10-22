@@ -977,13 +977,15 @@ extension Game {
       refineCourse: false, bodyCourseRefused: &bodyCourseRefused)
   }
 
+  @inline(never)
   private mutating func nativeStationApproachClear(
     from start: Vector3, to end: Vector3, excluding stationID: Int, radius: Double,
     observation: inout [String: String]?, refineCourse: Bool, bodyCourseRefused: inout Bool
   ) -> Bool {
     bodyCourseRefused = false
     observation?["refusal"] = "corridor.context"
-    guard let anchors = commander.flightSimulation.anchors, radius.isFinite else { return false }
+    guard let anchors = withReadOnlyCommander({ $0.flightSimulation.anchors }), radius.isFinite
+    else { return false }
     for (index, celestial) in [anchors.planet, anchors.sun].enumerated() {
       let distance = distanceFromNativeSegment(celestial.position, start: start, end: end)
       let bound = radius + celestial.radius
@@ -1003,59 +1005,80 @@ extension Game {
         return false
       }
     }
-    for body in bodies
-    where (body.energy > 0 || (refineCourse && !body.energy.isFinite)) && body.id != stationID {
-      let point = commander.flightSimulation.pose.systemPoint(body.position)
-      let distance = distanceFromNativeSegment(point, start: start, end: end)
-      let mesh: Mesh
-      if refineCourse, body.scriptNPC != nil {
-        guard let source = scriptNPCMesh(body) else { return false }
-        mesh = source
-      } else {
-        mesh = gameplayMesh(for: body)
+    let candidates = bodies
+    for index in candidates.indices {
+      guard
+        nativeStationApproachBodyClear(
+          candidates[index], from: start, to: end, excluding: stationID, radius: radius,
+          observation: &observation, refineCourse: refineCourse,
+          bodyCourseRefused: &bodyCourseRefused)
+      else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private mutating func nativeStationApproachBodyClear(
+    _ body: borrowing SpaceBody, from start: Vector3, to end: Vector3,
+    excluding stationID: Int, radius: Double, observation: inout [String: String]?,
+    refineCourse: Bool, bodyCourseRefused: inout Bool
+  ) -> Bool {
+    if !(body.energy > 0) {
+      guard refineCourse else { return true }
+      guard !body.energy.isFinite else { return true }
+    }
+    guard body.id != stationID else { return true }
+    let pose = withReadOnlyCommander { $0.flightSimulation.pose }
+    let point = pose.systemPoint(body.position)
+    let distance = distanceFromNativeSegment(point, start: start, end: end)
+    let mesh: Mesh
+    if refineCourse, body.scriptNPC != nil {
+      guard let source = scriptNPCMesh(body) else { return false }
+      mesh = source
+    } else {
+      mesh = gameplayMesh(for: body)
+    }
+    let bodyRadius = nativeStationRadius(mesh)
+    if refineCourse {
+      guard body.energy.isFinite, point.finite, distance.isFinite,
+        bodyRadius.isFinite, bodyRadius > 0,
+        mesh.vertices.count >= 4, mesh.faces.count >= 4,
+        mesh.vertices.allSatisfy({ $0.finite }),
+        mesh.faces.allSatisfy({
+          $0.count >= 3 && $0.allSatisfy { mesh.vertices.indices.contains($0) }
+        })
+      else {
+        observation?["refusal"] = "corridor.unproven-body"
+        observation?["blocker"] = String(body.id)
+        return false
       }
-      let bodyRadius = nativeStationRadius(mesh)
+    }
+    let bound = radius + bodyRadius
+    if distance <= bound {
       if refineCourse {
-        guard body.energy.isFinite, point.finite, distance.isFinite,
-          bodyRadius.isFinite, bodyRadius > 0,
-          mesh.vertices.count >= 4, mesh.faces.count >= 4,
-          mesh.vertices.allSatisfy({ $0.finite }),
-          mesh.faces.allSatisfy({
-            $0.count >= 3 && $0.allSatisfy { mesh.vertices.indices.contains($0) }
-          })
-        else {
-          observation?["refusal"] = "corridor.unproven-body"
+        let assessment = nativeStationCourseObstacleAssessment(
+          body, from: start, to: end, radius: radius, mesh: mesh)
+        if assessment == .clear { return true }
+        bodyCourseRefused = assessment.permitsFiniteStopAssessment
+        if assessment != .contact {
+          if case .unresolved(let failure) = assessment {
+            observation?["refusal"] = "corridor.unproven-body.\(failure)"
+          } else {
+            observation?["refusal"] = "corridor.unproven-body"
+          }
           observation?["blocker"] = String(body.id)
           return false
         }
       }
-      let bound = radius + bodyRadius
-      if distance <= bound {
-        if refineCourse {
-          let assessment = nativeStationCourseObstacleAssessment(
-            body, from: start, to: end, radius: radius, mesh: mesh)
-          if assessment == .clear { continue }
-          bodyCourseRefused = assessment.permitsFiniteStopAssessment
-          if assessment != .contact {
-            if case .unresolved(let failure) = assessment {
-              observation?["refusal"] = "corridor.unproven-body.\(failure)"
-            } else {
-              observation?["refusal"] = "corridor.unproven-body"
-            }
-            observation?["blocker"] = String(body.id)
-            return false
-          }
-        }
-        observation?["refusal"] = "corridor.body"
-        observation?["blocker"] = String(body.id)
-        observation?["blockerActor"] = body.physical.map { String($0.identity.entity) } ?? "nil"
-        observation?["blockerHull"] = body.hull.rawValue
-        observation?["blockerCatalogue"] = body.physical?.catalogueShipID ?? "nil"
-        observation?["blockerPosition"] = "\(point.x),\(point.y),\(point.z)"
-        observation?["blockerDistance"] = String(distance)
-        observation?["blockerBound"] = String(bound)
-        return false
-      }
+      observation?["refusal"] = "corridor.body"
+      observation?["blocker"] = String(body.id)
+      observation?["blockerActor"] = body.physical.map { String($0.identity.entity) } ?? "nil"
+      observation?["blockerHull"] = body.hull.rawValue
+      observation?["blockerCatalogue"] = body.physical?.catalogueShipID ?? "nil"
+      observation?["blockerPosition"] = "\(point.x),\(point.y),\(point.z)"
+      observation?["blockerDistance"] = String(distance)
+      observation?["blockerBound"] = String(bound)
+      return false
     }
     return true
   }
