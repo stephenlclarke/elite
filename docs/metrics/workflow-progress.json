@@ -5455,7 +5455,7 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/65",
         "ready_findings": [],
         "finding_owner": "G4",
-        "unit_status": "Correction66 actual hosted run active; no PASS yet",
+        "unit_status": "Actual corrected502 run39751691960 FAILURE; MBA one-artifact triage pending; no PASS inferred",
         "awaiting_verification_findings": [
           66
         ],
@@ -5741,7 +5741,9 @@
           "GameplayWeapons.fireLaser admitted playerdischarge/contact observer",
           "GameplayOrdnanceRuntime.admitGameplayMissile and GameplayOrdnance.advanceOrdnance launch/impact observer",
           "FlightWorkTools.fireSelectedFlightTool actual discharge observer",
-          "NativePracticeRuntime.handleNativePracticeContact retained receipt lesson sync"
+          "NativePracticeRuntime.handleNativePracticeContact retained receipt lesson sync",
+          "ContractBoardDisplay exact typed lesson detail/Confirm",
+          "OriginalServiceReservationPolicy.occupiesSlot actual activeT02 alongsideT01 under unchanged3limit"
         ]
       },
       {
@@ -5824,10 +5826,21 @@
       },
       {
         "id": "M14.P01.entitlement",
-        "owner": "G3",
+        "owner": "Root exact acceptance/entitlement scope queued",
         "assigned_at": "2026-10-22T09:11:32.213874+00:00",
         "ownership": "Bounded commission acceptance and permanent Hearth entitlement pure transaction/codec policy preflight",
         "limits": "Preview/decline no grant; accept once, both endings/repair/escape retain entitlement; no new artwork/shipanchors/central edit without reservation",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Missing Hearth Compact named acceptance\u2192permanent owned entitlement transaction and codec; no corresponding source/units; ordinary commission and painted-page input not substitutes",
+        "qualification_scope": "Readonly source preflight only; no edits/new execution"
+      },
+      {
+        "id": "M15.P01.thermal-reservoir",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:12:44.685369+00:00",
+        "ownership": "Bounded finite reservoir/ordinary cabin thermal resource policy preflight and pure tests if concrete defect",
+        "limits": "Actual conserved energy/overdraw/heat-life-support; no mission battery/scripted rescue/new framework/shared edits without reservation",
         "merged_at": null,
         "playable_at": null
       }
