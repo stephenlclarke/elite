@@ -32,6 +32,14 @@ Coordinate VM compiler activity with the local compiler lease. The developer can
 
 Set `ELITE_LOCAL_RUNNER_ENABLED=false` before stopping the runner. New pushes then use hosted macOS again. Do not leave the variable true with the only matching runner offline, because trusted pushes would queue indefinitely. Preserve already-running jobs and their evidence.
 
+## Installed service
+
+The MBP runs VM `elite-ci-sequoia16-4` with eight virtual CPUs and 10 GB RAM. Its host LaunchAgent is `~/Library/LaunchAgents/com.stephenclarke.elite-ci-vm.plist`. It starts the headless VM at login and restarts it if the VM exits. Audio, USB accessories and clipboard sharing are disabled. An AC-only sleep assertion keeps the host awake while the VM runs. Host logs are in `~/Library/Application Support/EliteCI/logs/`.
+
+Inside the guest, runner `elite-mbp-vm` is installed in `/Users/admin/actions-runner`. Its own LaunchAgent starts the runner at guest login. Registration credentials stay inside the guest. GitHub confirmed the runner online and idle after a clean guest shutdown and managed restart; this verifies service startup, not unit-job qualification.
+
+After disabling routing and waiting for any assigned job to finish, unload the host service with `launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.stephenclarke.elite-ci-vm.plist`. Load it again with `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.stephenclarke.elite-ci-vm.plist`, then confirm GitHub reports the runner online before re-enabling routing. Do not print or copy the guest's runner credential files.
+
 ## Validation and limits
 
 `make local-runner-check` checks rejected events/actors/forks, incompatible build inputs, wrong machine/compiler/SDK rejection, removal of stale source inputs, physical-cache survival across checkout cleanup and compatibility with the existing crash collector's confinement function. It also checks that foreign data is preserved and only an owned incompatible cache is rebuilt. Run `actionlint .github/workflows/unit-tests.yml` after routing changes.

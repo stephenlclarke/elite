@@ -21,3 +21,5 @@ Focused Python tests cover trust and cache preservation boundaries. Workflow lin
 The repository variable defaults to the hosted route. There is no game, save, simulation or unit-oracle change. VM resource use must respect the main compiler lease. See [operation and isolation requirements](LOCAL-MACOS-RUNNER.md).
 
 Guest provisioning confirmed macOS 15.7.7, VirtualMac2,1, Swift 6.1.2 and SDK 15.5. The observed Swift driver prefix is now accepted while the exact compiler identity remains required. Nine helper tests pass. Registration and actual job qualification remain pending.
+
+Runner registration and managed restart are verified: GitHub runner `elite-mbp-vm` (ID 21) returned online and idle after a clean guest shutdown and LaunchAgent restart. The guest uses eight virtual CPUs and 10 GB RAM, with host shares, audio, USB accessories and clipboard disabled. No unit-job qualification or measured speedup is claimed yet.
