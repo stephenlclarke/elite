@@ -34,7 +34,7 @@ The first comparison follows a full24-hour two-developer window. Show both compl
 
 ## Third developer added — explicit resource change
 
-On22 October Stephen added Elite Coder4, session01a16256-13d9-7a00-bd74-07d4dbf942aa, reported Sol6.1 High. G1/G3 remain Medium; G2/MBA independently reviews all three. G4 owns the separate T02.P01 practice provider. Record this as a resource/configuration change within the existing series, not a reset or a claimed speedup. Compare subsequent complete-feature outcomes with clear worker-count and complexity caveats; do not attribute differences solely to parallelism. No extra tests or forms are introduced.
+On22 October Stephen added Elite Coder4, session01a16256-13d9-7a00-bd74-07d4dbf942aa, reported Sol6.1 High. G1 remains Medium; G3 now reports the user-corrected Sol Light designation (actual runtime effort not independently read). G2/MBA independently reviews all three. G4 owns the separate T02.P01 practice provider. Record this as a resource/configuration change within the existing series, not a reset or a claimed speedup. Compare subsequent complete-feature outcomes with clear worker-count and complexity caveats; do not attribute differences solely to parallelism. No extra tests or forms are introduced.
 
 ## Lightweight maintenance
 
@@ -45,3 +45,7 @@ Authoritative reads: current development PR comments/reviews (queue23 is histori
 The next C08 compile result created a second ready issue, #35. The bounded issue-only MBP helper is assigned its display-expression correction while G1 retains34. The failed run executed no units and contributes no qualified packet or playable delivery.
 
 G1 subsequently composed35 atb8cd1cfa and pushed34 at8c82f024. Both findings now await independent verification; neither is a ready unimplemented defect. The maintained78-method hosted run39673657024 is active. The stopped helper has no new assignment. No unit PASS or usable delivery is inferred from this push.
+
+## Latest observed delivery — 22 October08:52UTC
+
+Five user-facing improvements have merged since the two-developer phase began05:55:43UTC: showroom, contextual help, inventory grouping, market ordering and original planet night technology. The last two share PR56, merged08:45:17UTC after actual267methods/299cases passed and independent MBA review. Fixture-only PR54 is excluded. This is shared-development source delivery, not five new usable app deliveries. One signed local unit-qualified candidate remains available; no new published release or Homebrew update is recorded. M01 remains incomplete because mission qualification still has failed jobs and open findings60/63/64. PR61 final269 and PR65 practice-provider qualification remain pending. The window is short and worker count changed, so no percentage speedup or causal claim is supported.

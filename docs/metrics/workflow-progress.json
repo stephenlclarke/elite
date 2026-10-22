@@ -5450,7 +5450,9 @@
         "state_scope": "G1approvedoptionalpracticeproperty/init+ScriptPersistencepracticehunks+optionalAlienSave.contains;seed117118,audit119120,practice121122fixed/precedence",
         "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support",
         "format_precedence": "Highestrequiredfeaturewins:practice121122,network123124,terminal125126;earlierformatsnotwidened",
-        "source_state": "Draft+13focusedmethods;allpendingnativeadmission/laser/mesh/missile/recovery/CIhooksnowreserved;authorwiringcontinues"
+        "source_state": "Pushed13practice methods; current-head hosted execution and MBA review pending",
+        "head": "805c7f999c6f1016d565157209b268406cb1092d",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/65"
       },
       {
         "id": "C08.commit-charter.audit",
@@ -5485,11 +5487,11 @@
         "assigned_at": "2026-10-22T07:59:46.640065+00:00",
         "phase_entry_state": "Concreteoriginalhigh-techclampinggap confirmed;minimalfixapproved",
         "source_complete_at": null,
-        "merged_at": null,
+        "merged_at": "2026-10-22T08:45:17Z",
         "playable_at": null,
         "ownership": "PlanetLightingoriginal-systeminitializer+focusedhighTL/minmax/legacyunits/notes",
         "limits": "Nophysicalmechanics/meshbackend/newart/research/visualcampaign",
-        "source_state": "Source/unitqualified;G3ownmergeafterfinalgates;notnewapp/release",
+        "source_state": "Merged through PR56; PR58 closed after byte-identical full inclusion proof; no new app",
         "credited_behavior": "Existingbelt/orestablematerialjoinscorrect;nochangeneeded",
         "head": "fa28096334f6d55ba3dfae938d1bb7944fe4f8ee",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/58",
@@ -5499,7 +5501,11 @@
         "verified_methods": 260,
         "verified_expanded_cases": 292,
         "compile_seconds": 665.61,
-        "execution_seconds": 47.88
+        "execution_seconds": 47.88,
+        "merge_commit": "a0f4608f7d8e6e8b51d9f700cf82a197b9e48a00",
+        "composition_unit_run": 39747759242,
+        "composition_verified_methods": 267,
+        "composition_verified_expanded_cases": 299
       },
       {
         "id": "C08.certify-network",
@@ -5539,9 +5545,9 @@
         "playable_at": null,
         "ownership": "WantedBoardtwofactlookups+2puredossierunits/notes",
         "limits": "NoG1Game/mission/saveorG4combat/scoop;no fabricatedtraffic/cargo/routes",
-        "source_state": "Domainqualified;actualselectorconflict/finalcompositionpending;notnewapp/release",
+        "source_state": "Domain qualified; final necessary269 selector union pushed; actual final-head verification pending",
         "credited_behavior": "Nativelegal/bounty/resource mechanics unchanged;no fabricatedtarget/cargo/travelfacts",
-        "head": "72f27b77ecd0a75a68aef88b0e09313d1e148509",
+        "head": "c6410d6237eb561b2c07399ca5565afe3db6a58f",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/61",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/61#issuecomment-6336183894",
         "unit_run": 39746993767,
@@ -5610,7 +5616,20 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "RecoveredEquipmentRuntime/effectivepolicy/narrowownedeffectprojection/tests/notes",
-        "limits": "NoG1Game/mission/saveorG4practice;noinventoryschemaeditwithoutreservation/norebalance/newframework"
+        "limits": "NoG1Game/mission/saveorG4practice;noinventoryschemaeditwithoutreservation/norebalance/newframework",
+        "disposition": "Existing four-type actual owned/fitted stacking credited; no concrete gap/no change",
+        "qualification_scope": "Source and existing unit definitions only; no fresh execution"
+      },
+      {
+        "id": "M08.P03.drive",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:53:37.507527+00:00",
+        "phase_entry_state": "Bounded modular/alien drive gap assignment",
+        "ownership": "HyperspaceDriveDefinition/HyperspaceDriveRuntime/narrow recovered fitting pure tests and notes",
+        "requirements": "10/5/1second activation;100/80/60percent mass lock; earned owned alien drive instant/no lock at PLUGH",
+        "limits": "No G1 Game/mission/save or G4 practice hunks; no pricing/schema/refactor/local compiler/native/integration",
+        "merged_at": null,
+        "playable_at": null
       }
     ],
     "model_settings": {
@@ -5659,9 +5678,9 @@
       "model": null,
       "active_assignment": null
     },
-    "qualification_queue_note": "PR55mergedfd9after257/289PASS;PR54GitHubmarkedmerged;PR51/56actualcurrentheadspending;MBA reviewqueueclear",
-    "complete_features_merged": 3,
-    "merged_feature_count_scope": "ShareddevelopmentPR48showroom,PR55controlhints,PR51inventory;nohelper/fix-onlydoublecount",
+    "qualification_queue_note": "56 merged after267/299 PASS;61 final269 pending;65 actual provider review/units pending;59/62 corrected-head failures retained,64 ready G1 and60 unattributed.",
+    "complete_features_merged": 5,
+    "merged_feature_count_scope": "Shared development PR48 showroom, PR55 hints, PR51 inventory, PR56 market order and night technology; fixture54 excluded; source merge distinct from usable build.",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
     "accessible_unit_qualified_candidates_delivered": 1,
