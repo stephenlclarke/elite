@@ -4584,10 +4584,19 @@
       "ledger_parent": "M01.I41/I42/I43",
       "github_run": 39713632774,
       "selection_methods": 174,
-      "source_review": "MBA assigned combined correction; prior collector review reused",
-      "unit_status": "existing hosted active; crash resolution and issue closure unproved",
+      "source_review": "MBA independent combined source clean;41 closed,43 closed,42 third literal outstanding",
+      "unit_status": "FAILURE solely one stale Cassette99 assertion; no process crash",
       "next_assigned": "C08.P05.B.source",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "executed_methods": 174,
+      "executed_expanded_cases": 206,
+      "passed_methods": 173,
+      "passed_expanded_cases": 205,
+      "failed_assertions": 1,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331702611",
+      "qualification_scope": "All6 Flight/6 Service/6 Receiving/10 Pickup/7 Funding pass including formerly crashing method; no native journey or playable delivery",
+      "issue41_status": "verified fixed and CLOSED",
+      "issue42_status": "OPEN; original two cases pass, Cassette99 exact literal assigned G1"
     },
     {
       "event": "Enron original utility source pushed; timed work assigned",
