@@ -151,16 +151,24 @@ extension Game {
 
 extension Commander {
   var nativeStationStateValid: Bool {
-    guard let world = nativeStations else { return true }
-    let resources = withReadOnlyScriptState { $0.stationResources }
-    let currentSystem = SystemIdentity(galaxy: galaxy, system: system)
-    guard world.valid, equipmentOwnerID == world.ledger.world else { return false }
-    let physicalTime = flightSimulation.physicalTime
+    Self.nativeStationStateIsValid(self)
+  }
+
+  @inline(never)
+  fileprivate static func nativeStationStateIsValid(_ commander: borrowing Commander) -> Bool {
+    guard let world = commander.nativeStations else { return true }
+    let resources = commander.withReadOnlyScriptState { $0.stationResources }
+    let currentSystem = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
+    guard world.valid, commander.equipmentOwnerID == world.ledger.world else { return false }
+    let physicalTime = commander.flightSimulation.physicalTime
     guard world.stationInertia.allSatisfy({ $0.physicalTime <= physicalTime }) else { return false }
     if world.stationInertia.contains(where: { $0.station.system == currentSystem }) {
-      guard flightSimulation.anchors?.station.position == Vector3(0, 0, 0) else { return false }
+      guard commander.flightSimulation.anchors?.station.position == Vector3(0, 0, 0) else {
+        return false
+      }
     }
-    guard let calendar = withReadOnlyScriptState({ $0.calendarLedger }), calendar.valid else {
+    guard let calendar = commander.withReadOnlyScriptState({ $0.calendarLedger }), calendar.valid
+    else {
       return false
     }
     guard
@@ -398,7 +406,7 @@ extension Game {
     _ body: borrowing SpaceBody, commander: borrowing Commander
   ) -> Bool {
     guard let identity = body.nativeStationIdentity, let physical = body.physical,
-      let world = commander.nativeStations, commander.nativeStationStateValid,
+      let world = commander.nativeStations, Commander.nativeStationStateIsValid(commander),
       let record = world.ledger.records.first(where: { $0.identity == identity })
     else { return false }
     let currentSystem = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
