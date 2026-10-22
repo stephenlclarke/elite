@@ -4666,11 +4666,17 @@
       "github_run": 39719918743,
       "selection_methods": 196,
       "new_methods": 6,
-      "source_review": "queued MBA after repair-result triage",
-      "unit_status": "existing hosted run active",
+      "source_review": "MBA independent charter source clean",
+      "unit_status": "Aggregate FAILURE solely known46/47; all6newCharter PASS, no crash",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332358871",
       "next_assigned": "C08.P05.B.work.I45",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "executed_methods": 196,
+      "executed_expanded_cases": 228,
+      "passed_methods": 194,
+      "passed_expanded_cases": 226,
+      "failed_methods": 2,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332612451"
     },
     {
       "event": "Utility re-admission and fixture corrections pushed; MBA verification assigned",
@@ -4680,8 +4686,8 @@
       "github_run": 39720692519,
       "selection_methods": 199,
       "new_methods": 3,
-      "source_review": "assigned MBA; correction verification pending",
-      "unit_status": "existing hosted run pending",
+      "source_review": "MBA correction source clean;45/46/47 execution verification pending",
+      "unit_status": "existing hosted run started and watched",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332466901",
       "next_assigned": "C08.P06.B.capacity",
       "usable_build_delivered": false
