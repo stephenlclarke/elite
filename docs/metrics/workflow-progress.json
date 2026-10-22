@@ -6199,7 +6199,10 @@
         75,
         78
       ],
-      "verification_pending": [],
+      "verification_pending": [
+        80,
+        81
+      ],
       "delivery_acceptance_open": [
         15,
         18
@@ -6399,7 +6402,14 @@
       "owner": "UX",
       "state": "boundedacceptedstage4designassigned",
       "implementation_owner": "G1 after acceptedcontract/currentpacket",
-      "scope": "Actualnativeaudit-reservationproof afteroriginalrecorderrecovery; no stage3rewrite or prematureaward"
+      "scope": "Actualnativeaudit-reservationproof afteroriginalrecorderrecovery; no stage3rewrite or prematureaward",
+      "proposed_source": "Finitegenuinecommission-boundcapacity/payment/claimcorpus, beforeoriginalclock/recordercreation",
+      "conditional_formats_reserved": [
+        137,
+        138
+      ],
+      "stage4_authority": "ReadonlyactualheldoriginalandindependentEnmadanledger; no retrofill/reward/clue",
+      "implementation": "notassigned"
     },
     "next_candidate_boundary": "Afterqualified69integration/currentC01coherenthandoff; cleanlatestqualifiedsource, no waitG11T03, no newintegrationcampaign; artifactnotyetexists",
     "c01_stage3_source": {
@@ -6408,10 +6418,17 @@
       "head": "61aefb07906ea6adcd37718f030a846e1b044a57",
       "focused_methods": 8,
       "selection_methods": 281,
-      "review": "MBAqueuedafterlessonartifact",
+      "review": "MBAfullreviewactive",
       "execution": "pending",
       "core_and_declarations": "authorPASS",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "findings": [
+        80,
+        81
+      ],
+      "finding_scope": "Unmerged79meshcapturecompletionmismatch/passivedriftoutsidesweep",
+      "correction_owner": "G1",
+      "fix_strategy": "onecoherentexactphysics-boundarypacketafterfullhandback; no nativecampaign"
     },
     "full_t02_composition": {
       "owner": "G4",
