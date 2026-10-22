@@ -5282,12 +5282,15 @@
         "id": "M03.P03.markets",
         "owner": "G3",
         "assigned_at": "2026-10-22T07:39:37.814413+00:00",
-        "phase_entry_state": "Bounded actual market-consistency gap implementation assigned;credit compliant behavior",
+        "phase_entry_state": "Concreteauthoredcommoditydisplayordergap confirmed; implementation authorized",
         "source_complete_at": null,
         "merged_at": null,
         "playable_at": null,
-        "ownership": "OriginalMarketCatalogue/narrow quote-projection adapters/puretests/notes;excludesG1Game/cargo/save/service mutators",
-        "numeric_policy": "Preservecurrentcatalogueprecedence/modularmechanics;noU03rebalance"
+        "ownership": "PureauthoreddisplayIDprojection;StationDisplay market;MarketInteractionclick;ONLYGame.keymarketup/down1060\u20131079;puretests/notes",
+        "numeric_policy": "Preservecurrentcatalogueprecedence/modularmechanics;noU03rebalance",
+        "credited_behavior": "Authenticated17-good prices/finite stock,stableIDs,quote/revision checks,once-debit,cargo/cash bounds;source/existingtests only",
+        "source_state": "G3assignedactualordercorrection;G1notifiedexactsharedGamehunks",
+        "outstanding_separate": "U03authored14baseequipmentprice/TLprecedence;notrebalancedhere"
       }
     ],
     "model_settings": {
