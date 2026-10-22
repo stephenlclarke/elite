@@ -5325,6 +5325,16 @@
       ],
       "author": "G4",
       "execution_qualified": false
+    },
+    {
+      "event": "Defensive-flight92/93 correction pushed; M01 entry repair authored; correctedT02run failed pending classification",
+      "date": "2026-10-22",
+      "t03_head": "0b5d3694133fe41f53c6aa484faf14837db4b6d0",
+      "t03_run": 39772601798,
+      "t03_methods": 371,
+      "g1_release_repair": "authored, author Core/declaration checks; not pushed or qualified",
+      "t02_failed_run": 39770919855,
+      "t02_current_cause": "pending existing evidence classification"
     }
   ],
   "two_developer_phase": {
