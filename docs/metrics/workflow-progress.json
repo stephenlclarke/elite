@@ -5079,6 +5079,16 @@
       "issue64_still_open_for_pr": 65,
       "merge_pending": true,
       "usable_build_delivered": false
+    },
+    {
+      "event": "Lesson borrowed-input compile finding assigned to author before next tutorial code",
+      "date": "2026-10-22",
+      "issue": 78,
+      "owner": "G4",
+      "failed_run": 39759361090,
+      "scope": "NativeSafeGunnerySave required-leaf snapshot, no predicate/authority weakening",
+      "unit_execution": false,
+      "new_jobs_started": 0
     }
   ],
   "two_developer_phase": {
@@ -6152,7 +6162,9 @@
       "actual_issue_operation_required": true,
       "design_path": "docs/gameplay-design/G11-P02-PARENT-ACCEPTANCE-AND-PROGRAMMER-CONTRACT.md",
       "design_sha256": "6f4888ce0a4811896bb154daa043dcb7e8d39663f50a54fb1017e104840c5b04",
-      "repeatability_limit": "Only initial original pair/tool stock; post-failure replacement/recovery policy remains outstanding"
+      "repeatability_limit": "Only initial original pair/tool stock; post-failure replacement/recovery policy remains outstanding",
+      "reserved_validation_leaf": "Single Commander.valid NativeIsolationWorkParentSave.validateClaims(self), primitive remains acyclic",
+      "focused_methods_planned": 6
     },
     "recovered_equipment_composition": {
       "owner": "Mission Coder1",
@@ -6191,15 +6203,18 @@
     "safe_gunnery_lesson": {
       "owner": "G4",
       "pr": 76,
-      "head": "dfb006e2",
+      "head": "10a72565f3852d5b421b04bda05ad070b13743b1",
       "focused_methods": 16,
       "selection_methods": 316,
-      "github_run": 39759361090,
+      "github_run": 39760548141,
       "qualification": "pending",
       "provider_dependency_pr": 65,
       "merged": false,
       "usable_build_delivered": false,
-      "source_review": "MBA full production and16methods clean"
+      "source_review": "MBA full production and16methods clean",
+      "ready_correction_issue": 78,
+      "older_run": 39759361090,
+      "older_result": "EliteCore compile failure; no XML/no unit execution"
     },
     "c08_qualification": {
       "head": "b0bfda8ad2aa3b7b51f63879c6e2fb3f2d0bb7f4",
@@ -6217,7 +6232,11 @@
         67
       ],
       "issue64_scope": "G1 verified; provider65 correction remains pending",
-      "composition_selection": 309
+      "composition_selection": 309,
+      "final_head": "3c2bf4a88afbac60c5af5b0416b5ace8aacf6560",
+      "final_github_run": 39761187231,
+      "final_selection": 309,
+      "final_qualification": "pending"
     },
     "defensive_flight_tutorial": {
       "id": "T03.P01",
