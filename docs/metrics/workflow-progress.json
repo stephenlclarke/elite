@@ -4643,11 +4643,13 @@
       "github_run": 39719212916,
       "selection_methods": 190,
       "new_methods": 9,
-      "source_review": "assigned MBA; pending",
+      "source_review": "MBA found45 same-visit native re-admission refusal; assigned G1 at natural boundary",
       "unit_status": "existing hosted run in progress; no execution pass claimed",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332256712",
       "next_assigned": "C08.P06.A",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "finding_url": "https://github.com/stephenlclarke/elite/issues/45",
+      "ready_findings": 1
     }
   ]
 }
