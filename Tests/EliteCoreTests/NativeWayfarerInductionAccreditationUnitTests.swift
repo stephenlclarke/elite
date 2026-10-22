@@ -273,31 +273,34 @@ struct NativeWayfarerInductionAccreditationUnitTests {
     #expect(
       NativeSafeGunnerySave.publicationVersion(
         lesson: true, practice: true, crewLog: true, alien: alien) == schema)
-    let missions = try JSONEncoder().encode(game.commander.scriptState)
-    let contracts = try JSONEncoder().encode(game.commander.contracts)
+    let expectedState = game.commander.scriptState
+    let expectedContracts = game.commander.contracts
+    let missions = try JSONEncoder().encode(expectedState)
+    let contracts = try JSONEncoder().encode(expectedContracts)
     try NativeSafeGunnerySave.validateArchiveFields(
       missions, part: .missions, schema: schema, alien: alien)
     try NativeSafeGunnerySave.validateArchiveFields(
       contracts, part: .contracts, schema: schema, alien: alien)
-    var restored = game.commander
-    restored.scriptState = try JSONDecoder().decode(ScriptEngineState.self, from: missions)
-    restored.contracts = try JSONDecoder().decode(ScriptContractState.self, from: contracts)
-    #expect(restored.scriptState == game.commander.scriptState)
-    #expect(restored.contracts == game.commander.contracts)
-    #expect(restored.scriptState.instances[parentID] == continued)
-    #expect(restored.scriptState.instances[instance.id] == instance)
-    #expect(restored.scriptState.savedClueJournal == journal && restored.credits == credits)
-    #expect(NativeSafeGunnerySave.validateClaims(restored))
-    #expect(NativePracticeSave.validateClaims(restored))
-    #expect(NativeWayfarerInductionSave.validateClaims(restored))
-    #expect(NativeInductionCrewLogSave.validateClaims(restored))
-    var resumed = Game()
-    resumed.commander = restored
-    #expect(resumed.hasWayfarerAccreditation)
-    #expect(resumed.activeSafeGunnery?.state == lesson)
+    // Decode back into the existing Game's COW Commander storage. The round-trip only
+    // replaces these two chunks; it does not need a whole Commander snapshot or second Game.
+    game.commander.scriptState = try JSONDecoder().decode(ScriptEngineState.self, from: missions)
+    game.commander.contracts = try JSONDecoder().decode(ScriptContractState.self, from: contracts)
+    #expect(game.commander.scriptState == expectedState)
+    #expect(game.commander.contracts == expectedContracts)
+    #expect(game.commander.scriptState.instances[parentID] == continued)
+    #expect(game.commander.scriptState.instances[instance.id] == instance)
+    #expect(
+      game.commander.scriptState.savedClueJournal == journal && game.commander.credits == credits)
+    #expect(NativeSafeGunnerySave.validateClaims(game.commander))
+    #expect(NativePracticeSave.validateClaims(game.commander))
+    #expect(NativeWayfarerInductionSave.validateClaims(game.commander))
+    #expect(NativeInductionCrewLogSave.validateClaims(game.commander))
+    #expect(game.hasWayfarerAccreditation)
+    #expect(game.activeSafeGunnery?.state == lesson)
     #expect(
       originalTerminal.valid(
-        for: try #require(restored.scriptState.instances[parentID]), engine: restored.scriptState))
+        for: try #require(game.commander.scriptState.instances[parentID]),
+        engine: game.commander.scriptState))
     // The higher envelope must still close every present lower-family native leaf.
     var parent = try #require(
       JSONSerialization.jsonObject(with: JSONEncoder().encode(continued)) as? [String: Any])
