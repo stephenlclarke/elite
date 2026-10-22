@@ -23,6 +23,9 @@ METHODS = {
         "threeRealServiceReservationsRefuseFourthAndPreviewChangesNothing",
         "strictParentCodecRejectsErasureUnknownFieldsAndDowngrade",
         "genericAcceptanceCannotMintNativeParent",
+        "escapeLossUsesActualConsumedPodAndPreservesOriginalHistoryWithoutDock",
+        "fatalHullLossUsesAttainedDamageAndCannotReplayOrRestoreWorkAuthority",
+        "staleEscapeWitnessForeignOriginalAndFailedWriterKeepCanonicalCustody",
     ),
     "NativeIsolationProgrammerUnitTests": (
         "actualCanonicalLoanOccupiesOneTonneAndReturnRemovesOnlyTheOriginal",

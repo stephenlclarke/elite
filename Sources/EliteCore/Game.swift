@@ -1900,6 +1900,7 @@ public struct Game: Sendable {
       return
     }
     var candidate = self
+    let isolationPod = candidate.isolationProgrammerEscapePod()
     let measuredPod = candidate.measuredEscapePod()
     let recorderPod = candidate.recordRecoveryEscapePod()
     let originalPod = candidate.identifiedSalvageEscapePod()
@@ -1907,6 +1908,10 @@ public struct Game: Sendable {
       guard try candidate.consumeNativeEquipment("Escape Pod") else { return }
     } catch {
       notify("ESCAPE POD REFUSED")
+      return
+    }
+    do { try candidate.loseIsolationProgrammerOnEscape(pod: isolationPod) } catch {
+      notify("PROGRAMMER LOSS NOT SAVED - ESCAPE NOT COMMITTED")
       return
     }
     guard candidate.loseCourierPackagesOnEscape() else {
@@ -2657,6 +2662,7 @@ public actor GameRuntime {
     commitInductionClinicUncollectedLoss()
     commitInductionClinicHeldFatalLoss()
     commitInductionWorkshopLoss()
+    commitIsolationProgrammerFatalLoss()
     commitWayfarerRepairLoopFatalLoss()
     commitNativeUtilityFatalLoss()
     commitFieldReliefTargetLoss()

@@ -101,9 +101,10 @@ extension Game {
       result.receipt.affectedItems == [state.issue.original], staged.credits == beforeCash
     else { throw EquipmentIssueError.identityMismatch }
     let sequence = staged.scriptState.nextEvent + 1
-    state.cutoff = .init(
-      operation: result.receipt.command, dock: arrival.receipt, sequence: sequence,
-      physicalTime: staged.flightSimulation.physicalTime)
+    state.cutoff = .returned(
+      .init(
+        operation: result.receipt.command, dock: arrival.receipt, sequence: sequence,
+        physicalTime: staged.flightSimulation.physicalTime))
     parent.savedIsolationWorkParent = state
     parent.acknowledge(sequence)
     staged.scriptState.nextEvent = sequence

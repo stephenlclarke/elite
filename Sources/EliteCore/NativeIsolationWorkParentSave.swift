@@ -7,7 +7,7 @@ enum NativeIsolationWorkParentSave {
   static func lowerSchema(_ schema: Int?) -> Int? {
     guard contains(schema) else { return schema }
     return schema == alienVersion
-      ? NativeInductionCrewLogSave.alienVersion : NativeInductionCrewLogSave.version
+      ? NativeIsolationWorkSave.alienVersion : NativeIsolationWorkSave.version
   }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
     commander.scriptState.instances.values.contains(where: NativeIsolationWorkParent.marked)
@@ -19,12 +19,12 @@ enum NativeIsolationWorkParentSave {
       guard (try? NativeIsolationWorkParent.primitive(parent: parent, commander: commander)) != nil,
         parent.outcome == .active, parent.contract?.settled == false,
         parent.completionReceipt == nil,
-        parent.savedIsolationWorkParent?.cutoff == nil,
         parent.milestones == [0], parent.data == .object([:]),
         parent.timers.isEmpty, parent.dialogue == nil,
         parent.ownedEncounters.isEmpty, parent.campaignParent == nil,
         parent.campaignChildren.isEmpty
       else { return false }
+      if case .returned? = parent.savedIsolationWorkParent?.cutoff { return false }
       guard let proof = parent.savedIsolationWorkParent,
         let child = commander.scriptState.instances[
           NativeIsolationWorkPack.instance(source: proof.source)],

@@ -172,4 +172,125 @@ struct NativeIsolationWorkParentUnitTests {
     #expect(game.commander == before)
 
   }
+
+  private func paidPod(_ game: inout Game) throws {
+    // Bounded equipment fixture funding; the real shop transaction supplies the pod/provenance.
+    game.commander.credits = 20000
+    let equipment = try #require(Equipment.all.first { $0.name == "Escape Pod" })
+    try #require(try game.applyEquipmentPurchase(game.quoteEquipmentPurchase(equipment)))
+  }
+
+  @Test func escapeLossUsesActualConsumedPodAndPreservesOriginalHistoryWithoutDock() async throws {
+    var game = try await prepared()
+    let accepted = try stage(&game)
+    try paidPod(&game)
+    game.launch()
+    try #require(!game.docked && game.screen.isFlight)
+    let pod = try #require(game.isolationProgrammerEscapePod())
+    let issued = game.commander
+    #expect(throws: (any Error).self) { try game.loseIsolationProgrammerOnEscape(pod: pod) }
+    #expect(game.commander == issued)
+    try #require(try game.consumeNativeEquipment("Escape Pod"))
+    let consumedPod = game.commander
+    try game.loseIsolationProgrammerOnEscape(pod: pod)
+    let parent = try #require(game.commander.scriptState.instances[accepted.parentID])
+    let historical = try NativeIsolationWorkParent.primitive(
+      parent: parent, commander: game.commander)
+    guard case .lost(let loss)? = historical.cutoff else {
+      Issue.record("Missing actual loss cutoff")
+      return
+    }
+    #expect(loss.facts.kind == .escape && loss.facts.pod?.id == pod.item.id)
+    #expect(!loss.facts.context.docked && loss.facts.context.nativeMainDock == nil)
+    #expect(loss.facts.issueOperation == accepted.issueOperation)
+    #expect(
+      parent.gearIssues[NativeIsolationProgrammerDefinition.resource]?.consumed == [
+        loss.facts.original.id
+      ])
+    #expect(
+      game.commander.credits == consumedPod.credits
+        && game.commander.cargoTonnes == consumedPod.cargoTonnes - 1)
+    #expect(NativeIsolationProgrammerCustody.hasIssuedOriginal(in: game.commander))
+    #expect(NativeIsolationWorkParentSave.validateClaims(game.commander))
+    let lost = game.commander
+    try game.loseIsolationProgrammerOnEscape(pod: pod)
+    #expect(game.commander == lost)
+  }
+
+  @Test func fatalHullLossUsesAttainedDamageAndCannotReplayOrRestoreWorkAuthority() async throws {
+    var game = try await prepared()
+    let accepted = try stage(&game)
+    game.launch()
+    try #require(!game.docked)
+    game.applyDamage(1e6, front: true)
+    game.tick(delta: 0.001)
+    try #require(game.screen == .gameOver && game.energy <= 0)
+    let before = game.commander
+    try game.loseIsolationProgrammerOnFatalHull()
+    let parent = try #require(game.commander.scriptState.instances[accepted.parentID])
+    let historical = try NativeIsolationWorkParent.primitive(
+      parent: parent, commander: game.commander)
+    guard case .lost(let loss)? = historical.cutoff else {
+      Issue.record("Missing fatal loss cutoff")
+      return
+    }
+    #expect(loss.facts.kind == .hull && loss.facts.energy == 0 && loss.facts.pod == nil)
+    #expect(loss.facts.physicalTime == game.commander.flightSimulation.physicalTime)
+    #expect(
+      game.commander.credits == before.credits
+        && game.commander.cargoTonnes == before.cargoTonnes - 1)
+    #expect(game.currentIsolationWorkParentAuthority == nil)
+    let restored = try JSONDecoder().decode(
+      Commander.self, from: JSONEncoder().encode(game.commander))
+    #expect(NativeIsolationWorkParentSave.validateClaims(restored))
+    #expect(
+      try NativeIsolationWorkParent.primitive(
+        parent: #require(restored.scriptState.instances[parent.id]), commander: restored)
+        == historical)
+    let lost = game.commander
+    try game.loseIsolationProgrammerOnFatalHull()
+    #expect(game.commander == lost)
+  }
+
+  @Test func staleEscapeWitnessForeignOriginalAndFailedWriterKeepCanonicalCustody() async throws {
+    var game = try await prepared()
+    let accepted = try stage(&game)
+    try paidPod(&game)
+    game.launch()
+    let pod = try #require(game.isolationProgrammerEscapePod())
+    try #require(try game.consumeNativeEquipment("Escape Pod"))
+    game.invalidateNativeStationAuthority()
+    let before = game.commander
+    #expect(throws: (any Error).self) { try game.loseIsolationProgrammerOnEscape(pod: pod) }
+    #expect(game.commander == before)
+    game.applyDamage(1e6, front: true)
+    game.tick(delta: 0.001)
+    try #require(game.screen == .gameOver)
+    let inventory = try #require(game.commander.equipmentInventory)
+    let serial = NativeIsolationProgrammerDefinition.serial(parent: accepted.parentID)
+    let actual = try #require(inventory.items.first { $0.id == serial })
+    let impostor = OwnedEquipmentItem(id: UUID(), node: actual.node, provenance: actual.provenance)
+    var foreign = game
+    foreign.commander.savedEquipmentInventory = try .init(
+      owner: inventory.owner, activeHull: inventory.activeHull, revision: inventory.revision,
+      items: inventory.items.map { $0.id == serial ? impostor : $0 })
+    let foreignBefore = foreign.commander
+    #expect(throws: (any Error).self) { try foreign.loseIsolationProgrammerOnFatalHull() }
+    #expect(foreign.commander == foreignBefore)
+    let files = try ScriptFreightFixture()
+    defer { files.clean() }
+    try FileManager.default.createDirectory(at: files.save, withIntermediateDirectories: true)
+    let runtime = GameRuntime(game: game, saveURL: files.save)
+    let retained = await runtime.snapshot()
+    await #expect(throws: (any Error).self) {
+      try await runtime.scriptCommand { candidate in
+        try candidate.loseIsolationProgrammerOnFatalHull()
+        #expect(candidate.commander.cargoTonnes == retained.commander.cargoTonnes - 1)
+      }
+    }
+    let refused = await runtime.snapshot()
+    #expect(refused.commander == retained.commander && refused.screen == .gameOver)
+    #expect(refused.energy == retained.energy)
+  }
+
 }

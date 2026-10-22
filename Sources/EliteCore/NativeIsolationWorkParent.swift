@@ -7,11 +7,34 @@ struct NativeIsolationWorkParentIssue: Codable, Equatable, Sendable {
   let original: UUID
 }
 
-struct NativeIsolationWorkParentCutoff: Codable, Equatable, Sendable {
+struct NativeIsolationWorkParentReturn: Codable, Equatable, Sendable {
   let operation: UUID
   let dock: NativeMainStationDockReceipt
   let sequence: UInt64
   let physicalTime: Double
+}
+
+enum NativeIsolationWorkParentCutoff: Codable, Equatable, Sendable {
+  case returned(NativeIsolationWorkParentReturn)
+  case lost(NativeIsolationProgrammerLoss)
+  var operation: UUID {
+    switch self {
+    case .returned(let value): value.operation
+    case .lost(let value): value.operation
+    }
+  }
+  var sequence: UInt64 {
+    switch self {
+    case .returned(let value): value.sequence
+    case .lost(let value): value.facts.sequence
+    }
+  }
+  var physicalTime: Double {
+    switch self {
+    case .returned(let value): value.physicalTime
+    case .lost(let value): value.facts.physicalTime
+    }
+  }
 }
 
 struct NativeIsolationWorkParentState: Codable, Equatable, Sendable {
@@ -135,23 +158,34 @@ enum NativeIsolationWorkParent {
       p.issue.original == NativeIsolationProgrammerDefinition.serial(parent: parent.id),
       obligation.items == [p.issue.original],
       obligation.node == NativeIsolationProgrammerDefinition.node,
-      obligation.loan, !obligation.returnRemaining, obligation.consumed.isEmpty,
+      obligation.loan, !obligation.returnRemaining,
+      obligation.consumed.isSubset(of: [p.issue.original]),
       obligation.displacements.isEmpty, obligation.legacyMissingItems.isEmpty,
       obligation.status != .released
     else { throw SaveError.invalidCommander }
     if let cutoff = p.cutoff {
-      guard obligation.status == .returned,
-        cutoff.sequence > p.sequence, cutoff.sequence <= commander.scriptState.nextEvent,
-        parent.hasAcknowledged(cutoff.sequence),
-        cutoff.physicalTime.isFinite, cutoff.physicalTime >= p.physicalTime,
-        cutoff.physicalTime <= commander.flightSimulation.physicalTime,
-        cutoff.dock.station == p.acceptance.station,
-        NativeStationPassengerJourney.historicalDock(cutoff.dock, commander: commander),
-        cutoff.dock.sequence >= p.acceptance.sequence,
-        cutoff.dock.calendarSeconds >= p.acceptance.calendarSeconds
+      guard cutoff.sequence > p.sequence, cutoff.sequence <= commander.scriptState.nextEvent,
+        parent.hasAcknowledged(cutoff.sequence), cutoff.physicalTime.isFinite,
+        cutoff.physicalTime >= p.physicalTime,
+        cutoff.physicalTime <= commander.flightSimulation.physicalTime
       else { throw SaveError.invalidCommander }
+      switch cutoff {
+      case .returned(let value):
+        guard obligation.status == .returned, obligation.consumed.isEmpty,
+          value.dock.station == p.acceptance.station,
+          NativeStationPassengerJourney.historicalDock(value.dock, commander: commander),
+          value.dock.sequence >= p.acceptance.sequence,
+          value.dock.calendarSeconds >= p.acceptance.calendarSeconds
+        else { throw SaveError.invalidCommander }
+      case .lost(let value):
+        guard obligation.status == .issued, obligation.consumed == [p.issue.original],
+          value.valid(parent: parent, proof: p, commander: commander)
+        else { throw SaveError.invalidCommander }
+      }
     } else {
-      guard obligation.status == .issued else { throw SaveError.invalidCommander }
+      guard obligation.status == .issued, obligation.consumed.isEmpty else {
+        throw SaveError.invalidCommander
+      }
     }
     return .init(
       parentID: parent.id, parentDigest: digest, authorization: p.authorization,

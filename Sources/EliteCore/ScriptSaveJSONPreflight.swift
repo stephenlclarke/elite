@@ -53,10 +53,12 @@ extension ScriptSaveJSONPreflight {
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
   ) throws {
     try NativeIsolationWorkParentSave.validateFields(data, part: part, schema: schema)
-    let schema = NativeIsolationWorkParentSave.lowerSchema(schema)
-    try NativeInductionCrewLogSave.validateFields(data, part: part, schema: schema)
-    try NativeInductionArkSave.validateFields(data, part: part, schema: schema)
-    let arkSchema = NativeInductionArkSave.lowerSchema(schema)
+    let parentSchema = NativeIsolationWorkParentSave.lowerSchema(schema)
+    try NativeIsolationWorkSave.validateFields(data, part: part, schema: parentSchema)
+    let providerSchema = NativeIsolationWorkSave.lowerSchema(parentSchema)
+    try NativeInductionCrewLogSave.validateFields(data, part: part, schema: providerSchema)
+    try NativeInductionArkSave.validateFields(data, part: part, schema: providerSchema)
+    let arkSchema = NativeInductionArkSave.lowerSchema(providerSchema)
     try NativeWayfarerInductionSave.validateFields(data, part: part, schema: arkSchema)
     let inductionSchema = NativeWayfarerInductionSave.lowerSchema(arkSchema)
     try NativeFirstCommoditySaleSave.validateFields(data, part: part, schema: inductionSchema)
