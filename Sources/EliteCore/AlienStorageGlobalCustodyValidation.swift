@@ -24,6 +24,8 @@ enum AlienStorageGlobalCustodyValidation {
       }
     }
     var collections: Set<UUID> = []
+    var researchOperations: Set<UUID> = []
+    var prototypes: Set<UUID> = []
     func collect(_ receipt: AlienStorageCompanionCollection) throws {
       guard !reserved.contains(receipt.operation), collections.insert(receipt.operation).inserted
       else { throw AlienStorageError.invalidJoin }
@@ -45,12 +47,22 @@ enum AlienStorageGlobalCustodyValidation {
           throw AlienStorageError.invalidJoin
         }
       case .companion(let companion):
-        if case .collected(let receipt) = companion.state { try collect(receipt) }
+        if let receipt = companion.state.collection { try collect(receipt) }
+        if case .researched(_, let proof) = companion.state {
+          guard researchOperations.insert(proof.operation).inserted,
+            prototypes.insert(proof.prototype).inserted
+          else { throw AlienStorageError.invalidJoin }
+        }
       case .legacyCurrent(let current):
         guard let claim = claims[current.claim], !settled.contains(claim.identity) else {
           throw AlienStorageError.invalidJoin
         }
-        if case .collected(let receipt) = current.state { try collect(receipt) }
+        if let receipt = current.state.collection { try collect(receipt) }
+        if case .researched(_, let proof) = current.state {
+          guard researchOperations.insert(proof.operation).inserted,
+            prototypes.insert(proof.prototype).inserted
+          else { throw AlienStorageError.invalidJoin }
+        }
       case .legacyLot(let claim):
         if settled.contains(claim.identity) {
           guard case .legacySettled = claim.state else { throw AlienStorageError.invalidJoin }
@@ -59,6 +71,9 @@ enum AlienStorageGlobalCustodyValidation {
       default: break
       }
     }
+    guard researchOperations.isDisjoint(with: collections),
+      researchOperations.isDisjoint(with: reserved)
+    else { throw AlienStorageError.invalidJoin }
   }
 
   /// Only current custody claims participate. Immutable legacy observation bindings

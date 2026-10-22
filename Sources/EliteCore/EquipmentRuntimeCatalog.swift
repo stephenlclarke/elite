@@ -35,9 +35,14 @@ enum EquipmentRuntimeCatalog {
     let ammunition = EquipmentPurchaseNode(
       id: standardMissile, displayName: "Missile", policy: .repeatable(maximumCount: 256))
     return .init(
-      revision: modular.revision + 1,
+      revision: modular.revision + 2,
       nodes: modular.nodes + HyperspaceDriveDefinition.purchaseGraph.nodes + lasers + utilityNodes
-        + [storage, ammunition],
+        + [
+          storage, ammunition,
+          .init(
+            id: AlienMissileDefinition.node, displayName: AlienMissileDefinition.name,
+            policy: .repeatable(maximumCount: 256)),
+        ],
       aliases: modular.aliases + [
         .init(alias: .init(family: ammunitionFamily, key: "Missile"), canonical: standardMissile)
       ])
@@ -45,6 +50,7 @@ enum EquipmentRuntimeCatalog {
 
   static func node(for savedKey: String) -> EquipmentNodeID? {
     if savedKey == "Missile" { return standardMissile }
+    if savedKey == AlienMissileDefinition.name { return AlienMissileDefinition.node }
     if let node = graph.nodes.first(where: { $0.id.key == savedKey }) { return node.id }
     return graph.aliases.first(where: { $0.alias.key == savedKey })?.canonical
   }

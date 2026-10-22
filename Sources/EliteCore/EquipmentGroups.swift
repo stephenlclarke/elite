@@ -25,7 +25,10 @@ public enum EquipmentGroups {
         "Energy Systems",
         ["Extra Energy Unit", Equipment.navalEnergyUnit, Equipment.eliteEnergyUnit]
       ),
-      ("Defence & Ordnance", ["Missile", "E.C.M. System", "Energy Bomb"]),
+      (
+        "Defence & Ordnance",
+        ["Missile", AlienMissileDefinition.name, "E.C.M. System", "Energy Bomb"]
+      ),
       ("Electronic Weapons", [Equipment.empPirateBlaster]),
       ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops", "Salvage Cutter"]),
       (

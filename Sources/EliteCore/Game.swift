@@ -524,7 +524,7 @@ public struct Equipment: Sendable {
       [
         legacyDockingComputer, "Extra Energy Unit", navalEnergyUnit, "Pulse Laser", "Beam Laser",
         HyperspaceDriveTier.basic.label, HyperspaceDriveTier.intermediate.label,
-        "Military Laser",
+        "Military Laser", AlienMissileDefinition.name,
       ]
         + TargetingTier.allCases.map(\.equipmentName) + NavigationTier.allCases.map(\.equipmentName)
         + ShieldBooster.allCases.map(\.equipmentName)
@@ -541,6 +541,9 @@ public struct Equipment: Sendable {
     [
       .init(name: "Fuel", price: 2, technology: 0),
       .init(name: "Missile", price: 300, technology: 0),
+      .init(
+        name: AlienMissileDefinition.name, price: AlienMissileDefinition.repeatPriceTenths,
+        technology: 0),
       .init(name: "Large Cargo Bay", price: 4000, technology: 0),
       .init(name: "E.C.M. System", price: 6000, technology: 2),
       .init(name: "Pulse Laser", price: 4000, technology: 3),

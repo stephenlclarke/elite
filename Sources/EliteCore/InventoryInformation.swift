@@ -173,6 +173,16 @@ extension Game {
       append("No owned-item storage records in this legacy fit.", .cyan)
     }
     if let native = commander.alienStorageState?.current {
+      for (storage, held) in native.salvage.storedTechnology.sorted(by: {
+        $0.key.uuidString < $1.key.uuidString
+      }) {
+        guard case .technology(let definition, _, _, _) = held.item.content,
+          definition == AlienMissileDefinition.recipe.requiredDefinitionID,
+          held.item.provenance == .alien
+        else { continue }
+        append("Recovered alien artefact " + storage.uuidString.prefix(8), .white)
+        action(.alienResearch(storage))
+      }
       append("Alien modules - separate physical fittings", .yellow)
       for kind in AlienModuleKind.allCases {
         let summary = commander.fittedAlienSummary(kind)

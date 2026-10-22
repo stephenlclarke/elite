@@ -60,7 +60,11 @@ extension Game {
   }
   public var atPlugh: Bool { currentSystem.isPlugh }
   public func equipmentAvailable(_ item: Equipment) -> Bool {
-    stationAllowsEquipmentServices
+    if item.name == AlienMissileDefinition.name {
+      return stationAllowsEquipmentServices && nativeAlienFittingAvailable
+        && commander.hasAlienMissileResearch
+    }
+    return stationAllowsEquipmentServices
       && (atPlugh
         || (item.requiredTechnologyLevel <= currentSystem.technology
           && !Equipment.isReward(item.name)))

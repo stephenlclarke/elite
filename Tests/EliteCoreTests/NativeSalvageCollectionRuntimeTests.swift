@@ -6,7 +6,7 @@ import Testing
 
 // Match the existing native page-store fixtures: every ancestor is a physical
 // directory so the production O_NOFOLLOW checks remain exercised unchanged.
-private func nativeSalvageTestDirectory() throws -> URL {
+func nativeSalvageTestDirectory() throws -> URL {
   let path = FileManager.default.temporaryDirectory.path
   let resolved = path.withCString { realpath($0, nil) }
   let physical = try #require(resolved)
@@ -15,7 +15,7 @@ private func nativeSalvageTestDirectory() throws -> URL {
     .appendingPathComponent("native-salvage-" + UUID().uuidString, isDirectory: true)
 }
 
-private func nativeSalvageScoopFixture(
+func nativeSalvageScoopFixture(
   definition: String = AlienModuleKind.energyCapacity.definitionID, system: Int = 7
 ) throws -> (Game, SalvageLot) {
   var game = try missionGearGame()
@@ -225,7 +225,7 @@ private func recoveredModuleAtActualPlughDock(
   return (runtime, item.id)
 }
 
-private func dockAtActualPlughDoorway(_ input: Game, file: URL) async throws -> GameRuntime {
+func dockAtActualPlughDoorway(_ input: Game, file: URL) async throws -> GameRuntime {
   var game = input
   let station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
   let old = game.commander.flightSimulation.pose

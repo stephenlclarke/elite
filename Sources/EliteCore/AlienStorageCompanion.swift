@@ -24,6 +24,7 @@ struct AlienStorageCompanion: Codable, Equatable, Sendable {
     case pending(
       lot: SalvageLot, physicalTime: Double, offer: SpawnIdentity?, binding: ActorIdentity?)
     case collected(AlienStorageCompanionCollection)
+    case researched(AlienStorageCompanionCollection, AlienMissileResearchReceipt)
     case discarded(at: Double)
     case destroyed(at: Double)
   }
@@ -82,10 +83,16 @@ enum AlienStorageCompanionValidation {
           binding.entity >= 2, binding.entity < UInt64.max, actors.insert(binding).inserted
         else { throw AlienStorageError.invalidJoin }
       }
-    case .collected(let receipt):
+    case .collected(let receipt), .researched(let receipt, _):
       guard receipt.at.isFinite, receipt.at >= value.issuedAt,
         operations.insert(receipt.operation).inserted
       else { throw AlienStorageError.invalidJoin }
+      if case .researched(_, let research) = value.state {
+        try research.validate(item: item, collection: receipt, owner: value.owner)
+        guard operations.insert(research.operation).inserted else {
+          throw AlienStorageError.invalidJoin
+        }
+      }
       switch (item.content, receipt.effect) {
       case (.commodity(let original), .cargo(let amount, let before, let after)):
         let total = before.addingReportingOverflow(original.quantity)
@@ -116,7 +123,12 @@ enum AlienStorageCompanionValidation {
     case (.pending(_, let time, _, _), .discarded(let at)),
       (.pending(_, let time, _, _), .destroyed(let at)):
       guard at >= time else { throw AlienStorageError.historyChanged }
-    case (.collected, .collected), (.discarded, .discarded), (.destroyed, .destroyed):
+    case (.collected(let oldReceipt), .researched(let receipt, let research)):
+      guard oldReceipt == receipt, research.at >= receipt.at else {
+        throw AlienStorageError.historyChanged
+      }
+    case (.researched, .researched), (.collected, .collected), (.discarded, .discarded),
+      (.destroyed, .destroyed):
       guard old == current else { throw AlienStorageError.historyChanged }
     default: throw AlienStorageError.historyChanged
     }

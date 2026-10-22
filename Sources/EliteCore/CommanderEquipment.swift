@@ -56,7 +56,7 @@ extension Commander {
       guard
         missiles
           == inventory.items.filter({
-            $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
+            AlienMissileDefinition.profile(for: $0.node) != nil && $0.location != nil
           }).count
       else { throw EquipmentMigrationError.invalidCrosswalk }
     }
@@ -75,6 +75,7 @@ extension Commander {
         owner: inventory.owner, hull: inventory.activeHull, performance: performance))
     try RecoveredFeatureDevices.validateRecoveredFeatures(
       inventory: inventory, ledger: salvageLedger)
+    try validateAlienMissileResearch()
   }
 
   /// Called explicitly at a runtime mutation boundary, never by a getter or decoder.

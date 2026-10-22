@@ -117,7 +117,7 @@ struct AlienStorageSnapshot: Sendable, Equatable {
       else { throw AlienStorageError.invalidJoin }
     }
     for case .companion(let companion) in world {
-      if case .collected(let receipt) = companion.state,
+      if let receipt = companion.state.collection,
         case .technology(let storage) = receipt.effect
       {
         guard attachmentMap[storage] == nil, upgradeMap[storage] == nil else {
@@ -126,7 +126,7 @@ struct AlienStorageSnapshot: Sendable, Equatable {
       }
     }
     for case .legacyCurrent(let current) in world {
-      if case .collected(let receipt) = current.state,
+      if let receipt = current.state.collection,
         case .technology(let storage) = receipt.effect
       {
         guard attachmentMap[storage] == nil, upgradeMap[storage] == nil else {
