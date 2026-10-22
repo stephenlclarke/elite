@@ -5648,7 +5648,8 @@
           "HyperspaceDriveRuntime validated actual active-hull fitted drive policy",
           "InventoryInformation narrow drive ability/source identity",
           "Game.beginHyperspace necessary stale comment only; existing immediate path preserved"
-        ]
+        ],
+        "compatibility_scope": "Human waives old-save compatibility; no legacy deterministic-plan replay fallback authorized"
       },
       {
         "id": "M08.P04.mining-control",
@@ -5689,6 +5690,26 @@
         "assigned_at": "2026-10-22T08:58:34.634551+00:00",
         "ownership": "PassengerCustody and narrow native care/pause-aware policy, pure tests/notes",
         "limits": "No central G1 mission/save or G4 practice hunks without reservation; preserve existing cabin grades/consent/contracts; no new capacity estimates/local compilation/integration",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Existing exact-person care/consent/cabin/receiver and original pause-aware clocks credited; no concrete gap/no change",
+        "qualification_scope": "Source/existing unit definitions only; no fresh execution"
+      },
+      {
+        "id": "T02.P01.lesson",
+        "owner": "G4",
+        "assigned_at": "2026-10-22T09:00:03.195042+00:00",
+        "ownership": "Exact safe-gunnery lesson types/reducer/tests/accepted pack plus proposed narrow board/save joins",
+        "limits": "Actual provider receipts only; exact authored values, no generic language/new rewards; reserve central hunks first; no compiler/native/integration",
+        "merged_at": null,
+        "playable_at": null
+      },
+      {
+        "id": "M10.P01.npc-transit",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:00:28.612120+00:00",
+        "ownership": "Readonly existing NPC native departure/transit/destination source and unit definitions",
+        "limits": "Scope actual missing same-ship/resource provider; no new cross-system/schema/AI framework or shared edits without decision; PR61 own merge first when ready",
         "merged_at": null,
         "playable_at": null
       }
