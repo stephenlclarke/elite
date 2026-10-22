@@ -16,6 +16,10 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeStationSnapshotUnitTests": (
+        "exactSnapshotRejectsEveryStoredFieldChangeAndDuplicateOrAbsentBodies",
+        "authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget",
+    ),
     "NativeWayfarerInductionAccreditationUnitTests": (
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
         "repeatedSennConfirmationCannotPayOrGrantAnotherClueOrDiscardExistingBookings",

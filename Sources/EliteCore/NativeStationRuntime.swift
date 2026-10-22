@@ -694,8 +694,7 @@ extension Game {
       let world = commander.nativeStations,
       let identity = world.mainStations.first(where: { $0.system == systemIdentity }),
       station.physical?.identity == flight.anchors?.station.identity,
-      bodies.filter({ $0.id == 0 }).count == 1,
-      bodies.first(where: { $0.id == 0 }) == station,
+      NativeStationSnapshot.matches(station, in: bodies),
       let current = currentNativeMainStationAnchor(at: flight.physicalTime),
       let previous = currentNativeMainStationAnchor(at: max(0, flight.physicalTime - delta)),
       (flight.pose.systemPoint(station.position) - current.position).length < 1e-5,
@@ -872,8 +871,7 @@ extension Game {
     let velocityError = (physical.velocity - nativeStationVelocity(station)).length
     observation?["stationVelocityError"] = String(velocityError)
     guard velocityError < 1e-7,
-      bodies.filter({ $0.id == station.id }).count == 1,
-      bodies.first(where: { $0.id == station.id }) == station
+      NativeStationSnapshot.matches(station, in: bodies)
     else { return false }
     let flight = commander.flightSimulation
     let player = commander.playerMesh
