@@ -6,11 +6,12 @@ import Testing
 private let recoveredAlienDrive = AlienModuleKind.hyperspaceDrive
 
 private func driveDestination(_ game: borrowing Game) -> StarSystem? {
-  game.knownSystems.filter {
-    $0.id != game.commander.system && $0.id != Plugh.systemID
-      && game.currentSystem.distance(to: $0) > 0
-      && game.currentSystem.distance(to: $0) <= game.commander.maximumJumpDistance
-  }.min { game.currentSystem.distance(to: $0) < game.currentSystem.distance(to: $1) }
+  let current = game.currentSystem
+  let reach = game.commander.maximumJumpDistance
+  return game.knownSystems.filter {
+    $0.id != current.id && $0.id != Plugh.systemID
+      && current.distance(to: $0) > 0 && current.distance(to: $0) <= reach
+  }.min { current.distance(to: $0) < current.distance(to: $1) }
 }
 
 private func fitRecoveredAlienDrive(_ file: URL) async throws -> (GameRuntime, UUID) {
