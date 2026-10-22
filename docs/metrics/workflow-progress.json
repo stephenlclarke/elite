@@ -4755,6 +4755,19 @@
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333643137",
       "verified_at": "2026-10-22T05:40:10Z",
       "qualification_scope": "All9ClinicSource and retained6Consent/7Capacity/6Charter/9UtilityWork/3Binding PASS; actual pack-loader digest matches; source/readonly-quote only, no native journey or usable delivery"
+    },
+    {
+      "event": "Clinic acceptance and original sample/window/hold reservation pushed; MBA review queued",
+      "at": "2026-10-22T06:01:24Z",
+      "head": "1523b3ee2394d74e576645451ad6606925a01488",
+      "base": "81d54e74919c106381e3b4d3cc66652001ffb218",
+      "ledger_parent": "C08.P06.B.clinic.acceptance",
+      "github_run": 39731389269,
+      "selection_methods": 231,
+      "new_methods": 10,
+      "unit_status": "existing hosted run active",
+      "source_review": "queued after showroom source review",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -4796,7 +4809,13 @@
         "phase_entry_state": "Clinic source/capacity/consent implemented and unit-qualified; acceptance in development",
         "source_complete_at": null,
         "merged_at": null,
-        "playable_at": null
+        "playable_at": null,
+        "latest_packet_head": "1523b3ee2394d74e576645451ad6606925a01488",
+        "latest_packet_pushed_at": "2026-10-22T06:01:24Z",
+        "latest_packet": "Clinic acceptance/reservation/cancel and uncollected loss closures",
+        "unit_run": 39731389269,
+        "unit_status": "in_progress",
+        "source_state": "Acceptance packet pushed; actual pickup/integrity/receiving/payment/held-return needed for complete clinic loop"
       },
       {
         "id": "M02.P04/F06",
