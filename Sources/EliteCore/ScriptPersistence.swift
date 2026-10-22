@@ -384,6 +384,7 @@ enum ScriptSaveStore {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid, NativePracticeSave.sceneValid(world, commander: commander),
       ScriptFreightVersionedSave.validateClaims(commander),
+      NativeDefensiveFlightSave.validateClaims(commander),
       NativeSafeGunnerySave.validateClaims(commander),
       NativePracticeSave.validateClaims(commander),
       NativeInductionCrewLogSave.validateClaims(commander),
@@ -587,10 +588,12 @@ enum ScriptSaveStore {
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: (NativeSafeGunnerySave.hasClaims(commander)
+      schemaVersion: (NativeDefensiveFlightSave.hasClaims(commander)
+        || NativeSafeGunnerySave.hasClaims(commander)
         || NativePracticeSave.hasClaims(commander)
         || NativeInductionCrewLogSave.hasClaims(commander))
-        ? (NativeSafeGunnerySave.publicationVersion(
+        ? (NativeDefensiveFlightSave.publicationVersion(
+          defensive: NativeDefensiveFlightSave.hasClaims(commander),
           lesson: NativeSafeGunnerySave.hasClaims(commander),
           practice: NativePracticeSave.hasClaims(commander),
           crewLog: NativeInductionCrewLogSave.hasClaims(commander), alien: alienPublication != nil)
@@ -709,6 +712,7 @@ enum ScriptSaveStore {
   ) throws -> (Commander, ScriptWorldSave) {
     guard pointerBytes.count <= 262144 else { throw SaveError.invalidCommander }
     try ScriptSaveJSONPreflight.validate(pointerBytes)
+    try NativeDefensiveFlightSave.validateFields(pointerBytes, part: .contracts, schema: nil)
     try NativeSafeGunnerySave.validateFields(pointerBytes, part: .contracts, schema: nil)
     try NativePracticeSave.validateFields(pointerBytes, part: .contracts, schema: nil)
     try ScriptSaveJSONPreflight.validateRepairLoopFields(pointerBytes, part: .contracts)
@@ -716,12 +720,13 @@ enum ScriptSaveStore {
     try ScriptNavigationTradeSave.validateFields(pointerBytes, part: .contracts, schema: nil)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
     // The closed current service envelope admits W02, W03 or both after feature validation.
+    let defensiveFlightEnvelope = NativeDefensiveFlightSave.contains(pointer.schemaVersion)
     let safeGunneryEnvelope = NativeSafeGunnerySave.contains(pointer.schemaVersion)
     let practiceEnvelope = NativePracticeSave.contains(pointer.schemaVersion)
     let crewLogEnvelope = NativeInductionCrewLogSave.contains(pointer.schemaVersion)
     let arkEnvelope = NativeInductionArkSave.contains(pointer.schemaVersion)
     let inductionEnvelope =
-      safeGunneryEnvelope || practiceEnvelope || arkEnvelope
+      defensiveFlightEnvelope || safeGunneryEnvelope || practiceEnvelope || arkEnvelope
       || NativeWayfarerInductionSave.contains(pointer.schemaVersion)
     let commerceEnvelope = NativeFirstCommoditySaleSave.contains(pointer.schemaVersion)
     let glassEnvelope = NativeGlassMeridianSave.contains(pointer.schemaVersion)
@@ -748,6 +753,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion == 27
       || pointer.schemaVersion == NativePracticeSave.alienVersion
       || pointer.schemaVersion == NativeSafeGunnerySave.alienVersion
+      || pointer.schemaVersion == NativeDefensiveFlightSave.alienVersion
       || NativeInductionArkSave.isAlien(pointer.schemaVersion)
       || NativeWayfarerInductionSave.isAlien(pointer.schemaVersion)
       || pointer.schemaVersion == NativeFirstCommoditySaleSave.alienVersion
@@ -828,7 +834,7 @@ enum ScriptSaveStore {
         : name == "missions.json" ? .missions : name == "contracts.json" ? .contracts : nil
       var featureSchema = pointer.schemaVersion
       if let nativePart {
-        try NativeSafeGunnerySave.validateArchiveFields(
+        try NativeDefensiveFlightSave.validateArchiveFields(
           data, part: nativePart, schema: pointer.schemaVersion, alien: alien)
         // Both service profiles were checked against the actual envelope before lower gates run.
         if inductionEnvelope || commerceEnvelope || glassEnvelope || fleetEnvelope
@@ -847,6 +853,7 @@ enum ScriptSaveStore {
             data, part: nativePart, alien: alien)
         }
       } else {
+        try NativeDefensiveFlightSave.validateFields(data, part: .contracts, schema: nil)
         try NativeSafeGunnerySave.validateFields(data, part: .contracts, schema: nil)
         try NativePracticeSave.validateFields(data, part: .contracts, schema: nil)
         try ScriptSaveJSONPreflight.validateRepairLoopFields(data, part: .contracts)
@@ -1048,16 +1055,17 @@ enum ScriptSaveStore {
         || outlook
         || stationJourney
         || supply == OriginalConsentedFreightSupplySave.hasClaims(commander),
-      safeGunneryEnvelope == NativeSafeGunnerySave.hasClaims(commander),
-      safeGunneryEnvelope
+      defensiveFlightEnvelope == NativeDefensiveFlightSave.hasClaims(commander),
+      defensiveFlightEnvelope || safeGunneryEnvelope == NativeSafeGunnerySave.hasClaims(commander),
+      defensiveFlightEnvelope || safeGunneryEnvelope
         || (pointer.schemaVersion == 123 || pointer.schemaVersion == 124
           || pointer.schemaVersion == 125 || pointer.schemaVersion == 126)
         || practiceEnvelope == NativePracticeSave.hasClaims(commander),
-      safeGunneryEnvelope || practiceEnvelope
+      defensiveFlightEnvelope || safeGunneryEnvelope || practiceEnvelope
         || crewLogEnvelope == NativeInductionCrewLogSave.hasClaims(commander),
-      safeGunneryEnvelope || practiceEnvelope
+      defensiveFlightEnvelope || safeGunneryEnvelope || practiceEnvelope
         || arkEnvelope == NativeInductionArkSave.hasClaims(commander),
-      safeGunneryEnvelope || practiceEnvelope
+      defensiveFlightEnvelope || safeGunneryEnvelope || practiceEnvelope
         || inductionEnvelope == NativeWayfarerInductionSave.hasClaims(commander),
       inductionEnvelope || commerceEnvelope == NativeFirstCommoditySaleSave.hasClaims(commander),
       inductionEnvelope || commerceEnvelope
@@ -1123,6 +1131,7 @@ enum ScriptSaveStore {
         || evacuation || originalRescue
         || outlook
         || stationJourney == NativeStationPassengerJourneySave.hasClaims(commander),
+      NativeDefensiveFlightSave.validateClaims(commander),
       NativeSafeGunnerySave.validateClaims(commander),
       NativePracticeSave.validateClaims(commander),
       NativeInductionCrewLogSave.validateClaims(commander),

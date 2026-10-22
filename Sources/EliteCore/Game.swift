@@ -896,6 +896,7 @@ public struct Game: Sendable {
       value.scriptState.savedFleetDiscovery == nil,
       value.scriptState.firstNativeCommoditySale == nil,
       !NativePracticeSave.hasClaims(value), !NativeSafeGunnerySave.hasClaims(value),
+      !NativeDefensiveFlightSave.hasClaims(value),
       !NativeInductionCrewLogSave.hasClaims(value),
       !NativeInductionArkSave.hasClaims(value),
       !NativeWayfarerInductionSave.hasClaims(value),
@@ -1890,6 +1891,7 @@ public struct Game: Sendable {
         candidate.applyAttributedEnergyBomb(), candidate.commander.valid
       else { return }
       candidate.observeSafeGunneryDischarge()
+      candidate.observeDefensiveFlightDischarge()
       candidate.notify("ENERGY BOMB")
       self = candidate
     } catch { notify("ENERGY BOMB REFUSED") }
@@ -1999,6 +2001,7 @@ public struct Game: Sendable {
     pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
+    defer { closeDefensiveFlightIfNeeded() }
     if screen == .showroom {
       showroom.advance(delta: dt)
       return
@@ -2032,6 +2035,7 @@ public struct Game: Sendable {
     lastAppliedWorkMotion = nil
     plannedLegacyWorkMotion.removeAll(keepingCapacity: true)
     workScenePlanned = false
+    let defensiveFlightBefore = defensiveFlightObservation()
     let fireRequested = controls.fire
     let wasElectricalDisabled = playerEMPDisabled
     commander.flightSimulation.advancePhysicalTime(dt)
@@ -2043,6 +2047,7 @@ public struct Game: Sendable {
     gameplayRevision &+= 1
     ensurePhysicalActors()
     beginSafeGunneryIfNeeded()
+    beginDefensiveFlightIfNeeded()
     defer { closeFailedSafeGunneryIfNeeded() }
     let craft = commander.performance
     if !manualResidualFlight && workGuidance == nil && workBraking == nil {
@@ -2134,6 +2139,12 @@ public struct Game: Sendable {
       notify("ENERGY LOW,SIR")
     }
     if screen != .gameOver { advanceMissionClock(dt) }
+    if safeGunneryAudioBefore.0 != dischargeAudio.epoch
+      || safeGunneryAudioBefore.1 != dischargeAudio.events.last?.id
+    {
+      observeDefensiveFlightDischarge()
+    }
+    advanceDefensiveFlight(before: defensiveFlightBefore, delta: dt)
   }
   public func viewPosition(_ p: Vector3) -> Vector3 {
     switch screen {

@@ -114,6 +114,7 @@ extension Game {
 
   private mutating func recordPlayerLaserDischarge(_ laser: LaserKind, emission: UInt64) {
     observeSafeGunneryDischarge(emission: emission)
+    observeDefensiveFlightDischarge(emission: emission)
     fireCooldown = laser.firingInterval
     laserHeat += 10
     energy -= Self.combatLaserEnergyCost

@@ -115,6 +115,10 @@ struct ScriptClueTrustCatalog: Sendable {
   private let pins: [ScriptClueExecutionPin]
   static let production = ScriptClueTrustCatalog(approvedPins: [
     .init(
+      sourceID: NativeDefensiveFlight.stateID, definition: NativeDefensiveFlight.stateID,
+      version: NativeDefensiveFlight.version, digest: NativeDefensiveFlight.digest,
+      terminalEvents: ["mission.receipted"]),
+    .init(
       sourceID: NativeSafeGunnery.stateID, definition: NativeSafeGunnery.stateID,
       version: NativeSafeGunnery.version, digest: NativeSafeGunnery.digest,
       terminalEvents: ["mission.receipted"]),

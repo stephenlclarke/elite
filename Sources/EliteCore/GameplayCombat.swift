@@ -71,7 +71,10 @@ extension Game {
     guard resolution.accepted else { return nil }
     gameplayCombatTrace?.append(incident)
     applyCrimeResolution(resolution, target: target, origin: origin, context: context)
-    if outcome == .hit { observeSafeGunneryOrdinaryHit(incident) }
+    if outcome == .hit {
+      observeSafeGunneryOrdinaryHit(incident)
+      observeDefensiveFlightOrdinaryHit(incident)
+    }
     return incident
   }
 

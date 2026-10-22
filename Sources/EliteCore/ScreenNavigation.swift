@@ -190,6 +190,14 @@ extension Game {
     if docked && ["1", "2"].contains(key) { return true }
     if passengerCabinKey(key) { return true }
     if marketKey(key) { return true }
+    if key == "escape", screen.isFlight, !docked,
+      let active = activeDefensiveFlight, !active.state.workVerified
+    {
+      do { try finishDefensiveFlight(active.state.failure == nil ? .abandoned : .failed) } catch {
+        notify("PRACTICE EXIT NOT RECORDED - RETRY")
+      }
+      return true
+    }
     if key == "escape" {
       backFromPrimary()
       return true

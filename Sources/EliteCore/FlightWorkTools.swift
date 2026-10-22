@@ -58,7 +58,10 @@ extension Game {
     if dischargeAudio.events.last?.id != priorEvent,
       dischargeAudio.events.last?.tool == selectedFlightTool
     {
-      if selectedFlightTool != .combatLaser { observeSafeGunneryDischarge() }
+      if selectedFlightTool != .combatLaser {
+        observeSafeGunneryDischarge()
+        observeDefensiveFlightDischarge()
+      }
       selectedToolActivity = .init(
         tool: selectedFlightTool, physicalTime: commander.flightSimulation.physicalTime)
     }

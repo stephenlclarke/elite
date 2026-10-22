@@ -77,6 +77,11 @@ extension Game {
       Set(bodies.map(\.id)).count == bodies.count,
       nextBodyID >= 0, nextBodyID <= 999_999_996
     else { throw NativePracticeError.staleContext }
+    if practice.permission.lesson == .defensiveFlight {
+      guard let radius = commander.playerMesh.vertices.map(\.length).max(),
+        defensiveFlightCourseIsClear(practice, radius: radius)
+      else { throw NativePracticeError.unsafePosition }
+    }
     var prepared: [SpaceBody] = []
     for beacon in practice.beacons {
       let matching = bodies.filter {

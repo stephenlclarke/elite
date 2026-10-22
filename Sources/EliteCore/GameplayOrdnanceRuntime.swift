@@ -105,6 +105,9 @@ extension Game {
     bodies[index].hostile = ownerBodyID != nil
     bodies[index].missileSourceID = ownerBodyID
     observeSafeGunneryMissileLaunch(origin)
+    if origin.owner == commander.flightSimulation.player {
+      observeDefensiveFlightDischarge(emission: origin.emissionID)
+    }
     return true
   }
 
