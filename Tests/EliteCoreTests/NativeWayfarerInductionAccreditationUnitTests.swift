@@ -238,8 +238,8 @@ struct NativeWayfarerInductionAccreditationUnitTests {
     game.scriptDurabilityAvailable = true
     game.docked = true
     game.dockedAtMainStation = true
-    game.nativeMainStationDockEvidence = .init(
-      receipt: f.f.dock, runtimeEpoch: game.nativeStationRuntimeEpoch)
+    try game.rebindNativeStationsAfterLoad()
+    try #require(game.nativeMainStationDockEvidenceIsCurrent)
     let review = game.safeGunneryReview(.accept)
     try #require(review.allowed)
     try game.confirmSafeGunnery(review)
