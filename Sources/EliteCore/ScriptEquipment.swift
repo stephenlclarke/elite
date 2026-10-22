@@ -72,6 +72,9 @@ extension Game {
       else {
         throw MissionPackError("Declared owned equipment and a main orbital station are required.")
       }
+      guard definition.kind?.canonicalNode != NativeIsolationProgrammerDefinition.node else {
+        throw MissionPackError("Use Lerr's actual authorized programmer issue and return.")
+      }
       let allowed: Set<String>
       switch op {
       case "gear.issue": allowed = ["op", "id", "gear", "fit"]
