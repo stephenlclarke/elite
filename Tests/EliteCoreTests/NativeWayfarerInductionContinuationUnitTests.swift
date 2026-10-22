@@ -5,10 +5,12 @@ import Testing
 
 struct InductionContinuationFixture {
   let helpers = NativeWayfarerInductionUnitTests()
+  let originalSale: NativeFirstCommoditySale
   let held: NativeWayfarerInductionState
   init() throws {
     let h = NativeWayfarerInductionUnitTests()
-    let (state, _) = try h.fixture()
+    let (state, engine) = try h.fixture()
+    originalSale = try #require(engine.firstNativeCommoditySale)
     held = try state.collecting(h.crate(state), freeTonnes: 1)
   }
   func reception(

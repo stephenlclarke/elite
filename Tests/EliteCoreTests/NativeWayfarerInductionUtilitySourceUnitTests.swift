@@ -5,11 +5,13 @@ import Testing
 
 /// Typed source/graph fixtures; no actual authorization, admission, repair or receiving is executed.
 final class InductionUtilityFixture {
+  let originalSale: NativeFirstCommoditySale
   let parent: NativeWayfarerInductionState
   let source: NativeInductionUtilitySource
   let authorization: NativeInductionUtilityAuthorization
   init() throws {
     let previous = try RescueReceivingFixture()
+    originalSale = previous.f.f.f.originalSale
     parent = try previous.f.f.parent.receivingOriginalRescue(previous.receipt())
     source = try .init(parent: parent)
     let received = try #require(parent.rescueReception)
