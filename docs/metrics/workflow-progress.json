@@ -5646,6 +5646,19 @@
       "training_reviewed_head": "10849b7cfd958e8f3d4aace7b54703442cd484bb",
       "training_review": "clean bounded clearance/codec/385 union",
       "training_runtime_qualified": false
+    },
+    {
+      "event": "G11 COW correction run failed; actual evidence inspection assigned and prepared route339 push released on stable C01 base",
+      "date": "2026-10-22",
+      "g11_head": "e399275a4b5da78726a2796ec5888e86040a2038",
+      "g11_run": 39778352147,
+      "g11_conclusion": "failure",
+      "g11_artifact_classification": "pending actual MBA evidence",
+      "route_owner": "G3",
+      "route_actual_base": "d731b79859dddffd3533c20360280c7c27825009",
+      "route_expected_union": 339,
+      "route_push": "author released to one coherent push, no new branch/PR",
+      "no_extra_test_campaign": true
     }
   ],
   "two_developer_phase": {
