@@ -1,10 +1,10 @@
 # Developer and reviewer workflow
 
-Updated 21 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
+Updated 22 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
 
 ## Developer: keep coding
 
-**Choose -> implement and write isolated unit tests -> push -> request review -> choose next.**
+**Choose one complete feature -> implement and write isolated unit tests -> push -> request review -> continue coding -> author merges when qualified.**
 
 G1/MBP (GPT-6.1 Sol High) is the primary developer and release publisher. There is no separate integrator or integration queue. Each explicitly assigned developer owns its feature through implementation, meaningful unit tests, reviewer corrections, conflict resolution and its own PR merge after the required checks, MBA review and approvals pass. At each coherent packet boundary, take ready actionable reviewer issues first; otherwise take the next ready ledger item, M01 first. Skip a genuinely unavailable dependency and record it briefly. Do not wait for tests, reviews, Sonar, packaging, an empty issue queue or Orchestrator acknowledgement.
 
@@ -19,6 +19,10 @@ Base <SHA> -> head <SHA>; isolated units <selection>; known gap <if any>
 ```
 
 **This is the only packet handoff.** Do not repeat it in issue23, chat or another queue. Do not duplicate same-head review requests. For a correction, reference the original review thread and mark its issue `awaiting-mba`; never auto-close it. Start the next item immediately.
+
+## Two independent feature streams
+
+G1 owns the complete clinic loop. G3 owns M02.P04/F06 showroom comparison, using its existing session01a13ff4-1a89-7711-befa-15701182d113 and an isolated branch/worktree from81d54e74. Each developer owns its PR and merge after MBA review/checks/approvals; showroom targets feature/canonical-mission-composition. No central integration queue. MBA takes ready corrections first, then the oldest ready feature. Root flags review backlog above two ready packets or an oldest source review older than30minutes; this is an orchestration signal, not a developer wait gate.
 
 ## Reviewer: work asynchronously
 
@@ -38,7 +42,7 @@ GitHub runs meaningful isolated component units. Inspect the actual head, select
 
 Root keeps priorities and ownership clear, ensures both machines have work, and batches ledger/scorecard updates from existing PR/issues/Actions evidence. No routine acknowledgements, duplicate reviews, hash inventories, per-event dossiers or extra developer forms. Record assignment/push promptly; record verification/delivery when meaningful. The [scorecard](WORKFLOW-METRICS.md) measures throughput, waiting and rework; it is not another work plan. Issue23 is historical coordination, not a required handoff or work queue.
 
-Activate a spare MBP coder for GitHub issue remediation only if at least two ready defects would delay ledger work, or the ready backlog keeps growing. Reserve disjoint files/hunks first. Exclude external blockers and `awaiting-mba`; keep other workers idle otherwise. MBA may create explicitly requested image assets on separate paths after review work; app/renderer/shader code stays MBP-owned. README media comes from `make readme-media`.
+The two active developer streams are G1 clinic service and G3 showroom comparison. G3 uses an isolated worktree and owns ShowroomDisplay/ShowroomGeometry, showroom-only ShipShowroom comparison hunks and focused showroom units; G1 owns clinic/mission/contract/cargo/save/Game/PlayerHelp work. Shared CI changes require an exact hunk agreement. Do not add further developers without a new scope decision. Ready correctness issues are remediated by their feature owner at packet boundaries. MBA may create explicitly requested image assets on separate paths after review work; app/renderer/shader code stays MBP-owned. README media comes from `make readme-media`.
 
 ## Merge and delivery
 
