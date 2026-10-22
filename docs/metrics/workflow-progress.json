@@ -4766,8 +4766,11 @@
       "selection_methods": 231,
       "new_methods": 10,
       "unit_status": "existing hosted run active",
-      "source_review": "queued after showroom source review",
-      "usable_build_delivered": false
+      "source_review": "MBA source review clean",
+      "usable_build_delivered": false,
+      "source_review_completed_at": "2026-10-22T06:05:57Z",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333935985",
+      "handoff_to_source_review_seconds": 245
     }
   ],
   "two_developer_phase": {
@@ -4815,7 +4818,12 @@
         "latest_packet": "Clinic acceptance/reservation/cancel and uncollected loss closures",
         "unit_run": 39731389269,
         "unit_status": "in_progress",
-        "source_state": "Acceptance packet pushed; actual pickup/integrity/receiving/payment/held-return needed for complete clinic loop"
+        "source_state": "Acceptance packet pushed; actual pickup/integrity/receiving/payment/held-return needed for complete clinic loop",
+        "source_review_result": "MBA acceptance source review clean at1523b3ee; actual hosted qualification pending",
+        "source_review_completed_at": "2026-10-22T06:05:57Z",
+        "latest_handoff_at": "2026-10-22T06:01:52Z",
+        "source_review_latency_seconds": 245,
+        "source_review_scope": "10 acceptance methods, actual Confirm/cancel, attained exit/source loss publication, stock/window/child reverse joins, aggregate slots/hold and closed111/112"
       },
       {
         "id": "M02.P04/F06",
@@ -4833,7 +4841,7 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
         "source_state": "Original display source clean at1b5; final composition/selector review and actual hosted qualification pending",
         "first_push_observed_elapsed_seconds": 224,
-        "source_review_result": "MBA bounded source review clean at1b5c07aa; final-head/three-method execution pending",
+        "source_review_result": "MBA final40159bba composition/selector clean; actual3-method execution pending",
         "source_review_time_reported": "2026-10-22 06:02 UTC (minute precision)",
         "handoff_at": "2026-10-22T06:02:37Z",
         "source_review_latency_seconds_reported": 88,
