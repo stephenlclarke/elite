@@ -4375,10 +4375,13 @@
       "selection_methods": 127,
       "new_methods": 6,
       "source_review": "MBA completed; no actionable source finding",
-      "unit_status": "existing hosted active; artifact pending",
+      "unit_status": "MBA verified exact-head hosted PASS",
       "next_assigned": "C08.P04.B",
       "usable_build_delivered": false,
-      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329279757"
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329279757",
+      "verified_methods": 127,
+      "verified_expanded_cases": 159,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329386801"
     }
   ]
 }
