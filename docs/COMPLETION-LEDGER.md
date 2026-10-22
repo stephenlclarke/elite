@@ -4,6 +4,8 @@ Updated 22 October 2026. This is the current delivery guide, not a content-compl
 
 ## Current execution checkpoint — 22 October, 14:23 UTC
 
+G11 exact7c1d4ac6 run39793592000/job119875359241 maintained-unit step completed FAILURE at14:30:24UTC while aggregate status remained in_progress. MBA owns existing exact-head logs/artifacts classification once available; MC1 is instructed to hold the reviewed head with no restart/compiler/probe/speculative correction pending evidence. No compile/runtime cause, method count or issue closure is inferred from the failed step alone. Station565e3ff9 job119882890660 remains queued.
+
 MBA exact565e3ff9 station delta review is COMPLETE/CLEAN ([review](https://github.com/stephenlclarke/elite/pull/94#issuecomment-6343250525)): same guard position and full24field comparison, preceding uniqueID/following unique physical identity preserved; inverse two edits recover the previous entire Runtime. Existing O(n) scan has no new allocation/unbounded search. Tests/CI unchanged and prior full reviews retained. G1 has outcome; #88 awaits actual current-head run39795866017/job119882890660, currently queued. No runtime-fix/M01 completion claim or extra execution.
 
 PR94 bounded station comparison correction is now PUSHED as565e3ff9d886bfcce0000dcf0e65d21099841622. Core authoring16.15s and affected snapshot/seed declarations passed; Python6/lint/diff passed. Inverse two-substitution proof recovers the complete Runtime file, all Tests/ToolsCI remain341 unchanged. Compiler lease returnedFREE. Root verified actual remote head and queued normal isolated-unit check; MBA exact-head delta review is assigned now, retaining prior full reviews. #88 remains open pending actual execution; no crash resolution is claimed.
