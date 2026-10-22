@@ -5809,15 +5809,21 @@
       },
       {
         "id": "G11.P01.isolation-provider",
-        "owner": "UX designer exact bounded source design",
-        "assigned_at": "2026-10-22T09:07:37.915718+00:00",
+        "owner": "Mission Coder1",
+        "assigned_at": "2026-10-22T09:26:33.987755+00:00",
         "ownership": "Bounded actual two-component isolation source/proof policy preflight; proposed narrow NativeIsolationWork types/tests",
-        "limits": "No fabricated flag/tool/receipt; exact source producer must exist; shared mission/save hunks reserved before edit; no reward/terminal in provider slice",
+        "limits": "Provider only, actual G3K06 tool obligation; no reward/P02; same source/no refresh; bounded coalesced segments must not cap valid work at256frames; no oldsavecompat",
         "merged_at": null,
         "playable_at": null,
         "disposition": "Missing exact original two-component physical resource isolation/work observation provider; existing induction three-module repair cannot substitute",
         "qualification_scope": "Source/existing utility foundation definitions only; no fresh execution",
-        "source_state": "Assigned design one actual two-component source/isolation/observation contract, not broad audit or new story"
+        "source_state": "Exact UX physical source/work design imported and Root approved; new provider implementation assigned",
+        "design_path": "docs/gameplay-design/G11-P01-TWO-COMPONENT-ISOLATION-PROVIDER.md",
+        "design_sha256": "3d8bdebb4179375c84d0901125db86ae3e12984430e0c5176a17d4b21e90447f",
+        "reserved_format_pair": [
+          131,
+          132
+        ]
       },
       {
         "id": "M13.P01.debris-station",
@@ -5877,7 +5883,21 @@
         "owner": "G1",
         "assigned_at": "2026-10-22T09:20:03.503256+00:00",
         "ownership": "Exact accepted Glass Meridian stage3 native disabled Harrier/original recorder source and actual recovery joins; new focused units",
-        "limits": "Confirm actual authoring/hull/sourcebindings; no fabricated recoveredreceipt/modelscale/people, no lateraudit/reward/clue; coordinate G4 lesson/MC1 source hunks",
+        "limits": "No global runtimeReady/Constrictor fallback; unsafe admission refuses, current source identity retained; no invented tonne/people/reward/stage4; preserve G4/MC1 hunks; no oldsavecompat work",
+        "merged_at": null,
+        "playable_at": null,
+        "authoring_decision": "Root new mission-specific SH026 identity/ROC-SH056 geometry adapter calibrated65m; mass18000kg inert uncrewed disabled source; actual Navidor164 planet-star frame25000m altitude; one8kg original detached recorder80m right; actual fitted scoop/irreversible recorder loss/no reissue",
+        "reserved_shared_hunks": [
+          "Nested optional savedGlassMeridian source/custody fields and NativeGlassSave exact stage3 joins",
+          "Exact native source admission/geometry/pickup/loss hooks and board/help stage3 readout"
+        ]
+      },
+      {
+        "id": "K06.P01.G11.programmer",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:26:33.987755+00:00",
+        "ownership": "Exact original programmer definition/actual Lerr issue-return custody policy and focused tests",
+        "limits": "Same actual G11 permission/issuer/1t serial; no fake entitlement/new loanledger/reward; shared hooks require exact symbol proposal",
         "merged_at": null,
         "playable_at": null
       }
