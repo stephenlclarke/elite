@@ -4365,6 +4365,20 @@
       "verified_expanded_cases": 153,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329143293",
       "qualification_scope": "Corrected descendant source/pure units; original failures retained; no native journey or usable delivery"
+    },
+    {
+      "event": "Finite replacement ark recovery pushed; original recorder stage assigned",
+      "head": "c8d98dde2e878332e4cb5a9c2aa117102b754921",
+      "base": "97fa4a8d711419a5ec28317eb17d6295cb1b3d50",
+      "ledger_parent": "M10.P02.C08.recovery",
+      "github_run": 39696946957,
+      "selection_methods": 127,
+      "new_methods": 6,
+      "source_review": "MBA assigned",
+      "unit_status": "existing hosted active; artifact pending",
+      "next_assigned": "C08.P04.B",
+      "usable_build_delivered": false,
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329279757"
     }
   ]
 }
