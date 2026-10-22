@@ -5161,6 +5161,18 @@
       "g3_next": "M07.P01.I18.cargo-route",
       "reason": "Avoid cross-author dependency/signature loops without an integrator",
       "usable_build_delivered": false
+    },
+    {
+      "event": "C08 merged and candidate1.4.902 independently artifact-verified; live ledger assignments reconciled",
+      "date": "2026-10-22",
+      "source": "f88d66e20972d2c6d5a5273bdf5fbb2e9816bc4b",
+      "scope": "unit-qualified signed/notarized local candidate; no native-journey or public-release claim",
+      "mba_queue": [
+        "PR79 correction80/81",
+        "PR83 readonly NPC route",
+        "PR84 full G11",
+        "PR76 final composition when handed off"
+      ]
     }
   ],
   "two_developer_phase": {
@@ -6139,27 +6151,21 @@
     "accessible_unit_qualified_candidates_delivered": 1,
     "new_usable_build_delivery_scope": "Requires actual relevant execution/UI evidence; new available unit-qualified notarized candidate recorded separately, no native journey run under coding policy.",
     "candidate": {
-      "path": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.901-8b30a311/Elite.app",
-      "version": "1.4.901",
-      "source_revision": "8b30a3112d1af0c5130cd01d8fed582c029a2913",
-      "manifest_built_at": "2026-10-22T07:05:57.763664+00:00",
-      "independently_verified_at": "2026-10-22T07:10:19Z",
-      "sha256": "7a5e075d57508e6e5c76f7128060bdb4670d74d3542d8a9572b9bf88dbfda676",
+      "version": "1.4.902",
+      "source": "f88d66e20972d2c6d5a5273bdf5fbb2e9816bc4b",
+      "path": "/Users/sclarke/Applications/Elite-Candidates/Elite-1.4.902-f88d66e2/Elite.app",
+      "root_artifact_verification": "passed",
+      "signed": true,
+      "notarized": true,
+      "gatekeeper": "accepted",
       "architectures": [
         "arm64",
         "x86_64"
       ],
-      "notarized": true,
-      "gatekeeper_accepted": true,
-      "scope": "Accessible local unit-qualified candidate; no native gameplay/fullM01/publicrelease/Homebrew acceptance",
-      "features_included": [
-        "Complete clinic loop",
-        "Compact showroom comparison"
-      ],
-      "features_excluded": [
-        "Unmerged inventory grouping",
-        "Unfinished workshop loop"
-      ]
+      "zip_sha256": "76be1b2f88d69b19be49aacaec2f4505b9bbc3967f272dc7b386f39bcf136a00",
+      "published_release": false,
+      "homebrew_available": false,
+      "native_gameplay_acceptance": false
     },
     "branch_policy": "Both authors use feature branches/PRs for new work; seed branches fromfcf, no unreviewed directsharedpush; fcf lastlegacydirectpacket. No history rewrite/integrator.",
     "resource_changes": [
@@ -6350,34 +6356,14 @@
       "issue78_closed": true
     },
     "c08_qualification": {
-      "head": "b0bfda8ad2aa3b7b51f63879c6e2fb3f2d0bb7f4",
-      "github_run": 39757431475,
-      "github_check": "SUCCESS",
-      "actual_artifact_qualification": "MBA305methods337expandedALLPASS",
-      "merge": "pending",
-      "verified_methods": 305,
-      "verified_expanded_cases": 337,
-      "compile_seconds": 890.26,
-      "test_seconds": 79.263,
-      "issues_closed": [
-        60,
-        63,
-        67
-      ],
-      "issue64_scope": "G1 verified; provider65 correction remains pending",
-      "composition_selection": 309,
-      "final_head": "da596615e6d54d02e73c16d69dff0af1f39674fa",
-      "final_github_run": 39764055347,
-      "final_selection": 321,
-      "final_qualification": "live321requiredcheck",
-      "final_check": "SUCCESS",
-      "final_artifact_qualification": "MBApending309actualreport",
-      "retained_composed_head": "3c2bf4a88afbac60c5af5b0416b5ace8aacf6560",
-      "retained_composed_methods": 309,
-      "retained_composed_cases": 341,
-      "retained_composed_run": 39761187231,
-      "final_source_review": "MBAcleanexactunion/merge",
-      "shared_selector_merge_priority": "M01 untilcurrent321result/ownmerge; otherauthorscontinuecoding"
+      "state": "merged",
+      "source": "f88d66e20972d2c6d5a5273bdf5fbb2e9816bc4b",
+      "qualified_head": "da596615e6d54d02e73c16d69dff0af1f39674fa",
+      "run": 39764055347,
+      "methods": 321,
+      "expanded_cases": 353,
+      "failures": 0,
+      "full_m01_native_acceptance": false
     },
     "defensive_flight_tutorial": {
       "id": "T03.P01",
