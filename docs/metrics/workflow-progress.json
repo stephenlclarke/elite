@@ -5407,7 +5407,8 @@
           "GameplayOrdnance verified contact before applyCombatHit",
           "GameplayCombat refuse unscoped beacon damage without practice receipt"
         ],
-        "state_scope": "One native-onlypracticearchiveapprovedinprinciple;G1exactproperty/init/persistence/formatslotcoordinationpending;G4newcodecontinues"
+        "state_scope": "G1approvedoptionalpracticeproperty/init+ScriptPersistencepracticehunks+optionalAlienSave.contains;seed117118,audit119120,practice121122fixed/precedence",
+        "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support"
       },
       {
         "id": "C08.commit-charter.audit",
@@ -5424,12 +5425,14 @@
         "id": "M06.P03.appearance",
         "owner": "G3",
         "assigned_at": "2026-10-22T07:59:46.640065+00:00",
-        "phase_entry_state": "Boundedactualeconomy/governmentappearancejoingapimplementationassigned",
+        "phase_entry_state": "Concreteoriginalhigh-techclampinggap confirmed;minimalfixapproved",
         "source_complete_at": null,
         "merged_at": null,
         "playable_at": null,
-        "ownership": "PlanetAppearanceProfile/PlanetLighting/exactring-oreprofileadapter/puretests/notes",
-        "limits": "Nophysicalmechanics/meshbackend/newart/research/visualcampaign"
+        "ownership": "PlanetLightingoriginal-systeminitializer+focusedhighTL/minmax/legacyunits/notes",
+        "limits": "Nophysicalmechanics/meshbackend/newart/research/visualcampaign",
+        "source_state": "G3implementingPlanetLightingoriginal-systemtechboundsjoin",
+        "credited_behavior": "Existingbelt/orestablematerialjoinscorrect;nochangeneeded"
       }
     ],
     "model_settings": {
