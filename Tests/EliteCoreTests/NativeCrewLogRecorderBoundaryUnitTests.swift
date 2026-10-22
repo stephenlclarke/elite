@@ -16,6 +16,11 @@ private final class CrewLogRecorderBoundaryFixture {
     childID = source.f.authorization.job
     expected = source.capture.marker
     game.commander = try source.commander()
+    // The typed custody fixture does not render; metadata also needs its exact retained geometry.
+    for design in source.f.source.models.values {
+      let hash = ScriptPackLibrary.hash(try ScriptPackLibrary.canonicalGeometry(design))
+      game.commander.scriptState.geometry[hash] = design
+    }
     game.commander.galaxy = NativeInductionCrewLogSource.location.galaxy
     game.commander.system = NativeInductionCrewLogSource.location.system
     game.commander.scriptState.instances[parentID]?.savedWayfarerInduction = source.f.parent
@@ -41,11 +46,13 @@ struct NativeCrewLogRecorderBoundaryUnitTests {
     let before = f.game.commander
     #expect(f.game.inductionCrewLogRecorder(body) == nil)
     #expect(f.game.inductionCrewLogFacts(body) == nil)
+    #expect(f.game.inductionCrewLogMetadata(body) == nil)
     #expect(f.game.commander == before)
   }
 
   @Test(arguments: [
-    "valid", "inactive", "missing-admission", "captured", "lost", "unadmitted", "absent",
+    "valid", "full-hold", "inactive", "missing-admission", "captured", "lost", "unadmitted",
+    "absent",
     "wrong-body", "hostile", "dead", "missing-physical", "wrong-visit", "wrong-population",
     "wrong-profile", "wrong-models",
   ])
@@ -55,6 +62,10 @@ struct NativeCrewLogRecorderBoundaryUnitTests {
     // A current pose is returned in the original owning alias rather than its retained old pose.
     body.position = .init(12, -34, 56)
     switch condition {
+    case "full-hold":
+      let free = f.game.commander.tradeCargoCapacity - f.game.commander.cargoTonnes
+      try #require(free >= 0)
+      f.game.commander.cargo[0] += free
     case "inactive": f.game.commander.scriptState.instances[f.childID]?.outcome = .complete
     case "missing-admission":
       f.game.commander.scriptState.instances[f.childID]?.savedNativeCrewLog?.admission = nil
@@ -92,16 +103,28 @@ struct NativeCrewLogRecorderBoundaryUnitTests {
     }
     let before = f.game.commander
     let actual = f.game.inductionCrewLogRecorder(body)
-    if condition == "valid" {
+    if condition == "valid" || condition == "full-hold" {
       var expected = f.expected
       expected.body = body
       #expect(actual == expected)
-      let facts = try #require(f.game.inductionCrewLogFacts(body))
+      let actualFacts = f.game.inductionCrewLogFacts(body)
+      let facts = try #require(actualFacts)
       #expect(facts.original == f.source.f.source.manifest.recorder)
       #expect(facts.fits == (before.tradeCargoCapacity - before.cargoTonnes >= 1))
+      #expect(facts.fits == (condition != "full-hold"))
+      let actualMetadata = f.game.inductionCrewLogMetadata(body)
+      let metadata = try #require(actualMetadata)
+      let expectedMetadata = SalvageTargetMetadata(
+        category: .cargo, ownership: .missionProtected, claimant: nil,
+        wreck: nil, section: nil, lot: nil,
+        bounds: .init(
+          center: .init(0, 0, 0), radius: try NativeInductionCrewLogSource.recorderRadius.get()),
+        workSurfaces: [])
+      #expect(metadata == expectedMetadata)
     } else {
       #expect(actual == nil)
       #expect(f.game.inductionCrewLogFacts(body) == nil)
+      #expect(f.game.inductionCrewLogMetadata(body) == nil)
     }
     #expect(f.game.commander == before)
   }

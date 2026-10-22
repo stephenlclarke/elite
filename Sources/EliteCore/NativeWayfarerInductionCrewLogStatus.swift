@@ -7,9 +7,13 @@ public struct NativeInductionCrewLogSelectionFacts: Sendable, Equatable {
 
 extension Game {
   func inductionCrewLogFacts(_ body: SpaceBody) -> NativeInductionCrewLogSelectionFacts? {
-    guard inductionCrewLogRecorder(body) != nil,
-      let state = inductionCrewLogChild?.savedNativeCrewLog
-    else { return nil }
+    guard inductionCrewLogRecorder(body) != nil else { return nil }
+    return inductionCrewLogFactsAfterRecorder()
+  }
+
+  @inline(never)
+  private func inductionCrewLogFactsAfterRecorder() -> NativeInductionCrewLogSelectionFacts? {
+    guard let state = inductionCrewLogChild?.savedNativeCrewLog else { return nil }
     return .init(
       original: state.authorization.manifest.recorder,
       fits: commander.tradeCargoCapacity - commander.cargoTonnes >= 1)
