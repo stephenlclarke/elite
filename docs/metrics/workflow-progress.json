@@ -5622,12 +5622,23 @@
       },
       {
         "id": "M08.P03.drive",
-        "owner": "G3",
+        "owner": "Mission Coder1",
         "assigned_at": "2026-10-22T08:53:37.507527+00:00",
         "phase_entry_state": "Bounded modular/alien drive gap assignment",
         "ownership": "HyperspaceDriveDefinition/HyperspaceDriveRuntime/narrow recovered fitting pure tests and notes",
         "requirements": "10/5/1second activation;100/80/60percent mass lock; earned owned alien drive instant/no lock at PLUGH",
-        "limits": "No G1 Game/mission/save or G4 practice hunks; no pricing/schema/refactor/local compiler/native/integration",
+        "limits": "First reserve exact shared representation/save hunks with G1; no fake policy grant or generic framework",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "G3 credits ordinary foundation; actual missing alien salvage/owned fitting route escalated",
+        "qualification_scope": "Source/existing test definitions only; no new execution"
+      },
+      {
+        "id": "M08.P04.mining-control",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:54:38.254725+00:00",
+        "ownership": "WorkTargetSelection/RelativeWorkController/MiningWorkTool/FlightWorkTools and pure tests/notes",
+        "limits": "No G1 Game/mission/save or G4 practice/scoop hooks; no local compiler/native/integration",
         "merged_at": null,
         "playable_at": null
       }
@@ -5668,6 +5679,13 @@
         "new_jobs_started": 0,
         "completed_observed_at": "2026-10-22T08:26:51.078034+00:00",
         "outcome": "All14fixtures/immediateconstructors/validators reviewed;noedits/jobs;issue60stillopen/unattributed"
+      },
+      {
+        "packet": "M08.P03.drive",
+        "session": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "started_at": "2026-10-22T08:54:38.254725+00:00",
+        "reason": "Concrete missing runtime ownership/fitting capability exceeds bounded G3 scope",
+        "scope": "One authenticated recovered alien-drive capability; central hunks require G1 reservation"
       }
     ],
     "escalation_reserve": {
@@ -5676,7 +5694,7 @@
       "authority": "Latest human instruction: use Mission Coder1 for difficult things",
       "policy": "Named necessary blocker only; no standing implementation stream; independent MBA review",
       "model": null,
-      "active_assignment": null
+      "active_assignment": "M08.P03.drive actual alien salvage-to-PLUGH-fit capability; exact central reservations before edits"
     },
     "qualification_queue_note": "56 merged after267/299 PASS;61 final269 pending;65 actual provider review/units pending;59/62 corrected-head failures retained,64 ready G1 and60 unattributed.",
     "complete_features_merged": 5,
