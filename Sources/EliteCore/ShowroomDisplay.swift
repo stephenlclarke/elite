@@ -171,7 +171,9 @@ extension Display {
         layout.details.y - 14, scale: font, ink: .cyan)
     }
     if let selected = game.showroomShip {
-      if layout.wide && game.showroom.compare, let baseline = game.showroomBaseline {
+      if (layout.wide || game.showroom.detail) && game.showroom.compare,
+        let baseline = game.showroomBaseline
+      {
         let half = (layout.model.width - 16) / 2
         showroomModel(
           baseline, game: game,

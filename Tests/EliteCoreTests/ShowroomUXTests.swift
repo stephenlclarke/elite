@@ -3,6 +3,115 @@ import Testing
 
 @testable import EliteCore
 
+struct ShowroomComparisonUnitTests {
+  private func game(width: Double = 768) -> Game {
+    var game = Game(executive: false)
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
+    game.commander.credits = 10_000_000
+    game.viewportWidth = width
+    game.viewportHeight = 900
+    game.screen = .showroom
+    game.showroom.detail = true
+    game.showroom.selection = "SH013"
+    return game
+  }
+
+  @Test func compactAndWideSpecsShowBothCurrentAndPinnedModelsWithoutChangingBrowseMode() {
+    for width in [512.0, 768, 1000, 1512] {
+      var game = game(width: width)
+      let layout = ShowroomLayout(width: width, height: 900, detail: true)
+      for pinned in [false, true] {
+        game.showroom.baselineUsesCurrent = !pinned
+        game.showroom.baseline = "SH023"
+        let frame = Display.showroomScreen(game, width: width, height: 900)
+        #expect(frame.labels.contains { $0.text == (pinned ? "PINNED BASELINE" : "CURRENT SHIP") })
+        #expect(
+          frame.labels.contains { $0.text == "SELECTED SHIP" && $0.x == layout.selectedModelX })
+        let modelLabels = frame.labels.filter {
+          $0.y >= layout.model.y && $0.y < layout.model.maxY
+        }
+        #expect(modelLabels.allSatisfy { $0.bounds.maxX <= width - 16 })
+        #expect(!frame.shipPanels.isEmpty)
+      }
+      game.showroom.compare = false
+      #expect(
+        !Display.showroomScreen(game, width: width, height: 900).labels.contains {
+          $0.text == "SELECTED SHIP"
+        })
+      if width < 1000 {
+        game.showroom.compare = true
+        game.showroom.detail = false
+        let browse = Display.showroomScreen(game, width: width, height: 900)
+        #expect(!browse.labels.contains { $0.text == "SELECTED SHIP" })
+        #expect(browse.labels.contains { $0.text.hasPrefix("Browsing:") })
+      }
+    }
+  }
+
+  @Test func bothRenderedPreviewsKeepTheSamePitchRollAndYawThroughRotationAndPause() throws {
+    for width in [512.0, 768, 1000, 1512] {
+      var game = game(width: width)
+      // The same owned mesh makes a differing transform visible in the actual projected vertices.
+      game.showroom.selection = game.commander.shipID
+      let layout = ShowroomLayout(width: width, height: 900, detail: true)
+      var previous: [ShipPanel] = []
+      for angle in [0.0, 0.7, 2.1, 5.0] {
+        game.showroom.angle = angle
+        let frame = Display.showroomScreen(game, width: width, height: 900)
+        let left = frame.shipPanels.filter {
+          $0.vertices.allSatisfy { $0.x < layout.selectedModelX }
+        }
+        let right = frame.shipPanels.filter {
+          $0.vertices.allSatisfy { $0.x >= layout.selectedModelX }
+        }
+        try #require(!left.isEmpty && left.count == right.count)
+        let offset = layout.selectedModelX - layout.model.x
+        for (a, b) in zip(left, right) {
+          try #require(a.vertices.count == b.vertices.count)
+          #expect(a.colour == b.colour)
+          for (p, q) in zip(a.vertices, b.vertices) {
+            #expect(abs(p.x + offset - q.x) < 0.000001)
+            #expect(abs(p.y - q.y) < 0.000001)
+          }
+        }
+        if !previous.isEmpty { #expect(left != previous) }
+        previous = left
+      }
+      game.showroom.rotationPaused = true
+      let paused = Display.showroomScreen(game, width: width, height: 900).shipPanels
+      game.showroom.advance(delta: 1)
+      #expect(Display.showroomScreen(game, width: width, height: 900).shipPanels == paused)
+      game.showroom.rotationPaused = false
+      game.showroom.advance(delta: 1)
+      #expect(Display.showroomScreen(game, width: width, height: 900).shipPanels != paused)
+    }
+  }
+
+  @Test func comparisonMatchesQuotedPriceAndActualTransferredFitWithHonestRatings() throws {
+    var game = game()
+    try game.commander.prepareEquipment()
+    let before = game.commander
+    let quote = try #require(game.shipTradeQuote)
+    try #require(quote.allowed)
+    let selected = try #require(game.showroomProfile)
+    let baseline = try #require(game.showroomBaselineProfile)
+    var transferred = before
+    try transferred.transferEquipment(to: quote.selected.id, hullID: UUID())
+    let actual = transferred.gameShipProfile
+    #expect(selected.fields.map(\.text) == actual.fields.map(\.text))
+    #expect(selected.fields.map(\.number) == actual.fields.map(\.number))
+    #expect(baseline.fields.map(\.text) == before.gameShipProfile.fields.map(\.text))
+    #expect(selected.fields.first { $0.key == "price" }?.number == Double(quote.purchase) / 10)
+    let rows = game.showroomComparison
+    #expect(rows.first { $0.label == "Cargo" }?.rating == .better)
+    #expect(rows.first { $0.label == "Hull price" }?.rating == .worse)
+    #expect(rows.first { $0.label == "Loaded missiles" }?.rating == .same)
+    #expect(rows.first { $0.label == "Fitted lasers" }?.rating == .same)
+    #expect(game.commander == before)
+  }
+}
+
 @Test func showroomPrimaryTradeWorksWithClickOrKeyboardAndNeverBuysOnOpening() throws {
   for width in [512.0, 768, 1000, 1512] {
     var game = Game(executive: false)
