@@ -4894,10 +4894,17 @@
       "head": "afba9c30ae7d0d5ee7caf82468398c24e97aab9b",
       "github_run": 39735189170,
       "ledger_parent": "M02.P05.inventory",
-      "unit_status": "FAILURE; actual cause/counts unverified",
+      "unit_status": "FAILURE;244methods243PASS/1FAIL,4assertions in legacylaserfixture; no crash",
       "merged": false,
       "qualified_source_candidate_unblocked": "G1 packages alreadyqualified8b30 independently",
-      "new_test_dispatches_by_orchestrator": 0
+      "new_test_dispatches_by_orchestrator": 0,
+      "executed_methods": 244,
+      "passed_methods": 243,
+      "failed_methods": 1,
+      "issues": [
+        52
+      ],
+      "source_fix_scope": "Test expected wrapped text only; production unchanged"
     }
   ],
   "two_developer_phase": {
@@ -5048,13 +5055,23 @@
         "handoff_at": "2026-10-22T06:34:13Z",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6334409306",
         "unit_run": 39735189170,
-        "unit_status": "FAILURE atafba/39735189170 completed06:55:42Z; cause/counts pending MBA single-artifact review",
+        "unit_status": "FAILURE;244methods243PASS/1FAIL,4assertions in legacylaserfixture; no crash",
         "source_state": "Source clean, execution failed; authorG3 owns actionable correction after MBA triage; no merge",
         "source_review_result": "MBAff-to-afba source clean, exact3projectionmethods/244selector unchanged; actual execution pending",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
         "latest_composition_review_seconds_reported": 119,
-        "review_latency_caveat": "Includes priority compiler-correction review, not pure source-review CPU time"
+        "review_latency_caveat": "Includes priority compiler-correction review, not pure source-review CPU time",
+        "ready_findings": [
+          52
+        ],
+        "finding_owner": "G3",
+        "finding_kind": "Fixture expects indentation removed by existing wrapper; preserve actual4mount/legacy/empty/no-subject assertions",
+        "passed_new_methods": 2,
+        "failed_new_methods": 1,
+        "verification_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6334812977",
+        "compile_seconds": 748.87,
+        "execution_seconds": 46.292
       }
     ],
     "model_settings": {
