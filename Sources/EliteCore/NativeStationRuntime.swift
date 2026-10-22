@@ -1028,17 +1028,11 @@ extension Game {
       guard !body.energy.isFinite else { return true }
     }
     guard body.id != stationID else { return true }
-    let pose = withReadOnlyCommander { $0.flightSimulation.pose }
-    let point = pose.systemPoint(body.position)
-    let distance = distanceFromNativeSegment(point, start: start, end: end)
-    let mesh: Mesh
-    if refineCourse, body.scriptNPC != nil {
-      guard let source = scriptNPCMesh(body) else { return false }
-      mesh = source
-    } else {
-      mesh = gameplayMesh(for: body)
-    }
-    let bodyRadius = nativeStationRadius(mesh)
+    guard
+      let inputs = Self.nativeStationApproachBodyInputs(
+        in: self, body: body, from: start, to: end, refineCourse: refineCourse)
+    else { return false }
+    let (point, distance, mesh, bodyRadius) = inputs
     if refineCourse {
       guard body.energy.isFinite, point.finite, distance.isFinite,
         bodyRadius.isFinite, bodyRadius > 0,
@@ -1081,6 +1075,25 @@ extension Game {
       return false
     }
     return true
+  }
+
+  @inline(never)
+  private static func nativeStationApproachBodyInputs(
+    in game: borrowing Game, body: borrowing SpaceBody, from start: Vector3,
+    to end: Vector3, refineCourse: Bool
+  ) -> (point: Vector3, distance: Double, mesh: Mesh, bodyRadius: Double)? {
+    let pose = game.withReadOnlyCommander { $0.flightSimulation.pose }
+    let point = pose.systemPoint(body.position)
+    let distance = game.distanceFromNativeSegment(point, start: start, end: end)
+    let mesh: Mesh
+    if refineCourse, body.scriptNPC != nil {
+      guard let source = game.scriptNPCMesh(body) else { return nil }
+      mesh = source
+    } else {
+      mesh = game.gameplayMesh(for: body)
+    }
+    let bodyRadius = game.nativeStationRadius(mesh)
+    return (point, distance, mesh, bodyRadius)
   }
 
   /// Current-course geometry only. Native entry retains its independent clearance gate.
