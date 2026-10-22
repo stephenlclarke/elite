@@ -2148,6 +2148,9 @@ public struct Game: Sendable {
     if screen != .gameOver { advanceMissionClock(dt) }
   }
   public func viewPosition(_ p: Vector3) -> Vector3 {
+    Self.viewPosition(p, screen: screen)
+  }
+  static func viewPosition(_ p: Vector3, screen: Screen) -> Vector3 {
     switch screen {
     case .rear: return .init(-p.x, p.y, -p.z)
     case .left: return .init(p.z, p.y, -p.x)

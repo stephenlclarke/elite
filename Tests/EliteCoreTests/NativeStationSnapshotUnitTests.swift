@@ -88,6 +88,11 @@ struct NativeStationSnapshotUnitTests {
     #expect(actual.faceTextures == expected.faceTextures)
   }
 
+  @Test(arguments: ["unjoined", "stale", "inactive", "malformed", "zero-energy"])
+  func originalCoverSourceStillRequiresItsOwnActualActiveHazard(condition: String) throws {
+    try stationAutoCoverSourceCannotBorrowAnotherAttackersActiveHazard(condition: condition)
+  }
+
   @Test func authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget() async throws {
     // Keep the complete existing crash-path assertions through the actor-owned tick.
     try await stationAutoAuthenticEntryAttackUsesMountedGunAndPhysicalEvasionWithOneBudget()
