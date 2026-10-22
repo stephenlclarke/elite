@@ -4644,12 +4644,13 @@
       "selection_methods": 190,
       "new_methods": 9,
       "source_review": "MBA found45 same-visit native re-admission refusal; assigned G1 at natural boundary",
-      "unit_status": "FAILURE; MBA artifact triage active, cause/counts unconfirmed",
+      "unit_status": "FAILURE; MBA identified46 prepared-resource fixture and47 stale energy expectation; full artifact count verification pending",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332256712",
       "next_assigned": "C08.P06.A",
       "usable_build_delivered": false,
       "finding_url": "https://github.com/stephenlclarke/elite/issues/45",
-      "ready_findings": 1
+      "ready_findings": 3,
+      "correction_owner": "G1;45/46/47 accepted on759a5e24, shared test ownership; no overlapping helper"
     },
     {
       "event": "Avenor charter choice pushed; MBA review queued; G1 correcting45",
