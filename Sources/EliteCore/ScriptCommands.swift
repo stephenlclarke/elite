@@ -9,8 +9,15 @@ extension Game {
       throw MissionPackError("Invalid script command.")
     }
     if NativeInductionClinicPack.marked(state) || state.savedNativeInductionClinic != nil {
-      guard op == "journal.append" else {
+      guard ["journal.append", "cold-chain.expire"].contains(op) else {
         throw MissionPackError("Use the original clinic's native custody transaction.")
+      }
+      if op == "cold-chain.expire" {
+        guard Set(fields.keys) == ["op"], NativeInductionClinicPack.matches(pack) else {
+          throw SaveError.invalidCommander
+        }
+        try applyInductionClinicExpiry(event: event, state: &state, candidate: &candidate)
+        return
       }
     }
     if pack.manifest.fieldRelief != nil || WayfarerFieldRelief.marked(state) {

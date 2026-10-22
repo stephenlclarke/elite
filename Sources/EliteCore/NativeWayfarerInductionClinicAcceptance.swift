@@ -64,6 +64,7 @@ extension Game {
   func inductionClinicCancellationIssues(instance: UUID?) -> [String] {
     guard let instance, let child = commander.scriptState.instances[instance],
       let contract = child.savedNativeInductionClinic, contract.close == nil,
+      contract.custody == nil,
       contract.booking.commanderOwner == commander.equipmentOwnerID,
       child.outcome == .active, child.suspension == nil,
       NativeInductionCrewLogSave.validateClaims(commander)
@@ -130,6 +131,7 @@ extension Game {
   ) throws {
     guard var child = commander.scriptState.instances[instance],
       let contract = child.savedNativeInductionClinic, contract.close == nil,
+      contract.custody == nil,
       child.outcome == .active, child.revision < UInt64(Int64.max) - 1,
       var parent = commander.scriptState.instances[contract.booking.parent],
       let state = parent.savedWayfarerInduction, let source = state.charterClinicSource,

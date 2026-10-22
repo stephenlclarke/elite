@@ -147,18 +147,26 @@ struct NativeInductionClinicUncollectedClose: Codable, Sendable, Equatable {
 final class NativeInductionClinicContract: Codable, Sendable, Equatable {
   let booking: NativeInductionClinicBooking
   let close: NativeInductionClinicUncollectedClose?
-  init(booking: NativeInductionClinicBooking, close: NativeInductionClinicUncollectedClose? = nil) {
+  let custody: NativeInductionClinicCustody?
+  init(
+    booking: NativeInductionClinicBooking, close: NativeInductionClinicUncollectedClose? = nil,
+    custody: NativeInductionClinicCustody? = nil
+  ) {
     self.booking = booking
     self.close = close
+    self.custody = custody
   }
-  var reservedCargoTonnes: Int { close == nil ? booking.terms.tonnes : 0 }
+  var reservedCargoTonnes: Int { close == nil && custody == nil ? booking.terms.tonnes : 0 }
   var outcome: ScriptOutcome {
-    close == nil ? .active : close?.kind == .cancelled ? .abandoned : .failed
+    custody?.outcome ?? (close == nil ? .active : close?.kind == .cancelled ? .abandoned : .failed)
   }
   func valid(parent: NativeWayfarerInductionState) -> Bool {
-    booking.valid(parent: parent) && (close?.valid(booking: booking, parent: parent) ?? true)
+    booking.valid(parent: parent) && !(close != nil && custody != nil)
+      && (close?.valid(booking: booking, parent: parent) ?? true)
+      && (custody?.valid(booking: booking, parent: parent) ?? true)
   }
   static func == (lhs: NativeInductionClinicContract, rhs: NativeInductionClinicContract) -> Bool {
-    lhs === rhs || (lhs.booking == rhs.booking && lhs.close == rhs.close)
+    lhs === rhs
+      || (lhs.booking == rhs.booking && lhs.close == rhs.close && lhs.custody == rhs.custody)
   }
 }

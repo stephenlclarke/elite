@@ -102,6 +102,9 @@ extension NativeInductionCrewLogSave {
         guard supportsClinicAcceptance(schema), !embedded,
           let leaf = mission["savedNativeInductionClinic"] as? [String: Any]
         else { throw SaveError.invalidCommander }
+        if leaf.keys.contains("custody") {
+          guard supportsClinicCustody(schema) else { throw SaveError.invalidCommander }
+        }
         let bytes = try JSONSerialization.data(withJSONObject: leaf)
         guard bytes.count <= 131072 else { throw SaveError.invalidCommander }
         let decoded = try JSONDecoder().decode(NativeInductionClinicContract.self, from: bytes)
@@ -118,6 +121,13 @@ extension NativeInductionCrewLogSave {
         {
           guard supportsClinicAcceptance(schema), !embedded else {
             throw SaveError.invalidCommander
+          }
+          if let history = source["history"] as? [[String: Any]],
+            history.contains(where: {
+              !["reserved", "cancelled", "failedBeforePickup"].contains($0["kind"] as? String ?? "")
+            })
+          {
+            guard supportsClinicCustody(schema) else { throw SaveError.invalidCommander }
           }
         }
         guard supportsClinicSource(schema), !embedded,
