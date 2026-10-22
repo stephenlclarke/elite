@@ -1143,6 +1143,12 @@ extension Game {
     return (point, distance, mesh, bodyRadius)
   }
 
+  /// Keep the optional scripted fallback's ordinary reader frame out of assessment.
+  @inline(never)
+  private mutating func nativeStationAssessmentScriptMesh(_ body: SpaceBody) -> Mesh? {
+    scriptNPCMesh(body)
+  }
+
   /// Current-course geometry only. Native entry retains its independent clearance gate.
   /// Exact maintained mesh distance and containment distinguish material contact
   /// from overlapping enclosing spheres. Prepared geometry uses the existing bounded cache.
@@ -1151,9 +1157,12 @@ extension Game {
     _ body: SpaceBody, from start: Vector3, to end: Vector3, radius: Double,
     mesh actualMesh: Mesh? = nil
   ) -> StationEntryCourseObstacleAssessment {
-    let flight = withReadOnlyCommander { $0.flightSimulation }
+    let flight = withNativeStationReadOnlyCommander { $0.flightSimulation }
     guard let physical = body.physical,
-      physical.identity.system == systemIdentity, physical.identity.visit == flight.visit,
+      physical.identity.system
+        == withNativeStationReadOnlyCommander({
+          SystemIdentity(galaxy: $0.galaxy, system: $0.system)
+        }), physical.identity.visit == flight.visit,
       physical.velocity.finite, body.rotation.isFinite, body.rotationRate.isFinite,
       bodies.filter({ $0.id == body.id }).count == 1,
       NativeStationSnapshot.matches(body, in: bodies),
@@ -1164,10 +1173,10 @@ extension Game {
     if let actualMesh {
       mesh = actualMesh
     } else if body.scriptNPC != nil {
-      guard let source = scriptNPCMesh(body) else { return .invalid }
+      guard let source = nativeStationAssessmentScriptMesh(body) else { return .invalid }
       mesh = source
     } else {
-      mesh = gameplayMesh(for: body)
+      mesh = nativeStationApproachGameplayMesh(for: body)
     }
     guard mesh.vertices.count >= 4, mesh.faces.count >= 4,
       mesh.vertices.allSatisfy({ $0.finite }),
@@ -1175,17 +1184,19 @@ extension Game {
         $0.count >= 3 && $0.allSatisfy { mesh.vertices.indices.contains($0) }
       })
     else { return .invalid }
-    let obstacle = modelPose(of: body)
+    let observerPose = withNativeStationReadOnlyCommander { $0.flightSimulation.pose }
+    let obstacle = Self.modelPose(of: body, player: observerPose)
     let frame = flight.pose.orientation
-    let bodyRadius = nativeStationRadius(mesh)
-    let player = withReadOnlyCommander { $0.playerMesh }
-    let playerRadius = nativeStationRadius(player)
+    let bodyRadius = Self.nativeStationMeshRadius(mesh)
+    let player = withNativeStationReadOnlyCommander { $0.playerMesh }
+    let playerRadius = Self.nativeStationMeshRadius(player)
     guard obstacle.position.finite, obstacle.orientation.validRotation, frame.validRotation,
       bodyRadius.isFinite, bodyRadius > 0, playerRadius.isFinite, radius >= playerRadius
     else { return .invalid }
     guard
       let playerHull = preparedWorkHull(
-        mesh: player, key: "station-entry-player:" + withReadOnlyCommander { $0.shipID }),
+        mesh: player,
+        key: "station-entry-player:" + withNativeStationReadOnlyCommander { $0.shipID }),
       let bodyHull = preparedWorkHull(mesh: mesh, key: "station-entry-body:\(body.id)")
     else { return .invalid }
     // Unit-duration interpolation describes the current geometric corridor only;
