@@ -2,7 +2,9 @@
 
 Updated 22 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
-## Current execution checkpoint — 22 October, 12:56 UTC
+## Current execution checkpoint — 22 October, 14:23 UTC
+
+Step-level execution supersedes stale GitHub aggregate labels: audit f582b63 job119869644276 completed its maintained units with FAILURE at14:17:28UTC and successfully uploaded results at14:17:46; station2a063896 job119871393497 completed units with FAILURE at14:22:23 and uploaded results at14:22:35. Both Complete job steps finished while job status still reported in_progress. MBA is assigned existing exact-head artifact/log classification once; G1 holds both heads pending attributed evidence. No passing qualification, new rerun, speculative repair or M01 completion is inferred. G11 job119875359241 still has an actually active maintained-unit step.
 
 Current G11 correction is pushed as PR84exact7c1d4ac6262c71c6f90c8912cc3a815987946c70; normal automatic39793592000 queued. The approved ownership guard helper returns four small values before the same fresh native binding query/three identity joins. Original ordered prefix/suffix equivalence and unchanged bridge/COW/schema/362selection are proven statically. Core16.10s passed, CPUlease returnedFREE; MBA exact7c1d4ac6bounded lifetime/equivalence review is COMPLETE/CLEAN: entire ordered ownership prefix and remaining contact file match, only four small values cross into unchanged fresh native binding/three identity joins, no suspension/mutation/authority change. Earlier full reviews retained; author has the outcome.85/96/97/98remain open,103isclosed. No runtime-fix claim or additional diagnostic campaign.
 
