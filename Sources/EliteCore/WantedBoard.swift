@@ -143,8 +143,7 @@ extension Game {
       "Recorded ship kills: \(entry.recordedKills) (earlier history Unknown)",
     ]
     if let sighting = entry.sighting {
-      let galaxy = Universe.galaxy(number: sighting.system.galaxy)
-      let system = galaxy.first { $0.id == sighting.system.system }?.name ?? "Unknown"
+      let system = Self.wantedReportedSystemName(sighting.system)
       lines.append("Last report: Galaxy \(sighting.system.galaxy + 1) / " + system)
       lines.append(
         String(
@@ -159,10 +158,8 @@ extension Game {
           format: "Seen at %.1f / age %.1f simulation seconds", sighting.time,
           max(0, commander.flightSimulation.physicalTime - sighting.time)))
       let next =
-        sighting.destination.flatMap { destination in
-          Universe.galaxy(number: destination.galaxy).first { $0.id == destination.system }.map {
-            "Galaxy \(destination.galaxy + 1) / " + $0.name
-          }
+        sighting.destination.map { destination in
+          "Galaxy \(destination.galaxy + 1) / " + Self.wantedReportedSystemName(destination)
         } ?? "Unknown"
       lines.append("Next reported destination: " + next)
       lines.append("Reports are historical, not a live position or intercept.")
@@ -172,6 +169,11 @@ extension Game {
     if entry.isPlayer { lines.append("YOU - no self-hunt or route action.") }
     lines.append("Paid only by native lawful death settlement. No board bonus.")
     return lines
+  }
+
+  private static func wantedReportedSystemName(_ identity: SystemIdentity) -> String {
+    TargetTelemetry.systemName(
+      .init(identity: identity, provenance: .recorded), observerGalaxy: identity.galaxy)
   }
 }
 
