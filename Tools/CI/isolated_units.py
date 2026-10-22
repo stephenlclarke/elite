@@ -377,6 +377,11 @@ METHODS = {
         "fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce",
         "emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody",
     ),
+    "PlanetNightTechnologyUnitTests": (
+        "originalWorldNightProfilesRetainEveryAuthoredTechnologyLevel",
+        "matchedOriginalEconomyAndGovernmentKeepIncreasingNightDevelopmentAboveFifteen",
+        "explicitLegacyNightProfilesKeepTheirExistingCoefficientsAndBounds",
+    ),
     "NativeUtilityCustodyTests": (
         "explicitWorldActivationOwnsEightMaterialsWithoutTargetDockAuthority",
         "strictCurrentUtilitySchemaRejectsUnjoinedOrInventedClaims",
