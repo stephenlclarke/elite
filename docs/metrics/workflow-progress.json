@@ -5696,6 +5696,26 @@
       "playable_build_delivered": false,
       "published_release": false,
       "broader_issue18": "open"
+    },
+    {
+      "event": "C01 audit coherent packet pushed; duplicate intermediate route checks cancellation requested",
+      "date": "2026-10-22",
+      "pr": 100,
+      "head": "d0f7b52f645d4f99eee95dc85bc12872fd6c17cf",
+      "run": 39785156893,
+      "selection_methods": 349,
+      "new_audit_methods": 10,
+      "review_owner": "MBA",
+      "implementation_owner": "G1",
+      "runtime_qualified": false,
+      "duplicate_route_whole_tree": "d6b0f8acbab0bc8d51b32f0fd1d568695905c622",
+      "cancellation_requested": [
+        39784202700,
+        39784202656,
+        39784191897
+      ],
+      "cancelled_not_passed": true,
+      "final_release_gates_retained": true
     }
   ],
   "two_developer_phase": {
