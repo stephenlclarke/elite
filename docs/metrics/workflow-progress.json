@@ -5208,6 +5208,17 @@
       "current_baseline_run": 39768145723,
       "baseline_execution_qualified": false,
       "correction_pushed": false
+    },
+    {
+      "event": "G11 issue85 correction pushed; independent correction review queued; obsolete known-defective baseline cancellation requested",
+      "date": "2026-10-22",
+      "head": "5f3912b2f45cc4e41501fafe7829b7d53c07f740",
+      "run": 39770168281,
+      "methods": 343,
+      "retained_methods": 342,
+      "issue": 85,
+      "qualified": false,
+      "superseded_run": 39768145723
     }
   ],
   "two_developer_phase": {
