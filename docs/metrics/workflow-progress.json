@@ -5136,10 +5136,10 @@
         "first_push_observed_at": "2026-10-22T06:33:57Z",
         "handoff_at": "2026-10-22T07:17:59Z",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6335617582",
-        "unit_run": 39741604031,
-        "unit_status": "Prior03113run39741604031SUCCESSawaitingartifactverification;notnew93cbheadqualification",
+        "unit_run": 39743064126,
+        "unit_status": "Current93existing259jobpending;old03113SUCCESSscopepreserved",
         "source_state": "93cbfinalassertion/suite/259selectorhandoffposted;MBAreview/executionpending",
-        "source_review_result": "MBA03113a74finalcomposition CLEAN;onlyexactreviewed53test+2notes changed;inventoryproduction/tests/258selectorunchanged",
+        "source_review_result": "MBA93cbCLEAN;protected/fitted/heldassertions,EnergyBombidentity/provenance/Status/immutabilityretained;259=258+1",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
         "latest_composition_review_seconds_reported": 119,
@@ -5192,7 +5192,13 @@
           "inventory_methods_passed": 3
         },
         "affected_method": "MarketInventoryProjectionUnitTests/statusSummaryAndInventoryHaveDistinctResponsibilities",
-        "affected_method_status": "Selected259=258retained+1affectedmethod;actualexecutionpending"
+        "affected_method_status": "Selected259=258retained+1affectedmethod;actualexecutionpending",
+        "obsolete_run": {
+          "run": 39742600706,
+          "head": "e4772060e3ec4ebe3b1142204b56f37e8ee52e6f",
+          "state": "Cancellationrequested;unqualified",
+          "reason": "Actualselectoromitsaffectedmethod;correct93successorjobalreadyexists"
+        }
       },
       {
         "id": "C08 workshop loop",
@@ -5265,11 +5271,15 @@
         "head": "dcf22e6b7afe5413fc2bf1fa6da3829fe4358ae9",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/55",
         "first_push_observed_at": "2026-10-22T07:35:56Z",
-        "source_state": "Sourcecomplete/source-reviewedclean;hosted257executionpending",
+        "source_state": "Source/unitqualified;G3authormergepending;notnewapp/release",
         "unit_run": 39741603995,
-        "unit_status": "39741603995SUCCESS;actualartifact257/2newverificationpending",
+        "unit_status": "MBAverified39741603995actual257methods289casesALLPASS;bothnewmethodsPASS;zeroerrors/skips/crash",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/55#issuecomment-6335390517",
-        "source_review_result": "MBA CLEAN:actual system/inventory viewport and normalized help-return contexts;2puremethods;exact255+2=257;noinput/weapon/missionhelpchange"
+        "source_review_result": "MBA CLEAN:actual system/inventory viewport and normalized help-return contexts;2puremethods;exact255+2=257;noinput/weapon/missionhelpchange",
+        "verified_methods": 257,
+        "verified_expanded_cases": 289,
+        "compile_seconds": 721.24,
+        "execution_seconds": 57.918
       },
       {
         "id": "M03.P02.world-identity",
@@ -5299,7 +5309,10 @@
         "outstanding_separate": "U03authored14baseequipmentprice/TLprecedence;notrebalancedhere",
         "head": "0aac86588b71477884bee10f021cd8a63e6b0ed1",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/56",
-        "first_push_observed_at": "2026-10-22T07:48:15Z"
+        "first_push_observed_at": "2026-10-22T07:48:15Z",
+        "source_review_result": "MBA0aacCLEAN;shared17IDprojection/render/click/2arrowhunks;stableprices/stock/cargoIDs;3fixturesread;255+3=258",
+        "unit_run": 39743069456,
+        "unit_status": "Existing258jobactive;actualexecutionpending"
       },
       {
         "id": "M04.P01.fleet-catalogue",
@@ -5354,7 +5367,7 @@
       "model": null,
       "active_assignment": null
     },
-    "qualification_queue_note": "Sourcequeueclear:PR54/51/55clean;existing255/258/257jobsactive;53openawaitingaffectedverification;seed/worldidentityworkcontinues",
+    "qualification_queue_note": "Sourcequeueclear;PR54255/287andPR55257/289verifiedPASS/author mergesready;PR51259andPR56258actualpending;52/53closed",
     "complete_features_merged": 1,
     "merged_feature_count_scope": "Shared development branch complete featurePR48 only; source qualification/individual packets do not add counts",
     "new_usable_build_deliveries": 0,
