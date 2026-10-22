@@ -319,6 +319,14 @@ extension ScriptPackLibrary {
     } catch {
       library.errors.append("Bundled original Renas clinic source: " + error.localizedDescription)
     }
+    do {
+      let workshop = try read(bundledInductionWorkshopDirectory)
+      if !library.packs.contains(where: { $0.digest == workshop.digest }) {
+        library.packs.append(workshop)
+      }
+    } catch {
+      library.errors.append("Bundled original Enmadan workshop: " + error.localizedDescription)
+    }
     return library
   }
 }

@@ -21,6 +21,7 @@ public struct ContractBoardRow: Sendable {
   var wayfarerInduction: NativeWayfarerInductionAction? = nil
   var inductionCapacityUnit: UUID? = nil
   var inductionClinicReference: UUID? = nil
+  var inductionWorkshopReference: UUID? = nil
   var flightReception: NativeFlightReceptionAction? = nil
   var measuredExtraction: NativeMeasuredExtractionAction? = nil
   var recordRecovery: WayfarerRecordRecoveryAction? = nil
@@ -31,6 +32,7 @@ public struct ContractBoardRow: Sendable {
     if let key = wayfarerInduction?.key {
       return key + (inductionCapacityUnit.map { "/unit/" + $0.uuidString } ?? "")
         + (inductionClinicReference.map { "/clinic/" + $0.uuidString } ?? "")
+        + (inductionWorkshopReference.map { "/workshop/" + $0.uuidString } ?? "")
     }
     if let key = glassMeridian?.key { return key }
     if let key = flightReception?.key { return key }
@@ -411,7 +413,7 @@ extension Game {
     contractBoard.utilityQuote = nil
     if let action = contractBoard.selected?.wayfarerInduction {
       contractBoard.wayfarerInductionQuote = wayfarerInductionReview(
-        action, prepareClinicQuote: true)
+        action, prepareClinicQuote: true, prepareWorkshopQuote: true)
       return
     }
     if let action = contractBoard.selected?.glassMeridian {

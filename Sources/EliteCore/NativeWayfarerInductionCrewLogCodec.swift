@@ -10,6 +10,10 @@ extension NativeInductionCrewLogSave {
       !root.keys.contains("nativeInductionUtility"),
       !root.keys.contains("savedNativeInductionClinic"),
       !root.keys.contains("nativeInductionClinic"),
+      !root.keys.contains("savedNativeInductionWorkshop"),
+      !root.keys.contains("nativeInductionWorkshop"),
+      !root.keys.contains("charterWorkshopSource"),
+      !root.keys.contains("nativeInductionWorkshopSource"),
       !root.keys.contains("charterClinicSource"), !root.keys.contains("nativeInductionClinicSource")
     else { throw SaveError.invalidCommander }
     if part == .missions {
@@ -31,7 +35,10 @@ extension NativeInductionCrewLogSave {
     }
     for entry in instances {
       guard let mission = entry as? [String: Any] else { throw SaveError.invalidCommander }
-      guard !mission.keys.contains("nativeInductionClinic"),
+      guard !mission.keys.contains("nativeInductionWorkshop"),
+        !mission.keys.contains("charterWorkshopSource"),
+        !mission.keys.contains("nativeInductionWorkshopSource"),
+        !mission.keys.contains("nativeInductionClinic"),
         !mission.keys.contains("charterClinicSource"),
         !mission.keys.contains("nativeInductionClinicSource")
       else { throw SaveError.invalidCommander }
@@ -90,6 +97,32 @@ extension NativeInductionCrewLogSave {
           || ((parent["charterCapacity"] as? [String: Any])?["events"] as? [Any])?.isEmpty == false
       {
         guard supportsCharterConsent(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
+      let workshop = mission["definition"] as? String == NativeInductionWorkshopPack.stateID
+      let workshopPin = mission["digest"] as? String == NativeInductionWorkshopPack.digest
+      let workshopClaim = mission.keys.contains("savedNativeInductionWorkshop")
+      guard workshop == workshopPin, workshop == workshopClaim else {
+        throw SaveError.invalidCommander
+      }
+      if workshop {
+        guard supportsWorkshop(schema), !embedded,
+          let leaf = mission["savedNativeInductionWorkshop"] as? [String: Any]
+        else { throw SaveError.invalidCommander }
+        let bytes = try JSONSerialization.data(withJSONObject: leaf)
+        guard bytes.count <= 131072 else { throw SaveError.invalidCommander }
+        let decoded = try JSONDecoder().decode(NativeInductionWorkshopContract.self, from: bytes)
+        guard
+          (leaf as NSDictionary).isEqual(
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))
+        else { throw SaveError.invalidCommander }
+      }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("charterWorkshopSource")
+      {
+        guard supportsWorkshop(schema), !embedded,
           mission["definition"] as? String == NativeWayfarerInduction.stateID,
           mission["digest"] as? String == NativeWayfarerInduction.digest
         else { throw SaveError.invalidCommander }

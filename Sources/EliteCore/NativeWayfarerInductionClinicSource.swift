@@ -41,9 +41,8 @@ struct NativeInductionClinicIssue: Codable, Sendable, Equatable {
       let snapshot = try? capacity.snapshot(at: capacityRevision),
       capacityFingerprint == (try? snapshot.fingerprint),
       snapshot.events.allSatisfy({ event in
-        guard case .released(let release) = event else { return false }
-        return release.sequence < sequence && release.physicalTime <= physicalTime
-          && release.flightSeconds <= flightSeconds
+        guard let clock = state.charterCapacityEventClock(event) else { return false }
+        return clock.0 < sequence && clock.1 <= physicalTime && clock.2 <= flightSeconds
       }),
       family == NativeInductionClinicPack.stateID,
       familyVersion == NativeInductionClinicPack.version,
@@ -147,7 +146,8 @@ extension NativeWayfarerInductionState {
       crewLog: crewLog, crewLogLoss: crewLogLoss, crewLogHullCustody: crewLogHullCustody,
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice, charterCapacity: charterCapacity,
-      charterSignatures: charterSignatures, charterClinicSource: source)
+      charterSignatures: charterSignatures, charterClinicSource: source,
+      charterWorkshopSource: charterWorkshopSource)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }

@@ -16,6 +16,19 @@ public enum PlayerHelp {
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
     if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction?.isWorkshopAction == true
+    {
+      pages.insert(
+        .init(
+          title: "ORIGINAL WORKSHOP SERIAL",
+          rows: [
+            "ARROWS - SELECT EXACT SERIAL / OPERATION", "RETURN - REVIEW; CONFIRM IS SEPARATE",
+            "BACK / ESC - KEEP ORIGINAL CUSTODY", "ENMADAN: ISSUE / BOOK / PICKUP / RECEIVE",
+            "RENAS: SERVICE THE SAME ORIGINAL SERIAL", "AFTER PICKUP CANCEL: OWNER RETURN",
+            "2T / SAME OWNER WINDOW / NO DEADLINE",
+          ]), at: 0)
+    }
+    if screen == .contracts,
       contextGame.contractBoard.selected?.wayfarerInduction?.isClinicStockAction == true
     {
       pages.insert(

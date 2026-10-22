@@ -133,7 +133,8 @@ extension NativeWayfarerInductionState {
       crewLog: crewLog, crewLogLoss: crewLogLoss, crewLogHullCustody: crewLogHullCustody,
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice, charterCapacity: capacity,
-      charterSignatures: charterSignatures, charterClinicSource: source)
+      charterSignatures: charterSignatures, charterClinicSource: source,
+      charterWorkshopSource: charterWorkshopSource)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }

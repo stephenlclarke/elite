@@ -155,6 +155,19 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.stateID == NativeInductionWorkshopPack.stateID
+      || pack.digest == NativeInductionWorkshopPack.digest
+    {
+      guard NativeInductionWorkshopPack.matches(pack) else {
+        return "Restore the original Enmadan workshop family content."
+      }
+      guard
+        commander.scriptState.instances.values.contains(where: {
+          $0.definition == NativeInductionWorkshopPack.stateID && $0.digest == pack.digest
+            && $0.savedNativeInductionWorkshop != nil
+        })
+      else { return "Use the original workshop owner's actual Enmadan rebrief and booking review." }
+    }
     if pack.manifest.stateID == NativeInductionClinicPack.stateID
       || pack.digest == NativeInductionClinicPack.digest
     {
@@ -403,7 +416,9 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
-    guard pack.manifest.stateID != NativeInductionClinicPack.stateID,
+    guard pack.manifest.stateID != NativeInductionWorkshopPack.stateID,
+      pack.digest != NativeInductionWorkshopPack.digest,
+      pack.manifest.stateID != NativeInductionClinicPack.stateID,
       pack.digest != NativeInductionClinicPack.digest
     else {
       throw MissionPackError(
@@ -1482,6 +1497,11 @@ extension Game {
         $1.manifest.priority, $1.manifest.id, $1.digest
       )
     }) {
+      if pack.manifest.stateID == NativeInductionWorkshopPack.stateID
+        || pack.digest == NativeInductionWorkshopPack.digest
+      {
+        continue
+      }
       if pack.manifest.stateID == NativeInductionClinicPack.stateID
         || pack.digest == NativeInductionClinicPack.digest
       {

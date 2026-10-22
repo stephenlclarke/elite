@@ -11,6 +11,10 @@ extension NativeWayfarerInductionAction {
     case .pickupClinicSample, .returnClinicSample, .cancelHeldClinicSample, .retryClinicExpiry:
       NativeWayfarerInduction.clinic
     case .receiveClinicSample: NativeWayfarerInduction.receiver
+    case .issueWorkshopStock, .viewWorkshopStock, .acceptWorkshopUnit, .pickupWorkshopUnit,
+      .receiveWorkshopUnit, .cancelWorkshopBooking, .cancelHeldWorkshopUnit, .returnWorkshopUnit:
+      NativeWayfarerInduction.workshop
+    case .serviceWorkshopUnit: NativeWayfarerInduction.clinic
     case .workshopConsent, .releaseWorkshopCapacity: NativeWayfarerInduction.workshop
     case .seedConsent, .releaseSeedCapacity: NativeWayfarerInduction.seedSource
     case .pickup: NativeWayfarerInduction.clinic
