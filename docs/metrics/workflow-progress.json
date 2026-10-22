@@ -4705,11 +4705,15 @@
       "github_run": 39721907534,
       "selection_methods": 206,
       "new_methods": 7,
-      "source_review": "MBA bounded capacity source clean; actual execution pending",
-      "unit_status": "GitHub SUCCESS; MBA exact artifact verification pending",
+      "source_review": "MBA independent capacity source clean",
+      "unit_status": "SUCCESS; MBA verified206methods238casesPASS,0failures/errors/skips,no crash",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332644511",
       "next_assigned": "C08.P06.B.consent",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verified_methods": 206,
+      "verified_expanded_cases": 238,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332935736",
+      "qualification_scope": "Bounded allocation/policy foundation; all7Capacity/6Charter/3Binding pass; no actual signatures/bookings/stage12/playable/release claim"
     },
     {
       "event": "Actual operator consent and named-unit release pushed; MBA review queued",
