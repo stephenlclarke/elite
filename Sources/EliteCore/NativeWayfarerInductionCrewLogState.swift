@@ -82,9 +82,18 @@ struct NativeCrewLogActorLoss: Codable, Sendable, Equatable {
   let role: String
   let actor: ActorIdentity
   let physicalTime: Double
-  func valid(admission: NativeCrewLogAdmission) -> Bool {
+  func valid(admission: NativeCrewLogAdmission, flight: NativeRescueFlightState? = nil) -> Bool {
     guard let role = NativeInductionCrewLogRole(rawValue: role) else { return false }
-    return actor.system == NativeInductionCrewLogSource.location
+    let permitted: Bool
+    if role == .launch, let flight {
+      permitted = flight.authorization.route.worldKeys.contains { key in
+        guard let world = try? Universe.originalWorlds.world(key: key) else { return false }
+        return actor.system == SystemIdentity(galaxy: world.galaxy, system: world.system)
+      }
+    } else {
+      permitted = actor.system == NativeInductionCrewLogSource.location
+    }
+    return permitted
       && actor.visit >= admission.actor(for: role).visit && actor.entity > 1
       && physicalTime.isFinite && (admission.physicalTime...1e12).contains(physicalTime)
   }
@@ -97,6 +106,7 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
   var capture: NativeCrewLogCapture?
   var rescueFuel: NativeRescueFuelEscrow?
   var rescueReserve: NativeRescueLaunchReserve?
+  var flight: NativeRescueFlightState?
   var livingCrew: [UUID] {
     admission != nil && !losses.contains(where: { $0.role == "launch" })
       ? authorization.manifest.crew : []
@@ -123,7 +133,14 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
     } else if rescueReserve != nil {
       return false
     }
-    guard let admission else { return losses.isEmpty && capture == nil }
+    if let flight {
+      guard let rescueFuel, capture != nil,
+        let source = try? NativeInductionCrewLogSource(parent: parent),
+        flight.shapeValid(
+          root: authorization, funding: rescueFuel.funding, parent: parent, source: source)
+      else { return false }
+    }
+    guard let admission else { return losses.isEmpty && capture == nil && flight == nil }
     if let capture {
       guard let reception = parent.seedReception,
         capture.valid(permission: parent.permission, reception: reception),
@@ -135,6 +152,6 @@ struct NativeInductionCrewLogState: Codable, Sendable, Equatable {
       else { return false }
     }
     return admission.valid(authorization: authorization)
-      && losses.allSatisfy { $0.valid(admission: admission) }
+      && losses.allSatisfy { $0.valid(admission: admission, flight: flight) }
   }
 }

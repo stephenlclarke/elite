@@ -2675,6 +2675,7 @@ public actor GameRuntime {
     if localActive {
       game.advanceInductionArk(from: transitSample, publish: scriptPublisher())
       game.advanceInductionCrewLog(publish: scriptPublisher())
+      game.advanceInductionRescueFlight(publish: scriptPublisher())
     }
     game.advanceScriptWorldJobs(delta: delta, publish: scriptPublisher())
   }

@@ -34,6 +34,38 @@ extension Game {
       return
         "Original custody recorder lost with its carrier. Its pickup history remains; no replacement or rescue receiving is invented."
     }
+    if let state = inductionCrewLogChild?.savedNativeCrewLog, let flight = state.flight {
+      if state.livingCrew.isEmpty {
+        return
+          "Original rescue launch destroyed; original crew are lost without actual supported surviving-person custody. No replacement people, receiving or stage9 credit is granted."
+      }
+      if let last = flight.legs.last,
+        let leg = commander.scriptState.wormholeTransit?.legs[last.leg]
+      {
+        if leg.phase == .inTransit || leg.phase == .arrivalPending {
+          return
+            "Original marked launch in actual native transit / two original crew aboard. Follow its recorded destination; arrival needs real destination admission."
+        }
+        if leg.phase != .arrived && leg.phase != .cancelled {
+          return
+            "Original marked launch requesting its own powered12s spool/aperture; native fuel and mass lock still apply. Keep clear of the ship."
+        }
+        if last.hop == flight.authorization.route.distancesLY.count - 1 && leg.phase == .arrived {
+          return
+            "Original marked launch actually admitted at Enmadan. Actual berth/survivor/recorder receiving still remains unavailable; no stage9 credit granted."
+        }
+      }
+      if let hop = nextInductionRescueHop(flight),
+        let npc = inductionCrewLogChild?.ownedEncounters[NativeInductionCrewLogPack.encounter]?
+          .actors["launch"]?.body.scriptNPC,
+        npc.fuel < flight.authorization.route.distancesLY[hop.hop]
+      {
+        return
+          "Original marked launch needs actual intermediate dock/fuel service. No arrival-time refill or escrow debit is invented; service provider remains next."
+      }
+      return
+        "Original marked-launch escort registered with the same two crew and retained fuel. Depart Cevilis and approach its real source; it clears the work area through ordinary flight before native hops."
+    }
     if parent.crewLog != nil, let state = inductionCrewLogChild?.savedNativeCrewLog,
       state.rescueFuel == nil
     {

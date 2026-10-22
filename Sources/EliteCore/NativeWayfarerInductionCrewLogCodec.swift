@@ -66,6 +66,9 @@ extension NativeInductionCrewLogSave {
               try JSONSerialization.jsonObject(with: JSONEncoder().encode(reserve)))
           else { throw SaveError.invalidCommander }
         }
+        if leaf.keys.contains("flight") {
+          guard supportsRescueFlight(schema) else { throw SaveError.invalidCommander }
+        }
         let bytes = try JSONSerialization.data(withJSONObject: leaf)
         guard supportsPickup(schema) || leaf["capture"] == nil else {
           throw SaveError.invalidCommander

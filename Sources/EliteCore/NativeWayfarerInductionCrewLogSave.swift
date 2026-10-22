@@ -1,10 +1,13 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 89
-  static let alienVersion = 90
-  static func supportsRescueFunding(_ schema: Int?) -> Bool {
+  static let version = 91
+  static let alienVersion = 92
+  static func supportsRescueFlight(_ schema: Int?) -> Bool {
     schema == version || schema == alienVersion
+  }
+  static func supportsRescueFunding(_ schema: Int?) -> Bool {
+    supportsRescueFlight(schema) || schema == 89 || schema == 90
   }
   static func supportsHullCustody(_ schema: Int?) -> Bool {
     supportsRescueFunding(schema) || schema == 87 || schema == 88
@@ -53,7 +56,9 @@ enum NativeInductionCrewLogSave {
         child.campaignParent == nil,
         child.campaignChildren.isEmpty,
         child.timers.keys.allSatisfy({ $0 == NativeInductionCrewLogPack.timer }),
-        actorClaimsValid(child, state: state, source: source, commander: commander)
+        actorClaimsValid(child, state: state, source: source, commander: commander),
+        NativeRescueFlightSave.valid(
+          state, parent: parent, child: child, source: source, commander: commander)
       else { return false }
       if let funding = state.rescueFuel?.funding {
         guard funding.sequence <= engine.nextEvent,
@@ -110,13 +115,27 @@ enum NativeInductionCrewLogSave {
         actor.alias == role.rawValue,
         actor.identity == NativeInductionCrewLogPack.actor(job: child.id, role: role),
         actor.body.missionActorID == actor.identity, actor.body.missionInstanceID == child.id,
-        actor.location(in: group) == NativeInductionCrewLogSource.location,
-        actor.transitLocation == nil, ![.inTransit, .arrivalPending].contains(actor.presence),
         !actor.body.hostile, let npc = actor.body.scriptNPC,
         source.matchesFit(npc.fit, recorder: role == .recorder),
         role != .tender || npc.components["drive"]?.energy == 0,
-        npc.intent == nil, npc.velocity == .init(0, 0, 0),
         actor.body.physical?.empSource == nil, actor.body.physical?.empCrewPod == nil
+      else { return false }
+      if role == .launch, let flight = state.flight {
+        guard
+          NativeRescueFlightSave.actorValid(
+            actor, flight: flight, root: state.authorization, commander: commander)
+        else { return false }
+        if let loss = state.losses.first(where: { $0.role == "launch" }) {
+          guard actor.presence == .destroyed, actor.body.energy == 0,
+            actor.body.physical?.identity == loss.actor,
+            loss.physicalTime <= commander.flightSimulation.physicalTime
+          else { return false }
+        }
+        continue
+      }
+      guard actor.location(in: group) == NativeInductionCrewLogSource.location,
+        actor.transitLocation == nil, ![.inTransit, .arrivalPending].contains(actor.presence),
+        npc.intent == nil, npc.velocity == .init(0, 0, 0)
       else { return false }
       if group.admitted {
         guard let native = actor.body.physical,
