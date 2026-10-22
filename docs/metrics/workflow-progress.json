@@ -6133,7 +6133,10 @@
         131,
         132
       ],
-      "actual_issue_operation_required": true
+      "actual_issue_operation_required": true,
+      "design_path": "docs/gameplay-design/G11-P02-PARENT-ACCEPTANCE-AND-PROGRAMMER-CONTRACT.md",
+      "design_sha256": "6f4888ce0a4811896bb154daa043dcb7e8d39663f50a54fb1017e104840c5b04",
+      "repeatability_limit": "Only initial original pair/tool stock; post-failure replacement/recovery policy remains outstanding"
     },
     "recovered_equipment_composition": {
       "owner": "Mission Coder1",
@@ -6176,6 +6179,13 @@
       "merged": false,
       "usable_build_delivered": false,
       "source_review": "MBA full production and16methods clean"
+    },
+    "c08_qualification": {
+      "head": "b0bfda8ad2aa3b7b51f63879c6e2fb3f2d0bb7f4",
+      "github_run": 39757431475,
+      "github_check": "SUCCESS",
+      "actual_artifact_qualification": "MBA pending",
+      "merge": "pending"
     }
   }
 }
