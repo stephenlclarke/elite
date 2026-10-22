@@ -5335,6 +5335,22 @@
       "g1_release_repair": "authored, author Core/declaration checks; not pushed or qualified",
       "t02_failed_run": 39770919855,
       "t02_current_cause": "pending existing evidence classification"
+    },
+    {
+      "event": "M01 crash repair94 pushed; T02 compile86 closed and runtime95 separated; T03 correction review clean",
+      "date": "2026-10-22",
+      "m01_pr": 94,
+      "m01_head": "b4d4166dc14bf32011f4f68539a11c7cba608722",
+      "m01_run": 39772859464,
+      "m01_methods": 323,
+      "m01_author_core_seconds": 42.67,
+      "m01_runtime_qualified": false,
+      "t02_compile_issue_closed": 86,
+      "t02_runtime_issue": 95,
+      "t02_runtime_attribution": "unattributed signal4; no ownedfaultstack",
+      "t03_reviewed_head": "0b5d3694133fe41f53c6aa484faf14837db4b6d0",
+      "t03_correction_review": "clean",
+      "t03_execution_qualified": false
     }
   ],
   "two_developer_phase": {
