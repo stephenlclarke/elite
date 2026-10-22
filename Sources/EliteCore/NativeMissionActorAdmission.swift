@@ -254,7 +254,11 @@ extension Game {
         member: UInt16(index), producer: .mission)
       prepared[index].id = nextBodyID + index
       let velocity: Vector3
-      if let viewVelocity = prepared[index].scriptNPC?.velocity {
+      if NativeC01Surveyor.passiveFit(prepared[index]),
+        let retained = template.retainedNativeVelocity
+      {
+        velocity = retained
+      } else if let viewVelocity = prepared[index].scriptNPC?.velocity {
         velocity = staged.pose.orientation.apply(viewVelocity)
       } else {
         velocity = template.retainedNativeVelocity ?? .init(0, 0, 0)
@@ -314,7 +318,8 @@ extension Game {
       if refusal == .staleContext { throw NativeMissionActorAdmissionError.invalidScene }
       return .pending(.native(refusal))
     }
-    let patch = try source.prepareRetentionPatch(sceneBodyIDs: staged.sceneBodyIDs)
+    let patch = try source.prepareRetentionPatch(
+      sceneBodyIDs: staged.sceneBodyIDs, nativeBodies: staged.admittedBodies)
     return .ready(
       .init(
         retentionPatch: patch, sceneBodyIDs: staged.sceneBodyIDs, source: copy source,

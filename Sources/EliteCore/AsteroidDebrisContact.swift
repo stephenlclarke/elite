@@ -408,6 +408,9 @@ extension Game {
     if !requiresFrame, commander.scriptState.savedIdentifiedSalvageSource != nil {
       requiresFrame = bodies.contains(where: { identifiedSalvageAlias($0) != nil })
     }
+    if !requiresFrame, glassMeridianMission?.savedGlassMeridian?.surveyor != nil {
+      requiresFrame = bodies.contains(where: { c01SurveyorCollision($0) != nil })
+    }
     guard requiresFrame else { return nil }
     return AsteroidContactFrame(
       game: self, startTime: start, stepDuration: delta, stationReady: ready)

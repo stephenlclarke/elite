@@ -112,6 +112,10 @@ private final class C01SurveyorFixture {
     group.admitted = true
     mission.ownedEncounters[group.id] = group
     commander.scriptState.instances[mission.id] = mission
+    let hashes = try NativeC01Surveyor.modelHashes.get()
+    for (reference, design) in try NativeC01Surveyor.models.get() {
+      commander.scriptState.geometry[try #require(hashes[reference])] = design
+    }
     return commander
   }
   func mission(_ state: NativeGlassMeridianState) -> ScriptInstance {
@@ -161,6 +165,24 @@ struct NativeC01SurveyorUnitTests {
     var foreign = harrier.body
     foreign.missionActorID = UUID()
     #expect(game.c01SurveyorCollision(foreign) == nil)
+    var drifting = harrier.body
+    drifting.physical?.velocity = .init(3, 0, 0)
+    if let index = game.bodies.firstIndex(where: { $0.id == drifting.id }) {
+      game.bodies[index] = drifting
+    }
+    game.commander.scriptState.instances[mission.id]?.ownedEncounters[NativeC01Surveyor.encounter]?
+      .actors[harrier.alias]?.body.physical?.velocity = .init(3, 0, 0)
+    game.scriptPacks = [try ScriptPackLibrary.read(ScriptPackLibrary.bundledGlassMeridianDirectory)]
+    let sources = try game.retainedMissionActorAdmissionSources()
+    let source = try #require(sources.first { $0.encounterID == NativeC01Surveyor.encounter })
+    let ids = Dictionary(
+      uniqueKeysWithValues: game.bodies.compactMap { body in
+        body.missionActorID.map { ($0, body.id) }
+      })
+    #expect(throws: (any Error).self) { try source.prepareRetentionPatch(sceneBodyIDs: ids) }
+    let patch = try source.prepareRetentionPatch(sceneBodyIDs: ids, nativeBodies: game.bodies)
+    #expect(patch.updatedEncounter.actors[recorder.alias]?.body.physical == recorder.body.physical)
+    #expect(patch.updatedEncounter.actors[harrier.alias]?.body.physical == drifting.physical)
   }
   @Test func convexEnvelopeRejectsNonfiniteFlatAndDegenerateGeometry() throws {
     for points in [

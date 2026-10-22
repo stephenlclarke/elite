@@ -133,6 +133,17 @@ enum NativeC01Surveyor {
     return actor.valid && actor.body.hull == .cobra && !actor.body.hostile
       && actor.body.missiles == 0 && actor.body.rotationRate == 0
   }
+  static func passiveFit(_ body: SpaceBody) -> Bool {
+    guard let mission = body.missionInstanceID, let npc = body.scriptNPC,
+      let index = aliases.indices.first(where: {
+        actor(mission: mission, alias: aliases[$0]) == body.missionActorID
+      }),
+      npc.fit.definition == profile(recorder: index == 1),
+      let hashes = try? modelHashes.get(),
+      npc.fit.models == [npc.fit.definition.model: hashes[npc.fit.definition.model]!]
+    else { return false }
+    return true
+  }
   static func nativeValid(_ physical: PhysicalActorState, recorder: Bool) -> Bool {
     guard physical.population == .mission, physical.npc?.role == .mission,
       physical.velocity.finite, physical.angularVelocity.finite,

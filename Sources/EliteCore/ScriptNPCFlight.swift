@@ -66,6 +66,13 @@ extension Game {
       observeNativeTransitSpool(bodies[index])
       guard bodies[index].energy > 0, var npc = bodies[index].scriptNPC else { continue }
       let definition = npc.fit.definition
+      // C01 propulsion stays disabled; physical contact momentum still moves the original hull.
+      if c01SurveyorActor(bodies[index]) != nil, let physical = bodies[index].physical {
+        bodies[index].position =
+          bodies[index].position
+          + commander.flightSimulation.pose.shipVector(physical.velocity) * delta
+        continue
+      }
       if bodies[index].physical?.npc?.resources?.profile != .nativeHull {
         bodies[index].energy = min(
           definition.energy, bodies[index].energy + definition.recharge * delta)

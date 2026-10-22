@@ -337,7 +337,9 @@ struct MissionActorRetentionPatch: Sendable {
 
 extension MissionActorAdmissionSource {
   /// Only the native preparation supplies new scene addresses; no historical address is reused.
-  func prepareRetentionPatch(sceneBodyIDs: [UUID: Int]) throws -> MissionActorRetentionPatch {
+  func prepareRetentionPatch(sceneBodyIDs: [UUID: Int], nativeBodies: [SpaceBody] = []) throws
+    -> MissionActorRetentionPatch
+  {
     var eligible = Set<UUID>()
     for index in actors.indices {
       if actors[index].presence != .destroyed, actors[index].canonicalBody.energy > 0 {
@@ -364,6 +366,20 @@ extension MissionActorAdmissionSource {
       case .inductionArkBerth, .inductionRescueBerth:
         actor.body = actors[index].canonicalBody
       default: break
+      }
+      if definition == NativeGlassMeridian.stateID, packDigest == NativeGlassMeridian.digest,
+        encounterID == NativeC01Surveyor.encounter
+      {
+        guard
+          let admitted = nativeBodies.first(where: {
+            $0.missionActorID == actorID && $0.missionInstanceID == instanceID && $0.id == bodyID
+          }), let physical = admitted.physical,
+          NativeC01Surveyor.passiveFit(admitted),
+          NativeC01Surveyor.nativeValid(
+            physical, recorder: actor.alias == NativeC01Surveyor.aliases[1])
+        else { throw NativeMissionActorAdmissionError.invalidCondition }
+        // These are the actual staged native addresses and conserved inertia, before any commit.
+        actor.body.physical = physical
       }
       actor.body.id = bodyID
       actor.presence = .present
