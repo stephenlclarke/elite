@@ -5210,13 +5210,19 @@
         "source_state": "Last legacy direct shared-branch source packet; not independently qualified or included in candidate1.4.901",
         "compile_seconds": 671.56,
         "execution_seconds": 45.702,
-        "ready_findings": [
-          53
-        ],
+        "ready_findings": [],
         "finding_owner": "G1",
         "finding_kind": "Overbroad whole-Gallery fixture assertion; scope to exact workshop child; retain unrelated recovery entries",
         "passed_methods": 254,
-        "passed_expanded_cases": 286
+        "passed_expanded_cases": 286,
+        "correction_head": "d33daaaebef910985c6d4035b088b7a40307e074",
+        "correction_pr": 54,
+        "correction_review": "MBA CLEAN; exact-instance/digest exclusion and immutability/history preserved; production unchanged",
+        "correction_unit_run": 39741278033,
+        "correction_unit_status": "Existing job active; no verified passing correction aggregate yet",
+        "awaiting_verification_findings": [
+          53
+        ]
       },
       {
         "id": "C08.P06.B.seed",
@@ -5279,7 +5285,7 @@
       "model": null,
       "active_assignment": null
     },
-    "qualification_queue_note": "53singleknownfixturefinding blocks workshop/inventory aggregates; G1corrects/G3composes; MBA existingartifacts verified once; controlhint sourcework and seed continue",
+    "qualification_queue_note": "53correctionPR54sourceclean,existing39741278033active;G3composesprecisefixforPR51;seed/controlhintcodingcontinues",
     "complete_features_merged": 1,
     "merged_feature_count_scope": "Shared development branch complete featurePR48 only; source qualification/individual packets do not add counts",
     "new_usable_build_deliveries": 0,
