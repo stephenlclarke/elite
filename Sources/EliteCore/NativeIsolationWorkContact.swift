@@ -45,7 +45,22 @@ struct NativeIsolationWorkEndpoint: Sendable {
 
 extension Game {
   /// Resolves the original logical module to its actual current native body. No targeting grant.
+  @inline(never)
   func isolationWorkRole(_ body: SpaceBody) -> NativeIsolationWorkRole? {
+    guard let owned = isolationWorkOwnership(body),
+      let binding = try? currentMissionNativeBinding(bodyID: body.id),
+      binding.nativeActor == owned.nativeActor, binding.instanceID == owned.instance,
+      binding.actorID == owned.actor
+    else { return nil }
+    return owned.role
+  }
+
+  /// Finish the full ownership census before entering the independent native binding stack.
+  /// Only these small identities outlive the source, physical and retained-actor snapshots.
+  @inline(never)
+  private func isolationWorkOwnership(_ body: SpaceBody) -> (
+    role: NativeIsolationWorkRole, instance: UUID, actor: UUID, nativeActor: ActorIdentity
+  )? {
     guard !isMissionTrial, systemIdentity == NativeIsolationWorkSource.location,
       let child = isolationWorkChild, child.suspension == nil,
       let state = child.savedIsolationWork,
@@ -64,12 +79,9 @@ extension Game {
       let retained = child.ownedEncounters[NativeIsolationWorkPack.encounter]?.actors[
         role.rawValue],
       retained.identity == body.missionActorID, retained.presence == .present,
-      retained.body.id == body.id,
-      let binding = try? currentMissionNativeBinding(bodyID: body.id),
-      binding.nativeActor == native.identity, binding.instanceID == child.id,
-      binding.actorID == retained.identity
+      retained.body.id == body.id
     else { return nil }
-    return role
+    return (role, child.id, retained.identity, native.identity)
   }
 
   var isolationWorkContactBody: SpaceBody? {

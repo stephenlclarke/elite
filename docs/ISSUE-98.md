@@ -25,3 +25,11 @@ The bounded follow-up borrows read-only inputs and marks the retained lookup, fi
 ## Compile-only prerequisite
 
 Head `c8728210` did not reach runtime: run `39785814462` failed production compilation because the new borrowed body/retained parameters were consumed by existing short-circuit/component closures. Issue #103 tracks that distinct compiler criterion. Ordered direct optional guards and a small borrowed component helper preserve the original predicate order and comparisons. Runtime #98 remains open; neither compilation nor a clean source review proves its actual native Tab path.
+
+## Confirmed caller lifetime follow-up
+
+Run `39787112105` at `63ded61c` compiled the production/test target in 917.40 seconds, proving and closing #103. Its completed inner job `119853139566` then reported signal 10 at the retained fit-match call (`ScriptNativeBridge.swift:62`) through the same G11 Tab path, with zero completed PASS methods. The parent workflow still appeared active after the inner job failed; use the completed inner job result. #85/#96/#97/#98 remain open.
+
+The G11 role reader held its full source, physical, fit and retained-actor snapshots across that independent native binding query. The approved lifetime correction places the identical ordered pre-binding guards in a private non-inline helper. It returns only role, child UUID, retained actor UUID and native actor identity. Its frame completes before the same fresh native binding query and same three identity comparisons. No ownership predicate, fit/component/model check, query authority, storage, schema, actor or selector changes. An explicitly leased existing-cache Core preflight is permitted for this coherent correction; actual runtime qualification remains required.
+
+The approved existing-cache Core preflight passed in 16.10 seconds with exit 0, and its CPU lease was released. No local unit/native runtime executed. The ordered prefix/suffix and selector proofs, independent review and actual hosted runtime result remain the acceptance evidence needed for this frame correction.

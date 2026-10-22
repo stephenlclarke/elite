@@ -11,3 +11,5 @@ Keep the same ordered non-NPC predicates using direct hull and optional `.none` 
 Run the single explicitly leased Core compiler preflight before push. Keep local unit/native/probe execution prohibited. Record its actual result and release the lease. Actual corrected compilation is required to close #103; the native runtime acceptance criteria #85/#96/#97/#98 remain separate and pending.
 
 The single leased production Core preflight passed in 59.04 seconds with exit 0, and its CPU lease was released. It does not compile the test target or prove runtime acceptance. Corrected exact-head hosted compilation and independent review remain pending before closure.
+
+Actual hosted run `39787112105` at `63ded61c` completed production/test-target compilation in 917.40 seconds. #103 closed on that evidence. Its later runtime stack failure remains tracked by #98; no runtime criterion is inferred from this compile-only closure.
