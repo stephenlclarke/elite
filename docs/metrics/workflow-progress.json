@@ -5131,14 +5131,14 @@
         "merged_at": null,
         "playable_at": null,
         "dependency": "Independent from pending showroom PR; canonical409d042c base",
-        "head": "03113a7442bcf67ce9d2089953eab2dc0a6b3b10",
+        "head": "e4772060e3ec4ebe3b1142204b56f37e8ee52e6f",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/51",
         "first_push_observed_at": "2026-10-22T06:33:57Z",
         "handoff_at": "2026-10-22T07:17:59Z",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6335090954",
         "unit_run": 39741604031,
-        "unit_status": "Corrected258-method runactive; b3failedaggregate preserved",
-        "source_state": "Authorcomposedexact53fix; inventoryproduction/tests/selectorunchanged;finalheadpending",
+        "unit_status": "Prior03113existing258runactive;notfinale477qualification",
+        "source_state": "DirectlyaffectedMarketFlowheadingassertion corrected;finalselector/handoff pending;productionunchanged",
         "source_review_result": "MBA03113a74finalcomposition CLEAN;onlyexactreviewed53test+2notes changed;inventoryproduction/tests/258selectorunchanged",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
@@ -5159,7 +5159,7 @@
         "correction_source_review_result": "MBA f791 bounded correction/final composition CLEAN; production unchanged; four literal indentation expectations only; originalassertionsretained",
         "selector_review": "Finalb3 exact union of f791247 and fcf255 equals258; no missing/unexpected methods",
         "issue_metadata": "52CLOSED after actual correction verification; no ready inventory finding",
-        "merge_blocker": "Inherited53singlefixtureassertion; no inventory production finding; correctedfinalheadchecks/MBApending",
+        "merge_blocker": "AffectedMarketFlowselection/finalheadverification plusknown53 correctionverification",
         "closed_findings": [
           52
         ],
@@ -5190,7 +5190,9 @@
           "crash": false,
           "failed_issue": 53,
           "inventory_methods_passed": 3
-        }
+        },
+        "affected_method": "MarketFlowTests/statusSummaryAndInventoryHaveDistinctResponsibilities",
+        "affected_method_status": "Previouslyunselected;mustselectordinarypushedheadbeforequalification"
       },
       {
         "id": "C08 workshop loop",
