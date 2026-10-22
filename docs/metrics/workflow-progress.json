@@ -4463,6 +4463,15 @@
       "verified_expanded_cases": 188,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6330521419",
       "qualification_scope": "Pure funding/route/source/schema units only; actual native travel, dock service, receiving and unused-fund return remain assigned; no playable delivery"
+    },
+    {
+      "event": "MBA closes issue27 with justified no-change diagnostic disposition",
+      "ledger_parent": "M01.P02.I27",
+      "issue": 27,
+      "status": "closed; no-change, not warnings fixed",
+      "verification_url": "https://github.com/stephenlclarke/elite/issues/27#issuecomment-6330554633",
+      "scope": "Existing declarations and logs only; valid nil assertions preserved, both diagnostics remain, compiler cause unproved; no new execution or source correction",
+      "usable_build_delivered": false
     }
   ]
 }
