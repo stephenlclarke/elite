@@ -16,9 +16,13 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
-    "ContextControlHintUnitTests": (
-        "systemScrollHintsFollowActualViewportAndHelpReturnContext",
-        "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
+    "MarketInventoryProjectionUnitTests": (
+        "statusSummaryAndInventoryHaveDistinctResponsibilities",
+    ),
+    "InventoryGroupingUnitTests": (
+        "mixedTradeAndReservedCargoStayInDistinctSectionsWithoutChangingQuantities",
+        "fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce",
+        "emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody",
     ),
     "NativeWayfarerInductionWorkshopUnitTests": (
         "originalBatchKeepsSixDistinctFailedSerialsSeparateFromClinicCargoAndAllWindows",
@@ -335,6 +339,10 @@ METHODS = {
         "installedFamilyLimitStoresExcessEvenWhenSlotsRemainSupported",
         "returningToALargerHullDoesNotRefitStoredSparesOrRecreateSoldBoundItems",
         "foreignOwnerUnknownNodeAndExhaustedRevisionRefuseWithoutChangingSource",
+    ),
+    "ContextControlHintUnitTests": (
+        "systemScrollHintsFollowActualViewportAndHelpReturnContext",
+        "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
     ),
     "FlightControlAuthorityUnitTests": (
         "allSharedFlightBindingsRoundTripWithoutFunctionKeys",
