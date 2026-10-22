@@ -5421,6 +5421,24 @@
       ],
       "safety_issue85_qualified": false,
       "full_feature_qualified": false
+    },
+    {
+      "event": "M01 repair run failed after parity pass; bounded High source consult assigned; G11 fixture correction pushed/reviewed clean",
+      "date": "2026-10-22",
+      "m01_head": "b4d4166dc14bf32011f4f68539a11c7cba608722",
+      "m01_run": 39772859464,
+      "m01_compile_seconds": 630.04,
+      "m01_raw_completed_methods": 321,
+      "m01_parity_method": "explicit pass",
+      "m01_full_qualification": false,
+      "m01_residual_attribution": "unknown; two unfinished methods, no owned fault stack",
+      "consult_owner": "Mission Coder1 High",
+      "consult_scope": "read-only two residual paths/direct lifetime boundaries; no edits/runtime/diagnostics",
+      "fix_owner": "G1",
+      "g11_head": "239583aa1d3ce75d1f34ccdf438f9ad0f905ff24",
+      "g11_run": 39774626467,
+      "g11_fixture_review": "clean",
+      "g11_current_execution_qualified": false
     }
   ],
   "two_developer_phase": {
