@@ -4565,13 +4565,16 @@
       "ledger_parent": "M01.I43",
       "pr": 44,
       "issue": 43,
-      "source_review": "MBA source clean; focused author14+2 synthetic evidence accepted",
+      "source_review": "MBA independent source and exact hosted ancestry verification complete;43 closed",
       "authoring_validation": "14 collector +2 attribution Python tests PASS; two primary regressions failold/passnew",
       "integration_status": "composed on canonical as670aad0490896faabad4f1c5205405f78a2514ec atop17432742; no usable delivery",
       "helper_status": "stopped after bounded correction",
       "usable_build_delivered": false,
       "github_run": 39713282582,
-      "unit_status": "existing hosted active; actual ancestry evidence pending for43 closure"
+      "unit_status": "20 Python/report +11 control checks PASS; separate Swift aggregate FAILED signal4",
+      "verification_url": "https://github.com/stephenlclarke/elite/issues/43#issuecomment-6331653409",
+      "issue_status": "CLOSED; observer root cause verified",
+      "qualification_scope": "Actual root exec and owned helper/image/symbol evidence only; no174 Swift aggregate or41/42 correction proof"
     },
     {
       "event": "Recorder frame and stale assertions corrected; reviewed collector composed",
@@ -4581,9 +4584,31 @@
       "ledger_parent": "M01.I41/I42/I43",
       "github_run": 39713632774,
       "selection_methods": 174,
-      "source_review": "MBA assigned combined correction; prior collector review reused",
-      "unit_status": "existing hosted active; crash resolution and issue closure unproved",
+      "source_review": "MBA independent combined source clean;41 closed,43 closed,42 third literal outstanding",
+      "unit_status": "FAILURE solely one stale Cassette99 assertion; no process crash",
       "next_assigned": "C08.P05.B.source",
+      "usable_build_delivered": false,
+      "executed_methods": 174,
+      "executed_expanded_cases": 206,
+      "passed_methods": 173,
+      "passed_expanded_cases": 205,
+      "failed_assertions": 1,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331702611",
+      "qualification_scope": "All6 Flight/6 Service/6 Receiving/10 Pickup/7 Funding pass including formerly crashing method; no native journey or playable delivery",
+      "issue41_status": "verified fixed and CLOSED",
+      "issue42_status": "OPEN; original two cases pass, Cassette99 exact literal assigned G1"
+    },
+    {
+      "event": "Enron original utility source pushed; timed work assigned",
+      "head": "aaa6f07444a8fa51d644f3ae2c56f478ff844dfd",
+      "base": "670aad0490896faabad4f1c5205405f78a2514ec",
+      "ledger_parent": "C08.P05.B.source",
+      "github_run": 39714460197,
+      "selection_methods": 181,
+      "new_methods": 7,
+      "source_review": "MBA queued exact source/authority/save delta",
+      "unit_status": "existing hosted pending; correction runs retained separately",
+      "next_assigned": "C08.P05.B.work",
       "usable_build_delivered": false
     }
   ]
