@@ -5575,6 +5575,36 @@
       "expected_union_methods": 358,
       "runtime_fix_proven": false,
       "no_new_diagnostic_campaign": true
+    },
+    {
+      "event": "Combined training99 compile failure assigned; one short authoring-only CPU preflight explicitly leased from free G1 to G4",
+      "date": "2026-10-22",
+      "training_head": "2b21e536b7e1254b10dc0b3202900f2513f7866a",
+      "run": 39777467304,
+      "issue": 99,
+      "failure_stage": "production compilation; practice clearance signature mismatch",
+      "lease_owner": "G4",
+      "lease_scope": "own-worktree Core build + affected test declaration typecheck only",
+      "lease_authority": "G1 confirmed no compiler/packaging/native jobs; holds compiler until release",
+      "runtime_tests_authorised": false,
+      "purpose": "catch real source API/declaration errors before another long hosted compile",
+      "m01_failed_run": 39776164699,
+      "m01_classification": "pending actual MBA artifact"
+    },
+    {
+      "event": "M01 residual failure classified without stack; full49-accessor COW audit clean; authoring preflight lease99 active",
+      "date": "2026-10-22",
+      "m01_head": "0c12cb0744d32588a4b271932dbc3c4270a66b87",
+      "m01_run": 39776164699,
+      "m01_compile_seconds": 615.56,
+      "m01_runtime": "unattributed signal4/no completedPASS or ownedstack",
+      "m01_next": "hold reviewedhead; approved audit source only until actualnew evidence",
+      "g11_head": "e399275a4b5da78726a2796ec5888e86040a2038",
+      "g11_run": 39778352147,
+      "g11_review": "complete private COW49 mutation accessors/value/flatJSON/C01composition clean",
+      "g11_methods": 358,
+      "g11_execution_qualified": false,
+      "g4_cpu_lease": "one short Core/declaration-only99 preflight; no runtime; G1 holds compiler"
     }
   ],
   "two_developer_phase": {
