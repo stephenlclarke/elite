@@ -274,6 +274,9 @@ extension Game {
   mutating func acceptContract(board key: String, offer id: UUID, confirmationToken: UUID = UUID())
     throws -> UUID
   {
+    guard commander.contracts.boards[key]?.digest != NativeIsolationWorkParent.digest,
+      commander.contracts.boards[key]?.group != NativeIsolationWorkParent.stateID
+    else { throw MissionPackError("Use Lerr's actual native isolation review and original issue.") }
     switch try prepareContractAcceptance(
       board: key, offer: id, confirmationToken: confirmationToken)
     {

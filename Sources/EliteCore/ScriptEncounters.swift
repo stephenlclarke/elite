@@ -716,7 +716,7 @@ extension Game {
     let legacy = encounter.legacyProvenance
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
-      let actor = try Self.validatedMissionActorAdmissionActor(
+      var actor = try Self.validatedMissionActorAdmissionActor(
         spec, encounter: encounter, instanceID: state.id, packDigest: pack.digest, legacy: legacy,
         glassMeridian: state.savedGlassMeridian)
       if mode == .retained {
@@ -725,6 +725,7 @@ extension Game {
         {
           continue
         }
+        actor = try original.isolationWorkRetainedActor(actor, in: state)
       }
       let template = try Self.missionActorAdmissionTemplate(
         actor, specification: spec,
@@ -749,6 +750,9 @@ extension Game {
   private static func preparedNativeMissionResources(
     state: borrowing ScriptInstance, actor: ScriptOwnedActor
   ) throws -> NPCState? {
+    if NativeIsolationWorkPack.marked(state) {
+      return try NativeIsolationWorkPack.initialResources(state: state, actor: actor)
+    }
     if NativeInductionUtilityPack.marked(state) {
       return try NativeInductionUtilityPack.initialResources(state: state, actor: actor)
     }
@@ -1364,6 +1368,7 @@ extension Game {
       try Self.stageScriptEncounterRetention(attempt, id: id, state: state)
       _ = try commitMissionActorAdmission(plan)
       Self.publishStagedScriptEncounter(attempt, state: &state)
+      try recordIsolationWorkAdmission(in: &state)
       return (
         "encounter.admitted",
         [
@@ -1446,6 +1451,7 @@ extension Game {
             saved.location(in: encounter) == systemIdentity,
             let body = actual[saved.identity], body.missionInstanceID == instanceID
           else { continue }
+          captureIsolationWorkPose(body, in: &instance)
           saved.body = body
           saved.body.energy = max(0, body.energy)
           saved.body.position = anchor.orientation.inverse(body.position - anchor.position)
@@ -1545,6 +1551,8 @@ extension Game {
       }
       encounter.actors[alias] = actor
       instance.ownedEncounters[key] = encounter
+      captureIsolationWorkPose(body, in: &instance)
+      if destroyed { recordIsolationWorkModuleLoss(body, in: &instance) }
       commander.scriptState.instances[instanceID] = instance
       emitScriptEvent(
         destroyed ? "actor.destroyed" : "actor.removed",

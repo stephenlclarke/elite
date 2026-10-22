@@ -1,6 +1,10 @@
 import Foundation
 
 extension ScriptPackLibrary {
+  static var bundledIsolationWorkDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-isolation-work-source")
+  }
   public static var userDirectory: URL {
     FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(
       ".xyzzy/elite/script-packs")
@@ -77,6 +81,11 @@ extension ScriptPackLibrary {
   static var bundledWayfarerInductionDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-wayfarer-induction")
+  }
+
+  static var bundledIsolationWorkParentDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-isolation-work")
   }
 
   static var bundledGlassMeridianDirectory: URL {
@@ -306,6 +315,15 @@ extension ScriptPackLibrary {
       }
     } catch { library.errors.append("Bundled Enron utility source: " + error.localizedDescription) }
     do {
+      let source = try read(bundledIsolationWorkDirectory)
+      guard NativeIsolationWorkPack.matches(source) else { throw SaveError.invalidCommander }
+      if !library.packs.contains(where: { $0.digest == source.digest }) {
+        library.packs.append(source)
+      }
+    } catch {
+      library.errors.append("Bundled Renas isolation source: " + error.localizedDescription)
+    }
+    do {
       let opening = try read(bundledGlassMeridianDirectory)
       if !library.packs.contains(where: { $0.digest == opening.digest }) {
         library.packs.append(opening)
@@ -326,6 +344,15 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled original Enmadan workshop: " + error.localizedDescription)
+    }
+    do {
+      let parent = try read(bundledIsolationWorkParentDirectory)
+      guard NativeIsolationWorkParent.matches(parent) else { throw SaveError.invalidCommander }
+      if !library.packs.contains(where: { $0.digest == parent.digest }) {
+        library.packs.append(parent)
+      }
+    } catch {
+      library.errors.append("Bundled external isolation commission: " + error.localizedDescription)
     }
     do {
       let seed = try read(bundledInductionSeedDirectory)

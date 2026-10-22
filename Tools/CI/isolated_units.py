@@ -16,6 +16,35 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeIsolationContractUnitTests": (
+        "unpaidSameDockReturnRemovesOnlyOriginalAndReleasesSlotWithoutCashOrClue",
+        "awayAbandonRetainsLoanAndActualPassiveSourceFlowThenAllowsUnpaidPropertyReturn",
+        "staleNativeReviewAndActualWriterRefusalCannotReturnOriginalOrCloseJob",
+        "sameBirthIncompleteSourceAndForgedTerminalCannotSupplySuccessfulReception",
+    ),
+    "NativeIsolationWorkUnitTests": (
+        "instanceStorageKeepsValueSnapshotsAndOriginalClosedEncoding",
+        "combatIntentDisarmsEvenWhenNoInventoryRevisionChanges",
+        "exactPackOwnsTwoPassiveSixMetreEnclosuresAndStableFiniteAccounts",
+        "genuineParentIssueReservesOnePairAndIdempotenceCannotRefillOrIssueAgain",
+        "connectedEnergyConservesFiniteSupplyAndOpenContactStopsTheActualTransfer",
+        "sixtyHertzHistoryCoalescesIntervalsAndInterruptionsCreditNoGap",
+        "closedProviderCodecRejectsErasureUnknownFieldsAndEarlierEnvelope",
+        "actualOriginalReturnKeepsHistoricalSourceButCannotMintFreshWorkAuthority",
+        "nativeWorkNeedsActualPairAndFreshWriteBeforeLaterZeroFlowObservation",
+        "cullingPauseAndWrongViewCannotCreditTimeOrLeaveAnArmedEndpoint",
+    ),
+    "NativeIsolationWorkParentUnitTests": (
+        "stableRoundTripQuoteUsesExactContentAndNoDeadline",
+        "genuineAcceptanceRetainsActualIssueAndOriginalReturnCutoff",
+        "staleNativeContextAndFullHoldRefuseWithoutOriginalOrReservation",
+        "threeRealServiceReservationsRefuseFourthAndPreviewChangesNothing",
+        "strictParentCodecRejectsErasureUnknownFieldsAndDowngrade",
+        "genericAcceptanceCannotMintNativeParent",
+        "escapeLossUsesActualConsumedPodAndPreservesOriginalHistoryWithoutDock",
+        "fatalHullLossUsesAttainedDamageAndCannotReplayOrRestoreWorkAuthority",
+        "staleEscapeWitnessForeignOriginalAndFailedWriterKeepCanonicalCustody",
+    ),
     "NativeWayfarerInductionAccreditationUnitTests": (
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
         "repeatedSennConfirmationCannotPayOrGrantAnotherClueOrDiscardExistingBookings",

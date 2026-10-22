@@ -551,6 +551,7 @@ extension Game {
     }
     targetPanelScroll = 0
     guard !docked, screen.isFlight else { return }
+    if cycleIsolationWorkContact() { return }
     guard let tier = commander.targetingTier else {
       if cycleInductionUtilityContact() { return }
       notify("FIT A TARGETING COMPUTER")

@@ -101,7 +101,10 @@ enum NativeC01Surveyor {
       && abs(offset.z) + radius <= 16 && speed.isFinite
       && speed >= 0 && speed <= ScoopApproachController.maximumRelativeSpeed
   }
-  static func definition(_ mission: ScriptInstance, id: String) -> ScriptEncounterDefinition? {
+  @inline(never)
+  static func definition(_ mission: borrowing ScriptInstance, id: String)
+    -> ScriptEncounterDefinition?
+  {
     guard id == encounter, mission.definition == NativeGlassMeridian.stateID,
       mission.digest == NativeGlassMeridian.digest, mission.version == NativeGlassMeridian.version,
       let state = mission.savedGlassMeridian, state.readings.count == 2,

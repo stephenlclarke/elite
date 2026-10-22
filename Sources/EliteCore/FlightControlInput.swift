@@ -58,6 +58,7 @@ extension Game {
   /// This transient stop may precede a refused native command; it grants no persistent action.
   mutating func interruptFlightTool() {
     interruptInductionUtilityWork()
+    interruptIsolationWork()
     // Only a held trigger needs a release/repress latch. Idle selection and launch
     // must not invent a stop, and an existing damage/impact stop must survive.
     if flightTrigger.held { workFireSuspended = true }
@@ -72,6 +73,7 @@ extension Game {
     interruptFlightTool()
     guard FlightControlInput.action(for: token) == .releaseHold else { return false }
     inductionUtilityWorkRuntime.contact = nil
+    isolationWorkRuntime.contact = nil
     let engaged = autoPilot.targetID != nil || workGuidance != nil || workBraking != nil
     cancelAutoTarget()
     if engaged {
@@ -94,7 +96,7 @@ extension Game {
 
   mutating func admitFlightFire(held: Bool) -> Bool {
     observeFlightFire(held: held)
-    if held && inductionUtilityUsesReturn {
+    if held && (inductionUtilityUsesReturn || isolationWorkUsesReturn) {
       workFireSuspended = true
       flightTrigger.pressPending = false
       return false

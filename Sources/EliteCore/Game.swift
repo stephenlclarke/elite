@@ -456,7 +456,10 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard NativeInductionCrewLogSave.validateClaims(self),
+    guard NativeIsolationWorkParentSave.validateClaims(self),
+      NativeIsolationWorkSave.validateClaims(self),
+      NativeIsolationContractSave.validateClaims(self),
+      NativeInductionCrewLogSave.validateClaims(self),
       NativeInductionArkSave.validateClaims(self),
       NativeWayfarerInductionSave.validateClaims(self),
       NativeFirstCommoditySaleSave.validateClaims(self),
@@ -711,6 +714,7 @@ public struct Game: Sendable {
       nativeC01SurveyorPending = nil
       nativeRecordRecoveryIdentificationPending = nil
       nativeIdentifiedSalvagePending = nil
+      isolationWorkRuntime = .init()
     }
   }
   var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
@@ -735,6 +739,7 @@ public struct Game: Sendable {
   var inductionArkDockPublicationPending = false
   var inductionRescueDockPublicationPending = false
   var inductionUtilityWorkRuntime = NativeInductionUtilityWorkRuntime()
+  var isolationWorkRuntime = NativeIsolationWorkRuntime()
   var nativeStationDockEvidence: NativeStationDockEvidence?
   var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
   public var scriptPacks: [ScriptPack] = []
@@ -988,6 +993,7 @@ public struct Game: Sendable {
   }
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
+    prepareIsolationWorkSafetyKey(key)
     if prepareFlightControlKey(key) { return }
     guard flushNativeSalvageWork() else {
       notify("SALVAGE STATE UNAVAILABLE")
@@ -996,6 +1002,7 @@ public struct Game: Sendable {
     let priorScreen = screen
     let priorPause = paused
     defer { if screen != priorScreen || paused != priorPause { interruptFlightTool() } }
+    if handleIsolationWorkKey(key) { return }
     if handleInductionUtilityWorkKey(key) { return }
     if interfaceKey(key) { return }
     keyAfterInterface(key)
@@ -1843,6 +1850,7 @@ public struct Game: Sendable {
     advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: 0)
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
+    if !retaliating { interruptIsolationWork() }
     guard !docked, !playerEMPDisabled, missileArmed, missileCooldown == 0,
       commander.missiles > 0 || commander.unlimitedMissiles,
       let target = bodies.firstIndex(where: { body in
@@ -1858,12 +1866,16 @@ public struct Game: Sendable {
     return true
   }
   public mutating func ecm() {
+    ecm(automatic: false)
+  }
+  mutating func ecm(automatic: Bool) {
     guard !docked, !playerEMPDisabled, commander.equipment.contains("E.C.M. System"),
       energy > ECMControl.activationEnergyCost,
       ecmFrames == 0
     else {
       return
     }
+    if !automatic { interruptIsolationWork() }
     ensurePhysicalActors()
     guard let player = commander.flightSimulation.player, activateOrdnanceECM(emitter: player)
     else { return }
@@ -1887,6 +1899,7 @@ public struct Game: Sendable {
     notify("E.C.M.", voiced: false)
   }
   public mutating func energyBomb() {
+    interruptIsolationWork()
     guard !docked else { return }
     var candidate = self
     do {
@@ -1904,6 +1917,7 @@ public struct Game: Sendable {
       return
     }
     var candidate = self
+    let isolationPod = candidate.isolationProgrammerEscapePod()
     let measuredPod = candidate.measuredEscapePod()
     let recorderPod = candidate.recordRecoveryEscapePod()
     let originalPod = candidate.identifiedSalvageEscapePod()
@@ -1915,6 +1929,10 @@ public struct Game: Sendable {
       guard try candidate.consumeNativeEquipment("Escape Pod") else { return }
     } catch {
       notify("ESCAPE POD REFUSED")
+      return
+    }
+    do { try candidate.loseIsolationProgrammerOnEscape(pod: isolationPod) } catch {
+      notify("PROGRAMMER LOSS NOT SAVED - ESCAPE NOT COMMITTED")
       return
     }
     guard candidate.loseCourierPackagesOnEscape() else {
@@ -2427,6 +2445,7 @@ public actor GameRuntime {
     keyAfterGallery(key)
   }
   private func keyAfterGallery(_ key: String) {
+    game.prepareIsolationWorkSafetyKey(key)
     // Safety input survives a refused candidate command because it precedes its rollback snapshot.
     let stopsTool = game.flightKeyStopsTool(key)
     if game.prepareFlightControlKey(key) {
@@ -2563,8 +2582,10 @@ public actor GameRuntime {
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
     let utilityWorkStart = game.inductionUtilityEndpoint()
+    let isolationWorkStart = game.isolationWorkSample()
     guard let context = prepareAdvance(delta: delta) else {
       game.advanceInductionUtilityWork(from: nil, publish: scriptPublisher())
+      game.advanceIsolationWork(from: nil, publish: scriptPublisher())
       return snapshot()
     }
     let glassMeridianStart = game.glassMeridianSample()
@@ -2599,6 +2620,7 @@ public actor GameRuntime {
     commitOriginalSurveyScan(start: surveyStart)
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
     game.advanceInductionUtilityWork(from: utilityWorkStart, publish: scriptPublisher())
+    game.advanceIsolationWork(from: isolationWorkStart, publish: scriptPublisher())
     return snapshot()
   }
   private typealias AdvanceContext = (
@@ -2669,6 +2691,7 @@ public actor GameRuntime {
     commitInductionClinicUncollectedLoss()
     commitInductionClinicHeldFatalLoss()
     commitInductionWorkshopLoss()
+    commitIsolationProgrammerFatalLoss()
     commitInductionSeedUncollectedLoss()
     commitInductionSeedHeldFatalLoss()
     commitWayfarerRepairLoopFatalLoss()
