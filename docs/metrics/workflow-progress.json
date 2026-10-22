@@ -6145,11 +6145,13 @@
         67,
         70,
         71,
-        74
+        74,
+        75
       ],
       "verification_pending": [
         64,
-        66
+        66,
+        78
       ],
       "delivery_acceptance_open": [
         15,
@@ -6178,7 +6180,12 @@
       "design_sha256": "6f4888ce0a4811896bb154daa043dcb7e8d39663f50a54fb1017e104840c5b04",
       "repeatability_limit": "Only initial original pair/tool stock; post-failure replacement/recovery policy remains outstanding",
       "reserved_validation_leaf": "Single Commander.valid NativeIsolationWorkParentSave.validateClaims(self), primitive remains acyclic",
-      "focused_methods_planned": 6
+      "focused_methods_planned": 6,
+      "snapshot": "068ab92477f9c57a4139052248b38bcdcb5a5aee",
+      "snapshot_tag": "archive/g3-isolation-parent-unqualified-20261022-068ab924",
+      "snapshot_qualification": "UNQUALIFIED actualprovider/mixedcodec dependency remains",
+      "remote_tag_verified": true,
+      "known_invalid_jobs_started": 0
     },
     "recovered_equipment_composition": {
       "owner": "Mission Coder1",
@@ -6221,7 +6228,11 @@
       "normal_check": "All171TOMLs/GIFs/reference sections current",
       "archive_sha256": "89e77d7c22832084637466c69f4cdfdaf7bda2b9f0e7f00c3da3313c9fb4a135",
       "manifest_sha256": "6b2e700bc39fa3e52ae5abe184d48f1c2f512e7a89b39b604a1b8fceed2e2205",
-      "mba_renderer_lease": "free"
+      "mba_renderer_lease": "free",
+      "final_head": "c0453386a9e837c307e642c64720c605d1ace6ab",
+      "final_delta_review": "MBAclean, exactgeneratedmanifest",
+      "issue_closed": true,
+      "merge_pending": true
     },
     "safe_gunnery_lesson": {
       "owner": "G4",
@@ -6268,10 +6279,16 @@
       "id": "T03.P01",
       "owner": "G4",
       "design_owner": "UX",
-      "state": "bounded source preflight and concrete design assigned",
+      "state": "approvedmanualobservationpolicy authoring; exactcorridordimensions pendingUX",
       "dependency": "Actual uncrewed practice provider source; missing safe acquisition/evasion/disengagement terms",
       "scope": "NativeDefensiveFlight policy/runtime and focused units, no ordinary-ship replacement or hardware grant",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "formats": [
+        135,
+        136
+      ],
+      "hardware_grant": false,
+      "ordinary_targeting_change": false
     }
   }
 }
