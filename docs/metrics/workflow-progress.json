@@ -4987,7 +4987,7 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08 complete seed-service loop on feature/wayfarer-seed-service; ready workshop findings at packet boundary",
-      "G3": "M02.P05 station navigation clarity; retain PR51 qualification/correction/merge ownership"
+      "G3": "M02.P01 control/action consistency; retain PR51 author merge/correction ownership"
     },
     "reviewer": "MBA/G2",
     "merge_owner": "Feature author; no separate integrator",
@@ -5219,7 +5219,20 @@
         "source_complete_at": null,
         "merged_at": null,
         "playable_at": null,
-        "ownership": "ScreenNavigation numbered-screen/title/projection hunks; StationDisplay docked footer; pure UI tests and paired notes; no G1 simulation/help mission hunks"
+        "ownership": "ScreenNavigation numbered-screen/title/projection hunks; StationDisplay docked footer; pure UI tests and paired notes; no G1 simulation/help mission hunks",
+        "disposition": "Existing implementation satisfies inspected navigation criteria; no new source change, test run or merge",
+        "source_evidence": "ScreenNavigation6\u201335; Game numbered dispatch1260; PlayerHelp90\u2013101; ChartDisplay314; StationDisplay Status/Inventory/Market; existing ScreenNavigationTests",
+        "qualification_scope": "Source inspection only; existing test definitions are not new execution proof"
+      },
+      {
+        "id": "M02.P01.controls",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T07:31:56.858334+00:00",
+        "phase_entry_state": "Bounded remaining mismatch correction assigned; credit compliant existing behavior",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "FlightControlInput/control projection; macOS key/menu hunks; PlayerHelp controls only; pure tests/pairednotes; excludes G1 mission/simulation"
       }
     ],
     "model_settings": {
