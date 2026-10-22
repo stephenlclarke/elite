@@ -5173,6 +5173,20 @@
         "PR84 full G11",
         "PR76 final composition when handed off"
       ]
+    },
+    {
+      "event": "Verified two obsolete runs cancelled after current-head replacements confirmed; G11 author safety finding routed to MBA",
+      "date": "2026-10-22",
+      "cancelled_runs": [
+        39766915942,
+        39767055203
+      ],
+      "replacement_runs": [
+        39767332595,
+        39767872407
+      ],
+      "g11_remote_head": "e69a8731a2caf59f61556e45f0d3685a4c7ecad1",
+      "g11_correction": "unpublished/unqualified manual-combat stop correction; independent review pending"
     }
   ],
   "two_developer_phase": {
@@ -6144,11 +6158,11 @@
       "active_assignment": "G11.P01 provider; issue60 source consult complete/no edit, G1 owns combined repair"
     },
     "qualification_queue_note": "Programmer73 prerequisite merged; drive275/307 and missile275/307 verified,74closed; same-author combined285 PR72 pending;69/65 current jobs active. No manual jobs.",
-    "complete_features_merged": 8,
-    "merged_feature_count_scope": "Shared delivery showroom48/help55/inventory51/market+night56/Wanted61 plus alien drive+missile72; custody73/media77/fixes excluded; no new usable app/release.",
+    "complete_features_merged": 9,
+    "merged_feature_count_scope": "Shared delivery showroom48/help55/inventory51/market+night56/Wanted61, alien drive+missile72 and complete C08 career69 (counted once); custody73/media77/fixes excluded. Source delivery is separate from native gameplay acceptance.",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
-    "accessible_unit_qualified_candidates_delivered": 1,
+    "accessible_unit_qualified_candidates_delivered": 2,
     "new_usable_build_delivery_scope": "Requires actual relevant execution/UI evidence; new available unit-qualified notarized candidate recorded separately, no native journey run under coding policy.",
     "candidate": {
       "version": "1.4.902",
@@ -6194,12 +6208,15 @@
         21,
         57,
         59,
-        62
+        62,
+        68,
+        82
       ],
       "extra_closed_head_deleted": 58,
       "recovery_tags": [
         "archive/branch-cleanup-20261022T080946Z",
-        "archive/pr-consolidation-20261022T094058Z"
+        "archive/pr-consolidation-20261022T094058Z",
+        "archive/superseded-pr82-20261022-a8ac15df"
       ],
       "delivery_pr": 25,
       "delivery_base": "main",
@@ -6224,7 +6241,7 @@
         18
       ],
       "local_worktrees_indexes_files_unchanged": true,
-      "current_remote_branches": 7,
+      "current_remote_branches": 8,
       "newly_retired_pr": 68,
       "new_source_archive": "archive/recovered-equipment-20261022-50950372"
     },
@@ -6467,6 +6484,23 @@
       "shared_symbol": "Game.telemetryFacts(for:) inNPCResourceRuntime.swift",
       "preserve": "Existinggenerated/recordedroutes,cargo,provenance,Pirate/Militarytiers",
       "hud_performance_limit": "No wholeCommander/fullsave/fullengine validation or speculativecache"
-    }
+    },
+    "accessible_candidate_count_scope": "Distinct local candidates901 and902;902 independently artifact-verified and user notified. No published-release or native-gameplay acceptance claim.",
+    "cancelled_superseded_runs": [
+      {
+        "run": 39766915942,
+        "head": "a8ac15df45ee627e7e01d29e879e18bce897c953",
+        "replacement": 39767332595,
+        "state": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "run": 39767055203,
+        "head": "b2821428232afdd5bda8b2862156890262147b6c",
+        "replacement": 39767872407,
+        "state": "completed",
+        "conclusion": "cancelled"
+      }
+    ]
   }
 }
