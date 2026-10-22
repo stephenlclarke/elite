@@ -5272,12 +5272,17 @@
         "pr_url": "https://github.com/stephenlclarke/elite/pull/57",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/57#issuecomment-6335771730",
         "unit_run": 39744222656,
-        "unit_status": "39744222656FAILURE08:13:03;MBAexistingartifactclassificationpending",
+        "unit_status": "MBAverifiedcompilePASS782.08s;SIGNAL4,zeroverifiedmethodpasses,52byteXMLinvalid,noattributablecrashreport",
         "new_methods": 14,
         "source_review_result": "MBA235719f0completefeature/14fixtures CLEAN;closed117/118reversejoins and271selectorverified",
         "source_review_completed_at": "2026-10-22T08:01:32Z",
         "handoff_at": "2026-10-22T07:58:22Z",
-        "source_review_latency_seconds": 190
+        "source_review_latency_seconds": 190,
+        "ready_findings": [
+          60
+        ],
+        "finding_owner": "MC1boundedsourceinspection;G1featureauthor/correctionownerafterexactreservation",
+        "finding_kind": "Unattributedunitexecutioncrash;rootcauseunknown;notfailedassertionorcompilererror"
       },
       {
         "id": "M02.P05.station-navigation",
@@ -5479,12 +5484,14 @@
         "id": "M07.P01.legal-facts",
         "owner": "G3",
         "assigned_at": "2026-10-22T08:16:51.454428+00:00",
-        "phase_entry_state": "Boundedactuallegal/scannerprojectiongapimplementationassigned",
+        "phase_entry_state": "ActualPLUGHfactprojectiongap confirmed;WantedBoard-onlyfixapproved",
         "source_complete_at": null,
         "merged_at": null,
         "playable_at": null,
-        "ownership": "WantedBoard/NPCResources/purelegal-factprojections/tests/notes",
-        "limits": "NoG1Game/mission/saveorG4combat/scoop;no fabricatedtraffic/cargo/routes"
+        "ownership": "WantedBoardtwofactlookups+2puredossierunits/notes",
+        "limits": "NoG1Game/mission/saveorG4combat/scoop;no fabricatedtraffic/cargo/routes",
+        "source_state": "G3implementingobservedlocation/destinationresolvercorrection",
+        "credited_behavior": "Nativelegal/bounty/resource mechanics unchanged;no fabricatedtarget/cargo/travelfacts"
       }
     ],
     "model_settings": {
@@ -5510,14 +5517,24 @@
         "source": "Latest explicit human report and authorization; no tool model override"
       }
     },
-    "escalations": [],
+    "escalations": [
+      {
+        "issue": 60,
+        "session": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "started_at": "2026-10-22T08:19:36.191982+00:00",
+        "reason": "UnattributedSIGNAL4/zeropasses;boundedsource-onlyreviewfreesG1tocontinuecertification",
+        "scope": "Exactnewseed14fixtures/validation;noedituntilsourceprovenhunkreservation",
+        "status": "Active source inspection; no actual cause claimed",
+        "new_jobs_started": 0
+      }
+    ],
     "escalation_reserve": {
       "session": "01a14024-0284-7b43-8d7f-e07a9208b253",
       "name": "Mission Coder 1",
       "authority": "Latest human instruction: use Mission Coder1 for difficult things",
       "policy": "Named necessary blocker only; no standing implementation stream; independent MBA review",
       "model": null,
-      "active_assignment": null
+      "active_assignment": "Issue60 boundedsource-onlyseedcrashreview"
     },
     "qualification_queue_note": "PR55mergedfd9after257/289PASS;PR54GitHubmarkedmerged;PR51/56actualcurrentheadspending;MBA reviewqueueclear",
     "complete_features_merged": 2,
