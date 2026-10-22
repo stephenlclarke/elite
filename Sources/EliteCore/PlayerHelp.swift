@@ -226,7 +226,12 @@ public enum PlayerHelp {
     case .system:
       .init(
         title: "SYSTEM DATA",
-        rows: ["UP / DOWN / SCROLL - LONG PLANET DATA", "ESC - PREVIOUS SCREEN", "K - HELP"])
+        rows: [
+          Display.systemWindow(game, width: game.viewportWidth, height: game.viewportHeight).last
+            == 0
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - LONG PLANET DATA",
+          "ESC - PREVIOUS SCREEN", "K - HELP",
+        ])
     case .market where !game.docked:
       .init(
         title: "MARKET PRICES",
@@ -262,9 +267,9 @@ public enum PlayerHelp {
           "MINING / SALVAGE MODULES REQUIRE A CORE",
           game.informationWindow.hint == nil
             ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
-          "OPTION-UP/DOWN - PAGE LONG LISTS",
-          "ESC - PREVIOUS SCREEN",
-        ])
+        ]
+          + (game.informationWindow.last > 0 ? ["OPTION-UP/DOWN - PAGE LONG LISTS"] : [])
+          + ["ESC - PREVIOUS SCREEN"])
     case .buy, .sell, .market:
       .init(
         title: "MARKET: BUY / SELL",
