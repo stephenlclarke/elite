@@ -5282,6 +5282,19 @@
       "g11_failure_stage": "test compilation",
       "g11_qualified_methods": 0,
       "priority": "G1 issue88 first, then89/90; MC1 narrow91 correction; no added diagnostic campaign"
+    },
+    {
+      "event": "G11 test-compile correction pushed; T03 first run failed and existing evidence review assigned",
+      "date": "2026-10-22",
+      "g11_head": "89ef0ccaec2f488cb7395a65c21125fadcfa163e",
+      "g11_run": 39771925686,
+      "g11_compile_issue": 91,
+      "g11_methods": 343,
+      "g11_production_changed": false,
+      "t03_failed_run": 39771248644,
+      "t03_cause": "pending actual MBA log/XML classification",
+      "t03_owner": "G4",
+      "no_new_campaign": true
     }
   ],
   "two_developer_phase": {
