@@ -16,6 +16,15 @@ public enum PlayerHelp {
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
     if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction == .auditCharter {
+      pages.insert(.init(title: "AVENOR CHARTER AUDIT", rows: [
+        "ARROWS - SELECT AUDIT / RETURN - REVIEW", "CONFIRM - RECORD REAL CAPACITY REFUSAL",
+        "BACK / ESC - KEEP ALL RECORDS UNCHANGED", "ALL THREE OWNER SIGNATURES REQUIRED",
+        "ISSUED AVAILABLE LOT / OWNER DELEGATION", "NO STOCK / WINDOW / CARGO / CASH MOVES",
+        "STAGE12 ONLY / VEIL CERTIFICATION NEXT",
+      ]), at: 0)
+    }
+    if screen == .contracts,
       contextGame.contractBoard.selected?.wayfarerInduction?.isSeedStockAction == true
     {
       pages.insert(

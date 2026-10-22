@@ -3,7 +3,7 @@ import Foundation
 enum NativeWayfarerInductionAction: String, Sendable {
   case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, replaceArk,
     fundRescueLaunch, startRescueFlight, receiveRescue, authorizeUtility, receiveUtility,
-    pooledCharter, protectedCharter, allocateCharterCapacity,
+    pooledCharter, protectedCharter, allocateCharterCapacity, auditCharter,
     clinicConsent, workshopConsent, seedConsent, releaseClinicCapacity, releaseWorkshopCapacity,
     releaseSeedCapacity, issueClinicStock, viewClinicStock, acceptClinicSample, cancelClinicSample,
     pickupClinicSample, receiveClinicSample, cancelHeldClinicSample, returnClinicSample,
@@ -32,6 +32,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .pooledCharter: "Avenor charter / review Pooled windows"
     case .protectedCharter: "Avenor charter / review Protected reservations"
     case .allocateCharterCapacity: "Avenor charter / review still-unissued original capacity"
+    case .auditCharter: "Avenor / review original charter capacity audit"
     case .clinicConsent: "Renas clinic / review selected charter consent"
     case .workshopConsent: "Enmadan workshop / review selected charter consent"
     case .seedConsent: "Enlirin seed custodians / review selected charter consent"
@@ -96,6 +97,7 @@ struct NativeWayfarerInductionReview: Sendable {
   var seedQuote: NativeInductionSeedQuote? = nil
   var seedWindow: NativeInductionCapacityReservation? = nil
   var seedChildRevision: UInt64? = nil
+  var charterAuditCandidate: NativeInductionCharterAuditCandidate? = nil
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
 }
@@ -114,7 +116,7 @@ extension Game {
       }
     }
     let operatorRows =
-      inductionCharterOperatorRows + inductionClinicRows + inductionWorkshopRows + inductionSeedRows
+      inductionCharterOperatorRows + inductionClinicRows + inductionWorkshopRows + inductionSeedRows + inductionCharterAuditRows
     if !operatorRows.isEmpty { return operatorRows }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
@@ -167,7 +169,8 @@ extension Game {
     _ action: NativeWayfarerInductionAction, capacityUnit: UUID? = nil,
     prepareClinicQuote: Bool = false, clinicReference: UUID? = nil,
     prepareWorkshopQuote: Bool = false, workshopReference: UUID? = nil,
-    prepareSeedQuote: Bool = false, seedReference: UUID? = nil
+    prepareSeedQuote: Bool = false, seedReference: UUID? = nil,
+    prepareCharterAudit: Bool = false
   ) -> NativeWayfarerInductionReview {
     let unit =
       action.isCapacityRelease
@@ -228,6 +231,11 @@ extension Game {
         )
       }
     }
+    let auditCandidate = prepareCharterAudit && action == .auditCharter
+      ? try? inductionCharterAuditCandidate() : nil
+    if action == .auditCharter && prepareCharterAudit && auditCandidate == nil {
+      actionIssues.append("No real available source consignment/current delegated quote and blocked same-owner window; review again after restoring those prerequisites.")
+    }
     let trade =
       action == .accept
       ? commander.equipmentOwnerID.flatMap {
@@ -258,7 +266,8 @@ extension Game {
       workshopChildRevision: workshopReference.flatMap {
         commander.scriptState.instances[$0]?.revision
       }, seedReference: seedReference, seedQuote: seedQuote, seedWindow: seedWindow,
-      seedChildRevision: seedReference.flatMap { commander.scriptState.instances[$0]?.revision }
+      seedChildRevision: seedReference.flatMap { commander.scriptState.instances[$0]?.revision },
+      charterAuditCandidate: auditCandidate
     )
   }
 
@@ -285,7 +294,7 @@ extension Game {
       && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility
       && action.charterPolicy == nil && action != .allocateCharterCapacity
       && action.capacityOperator == nil && !action.isClinicStockAction && !action.isWorkshopAction
-      && !action.isSeedStockAction,
+      && !action.isSeedStockAction && action != .auditCharter,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -304,6 +313,7 @@ extension Game {
     case .receiveUtility: issues += inductionUtilityReceivingIssues()
     case .pooledCharter, .protectedCharter: issues += inductionCharterChoiceIssues()
     case .allocateCharterCapacity: issues += inductionCapacityAllocationIssues()
+    case .auditCharter: issues += inductionCharterAuditIssues()
     case .clinicConsent, .workshopConsent, .seedConsent, .releaseClinicCapacity,
       .releaseWorkshopCapacity, .releaseSeedCapacity:
       issues += inductionCharterOperatorIssues(action, unit: capacityUnit)
@@ -361,7 +371,8 @@ extension Game {
     let current = wayfarerInductionReview(
       quote.action, prepareClinicQuote: quote.action == .acceptClinicSample,
       prepareWorkshopQuote: quote.action == .acceptWorkshopUnit,
-      prepareSeedQuote: quote.action == .acceptSeedLot)
+      prepareSeedQuote: quote.action == .acceptSeedLot,
+      prepareCharterAudit: quote.action == .auditCharter)
     guard quote.allowed, current.allowed, quote.dock == current.dock,
       quote.carrier == current.carrier, quote.inventoryRevision == current.inventoryRevision,
       quote.trade == current.trade, quote.epoch == current.epoch,
@@ -370,6 +381,7 @@ extension Game {
       quote.utilityRevision == current.utilityRevision,
       quote.capacityRevision == current.capacityRevision,
       quote.capacityUnit == current.capacityUnit,
+      quote.charterAuditCandidate == current.charterAuditCandidate,
       quote.clinicReference == current.clinicReference,
       quote.clinicChildRevision == current.clinicChildRevision,
       quote.seedReference == current.seedReference,
@@ -562,10 +574,17 @@ extension Game {
       default: throw SaveError.invalidCommander
       }
     }
+    if quote.action == .auditCharter {
+      guard let audit = current.charterAuditCandidate else { throw SaveError.invalidCommander }
+      try candidate.confirmInductionCharterAudit(audit)
+    }
     self = candidate
   }
 
   func wayfarerInductionDetail() -> [String] {
+    if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction) == .auditCharter {
+      return inductionCharterAuditDetail
+    }
     if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
       .isSeedStockAction == true
     {

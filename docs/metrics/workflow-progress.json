@@ -4986,8 +4986,9 @@
   "two_developer_phase": {
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
-      "G1": "C08 complete seed-service loop on feature/wayfarer-seed-service; ready workshop findings at packet boundary",
-      "G3": "M05.P01 native pack validation/capability reporting;retainsPR51/55/56qualification/merge"
+      "G1": "C08 actual Avenor charter audit;seedPR57review/unitsasync",
+      "G3": "M06.P03 appearance data joins;retainsPR51/56qualification/merge",
+      "G4": "T02.P01.provider native uncrewed practice targets/harmless native hits"
     },
     "reviewer": "MBA/G2",
     "merge_owner": "Feature author; no separate integrator",
@@ -5196,7 +5197,7 @@
         "obsolete_run": {
           "run": 39742600706,
           "head": "e4772060e3ec4ebe3b1142204b56f37e8ee52e6f",
-          "state": "Cancellationrequested;GitHubstillin_progressatlatestobservation;unqualified",
+          "state": "TerminalCANCELLED/unqualifiedverifiedviaGitHub",
           "reason": "Actualselectoromitsaffectedmethod;correct93successorjobalreadyexists"
         }
       },
@@ -5215,7 +5216,7 @@
         "new_methods": 11,
         "merged_at": null,
         "playable_at": null,
-        "source_state": "Completeworkshopsource/unitqualified;PR54authormergepending;notnewapp/nativejourney",
+        "source_state": "Completeworkshopsourcequalifiedandcorrectionauthor-merged;notnewapp/nativejourney/publicrelease",
         "compile_seconds": 730.78,
         "execution_seconds": 53.9,
         "ready_findings": [],
@@ -5233,7 +5234,9 @@
           53
         ],
         "correction_verified_methods": 255,
-        "correction_verified_expanded_cases": 287
+        "correction_verified_expanded_cases": 287,
+        "correction_merged_at": "2026-10-22T07:52:30Z",
+        "correction_merge_commit": "dbd4e2501a37c9316bb5571aa5343330f16da733"
       },
       {
         "id": "C08.P06.B.seed",
@@ -5244,7 +5247,17 @@
         "merged_at": null,
         "playable_at": null,
         "next_ready_scope": "C08 commit-charter actual Avenor audit, then certify-network and once-only terminal; no premature stage/reward credit",
-        "source_state": "Authorreportsloopcompilesandlifecycle/threeoperatorunitswritten;notyetpushed/independentlyreviewed/executed"
+        "source_state": "Completesourcepushed;14newtests/271selection;MBAreview/hostedexecutionpending",
+        "head": "235719f0ac4917293e53f566a2f39154fb31001e",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/57",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/57#issuecomment-6335771730",
+        "unit_run": 39744222656,
+        "unit_status": "Existing271jobactive",
+        "new_methods": 14,
+        "source_review_result": "MBA235719f0completefeature/14fixtures CLEAN;closed117/118reversejoins and271selectorverified",
+        "source_review_completed_at": "2026-10-22T08:01:32Z",
+        "handoff_at": "2026-10-22T07:58:22Z",
+        "source_review_latency_seconds": 190
       },
       {
         "id": "M02.P05.station-navigation",
@@ -5358,7 +5371,68 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "MissionPackInput/ScriptPack/PackValidation/narrowNativeMissionMenu/puretests/notes;noG1Director/Game/mission/save",
-        "limits": "Noinvalidpackmutation/rewards;nogenericlanguage/hotreload/replayframework"
+        "limits": "Noinvalidpackmutation/rewards;nogenericlanguage/hotreload/replayframework",
+        "disposition": "Existingvalidatedreferenceinstallation/lockedacceptance meetsledger;nochange",
+        "scope_correction": "Missingcapabilityisnotinvalidpack;preserveexplicitMISSIONREFERENCEanddependencylocking;noScriptRuntimeguardauthorized",
+        "source_evidence": "MissionPackInput;ScriptPackLibraryread;PackValidation;Nativepicker;ScriptDirectoracceptanceguard;existingMissionPackInputTests",
+        "qualification_scope": "Source/existingtestdefinitionsonly;nofreshexecution"
+      },
+      {
+        "id": "K06.P01.issue-return",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T07:55:12.050182+00:00",
+        "phase_entry_state": "Boundedactualfiniteissue/sameownerreceivinggapimplementationassigned",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "EquipmentMissionIssueContract/EquipmentIssueTransactions/narrowreceivingpolicies/puretests/notes;noG1Game/mission/save",
+        "limits": "Reusecurrentloan/bondledgers;nonewframework/campaign",
+        "disposition": "Existingfoundationcredited;noconcretegap/nochange",
+        "qualification_scope": "Source/existingunitdefinitionsonly;nofreshexecution/campaignspecificcompletion"
+      },
+      {
+        "id": "T02.P01.provider",
+        "owner": "G4",
+        "session": "01a16256-13d9-7a00-bd74-07d4dbf942aa",
+        "assigned_at": "2026-10-22T07:57:16.747470+00:00",
+        "phase_entry_state": "Missing native uncrewed practice provider explicitly assigned",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "NewNativePracticeprovider/PracticeTargettests;existingnativehunksrequireexactreservation",
+        "dependencies": "AcceptedT02/T03authoring;actualnativeadmission/hits;noordinaryharmfacts",
+        "limits": "NoG1/G3overlap,no schema changes without decision,no tutorial reward,genericlanguage orlocalintegrationjobs",
+        "initial_authoring": "RootexplicitnewL337three6mcubes/frozenplayerposeoffsets1500\u20132100m/650mvolume;unsafeadmissionrefuses;notrecoveredpredecessorspec",
+        "reserved_shared_hunks": [
+          "GameplayOrdnance verified contact before applyCombatHit",
+          "GameplayCombat refuse unscoped beacon damage without practice receipt"
+        ],
+        "state_scope": "G1approvedoptionalpracticeproperty/init+ScriptPersistencepracticehunks+optionalAlienSave.contains;seed117118,audit119120,practice121122fixed/precedence",
+        "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support"
+      },
+      {
+        "id": "C08.commit-charter.audit",
+        "owner": "G1",
+        "assigned_at": "2026-10-22T07:59:46.640065+00:00",
+        "phase_entry_state": "AlreadyassignedactualAvenorauditstartsafterseedpush",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "Newaudittypes/narrowG1mission-board-savejoins;separatedependentbranch",
+        "limits": "Actual3signatures+finitecapacityrefusal;nofabricatedreservations/noearlyreward"
+      },
+      {
+        "id": "M06.P03.appearance",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T07:59:46.640065+00:00",
+        "phase_entry_state": "Concreteoriginalhigh-techclampinggap confirmed;minimalfixapproved",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "PlanetLightingoriginal-systeminitializer+focusedhighTL/minmax/legacyunits/notes",
+        "limits": "Nophysicalmechanics/meshbackend/newart/research/visualcampaign",
+        "source_state": "G3implementingPlanetLightingoriginal-systemtechboundsjoin",
+        "credited_behavior": "Existingbelt/orestablematerialjoinscorrect;nochangeneeded"
       }
     ],
     "model_settings": {
@@ -5377,7 +5451,12 @@
         "source": "Human confirms Coder2 High; Coder2 also runs the existing MBA review workflow",
         "implementation_policy": "Reviewer only; Mission Coder1 supersedes Coder2 as difficult-coding reserve"
       },
-      "comparison_caveat": "Worker count and reported effort settings may differ from the prior period; do not attribute a change solely to parallelism."
+      "comparison_caveat": "Worker count and reported effort settings may differ from the prior period; do not attribute a change solely to parallelism.",
+      "G4": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "source": "Latest explicit human report and authorization; no tool model override"
+      }
     },
     "escalations": [],
     "escalation_reserve": {
@@ -5418,6 +5497,15 @@
         "Unfinished workshop loop"
       ]
     },
-    "branch_policy": "Both authors use feature branches/PRs for new work; seed branches fromfcf, no unreviewed directsharedpush; fcf lastlegacydirectpacket. No history rewrite/integrator."
+    "branch_policy": "Both authors use feature branches/PRs for new work; seed branches fromfcf, no unreviewed directsharedpush; fcf lastlegacydirectpacket. No history rewrite/integrator.",
+    "resource_changes": [
+      {
+        "observed_at": "2026-10-22T07:57:16.747470+00:00",
+        "change": "Human explicitly adds third developer G4 High",
+        "session": "01a16256-13d9-7a00-bd74-07d4dbf942aa",
+        "scope": "T02.P01.provider;newNativePracticefiles/tests;existinghunksreservedbeforeedit",
+        "comparison_caveat": "Retain baseline/phase history;worker count changed;no causal speedup claim"
+      }
+    ]
   }
 }

@@ -32,6 +32,10 @@ The retained single-developer snapshot at21 October20:11:14UTC covers4.29hours:1
 
 The first comparison follows a full24-hour two-developer window. Show both complete-feature outcomes and each feature's actual complexity/carry-over; a small unequal sample is directional, not causal proof. Review backlog above two ready packets or oldest source-review age above30minutes triggers orchestration, never a developer wait. Metrics are maintained from existing events without extra testing, forms or per-poll paperwork. The JSON stores the phase baseline and both feature outcomes.
 
+## Third developer added — explicit resource change
+
+On22 October Stephen added Elite Coder4, session01a16256-13d9-7a00-bd74-07d4dbf942aa, reported Sol6.1 High. G1/G3 remain Medium; G2/MBA independently reviews all three. G4 owns the separate T02.P01 practice provider. Record this as a resource/configuration change within the existing series, not a reset or a claimed speedup. Compare subsequent complete-feature outcomes with clear worker-count and complexity caveats; do not attribute differences solely to parallelism. No extra tests or forms are introduced.
+
 ## Lightweight maintenance
 
 Batch JSON updates at natural packet boundaries, meaningful delivery changes and the existing daily hygiene review, deduplicated by SHA, review URL or run ID. Use the single PR handoff, review/finding issues, Actions results and ledger transitions; issue23 records are historical. Do not create a separate commit or dossier for every review or CI transition. No builds, tests, new worker or extra developer form is needed for measurement. Keep the prior snapshot; report changes since the last snapshot and window-to-window comparisons when asked or a meaningful milestone changes.
