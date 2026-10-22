@@ -4802,7 +4802,7 @@
         49,
         50
       ],
-      "issue_state": "awaiting-mba;not closed",
+      "issue_state": "50ready;49awaitingMBAactualexecution",
       "showroom_head": "382664d131016207aec3e2c41418b62dceef7a25",
       "showroom_run": 39733402267,
       "integration_handoff_required": false,
@@ -4810,10 +4810,12 @@
       "handoff_at": "2026-10-22T06:21:00Z",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6334216242",
       "github_run": 39733300232,
-      "unit_status": "existing correction run in_progress",
+      "unit_status": "FAILURE compile exit1/noXML/ZEROmethods; overlapping computed nativeStations accesses at257/258 under50",
       "source_review": "MBA correction and showroom composition source clean",
       "source_review_completed_at": "2026-10-22T06:24:15Z",
-      "handoff_to_source_review_seconds": 195
+      "handoff_to_source_review_seconds": 195,
+      "executed_methods": 0,
+      "source_review_scope": "Prior logical source fix clean; hosted compiler rejects overlapping accesses in new fixture expression"
     },
     {
       "event": "Complete clinic loop source pushed; next complete workshop service assigned",
@@ -4893,18 +4895,21 @@
         "latest_handoff_at": "2026-10-22T06:01:52Z",
         "source_review_latency_seconds": 245,
         "source_review_scope": "10 acceptance methods, actual Confirm/cancel, attained exit/source loss publication, stock/window/child reverse joins, aggregate slots/hold and closed111/112",
-        "ready_findings": [],
+        "ready_findings": [
+          50
+        ],
         "finding_owner": "G1; routine positive fixture corrections; no MC1 escalation",
         "awaiting_verification_findings": [
-          49,
-          50
+          49
         ],
         "correction_head": "2c38cdbba55d86523ff53e5e9e7cc0a0fcf342a2",
         "correction_unit_run": 39733300232,
         "correction_handoff_at": "2026-10-22T06:21:00Z",
         "source_complete_head": "409d042c3a242330c9ae6c71b2316b3678f09180",
         "source_complete_evidence": "Author commit and handoff6334295039; not independent qualification",
-        "correction_unit_status": "FAILURE at2c38/39733300232; MBA inspecting existing artifact; remaining cause/counts unknown"
+        "correction_unit_status": "FAILURE compile exit1/noXML/ZEROmethods; overlapping computed nativeStations accesses at257/258 under50",
+        "correction_failure_kind": "fixture compiler error, not failed unit execution",
+        "escalation_decision": "G1 routine local-value latch; no MC1needed"
       },
       {
         "id": "M02.P04/F06",
