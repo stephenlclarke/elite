@@ -158,7 +158,8 @@ struct NativeWayfarerInductionNetworkUnitTests {
     ])
     for schema in [123, 124] {
       try NativeInductionCrewLogSave.validateFields(bytes, part: .missions, schema: schema)
-      try NativeWayfarerInductionSave.validateFields(bytes, part: .missions, schema: schema)
+      try NativeWayfarerInductionSave.validateFields(
+        bytes, part: .missions, schema: NativeInductionArkSave.lowerSchema(schema))
     }
     for schema in [119, 120, 121, 122, 117, 118] {
       #expect(throws: (any Error).self) {
@@ -181,7 +182,8 @@ struct NativeWayfarerInductionNetworkUnitTests {
       "instances": [mission.id.uuidString: changed]
     ])
     #expect(throws: (any Error).self) {
-      try NativeWayfarerInductionSave.validateFields(unknown, part: .missions, schema: 123)
+      try NativeWayfarerInductionSave.validateFields(
+        unknown, part: .missions, schema: NativeInductionArkSave.lowerSchema(123))
     }
     let misplaced = try JSONSerialization.data(withJSONObject: [
       "networkCertification": certification
