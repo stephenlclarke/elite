@@ -4409,10 +4409,14 @@
       "selection_methods": 139,
       "new_methods": 7,
       "source_review": "MBA completed; no actionable source finding",
-      "unit_status": "existing hosted active; artifact pending",
+      "unit_status": "MBA verified exact-head hosted PASS",
       "next_assigned": "C08.P04.B.pickup",
       "usable_build_delivered": false,
-      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329698798"
+      "handoff": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329698798",
+      "verified_methods": 139,
+      "verified_expanded_cases": 171,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6329819723",
+      "qualification_scope": "Source/admission pure structural units; no native journey/refusal execution or playable delivery"
     }
   ]
 }
