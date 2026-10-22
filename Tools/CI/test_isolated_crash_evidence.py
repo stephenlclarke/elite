@@ -21,6 +21,66 @@ class IsolatedCrashEvidenceTests(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
 
+    def capture_snapshots(self, snapshots):
+        process = SimpleNamespace(pid=10, exit_code=None)
+        process.poll = lambda: process.exit_code
+        samples = iter(snapshots)
+
+        def read_snapshot():
+            rows, process.exit_code = next(samples)
+            return rows
+
+        capture = evidence.IsolatedCrashEvidence(
+            self.root, self.root / 'evidence', roots=[], read_snapshot=read_snapshot)
+        # Run the observer synchronously against synthetic snapshots, without a thread or ps.
+        with patch.object(evidence.threading, 'Thread') as thread, \
+                patch.object(capture.stop, 'wait',
+                             side_effect=[False] * (len(snapshots) - 1) + [True]):
+            thread.return_value.start.side_effect = lambda: thread.call_args.kwargs['target']()
+            capture.start(process)
+        self.assertEqual(capture.errors, [])
+        return capture
+
+    def test_live_root_exec_keeps_both_commands_and_discovers_new_test_descendants(self):
+        original = row(1, '/tool/swift test --filter selected')
+        executed = row(1, '/tool/swift-test --filter selected')
+        helper = row(10, '/tool/swiftpm-testing-helper --test-bundle-path native')
+        native = row(11, '/build/ElitePackageTests')
+        capture = self.capture_snapshots([
+            ({10: original}, None),
+            ({10: executed, 11: helper}, None),
+            ({10: executed, 11: helper, 12: native, 90: row(1, 'foreign')}, None),
+        ])
+        self.assertEqual(capture.history, {10: [original, executed], 11: [helper], 12: [native]})
+        self.assertEqual(capture.known, {10: executed, 11: helper, 12: native})
+
+    def test_exited_root_cannot_reenrol_even_with_the_same_start_and_command(self):
+        original = row(1, '/tool/swift test --filter selected')
+        capture = self.capture_snapshots([
+            ({10: original}, None),
+            ({}, 0),
+            ({10: original, 11: row(10, '/tool/swiftpm-testing-helper')}, 0),
+        ])
+        self.assertEqual(capture.history, {10: [original]})
+
+    def test_root_exit_during_first_snapshot_never_establishes_authority(self):
+        capture = self.capture_snapshots([
+            ({10: row(1, '/tool/swift test'),
+              11: row(10, '/tool/swiftpm-testing-helper')}, 0),
+        ])
+        self.assertEqual(capture.history, {})
+        self.assertEqual(capture.known, {})
+
+    def test_live_poll_cannot_authorize_a_changed_start_root(self):
+        original = row(1, '/tool/swift test --filter selected')
+        replacement = row(1, '/tool/swift-test --filter selected', start='later')
+        capture = self.capture_snapshots([
+            ({10: original}, None),
+            ({10: replacement, 11: row(10, '/tool/swiftpm-testing-helper')}, None),
+        ])
+        self.assertEqual(capture.history, {10: [original]})
+        self.assertEqual(capture.known[10], original)
+
     def test_old_evidence_is_cleared_and_foreign_or_symbolic_roots_refused(self):
         directory = self.root / 'evidence'
         directory.mkdir()
@@ -38,24 +98,26 @@ class IsolatedCrashEvidenceTests(unittest.TestCase):
         rows = {10: row(1), 11: row(10, 'swift helper'), 12: row(11, 'native test'),
                 90: row(1, 'unrelated'), 91: row(90, 'other test')}
         known, history = {}, {}
-        evidence.observe_descendants(rows, 10, known, history)
+        evidence.observe_descendants(rows, 10, known, history, root_alive=True)
         self.assertEqual(set(history), {10, 11, 12})
-        evidence.observe_descendants(rows, 10, known, history)
+        evidence.observe_descendants(rows, 10, known, history, root_alive=True)
         self.assertTrue(all(len(records) == 1 for records in history.values()))
 
     def test_reused_root_or_child_pid_cannot_confer_ownership(self):
         known, history = {}, {}
-        evidence.observe_descendants({10: row(1), 11: row(10)}, 10, known, history)
+        evidence.observe_descendants({10: row(1), 11: row(10)}, 10, known, history,
+                                     root_alive=True)
         reused = {10: row(1, start='later'), 11: row(1, start='later'), 12: row(11)}
-        evidence.observe_descendants(reused, 10, known, history)
+        evidence.observe_descendants(reused, 10, known, history, root_alive=True)
         self.assertEqual(set(history), {10, 11})
         self.assertEqual(known[10]['start'], 'Thu Oct 22 01:00:00 2026')
 
     def test_changed_unowned_command_does_not_match_old_identity(self):
         known, history = {}, {}
-        evidence.observe_descendants({10: row(1), 11: row(10)}, 10, known, history)
+        evidence.observe_descendants({10: row(1), 11: row(10)}, 10, known, history,
+                                     root_alive=True)
         evidence.observe_descendants({11: row(1, command='unrelated exec'), 12: row(11)},
-                                     10, known, history)
+                                     10, known, history, root_alive=True)
         self.assertNotIn(12, history)
         self.assertEqual(history[11][0]['command'], 'owned')
 
@@ -64,9 +126,9 @@ class IsolatedCrashEvidenceTests(unittest.TestCase):
         rows = {10: row(1, '/tool/swift test'),
                 11: row(10, '/tool/swift-frontend ' + 'large-file.swift ' * 1000),
                 12: row(10, '/tool/swiftpm-testing-helper --test-bundle-path native')}
-        capture.observe(rows, 10)
+        capture.observe(rows, 10, root_alive=True)
         self.assertEqual(set(capture.history), {10, 12})
-        capture.observe({10: rows[10]}, 10)
+        capture.observe({10: rows[10]}, 10, root_alive=True)
         self.assertEqual(set(capture.known), {10})
         self.assertEqual(set(capture.history), {10, 12})
 
