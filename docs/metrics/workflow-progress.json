@@ -4955,10 +4955,18 @@
       "ledger_parent": "C08.P06.B.workshop",
       "github_run": 39738732938,
       "new_methods_reported": 11,
-      "handoff_status": "Missing atauthoritativePRcommentread; Rootrequestedsolecomment",
-      "source_review": "queuedMBA",
+      "handoff_status": "posted afterRootidentifiedmissingcomment",
+      "source_review": "MBA CLEAN",
       "unit_status": "active",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "handoff_at": "2026-10-22T07:14:38Z",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6335036267",
+      "source_review_completed_at": "2026-10-22T07:15:12Z",
+      "source_review_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6335045412",
+      "push_to_source_review_seconds": 258,
+      "handoff_to_source_review_seconds": 34,
+      "latency_caveat": "Source review began before lateformalhandoff;34seconds is not pure review duration",
+      "selection_methods": 255
     }
   ],
   "two_developer_phase": {
@@ -5136,7 +5144,8 @@
         "correction_handoff_at": "2026-10-22T07:02:04Z",
         "correction_source_review_result": "MBA f791 bounded correction/final composition CLEAN; production unchanged; four literal indentation expectations only; originalassertionsretained",
         "selector_review": "Exactunion of priorafba244 and merged8b30244 equals247, no missing/unexpectedmethods",
-        "issue_metadata": "mba-finding and awaiting-mba restored;OPEN"
+        "issue_metadata": "mba-finding and awaiting-mba restored;OPEN",
+        "merge_blocker": "ActualDIRTYsharedselectorconflictwithworkshopfcf;G3assignedonenecessarycompositionpreserving255+3=258"
       }
     ],
     "model_settings": {
