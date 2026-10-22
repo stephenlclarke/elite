@@ -5027,6 +5027,19 @@
       ],
       "final_union_expected": 285,
       "usable_build_delivered": false
+    },
+    {
+      "event": "G11 native acceptance bridge assigned with concrete terms and disjoint parent authority",
+      "date": "2026-10-22",
+      "owner": "G3",
+      "quote_credits": 970,
+      "parent_formats": [
+        133,
+        134
+      ],
+      "provider_owner": "Mission Coder1",
+      "scope": "Real native Avenor acceptance and atomic original1t issue/return, existing custody and actual issueoperationUUID; later settlement requires actual provider receipts",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -6083,10 +6096,21 @@
     },
     "g11_parent_bridge": {
       "owner": "G3",
-      "state": "source preflight pending exact UX contract",
+      "state": "implementing accepted native parent and original programmer issue/return adapter",
       "design_owner": "UX",
       "dependency": "Actual native parent acceptance and original issue/return authority; not a mock flag",
-      "supersedes": "M17 fabrication as next G3 assignment"
+      "supersedes": "M17 fabrication as next G3 assignment",
+      "quote_credits": 970,
+      "quote_terms": "760+105*2+80*0; zero fee/deposit, no deadline",
+      "parent_formats": [
+        133,
+        134
+      ],
+      "provider_formats": [
+        131,
+        132
+      ],
+      "actual_issue_operation_required": true
     },
     "recovered_equipment_composition": {
       "owner": "Mission Coder1",
