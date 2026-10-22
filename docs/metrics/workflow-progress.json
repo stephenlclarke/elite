@@ -6200,12 +6200,22 @@
       "design_sha256": "6f4888ce0a4811896bb154daa043dcb7e8d39663f50a54fb1017e104840c5b04",
       "repeatability_limit": "Only initial original pair/tool stock; post-failure replacement/recovery policy remains outstanding",
       "reserved_validation_leaf": "Single Commander.valid NativeIsolationWorkParentSave.validateClaims(self), primitive remains acyclic",
-      "focused_methods_planned": 6,
+      "focused_methods_planned": 9,
       "snapshot": "068ab92477f9c57a4139052248b38bcdcb5a5aee",
       "snapshot_tag": "archive/g3-isolation-parent-unqualified-20261022-068ab924",
       "snapshot_qualification": "UNQUALIFIED actualprovider/mixedcodec dependency remains",
       "remote_tag_verified": true,
-      "known_invalid_jobs_started": 0
+      "known_invalid_jobs_started": 0,
+      "physical_loss_state": "actual escape/death adapter authored, unexecuted",
+      "cutoff_cases": [
+        "returned",
+        "lost"
+      ],
+      "cutoff_common_fields": [
+        "operation",
+        "sequence",
+        "physicalTime"
+      ]
     },
     "recovered_equipment_composition": {
       "owner": "Mission Coder1",
@@ -6309,7 +6319,7 @@
       "id": "T03.P01",
       "owner": "G4",
       "design_owner": "UX",
-      "state": "approvedmanualobservationpolicy authoring; exactcorridordimensions pendingUX",
+      "state": "full exact UX contract approved; policy/observation/tutorial source assigned",
       "dependency": "Actual uncrewed practice provider source; missing safe acquisition/evasion/disengagement terms",
       "scope": "NativeDefensiveFlight policy/runtime and focused units, no ordinary-ship replacement or hardware grant",
       "usable_build_delivered": false,
@@ -6318,7 +6328,11 @@
         136
       ],
       "hardware_grant": false,
-      "ordinary_targeting_change": false
+      "ordinary_targeting_change": false,
+      "design_path": "docs/gameplay-design/T03-P01-DEFENSIVE-FLIGHT-PRACTICE.md",
+      "design_sha256": "521e6e5bd7b0957db15a202f7cb5705b7668c5b600c3b02ce31d864e2c271b65",
+      "corridor_inputs": "complete",
+      "qualification": "pending actualsource/units/review"
     }
   }
 }
