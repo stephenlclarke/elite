@@ -15,6 +15,21 @@ extension Game {
     fields["laser_heat"] = .number(laserHeat)
     fields["cabin_temperature"] = .number(cabinTemperature)
     fields["location"] = scriptCommanderLocationQuery
+    appendScriptCommanderStation(&fields, commander: commander)
+    appendScriptCommanderExtraction(&fields, commander: commander)
+    appendScriptCommanderRecordRecovery(&fields, commander: commander)
+    appendScriptCommanderIdentifiedSalvage(&fields, commander: commander)
+    appendScriptCommanderSurvey(&fields, commander: commander)
+    appendScriptCommanderOutlook(&fields, commander: commander)
+    appendScriptCommanderEvacuation(&fields, commander: commander)
+    appendScriptCommanderRescue(&fields, commander: commander)
+    return .object(fields)
+  }
+
+  @inline(never)
+  private func appendScriptCommanderStation(
+    _ fields: inout [String: ScriptValue], commander: borrowing Commander
+  ) {
     if nativeStationEventFacts != nil { fields["native_station"] = nativeStationFacts }
     if let receipt = commander.nativeStations?.currentMainDock, docked && dockedAtMainStation {
       fields["native_main_arrival"] = .object([
@@ -25,6 +40,12 @@ extension Game {
         "calendar_seconds": .number(receipt.calendarSeconds),
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScriptCommanderExtraction(
+    _ fields: inout [String: ScriptValue], commander: borrowing Commander
+  ) {
     if let state = measuredExtractionState,
       let source = commander.scriptState.savedMeasuredExtractionSource
     {
@@ -37,6 +58,12 @@ extension Game {
         "processed": .bool(state.processing != nil), "closed": .bool(state.reception != nil),
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScriptCommanderRecordRecovery(
+    _ fields: inout [String: ScriptValue], commander: borrowing Commander
+  ) {
     if let state = recordRecoveryState {
       fields["record_recovery"] = .object([
         "identified": .bool(state.identification != nil),
@@ -47,6 +74,12 @@ extension Game {
         "closed": .bool(state.reception != nil),
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScriptCommanderIdentifiedSalvage(
+    _ fields: inout [String: ScriptValue], commander: borrowing Commander
+  ) {
     if let state = identifiedSalvageState {
       fields["identified_salvage"] = .object([
         "held": .integer(Int64(state.held.count)),
@@ -56,6 +89,12 @@ extension Game {
         "closed": .bool(state.reception != nil),
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScriptCommanderSurvey(
+    _ fields: inout [String: ScriptValue], commander: borrowing Commander
+  ) {
     if let source = originalSurveyState {
       fields["consented_survey"] = .object([
         "mission": source.permission.map { .string($0.mission.uuidString) } ?? .null,
@@ -65,6 +104,12 @@ extension Game {
         "status": originalSurveyScanStatus.map(ScriptValue.string) ?? .null,
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScriptCommanderOutlook(
+    _ fields: inout [String: ScriptValue], commander: borrowing Commander
+  ) {
     if let source = commander.nativePeople?.outlookJourney {
       fields["orbital_outlook"] = .object([
         "people": .integer(Int64(source.references.count)),
@@ -79,6 +124,12 @@ extension Game {
         "status": orbitalOutlookScanStatus.map(ScriptValue.string) ?? .null,
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScriptCommanderEvacuation(
+    _ fields: inout [String: ScriptValue], commander: borrowing Commander
+  ) {
     if let state = commander.nativePeople?.orbitalEvacuation {
       fields["orbital_evacuation"] = .object([
         "registered": .integer(Int64(state.people.count)),
@@ -87,6 +138,12 @@ extension Game {
         "destination": .integer(185), "closed": .bool(state.terminalOperation != nil),
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScriptCommanderRescue(
+    _ fields: inout [String: ScriptValue], commander: borrowing Commander
+  ) {
     if let state = commander.nativePeople?.originalRescue {
       fields["original_rescue"] = .object([
         "mission": .string(state.mission.uuidString),
@@ -98,7 +155,6 @@ extension Game {
         "closed": .bool(state.terminalOperation != nil),
       ])
     }
-    return .object(fields)
   }
   private var scriptCommanderLocationQuery: ScriptValue {
     let location = withReadOnlyCommander { ($0.galaxy, $0.system) }

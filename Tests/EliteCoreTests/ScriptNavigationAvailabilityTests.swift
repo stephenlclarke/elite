@@ -61,13 +61,15 @@ struct ScriptNavigationAvailabilityTests {
     let invalid = ScriptNavigationTradeBinding(
       training: binding.training, destination: binding.training)
     let bindingRefusal =
-      "Navigation and trade practice awaits installed original-world endpoint bindings."
+      "Restore the installed original-world route records, then select an ordinary destination and reopen Mission Contacts."
     #expect(game.scriptUnavailable(pack, navigationBinding: invalid) == bindingRefusal)
     game.selectedSystem = game.commander.system
-    #expect(game.scriptUnavailable(pack) == bindingRefusal)
+    let selectionRefusal =
+      "Select a different reachable original-world destination on the chart, then reopen Mission Contacts."
+    #expect(game.scriptUnavailable(pack) == selectionRefusal)
     #expect(game.scriptUnavailable(pack, navigationBinding: binding) == nil)
     game.scriptDurabilityAvailable = false
-    #expect(game.scriptUnavailable(pack) == bindingRefusal)
+    #expect(game.scriptUnavailable(pack) == selectionRefusal)
     #expect(
       game.scriptUnavailable(pack, navigationBinding: binding)
         == "Choose a commander save before running this mission.")

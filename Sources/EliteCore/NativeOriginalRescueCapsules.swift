@@ -66,6 +66,14 @@ extension Game {
   func originalRescueFacts(_ body: borrowing SpaceBody, context: EncounterContext)
     -> NativeOriginalRescueSelectionFacts?
   {
+    guard body.missionInstanceID != nil, body.missionActorID != nil else { return nil }
+    return originalRescueFactsForMissionBody(body, context: context)
+  }
+
+  @inline(never)
+  private func originalRescueFactsForMissionBody(
+    _ body: borrowing SpaceBody, context: EncounterContext
+  ) -> NativeOriginalRescueSelectionFacts? {
     let currentBody = copy body
     let currentBodies = bodies
     return withReadOnlyCommander { commander in
@@ -79,7 +87,6 @@ extension Game {
     _ body: borrowing SpaceBody, context: borrowing EncounterContext,
     commander: borrowing Commander, bodies: borrowing [SpaceBody]
   ) -> NativeOriginalRescueSelectionFacts? {
-    guard body.missionInstanceID != nil, body.missionActorID != nil else { return nil }
     return eligibleOriginalRescueFacts(
       body, context: context, commander: commander, bodies: bodies)
   }

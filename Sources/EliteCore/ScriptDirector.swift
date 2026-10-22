@@ -155,137 +155,39 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
-    if pack.manifest.stateID == NativeInductionSeedPack.stateID
-      || pack.digest == NativeInductionSeedPack.digest
-    {
-      guard NativeInductionSeedPack.matches(pack) else {
-        return "Restore the original Enlirin seed family content."
-      }
-      guard
-        commander.scriptState.instances.values.contains(where: {
-          $0.definition == NativeInductionSeedPack.stateID && $0.digest == pack.digest
-            && $0.savedNativeInductionSeed != nil
-        })
-      else { return "Use the original seed custodian's actual Enlirin batch and booking review." }
+    if Self.scriptInductionSeedApplies(pack) {
+      if let reason = scriptInductionSeedUnavailable(pack) { return reason }
     }
-    if pack.manifest.stateID == NativeInductionWorkshopPack.stateID
-      || pack.digest == NativeInductionWorkshopPack.digest
-    {
-      guard NativeInductionWorkshopPack.matches(pack) else {
-        return "Restore the original Enmadan workshop family content."
-      }
-      guard
-        commander.scriptState.instances.values.contains(where: {
-          $0.definition == NativeInductionWorkshopPack.stateID && $0.digest == pack.digest
-            && $0.savedNativeInductionWorkshop != nil
-        })
-      else { return "Use the original workshop owner's actual Enmadan rebrief and booking review." }
+    if Self.scriptInductionWorkshopApplies(pack) {
+      if let reason = scriptInductionWorkshopUnavailable(pack) { return reason }
     }
-    if pack.manifest.stateID == NativeInductionClinicPack.stateID
-      || pack.digest == NativeInductionClinicPack.digest
-    {
-      guard NativeInductionClinicPack.matches(pack) else {
-        return "Restore the original Renas clinic family content."
-      }
-      guard
-        commander.scriptState.instances.values.contains(where: {
-          $0.definition == NativeInductionClinicPack.stateID && $0.digest == pack.digest
-            && $0.savedNativeInductionClinic != nil
-        })
-      else { return "Use the original clinic owner's actual Renas booking review." }
+    if Self.scriptInductionClinicApplies(pack) {
+      if let reason = scriptInductionClinicUnavailable(pack) { return reason }
     }
-    if pack.manifest.stateID == NativeInductionUtilityPack.stateID
-      || pack.digest == NativeInductionUtilityPack.digest
-    {
-      guard NativeInductionUtilityPack.matches(pack) else {
-        return "Restore the original Enron utility source."
-      }
-      guard
-        commander.scriptState.instances.values.contains(where: {
-          $0.definition == NativeInductionUtilityPack.stateID && $0.digest == pack.digest
-            && $0.savedNativeInductionUtility != nil
-        })
-      else { return "Use the actual Exchange utility authorization at Enron." }
+    if Self.scriptInductionUtilityApplies(pack) {
+      if let reason = scriptInductionUtilityUnavailable(pack) { return reason }
     }
-    if pack.manifest.stateID == NativeInductionCrewLogPack.stateID
-      || pack.digest == NativeInductionCrewLogPack.digest
-    {
-      guard NativeInductionCrewLogPack.matches(pack) else {
-        return "Restore the original Cevilis custody source."
-      }
-      guard
-        commander.scriptState.instances.values.contains(where: {
-          $0.definition == NativeInductionCrewLogPack.stateID && $0.digest == pack.digest
-            && $0.savedNativeCrewLog != nil
-        })
-      else { return "Continue the actual Exchange induction at Cevilis." }
+    if Self.scriptInductionCrewLogApplies(pack) {
+      if let reason = scriptInductionCrewLogUnavailable(pack) { return reason }
     }
-    if pack.manifest.stateID == NativeInductionArkPack.stateID
-      || pack.digest == NativeInductionArkPack.digest
-    {
-      guard NativeInductionArkPack.matches(pack) else {
-        return "Restore the registered original seed-ark service."
-      }
-      guard
-        commander.scriptState.instances.values.contains(where: {
-          $0.definition == NativeInductionArkPack.stateID && $0.digest == pack.digest
-            && $0.savedNativeArk != nil
-        })
-      else { return "Use the original custodian launch review at Enlirin." }
+    if Self.scriptInductionArkApplies(pack) {
+      if let reason = scriptInductionArkUnavailable(pack) { return reason }
     }
-    if pack.manifest.wayfarerInduction != nil
-      || pack.manifest.stateID == NativeWayfarerInduction.stateID
-    {
-      guard pack.digest == NativeWayfarerInduction.digest,
-        pack.manifest.wayfarerInduction?.valid == true
-      else { return "Restore the approved Wayfarer Exchange opening." }
-      if !commander.scriptState.instances.values.contains(where: {
-        $0.definition == NativeWayfarerInduction.stateID && $0.digest == pack.digest
-      }) {
-        return "Use Station Contracts at Avenor for Senn's induction commission."
-      }
+    if Self.scriptWayfarerInductionApplies(pack) {
+      if let reason = scriptWayfarerInductionUnavailable(pack) { return reason }
     }
-    if pack.manifest.glassMeridian != nil || pack.manifest.stateID == NativeGlassMeridian.stateID {
-      if let reason = NativeGlassMeridian.availability(
-        pack,
-        accepted: commander.scriptState.instances.values.contains(where: {
-          $0.definition == NativeGlassMeridian.stateID && $0.digest == pack.digest
-        }))
-      {
-        return reason
-      }
+    if Self.scriptGlassMeridianApplies(pack) {
+      if let reason = scriptGlassMeridianUnavailable(pack) { return reason }
     }
-    if pack.manifest.flightReception != nil
-      || pack.manifest.stateID == NativeFlightReception.stateID
-    {
-      guard pack.digest == NativeFlightReception.digest,
-        pack.manifest.flightReception?.valid == true
-      else {
-        return "Restore the approved flight and reception practice."
-      }
-      if !commander.scriptState.instances.values.contains(where: {
-        $0.definition == NativeFlightReception.stateID && $0.digest == pack.digest
-      }) {
-        return "Use Station Contracts at an actual original main training berth."
-      }
+    if Self.scriptFlightReceptionApplies(pack) {
+      if let reason = scriptFlightReceptionUnavailable(pack) { return reason }
     }
-    if pack.manifest.fieldRelief != nil || pack.manifest.stateID == WayfarerFieldRelief.stateID {
-      guard WayfarerFieldRelief.matches(pack) else {
-        return "Restore the original field-relief mission content."
-      }
-      if !commander.scriptState.instances.values.contains(where: {
-        $0.definition == WayfarerFieldRelief.stateID && $0.digest == pack.digest
-      }) {
-        return "Use Station Contracts at the actual Avenor source for native field relief."
-      }
+    if Self.scriptFieldReliefApplies(pack) {
+      if let reason = scriptFieldReliefUnavailable(pack) { return reason }
     }
     // Unrelated missions do not use a navigation binding; decide that before resolving one.
-    if pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability)
-      || pack.manifest.stateID == ScriptNavigationTradeContent.sourceID
-    {
-      if let reason = navigationTradeUnavailable(
-        pack, binding: navigationBinding ?? ScriptNavigationTradeBinding.production(in: self))
-      {
+    if Self.scriptNavigationTradeApplies(pack) {
+      if let reason = scriptNavigationTradeUnavailable(pack, navigationBinding: navigationBinding) {
         return reason
       }
     }
@@ -297,6 +199,226 @@ extension Game {
     if pack.manifest.capabilities.contains("durable-commands-v2"), !scriptDurabilityAvailable {
       return "Choose a commander save before running this mission."
     }
+    return scriptDependenciesUnavailable(pack)
+  }
+
+  @inline(never)
+  private static func scriptInductionSeedApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.stateID == NativeInductionSeedPack.stateID
+      || pack.digest == NativeInductionSeedPack.digest
+  }
+
+  @inline(never)
+  private static func scriptInductionWorkshopApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.stateID == NativeInductionWorkshopPack.stateID
+      || pack.digest == NativeInductionWorkshopPack.digest
+  }
+
+  @inline(never)
+  private static func scriptInductionClinicApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.stateID == NativeInductionClinicPack.stateID
+      || pack.digest == NativeInductionClinicPack.digest
+  }
+
+  @inline(never)
+  private static func scriptInductionUtilityApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.stateID == NativeInductionUtilityPack.stateID
+      || pack.digest == NativeInductionUtilityPack.digest
+  }
+
+  @inline(never)
+  private static func scriptInductionCrewLogApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.stateID == NativeInductionCrewLogPack.stateID
+      || pack.digest == NativeInductionCrewLogPack.digest
+  }
+
+  @inline(never)
+  private static func scriptInductionArkApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.stateID == NativeInductionArkPack.stateID
+      || pack.digest == NativeInductionArkPack.digest
+  }
+
+  @inline(never)
+  private static func scriptWayfarerInductionApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.wayfarerInduction != nil
+      || pack.manifest.stateID == NativeWayfarerInduction.stateID
+  }
+
+  @inline(never)
+  private static func scriptGlassMeridianApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.glassMeridian != nil
+      || pack.manifest.stateID == NativeGlassMeridian.stateID
+  }
+
+  @inline(never)
+  private static func scriptFlightReceptionApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.flightReception != nil
+      || pack.manifest.stateID == NativeFlightReception.stateID
+  }
+
+  @inline(never)
+  private static func scriptFieldReliefApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.fieldRelief != nil || pack.manifest.stateID == WayfarerFieldRelief.stateID
+  }
+
+  @inline(never)
+  private static func scriptNavigationTradeApplies(_ pack: ScriptPack) -> Bool {
+    return pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability)
+      || pack.manifest.stateID == ScriptNavigationTradeContent.sourceID
+  }
+
+  @inline(never)
+  private func scriptInductionSeedUnavailable(_ pack: ScriptPack) -> String? {
+    guard NativeInductionSeedPack.matches(pack) else {
+      return "Restore the original Enlirin seed family content."
+    }
+    guard
+      commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeInductionSeedPack.stateID && $0.digest == pack.digest
+          && $0.savedNativeInductionSeed != nil
+      })
+    else { return "Use the original seed custodian's actual Enlirin batch and booking review." }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptInductionWorkshopUnavailable(_ pack: ScriptPack) -> String? {
+    guard NativeInductionWorkshopPack.matches(pack) else {
+      return "Restore the original Enmadan workshop family content."
+    }
+    guard
+      commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeInductionWorkshopPack.stateID && $0.digest == pack.digest
+          && $0.savedNativeInductionWorkshop != nil
+      })
+    else { return "Use the original workshop owner's actual Enmadan rebrief and booking review." }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptInductionClinicUnavailable(_ pack: ScriptPack) -> String? {
+    guard NativeInductionClinicPack.matches(pack) else {
+      return "Restore the original Renas clinic family content."
+    }
+    guard
+      commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeInductionClinicPack.stateID && $0.digest == pack.digest
+          && $0.savedNativeInductionClinic != nil
+      })
+    else { return "Use the original clinic owner's actual Renas booking review." }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptInductionUtilityUnavailable(_ pack: ScriptPack) -> String? {
+    guard NativeInductionUtilityPack.matches(pack) else {
+      return "Restore the original Enron utility source."
+    }
+    guard
+      commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeInductionUtilityPack.stateID && $0.digest == pack.digest
+          && $0.savedNativeInductionUtility != nil
+      })
+    else { return "Use the actual Exchange utility authorization at Enron." }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptInductionCrewLogUnavailable(_ pack: ScriptPack) -> String? {
+    guard NativeInductionCrewLogPack.matches(pack) else {
+      return "Restore the original Cevilis custody source."
+    }
+    guard
+      commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeInductionCrewLogPack.stateID && $0.digest == pack.digest
+          && $0.savedNativeCrewLog != nil
+      })
+    else { return "Continue the actual Exchange induction at Cevilis." }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptInductionArkUnavailable(_ pack: ScriptPack) -> String? {
+    guard NativeInductionArkPack.matches(pack) else {
+      return "Restore the registered original seed-ark service."
+    }
+    guard
+      commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeInductionArkPack.stateID && $0.digest == pack.digest
+          && $0.savedNativeArk != nil
+      })
+    else { return "Use the original custodian launch review at Enlirin." }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptWayfarerInductionUnavailable(_ pack: ScriptPack) -> String? {
+    guard pack.digest == NativeWayfarerInduction.digest,
+      pack.manifest.wayfarerInduction?.valid == true
+    else { return "Restore the approved Wayfarer Exchange opening." }
+    if !commander.scriptState.instances.values.contains(where: {
+      $0.definition == NativeWayfarerInduction.stateID && $0.digest == pack.digest
+    }) {
+      return "Use Station Contracts at Avenor for Senn's induction commission."
+    }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptGlassMeridianUnavailable(_ pack: ScriptPack) -> String? {
+    if let reason = NativeGlassMeridian.availability(
+      pack,
+      accepted: commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeGlassMeridian.stateID && $0.digest == pack.digest
+      }))
+    {
+      return reason
+    }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptFlightReceptionUnavailable(_ pack: ScriptPack) -> String? {
+    guard pack.digest == NativeFlightReception.digest,
+      pack.manifest.flightReception?.valid == true
+    else {
+      return "Restore the approved flight and reception practice."
+    }
+    if !commander.scriptState.instances.values.contains(where: {
+      $0.definition == NativeFlightReception.stateID && $0.digest == pack.digest
+    }) {
+      return "Use Station Contracts at an actual original main training berth."
+    }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptFieldReliefUnavailable(_ pack: ScriptPack) -> String? {
+    guard WayfarerFieldRelief.matches(pack) else {
+      return "Restore the original field-relief mission content."
+    }
+    if !commander.scriptState.instances.values.contains(where: {
+      $0.definition == WayfarerFieldRelief.stateID && $0.digest == pack.digest
+    }) {
+      return "Use Station Contracts at the actual Avenor source for native field relief."
+    }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptNavigationTradeUnavailable(
+    _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding?
+  ) -> String? {
+    if let reason = navigationTradeUnavailable(
+      pack, binding: navigationBinding ?? ScriptNavigationTradeBinding.production(in: self))
+    {
+      return reason
+    }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptDependenciesUnavailable(_ pack: ScriptPack) -> String? {
     let versions = Set(scriptPacks.map { $0.manifest.id + "@" + $0.manifest.version })
       .union(missionPacks.entries.map { $0.pack.id + "@" + $0.pack.version })
     let missing = Set(pack.manifest.dependencies ?? []).subtracting(versions)
@@ -306,7 +428,7 @@ extension Game {
     // Read commander fields in their own borrowed-self frame. Expanding every
     // expression through Game.commander keeps many complete Commander temporaries
     // alive in this synchronous mission-dispatch stack under debug sanitizers.
-    var fields = commander.scriptBaseSnapshotFields
+    var fields = baseScriptSnapshotFields()
     fields["docked"] = .bool(docked)
     fields["main_station"] = .bool(docked && dockedAtMainStation)
     fields["station_id"] = docked && dockedAtMainStation ? .string(contractStation.key) : .null
@@ -316,8 +438,26 @@ extension Game {
     fields["calendar_day"] = .integer(calendarDay)
     return .object(fields)
   }
+
+  @inline(never)
+  private func baseScriptSnapshotFields() -> [String: ScriptValue] {
+    commander.scriptBaseSnapshotFields
+  }
   func scopedScriptSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     var fields = scriptSnapshot.object ?? [:]
+    appendScopedScriptServiceFields(&fields, instance: instance)
+    appendScopedScriptCourier(&fields, instance: instance)
+    appendScopedScriptReceiptRequirements(&fields, instance: instance)
+    appendScopedScriptTimers(&fields, instance: instance)
+    appendScopedScriptPlayer(&fields)
+    appendScopedScriptFreePlaces(&fields)
+    return .object(fields)
+  }
+
+  @inline(never)
+  private func appendScopedScriptServiceFields(
+    _ fields: inout [String: ScriptValue], instance: ScriptInstance
+  ) {
     fields["navigation_trade"] = navigationTradeQuery(instance)
     fields["provider"] = providerMissionQuery(instance)
     fields["children"] = campaignChildrenQuery(instance)
@@ -333,6 +473,12 @@ extension Game {
       instance.conversationReceipts.values.max { $0.sequence < $1.sequence }?.value ?? .null
     fields["contract"] = contractSnapshot(instance)
     fields["pledge"] = pledgeQuery(instance)
+  }
+
+  @inline(never)
+  private func appendScopedScriptCourier(
+    _ fields: inout [String: ScriptValue], instance: ScriptInstance
+  ) {
     if let terms = instance.contract?.offer.courier {
       fields["courier"] = .object([
         "item": instance.courier.map { .string($0.item.uuidString) } ?? .null,
@@ -340,9 +486,21 @@ extension Game {
         "clock": .number(commander.scriptState.clock(.missionCalendar)),
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScopedScriptReceiptRequirements(
+    _ fields: inout [String: ScriptValue], instance: ScriptInstance
+  ) {
     if let pack = scriptPack(for: instance) {
       fields["receipt_requirements"] = scriptReceiptQuery(pack, state: instance)
     }
+  }
+
+  @inline(never)
+  private func appendScopedScriptTimers(
+    _ fields: inout [String: ScriptValue], instance: ScriptInstance
+  ) {
     fields["timers"] = .object(
       instance.timers.mapValues { timer in
         .object([
@@ -360,6 +518,12 @@ extension Game {
             }),
         ])
       })
+  }
+
+  @inline(never)
+  private func appendScopedScriptPlayer(
+    _ fields: inout [String: ScriptValue]
+  ) {
     if let anchor = scriptAnchor {
       let position = anchor.orientation.inverse(anchor.position * -1)
       let velocity = anchor.orientation.inverse(autoPilot.velocity + Vector3(0, 0, speed * 18))
@@ -370,9 +534,14 @@ extension Game {
         "rear_shield": .number(rearShield), "laser_heat": .number(laserHeat),
       ])
     }
+  }
+
+  @inline(never)
+  private func appendScopedScriptFreePlaces(
+    _ fields: inout [String: ScriptValue]
+  ) {
     fields["free_passenger_places"] = .integer(
       Int64(commander.passengerFit?.freeCompatiblePlaces ?? 0))
-    return .object(fields)
   }
   mutating func acceptScriptMission(
     _ pack: ScriptPack, instanceID: UUID = UUID(), randomSeed: UInt64 = 0x45_4c49_5445,
