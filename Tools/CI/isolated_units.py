@@ -16,6 +16,16 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeWayfarerInductionAccreditationUnitTests": (
+        "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
+        "repeatedSennConfirmationCannotPayOrGrantAnotherClueOrDiscardExistingBookings",
+        "actualUncollectedCancellationAfterAccreditationReturnsSameStockWindowAndKeepsFinalReceipt",
+        "realHeldSeedReceivingAfterSennPaysOnlyItsFrozenQuoteAndRetainsTheOwningEntitlement",
+        "revisionOnlyForgeryMissingChildAcknowledgementOrClueCannotPreserveAccreditation",
+        "wrongOwningSourceOperationRewardAndOriginalProofCannotBecomeACompletionClue",
+        "terminalFormatsCloseTheNativeProofAndKeepEarlierSchemasAndUnknownRefusalsDistinct",
+        "finalHelpAndOrdinaryServicePathsKeepTheirExistingLimitsAndNoPrematureEntitlement",
+    ),
     "NativeWayfarerInductionNetworkUnitTests": (
         "veilCertifiesOnlyTheOriginalNetworkOnceWithoutPaymentOrChangingAnyCustody",
         "signaturesAndLaterConsignmentsCannotReplaceTheActualSelectedCharterAudit",

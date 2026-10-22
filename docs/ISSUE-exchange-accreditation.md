@@ -1,0 +1,7 @@
+# C08.P07.B / M16.P01: one owning Senn terminal and continuing service entitlement
+
+After Veil's actual certification, Senn must confirm the original induction at actual living Avenor and pay7600CR, record selected charter outcome/accreditation, complete the owning mission and award its one Exchange completion clue in one transaction. The existing service board must read that same entitlement; it must not mint a second accreditation or bypass the shared three-active limit. Basic W01-W05 paths remain; W06 is separate unfinished work.
+
+The parent owns continuing operator stock/window ledgers. Existing held consignments must remain finishable/cancellable after accreditation. Their legitimate later revisions must preserve the immutable owning final receipt and clue, while revision-only forgery, changed proofs/payment/operation/source, absent original children and missing acknowledgements refuse. Other mission completion receipts keep strict revision equality.
+
+Preserve actual native contact, current commander/carrier/fitting, all original receiving proofs, finite stock/custody/windows and once-only rewards. Back/Escape changes nothing. Credit overflow, stale context or missing proof refuses the whole protected Confirm candidate. Closed new formats must retain all earlier originals and mixed actual feature claims without admitting terminal fields in older/embedded/unknown positions.

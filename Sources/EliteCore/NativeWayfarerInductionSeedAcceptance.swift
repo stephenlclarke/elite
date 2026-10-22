@@ -20,7 +20,8 @@ extension Game {
     return try capacity.quote(consignment: instance, unit: slot.unit.identity)
   }
   func inductionSeedBookingIssues(unit: UUID?) -> [String] {
-    guard let unit, let mission = wayfarerInductionMission, mission.outcome == .active,
+    guard let unit, let mission = wayfarerInductionMission,
+      mission.hasInductionServiceAuthority(in: commander.scriptState),
       mission.suspension == nil, let state = mission.savedWayfarerInduction,
       let source = state.charterSeedSource, let capacity = state.charterCapacity,
       source.units.contains(where: {

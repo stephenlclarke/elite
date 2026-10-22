@@ -62,7 +62,8 @@ extension Game {
     -> [String]
   {
     guard let operatorID = action.capacityOperator,
-      let mission = wayfarerInductionMission, mission.outcome == .active, mission.suspension == nil,
+      let mission = wayfarerInductionMission,
+      mission.hasInductionServiceAuthority(in: commander.scriptState), mission.suspension == nil,
       let state = mission.savedWayfarerInduction, let capacity = state.charterCapacity,
       state.charterChoice != nil, NativeInductionCrewLogSave.validateClaims(commander)
     else { return ["Restore this owning charter and its original finite capacity source first."] }

@@ -5,7 +5,8 @@ extension Game {
     unit: UUID? = nil,
     scope: NativeInductionWorkshopQuoteScope = .ownerStation
   ) throws -> NativeInductionWorkshopQuote {
-    guard let mission = wayfarerInductionMission, mission.outcome == .active,
+    guard let mission = wayfarerInductionMission,
+      mission.hasInductionServiceAuthority(in: commander.scriptState),
       mission.suspension == nil,
       let parent = mission.savedWayfarerInduction, let source = parent.charterWorkshopSource,
       nativeInductionWorkshopPack != nil,
@@ -30,7 +31,8 @@ extension Game {
       firstReachLY: commander.maximumJumpDistance, fullReachLY: commander.fullTankJumpDistance)
   }
   func inductionWorkshopSourceIssues() -> [String] {
-    guard let mission = wayfarerInductionMission, mission.outcome == .active,
+    guard let mission = wayfarerInductionMission,
+      mission.hasInductionServiceAuthority(in: commander.scriptState),
       mission.suspension == nil,
       let state = mission.savedWayfarerInduction, state.charterWorkshopSource == nil,
       state.charterSignatures?.contains(where: { $0.operatorID == .workshop }) == true,

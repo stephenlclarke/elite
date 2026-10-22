@@ -49,7 +49,8 @@ extension Game {
   }
 
   func inductionClinicSourceIssues() -> [String] {
-    guard let mission = wayfarerInductionMission, mission.outcome == .active,
+    guard let mission = wayfarerInductionMission,
+      mission.hasInductionServiceAuthority(in: commander.scriptState),
       mission.suspension == nil,
       let state = mission.savedWayfarerInduction, state.charterClinicSource == nil,
       state.charterChoice != nil, state.charterCapacity != nil,

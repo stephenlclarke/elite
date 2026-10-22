@@ -97,7 +97,8 @@ extension Game {
     throws -> NativeInductionSeedQuote
   {
     guard !isMissionTrial, !paused, docked, energy > 0,
-      let mission = wayfarerInductionMission, mission.outcome == .active, mission.suspension == nil,
+      let mission = wayfarerInductionMission,
+      mission.hasInductionServiceAuthority(in: commander.scriptState), mission.suspension == nil,
       let parent = mission.savedWayfarerInduction, let source = parent.charterSeedSource,
       nativeInductionSeedPack != nil, let dock = commander.nativeStations?.currentMainDock,
       nativeMainStationDockEvidenceIsCurrent,

@@ -84,6 +84,12 @@ extension Game {
       contractBoard.wayfarerInductionQuote?.action.charterPolicy
       ?? contractBoard.selected?.wayfarerInduction?.charterPolicy
       ?? state.charterChoice?.policy
+    if let accreditation = state.accreditation {
+      return [
+        "Stage14 complete: Senn accredited this commander under " + accreditation.policy.title
+          + ", paid7600CR once and recorded the Exchange clue. The same entitlement opens advanced offered services; current original obligations and the shared three-active limit remain."
+      ]
+    }
     if state.networkCertification != nil {
       return [
         "Stage13: Veil certified the original network and selected charter. Senn's separate final receiving remains next; certification pays nothing and grants no accreditation or clue."

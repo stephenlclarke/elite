@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Native receipt graph only; no fixture claims an executed gameplay journey.
-private final class InductionNetworkFixture {
+final class InductionNetworkFixture {
   let f: InductionSeedFixture
   let audited: NativeWayfarerInductionState
   let certification: NativeInductionNetworkCertification

@@ -96,7 +96,7 @@ extension NativeWayfarerInductionState {
       charterCapacity: charterCapacity, charterSignatures: signatures,
       charterClinicSource: charterClinicSource, charterWorkshopSource: charterWorkshopSource,
       charterSeedSource: charterSeedSource, charterAudit: charterAudit,
-      networkCertification: networkCertification)
+      networkCertification: networkCertification, accreditation: accreditation)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }
@@ -118,7 +118,7 @@ extension NativeWayfarerInductionState {
       charterCapacity: capacity, charterSignatures: charterSignatures,
       charterClinicSource: charterClinicSource, charterWorkshopSource: charterWorkshopSource,
       charterSeedSource: charterSeedSource, charterAudit: charterAudit,
-      networkCertification: networkCertification)
+      networkCertification: networkCertification, accreditation: accreditation)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }

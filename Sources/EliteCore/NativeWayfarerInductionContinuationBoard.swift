@@ -4,7 +4,7 @@ extension NativeWayfarerInductionAction {
   var station: SystemIdentity {
     switch self {
     case .accept, .progress, .pooledCharter, .protectedCharter, .allocateCharterCapacity,
-      .auditCharter, .certifyNetwork:
+      .auditCharter, .certifyNetwork, .accredit:
       NativeWayfarerInduction.source
     case .clinicConsent, .releaseClinicCapacity, .issueClinicStock, .viewClinicStock,
       .acceptClinicSample, .cancelClinicSample:

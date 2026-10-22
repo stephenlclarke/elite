@@ -16,6 +16,18 @@ public enum PlayerHelp {
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
     if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction == .accredit
+    {
+      pages.insert(
+        .init(
+          title: "SENN FINAL ACCREDITATION",
+          rows: [
+            "RETURN - REVIEW / CONFIRM - RECEIVE ONCE", "BACK / ESC - CHANGE NOTHING",
+            "7600CR / CHOSEN CHARTER / ONE CLUE", "SAME RECEIPT OPENS ADVANCED SERVICES",
+            "EXISTING CONTRACTS / GLOBAL3 LIMIT STAY",
+          ]), at: 0)
+    }
+    if screen == .contracts,
       contextGame.contractBoard.selected?.wayfarerInduction == .certifyNetwork
     {
       pages.insert(

@@ -74,6 +74,7 @@ extension NativeWayfarerInductionState {
     if charterChoice != nil { result.insert(10) }
     if charterAudit != nil { result.insert(11) }
     if networkCertification != nil { result.insert(12) }
+    if accreditation != nil { result.insert(13) }
     return result
   }
 
