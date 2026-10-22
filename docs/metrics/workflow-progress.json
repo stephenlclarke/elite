@@ -5703,9 +5703,18 @@
         "owner": "G4",
         "assigned_at": "2026-10-22T09:00:03.195042+00:00",
         "ownership": "Exact safe-gunnery lesson types/reducer/tests/accepted pack plus proposed narrow board/save joins",
-        "limits": "Actual provider receipts only; exact authored values, no generic language/new rewards; reserve central hunks first; no compiler/native/integration",
+        "limits": "Preserve every present closed validator and G1 C08; no generic language/new rewards/local compiler/native/integration",
         "merged_at": null,
-        "playable_at": null
+        "playable_at": null,
+        "authoring_decision": "Root new L337: actual Avenor7 issue/receive, explicit consent, zero fee/deposit/cash,3actualdistinctbeaconhits,3unpausedsecondsceasefire/no unresolved projectile,ordinaryactualhitfailsattempt,onceexistingclue",
+        "reserved_shared_hunks": [
+          "ContractBoard exact typed lesson rows/review/Confirm",
+          "ScriptDirector exact native lesson availability/generic refusal",
+          "ScriptMissionState savedSafeGunnery optional field/accessor/shape",
+          "Exact bundled pack registration and existing clue pin",
+          "ScriptPersistence closed127128 joins, highest required feature format",
+          "Necessary practice-only live-frame/discharge/projectile observer; exact symbols before edit"
+        ]
       },
       {
         "id": "M10.P01.npc-transit",
@@ -5724,6 +5733,28 @@
         "assigned_at": "2026-10-22T09:01:32.794512+00:00",
         "ownership": "Readonly station clearance/service-origin/NPCResourceRuntime/finite receiving policy preflight",
         "limits": "Reuse W04; no fabricated arrival/receiver/cargo; actual new shared edits require reservation; no local compiler/native/integration",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Existing actual relative doorway/source-bound service/finite W04 receiving foundation credited; no concrete gap/no edits",
+        "qualification_scope": "Source/existing unit definitions only; no fresh execution"
+      },
+      {
+        "id": "M10.P03.convoy",
+        "owner": "G1 queued after M01 for production integration scope",
+        "assigned_at": "2026-10-22T09:03:45.065507+00:00",
+        "ownership": "OrbitFormationController and existing native lawful defence/convoy pure policies/tests",
+        "limits": "Same original finite crew/cargo; actual threat attribution; no teleport/recreation/framework/shared Game or mission/save edits without reservation",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Formation/rejoin source foundation correct; production Crimbo gate false and defence intents have no caller, actual NPC lawful finite firing integration missing",
+        "qualification_scope": "Source/existing unit definitions only; fixture enablement does not establish production behavior"
+      },
+      {
+        "id": "M10.P04.crimbo-habitat",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:05:43.236728+00:00",
+        "ownership": "Readonly original world appearance and exact SH150SH151 habitat/provider definition preflight",
+        "limits": "Do not enable Crimbo lifecycle gate; no inferred C39completion or new physical calibration; pure actual gap only",
         "merged_at": null,
         "playable_at": null
       }
