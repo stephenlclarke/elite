@@ -447,6 +447,7 @@ METHODS = {
         "explicitLegacyNightProfilesKeepTheirExistingCoefficientsAndBounds",
     ),
     "NativeWayfarerInductionAccreditationUnitTests": (
+        "completedEntitlementAndLaterCancellationSurviveActiveLessonHighestEnvelope",
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
         "repeatedSennConfirmationCannotPayOrGrantAnotherClueOrDiscardExistingBookings",
         "actualUncollectedCancellationAfterAccreditationReturnsSameStockWindowAndKeepsFinalReceipt",

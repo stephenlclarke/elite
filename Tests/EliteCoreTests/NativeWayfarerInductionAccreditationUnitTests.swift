@@ -216,6 +216,105 @@ struct NativeWayfarerInductionAccreditationUnitTests {
     #expect(commander.scriptState.savedClueJournal?.awards.count == 1)
   }
 
+  @Test(arguments: [false, true])
+  func completedEntitlementAndLaterCancellationSurviveActiveLessonHighestEnvelope(alien: Bool)
+    throws
+  {
+    let f = try InductionAccreditationFixture()
+    var game = Game()
+    game.commander = f.commander
+    let parentID = f.previous.id
+    let originalTerminal = try #require(game.wayfarerInductionMission?.completionReceipt)
+    // Use the actual continuing-service command after accreditation, not a forged revision.
+    try game.closeInductionSeedBooking(instance: f.f.f.booking.instance)
+    let continued = try #require(game.wayfarerInductionMission)
+    #expect(continued.revision > f.previous.revision + 1)
+    #expect(continued.completionReceipt == originalTerminal)
+    let credits = game.commander.credits
+    let journal = game.commander.scriptState.savedClueJournal
+    game.scriptPacks = [
+      try ScriptPackLibrary.read(ScriptPackLibrary.bundledSafeGunneryDirectory)
+    ]
+    game.scriptDurabilityAvailable = true
+    game.docked = true
+    game.dockedAtMainStation = true
+    game.nativeMainStationDockEvidence = .init(
+      receipt: f.f.dock, runtimeEpoch: game.nativeStationRuntimeEpoch)
+    let review = game.safeGunneryReview(.accept)
+    try #require(review.allowed)
+    try game.confirmSafeGunnery(review)
+    let active = try #require(game.activeSafeGunnery)
+    // Provider allocation is a component fixture; no flight journey or weapon input is run.
+    var flight = game.commander.flightSimulation
+    flight.enter(NativeSafeGunnery.location, arriving: false)
+    flight.pose.position = .init(20000, 0, 0)
+    flight.physicalTime += 1
+    let scope = active.state.permission
+    let provider = try NativePracticeState.prepare(
+      permission: .init(
+        mission: active.instance.id, owner: scope.owner, carrier: scope.carrier,
+        lesson: .gunnery, digest: NativeSafeGunnery.digest, consent: scope.consent,
+        player: try #require(flight.player), frame: flight.pose, begunAt: flight.physicalTime),
+      flight: &flight)
+    var lesson = active.state
+    try lesson.begin(provider)
+    var instance = active.instance
+    instance.savedSafeGunnery = lesson
+    instance.savedNativePractice = provider
+    instance.milestones = [0, 1]
+    game.commander.flightSimulation = flight
+    game.commander.scriptState.instances[instance.id] = instance
+    #expect(NativeSafeGunnerySave.validateClaims(game.commander))
+    #expect(NativePracticeSave.validateClaims(game.commander))
+    #expect(NativeWayfarerInductionSave.validateClaims(game.commander))
+    #expect(NativeInductionCrewLogSave.validateClaims(game.commander))
+
+    let schema = alien ? 128 : 127
+    #expect(
+      NativeSafeGunnerySave.publicationVersion(
+        lesson: true, practice: true, crewLog: true, alien: alien) == schema)
+    let missions = try JSONEncoder().encode(game.commander.scriptState)
+    let contracts = try JSONEncoder().encode(game.commander.contracts)
+    try NativeSafeGunnerySave.validateArchiveFields(
+      missions, part: .missions, schema: schema, alien: alien)
+    try NativeSafeGunnerySave.validateArchiveFields(
+      contracts, part: .contracts, schema: schema, alien: alien)
+    var restored = game.commander
+    restored.scriptState = try JSONDecoder().decode(ScriptEngineState.self, from: missions)
+    restored.contracts = try JSONDecoder().decode(ScriptContractState.self, from: contracts)
+    #expect(restored.scriptState == game.commander.scriptState)
+    #expect(restored.contracts == game.commander.contracts)
+    #expect(restored.scriptState.instances[parentID] == continued)
+    #expect(restored.scriptState.instances[instance.id] == instance)
+    #expect(restored.scriptState.savedClueJournal == journal && restored.credits == credits)
+    #expect(NativeSafeGunnerySave.validateClaims(restored))
+    #expect(NativePracticeSave.validateClaims(restored))
+    #expect(NativeWayfarerInductionSave.validateClaims(restored))
+    #expect(NativeInductionCrewLogSave.validateClaims(restored))
+    var resumed = Game()
+    resumed.commander = restored
+    #expect(resumed.hasWayfarerAccreditation)
+    #expect(resumed.activeSafeGunnery?.state == lesson)
+    #expect(
+      originalTerminal.valid(
+        for: try #require(restored.scriptState.instances[parentID]), engine: restored.scriptState))
+    // The higher envelope must still close every present lower-family native leaf.
+    var parent = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(continued)) as? [String: Any])
+    var induction = try #require(parent["savedWayfarerInduction"] as? [String: Any])
+    var terminal = try #require(induction["accreditation"] as? [String: Any])
+    terminal["extraPayment"] = 76000
+    induction["accreditation"] = terminal
+    parent["savedWayfarerInduction"] = induction
+    let corrupt = try JSONSerialization.data(withJSONObject: [
+      "instances": [parentID.uuidString: parent]
+    ])
+    #expect(throws: (any Error).self) {
+      try NativeSafeGunnerySave.validateArchiveFields(
+        corrupt, part: .missions, schema: schema, alien: alien)
+    }
+  }
+
   @Test func revisionOnlyForgeryMissingChildAcknowledgementOrClueCannotPreserveAccreditation()
     throws
   {
