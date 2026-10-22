@@ -336,7 +336,11 @@ final class AsteroidContactFrame {
       let mass = game.asteroidDebrisMassKg(body)
       let mesh: Mesh
       let collisionMass: Double
-      if let recorder = game.recordRecoveryCollision(body) {
+      let surveyor = game.c01SurveyorCollision(body)
+      if let surveyor {
+        mesh = surveyor.mesh
+        collisionMass = surveyor.mass
+      } else if let recorder = game.recordRecoveryCollision(body) {
         mesh = recorder.mesh
         collisionMass = recorder.mass
       } else if let original = game.identifiedSalvageCollision(body) {
@@ -359,7 +363,8 @@ final class AsteroidContactFrame {
           pose: game.modelPose(of: body), velocity: physical.velocity,
           mesh: mesh,
           mass: collisionMass,
-          debris: mass != nil || movingStation, asteroid: mass != nil, station: station,
+          debris: mass != nil || movingStation || surveyor != nil, asteroid: mass != nil,
+          station: station,
           hull: body.hull, localOrientation: body.orientation,
           rotation: body.rotation))
     }
@@ -402,6 +407,9 @@ extension Game {
     }
     if !requiresFrame, commander.scriptState.savedIdentifiedSalvageSource != nil {
       requiresFrame = bodies.contains(where: { identifiedSalvageAlias($0) != nil })
+    }
+    if !requiresFrame, glassMeridianMission?.savedGlassMeridian?.surveyor != nil {
+      requiresFrame = bodies.contains(where: { c01SurveyorCollision($0) != nil })
     }
     guard requiresFrame else { return nil }
     return AsteroidContactFrame(
@@ -447,7 +455,9 @@ extension Game {
           body.energy > 0
         else { return refuseDebrisStep(frame, reason: "ACTOR CHANGED") }
         let currentMesh: Mesh
-        if let recorder = recordRecoveryCollision(body) {
+        if let surveyor = c01SurveyorCollision(body) {
+          currentMesh = surveyor.mesh
+        } else if let recorder = recordRecoveryCollision(body) {
           currentMesh = recorder.mesh
         } else if let original = identifiedSalvageCollision(body) {
           currentMesh = original.mesh
@@ -514,7 +524,8 @@ extension Game {
     }
     guard let (source, target, contact) = selected else { return .advanced(nil) }
     if let id = trajectories[target].frame.bodyID,
-      bodies.first(where: { $0.id == id })?.scriptNPC != nil
+      let body = bodies.first(where: { $0.id == id }), body.scriptNPC != nil,
+      c01SurveyorCollision(body) == nil
     {
       return refuseDebrisStep(frame, reason: "MISSION INERTIA AUTHORITY UNAVAILABLE")
     }

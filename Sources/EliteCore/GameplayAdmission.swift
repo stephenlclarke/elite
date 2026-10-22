@@ -190,7 +190,7 @@ extension Game {
         return refusal
       }
       if let refusal = Self.gameplayMissionActorSceneClearanceRefusal(
-        original: original, center: requests[index].position, radius: templates[index].radius,
+        original: original, request: requests[index], template: templates[index],
         context: context, registeredStationBodies: registeredStationBodies)
       {
         return refusal
@@ -201,7 +201,9 @@ extension Game {
     for index in requests.indices {
       for other in requests.indices where other > index {
         if (requests[index].position - requests[other].position).length
-          < templates[index].radius + templates[other].radius + 64
+          < templates[index].radius + templates[other].radius + 64,
+          !original.c01SurveyorPairSeparated(
+            requests[index], templates[index], requests[other], templates[other])
         {
           return .unsafePosition
         }
@@ -253,9 +255,11 @@ extension Game {
   /// Scene-body and measured-radius storage is needed only after request preflight returns.
   @inline(never)
   private static func gameplayMissionActorSceneClearanceRefusal(
-    original: borrowing Game, center: Vector3, radius: Double, context: EncounterContext,
-    registeredStationBodies: Set<Int>
+    original: borrowing Game, request: SpawnRequest, template: MissionActorAdmissionTemplate,
+    context: EncounterContext, registeredStationBodies: Set<Int>
   ) -> AdmissionRefusal? {
+    let center = request.position
+    let radius = template.radius
     for actorIndex in context.actors.indices where context.actors[actorIndex].energy > 0 {
       var matchingBodyIndex: Int?
       for bodyIndex in original.bodies.indices {
@@ -265,6 +269,9 @@ extension Game {
         }
       }
       guard let bodyIndex = matchingBodyIndex else { return .staleContext }
+      if original.c01SurveyorRetainedPairSeparated(request, template, original.bodies[bodyIndex]) {
+        continue
+      }
       if let refusal = Self.gameplayMissionActorSceneBodyRefusal(
         original: original, center: center, radius: radius,
         actor: context.actors[actorIndex], body: original.bodies[bodyIndex],

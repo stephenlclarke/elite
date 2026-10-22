@@ -51,11 +51,13 @@ extension Game {
           actor.location(in: encounter) == .init(galaxy: galaxy, system: system),
           actor.body.id == bodyID, actor.body.missionActorID == actorID,
           actor.body.missionInstanceID == instanceID, actor.body.hull == body.hull,
-          let definition = pack.manifest.encounters?.first(where: { $0.id == encounterID }),
+          let definition = NativeC01Surveyor.encounterDefinition(
+            pack: pack, state: instance, id: encounterID),
           definition.galaxy == encounter.galaxy, definition.system == encounter.system,
           let declared = definition.actors.first(where: { $0.id == alias }),
           missionActorFitMatches(
-            body, retained: actor, declared: declared, pack: pack, geometry: geometry)
+            body, retained: actor, declared: declared, pack: pack, instance: instance,
+            geometry: geometry)
         else { return nil }
         match = (encounter, actor)
       }
@@ -73,7 +75,7 @@ extension Game {
 
   private static func missionActorFitMatches(
     _ body: SpaceBody, retained: ScriptOwnedActor, declared: ScriptActorDefinition,
-    pack: ScriptPack,
+    pack: ScriptPack, instance: ScriptInstance,
     geometry: [String: ShipDesign]
   ) -> Bool {
     guard let npcID = declared.npc else {
@@ -84,13 +86,15 @@ extension Game {
       npc.components.allSatisfy({ alias, component in
         retained.body.scriptNPC?.components[alias]?.identity == component.identity
       }),
-      let definition = pack.manifest.npcs?.first(where: { $0.id == npcID }),
+      let definition = NativeC01Surveyor.profiles(pack: pack, state: instance).first(where: {
+        $0.id == npcID
+      }),
       npc.fit.definition == definition
     else { return false }
     // Compare existing immutable designs directly. No geometry encoding, hash construction or
     // cache mutation belongs on this live source-resolution path.
     return npc.fit.models.allSatisfy { reference, digest in
-      guard let installed = pack.models[reference],
+      guard let installed = NativeC01Surveyor.designs(pack: pack, state: instance)[reference],
         let retained = geometry[digest]
       else { return false }
       return installed == retained

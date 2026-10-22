@@ -6,7 +6,7 @@ The new projection checks only the needed route and phase bindings; it does not 
 
 ## Validation
 
-Four pure value methods cover spool/open/arrival route bindings, native endpoint names, tier denial, unchanged cargo/player resources, foreign actor/instance/visit, unsupported phases, ambiguity, explicit provenance, unknown versus empty manifests, live manifest changes and unavailable-world fallback. No jump, frame, native admission or fuel debit runs in these tests. The selector retains all 321 delivered base methods and adds four, for 325. All 20 Python report fixtures, Markdown lint, strict Swift formatting and whitespace checks pass; hosted Swift execution and independent final-head review remain pending. No local Swift compiler, native journey or broad validation campaign ran.
+Four pure value methods cover spool/open/arrival route bindings, native endpoint names, tier denial, unchanged cargo/player resources, foreign actor/instance/visit, unsupported phases, ambiguity, explicit provenance, unknown versus empty manifests, live manifest changes and unavailable-world fallback. No jump, frame, native admission or fuel debit runs in these tests. The selector retains all 335 delivered base methods and adds four, for 339. All 20 Python report fixtures, Markdown lint, strict Swift formatting and whitespace checks pass; hosted Swift execution and independent final-head review remain pending. No local Swift compiler, native journey or broad validation campaign ran.
 
 ## Scope and remaining work
 
