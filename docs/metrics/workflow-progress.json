@@ -4887,6 +4887,17 @@
       "final_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6334705280",
       "separate_integrator": false,
       "usable_build_delivered": false
+    },
+    {
+      "event": "Inventory qualification failed; MBA artifact triage, authorG3correction ownership",
+      "at": "2026-10-22T06:55:42Z",
+      "head": "afba9c30ae7d0d5ee7caf82468398c24e97aab9b",
+      "github_run": 39735189170,
+      "ledger_parent": "M02.P05.inventory",
+      "unit_status": "FAILURE; actual cause/counts unverified",
+      "merged": false,
+      "qualified_source_candidate_unblocked": "G1 packages alreadyqualified8b30 independently",
+      "new_test_dispatches_by_orchestrator": 0
     }
   ],
   "two_developer_phase": {
@@ -5037,8 +5048,8 @@
         "handoff_at": "2026-10-22T06:34:13Z",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6334409306",
         "unit_run": 39735189170,
-        "unit_status": "existing corrected244methodrunpending; oldffknown-bad cancellationrequested",
-        "source_state": "Source pushed; MBA review/actual hosted qualification pending",
+        "unit_status": "FAILURE atafba/39735189170 completed06:55:42Z; cause/counts pending MBA single-artifact review",
+        "source_state": "Source clean, execution failed; authorG3 owns actionable correction after MBA triage; no merge",
         "source_review_result": "MBAff-to-afba source clean, exact3projectionmethods/244selector unchanged; actual execution pending",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
