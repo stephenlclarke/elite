@@ -4481,10 +4481,13 @@
       "github_run": 39707132453,
       "selection_methods": 162,
       "new_methods": 6,
-      "source_review": "MBA assigned exact delta and necessary callers",
-      "unit_status": "existing hosted active",
+      "source_review": "MBA bounded source review no actionable finding",
+      "unit_status": "FAILED after compile; signal10, truncated XML, no attributable source cause",
       "next_assigned": "C08.P05.A.service",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "qualification_scope": "All six new methods START, none PASS; no maintained162 aggregate verified; actual service continues separately",
+      "finding": "https://github.com/stephenlclarke/elite/issues/41",
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6330774441"
     }
   ]
 }
