@@ -5605,6 +5605,19 @@
       "g11_methods": 358,
       "g11_execution_qualified": false,
       "g4_cpu_lease": "one short Core/declaration-only99 preflight; no runtime; G1 holds compiler"
+    },
+    {
+      "event": "Training99 authoring preflight passed and CPU lease released before next hosted packet",
+      "date": "2026-10-22",
+      "owner": "G4",
+      "issue": 99,
+      "core_build_seconds": 57.15,
+      "core_build": "pass",
+      "affected_declarations": "exit0/no errors or warnings",
+      "runtime_tests_executed": false,
+      "lease_state": "released to G1",
+      "hosted_unit_qualification": false,
+      "purpose": "catch actual API/test declaration compile errors cheaply; no claim of overall cadence improvement from one observation"
     }
   ],
   "two_developer_phase": {
