@@ -4446,6 +4446,19 @@
       "correction_verified_expanded_cases": 181,
       "correction_verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6330265717",
       "source_finding_status": "40 closed on corrected descendant; original finding evidence retained"
+    },
+    {
+      "event": "Rescue funding and route prerequisite pushed; native travel assigned",
+      "head": "ac1095ba44b3f9ff69b7ed66414a2de06e1d585a",
+      "base": "3a7aeff855c9f0dd07366be5a656e884a6244345",
+      "ledger_parent": "C08.P05.A.funding",
+      "github_run": 39705325737,
+      "selection_methods": 156,
+      "new_methods": 7,
+      "source_review": "MBA assigned",
+      "unit_status": "existing hosted active; artifact pending",
+      "next_assigned": "C08.P05.A.runtime",
+      "usable_build_delivered": false
     }
   ]
 }
