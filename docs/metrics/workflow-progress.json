@@ -5007,7 +5007,7 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08Sennterminal;certification/auditreviewasync;MC1seed60sourceinspection",
-      "G3": "M07.P03EMP electrical/charge policy;retains267batch/otherfeaturequalificationandmerges",
+      "G3": "M07.P04-P05 recovery/crew custody;retains267batchand61verification/merges",
       "G4": "T02.P01.provider native uncrewed practice targets/harmless native hits"
     },
     "reviewer": "MBA/G2",
@@ -5550,7 +5550,20 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "EMPElectricalRuntime/EMPPulseProfile/purechargepolicy/tests/notes",
-        "limits": "NoG1Game/mission/saveorG4combat/impact/scoop;nonewrebalance/framework"
+        "limits": "NoG1Game/mission/saveorG4combat/impact/scoop;nonewrebalance/framework",
+        "disposition": "Existingelectricalfoundationcredited;noconcretegap/nochange",
+        "qualification_scope": "Source/existingunitdefinitionsevidence;nofreshexecution/balancechange"
+      },
+      {
+        "id": "M07.P04-P05.emp-lifecycle",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:32:40.085225+00:00",
+        "phase_entry_state": "Coherentdisabledrecovery/finitecrew-custodylifecyclegapassignment",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "EMPState/RecoveryRuntime/VersionedSave/CrewEpisodes/SourceCustody/Salvage exactpolicies/tests/notes",
+        "limits": "NoG1centralGame/mission/saveorG4practicehooks;noinventedpeople/timerrebalance"
       }
     ],
     "model_settings": {
