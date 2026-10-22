@@ -5120,6 +5120,23 @@
       "archive_tag": "archive/recovered-equipment-20261022-50950372",
       "current_remote_branches": 7,
       "usable_build_delivered": false
+    },
+    {
+      "event": "C08 retained309 andprovider300 verified;64and66closed; firstM01final321lane remainsactive",
+      "date": "2026-10-22",
+      "retained_c08_run": 39761187231,
+      "retained_c08_methods": 309,
+      "retained_c08_cases": 341,
+      "provider_run": 39760458629,
+      "provider_methods": 300,
+      "provider_cases": 334,
+      "issues_closed": [
+        64,
+        66
+      ],
+      "final_m01_run": 39764055347,
+      "final_m01_methods": 321,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -6159,6 +6176,8 @@
       "issues_closed": [
         60,
         63,
+        64,
+        66,
         67,
         70,
         71,
@@ -6166,8 +6185,6 @@
         75
       ],
       "verification_pending": [
-        64,
-        66,
         78
       ],
       "delivery_acceptance_open": [
@@ -6292,9 +6309,11 @@
       "ready_correction_issue": 78,
       "older_run": 39759361090,
       "older_result": "EliteCore compile failure; no XML/no unit execution",
-      "correction_head": "fa2c4733",
+      "correction_head": "fa2c4733eeb9fbf1f78667b02d5257f7df8c78ff",
       "correction_source_review": "MBA bounded snapshot/controlflow clean",
-      "correction_execution": "pending"
+      "correction_execution": "MBAactualartifactverificationpending",
+      "correction_github_run": 39761626483,
+      "correction_check": "SUCCESS"
     },
     "c08_qualification": {
       "head": "b0bfda8ad2aa3b7b51f63879c6e2fb3f2d0bb7f4",
@@ -6313,12 +6332,18 @@
       ],
       "issue64_scope": "G1 verified; provider65 correction remains pending",
       "composition_selection": 309,
-      "final_head": "3c2bf4a88afbac60c5af5b0416b5ace8aacf6560",
-      "final_github_run": 39761187231,
-      "final_selection": 309,
-      "final_qualification": "pending",
+      "final_head": "da596615e6d54d02e73c16d69dff0af1f39674fa",
+      "final_github_run": 39764055347,
+      "final_selection": 321,
+      "final_qualification": "live321requiredcheck",
       "final_check": "SUCCESS",
-      "final_artifact_qualification": "MBApending309actualreport"
+      "final_artifact_qualification": "MBApending309actualreport",
+      "retained_composed_head": "3c2bf4a88afbac60c5af5b0416b5ace8aacf6560",
+      "retained_composed_methods": 309,
+      "retained_composed_cases": 341,
+      "retained_composed_run": 39761187231,
+      "final_source_review": "MBAcleanexactunion/merge",
+      "shared_selector_merge_priority": "M01 untilcurrent321result/ownmerge; otherauthorscontinuecoding"
     },
     "defensive_flight_tutorial": {
       "id": "T03.P01",
@@ -6343,7 +6368,14 @@
       "head": "6ce3d42fb9923f02a04e7c7407fab500334bdb98",
       "github_run": 39760458629,
       "check": "SUCCESS",
-      "actual_artifact_qualification": "MBApending300actualreport"
+      "actual_artifact_qualification": "MBA300methods334casesALLPASS",
+      "verified_methods": 300,
+      "verified_expanded_cases": 334,
+      "issues_closed": [
+        64,
+        66
+      ],
+      "final_composition": "aftercurrentM01sharedselectormergeturn"
     },
     "c01_stage4_design": {
       "owner": "UX",
@@ -6351,6 +6383,17 @@
       "implementation_owner": "G1 after acceptedcontract/currentpacket",
       "scope": "Actualnativeaudit-reservationproof afteroriginalrecorderrecovery; no stage3rewrite or prematureaward"
     },
-    "next_candidate_boundary": "Afterqualified69integration/currentC01coherenthandoff; cleanlatestqualifiedsource, no waitG11T03, no newintegrationcampaign; artifactnotyetexists"
+    "next_candidate_boundary": "Afterqualified69integration/currentC01coherenthandoff; cleanlatestqualifiedsource, no waitG11T03, no newintegrationcampaign; artifactnotyetexists",
+    "c01_stage3_source": {
+      "owner": "G1",
+      "pr": 79,
+      "head": "61aefb07906ea6adcd37718f030a846e1b044a57",
+      "focused_methods": 8,
+      "selection_methods": 281,
+      "review": "MBAqueuedafterlessonartifact",
+      "execution": "pending",
+      "core_and_declarations": "authorPASS",
+      "usable_build_delivered": false
+    }
   }
 }
