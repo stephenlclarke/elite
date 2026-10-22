@@ -5735,6 +5735,27 @@
       "reviewer": "MBA",
       "cpu_lease": "G1 released; no new Root compiler job assigned",
       "runtime_fix_proven": false
+    },
+    {
+      "event": "Isolation matched fit-check lifetime correction pushed with actual route base",
+      "date": "2026-10-22",
+      "pr": 84,
+      "head": "c8728210487c3bb62801cd27785075a91346bc4b",
+      "run": 39785814462,
+      "methods_selected": 362,
+      "base_methods_retained": 339,
+      "g11_methods": 23,
+      "owner": "Mission Coder1",
+      "reviewer": "MBA",
+      "scope": "borrowed read-only arguments and non-inline call boundaries; actual helper bodies/authority unchanged",
+      "cow_storage_unchanged": true,
+      "runtime_qualified": false,
+      "issues_open": [
+        85,
+        96,
+        97,
+        98
+      ]
     }
   ],
   "two_developer_phase": {
