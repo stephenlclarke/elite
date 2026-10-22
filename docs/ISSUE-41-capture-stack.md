@@ -1,0 +1,5 @@
+# Issue41: recorder-capture validation stack-probe failure
+
+Collector-enabled hosted run39711047075 at7068555f finally retained an attributable stderr stack: `___chkstk_darwin` enters `NativeCrewLogCapture.valid(permission:reception:)`, then recorder collection, pickup fixture, rescue finance fixture and rescue flight fixture initialization. This establishes a failing large-value validation/fixture call path; it does not prove recursive validation or a particular compiler defect. All four earlier flight/service/receiving/collector runs remain failed/unqualified.
+
+Bound the production validator's marker/physical/NPC value lifetimes without removing any identity, fitted-scoop, model, native ownership, physical ingress, speed, radius or clock check. Keep receipt data/Codable and actual mission behavior unchanged. Give the immutable rescue-flight fixture reference ownership so nested finance/commander values are not copied inside another outer value. Reuse the actual previously failing maintained flight methods and all selected checks in the next ordinary hosted run; no local native execution, test disabling or unchanged retry.

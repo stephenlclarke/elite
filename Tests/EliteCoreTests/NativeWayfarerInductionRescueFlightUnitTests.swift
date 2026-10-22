@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Typed native-ledger records only; no fixture executes a departure, arrival or flight journey.
-struct RescueFlightFixture {
+final class RescueFlightFixture {
   let f: RescueFinanceFixture
   let authorization: NativeRescueFlightAuthorization
   init(fuel: Double = 13) throws {

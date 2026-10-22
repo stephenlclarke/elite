@@ -43,47 +43,103 @@ struct NativeCrewLogCapture: Codable, Sendable, Equatable {
       && speed >= 0 && speed <= ScoopApproachController.maximumRelativeSpeed
   }
 
-  func valid(permission: NativeInductionPermission, reception: NativeInductionSeedReception) -> Bool
-  {
-    let manifest = NativeInductionCrewLogManifest(permission: permission)
-    let logical = NativeInductionCrewLogPack.actor(job: job, role: .recorder)
-    guard original == manifest.recorder,
-      job == NativeInductionCrewLogPack.instance(recorder: original),
-      operation == Self.identity(issue: issue, original: original),
-      sequence > reception.sequence, sequence < UInt64(Int64.max),
-      actor.system == NativeInductionCrewLogSource.location, actor.entity > 1,
-      actor.visit > reception.playerDock.actor.visit,
-      collector.system == actor.system, collector.visit == actor.visit, collector.entity == 0,
-      inventoryRevision < UInt64(Int64.max),
-      scoop.node
+  /// Keep large marker/physical/NPC optionals in separate borrowed validation frames.
+  @inline(never)
+  func valid(
+    permission: borrowing NativeInductionPermission,
+    reception: borrowing NativeInductionSeedReception
+  ) -> Bool {
+    guard Self.identityValid(self, permission: permission, reception: reception) else {
+      return false
+    }
+    guard Self.markerValid(self) else { return false }
+    guard Self.nativeMarkerValid(marker, actor: actor) else { return false }
+    guard Self.fittedMarkerValid(marker) else { return false }
+    return Self.ingressValid(self, reception: reception)
+  }
+
+  @inline(never)
+  private static func identityValid(
+    _ capture: borrowing NativeCrewLogCapture,
+    permission: borrowing NativeInductionPermission,
+    reception: borrowing NativeInductionSeedReception
+  ) -> Bool {
+    let manifest = NativeInductionCrewLogManifest(permission: copy permission)
+    guard capture.original == manifest.recorder,
+      capture.job == NativeInductionCrewLogPack.instance(recorder: capture.original),
+      capture.operation == Self.identity(issue: capture.issue, original: capture.original),
+      capture.sequence > reception.sequence, capture.sequence < UInt64(Int64.max),
+      capture.actor.system == NativeInductionCrewLogSource.location, capture.actor.entity > 1,
+      capture.actor.visit > reception.playerDock.actor.visit,
+      capture.collector.system == capture.actor.system,
+      capture.collector.visit == capture.actor.visit,
+      capture.collector.entity == 0, capture.inventoryRevision < UInt64(Int64.max),
+      capture.scoop.node
         == EquipmentNodeID(
           family: EquipmentRuntimeCatalog.utilityFamily(.fuelScoops), key: "Fuel Scoops"),
-      scoop.location
+      capture.scoop.location
         == EquipmentRuntimeCatalog.purchaseLocation(
-          .init(hullInstanceID: carrier, slot: .utility(.fuelScoops))),
-      marker.valid, marker.identity == logical, marker.alias == "recorder",
-      marker.presence == .present,
-      marker.body.missionActorID == logical, marker.body.missionInstanceID == job,
-      marker.body.physical?.identity == actor, marker.body.id >= 0,
-      marker.body.hull == .cobra, marker.body.energy > 0, !marker.body.hostile,
-      marker.body.physical?.population == .mission, marker.body.physical?.npc?.role == .mission,
-      marker.body.physical?.empSource == nil, marker.body.physical?.empCrewPod == nil,
-      marker.body.physical?.payload == nil, marker.body.physical?.salvage == nil,
-      marker.body.physical?.ordnance == nil, marker.body.physical?.rock == nil,
-      marker.body.position == capturePoint, marker.body.orientation.validRotation,
-      marker.body.scriptNPC?.fit.definition == NativeInductionCrewLogSource.recorderProfile(),
-      marker.body.scriptNPC?.fit.models == [
-        NativeInductionCrewLogSource.recorderModel: NativeInductionCrewLogSource.recorderGeometry
-      ],
-      Self.approachAllowed(point: capturePoint, radius: radius, speed: relativeSpeed),
-      radius == (try? NativeInductionCrewLogSource.recorderRadius.get()),
-      startTime.isFinite, startTime >= reception.physicalTime,
-      physicalTime.isFinite, physicalTime > startTime, physicalTime - startTime <= 0.1 + 1e-9,
-      physicalTime <= 1e12,
-      flightSeconds.isFinite, (reception.flightSeconds...1e12).contains(flightSeconds)
+          .init(hullInstanceID: capture.carrier, slot: .utility(.fuelScoops)))
     else { return false }
     return true
   }
+
+  @inline(never)
+  private static func markerValid(_ capture: borrowing NativeCrewLogCapture) -> Bool {
+    let logical = NativeInductionCrewLogPack.actor(job: capture.job, role: .recorder)
+    guard capture.marker.valid, capture.marker.identity == logical,
+      capture.marker.alias == "recorder",
+      capture.marker.presence == .present, capture.marker.body.missionActorID == logical,
+      capture.marker.body.missionInstanceID == capture.job, capture.marker.body.id >= 0,
+      capture.marker.body.hull == .cobra, capture.marker.body.energy > 0,
+      !capture.marker.body.hostile,
+      capture.marker.body.position == capture.capturePoint,
+      capture.marker.body.orientation.validRotation
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func nativeMarkerValid(_ marker: borrowing ScriptOwnedActor, actor: ActorIdentity)
+    -> Bool
+  {
+    guard let native = marker.body.physical, native.identity == actor,
+      native.population == .mission, native.npc?.role == .mission,
+      native.empSource == nil, native.empCrewPod == nil, native.payload == nil,
+      native.salvage == nil, native.ordnance == nil, native.rock == nil
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func fittedMarkerValid(_ marker: borrowing ScriptOwnedActor) -> Bool {
+    guard let npc = marker.body.scriptNPC,
+      npc.fit.definition == NativeInductionCrewLogSource.recorderProfile(),
+      npc.fit.models == [
+        NativeInductionCrewLogSource.recorderModel: NativeInductionCrewLogSource.recorderGeometry
+      ]
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func ingressValid(
+    _ capture: borrowing NativeCrewLogCapture,
+    reception: borrowing NativeInductionSeedReception
+  ) -> Bool {
+    guard
+      Self.approachAllowed(
+        point: capture.capturePoint, radius: capture.radius, speed: capture.relativeSpeed),
+      capture.radius == (try? NativeInductionCrewLogSource.recorderRadius.get()),
+      capture.startTime.isFinite, capture.startTime >= reception.physicalTime,
+      capture.physicalTime.isFinite, capture.physicalTime > capture.startTime,
+      capture.physicalTime - capture.startTime <= 0.1 + 1e-9, capture.physicalTime <= 1e12,
+      capture.flightSeconds.isFinite,
+      (reception.flightSeconds...1e12).contains(capture.flightSeconds)
+    else { return false }
+    return true
+  }
+
 }
 
 extension NativeWayfarerInductionState {

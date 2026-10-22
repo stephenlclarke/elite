@@ -4513,10 +4513,12 @@
       "github_run": 39710164853,
       "selection_methods": 174,
       "new_methods": 6,
-      "source_review": "MBA assigned exact delta and necessary custody/account callers",
-      "unit_status": "existing hosted active; prior two signal10 runs remain unqualified",
+      "source_review": "MBA exact delta and necessary receiving callers clean",
+      "unit_status": "FAILED after646.82s compilation; signal10,174 starts/zero verified passes,truncated XML",
       "next_assigned": "C08.P05.B.source",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331210067",
+      "finding": "https://github.com/stephenlclarke/elite/issues/41"
     },
     {
       "event": "Issue41 next-run bounded crash evidence capture assigned",
@@ -4525,6 +4527,51 @@
       "reviewer": "MBA",
       "scope": "Existing hosted unit failure artifact only; no new run, assertions or failure status changes",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Bounded unit crash evidence collector pushed for independent review",
+      "head": "7068555f9c0d85191bce27b0a8947782e2409894",
+      "base": "fa634d8a141a53403b80da24627dbae77cd0790b",
+      "ledger_parent": "C08.P05.A.I41",
+      "github_run": 39711047075,
+      "selection_methods": 174,
+      "source_review": "MBA completed exact8-path delta and necessary collector callers; no actionable finding",
+      "unit_status": "FAILED after565.67s Swift compile;174 starts/zero method passes,incomplete XML",
+      "authoring_validation": "10 synthetic crash-evidence Python cases and6 existing report fixtures pass",
+      "next_assigned": "C08.P05.B.source",
+      "usable_build_delivered": false,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331420863",
+      "verified_non_swift_checks": "16 Python fixtures and11 shared-control checks PASS",
+      "findings": [
+        41,
+        42,
+        43
+      ],
+      "qualification_scope": "Attributable stack-probe trace; exact cause unproved; no Swift aggregate qualification"
+    },
+    {
+      "event": "Three ready findings assigned with disjoint remediation ownership",
+      "ledger_parent": "M01 / C08.P05.A.I41",
+      "primary_owner": "G1 issues41/42, preserving active utility work",
+      "helper_owner": "existing issue-only MBP helper issue43; two CI collector paths only",
+      "reviewer": "MBA",
+      "scope": "No ledger features for helper or new Swift/native execution; normal correction-head GitHub qualification",
+      "usable_build_delivered": false
+    },
+    {
+      "event": "Issue43 isolated two-file correction pushed and assigned MBA review",
+      "head": "92a60684e034247630e95c4047dee103bd9d4802",
+      "base": "7068555f9c0d85191bce27b0a8947782e2409894",
+      "ledger_parent": "M01.I43",
+      "pr": 44,
+      "issue": 43,
+      "source_review": "MBA source clean; focused author14+2 synthetic evidence accepted",
+      "authoring_validation": "14 collector +2 attribution Python tests PASS; two primary regressions failold/passnew",
+      "integration_status": "ready for G1 exact bounded composition; not yet observed",
+      "helper_status": "stopped after bounded correction",
+      "usable_build_delivered": false,
+      "github_run": 39713282582,
+      "unit_status": "existing hosted active; actual ancestry evidence pending for43 closure"
     }
   ]
 }
