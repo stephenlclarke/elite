@@ -314,7 +314,7 @@ extension Game {
   ) {
     guard let death, death.owner == context.player.identity, case .body(let id) = target,
       let body = bodies.first(where: { $0.id == id }), body.hull.isTargetShip,
-      !isGlassMeridianClock(body)
+      !isGlassMeridianClock(body), !isC01Surveyor(body)
     else { return }
     let previousRank = commander.rank
     commander.kills = (commander.kills &+ 1) & 0xffff

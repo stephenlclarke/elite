@@ -1815,18 +1815,62 @@ extension HullSweepSafety {
     }
   }
 
+  private struct NativeContactInterval {
+    let start: Double
+    let end: Double
+    let depth: Int
+    let known: NativeHullContact?
+  }
+
+  private enum NativeContactIntervalDecision {
+    case finished(NativeHullContactResult)
+    case split(middle: Double, witness: NativeHullContact?)
+  }
+
   private static func contactInterval(
     _ source: HullSceneMotion, hull: PreparedHull, target: HullSceneMotion,
     targetHull: PreparedHull, start: Double, end: Double, depth: Int,
     known: NativeHullContact?, work: inout SweepWork
   ) throws -> NativeHullContactResult {
+    // The right sibling waits while the complete earlier prefix is proved clear.
+    // At most one sibling per subdivision depth is retained; geometric work and
+    // all original budgets stay in the single shared work value.
+    var pending = [NativeContactInterval(start: start, end: end, depth: depth, known: known)]
+    while let interval = pending.popLast() {
+      let decision = try contactIntervalStep(
+        source, hull: hull, target: target, targetHull: targetHull,
+        start: interval.start, end: interval.end, depth: interval.depth,
+        known: interval.known, work: &work)
+      switch decision {
+      case .finished(.clear): continue
+      case .finished(let result): return result
+      case .split(let middle, let witness):
+        // A future witness remains only an axis hint for the earlier interval.
+        let rightWitness = witness.flatMap { $0.upperTime > middle ? $0 : nil }
+        pending.append(
+          .init(
+            start: middle, end: interval.end, depth: interval.depth + 1, known: rightWitness))
+        pending.append(
+          .init(
+            start: interval.start, end: middle, depth: interval.depth + 1, known: witness))
+      }
+    }
+    return .clear
+  }
+
+  @inline(never)
+  private static func contactIntervalStep(
+    _ source: HullSceneMotion, hull: PreparedHull, target: HullSceneMotion,
+    targetHull: PreparedHull, start: Double, end: Double, depth: Int,
+    known: NativeHullContact?, work: inout SweepWork
+  ) throws -> NativeContactIntervalDecision {
     try work.query()
     if let known, known.upperTime > end,
       try contactPrefixClear(
         source, hull: hull, target: target, targetHull: targetHull,
         start: start, end: end, axis: known.normal, work: &work)
     {
-      return .clear
+      return .finished(.clear)
     }
     let middle = (start + end) * 0.5
     let a = shipPose(source, at: middle)
@@ -1852,7 +1896,7 @@ extension HullSweepSafety {
       64 * Double.ulpOfOne
       * max(1, hull.radius + targetHull.radius + a.position.length + b.position.length)
     guard separation.isFinite, envelope.isFinite else { throw HullSweepFailure.invalidMotion }
-    if separation - envelope - numerical > 0 { return .clear }
+    if separation - envelope - numerical > 0 { return .finished(.clear) }
     var witness = known
     if separation <= 1e-9,
       let found = try nativeContactWitness(
@@ -1869,7 +1913,7 @@ extension HullSweepSafety {
         targetHull: targetHull, start: start, end: end, work: &work)
       {
         guard witness == nil || witness!.upperTime > end else { throw HullSweepFailure.unproven }
-        return .clear
+        return .finished(.clear)
       }
       if let axial = try axialVertexInterval(
         source, hull: hull, target: target, targetHull: targetHull,
@@ -1880,7 +1924,7 @@ extension HullSweepSafety {
           guard witness == nil || witness!.upperTime > end else {
             throw HullSweepFailure.unproven
           }
-          return .clear
+          return .finished(.clear)
         case .contact(let entry):
           if witness == nil || entry.upperTime < witness!.upperTime { witness = entry }
         case .refused(let failure): throw failure
@@ -1911,24 +1955,13 @@ extension HullSweepSafety {
       guard let witness, witness.upperTime >= start, witness.upperTime <= end else {
         throw HullSweepFailure.unproven
       }
-      return .contact(
-        .init(
-          lowerTime: start, upperTime: witness.upperTime,
-          point: witness.point, normal: witness.normal))
+      return .finished(
+        .contact(
+          .init(
+            lowerTime: start, upperTime: witness.upperTime,
+            point: witness.point, normal: witness.normal)))
     }
-    // A future witness is a separation-axis hint, never evidence of contact in
-    // an earlier interval. Keep it while proving the chronological prefix clear.
-    let left = try contactInterval(
-      source, hull: hull, target: target, targetHull: targetHull,
-      start: start, end: middle, depth: depth + 1, known: witness, work: &work)
-    switch left {
-    case .clear:
-      let rightWitness = witness.flatMap { $0.upperTime > middle ? $0 : nil }
-      return try contactInterval(
-        source, hull: hull, target: target, targetHull: targetHull,
-        start: middle, end: end, depth: depth + 1, known: rightWitness, work: &work)
-    case .contact, .refused: return left
-    }
+    return .split(middle: middle, witness: witness)
   }
 
   /// Fixed orientations admit a direct interval certificate for every actual triangle pair.
