@@ -4771,6 +4771,18 @@
       "source_review_completed_at": "2026-10-22T06:05:57Z",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333935985",
       "handoff_to_source_review_seconds": 245
+    },
+    {
+      "event": "Requested cancellation of superseded showroom run that excluded all new methods and blocked correct same-branch job",
+      "observed_at": "2026-10-22T06:10:48Z",
+      "cancel_requested_run": 39731164624,
+      "superseded_head": "1b5c07aa136840b759cee87b0e766307c26ec8ad",
+      "authoritative_run": 39731489668,
+      "authoritative_head": "40159bbacafc55414e19d86ea6e073869bb9301b",
+      "reason": "Old221 selection contains no new showroom methods; per-ref concurrency holds corrected234 selection pending",
+      "status": "Cancellation requested; old run still in_progress and corrected run pending at observation",
+      "pass_claim": false,
+      "new_test_dispatches": 0
     }
   ],
   "two_developer_phase": {
@@ -4851,7 +4863,8 @@
         "unit_run": 39731489668,
         "unit_status": "pending;234 maintained methods includes3ShowroomComparison and10ClinicAcceptance",
         "original_source_handoff_at": "2026-10-22T06:00:41Z",
-        "source_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333946221"
+        "source_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333946221",
+        "queue_delay_note": "Correct run39731489668 waits behind superseded unselected39731164624; cancellation requested, terminal outcome not yet observed"
       }
     ],
     "model_settings": {
