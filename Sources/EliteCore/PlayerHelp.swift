@@ -15,6 +15,23 @@ public enum PlayerHelp {
     var contextGame = game
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
+    if contextGame.inductionUtilityUsesReturn {
+      pages.insert(
+        .init(
+          title: "ENRON MAINTENANCE",
+          rows: [
+            "TAB - SELECT ORIGINAL HANDOFF",
+            "RETURN - REVIEW; RETURN - CONFIRM ARM",
+            "RETURN IS MAINTENANCE FOR THIS CONTACT",
+            "FRONT SURFACE 50-150m; AIM <=2deg",
+            "RELATIVE SPEED <=1m/s; 20s PER MODULE",
+            "OUTSIDE ENVELOPE OR PAUSED: NO WORK",
+            "Q / ESC - STOP; PARTIAL WORK STAYS",
+            "ONE CREW KIT SPENT ONLY WITH REPAIR",
+            "AFTER ALL THREE: DOCK AT ENRON",
+            "B - CONTACTS; REVIEW / CONFIRM RECEIVING",
+          ]), at: 0)
+    }
     if ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff].contains(screen)
       && !(screen == .showroom && game.showroom.trading)
     {

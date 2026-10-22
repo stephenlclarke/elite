@@ -64,11 +64,13 @@ extension Game {
       return
         "Stage10: review Enron G01-S190 utility crew authorization for the three original external handoffs. No player cargo or equipment purchase is required."
     }
-    if state.admission == nil {
-      return
-        "Enron utility maintenance authorized; depart for native clearance/admission. Non-spinning metre reference: inlet X+60km/Y+20km, buffer X+60.3km/Y+20km, return X+60.6km/Y+20km. Faults and one local kit each remain unchanged."
+    if state.receiving != nil {
+      return "Stage10 received by Enron's living utility crew; all three original controls work and their local kits remain spent. " + NativeWayfarerInduction.laterStages
     }
-    return
-      "Three original Enron handoffs admitted: inlet valve CLOSED, buffer relay DISCONNECTED, return bypass CLOSED; one crew-owned kit each. Separate arming/timed physical repair and receiving remain next; authorization/admission grant no stage10 progress."
+    if state.admission == nil {
+      return "Enron maintenance authorized; depart for native clearance/admission. Non-spinning metre reference: inlet X+60km/Y+20km, buffer X+60.3km/Y+20km, return X+60.6km/Y+20km. Each module retains its own local kit."
+    }
+    let repaired = state.modules.filter { $0.work?.repair != nil }.count
+    return "Enron original repairs \(repaired)/3. Tab selects a handoff; Return reviews, then Confirm arms remote maintenance. Hold its unobstructed front surface50-150m away, relative speed<=1m/s, aim<=2deg for20 qualifying unpaused native seconds per module. Partial work persists; Q/ESC stops. One local kit is consumed atomically with each control repair. Return to actual Enron and separately Confirm crew receiving after all three. No player cargo, energy fee or equipment grant."
   }
 }

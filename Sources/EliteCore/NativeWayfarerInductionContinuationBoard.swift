@@ -11,7 +11,7 @@ extension NativeWayfarerInductionAction {
     case .receiveArk: NativeWayfarerInduction.seedReceiver
     case .fundRescueLaunch, .startRescueFlight: NativeInductionCrewLogSource.location
     case .receiveRescue: NativeInductionCrewLogSource.receiver
-    case .authorizeUtility: NativeInductionUtilitySource.location
+    case .authorizeUtility, .receiveUtility: NativeInductionUtilitySource.location
     case .cassette: NativeWayfarerInduction.workshop
     }
   }

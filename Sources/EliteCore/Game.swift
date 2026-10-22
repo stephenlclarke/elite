@@ -729,6 +729,7 @@ public struct Game: Sendable {
   var pendingNativeStationDock: NativeStationEntryProof?
   var inductionArkDockPublicationPending = false
   var inductionRescueDockPublicationPending = false
+  var inductionUtilityWorkRuntime = NativeInductionUtilityWorkRuntime()
   var nativeStationDockEvidence: NativeStationDockEvidence?
   var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
   public var scriptPacks: [ScriptPack] = []
@@ -990,6 +991,7 @@ public struct Game: Sendable {
     let priorScreen = screen
     let priorPause = paused
     defer { if screen != priorScreen || paused != priorPause { interruptFlightTool() } }
+    if handleInductionUtilityWorkKey(key) { return }
     if interfaceKey(key) { return }
     keyAfterInterface(key)
   }
@@ -2536,7 +2538,11 @@ public actor GameRuntime {
     game.pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
-    guard let context = prepareAdvance(delta: delta) else { return snapshot() }
+    let utilityWorkStart = game.inductionUtilityEndpoint()
+    guard let context = prepareAdvance(delta: delta) else {
+      game.advanceInductionUtilityWork(from: nil, publish: scriptPublisher())
+      return snapshot()
+    }
     let glassMeridianStart = game.glassMeridianSample()
     let flightReceptionStart = game.flightReceptionSample()
     let outlookStart = game.orbitalOutlookSample()
@@ -2567,6 +2573,7 @@ public actor GameRuntime {
     commitOrbitalOutlookScan(start: outlookStart)
     commitOriginalSurveyScan(start: surveyStart)
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
+    game.advanceInductionUtilityWork(from: utilityWorkStart, publish: scriptPublisher())
     return snapshot()
   }
   private typealias AdvanceContext = (

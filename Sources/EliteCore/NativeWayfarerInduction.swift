@@ -146,6 +146,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let crewLogLoss: NativeInductionCrateLoss?
   let crewLogHullCustody: NativeCrewLogHullCustody?
   let rescueReception: NativeInductionRescueReception?
+  let utilityReception: NativeInductionUtilityReception?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
@@ -155,7 +156,8 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     ark: NativeInductionArkLink? = nil, seedReception: NativeInductionSeedReception? = nil,
     crewLog: NativeCrewLogCapture? = nil, crewLogLoss: NativeInductionCrateLoss? = nil,
     crewLogHullCustody: NativeCrewLogHullCustody? = nil,
-    rescueReception: NativeInductionRescueReception? = nil
+    rescueReception: NativeInductionRescueReception? = nil,
+    utilityReception: NativeInductionUtilityReception? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -172,6 +174,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.crewLogLoss = crewLogLoss
     self.crewLogHullCustody = crewLogHullCustody
     self.rescueReception = rescueReception
+    self.utilityReception = utilityReception
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
@@ -180,7 +183,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.seedKey == rhs.seedKey && lhs.seedKeyLoss == rhs.seedKeyLoss && lhs.ark == rhs.ark
       && lhs.seedReception == rhs.seedReception && lhs.crewLog == rhs.crewLog
       && lhs.crewLogLoss == rhs.crewLogLoss && lhs.crewLogHullCustody == rhs.crewLogHullCustody
-      && lhs.rescueReception == rhs.rescueReception
+      && lhs.rescueReception == rhs.rescueReception && lhs.utilityReception == rhs.utilityReception
   }
   var valid: Bool {
     let p = permission
@@ -247,6 +250,11 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     } else if crewLogLoss != nil || crewLogHullCustody != nil || rescueReception != nil {
       return false
     }
+    if let utilityReception {
+      guard let rescueReception,
+        utilityReception.valid(permission: permission, rescue: rescueReception)
+      else { return false }
+    }
     return continuationValid && seedKeyValid
   }
   var payloads: [String: Int] {
@@ -312,7 +320,7 @@ enum NativeWayfarerInduction {
   static let clinic = SystemIdentity(galaxy: 0, system: 185)
   static let receiver = SystemIdentity(galaxy: 0, system: 164)
   static let laterStages =
-    "Stages 10-14, utility-route work, charter and final accreditation are not yet available."
+    "Stages 11-14, charter and final accreditation are not yet available."
   static func mission(owner: UUID) -> UUID {
     ScriptIdentity.uuid("wayfarer-induction-v1:\(owner)")
   }

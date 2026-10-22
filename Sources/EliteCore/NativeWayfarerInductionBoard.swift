@@ -2,7 +2,7 @@ import Foundation
 
 enum NativeWayfarerInductionAction: String, Sendable {
   case accept, pickup, receive, cassette, service, keyLoan, launchArk, receiveArk, replaceArk,
-    fundRescueLaunch, startRescueFlight, receiveRescue, authorizeUtility,
+    fundRescueLaunch, startRescueFlight, receiveRescue, authorizeUtility, receiveUtility,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -20,6 +20,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .startRescueFlight: "Cevilis custodian / review original marked-launch escort"
     case .receiveRescue: "Enmadan reception / review original survivors and recorder return"
     case .authorizeUtility: "Enron utility crew / review original handoff maintenance authorization"
+    case .receiveUtility: "Enron utility crew / review all three repaired handoffs"
     case .progress: "Senn / current induction records"
     }
   }
@@ -34,6 +35,7 @@ struct NativeWayfarerInductionReview: Sendable {
   let missionRevision: UInt64?
   let arkRevision: UInt64?
   let rescueRevision: UInt64?
+  let utilityRevision: UInt64?
   let issues: [String]
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
@@ -48,6 +50,11 @@ extension Game {
         inductionUtilityChild == nil
       {
         action = .authorizeUtility
+      } else if systemIdentity == NativeInductionUtilitySource.location,
+        state.rescueReception != nil,
+        state.utilityReception == nil, inductionUtilityChild != nil
+      {
+        action = .receiveUtility
       } else if systemIdentity == NativeInductionCrewLogSource.location,
         state.crewLog != nil, state.crewLogLoss == nil,
         inductionCrewLogChild?.savedNativeCrewLog?.rescueFuel == nil,
@@ -96,6 +103,7 @@ extension Game {
         commander.scriptState.instances[$0.job]?.revision
       },
       rescueRevision: inductionCrewLogChild?.revision,
+      utilityRevision: inductionUtilityChild?.revision,
       issues: action == .progress ? [] : inductionActionIssues(action, trade: trade))
   }
 
@@ -116,7 +124,7 @@ extension Game {
     }
     if action != .receive && action != .service && action != .launchArk && action != .receiveArk
       && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight
-      && action != .receiveRescue && action != .authorizeUtility,
+      && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -132,6 +140,7 @@ extension Game {
     case .startRescueFlight: issues += inductionRescueFlightIssues()
     case .receiveRescue: issues += inductionRescueReceivingIssues()
     case .authorizeUtility: issues += inductionUtilityAuthorizationIssues()
+    case .receiveUtility: issues += inductionUtilityReceivingIssues()
     case .progress: break
     }
     return issues
@@ -171,6 +180,7 @@ extension Game {
       quote.trade == current.trade, quote.epoch == current.epoch,
       quote.missionRevision == current.missionRevision, quote.arkRevision == current.arkRevision,
       quote.rescueRevision == current.rescueRevision,
+      quote.utilityRevision == current.utilityRevision,
       let owner = commander.equipmentOwnerID, let dock = current.dock,
       let carrier = current.carrier, let revision = current.inventoryRevision,
       let pack = wayfarerInductionPack
@@ -257,6 +267,10 @@ extension Game {
     }
     if quote.action == .authorizeUtility {
       try candidate.confirmInductionUtilityAuthorization(
+        dock: dock, carrier: carrier, revision: revision)
+    }
+    if quote.action == .receiveUtility {
+      try candidate.confirmInductionUtilityReceiving(
         dock: dock, carrier: carrier, revision: revision)
     }
     self = candidate

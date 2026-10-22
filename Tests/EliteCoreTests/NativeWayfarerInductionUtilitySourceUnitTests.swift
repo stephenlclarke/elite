@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Typed source/graph fixtures; no actual authorization, admission, repair or receiving is executed.
-private final class InductionUtilityFixture {
+final class InductionUtilityFixture {
   let parent: NativeWayfarerInductionState
   let source: NativeInductionUtilitySource
   let authorization: NativeInductionUtilityAuthorization
@@ -55,6 +55,7 @@ private final class InductionUtilityFixture {
     }
     commander.flightSimulation.physicalTime = 1_000_005
     commander.scriptState.flightSeconds = 900_005
+    commander.scriptState.calendarSeconds = 1_000_005
     commander.scriptState.nextEvent = 105
     commander.nativeStations = try .init(owner: source.owner)
     commander.nativeStations?.mainStations = [authorization.dock.station]

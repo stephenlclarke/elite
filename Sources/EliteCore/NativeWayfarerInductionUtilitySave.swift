@@ -18,7 +18,8 @@ enum NativeInductionUtilitySave {
         child.digest == NativeInductionUtilityPack.digest,
         child.outcome == .active, child.contract == nil, child.completionReceipt == nil,
         child.dialogue == nil, child.payloads.isEmpty, child.gearIssues.isEmpty,
-        child.milestones.isEmpty, child.data == .object([:]), child.campaignParent == nil,
+        child.milestones == (state.receiving == nil ? [] : [0]), child.data == .object([:]),
+        child.campaignParent == nil,
         child.campaignChildren.isEmpty,
         child.timers.keys.allSatisfy({ $0 == NativeInductionUtilityPack.timer }),
         source.owner == commander.equipmentOwnerID,
@@ -27,13 +28,18 @@ enum NativeInductionUtilitySave {
         child.hasAcknowledged(state.authorization.sequence),
         state.authorization.physicalTime <= commander.flightSimulation.physicalTime,
         state.authorization.flightSeconds <= engine.flightSeconds,
+        state.authorization.dock.calendarSeconds <= engine.calendarSeconds,
+        workClaimsValid(state, parent: parent, child: child, commander: commander),
         state.authorization.dock.actor.visit <= commander.flightSimulation.visit,
         commander.nativeStations?.mainStations.contains(state.authorization.dock.station) == true,
         state.authorization.dock.sequence < (commander.nativeStations?.nextMainDockSequence ?? 0),
         actorClaimsValid(child, state: state, source: source, commander: commander)
       else { return false }
     }
-    return true
+    return engine.instances.values.allSatisfy { parent in
+      guard let receipt = parent.savedWayfarerInduction?.utilityReception else { return true }
+      return engine.instances[receipt.job]?.savedNativeInductionUtility?.receiving == receipt
+    }
   }
 
   static func actorClaimsValid(
@@ -88,7 +94,14 @@ enum NativeInductionUtilitySave {
       let modules = leaf["modules"] as? [Any], modules.count == 3
     else { throw SaveError.invalidCommander }
     let bytes = try JSONSerialization.data(withJSONObject: leaf)
-    guard bytes.count <= 32_768 else { throw SaveError.invalidCommander }
+    if leaf.keys.contains("receiving")
+      || modules.contains(where: { ($0 as? [String: Any])?.keys.contains("work") == true })
+    {
+      guard NativeInductionCrewLogSave.supportsUtilityWork(schema) else {
+        throw SaveError.invalidCommander
+      }
+    }
+    guard bytes.count <= 1_048_576 else { throw SaveError.invalidCommander }
     let decoded = try JSONDecoder().decode(NativeInductionUtilityState.self, from: bytes)
     guard
       (leaf as NSDictionary).isEqual(

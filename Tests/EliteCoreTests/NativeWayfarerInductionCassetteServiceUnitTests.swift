@@ -96,7 +96,7 @@ struct NativeWayfarerInductionCassetteServiceUnitTests {
     #expect(f.carried.action(at: NativeWayfarerInduction.clinic) == .service)
     #expect(returned.action(at: NativeWayfarerInduction.clinic) == .progress)
     #expect(NativeWayfarerInduction.repairTarget == "renas-cassette-loop-closed")
-    #expect(NativeWayfarerInduction.laterStages.contains("10-14"))
+    #expect(NativeWayfarerInduction.laterStages.contains("11-14"))
     #expect(throws: (any Error).self) { try returned.servicingCassette(receipt) }
     #expect(throws: (any Error).self) {
       try returned.collectingCassette(try #require(f.carried.cassette), freeTonnes: 100)

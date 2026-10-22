@@ -33,6 +33,7 @@ public enum ScriptPageIdentity: Codable, Sendable, Equatable {
   case question(ScriptQuestionIdentity)
   case gallery(ScriptGalleryPageIdentity)
   case contract(ScriptContractPageIdentity)
+  case inductionUtility(UUID)
   var valid: Bool {
     switch self {
     case .legacy(let page): page.valid
@@ -40,6 +41,7 @@ public enum ScriptPageIdentity: Codable, Sendable, Equatable {
     case .question(let question): question.valid
     case .gallery(let page): page.valid
     case .contract(let page): page.valid
+    case .inductionUtility: true
     }
   }
 }
@@ -81,6 +83,8 @@ extension Game {
       page = .gallery(scriptGalleryPageIdentity)
     } else if screen == .contracts {
       page = .contract(scriptContractPageIdentity)
+    } else if screen == .front, let review = inductionUtilityWorkRuntime.review {
+      page = .inductionUtility(review.nonce)
     } else {
       page = nil
     }

@@ -54,6 +54,9 @@ extension GameRuntime {
     candidate.persistScriptActors()
     candidate.inductionArkDockPublicationPending = false
     candidate.inductionRescueDockPublicationPending = false
+    candidate.inductionUtilityWorkRuntime.dirty = false
+    candidate.inductionUtilityWorkRuntime.publishedSeconds =
+      candidate.inductionUtilityQualifiedSeconds
     return try Self.prepareNativeSaveState(
       candidate, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
   }
@@ -104,6 +107,7 @@ extension GameRuntime {
       let changed =
         before.commander != game.commander || before.docked != game.docked
         || before.bodies != game.bodies || before.jumpCountdown != game.jumpCountdown
+        || game.inductionUtilityWorkRuntime.dirty
       guard ownsPersistentState, changed else { return }
       var candidate = game
       stage = .commandPublish

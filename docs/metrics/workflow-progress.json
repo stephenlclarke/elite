@@ -4606,10 +4606,34 @@
       "github_run": 39714460197,
       "selection_methods": 181,
       "new_methods": 7,
-      "source_review": "MBA queued exact source/authority/save delta",
-      "unit_status": "existing hosted pending; correction runs retained separately",
+      "source_review": "MBA exact delta and necessary source/save callers clean",
+      "unit_status": "Aggregate FAILURE solely known42 Cassette99; all7 new source methods PASS, no crash",
       "next_assigned": "C08.P05.B.work",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "executed_methods": 181,
+      "executed_expanded_cases": 213,
+      "passed_methods": 180,
+      "passed_expanded_cases": 212,
+      "failed_assertions": 1,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6331834885",
+      "qualification_scope": "Bounded source/typed graph/pack/schema only; no native authorization/admission/work/receiving/gameplay delivery"
+    },
+    {
+      "event": "Final cassette deferred-boundary assertion corrected and pushed",
+      "head": "6ff0a669bc11088eea9342cf7e469704d7bebd7e",
+      "base": "aaa6f07444a8fa51d644f3ae2c56f478ff844dfd",
+      "ledger_parent": "M01.I42",
+      "github_run": 39715425338,
+      "selection_methods": 181,
+      "source_review": "MBA independent exact one-literal source clean;42 verified CLOSED",
+      "unit_status": "MBA verified exact-head SUCCESS181methods213cases,zero failures/errors/skips,no crash",
+      "next_assigned": "C08.P05.B.work",
+      "usable_build_delivered": false,
+      "verified_methods": 181,
+      "verified_expanded_cases": 213,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332000768",
+      "issue_status": "42 CLOSED;41/42/43 independently closed",
+      "qualification_scope": "Composed maintained pure-unit scope incl all3 affected assertions,formerlycrashingFlight and7UtilitySource methods; no native journey/playable/release claim"
     }
   ]
 }

@@ -47,14 +47,27 @@ struct NativeInductionUtilitySource: Sendable {
     owner = parent.permission.owner
     self.parent = parent.permission.mission
     self.reception = reception.operation
-    issue = ScriptIdentity.uuid(
-      "induction-original-enron-utility-source-v1:\(owner):\(self.parent):\(reception.operation)")
+    issue = Self.issueIdentity(owner: owner, parent: self.parent, receiving: reception.operation)
   }
-  func module(_ role: NativeInductionUtilityRole) -> UUID {
+  static func issueIdentity(owner: UUID, parent: UUID, receiving: UUID) -> UUID {
+    ScriptIdentity.uuid(
+      "induction-original-enron-utility-source-v1:\(owner):\(parent):\(receiving)")
+  }
+  static func moduleIdentity(issue: UUID, role: NativeInductionUtilityRole) -> UUID {
     ScriptIdentity.uuid("\(issue):module:\(role.rawValue)")
   }
-  func kit(_ role: NativeInductionUtilityRole) -> UUID {
+  static func kitIdentity(issue: UUID, role: NativeInductionUtilityRole) -> UUID {
     ScriptIdentity.uuid("\(issue):crew-repair-kit:\(role.rawValue)")
+  }
+  static func operatorIdentity(issue: UUID) -> UUID {
+    ScriptIdentity.uuid("\(issue):local-utility-crew")
+  }
+  var operatorID: UUID { Self.operatorIdentity(issue: issue) }
+  func module(_ role: NativeInductionUtilityRole) -> UUID {
+    Self.moduleIdentity(issue: issue, role: role)
+  }
+  func kit(_ role: NativeInductionUtilityRole) -> UUID {
+    Self.kitIdentity(issue: issue, role: role)
   }
   func initialPose(_ role: NativeInductionUtilityRole, reference: StationAnchor) throws -> ShipPose
   {

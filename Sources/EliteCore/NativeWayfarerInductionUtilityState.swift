@@ -73,8 +73,9 @@ struct NativeInductionUtilityModule: Codable, Sendable, Equatable {
   let role: NativeInductionUtilityRole
   let module: UUID
   let kit: UUID
-  let fault: String
-  let availableKits: Int
+  var fault: String
+  var availableKits: Int
+  var work: NativeInductionUtilityWork?
   init(source: NativeInductionUtilitySource, role: NativeInductionUtilityRole) {
     self.role = role
     module = source.module(role)
@@ -86,8 +87,9 @@ struct NativeInductionUtilityModule: Codable, Sendable, Equatable {
 
 struct NativeInductionUtilityState: Codable, Sendable, Equatable {
   let authorization: NativeInductionUtilityAuthorization
-  let modules: [NativeInductionUtilityModule]
+  var modules: [NativeInductionUtilityModule]
   var admission: [String: NativeArkAdmission]?
+  var receiving: NativeInductionUtilityReception?
   init(authorization: NativeInductionUtilityAuthorization, source: NativeInductionUtilitySource) {
     self.authorization = authorization
     modules = NativeInductionUtilityRole.allCases.map { .init(source: source, role: $0) }
@@ -95,9 +97,15 @@ struct NativeInductionUtilityState: Codable, Sendable, Equatable {
   func shapeValid(parent: NativeWayfarerInductionState) -> Bool {
     guard authorization.valid(parent: parent),
       let source = try? NativeInductionUtilitySource(parent: parent),
-      modules == NativeInductionUtilityRole.allCases.map({ .init(source: source, role: $0) }),
+      modules.count == 3,
+      zip(modules, NativeInductionUtilityRole.allCases).allSatisfy({ module, role in
+        module.role == role && module.module == source.module(role)
+          && module.kit == source.kit(role)
+          && module.valid(authorization: authorization, source: source)
+      }),
       Set(modules.map(\.module) + modules.map(\.kit)).count == 6
     else { return false }
+    if modules.contains(where: { $0.work != nil }) && admission == nil { return false }
     if let admission {
       guard Set(admission.keys) == Set(NativeInductionUtilityRole.allCases.map(\.rawValue)),
         Set(admission.values.map(\.actor)).count == 3,
@@ -111,6 +119,39 @@ struct NativeInductionUtilityState: Codable, Sendable, Equatable {
         })
       else { return false }
     }
+    guard receiving == parent.utilityReception else { return false }
+    if let receiving {
+      guard let rescue = parent.rescueReception,
+        receiving.valid(permission: parent.permission, rescue: rescue),
+        receiving.authorization == authorization.operation,
+        receiving.repairs == modules.compactMap({ $0.work?.repair?.operation }),
+        modules.allSatisfy({
+          $0.availableKits == 0 && $0.work?.repair != nil && $0.fault == $0.role.workingFault
+        }),
+        receiving.dock.station == authorization.dock.station,
+        receiving.dock.sequence > authorization.dock.sequence,
+        receiving.sequence
+          > (modules.compactMap({ $0.work?.repair?.sequence }).max() ?? UInt64.max),
+        receiving.physicalTime
+          >= (modules.compactMap({ $0.work?.repair?.physicalTime }).max() ?? .infinity),
+        receiving.flightSeconds
+          >= (modules.compactMap({ $0.work?.repair?.flightSeconds }).max() ?? .infinity)
+      else { return false }
+    }
     return true
+  }
+}
+
+extension NativeInductionUtilityModule {
+  func valid(
+    authorization: NativeInductionUtilityAuthorization, source: NativeInductionUtilitySource
+  ) -> Bool {
+    if let work {
+      guard work.valid(authorization: authorization, source: source, role: role) else {
+        return false
+      }
+      if work.repair != nil { return availableKits == 0 && fault == role.workingFault }
+    }
+    return availableKits == 1 && fault == role.initialFault
   }
 }
