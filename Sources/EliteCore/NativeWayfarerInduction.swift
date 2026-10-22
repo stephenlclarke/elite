@@ -221,6 +221,28 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.charterSeedSource == rhs.charterSeedSource
   }
   var valid: Bool {
+    // Validate each stage in order without retaining every optional payload on one stack frame.
+    return permissionValid()
+      && clinicCrateValid()
+      && arkLinkValid()
+      && seedReceptionValid()
+      && crewLogValid()
+      && utilityReceptionValid()
+      && charterChoiceValid()
+      && charterCapacityValid()
+      && charterSignaturesValid()
+      && charterCapacityEventsValid()
+      && charterClinicSourceValid()
+      && charterWorkshopSourceValid()
+      && charterSeedSourceValid()
+      && charterAuditValid()
+      && networkCertificationValid()
+      && accreditationValid()
+      && continuationValid && seedKeyValid
+  }
+
+  @inline(never)
+  private func permissionValid() -> Bool {
     let p = permission
     guard p.mission == NativeWayfarerInduction.mission(owner: p.owner),
       p.dock.valid, p.dock.commanderOwner == p.owner, p.dock.station.world == p.owner,
@@ -232,6 +254,12 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
           mission: p.mission, owner: p.owner, dock: p.dock,
           carrier: p.carrier, revision: p.inventoryRevision))
     else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func clinicCrateValid() -> Bool {
+    let p = permission
     if let crate {
       guard crate.valid(permission: p) else { return false }
       if let loss {
@@ -244,6 +272,11 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     } else if loss != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func arkLinkValid() -> Bool {
     if let ark {
       guard ark.valid, let seedKey,
         ark.registeredArk
@@ -255,49 +288,103 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
         ark.loanOperation == seedKey.operation
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func seedReceptionValid() -> Bool {
     if let seedReception {
       guard let seedKey, let ark, seedKeyLoss == nil, seedReception.valid(key: seedKey, link: ark)
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func crewLogValid() -> Bool {
     if let crewLog {
       guard let seedReception, crewLog.valid(permission: permission, reception: seedReception)
       else { return false }
-      if let crewLogHullCustody {
-        guard crewLogHullCustody.valid(capture: crewLog, owner: permission.owner) else {
-          return false
-        }
+      return crewLogHullCustodyValid(crewLog)
+        && crewLogLossValid(crewLog)
+        && crewLogRescueReceptionValid(crewLog)
+    }
+    return crewLogAbsentClaimsValid()
+  }
+
+  @inline(never)
+  private func crewLogHullCustodyValid(_ crewLog: borrowing NativeCrewLogCapture) -> Bool {
+    if let crewLogHullCustody {
+      guard crewLogHullCustody.valid(capture: crewLog, owner: permission.owner) else {
+        return false
       }
-      if let crewLogLoss {
-        guard crewLogLoss.facts.valid, crewLogLoss.carrier == crewLogCarrier,
-          crewLogLoss.facts.sequence > crewLog.sequence,
-          crewLogLoss.physicalTime.isFinite,
-          (crewLog.physicalTime...1e12).contains(crewLogLoss.physicalTime),
-          crewLogLoss.facts.visit >= crewLog.collector.visit,
-          crewLogLoss.facts.context.flightSeconds >= crewLog.flightSeconds
-        else { return false }
-      }
-      if let rescueReception {
-        guard crewLogLoss == nil, rescueReception.valid(permission: permission, original: crewLog),
-          rescueReception.carrier == crewLogCarrier,
-          rescueReception.inventoryRevision >= (crewLogInventoryRevision ?? UInt64.max)
-        else { return false }
-      }
-    } else if crewLogLoss != nil || crewLogHullCustody != nil || rescueReception != nil {
+    }
+    return true
+  }
+
+  @inline(never)
+  private func crewLogLossValid(_ crewLog: borrowing NativeCrewLogCapture) -> Bool {
+    if let crewLogLoss {
+      guard crewLogLoss.facts.valid, crewLogLoss.carrier == crewLogCarrier,
+        crewLogLoss.facts.sequence > crewLog.sequence,
+        crewLogLoss.physicalTime.isFinite,
+        (crewLog.physicalTime...1e12).contains(crewLogLoss.physicalTime),
+        crewLogLoss.facts.visit >= crewLog.collector.visit,
+        crewLogLoss.facts.context.flightSeconds >= crewLog.flightSeconds
+      else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func crewLogRescueReceptionValid(_ crewLog: borrowing NativeCrewLogCapture) -> Bool {
+    if let rescueReception {
+      guard crewLogLoss == nil, rescueReception.valid(permission: permission, original: crewLog),
+        rescueReception.carrier == crewLogCarrier,
+        rescueReception.inventoryRevision >= (crewLogInventoryRevision ?? UInt64.max)
+      else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func crewLogAbsentClaimsValid() -> Bool {
+    if crewLogLoss != nil || crewLogHullCustody != nil || rescueReception != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func utilityReceptionValid() -> Bool {
     if let utilityReception {
       guard let rescueReception,
         utilityReception.valid(permission: permission, rescue: rescueReception)
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func charterChoiceValid() -> Bool {
     if let charterChoice {
       guard let utilityReception,
         charterChoice.valid(permission: permission, utility: utilityReception)
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func charterCapacityValid() -> Bool {
     if let charterCapacity {
       guard let charterChoice, charterCapacity.valid(choice: charterChoice) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func charterSignaturesValid() -> Bool {
     if let charterSignatures {
       guard let charterChoice, let charterCapacity, !charterSignatures.isEmpty,
         charterSignatures.count <= 3,
@@ -308,6 +395,11 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
         charterSignatures.allSatisfy({ $0.valid(choice: charterChoice, capacity: charterCapacity) })
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func charterCapacityEventsValid() -> Bool {
     if let charterCapacity {
       for event in charterCapacity.events {
         guard case .released(let release) = event else {
@@ -328,13 +420,43 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
         else { return false }
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func charterClinicSourceValid() -> Bool {
     if let charterClinicSource, !charterClinicSource.valid(parent: self) { return false }
+    return true
+  }
+
+  @inline(never)
+  private func charterWorkshopSourceValid() -> Bool {
     if let charterWorkshopSource, !charterWorkshopSource.valid(parent: self) { return false }
+    return true
+  }
+
+  @inline(never)
+  private func charterSeedSourceValid() -> Bool {
     if let charterSeedSource, !charterSeedSource.valid(parent: self) { return false }
+    return true
+  }
+
+  @inline(never)
+  private func charterAuditValid() -> Bool {
     if let charterAudit, !charterAudit.valid(parent: self) { return false }
+    return true
+  }
+
+  @inline(never)
+  private func networkCertificationValid() -> Bool {
     if let networkCertification, !networkCertification.valid(parent: self) { return false }
+    return true
+  }
+
+  @inline(never)
+  private func accreditationValid() -> Bool {
     if let accreditation, !accreditation.valid(parent: self) { return false }
-    return continuationValid && seedKeyValid
+    return true
   }
   var payloads: [String: Int] {
     if crewLog != nil && crewLogLoss == nil && rescueReception == nil {

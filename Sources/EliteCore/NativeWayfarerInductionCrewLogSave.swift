@@ -80,6 +80,19 @@ enum NativeInductionCrewLogSave {
   }
 
   static func validateClaims(_ commander: borrowing Commander) -> Bool {
+    guard recorderClaimsValid(commander) else { return false }
+    // A parent cannot claim pickup or receiving without the same original source job and receipt.
+    guard NativeInductionUtilitySave.validateClaims(commander),
+      NativeInductionClinicSave.validateClaims(commander),
+      NativeInductionWorkshopSave.validateClaims(commander),
+      NativeInductionSeedSave.validateClaims(commander)
+    else { return false }
+    return parentClaimsValid(commander)
+  }
+
+  // Release completed recorder-validation temporaries before validating later child claims.
+  @inline(never)
+  private static func recorderClaimsValid(_ commander: borrowing Commander) -> Bool {
     let engine = commander.scriptState
     let jobs = engine.instances.values.filter { NativeInductionCrewLogPack.marked($0) }
     guard jobs.count <= 1 else { return false }
@@ -147,12 +160,12 @@ enum NativeInductionCrewLogSave {
         else { return false }
       }
     }
-    // A parent cannot claim pickup or receiving without the same original source job and receipt.
-    guard NativeInductionUtilitySave.validateClaims(commander),
-      NativeInductionClinicSave.validateClaims(commander),
-      NativeInductionWorkshopSave.validateClaims(commander),
-      NativeInductionSeedSave.validateClaims(commander)
-    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func parentClaimsValid(_ commander: borrowing Commander) -> Bool {
+    let engine = commander.scriptState
     return engine.instances.values.allSatisfy { parent in
       guard let capture = parent.savedWayfarerInduction?.crewLog else { return true }
       guard let source = engine.instances[capture.job]?.savedNativeCrewLog else { return false }
