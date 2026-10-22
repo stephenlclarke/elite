@@ -5400,6 +5400,27 @@
       "owner": "Mission Coder1",
       "reviewer": "MBA",
       "qualified_methods": 0
+    },
+    {
+      "event": "G11 actual complete result classified: compile91 closed; fixture96/97 assigned without production authority changes",
+      "date": "2026-10-22",
+      "head": "89ef0ccaec2f488cb7395a65c21125fadcfa163e",
+      "run": 39771925686,
+      "methods": 343,
+      "expanded_cases": 375,
+      "passing_methods": 341,
+      "failing_methods": 2,
+      "errors": 0,
+      "skips": 0,
+      "compile_seconds": 795.94,
+      "test_seconds": 93.629,
+      "closed_issue": 91,
+      "fixture_issues": [
+        96,
+        97
+      ],
+      "safety_issue85_qualified": false,
+      "full_feature_qualified": false
     }
   ],
   "two_developer_phase": {
