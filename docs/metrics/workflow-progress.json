@@ -4472,6 +4472,19 @@
       "verification_url": "https://github.com/stephenlclarke/elite/issues/27#issuecomment-6330554633",
       "scope": "Existing declarations and logs only; valid nil assertions preserved, both diagnostics remain, compiler cause unproved; no new execution or source correction",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Original rescue native-hop child pushed; paid dock service assigned",
+      "head": "ba905b09a56b2fcb2ac17649e310de5bd5596df5",
+      "base": "ac1095ba44b3f9ff69b7ed66414a2de06e1d585a",
+      "ledger_parent": "C08.P05.A.flight",
+      "github_run": 39707132453,
+      "selection_methods": 162,
+      "new_methods": 6,
+      "source_review": "MBA assigned exact delta and necessary callers",
+      "unit_status": "existing hosted active",
+      "next_assigned": "C08.P05.A.service",
+      "usable_build_delivered": false
     }
   ]
 }
