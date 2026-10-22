@@ -19,6 +19,11 @@ extension Game {
         format: "MEASURED WORK %.2f/20s / ZERO-FLOW OBSERVATION %.2f/1s",
         module.history.seconds(.work), module.history.seconds(.observation)),
     ]
+    if let meter = module.lastMeter {
+      lines.append(
+        String(
+          format: "LAST LIVE METER %.3f UNITS / %.3fs", meter.transferred, meter.end - meter.start))
+    }
     if module.verification != nil {
       lines.append("INDEPENDENT ZERO-FLOW MEASUREMENT VERIFIED")
     } else {
