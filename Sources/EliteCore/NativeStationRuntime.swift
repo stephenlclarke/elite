@@ -858,6 +858,16 @@ extension Game {
       bodyCourseRefused: &bodyCourseRefused)
   }
 
+  /// Finish the full physical-state read before entering deeper course geometry.
+  /// These fields are not authority; the complete current-body comparison still follows.
+  @inline(never)
+  private static func nativeStationEntryPhysicalFields(
+    _ station: borrowing SpaceBody
+  ) -> (identity: ActorIdentity, velocity: Vector3)? {
+    guard let physical = station.physical else { return nil }
+    return (identity: physical.identity, velocity: physical.velocity)
+  }
+
   mutating func nativeStationAutoEntryCourseIsClear(
     _ station: borrowing SpaceBody, advance: Vector3, terminalSpeed: Double,
     observation: inout [String: String]?, bodyCourseRefused: inout Bool
@@ -866,7 +876,8 @@ extension Game {
     observation?["refusal"] = "native.state"
     let stateValid = commander.nativeStationStateValid
     observation?["nativeStateValid"] = String(stateValid)
-    guard stateValid, let world = commander.nativeStations, let physical = station.physical
+    guard stateValid, let world = commander.nativeStations,
+      let physical = Self.nativeStationEntryPhysicalFields(station)
     else { return false }
     observation?["refusal"] = "native.advance"
     guard advance.finite else { return false }
