@@ -1067,7 +1067,7 @@ extension Game {
     _ body: SpaceBody, from start: Vector3, to end: Vector3, radius: Double,
     mesh actualMesh: Mesh? = nil
   ) -> StationEntryCourseObstacleAssessment {
-    let flight = commander.flightSimulation
+    let flight = withReadOnlyCommander { $0.flightSimulation }
     guard let physical = body.physical,
       physical.identity.system == systemIdentity, physical.identity.visit == flight.visit,
       physical.velocity.finite, body.rotation.isFinite, body.rotationRate.isFinite,
@@ -1094,14 +1094,14 @@ extension Game {
     let obstacle = modelPose(of: body)
     let frame = flight.pose.orientation
     let bodyRadius = nativeStationRadius(mesh)
-    let player = commander.playerMesh
+    let player = withReadOnlyCommander { $0.playerMesh }
     let playerRadius = nativeStationRadius(player)
     guard obstacle.position.finite, obstacle.orientation.validRotation, frame.validRotation,
       bodyRadius.isFinite, bodyRadius > 0, playerRadius.isFinite, radius >= playerRadius
     else { return .invalid }
     guard
       let playerHull = preparedWorkHull(
-        mesh: player, key: "station-entry-player:" + commander.shipID),
+        mesh: player, key: "station-entry-player:" + withReadOnlyCommander { $0.shipID }),
       let bodyHull = preparedWorkHull(mesh: mesh, key: "station-entry-body:\(body.id)")
     else { return .invalid }
     // Unit-duration interpolation describes the current geometric corridor only;
