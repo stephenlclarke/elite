@@ -33,11 +33,20 @@ final class IsolationWorkFixture {
     game.launch()
     try #require(!game.docked)
     game.persistScriptActors(unloading: true)
+    try #require(game.commander.npcPersistence.system == game.systemIdentity)
+    try #require(game.commander.npcPersistence.count > 0)
+    // The test scene still uses the ordinary departure lifecycle before changing systems.
+    try game.departOrdinarySimulation()
+    try #require(
+      game.commander.npcPersistence.system == nil && game.commander.npcPersistence.count == 0)
     game.commander.system = 185
     game.commander.nativeStations?.currentMainDock = nil
     game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 16000))]
     let entered = game.beginGameplayVisit(arriving: true)
     try #require(entered)
+    try #require(
+      game.commander.npcPersistence.system == nil
+        || game.commander.npcPersistence.system == game.systemIdentity)
     let previous = game.commander.flightSimulation.pose
     var pose = previous
     pose.position = .init(66000, 24000, -1000)
@@ -407,6 +416,9 @@ struct NativeIsolationWorkUnitTests {
     #expect(pair.modules[0].accounts == module.accounts)
     let saved = try Data(contentsOf: files.save)
     let (cold, _) = try ScriptSaveStore.read(saved, from: files.save)
+    try #require(
+      cold.npcPersistence.system == nil
+        || cold.npcPersistence.system == SystemIdentity(galaxy: cold.galaxy, system: cold.system))
     let job = NativeIsolationWorkPack.instance(source: verification.authority.source)
     #expect(
       cold.scriptState.instances[job]?.savedIsolationWork

@@ -33,3 +33,7 @@ Run `39787112105` at `63ded61c` compiled the production/test target in 917.40 se
 The G11 role reader held its full source, physical, fit and retained-actor snapshots across that independent native binding query. The approved lifetime correction places the identical ordered pre-binding guards in a private non-inline helper. It returns only role, child UUID, retained actor UUID and native actor identity. Its frame completes before the same fresh native binding query and same three identity comparisons. No ownership predicate, fit/component/model check, query authority, storage, schema, actor or selector changes. An explicitly leased existing-cache Core preflight is permitted for this coherent correction; actual runtime qualification remains required.
 
 The approved existing-cache Core preflight passed in 16.10 seconds with exit 0, and its CPU lease was released. No local unit/native runtime executed. The ordered prefix/suffix and selector proofs, independent review and actual hosted runtime result remain the acceptance evidence needed for this frame correction.
+
+## Actual runtime closure
+
+Run `39793592000` at `7c1d4ac6` compiled in 862.64 seconds and completed the complete 362-method selection without a process crash. The real Tab/manual-combat/rollback method passed, proving #98's actual contact-selection stack criterion, so #98 is closed along with #85/#96. The separate positive flow caught `invalidScene`; its remaining fixture lifecycle correction stays in #97. This records 361 method passes and one failure, not full PR acceptance.
