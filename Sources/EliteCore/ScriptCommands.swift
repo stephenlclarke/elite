@@ -16,7 +16,7 @@ extension Game {
         guard Set(fields.keys) == ["op"], NativeInductionSeedPack.matches(pack) else {
           throw SaveError.invalidCommander
         }
-        try applyInductionSeedExpiry(event: event, state: &state, candidate: &candidate)
+        try Self.applyInductionSeedExpiry(event: event, state: &state, candidate: &candidate)
         return
       }
     }

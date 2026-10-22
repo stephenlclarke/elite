@@ -1,7 +1,7 @@
 import Foundation
 
 extension Game {
-  func applyInductionSeedExpiry(
+  static func applyInductionSeedExpiry(
     event: ScriptEvent, state: inout ScriptInstance,
     candidate: inout Commander
   ) throws {
@@ -12,7 +12,8 @@ extension Game {
       let context = event.context,
       candidate.freightHistoricalContextValid(context, requiresDock: context.docked),
       let parent = candidate.scriptState.instances[contract.booking.parent]?.savedWayfarerInduction,
-      let source = parent.charterSeedSource, let capacity = parent.charterCapacity,
+      let sourceRevision = Self.nativeSeedExpiryStockRevision(parent),
+      let capacity = parent.charterCapacity,
       candidate.scriptState.nextEvent < UInt64(Int64.max) - 1
     else {
       throw MissionPackError(
@@ -32,13 +33,13 @@ extension Game {
     let operation = try NativeInductionSeedCustodyEnd.identity(
       booking: contract.booking.operation,
       pickup: custody.pickup.operation, kind: .spoiled, sequence: sequence,
-      stockRevision: source.revision, window: window, time: time, context: context,
+      stockRevision: sourceRevision, window: window, time: time, context: context,
       closedFlightSeconds: clock, contact: nil, loss: nil, expiry: event, payment: nil,
       before: nil, after: nil)
     let end = NativeInductionSeedCustodyEnd(
       operation: operation, booking: contract.booking.operation,
       pickup: custody.pickup.operation, kind: .spoiled, sequence: sequence,
-      stockRevision: source.revision, window: window, physicalTime: time, context: context,
+      stockRevision: sourceRevision, window: window, physicalTime: time, context: context,
       closedFlightSeconds: clock, contact: nil, loss: nil, expiry: event, payment: nil,
       creditsBefore: nil, creditsAfter: nil)
     custody.end = end
@@ -48,6 +49,14 @@ extension Game {
       "The original seed lot spoiled at its native flight deadline. Recorded terminal failure releases its original window and cargo reservation; no restock, payment or success."
     )
   }
+  /// The exact original source is required, but its full value is not retained during settlement.
+  @inline(never)
+  private static func nativeSeedExpiryStockRevision(
+    _ parent: borrowing NativeWayfarerInductionState
+  ) -> UInt64? {
+    parent.charterSeedSource?.revision
+  }
+
   mutating func retryInductionSeedExpiry(_ id: UUID) throws {
     guard let child = commander.scriptState.instances[id], child.suspension != nil,
       let event = NativeInductionSeedSave.pendingExpiry(child, engine: commander.scriptState),
