@@ -5450,9 +5450,14 @@
         "state_scope": "G1approvedoptionalpracticeproperty/init+ScriptPersistencepracticehunks+optionalAlienSave.contains;seed117118,audit119120,practice121122fixed/precedence",
         "schema_dependency": "Composeactualseed235719PR57asneeded;G1retainsC08accessors/mixed121122support",
         "format_precedence": "Highestrequiredfeaturewins:practice121122,network123124,terminal125126;earlierformatsnotwidened",
-        "source_state": "Pushed13practice methods; current-head hosted execution and MBA review pending",
+        "source_state": "Correction66 assigned; full MBA source review continues",
         "head": "805c7f999c6f1016d565157209b268406cb1092d",
-        "pr_url": "https://github.com/stephenlclarke/elite/pull/65"
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/65",
+        "ready_findings": [
+          66
+        ],
+        "finding_owner": "G4",
+        "unit_status": "39749973411 compile failed; optional actual equipmentOwnerID at four practice boundaries; no units/XML"
       },
       {
         "id": "C08.commit-charter.audit",
@@ -5639,6 +5644,28 @@
         "assigned_at": "2026-10-22T08:54:38.254725+00:00",
         "ownership": "WorkTargetSelection/RelativeWorkController/MiningWorkTool/FlightWorkTools and pure tests/notes",
         "limits": "No G1 Game/mission/save or G4 practice/scoop hooks; no local compiler/native/integration",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Existing selected-tool/manual override/hold/cancel momentum and finite native extraction foundation credited; no demonstrated gap/no edits",
+        "qualification_scope": "Source and existing unit definitions only; no fresh execution"
+      },
+      {
+        "id": "M08.P05.native-salvage",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:55:59.477872+00:00",
+        "ownership": "NativeSalvageWork exact remaining selection/cut/scoop gap and pure tests",
+        "limits": "No G1 central mission/save or G4 practice recovery/scoop hooks; reserve any shared hunk first; no local compilation/native/integration",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Existing actual fitted cutting, bounded work proof, writer-first publication and sealed scoop custody credited; no demonstrated gap/no edit",
+        "qualification_scope": "Source/existing test definitions only; no fresh execution"
+      },
+      {
+        "id": "M08.P06.plugh-fitting",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T08:57:07.689475+00:00",
+        "ownership": "Existing recovered equipment and alien missile reverse-engineering finite purchase policy; focused tests/notes",
+        "limits": "Alien drive Mission Coder1; no G1 central Game/mission/save or G4 practice hooks; no generic framework/local compilation/native/integration",
         "merged_at": null,
         "playable_at": null
       }
