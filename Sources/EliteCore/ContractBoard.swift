@@ -24,6 +24,7 @@ public struct ContractBoardRow: Sendable {
   var inductionWorkshopReference: UUID? = nil
   var inductionSeedReference: UUID? = nil
   var flightReception: NativeFlightReceptionAction? = nil
+  var safeGunnery: NativeSafeGunneryAction? = nil
   var measuredExtraction: NativeMeasuredExtractionAction? = nil
   var recordRecovery: WayfarerRecordRecoveryAction? = nil
   var identifiedSalvage: NativeIdentifiedSalvageAction? = nil
@@ -38,6 +39,7 @@ public struct ContractBoardRow: Sendable {
     }
     if let key = glassMeridian?.key { return key }
     if let key = flightReception?.key { return key }
+    if let key = safeGunnery?.key { return key }
     if let key: String = measuredExtraction?.key { return key }
     if let key: String = recordRecovery?.key { return key }
     if let key: String = identifiedSalvage?.key { return key }
@@ -73,6 +75,7 @@ private enum ContractBoardReview: Sendable {
   case glassMeridian(NativeGlassMeridianReview)
   case wayfarerInduction(NativeWayfarerInductionReview)
   case flightReception(NativeFlightReceptionReview)
+  case safeGunnery(NativeSafeGunneryReview)
   case measuredExtraction(NativeMeasuredExtractionReview)
   case recordRecovery(WayfarerRecordRecoveryReview)
   case identifiedSalvage(NativeIdentifiedSalvageReview)
@@ -220,6 +223,19 @@ public struct ContractBoardUI: Sendable {
       }
     }
   }
+  var safeGunneryQuote: NativeSafeGunneryReview? {
+    get {
+      guard case .safeGunnery(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .safeGunnery(newValue)
+      } else if case .safeGunnery(_)? = review {
+        review = nil
+      }
+    }
+  }
   var flightReceptionQuote: NativeFlightReceptionReview? {
     get {
       guard case .flightReception(let quote)? = review else { return nil }
@@ -356,6 +372,7 @@ extension Game {
       + wayfarerInductionRows
       + glassMeridianRows
       + flightReceptionRows
+      + safeGunneryRows
       + measuredExtractionRows
       + recordRecoveryRows
       + identifiedSalvageRows
@@ -398,6 +415,7 @@ extension Game {
         || contractBoard.surveyQuote != nil || contractBoard.wayfarerInductionQuote != nil
         || contractBoard.glassMeridianQuote != nil
         || contractBoard.flightReceptionQuote != nil
+        || contractBoard.safeGunneryQuote != nil
         || contractBoard.measuredExtractionQuote != nil
         || contractBoard.recordRecoveryQuote != nil
         || contractBoard.identifiedSalvageQuote != nil || contractBoard.utilityQuote != nil
@@ -420,6 +438,10 @@ extension Game {
     }
     if let action = contractBoard.selected?.glassMeridian {
       contractBoard.glassMeridianQuote = glassMeridianReview(action)
+      return
+    }
+    if let action = contractBoard.selected?.safeGunnery {
+      contractBoard.safeGunneryQuote = safeGunneryReview(action)
       return
     }
     if let action = contractBoard.selected?.flightReception {
@@ -584,6 +606,16 @@ extension Game {
         contractBoard.detail = false
         contractBoard.wayfarerInductionQuote = nil
         contractBoard.glassMeridianQuote = nil
+        return
+      }
+      if let action = contractBoard.selected?.safeGunnery {
+        guard contractBoard.action == .accept, let quote = contractBoard.safeGunneryQuote,
+          quote.action == action
+        else { throw MissionPackError("Review safe gunnery and choose Confirm or Back.") }
+        try confirmSafeGunnery(quote)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.safeGunneryQuote = nil
         return
       }
       if let action = contractBoard.selected?.flightReception {

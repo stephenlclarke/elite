@@ -336,6 +336,7 @@ extension Game {
     commitMissionDamage(plan, damage: damage, origin: origin, eventID: eventID)
     applyNativeCrimeResolution(
       resolution, target: contact.hit.target, attacker: origin.owner, context: context)
+    observeSafeGunneryOrdinaryHit(incident)
     let source = bodies.first(where: { $0.physical?.identity == origin.owner })
     return Self.missionImpactReceipt(
       kind: .laser, hit: contact.hit, part: contact.victimPart,
@@ -385,6 +386,7 @@ extension Game {
     commitMissionDamage(plan, damage: proof.damage, origin: origin, eventID: eventID)
     applyNativeCrimeResolution(
       resolution, target: contact.hit.target, attacker: origin.owner, context: context)
+    observeSafeGunneryOrdinaryHit(incident)
     let source = bodies.first(where: { $0.physical?.identity == origin.owner })
     return (
       Self.missionImpactReceipt(

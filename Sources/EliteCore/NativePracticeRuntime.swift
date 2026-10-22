@@ -168,6 +168,7 @@ extension Game {
     do { try practice.record(receipt) } catch { return true }
     instance.savedNativePractice = practice
     commander.scriptState.instances[instance.id] = instance
+    synchronizeSafeGunneryHit(instance: instance.id)
     return true
   }
 

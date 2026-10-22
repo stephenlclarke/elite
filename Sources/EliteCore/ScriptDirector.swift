@@ -255,6 +255,16 @@ extension Game {
         return reason
       }
     }
+    if pack.manifest.stateID == NativeSafeGunnery.stateID {
+      guard pack.digest == NativeSafeGunnery.digest else {
+        return "Restore approved safe gunnery content."
+      }
+      if !commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeSafeGunnery.stateID && $0.digest == pack.digest
+      }) {
+        return "Use Station Contracts at actual Avenor for safe gunnery consent."
+      }
+    }
     if pack.manifest.flightReception != nil
       || pack.manifest.stateID == NativeFlightReception.stateID
     {
@@ -453,6 +463,9 @@ extension Game {
     else { throw MissionPackError("Use Senn's actual induction commission review.") }
     guard pack.manifest.glassMeridian == nil, pack.manifest.stateID != NativeGlassMeridian.stateID
     else { throw MissionPackError("Use the actual Venn commission review.") }
+    guard pack.manifest.stateID != NativeSafeGunnery.stateID else {
+      throw MissionPackError("Use actual Avenor native safe-gunnery consent.")
+    }
     guard pack.manifest.flightReception == nil,
       pack.manifest.stateID != NativeFlightReception.stateID
     else { throw MissionPackError("Use the actual native training berth practice.") }

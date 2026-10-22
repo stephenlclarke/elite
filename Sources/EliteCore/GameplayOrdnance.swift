@@ -256,6 +256,7 @@ extension Game {
     bodyID: Int, state: inout OrdnanceState, context: EncounterContext,
     activeECM: [ECMActivationIdentity] = []
   ) -> OrdnanceUpdate {
+    defer { observeSafeGunneryMissileEnd(state) }
     guard state.valid, context.physicalTime.isFinite,
       context.system == state.origin.owner.system, context.visit == state.origin.owner.visit,
       context.physicalTime >= state.lastUpdatedAt,

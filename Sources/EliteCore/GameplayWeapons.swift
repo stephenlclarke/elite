@@ -79,7 +79,7 @@ extension Game {
     guard let origin = makeAttackOrigin(owner: player) else { return }
     let emissionPosition = commander.flightSimulation.pose.position
     guard let contact else {
-      recordPlayerLaserDischarge(laser)
+      recordPlayerLaserDischarge(laser, emission: origin.emissionID)
       recordCombat(
         origin: origin, kind: .laser, outcome: .discharge, target: nil,
         worldPosition: emissionPosition, emissionPosition: emissionPosition,
@@ -89,7 +89,7 @@ extension Game {
     }
     let hit = contact.hit
     if handleNativePracticeContact(contact, origin: origin, kind: .laser) {
-      recordPlayerLaserDischarge(laser)
+      recordPlayerLaserDischarge(laser, emission: origin.emissionID)
       commander.crimeLedger.finishEmission(origin.emissionID)
       return
     }
@@ -108,11 +108,12 @@ extension Game {
         hit, origin: origin, kind: .laser, damage: damage, laser: laser, mount: mount,
         emissionPosition: emissionPosition)
     }
-    recordPlayerLaserDischarge(laser)
+    recordPlayerLaserDischarge(laser, emission: origin.emissionID)
     commander.crimeLedger.finishEmission(origin.emissionID)
   }
 
-  private mutating func recordPlayerLaserDischarge(_ laser: LaserKind) {
+  private mutating func recordPlayerLaserDischarge(_ laser: LaserKind, emission: UInt64) {
+    observeSafeGunneryDischarge(emission: emission)
     fireCooldown = laser.firingInterval
     laserHeat += 10
     energy -= Self.combatLaserEnergyCost

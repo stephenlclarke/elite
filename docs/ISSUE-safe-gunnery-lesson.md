@@ -1,0 +1,7 @@
+# T02.P01.lesson: native safe gunnery at Avenor
+
+The native practice provider supplies harmless original targets but cannot itself authorize lesson success. T02 needs explicit actual Avenor consent, three distinct retained first weapon intersections, safe ceasefire and separate actual Avenor reception.
+
+The approved new L337 terms are zero fee, deposit and cash reward. Actual fitted laser or player missile hits may count; normal finite weapon costs remain. EMP, utility tools, bombs, proximity, missing bodies and ordinary targets cannot supply practice credit. After the third hit, require three continuous unpaused native flight seconds with no actual player discharge and no unresolved player projectile from the attempt. A refused input is not a discharge. Each real discharge and the last original projectile termination restart the interval. An actual player-attributed ordinary actor hit irreversibly fails the accepted attempt while retaining normal damage and law.
+
+Actual Avenor docking and separate Confirm reception award the existing safe-gunnery-family-trace once. Failed attempts may be explicitly accepted again without duplicating that lifetime award. No invented cash, accreditation or narrative history is authorized. Formats 127/128 must retain the closed native lesson proof and every present lower-family validator, without requiring unrelated earlier-family claims.

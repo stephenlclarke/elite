@@ -104,6 +104,7 @@ extension Game {
     bodies[index].enemyMissile = ownerBodyID != nil
     bodies[index].hostile = ownerBodyID != nil
     bodies[index].missileSourceID = ownerBodyID
+    observeSafeGunneryMissileLaunch(origin)
     return true
   }
 

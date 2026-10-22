@@ -87,6 +87,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedWayfarerInduction: NativeWayfarerInductionState?
   var savedFlightReception: NativeFlightReceptionState?
   var savedNativePractice: NativePracticeState?
+  var savedSafeGunnery: NativeSafeGunneryState?
   var savedMeasuredExtraction: NativeMeasuredExtractionState?
   var savedRecordRecovery: WayfarerRecordRecoveryState?
   var savedIdentifiedSalvage: NativeIdentifiedSalvageState?
@@ -256,6 +257,11 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     _read { yield storage[0].savedWayfarerInduction }
     _modify { yield &storage[0].savedWayfarerInduction }
   }
+  var savedSafeGunnery: NativeSafeGunneryState? {
+    _read { yield storage[0].savedSafeGunnery }
+    _modify { yield &storage[0].savedSafeGunnery }
+  }
+
   var savedNativePractice: NativePracticeState? {
     _read { yield storage[0].savedNativePractice }
     _modify { yield &storage[0].savedNativePractice }
@@ -622,6 +628,9 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         NativeGlassMeridian.readingsValid(opening), NativeGlassMeridian.lossesValid(opening)
       else { return false }
     } else if instance.savedGlassMeridian != nil {
+      return false
+    }
+    if NativeSafeGunnerySave.marked(instance), !NativeSafeGunnerySave.shapeValid(instance) {
       return false
     }
     if instance.definition == NativeFlightReception.stateID {

@@ -895,7 +895,7 @@ public struct Game: Sendable {
       !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
       value.scriptState.savedFleetDiscovery == nil,
       value.scriptState.firstNativeCommoditySale == nil,
-      !NativePracticeSave.hasClaims(value),
+      !NativePracticeSave.hasClaims(value), !NativeSafeGunnerySave.hasClaims(value),
       !NativeInductionCrewLogSave.hasClaims(value),
       !NativeInductionArkSave.hasClaims(value),
       !NativeWayfarerInductionSave.hasClaims(value),
@@ -1885,6 +1885,7 @@ public struct Game: Sendable {
       guard try candidate.consumeNativeEquipment("Energy Bomb"),
         candidate.applyAttributedEnergyBomb(), candidate.commander.valid
       else { return }
+      candidate.observeSafeGunneryDischarge()
       candidate.notify("ENERGY BOMB")
       self = candidate
     } catch { notify("ENERGY BOMB REFUSED") }
@@ -2030,12 +2031,15 @@ public struct Game: Sendable {
     let fireRequested = controls.fire
     let wasElectricalDisabled = playerEMPDisabled
     commander.flightSimulation.advancePhysicalTime(dt)
+    let safeGunneryAudioBefore = (dischargeAudio.epoch, dischargeAudio.events.last?.id)
     advancePlayerElectrical()
     if wasElectricalDisabled != playerEMPDisabled { interruptFlightTool() }
     let fireAdmitted = admitFlightFire(held: fireRequested)
     let controls = playerEMPDisabled ? Controls() : controls
     gameplayRevision &+= 1
     ensurePhysicalActors()
+    beginSafeGunneryIfNeeded()
+    defer { closeFailedSafeGunneryIfNeeded() }
     let craft = commander.performance
     if !manualResidualFlight && workGuidance == nil && workBraking == nil {
       speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
@@ -2107,6 +2111,10 @@ public struct Game: Sendable {
     }
     resolveDestroyed()
     persistBlackjackTargets()
+    advanceSafeGunnery(
+      delta: dt,
+      discharged: safeGunneryAudioBefore.0 != dischargeAudio.epoch
+        || safeGunneryAudioBefore.1 != dischargeAudio.events.last?.id)
     if let id = weaponsTargetID, !bodies.contains(where: { $0.id == id && $0.energy > 0 }) {
       weaponsTargetID = nil
       notify("WEAPON LOCK LOST")

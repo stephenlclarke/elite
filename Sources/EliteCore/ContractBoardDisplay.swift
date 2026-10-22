@@ -35,6 +35,8 @@ extension Display {
       rows = game.wayfarerInductionDetail()
     } else if row.glassMeridian != nil {
       rows = game.glassMeridianDetail()
+    } else if let action = row.safeGunnery {
+      rows = game.safeGunneryDetail(action)
     } else if let action = row.flightReception {
       rows = game.flightReceptionDetail(action)
     } else if let action = row.measuredExtraction {
@@ -179,6 +181,7 @@ extension Display {
         let wayfarerInduction = game.contractBoard.wayfarerInductionQuote
         let glassMeridian = game.contractBoard.glassMeridianQuote
         let flightReception = game.contractBoard.flightReceptionQuote
+        let safeGunnery = game.contractBoard.safeGunneryQuote
         let measuredExtraction = game.contractBoard.measuredExtractionQuote
         let recordRecovery = game.contractBoard.recordRecoveryQuote
         let identifiedSalvage = game.contractBoard.identifiedSalvageQuote
@@ -188,6 +191,7 @@ extension Display {
           || (wayfarerInduction != nil && action == .accept && wayfarerInduction?.allowed == true)
           || (glassMeridian != nil && action == .accept && glassMeridian?.allowed == true)
           || (flightReception != nil && action == .accept && flightReception?.allowed == true)
+          || (safeGunnery != nil && action == .accept && safeGunnery?.allowed == true)
           || (measuredExtraction != nil && action == .accept && measuredExtraction?.allowed == true)
           || (recordRecovery != nil && action == .accept && recordRecovery?.allowed == true)
           || (identifiedSalvage != nil && action == .accept && identifiedSalvage?.allowed == true)
