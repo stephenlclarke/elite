@@ -7,7 +7,8 @@ extension NativeInductionCrewLogSave {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any],
       !root.keys.contains("savedNativeCrewLog"), !root.keys.contains("nativeCrewLog"),
       !root.keys.contains("savedNativeInductionUtility"),
-      !root.keys.contains("nativeInductionUtility")
+      !root.keys.contains("nativeInductionUtility"),
+      !root.keys.contains("charterClinicSource"), !root.keys.contains("nativeInductionClinicSource")
     else { throw SaveError.invalidCommander }
     if part == .missions {
       try validateInstances(root["instances"], schema: schema, embedded: false)
@@ -28,6 +29,9 @@ extension NativeInductionCrewLogSave {
     }
     for entry in instances {
       guard let mission = entry as? [String: Any] else { throw SaveError.invalidCommander }
+      guard !mission.keys.contains("charterClinicSource"),
+        !mission.keys.contains("nativeInductionClinicSource")
+      else { throw SaveError.invalidCommander }
       try NativeInductionUtilitySave.validateFields(mission, schema: schema, embedded: embedded)
       let own = mission["definition"] as? String == NativeInductionCrewLogPack.stateID
       let pinned = mission["digest"] as? String == NativeInductionCrewLogPack.digest
@@ -83,6 +87,19 @@ extension NativeInductionCrewLogSave {
           || ((parent["charterCapacity"] as? [String: Any])?["events"] as? [Any])?.isEmpty == false
       {
         guard supportsCharterConsent(schema), !embedded,
+          mission["definition"] as? String == NativeWayfarerInduction.stateID,
+          mission["digest"] as? String == NativeWayfarerInduction.digest
+        else { throw SaveError.invalidCommander }
+      }
+      if mission["definition"] as? String == NativeInductionClinicPack.stateID
+        || mission["digest"] as? String == NativeInductionClinicPack.digest
+      {
+        throw SaveError.invalidCommander
+      }
+      if let parent = mission["savedWayfarerInduction"] as? [String: Any],
+        parent.keys.contains("charterClinicSource")
+      {
+        guard supportsClinicSource(schema), !embedded,
           mission["definition"] as? String == NativeWayfarerInduction.stateID,
           mission["digest"] as? String == NativeWayfarerInduction.digest
         else { throw SaveError.invalidCommander }

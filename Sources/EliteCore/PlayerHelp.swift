@@ -16,6 +16,22 @@ public enum PlayerHelp {
     contextGame.screen = screen
     var pages = [context(for: screen, game: contextGame)]
     if screen == .contracts,
+      contextGame.contractBoard.selected?.wayfarerInduction?.isClinicStockAction == true
+    {
+      pages.insert(
+        .init(
+          title: "ORIGINAL CLINIC SOURCE",
+          rows: [
+            "ARROWS - SELECT OWNER SOURCE / STOCK",
+            "RETURN - REVIEW; CONFIRM IS SEPARATE",
+            "BACK / ESC - ISSUE NOTHING",
+            "ONLY ACTUAL RENAS CAN ISSUE ITS BATCH",
+            "VIEW STOCK IS READ-ONLY; NO PICKUP",
+            "QUOTES RESERVE NO STOCK OR WINDOWS",
+            "NO INTEGRITY CLOCK UNTIL REAL PICKUP",
+          ]), at: 0)
+    }
+    if screen == .contracts,
       contextGame.contractBoard.selected?.wayfarerInduction?.capacityOperator != nil
     {
       pages.insert(

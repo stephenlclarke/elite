@@ -1,10 +1,13 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 107
-  static let alienVersion = 108
-  static func supportsCharterConsent(_ schema: Int?) -> Bool {
+  static let version = 109
+  static let alienVersion = 110
+  static func supportsClinicSource(_ schema: Int?) -> Bool {
     schema == version || schema == alienVersion
+  }
+  static func supportsCharterConsent(_ schema: Int?) -> Bool {
+    supportsClinicSource(schema) || schema == 107 || schema == 108
   }
   static func supportsCharterCapacity(_ schema: Int?) -> Bool {
     supportsCharterConsent(schema) || schema == 105 || schema == 106
@@ -45,6 +48,7 @@ enum NativeInductionCrewLogSave {
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
     commander.scriptState.instances.values.contains {
       NativeInductionCrewLogPack.marked($0) || NativeInductionUtilityPack.marked($0)
+        || $0.savedWayfarerInduction?.charterClinicSource != nil
     }
   }
 
@@ -117,7 +121,9 @@ enum NativeInductionCrewLogSave {
       }
     }
     // A parent cannot claim pickup or receiving without the same original source job and receipt.
-    guard NativeInductionUtilitySave.validateClaims(commander) else { return false }
+    guard NativeInductionUtilitySave.validateClaims(commander),
+      NativeInductionClinicSave.validateClaims(commander)
+    else { return false }
     return engine.instances.values.allSatisfy { parent in
       guard let capture = parent.savedWayfarerInduction?.crewLog else { return true }
       guard let source = engine.instances[capture.job]?.savedNativeCrewLog else { return false }

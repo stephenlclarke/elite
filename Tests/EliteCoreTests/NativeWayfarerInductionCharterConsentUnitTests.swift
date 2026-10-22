@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Contact/receipt/ledger policy only; no fixture executes native operator visits or unit release.
-private final class InductionConsentFixture {
+final class InductionConsentFixture {
   let f: InductionCapacityFixture
   let initial: NativeWayfarerInductionState
   init(_ policy: NativeInductionCharterPolicy = .protectedReservations) throws {
@@ -13,7 +13,8 @@ private final class InductionConsentFixture {
   }
   func signature(
     _ operatorID: NativeInductionCapacityOperator,
-    capacity: NativeInductionCapacityState? = nil, station: Int? = nil
+    capacity: NativeInductionCapacityState? = nil, station: Int? = nil,
+    sequence: UInt64? = nil, time: Double? = nil, flightSeconds: Double? = nil
   ) throws -> NativeInductionCharterSignature {
     let capacity = capacity ?? f.initial
     let index = try #require(NativeInductionCapacityOperator.allCases.firstIndex(of: operatorID))
@@ -21,9 +22,9 @@ private final class InductionConsentFixture {
       owner: f.choice.owner,
       system: station ?? operatorID.station.system,
       visit: f.choice.dock.actor.visit + 1 + UInt64(index), sequence: 104 + UInt64(index))
-    let sequence = 126 + UInt64(index)
-    let time = 1_000_130 + Double(index)
-    let clock = 900_130 + Double(index)
+    let sequence = sequence ?? (126 + UInt64(index))
+    let time = time ?? (1_000_130 + Double(index))
+    let clock = flightSeconds ?? (900_130 + Double(index))
     let fingerprint = try capacity.fingerprint
     let operation = try NativeInductionCharterSignature.identity(
       choice: f.choice.operation,
@@ -45,26 +46,29 @@ private final class InductionConsentFixture {
   }
   func release(
     _ consent: NativeInductionCharterSignature,
-    capacity: NativeInductionCapacityState? = nil, unit: NativeInductionCapacityUnit? = nil
+    capacity: NativeInductionCapacityState? = nil, unit: NativeInductionCapacityUnit? = nil,
+    sequence: UInt64? = nil, time: Double? = nil, flightSeconds: Double? = nil
   ) throws -> NativeInductionCapacityRelease {
     let capacity = capacity ?? f.initial
     let selected = try #require(
       unit ?? capacity.units.first { $0.operatorID == consent.operatorID && !$0.protected })
-    let sequence = 140 + capacity.revision
+    let sequence = sequence ?? (140 + capacity.revision)
+    let time = time ?? 1_000_150
+    let flightSeconds = flightSeconds ?? 900_150
     let before = try capacity.fingerprint
     let operation = try NativeInductionCapacityRelease.identity(
       allocation: capacity.allocation.operation,
       unit: selected.identity, owner: selected.owner, revision: capacity.revision, before: before,
-      dock: consent.dock, carrier: consent.carrier, fit: 1, time: 1_000_150,
-      flightSeconds: 900_150, sequence: sequence, consent: consent.operation)
+      dock: consent.dock, carrier: consent.carrier, fit: 1, time: time,
+      flightSeconds: flightSeconds, sequence: sequence, consent: consent.operation)
     return .init(
       operation: operation, allocation: capacity.allocation.operation,
       epoch: capacity.allocation.epoch, policy: capacity.allocation.policy,
       revision: capacity.revision,
       unit: selected.identity, owner: selected.owner, operatorID: selected.operatorID,
       dock: consent.dock,
-      carrier: consent.carrier, inventoryRevision: 1, physicalTime: 1_000_150,
-      flightSeconds: 900_150, sequence: sequence, before: before, consent: consent.operation)
+      carrier: consent.carrier, inventoryRevision: 1, physicalTime: time,
+      flightSeconds: flightSeconds, sequence: sequence, before: before, consent: consent.operation)
   }
 }
 
@@ -201,7 +205,7 @@ struct NativeWayfarerInductionCharterConsentUnitTests {
       try ScriptPackLibrary.read(ScriptPackLibrary.bundledWayfarerInductionDirectory)
     ]
     game.commander.scriptState.instances[f.f.choice.parent]?.savedWayfarerInduction = signed
-    let rows = game.wayfarerInductionRows
+    let rows = game.inductionCharterOperatorRows
     #expect(rows.count == 5 && rows[0].wayfarerInduction == .clinicConsent)
     #expect(Set(rows.map(\.key)).count == 5)
     #expect(

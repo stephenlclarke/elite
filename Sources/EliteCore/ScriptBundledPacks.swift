@@ -311,6 +311,14 @@ extension ScriptPackLibrary {
         library.packs.append(opening)
       }
     } catch { library.errors.append("Bundled Glass Meridian: " + error.localizedDescription) }
+    do {
+      let clinic = try read(bundledInductionClinicDirectory)
+      if !library.packs.contains(where: { $0.digest == clinic.digest }) {
+        library.packs.append(clinic)
+      }
+    } catch {
+      library.errors.append("Bundled original Renas clinic source: " + error.localizedDescription)
+    }
     return library
   }
 }

@@ -408,7 +408,8 @@ extension Game {
     }
     contractBoard.utilityQuote = nil
     if let action = contractBoard.selected?.wayfarerInduction {
-      contractBoard.wayfarerInductionQuote = wayfarerInductionReview(action)
+      contractBoard.wayfarerInductionQuote = wayfarerInductionReview(
+        action, prepareClinicQuote: true)
       return
     }
     if let action = contractBoard.selected?.glassMeridian {

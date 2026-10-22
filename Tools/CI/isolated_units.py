@@ -16,6 +16,17 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeWayfarerInductionClinicSourceUnitTests": (
+        "originalClinicBatchUsesSixNewOperatorStockSerialsSeparateFromWindowsAndInductionCargo",
+        "currentReachableOriginalRoutesSetExactLegPriceAndIntegrityWithoutForcedJumpOrFuel",
+        "readOnlyAvenorDelegationCannotBecomeRemotePickupOrQuoteForeignUnits",
+        "laterOwnerConsentAndExactUnitReleaseKeepTheSameOriginalClinicStockAndRefreshOnlyQuoteIdentity",
+        "originalSourceDecodeRejectsMissingRefilledHeldOrForeignStockAndDoesNotRecreateUnits",
+        "owningSourceClaimsRequireActualAcknowledgedIssueStationAndClockAndRefusePrematureConsignments",
+        "exactInternalFamilyPinsSourceAndRemainsOutsideGenericAcceptanceGalleryAndStockInitialization",
+        "sourceDetailUsesTheCapturedReadOnlyQuoteWithoutReplanningFromTheRenderPath",
+        "closedClinicSourceSchemaRejectsEarlyEmbeddedUnknownDelegationAndGenericInstanceClaims",
+    ),
     "NativeWayfarerInductionCharterConsentUnitTests": (
         "threeDistinctActualOwnerConsentReceiptsBindEachSelectedBranchWithoutReleaseOrStageTwelve",
         "ownerConsentRefusesWrongStationChangedEpochMinimaUnitsRevisionAndDuplicateOrOtherBranch",

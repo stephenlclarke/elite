@@ -5,7 +5,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     fundRescueLaunch, startRescueFlight, receiveRescue, authorizeUtility, receiveUtility,
     pooledCharter, protectedCharter, allocateCharterCapacity,
     clinicConsent, workshopConsent, seedConsent, releaseClinicCapacity, releaseWorkshopCapacity,
-    releaseSeedCapacity,
+    releaseSeedCapacity, issueClinicStock, viewClinicStock,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -33,6 +33,9 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .releaseClinicCapacity: "Renas clinic / review exact free-unit release"
     case .releaseWorkshopCapacity: "Enmadan workshop / review exact free-unit release"
     case .releaseSeedCapacity: "Enlirin seed custodians / review exact free-unit release"
+    case .issueClinicStock:
+      "Renas clinic / review six original sample issue and read-only delegation"
+    case .viewClinicStock: "Renas clinic / original stock and read-only current route quote"
     case .progress: "Senn / current induction records"
     }
   }
@@ -50,6 +53,7 @@ struct NativeWayfarerInductionReview: Sendable {
   let utilityRevision: UInt64?
   let capacityRevision: UInt64?
   let capacityUnit: UUID?
+  let clinicQuote: NativeInductionClinicQuote?
   let issues: [String]
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
@@ -68,7 +72,7 @@ extension Game {
           reason: wayfarerInductionReview(action).issues.first, wayfarerInduction: action)
       }
     }
-    let operatorRows = inductionCharterOperatorRows
+    let operatorRows = inductionCharterOperatorRows + inductionClinicRows
     if !operatorRows.isEmpty { return operatorRows }
     let action: NativeWayfarerInductionAction
     if let state = wayfarerInductionMission?.savedWayfarerInduction {
@@ -118,7 +122,8 @@ extension Game {
   }
 
   func wayfarerInductionReview(
-    _ action: NativeWayfarerInductionAction, capacityUnit: UUID? = nil
+    _ action: NativeWayfarerInductionAction, capacityUnit: UUID? = nil,
+    prepareClinicQuote: Bool = false
   ) -> NativeWayfarerInductionReview {
     let unit =
       action.isCapacityRelease
@@ -140,6 +145,8 @@ extension Game {
       utilityRevision: inductionUtilityChild?.revision,
       capacityRevision: wayfarerInductionMission?.savedWayfarerInduction?.charterCapacity?.revision,
       capacityUnit: unit,
+      clinicQuote: action == .viewClinicStock && prepareClinicQuote
+        ? try? inductionClinicReadOnlyQuote() : nil,
       issues: action == .progress
         ? [] : inductionActionIssues(action, trade: trade, capacityUnit: unit))
   }
@@ -164,7 +171,7 @@ extension Game {
       && action != .replaceArk && action != .fundRescueLaunch && action != .startRescueFlight
       && action != .receiveRescue && action != .authorizeUtility && action != .receiveUtility
       && action.charterPolicy == nil && action != .allocateCharterCapacity
-      && action.capacityOperator == nil,
+      && action.capacityOperator == nil && !action.isClinicStockAction,
       commander.tradeCargoCapacity - commander.cargoTonnes < 1
     {
       issues.append("Keep one free tonne for the serial induction consignment.")
@@ -186,6 +193,11 @@ extension Game {
     case .clinicConsent, .workshopConsent, .seedConsent, .releaseClinicCapacity,
       .releaseWorkshopCapacity, .releaseSeedCapacity:
       issues += inductionCharterOperatorIssues(action, unit: capacityUnit)
+    case .issueClinicStock: issues += inductionClinicSourceIssues()
+    case .viewClinicStock:
+      issues += [
+        "Read-only original source quote; actual pickup/custody/settlement remains unavailable."
+      ]
     case .progress: break
     }
     return issues
@@ -337,10 +349,18 @@ extension Game {
           operatorID, dock: dock, carrier: carrier, revision: revision)
       }
     }
+    if quote.action == .issueClinicStock {
+      try candidate.confirmInductionClinicIssue(dock: dock, carrier: carrier, revision: revision)
+    }
     self = candidate
   }
 
   func wayfarerInductionDetail() -> [String] {
+    if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
+      .isClinicStockAction == true
+    {
+      return inductionClinicDetail
+    }
     if (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)?
       .charterPolicy != nil
       || (contractBoard.wayfarerInductionQuote?.action ?? contractBoard.selected?.wayfarerInduction)

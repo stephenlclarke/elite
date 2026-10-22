@@ -150,6 +150,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
   let charterChoice: NativeInductionCharterChoice?
   let charterCapacity: NativeInductionCapacityState?
   let charterSignatures: [NativeInductionCharterSignature]?
+  let charterClinicSource: NativeInductionClinicSource?
   init(
     permission: NativeInductionPermission, crate: NativeInductionClinicCrate? = nil,
     loss: NativeInductionCrateLoss? = nil, reception: NativeInductionClinicReception? = nil,
@@ -163,7 +164,8 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     utilityReception: NativeInductionUtilityReception? = nil,
     charterChoice: NativeInductionCharterChoice? = nil,
     charterCapacity: NativeInductionCapacityState? = nil,
-    charterSignatures: [NativeInductionCharterSignature]? = nil
+    charterSignatures: [NativeInductionCharterSignature]? = nil,
+    charterClinicSource: NativeInductionClinicSource? = nil
   ) {
     self.permission = permission
     self.crate = crate
@@ -184,6 +186,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     self.charterChoice = charterChoice
     self.charterCapacity = charterCapacity
     self.charterSignatures = charterSignatures
+    self.charterClinicSource = charterClinicSource
   }
   static func == (lhs: NativeWayfarerInductionState, rhs: NativeWayfarerInductionState) -> Bool {
     lhs.permission == rhs.permission && lhs.crate == rhs.crate && lhs.loss == rhs.loss
@@ -195,6 +198,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
       && lhs.rescueReception == rhs.rescueReception && lhs.utilityReception == rhs.utilityReception
       && lhs.charterChoice == rhs.charterChoice && lhs.charterCapacity == rhs.charterCapacity
       && lhs.charterSignatures == rhs.charterSignatures
+      && lhs.charterClinicSource == rhs.charterClinicSource
   }
   var valid: Bool {
     let p = permission
@@ -296,6 +300,7 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
         else { return false }
       }
     }
+    if let charterClinicSource, !charterClinicSource.valid(parent: self) { return false }
     return continuationValid && seedKeyValid
   }
   var payloads: [String: Int] {

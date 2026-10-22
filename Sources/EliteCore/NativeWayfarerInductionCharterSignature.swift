@@ -93,7 +93,8 @@ extension NativeWayfarerInductionState {
       crewLog: crewLog, crewLogLoss: crewLogLoss, crewLogHullCustody: crewLogHullCustody,
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice,
-      charterCapacity: charterCapacity, charterSignatures: signatures)
+      charterCapacity: charterCapacity, charterSignatures: signatures,
+      charterClinicSource: charterClinicSource)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }
@@ -112,7 +113,8 @@ extension NativeWayfarerInductionState {
       crewLog: crewLog, crewLogLoss: crewLogLoss, crewLogHullCustody: crewLogHullCustody,
       rescueReception: rescueReception, utilityReception: utilityReception,
       charterChoice: charterChoice,
-      charterCapacity: capacity, charterSignatures: charterSignatures)
+      charterCapacity: capacity, charterSignatures: charterSignatures,
+      charterClinicSource: charterClinicSource)
     guard next.valid else { throw SaveError.invalidCommander }
     return next
   }

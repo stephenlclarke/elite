@@ -4705,11 +4705,33 @@
       "github_run": 39721907534,
       "selection_methods": 206,
       "new_methods": 7,
-      "source_review": "MBA bounded capacity source clean; actual execution pending",
-      "unit_status": "existing hosted run running and watched",
+      "source_review": "MBA independent capacity source clean",
+      "unit_status": "SUCCESS; MBA verified206methods238casesPASS,0failures/errors/skips,no crash",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332644511",
       "next_assigned": "C08.P06.B.consent",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verified_methods": 206,
+      "verified_expanded_cases": 238,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332935736",
+      "qualification_scope": "Bounded allocation/policy foundation; all7Capacity/6Charter/3Binding pass; no actual signatures/bookings/stage12/playable/release claim"
+    },
+    {
+      "event": "Actual operator consent and named-unit release pushed; MBA review queued",
+      "head": "eb0fdf58354240d0816ca5a95d6b0ddfb05f7caa",
+      "base": "aa4ca56c55cf9e4f66b9f357df7677495c0788ae",
+      "ledger_parent": "C08.P06.B.operator-consent",
+      "github_run": 39723616779,
+      "selection_methods": 212,
+      "new_methods": 6,
+      "source_review": "MBA independent operator-consent source clean",
+      "unit_status": "SUCCESS; MBA verified212methods244casesPASS,0failures/errors/skips,no crash",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332863778",
+      "next_assigned": "C08.P06.B.quote.clinic",
+      "usable_build_delivered": false,
+      "verified_methods": 212,
+      "verified_expanded_cases": 244,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333087491",
+      "qualification_scope": "All6Consent/7Capacity/6Charter/9Work/3Binding pass; no native owner-visit/release/stock/booking/audit/stage12/playable/release claim"
     }
   ]
 }

@@ -155,6 +155,13 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
+    if pack.manifest.stateID == NativeInductionClinicPack.stateID
+      || pack.digest == NativeInductionClinicPack.digest
+    {
+      return NativeInductionClinicPack.matches(pack)
+        ? "Use the original clinic owner's actual Renas rebrief. Native consignment pickup remains unavailable."
+        : "Restore the original Renas clinic family content."
+    }
     if pack.manifest.stateID == NativeInductionUtilityPack.stateID
       || pack.digest == NativeInductionUtilityPack.digest
     {
@@ -390,6 +397,12 @@ extension Game {
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    guard pack.manifest.stateID != NativeInductionClinicPack.stateID,
+      pack.digest != NativeInductionClinicPack.digest
+    else {
+      throw MissionPackError(
+        "Use the actual original clinic rebrief; generic consignment acceptance is refused.")
+    }
     guard pack.manifest.stateID != NativeInductionUtilityPack.stateID,
       pack.digest != NativeInductionUtilityPack.digest
     else { throw MissionPackError("Use the actual utility authorization at Enron.") }
@@ -1463,6 +1476,11 @@ extension Game {
         $1.manifest.priority, $1.manifest.id, $1.digest
       )
     }) {
+      if pack.manifest.stateID == NativeInductionClinicPack.stateID
+        || pack.digest == NativeInductionClinicPack.digest
+      {
+        continue
+      }
       if pack.manifest.stateID == NativeInductionUtilityPack.stateID
         || pack.digest == NativeInductionUtilityPack.digest
       {
