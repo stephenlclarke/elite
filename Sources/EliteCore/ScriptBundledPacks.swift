@@ -1,6 +1,10 @@
 import Foundation
 
 extension ScriptPackLibrary {
+  static var bundledIsolationWorkDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-isolation-work-source")
+  }
   public static var userDirectory: URL {
     FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(
       ".xyzzy/elite/script-packs")
@@ -305,6 +309,15 @@ extension ScriptPackLibrary {
         library.packs.append(source)
       }
     } catch { library.errors.append("Bundled Enron utility source: " + error.localizedDescription) }
+    do {
+      let source = try read(bundledIsolationWorkDirectory)
+      guard NativeIsolationWorkPack.matches(source) else { throw SaveError.invalidCommander }
+      if !library.packs.contains(where: { $0.digest == source.digest }) {
+        library.packs.append(source)
+      }
+    } catch {
+      library.errors.append("Bundled Renas isolation source: " + error.localizedDescription)
+    }
     do {
       let opening = try read(bundledGlassMeridianDirectory)
       if !library.packs.contains(where: { $0.digest == opening.digest }) {

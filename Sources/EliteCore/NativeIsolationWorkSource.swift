@@ -62,9 +62,10 @@ struct NativeIsolationWorkSource: Sendable {
     }
     return pose
   }
-  static var geometryHash: String {
-    get throws { ScriptPackLibrary.hash(try ScriptPackLibrary.canonicalGeometry(geometry)) }
+  private static let geometryDigest = Result {
+    ScriptPackLibrary.hash(try ScriptPackLibrary.canonicalGeometry(geometry))
   }
+  static var geometryHash: String { get throws { try geometryDigest.get() } }
   func matches(_ fit: ScriptNPCFit) -> Bool {
     fit.valid && fit.definition == Self.profile
       && fit.models == [Self.model: (try? Self.geometryHash) ?? ""]
@@ -83,6 +84,12 @@ enum NativeIsolationWorkPack {
   }
   static func actor(job: UUID, role: NativeIsolationWorkRole) -> UUID {
     ScriptIdentity.uuid("script-actor-v2:\(job):\(digest):\(encounter):\(role.rawValue)")
+  }
+  static func marked(_ state: borrowing ScriptInstance) -> Bool {
+    let definition = state.definition
+    let pin = state.digest
+    let claim = state.savedIsolationWork != nil
+    return definition == stateID || pin == digest || claim
   }
   static func matches(_ pack: ScriptPack) -> Bool {
     guard pack.manifest.stateID == stateID, pack.manifest.version == version, pack.digest == digest,
@@ -108,5 +115,27 @@ enum NativeIsolationWorkPack {
       return actor.npc == NativeIsolationWorkSource.profile.id && !actor.hostile
         && Vector3(actor.x, actor.y, actor.z) == role.offset
     }
+  }
+
+  static func initialResources(state: borrowing ScriptInstance, actor: ScriptOwnedActor) throws
+    -> NPCState?
+  {
+    guard marked(state) else { return nil }
+    guard state.definition == stateID, state.version == version, state.digest == digest,
+      let source = state.savedIsolationWork, source.job == state.id,
+      let role = NativeIsolationWorkRole(rawValue: actor.alias),
+      let module = source.modules.first(where: { $0.role == role }), module.admission == nil,
+      actor.presence == .prepared, actor.identity == Self.actor(job: source.job, role: role)
+    else { throw SaveError.invalidCommander }
+    let resources = NPCResources(
+      profile: .nativeHull, energyCapacity: 100, energyRecharge: 0,
+      frontCapacity: 0, rearCapacity: 0, shieldRecharge: 0, frontShield: 0, rearShield: 0,
+      heatCapacity: 240, heatCooling: 0, fuel: nil, fuelCapacity: nil)
+    guard resources.valid else { throw SaveError.invalidCommander }
+    return .init(
+      role: .mission, origin: NativeIsolationWorkSource.location,
+      destination: NativeIsolationWorkSource.location,
+      legalProvenance: .recorded, cargoProvenance: .recorded, routeProvenance: .recorded,
+      resources: resources, hasFuelScoops: false)
   }
 }

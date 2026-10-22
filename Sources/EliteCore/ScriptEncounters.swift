@@ -729,6 +729,9 @@ extension Game {
   private static func preparedNativeMissionResources(
     state: borrowing ScriptInstance, actor: ScriptOwnedActor
   ) throws -> NPCState? {
+    if NativeIsolationWorkPack.marked(state) {
+      return try NativeIsolationWorkPack.initialResources(state: state, actor: actor)
+    }
     if NativeInductionUtilityPack.marked(state) {
       return try NativeInductionUtilityPack.initialResources(state: state, actor: actor)
     }
@@ -1336,6 +1339,7 @@ extension Game {
       try Self.stageScriptEncounterRetention(attempt, id: id, state: state)
       _ = try commitMissionActorAdmission(plan)
       Self.publishStagedScriptEncounter(attempt, state: &state)
+      try recordIsolationWorkAdmission(in: &state)
       return (
         "encounter.admitted",
         [
@@ -1517,6 +1521,7 @@ extension Game {
       }
       encounter.actors[alias] = actor
       instance.ownedEncounters[key] = encounter
+      if destroyed { recordIsolationWorkModuleLoss(body, in: &instance) }
       commander.scriptState.instances[instanceID] = instance
       emitScriptEvent(
         destroyed ? "actor.destroyed" : "actor.removed",

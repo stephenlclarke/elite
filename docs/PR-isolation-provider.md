@@ -1,0 +1,17 @@
+# G11 native two-feeder isolation provider
+
+UNQUALIFIED authoring packet. No native or compiler execution has been performed locally. This packet is not ready for merge until the actual parent dependency and all present save families compose and the existing hosted checks/review pass.
+
+Adds the fixed original pair of passive six-metre Renas enclosures, each with conserved 10000-unit supply/load accounts and a canonical connected/open contact. Real prepared-encounter admission freezes the first station-relative poses. Retained logical identities resolve fresh native bindings after re-entry; no replacement pair or refill is issued. Local producer steps transfer one unit per second only when both original bindings remain available; no off-scene elapsed time is credited.
+
+The real parent primitive plus qualified original programmer custody is the sole opaque authority factory. Tab selects a maintenance contact without granting targeting hardware. Return reviews and a fresh Return arms. Both endpoints of an attained step must resolve the same authority and first unobstructed outward mesh hit at 50–150 metres, relative speed at most one metre per second and aim within two degrees. Twenty measured seconds permit a candidate contact opening only with fresh positive transfer. A later native producer step and one measured second of zero flow, with positive supply/headroom, establish verification. Opening alone establishes no verification or contract reward.
+
+Accounts and partial history commit before writer proposals. A refused save retains attained accounting/work, while an unpublished opening leaves the contact connected. Retry requires a fresh measurement. A separate observation retry cannot reopen the contact or refund transfer. History coalesces actual intervals rather than imposing a 256-frame limit. Transient review, arm, query and epoch capabilities are never encoded.
+
+The closed provider codec reserves 131/132 and recognizes the actual parent 133/134 envelope. Historical validation consumes only the parent's acyclic primitive/cutoff, not its currently-held-tool resolver or whole-Commander validation. New runtime measurements continue to require active parent and fresh issued original custody. Real native module/facility losses interrupt further work. Receiving, terminal payment/failure and the family clue remain unfinished outside this provider packet.
+
+## Validation
+
+Eight authored focused methods cover exact source/mesh, actual issue/one-pair reservation, finite transfer/refusal policy, 1200 coalesced 60 Hz intervals with a gap, strict codec rejection, actual return cutoff, real admission/work/exclusive-writer refusal/fresh retry/later zero flow, and missing-body/pause/view interruptions. These methods have not run. The test scene establishes the Renas source directly and does not claim a flown journey.
+
+Source formatting and diff checks are the only validation performed for this packet so far. No local Swift/native/probe/GUI/performance job, manual hosted dispatch, retry, cancellation or workflow change was used.

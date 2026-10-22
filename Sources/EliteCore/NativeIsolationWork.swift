@@ -1,11 +1,11 @@
 import Foundation
 
-/// Input contract for the separate G11 acceptance producer. No factory or fallback
-/// exists here: P02 must authenticate the real parent permission before it can mint this value.
+/// Only the real parent primitive plus fresh original programmer custody can mint this value.
 struct NativeIsolationWorkParentAuthority: Equatable, Sendable {
   let parentID: UUID
   let parentDigest: String
   let authorization: UUID
+  let issueOperation: UUID
   let owner: UUID
   let issuer: UUID
   let acceptance: NativeMainStationDockReceipt
@@ -13,17 +13,57 @@ struct NativeIsolationWorkParentAuthority: Equatable, Sendable {
   let inventoryRevision: UInt64
 
   private init(
-    parentID: UUID, parentDigest: String, authorization: UUID, owner: UUID, issuer: UUID,
+    parentID: UUID, parentDigest: String, authorization: UUID, issueOperation: UUID,
+    owner: UUID, issuer: UUID,
     acceptance: NativeMainStationDockReceipt, carrier: UUID, inventoryRevision: UInt64
   ) {
     self.parentID = parentID
     self.parentDigest = parentDigest
     self.authorization = authorization
+    self.issueOperation = issueOperation
     self.owner = owner
     self.issuer = issuer
     self.acceptance = acceptance
     self.carrier = carrier
     self.inventoryRevision = inventoryRevision
+  }
+
+  static func resolve(parentID: UUID, commander: borrowing Commander) throws
+    -> (authority: Self, primitive: NativeIsolationWorkParentPrimitive)
+  {
+    guard let parent = commander.scriptState.instances[parentID], parent.outcome == .active,
+      parent.suspension == nil, let carrier = commander.hullInstanceID,
+      let revision = commander.equipmentInventory?.revision
+    else { throw SaveError.invalidCommander }
+    let primitive = try NativeIsolationWorkParent.primitive(parent: parent, commander: commander)
+    guard primitive.cutoff == nil else { throw SaveError.invalidCommander }
+    let value = Self(
+      parentID: primitive.parentID, parentDigest: primitive.parentDigest,
+      authorization: primitive.authorization, issueOperation: primitive.issueOperation,
+      owner: primitive.owner, issuer: primitive.issuer, acceptance: primitive.acceptance,
+      carrier: carrier, inventoryRevision: revision)
+    _ = try value.programmer(in: commander)
+    return (value, primitive)
+  }
+
+  /// The opaque parent proof is necessary but insufficient: every use rejoins the live loan.
+  func programmer(in commander: borrowing Commander) throws -> NativeIsolationProgrammerBinding {
+    guard let parent = commander.scriptState.instances[parentID],
+      parent.digest == parentDigest, parent.outcome == .active, parent.suspension == nil,
+      commander.equipmentOwnerID == owner, commander.hullInstanceID == carrier,
+      commander.equipmentInventory?.revision == inventoryRevision,
+      issuer == NativeIsolationProgrammerDefinition.issuer(owner: owner),
+      acceptance.station.system == NativeIsolationWorkSource.issuerLocation,
+      NativeStationPassengerJourney.historicalDock(acceptance, commander: commander)
+    else { throw SaveError.invalidCommander }
+    let binding = try NativeIsolationProgrammerCustody.resolve(
+      parent: parent, commander: copy commander)
+    guard binding.source.mission == parentID, binding.source.packDigest == parentDigest,
+      binding.source.resource == NativeIsolationWorkSource.programmerResource,
+      binding.issuer == issuer, binding.owner == owner, binding.hull == carrier,
+      binding.inventoryRevision == inventoryRevision
+    else { throw SaveError.invalidCommander }
+    return binding
   }
 }
 
@@ -107,6 +147,12 @@ struct NativeIsolationMeasurementAuthority: Codable, Equatable, Sendable {
       && actor.visit < UInt64(Int64.max) && player.system == actor.system
       && player.visit == actor.visit && player.entity == 0
       && inventoryRevision < UInt64(Int64.max)
+  }
+
+  func sameOriginal(as other: Self) -> Bool {
+    parent == other.parent && authorization == other.authorization && owner == other.owner
+      && source == other.source && role == other.role && module == other.module
+      && issueOperation == other.issueOperation && programmer == other.programmer
   }
 }
 
@@ -201,5 +247,362 @@ struct NativeIsolationWorkHistory: Codable, Equatable, Sendable {
           intervals: 1, lastRange: range, lastSpeed: speed, lastAim: aim))
     }
     guard valid else { throw SaveError.invalidCommander }
+  }
+}
+
+struct NativeIsolationWorkPermission: Codable, Equatable, Sendable {
+  let parent: UUID
+  let parentDigest: String
+  let authorization: UUID
+  let issueOperation: UUID
+  let owner: UUID
+  let issuer: UUID
+  let programmer: UUID
+  let carrier: UUID
+  let inventoryRevision: UInt64
+  let acceptance: NativeMainStationDockReceipt
+  let sequence: UInt64
+  let physicalTime: Double
+
+  init(
+    authority: NativeIsolationWorkParentAuthority, commander: borrowing Commander,
+    sequence: UInt64
+  ) throws {
+    let binding = try authority.programmer(in: commander)
+    guard sequence > 0, sequence < UInt64(Int64.max) else {
+      throw SaveError.invalidCommander
+    }
+    parent = authority.parentID
+    parentDigest = authority.parentDigest
+    authorization = authority.authorization
+    issueOperation = authority.issueOperation
+    owner = authority.owner
+    issuer = authority.issuer
+    programmer = binding.serial
+    carrier = binding.hull
+    inventoryRevision = binding.inventoryRevision
+    acceptance = authority.acceptance
+    self.sequence = sequence
+    physicalTime = commander.flightSimulation.physicalTime
+    guard valid else { throw SaveError.invalidCommander }
+  }
+
+  var valid: Bool {
+    ScriptCompletionReceipt.validDigest(parentDigest)
+      && issuer == NativeIsolationWorkSource(owner: owner).issuer
+      && programmer == NativeIsolationProgrammerDefinition.serial(parent: parent)
+      && acceptance.valid && acceptance.commanderOwner == owner
+      && acceptance.station.system == NativeIsolationWorkSource.issuerLocation
+      && sequence > 0 && sequence < UInt64(Int64.max)
+      && inventoryRevision < UInt64(Int64.max)
+      && physicalTime.isFinite && (0...1e12).contains(physicalTime)
+  }
+  func matches(_ authority: NativeIsolationWorkParentAuthority, programmer: UUID) -> Bool {
+    parent == authority.parentID && parentDigest == authority.parentDigest
+      && authorization == authority.authorization && issueOperation == authority.issueOperation
+      && owner == authority.owner && issuer == authority.issuer && self.programmer == programmer
+  }
+}
+
+struct NativeIsolationWorkAdmission: Codable, Equatable, Sendable {
+  let source: UUID
+  let role: NativeIsolationWorkRole
+  let logicalActor: UUID
+  let actor: ActorIdentity
+  let station: StationAnchor
+  let pose: ShipPose
+  let geometry: String
+  let sequence: UInt64
+  let physicalTime: Double
+
+  func valid(source original: NativeIsolationWorkSource, permission: NativeIsolationWorkPermission)
+    -> Bool
+  {
+    source == original.id
+      && logicalActor
+        == NativeIsolationWorkPack.actor(
+          job: NativeIsolationWorkPack.instance(source: source), role: role)
+      && actor.system == NativeIsolationWorkSource.location
+      && actor.visit == station.identity.visit && actor.entity > 1
+      && actor.entity < UInt64(Int64.max) && station.identity.entity == 1
+      && pose == (try? original.initialPose(role, reference: station))
+      && geometry == (try? NativeIsolationWorkSource.geometryHash)
+      && sequence > permission.sequence && sequence < UInt64(Int64.max)
+      && physicalTime.isFinite && physicalTime >= permission.physicalTime && physicalTime <= 1e12
+  }
+}
+
+/// Saved evidence of an actual producer step. This is never accepted as a live endpoint.
+struct NativeIsolationMeterEvidence: Codable, Equatable, Sendable {
+  let actor: ActorIdentity
+  let peer: ActorIdentity
+  let sequence: UInt64
+  let start: Double
+  let end: Double
+  let contact: NativeIsolationContact
+  let before: NativeIsolationEnergyAccounts
+  let after: NativeIsolationEnergyAccounts
+  let transferred: Double
+
+  var valid: Bool {
+    guard before.valid, after.valid, contact.valid,
+      let elapsed = NativeIsolationWorkEnvelope.interval(start: start, end: end),
+      sequence > 0, sequence < UInt64(Int64.max), transferred.isFinite, transferred >= 0,
+      actor.system == NativeIsolationWorkSource.location, peer.system == actor.system,
+      peer.visit == actor.visit, actor.entity > 1, peer.entity > 1,
+      actor.entity != peer.entity, actor.visit > 0,
+      abs(before.remainingSupply - after.remainingSupply - transferred) < 1e-7,
+      abs(after.deliveredLoad - before.deliveredLoad - transferred) < 1e-7
+    else { return false }
+    let expected: Double
+    switch contact {
+    case .connected: expected = min(elapsed, before.remainingSupply, before.headroom)
+    case .latchedOpen: expected = 0
+    }
+    return abs(transferred - expected) < 1e-7
+  }
+}
+
+struct NativeIsolationWorkOpening: Codable, Equatable, Sendable {
+  let operation: UUID
+  let sequence: UInt64
+  let authority: NativeIsolationMeasurementAuthority
+  let geometry: String
+  let workHistory: String
+  let contactRevision: UInt64
+  let meter: NativeIsolationMeterEvidence
+
+  static func identity(
+    authority: NativeIsolationMeasurementAuthority, history: String,
+    meter: NativeIsolationMeterEvidence, revision: UInt64, sequence: UInt64
+  ) throws -> UUID {
+    ScriptIdentity.uuid(
+      "g11-isolation-open-v1:\(try NativeFlightReception.hash(authority)):\(history):\(try NativeFlightReception.hash(meter)):\(revision):\(sequence)"
+    )
+  }
+  func valid(history: NativeIsolationWorkHistory) -> Bool {
+    let work = history.segments.filter { $0.phase == .work }
+    return authority.valid && history.valid && abs(history.seconds(.work) - 20) < 1e-8
+      && work.allSatisfy({ $0.authority.sameOriginal(as: authority) })
+      && (work.last?.last ?? .infinity) <= meter.end
+      && workHistory == (try? NativeFlightReception.hash(work))
+      && geometry == (try? NativeIsolationWorkSource.geometryHash)
+      && contactRevision > 0 && contactRevision < UInt64(Int64.max)
+      && sequence > 0 && sequence < UInt64(Int64.max)
+      && meter.valid && meter.actor == authority.actor && meter.contact == .connected
+      && meter.transferred > 0 && meter.before.remainingSupply > 0 && meter.before.headroom > 0
+      && meter.after.remainingSupply > 0 && meter.after.headroom > 0
+      && operation
+        == (try? Self.identity(
+          authority: authority, history: workHistory, meter: meter,
+          revision: contactRevision, sequence: sequence))
+  }
+}
+
+struct NativeIsolationVerification: Codable, Equatable, Sendable {
+  let operation: UUID
+  let sequence: UInt64
+  let authority: NativeIsolationMeasurementAuthority
+  let opening: UUID
+  let geometry: String
+  let workHistory: String
+  let observationHistory: String
+  let first: NativeIsolationMeterEvidence
+  let last: NativeIsolationMeterEvidence
+
+  static func identity(
+    opening: UUID, authority: NativeIsolationMeasurementAuthority, observation: String,
+    first: NativeIsolationMeterEvidence, last: NativeIsolationMeterEvidence, sequence: UInt64
+  ) throws -> UUID {
+    ScriptIdentity.uuid(
+      "g11-isolation-verified-v1:\(opening):\(try NativeFlightReception.hash(authority)):\(observation):\(try NativeFlightReception.hash(first)):\(try NativeFlightReception.hash(last)):\(sequence)"
+    )
+  }
+  func valid(opened: NativeIsolationWorkOpening, history: NativeIsolationWorkHistory) -> Bool {
+    let observations = history.segments.filter { $0.phase == .observation }
+    let contact = NativeIsolationContact.latchedOpen(
+      operation: opened.operation, revision: opened.contactRevision)
+    return opened.valid(history: history) && authority.valid && history.valid
+      && authority.sameOriginal(as: opened.authority)
+      && opening == opened.operation && geometry == opened.geometry
+      && workHistory == opened.workHistory
+      && abs(history.seconds(.observation) - 1) < 1e-8
+      && observationHistory == (try? NativeFlightReception.hash(observations))
+      && observations.allSatisfy({ $0.authority.sameOriginal(as: authority) })
+      && observations.first?.first == first.start
+      && (observations.last?.last ?? .infinity) <= last.end && last.actor == authority.actor
+      && first.valid && last.valid && first.sequence > opened.meter.sequence
+      && last.sequence >= first.sequence && first.start >= opened.meter.end
+      && first.end > opened.meter.end && last.end >= first.end
+      && first.contact == contact && last.contact == contact
+      && first.transferred == 0 && last.transferred == 0
+      && first.before.remainingSupply > 0 && first.before.headroom > 0
+      && last.after.remainingSupply > 0 && last.after.headroom > 0
+      && sequence > opened.sequence && sequence < UInt64(Int64.max)
+      && operation
+        == (try? Self.identity(
+          opening: opening, authority: authority, observation: observationHistory,
+          first: first, last: last, sequence: sequence))
+  }
+}
+
+struct NativeIsolationModuleLoss: Codable, Equatable, Sendable {
+  let actor: ActorIdentity
+  let sequence: UInt64
+  let physicalTime: Double
+}
+
+struct NativeIsolationStationLoss: Codable, Equatable, Sendable {
+  let station: NativeMainStationIdentity
+  let sequence: UInt64
+  let physicalTime: Double
+}
+
+struct NativeIsolationWorkModule: Codable, Equatable, Sendable {
+  let role: NativeIsolationWorkRole
+  let module: UUID
+  let supply: UUID
+  let load: UUID
+  var accounts = NativeIsolationEnergyAccounts()
+  var connectedSeconds = 0.0
+  var contact = NativeIsolationContact.connected
+  var history = NativeIsolationWorkHistory()
+  var admission: NativeIsolationWorkAdmission?
+  var binding: ActorIdentity?
+  var lastMeter: NativeIsolationMeterEvidence?
+  var observationFirst: NativeIsolationMeterEvidence?
+  var opening: NativeIsolationWorkOpening?
+  var verification: NativeIsolationVerification?
+  var loss: NativeIsolationModuleLoss?
+
+  init(source: NativeIsolationWorkSource, role: NativeIsolationWorkRole) {
+    self.role = role
+    module = source.module(role)
+    supply = source.supply(role)
+    load = source.load(role)
+  }
+
+  func valid(
+    permission: NativeIsolationWorkPermission, producerSequence: UInt64, localSeconds: Double
+  ) -> Bool {
+    let source = NativeIsolationWorkSource(owner: permission.owner)
+    guard module == source.module(role), supply == source.supply(role), load == source.load(role),
+      accounts.valid, contact.valid, history.valid,
+      connectedSeconds.isFinite, connectedSeconds >= 0, connectedSeconds <= localSeconds + 1e-7,
+      abs(accounts.deliveredLoad - min(connectedSeconds, NativeIsolationEnergyAccounts.capacity))
+        < 1e-7,
+      history.seconds(.work) <= connectedSeconds + 1e-7,
+      history.segments.allSatisfy({
+        let a = $0.authority
+        return a.parent == permission.parent && a.authorization == permission.authorization
+          && a.owner == permission.owner && a.source == source.id && a.role == role
+          && a.module == module && a.issueOperation == permission.issueOperation
+          && a.programmer == permission.programmer
+      })
+    else { return false }
+    if let binding {
+      guard binding.system == NativeIsolationWorkSource.location, binding.visit > 0,
+        binding.entity > 1, binding.entity < UInt64(Int64.max)
+      else { return false }
+    }
+    if let admission {
+      guard admission.role == role, admission.valid(source: source, permission: permission),
+        history.segments.allSatisfy({
+          $0.first >= admission.physicalTime && $0.authority.actor.visit >= admission.actor.visit
+        })
+      else { return false }
+    } else if binding != nil || !history.segments.isEmpty || lastMeter != nil || loss != nil {
+      return false
+    }
+    if let lastMeter {
+      guard lastMeter.valid, lastMeter.after == accounts,
+        lastMeter.sequence == producerSequence, lastMeter.sequence > 0
+      else { return false }
+    } else if producerSequence != 0 || localSeconds != 0 {
+      return false
+    }
+    if let loss {
+      guard admission != nil, loss.actor.system == NativeIsolationWorkSource.location,
+        loss.actor.entity > 1, loss.sequence > permission.sequence,
+        loss.sequence < UInt64(Int64.max), loss.physicalTime.isFinite,
+        loss.physicalTime >= (admission?.physicalTime ?? .infinity), loss.physicalTime <= 1e12
+      else { return false }
+    }
+    switch contact {
+    case .connected:
+      return opening == nil && verification == nil && observationFirst == nil
+        && history.seconds(.observation) == 0 && abs(connectedSeconds - localSeconds) < 1e-7
+    case .latchedOpen(let operation, let revision):
+      guard let opening, opening.operation == operation, opening.contactRevision == revision,
+        opening.valid(history: history), accounts == opening.meter.after,
+        opening.authority.role == role, opening.authority.module == module,
+        opening.sequence > (admission?.sequence ?? UInt64.max),
+        opening.meter.sequence <= producerSequence
+      else { return false }
+      if history.seconds(.observation) > 0 {
+        guard let observationFirst, observationFirst.valid,
+          observationFirst.sequence > opening.meter.sequence,
+          observationFirst.start >= opening.meter.end, observationFirst.transferred == 0,
+          observationFirst.contact == contact, observationFirst.before == accounts,
+          observationFirst.after == accounts
+        else { return false }
+      } else if observationFirst != nil || verification != nil {
+        return false
+      }
+      if let verification {
+        guard verification.valid(opened: opening, history: history),
+          verification.first == observationFirst, verification.last.after == accounts,
+          verification.last.sequence <= producerSequence
+        else { return false }
+      }
+      return true
+    }
+  }
+}
+
+struct NativeIsolationWorkState: Codable, Equatable, Sendable {
+  let permission: NativeIsolationWorkPermission
+  let source: UUID
+  let job: UUID
+  var modules: [NativeIsolationWorkModule]
+  var producerSequence: UInt64 = 0
+  var localSeconds = 0.0
+  var stationLoss: NativeIsolationStationLoss?
+
+  init(permission: NativeIsolationWorkPermission) throws {
+    guard permission.valid else { throw SaveError.invalidCommander }
+    let original = NativeIsolationWorkSource(owner: permission.owner)
+    self.permission = permission
+    source = original.id
+    job = NativeIsolationWorkPack.instance(source: source)
+    modules = NativeIsolationWorkRole.allCases.map { .init(source: original, role: $0) }
+  }
+
+  var shapeValid: Bool {
+    guard permission.valid, source == NativeIsolationWorkSource(owner: permission.owner).id,
+      job == NativeIsolationWorkPack.instance(source: source), modules.count == 2,
+      Set(modules.map(\.role)) == Set(NativeIsolationWorkRole.allCases),
+      Set(modules.map(\.module)).count == 2, producerSequence < UInt64(Int64.max),
+      localSeconds.isFinite, (0...1e12).contains(localSeconds),
+      localSeconds <= Double(producerSequence) * 0.100001 + 1e-7,
+      modules.allSatisfy({
+        $0.valid(
+          permission: permission, producerSequence: producerSequence, localSeconds: localSeconds)
+      })
+    else { return false }
+    let bindings = modules.compactMap(\.binding)
+    guard Set(bindings).count == bindings.count else { return false }
+    if let stationLoss {
+      guard stationLoss.station.world == permission.owner,
+        [NativeIsolationWorkSource.location, NativeIsolationWorkSource.issuerLocation].contains(
+          stationLoss.station.system), stationLoss.sequence > permission.sequence,
+        stationLoss.sequence < UInt64(Int64.max), stationLoss.physicalTime.isFinite,
+        (permission.physicalTime...1e12).contains(stationLoss.physicalTime)
+      else { return false }
+    }
+    return Set(modules.compactMap { $0.opening?.operation }).count
+      == modules.filter { $0.opening != nil }.count
+      && Set(modules.compactMap { $0.verification?.operation }).count
+        == modules.filter { $0.verification != nil }.count
   }
 }

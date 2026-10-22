@@ -81,6 +81,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedNativeArk: NativeInductionArkState?
   var savedNativeCrewLog: NativeInductionCrewLogState?
   var savedNativeInductionUtility: NativeInductionUtilityState?
+  var savedIsolationWork: NativeIsolationWorkState?
   var savedNativeInductionClinic: NativeInductionClinicContract?
   var savedNativeInductionWorkshop: NativeInductionWorkshopContract?
   var savedWayfarerInduction: NativeWayfarerInductionState?
@@ -245,6 +246,10 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   var savedNativeInductionUtility: NativeInductionUtilityState? {
     _read { yield storage[0].savedNativeInductionUtility }
     _modify { yield &storage[0].savedNativeInductionUtility }
+  }
+  var savedIsolationWork: NativeIsolationWorkState? {
+    _read { yield storage[0].savedIsolationWork }
+    _modify { yield &storage[0].savedIsolationWork }
   }
   var savedWayfarerInduction: NativeWayfarerInductionState? {
     _read { yield storage[0].savedWayfarerInduction }
@@ -569,6 +574,14 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
     if NativeInductionClinicPack.marked(instance) || instance.savedNativeInductionClinic != nil {
       guard NativeInductionClinicSave.shapeValid(instance) else { return false }
+    }
+    if NativeIsolationWorkPack.marked(instance) {
+      guard instance.definition == NativeIsolationWorkPack.stateID,
+        instance.version == NativeIsolationWorkPack.version,
+        instance.digest == NativeIsolationWorkPack.digest,
+        let source = instance.savedIsolationWork, source.job == instance.id,
+        source.shapeValid, instance.payloads.isEmpty
+      else { return false }
     }
     if NativeInductionUtilityPack.marked(instance) {
       guard instance.definition == NativeInductionUtilityPack.stateID,

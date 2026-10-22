@@ -456,7 +456,8 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard NativeInductionCrewLogSave.validateClaims(self),
+    guard NativeIsolationWorkSave.validateClaims(self),
+      NativeInductionCrewLogSave.validateClaims(self),
       NativeInductionArkSave.validateClaims(self),
       NativeWayfarerInductionSave.validateClaims(self),
       NativeFirstCommoditySaleSave.validateClaims(self),
@@ -707,6 +708,7 @@ public struct Game: Sendable {
       nativeCrewLogPickupPending = nil
       nativeRecordRecoveryIdentificationPending = nil
       nativeIdentifiedSalvagePending = nil
+      isolationWorkRuntime = .init()
     }
   }
   var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
@@ -730,6 +732,7 @@ public struct Game: Sendable {
   var inductionArkDockPublicationPending = false
   var inductionRescueDockPublicationPending = false
   var inductionUtilityWorkRuntime = NativeInductionUtilityWorkRuntime()
+  var isolationWorkRuntime = NativeIsolationWorkRuntime()
   var nativeStationDockEvidence: NativeStationDockEvidence?
   var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
   public var scriptPacks: [ScriptPack] = []
@@ -991,6 +994,7 @@ public struct Game: Sendable {
     let priorScreen = screen
     let priorPause = paused
     defer { if screen != priorScreen || paused != priorPause { interruptFlightTool() } }
+    if handleIsolationWorkKey(key) { return }
     if handleInductionUtilityWorkKey(key) { return }
     if interfaceKey(key) { return }
     keyAfterInterface(key)
@@ -2551,8 +2555,10 @@ public actor GameRuntime {
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
     let utilityWorkStart = game.inductionUtilityEndpoint()
+    let isolationWorkStart = game.isolationWorkSample()
     guard let context = prepareAdvance(delta: delta) else {
       game.advanceInductionUtilityWork(from: nil, publish: scriptPublisher())
+      game.advanceIsolationWork(from: nil, publish: scriptPublisher())
       return snapshot()
     }
     let glassMeridianStart = game.glassMeridianSample()
@@ -2586,6 +2592,7 @@ public actor GameRuntime {
     commitOriginalSurveyScan(start: surveyStart)
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
     game.advanceInductionUtilityWork(from: utilityWorkStart, publish: scriptPublisher())
+    game.advanceIsolationWork(from: isolationWorkStart, publish: scriptPublisher())
     return snapshot()
   }
   private typealias AdvanceContext = (

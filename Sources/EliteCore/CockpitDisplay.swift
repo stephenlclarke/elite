@@ -91,6 +91,7 @@ extension Display {
       targetMarker(game, layout: layout, into: &frame)
       targetPanel(game, layout: layout, into: &frame)
       inductionUtilityWorkPanel(game, layout: layout, into: &frame)
+      isolationWorkPanel(game, layout: layout, into: &frame)
       if game.messageTime > 0 {
         let x = max(12, (layout.width - Double(game.message.count) * 6 * layout.font) / 2)
         frame.label(
