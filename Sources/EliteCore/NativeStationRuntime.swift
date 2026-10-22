@@ -405,15 +405,15 @@ extension Game {
   private static func nativeStationBodyIsCurrent(
     _ body: borrowing SpaceBody, commander: borrowing Commander
   ) -> Bool {
-    guard let identity = body.nativeStationIdentity, let physical = body.physical,
+    guard let identity = body.nativeStationIdentity, let physicalIdentity = body.physical?.identity,
       let world = commander.nativeStations, Commander.nativeStationStateIsValid(commander),
       let record = world.ledger.records.first(where: { $0.identity == identity })
     else { return false }
     let currentSystem = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
     guard identity.system == currentSystem, record.tombstone == nil, body.energy > 0,
-      physical.identity.system == currentSystem,
-      physical.identity.visit == commander.flightSimulation.visit,
-      record.binding == .init(actor: physical.identity, bodyID: body.id)
+      physicalIdentity.system == currentSystem,
+      physicalIdentity.visit == commander.flightSimulation.visit,
+      record.binding == .init(actor: physicalIdentity, bodyID: body.id)
     else { return false }
     return true
   }
