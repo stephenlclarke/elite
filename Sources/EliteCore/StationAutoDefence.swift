@@ -266,7 +266,7 @@ extension Game {
     )
   }
 
-  mutating func stationAutoGuidance(target station: SpaceBody) -> StationAutoGuidance? {
+  mutating func stationAutoGuidance(target station: borrowing SpaceBody) -> StationAutoGuidance? {
     guard let assessment = stationAutoAssessment(), let stationActor = station.physical?.identity,
       stationActor == autoPilot.targetActor, station.id == autoPilot.targetID
     else {
@@ -277,24 +277,35 @@ extension Game {
     var courseObservation: [String: String]? = gameplayCombatTrace == nil ? nil : [:]
     let observations = stationAutoHazards(assessment, observation: &courseObservation)
     let hazard = observations.hazard
-    let stationMesh = gameplayMeshOverrides[station.id] ?? Mesh.hull(station.hull)
+    let stationMesh: Mesh
+    if let override = gameplayMeshOverrides[station.id] {
+      stationMesh = override
+    } else {
+      stationMesh = Mesh.hull(station.hull)
+    }
     let structureRadius =
       (stationMesh.vertices.map(\.length).max() ?? .infinity)
       + (commander.playerMesh.vertices.map(\.length).max() ?? .infinity)
     let clearanceRadius = max(station.stationClearanceRadius, structureRadius)
-    let interruptionAllowed =
-      pendingNativeStationDock == nil && !station.containsPlayer
-      && clearanceRadius.isFinite
+    let interruptionAllowed: Bool
+    if pendingNativeStationDock == nil {
+      interruptionAllowed = !station.containsPlayer && clearanceRadius.isFinite
+    } else {
+      interruptionAllowed = false
+    }
     if stationAutoDefence?.station != stationActor
       || stationAutoDefence?.player != context.player.identity
     {
       stationAutoDefence = .init(station: stationActor, player: context.player.identity)
     }
     var entryBrakingAllowed = false
-    let movingEntryAllowed =
-      hazard == .active && observations.courseKnown
-      && stationAutoMovingEntryAllowed(
+    let movingEntryAllowed: Bool
+    if hazard == .active, observations.courseKnown {
+      movingEntryAllowed = stationAutoMovingEntryAllowed(
         station, observation: &courseObservation, entryBrakingAllowed: &entryBrakingAllowed)
+    } else {
+      movingEntryAllowed = false
+    }
     if courseObservation != nil, hazard == .active,
       stationAutoDefence?.firstEntryCourseObservation == nil
         || (!movingEntryAllowed && stationAutoDefence?.firstEntryCourseRefusalObservation == nil)
@@ -452,7 +463,8 @@ extension Game {
 
   /// A current motion proposal, never native docking or attack authority.
   private mutating func stationAutoMovingEntryAllowed(
-    _ station: SpaceBody, observation: inout [String: String]?, entryBrakingAllowed: inout Bool
+    _ station: borrowing SpaceBody, observation: inout [String: String]?,
+    entryBrakingAllowed: inout Bool
   ) -> Bool {
     observation?["refusal"] = "motion.context"
     guard pendingNativeStationDock == nil, !station.containsPlayer,

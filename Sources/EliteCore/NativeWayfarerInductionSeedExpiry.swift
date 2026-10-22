@@ -1,7 +1,7 @@
 import Foundation
 
 extension Game {
-  func applyInductionSeedExpiry(
+  static func applyInductionSeedExpiry(
     event: ScriptEvent, state: inout ScriptInstance,
     candidate: inout Commander
   ) throws {

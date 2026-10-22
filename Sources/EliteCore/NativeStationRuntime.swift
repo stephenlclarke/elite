@@ -674,7 +674,7 @@ extension Game {
   /// Real effective-hull clearance against the same main-port mesh used by rendering and rays.
   /// The optional elapsed step uses the station's actual prior translation and spin.
   func nativeMainStationHullCourseIsClear(
-    _ station: SpaceBody, from start: ShipPose, to end: ShipPose,
+    _ station: borrowing SpaceBody, from start: ShipPose, to end: ShipPose,
     delta: Double = 0, requireAperture: Bool = true
   ) -> Bool {
     var observation: [String: String]?
@@ -684,7 +684,7 @@ extension Game {
   }
 
   private func nativeMainStationHullCourseIsClear(
-    _ station: SpaceBody, from start: ShipPose, to end: ShipPose,
+    _ station: borrowing SpaceBody, from start: ShipPose, to end: ShipPose,
     delta: Double = 0, requireAperture: Bool = true, observation: inout [String: String]?
   ) -> Bool {
     let flight = commander.flightSimulation
@@ -697,9 +697,12 @@ extension Game {
       NativeStationSnapshot.matches(station, in: bodies),
       let current = currentNativeMainStationAnchor(at: flight.physicalTime),
       let previous = currentNativeMainStationAnchor(at: max(0, flight.physicalTime - delta)),
-      (flight.pose.systemPoint(station.position) - current.position).length < 1e-5,
+      (flight.pose.systemPoint(station.position) - current.position).length < 1e-5
+    else { return false }
+    let stationOrientation = station.orientation
+    guard
       [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy({
-        (flight.pose.orientation.apply(station.orientation.apply($0))
+        (flight.pose.orientation.apply(stationOrientation.apply($0))
           - current.orientation.apply($0)).length < 1e-5
       })
     else { return false }
@@ -846,7 +849,7 @@ extension Game {
   /// Reuse native source, aperture and corridor checks for a proposed approach.
   /// The relative frame at the door is geometry only and is never installed or minted as entry.
   mutating func nativeStationAutoEntryCourseIsClear(
-    _ station: SpaceBody, advance: Vector3, terminalSpeed: Double
+    _ station: borrowing SpaceBody, advance: Vector3, terminalSpeed: Double
   ) -> Bool {
     var observation: [String: String]?
     var bodyCourseRefused = false
@@ -856,7 +859,7 @@ extension Game {
   }
 
   mutating func nativeStationAutoEntryCourseIsClear(
-    _ station: SpaceBody, advance: Vector3, terminalSpeed: Double,
+    _ station: borrowing SpaceBody, advance: Vector3, terminalSpeed: Double,
     observation: inout [String: String]?, bodyCourseRefused: inout Bool
   ) -> Bool {
     bodyCourseRefused = false
@@ -917,10 +920,11 @@ extension Game {
       observation?["stationPositionError"] = String(positionError)
       guard positionError < 1e-5 else { return false }
       observation?["refusal"] = "main.basis-source"
+      let stationOrientation = station.orientation
       guard
         [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy({
           let error =
-            (flight.pose.orientation.apply(station.orientation.apply($0))
+            (flight.pose.orientation.apply(stationOrientation.apply($0))
             - anchor.orientation.apply($0)).length
           observation?["stationBasisError"] = String(error)
           return error < 1e-5
@@ -931,7 +935,7 @@ extension Game {
         let resource = commander.scriptState.stationResources[identity.key],
         resource.identity == identity.resource, !resource.destroyed, resource.energy > 0
       else { return false }
-      var atDoor = station
+      var atDoor = copy station
       atDoor.position = atDoor.position - advance
       observation?["refusal"] = "main.centre-entry"
       guard atDoor.canEnter(roll: autoPilot.rollRate, speed: terminalSpeed) else { return false }
