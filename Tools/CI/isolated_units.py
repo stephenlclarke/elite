@@ -64,6 +64,12 @@ METHODS = {
         "systemScrollHintsFollowActualViewportAndHelpReturnContext",
         "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
     ),
+    "NativeIsolationProgrammerUnitTests": (
+        "actualCanonicalLoanOccupiesOneTonneAndReturnRemovesOnlyTheOriginal",
+        "fullRealHoldRefusesBeforeCreatingProgrammerOrObligation",
+        "matchingLabelForeignSerialOrChangedSourceCannotSupplyOriginalCustody",
+        "acquisitionOnlyDefinitionHasNoFittingOrShopOffer",
+    ),
     "WantedDossierNameUnitTests": (
         "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
         "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
