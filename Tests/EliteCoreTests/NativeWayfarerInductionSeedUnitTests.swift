@@ -177,6 +177,91 @@ final class InductionSeedFixture {
       commander.nativeStations?.mainStations.append(dock.station)
     }
   }
+  /// Complete-network callers keep the same original received crew and repaired utility records.
+  func restoreOriginalNetworkChildren(_ commander: inout Commander) throws {
+    let work = f.f.f.f.f.f.work
+    let utility = work.f
+    let rescue = utility.receivingFixture
+    let parent = try #require(
+      commander.scriptState.instances[held.permission.mission]?.savedWayfarerInduction)
+    let received = try #require(parent.rescueReception)
+    let utilityReceived = try #require(parent.utilityReception)
+    var crew = try #require(rescue.f.f.commander().scriptState.instances[received.job])
+    var crewState = try rescue.state(receipt: received)
+    let legs = try rescue.routeLegs()
+    crewState.flight?.legs = legs.map(\.0)
+    if commander.scriptState.wormholeTransit == nil {
+      commander.scriptState.wormholeTransit = .init(owner: parent.permission.owner)
+    }
+    var fuel = rescue.f.authorization.initialFuelLY
+    for (_, originalLeg) in legs {
+      var leg = originalLeg
+      let departure = try #require(leg.departure)
+      let route = try #require(leg.route)
+      let after = fuel - route.distanceLightYears
+      try #require(after >= 0)
+      var body = departure.body
+      body.scriptNPC?.fuel = after
+      leg.departure = .init(
+        hole: departure.hole, nativeActor: departure.nativeActor,
+        calendarSeconds: departure.calendarSeconds, physicalTime: departure.physicalTime,
+        revision: departure.revision, fuelBefore: fuel, fuelAfter: after, body: body)
+      try #require(leg.valid)
+      commander.scriptState.wormholeTransit?.legs[leg.id] = leg
+      fuel = after
+    }
+    let encounter = NativeInductionCrewLogPack.encounter
+    var group = try #require(crew.ownedEncounters[encounter])
+    var launch = try #require(group.actors["launch"])
+    launch.presence = .unloaded
+    launch.transitLocation = rescue.contact.station.system
+    launch.body.physical = .init(
+      identity: rescue.contact.arkActor, population: .mission,
+      npc: .init(
+        role: .mission, origin: NativeInductionCrewLogSource.location,
+        destination: NativeInductionCrewLogSource.receiver))
+    launch.body.scriptNPC?.fuel = fuel
+    launch.body.scriptNPC?.velocity = .init(0, 0, 0)
+    launch.body.scriptNPC?.intent = nil
+    group.actors["launch"] = launch
+    crew.ownedEncounters[encounter] = group
+    crew.savedNativeCrewLog = crewState
+    crew.revision = 1000
+    crew.milestones = [0, 1]
+    crew.acknowledge(received.sequence)
+    commander.scriptState.instances[crew.id] = crew
+    if commander.nativeStations?.mainStations.contains(rescue.f.authorization.dock.station) != true
+    {
+      commander.nativeStations?.mainStations.append(rescue.f.authorization.dock.station)
+    }
+    var utilityState = try work.state()
+    utilityState.receiving = utilityReceived
+    var child = utility.child()
+    child.savedNativeInductionUtility = utilityState
+    child.revision = 1000
+    child.milestones = [0]
+    child.acknowledge(utilityReceived.sequence)
+    var actors: [String: ScriptOwnedActor] = [:]
+    for role in NativeInductionUtilityRole.allCases {
+      var actor = try utility.prepared(role)
+      let resources = try NativeInductionUtilityPack.initialResources(
+        state: utility.child(), actor: actor)
+      let arm = try work.arm(role)
+      actor.body.id = Int(arm.actor.entity)
+      actor.presence = .unloaded
+      actor.body.physical = .init(identity: arm.actor, population: .mission, npc: resources)
+      actors[role.rawValue] = actor
+    }
+    var utilityGroup = ScriptOwnedEncounter(
+      id: NativeInductionUtilityPack.encounter,
+      galaxy: 0, system: 190, actors: actors)
+    utilityGroup.admitted = true
+    child.ownedEncounters[utilityGroup.id] = utilityGroup
+    commander.scriptState.instances[child.id] = child
+    while commander.flightSimulation.nextActor <= 44 {
+      _ = commander.flightSimulation.allocateActor()
+    }
+  }
   func cancelled() throws -> NativeInductionSeedCustody {
     let contact = WayfarerColdChainContact(
       sequence: 265, dock: issue.dock,

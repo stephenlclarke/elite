@@ -44,6 +44,7 @@ private final class InductionNetworkFixture {
     mission.acknowledge(310)
     commander.scriptState.instances[mission.id] = mission
     try f.restoreOriginalParentSaveClaims(&commander)
+    try f.restoreOriginalNetworkChildren(&commander)
     return commander
   }
 }
@@ -142,6 +143,12 @@ struct NativeWayfarerInductionNetworkUnitTests {
       !NativeInductionNetworkCertificationSave.claimsValid(
         f.certification, mission: mission, commander: commander))
     commander.scriptState.flightSeconds = 900_510
+    let crewID = try #require(f.audited.crewLog?.job)
+    let removedCrew = commander.scriptState.instances.removeValue(forKey: crewID)
+    let originalCrew = try #require(removedCrew)
+    #expect(!NativeInductionCrewLogSave.validateClaims(commander))
+    commander.scriptState.instances[crewID] = originalCrew
+    #expect(NativeInductionCrewLogSave.validateClaims(commander))
     let utility = try #require(f.audited.utilityReception)
     commander.scriptState.instances[utility.job] = nil
     #expect(!NativeInductionCrewLogSave.validateClaims(commander))
