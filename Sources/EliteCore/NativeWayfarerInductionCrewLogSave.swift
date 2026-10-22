@@ -97,68 +97,77 @@ enum NativeInductionCrewLogSave {
     let jobs = engine.instances.values.filter { NativeInductionCrewLogPack.marked($0) }
     guard jobs.count <= 1 else { return false }
     for child in jobs {
-      guard let state = child.savedNativeCrewLog,
-        let parent = engine.instances[state.authorization.manifest.mission],
-        let leaf = parent.savedWayfarerInduction,
-        parent.definition == NativeWayfarerInduction.stateID,
-        parent.version == NativeWayfarerInduction.version,
-        parent.digest == NativeWayfarerInduction.digest,
-        let source = try? NativeInductionCrewLogSource(parent: leaf),
-        state.shapeValid(parent: leaf), state.capture == leaf.crewLog,
-        state.authorization.manifest == source.manifest,
-        state.authorization.manifest.owner == commander.equipmentOwnerID,
-        state.authorization.sequence <= engine.nextEvent,
-        state.authorization.stationActor.visit <= commander.flightSimulation.visit,
-        state.authorization.physicalTime <= commander.flightSimulation.physicalTime,
-        state.authorization.flightSeconds <= engine.flightSeconds,
-        commander.nativeStations?.mainStations.contains(where: {
-          $0.world == source.manifest.owner && $0.system == NativeInductionCrewLogSource.location
-        }) == true,
-        parent.hasAcknowledged(state.authorization.sequence),
-        child.hasAcknowledged(state.authorization.sequence),
-        child.id == state.authorization.job,
-        child.definition == NativeInductionCrewLogPack.stateID,
-        child.version == NativeInductionCrewLogPack.version,
-        child.digest == NativeInductionCrewLogPack.digest,
-        child.outcome == .active, child.contract == nil, child.completionReceipt == nil,
-        child.dialogue == nil, child.payloads.isEmpty, child.gearIssues.isEmpty,
-        child.milestones
-          == (state.capture == nil ? [] : state.rescueReception == nil ? [0] : [0, 1]),
-        child.data == .object([:]),
-        child.campaignParent == nil,
-        child.campaignChildren.isEmpty,
-        child.timers.keys.allSatisfy({ $0 == NativeInductionCrewLogPack.timer }),
-        actorClaimsValid(child, state: state, source: source, commander: commander),
-        NativeRescueFlightSave.valid(
-          state, parent: parent, child: child, source: source, commander: commander)
+      guard recorderClaimValid(child, engine: engine, commander: commander) else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private static func recorderClaimValid(
+    _ child: borrowing ScriptInstance, engine: borrowing ScriptEngineState,
+    commander: borrowing Commander
+  ) -> Bool {
+    guard let state = child.savedNativeCrewLog,
+      let parent = engine.instances[state.authorization.manifest.mission],
+      let leaf = parent.savedWayfarerInduction,
+      parent.definition == NativeWayfarerInduction.stateID,
+      parent.version == NativeWayfarerInduction.version,
+      parent.digest == NativeWayfarerInduction.digest,
+      let source = try? NativeInductionCrewLogSource(parent: leaf),
+      state.shapeValid(parent: leaf), state.capture == leaf.crewLog,
+      state.authorization.manifest == source.manifest,
+      state.authorization.manifest.owner == commander.equipmentOwnerID,
+      state.authorization.sequence <= engine.nextEvent,
+      state.authorization.stationActor.visit <= commander.flightSimulation.visit,
+      state.authorization.physicalTime <= commander.flightSimulation.physicalTime,
+      state.authorization.flightSeconds <= engine.flightSeconds,
+      commander.nativeStations?.mainStations.contains(where: {
+        $0.world == source.manifest.owner && $0.system == NativeInductionCrewLogSource.location
+      }) == true,
+      parent.hasAcknowledged(state.authorization.sequence),
+      child.hasAcknowledged(state.authorization.sequence),
+      child.id == state.authorization.job,
+      child.definition == NativeInductionCrewLogPack.stateID,
+      child.version == NativeInductionCrewLogPack.version,
+      child.digest == NativeInductionCrewLogPack.digest,
+      child.outcome == .active, child.contract == nil, child.completionReceipt == nil,
+      child.dialogue == nil, child.payloads.isEmpty, child.gearIssues.isEmpty,
+      child.milestones
+        == (state.capture == nil ? [] : state.rescueReception == nil ? [0] : [0, 1]),
+      child.data == .object([:]),
+      child.campaignParent == nil,
+      child.campaignChildren.isEmpty,
+      child.timers.keys.allSatisfy({ $0 == NativeInductionCrewLogPack.timer }),
+      actorClaimsValid(child, state: state, source: source, commander: commander),
+      NativeRescueFlightSave.valid(
+        state, parent: parent, child: child, source: source, commander: commander)
+    else { return false }
+    if let funding = state.rescueFuel?.funding {
+      guard funding.sequence <= engine.nextEvent,
+        parent.hasAcknowledged(funding.sequence), child.hasAcknowledged(funding.sequence),
+        funding.physicalTime <= commander.flightSimulation.physicalTime,
+        funding.flightSeconds <= engine.flightSeconds
       else { return false }
-      if let funding = state.rescueFuel?.funding {
-        guard funding.sequence <= engine.nextEvent,
-          parent.hasAcknowledged(funding.sequence), child.hasAcknowledged(funding.sequence),
-          funding.physicalTime <= commander.flightSimulation.physicalTime,
-          funding.flightSeconds <= engine.flightSeconds
-        else { return false }
-        if let dock = funding.legacyRebriefDock {
-          guard commander.nativeStations?.mainStations.contains(dock.station) == true,
-            dock.sequence < (commander.nativeStations?.nextMainDockSequence ?? 0),
-            dock.actor.visit <= commander.flightSimulation.visit
-          else { return false }
-        }
-      }
-      if let capture = state.capture {
-        if leaf.crewLogLoss == nil && leaf.rescueReception == nil {
-          guard leaf.crewLogCarrier == commander.hullInstanceID,
-            let revision = commander.equipmentInventory?.revision,
-            revision >= (leaf.crewLogInventoryRevision ?? UInt64.max)
-          else { return false }
-        }
-        guard capture.sequence <= engine.nextEvent,
-          child.hasAcknowledged(capture.sequence), parent.hasAcknowledged(capture.sequence),
-          capture.actor.visit <= commander.flightSimulation.visit,
-          capture.physicalTime <= commander.flightSimulation.physicalTime,
-          capture.flightSeconds <= engine.flightSeconds
+      if let dock = funding.legacyRebriefDock {
+        guard commander.nativeStations?.mainStations.contains(dock.station) == true,
+          dock.sequence < (commander.nativeStations?.nextMainDockSequence ?? 0),
+          dock.actor.visit <= commander.flightSimulation.visit
         else { return false }
       }
+    }
+    if let capture = state.capture {
+      if leaf.crewLogLoss == nil && leaf.rescueReception == nil {
+        guard leaf.crewLogCarrier == commander.hullInstanceID,
+          let revision = commander.equipmentInventory?.revision,
+          revision >= (leaf.crewLogInventoryRevision ?? UInt64.max)
+        else { return false }
+      }
+      guard capture.sequence <= engine.nextEvent,
+        child.hasAcknowledged(capture.sequence), parent.hasAcknowledged(capture.sequence),
+        capture.actor.visit <= commander.flightSimulation.visit,
+        capture.physicalTime <= commander.flightSimulation.physicalTime,
+        capture.flightSeconds <= engine.flightSeconds
+      else { return false }
     }
     return true
   }
