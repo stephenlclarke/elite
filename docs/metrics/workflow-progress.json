@@ -5103,6 +5103,23 @@
       "issue": 75,
       "merge_pending": true,
       "usable_build_delivered": false
+    },
+    {
+      "event": "Two recovered-equipment features and realmedia correction author-merged; superseded68safelyretired",
+      "date": "2026-10-22",
+      "feature_pr": 72,
+      "feature_merge": "abeca025895c71a950e9156a751d5fddcb572963",
+      "verified_methods": 285,
+      "verified_expanded_cases": 317,
+      "incoming_files_verified": 47,
+      "media_pr": 77,
+      "media_merge": "5ee08d503a9716e65f66b9b2c648ceda7ac64fdb",
+      "source_features_added": 2,
+      "source_features_phase_total": 8,
+      "retired_pr": 68,
+      "archive_tag": "archive/recovered-equipment-20261022-50950372",
+      "current_remote_branches": 7,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -6074,8 +6091,8 @@
       "active_assignment": "G11.P01 provider; issue60 source consult complete/no edit, G1 owns combined repair"
     },
     "qualification_queue_note": "Programmer73 prerequisite merged; drive275/307 and missile275/307 verified,74closed; same-author combined285 PR72 pending;69/65 current jobs active. No manual jobs.",
-    "complete_features_merged": 6,
-    "merged_feature_count_scope": "Shared development showroom48/help55/inventory51/market+night56/Wanted61; fixes/helpers excluded; not six usable builds.",
+    "complete_features_merged": 8,
+    "merged_feature_count_scope": "Shared delivery showroom48/help55/inventory51/market+night56/Wanted61 plus alien drive+missile72; custody73/media77/fixes excluded; no new usable app/release.",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
     "accessible_unit_qualified_candidates_delivered": 1,
@@ -6157,7 +6174,10 @@
         15,
         18
       ],
-      "local_worktrees_indexes_files_unchanged": true
+      "local_worktrees_indexes_files_unchanged": true,
+      "current_remote_branches": 7,
+      "newly_retired_pr": 68,
+      "new_source_archive": "archive/recovered-equipment-20261022-50950372"
     },
     "g11_parent_bridge": {
       "owner": "G3",
@@ -6197,11 +6217,19 @@
       "retained_missile_run": 39757019041,
       "retained_missile_methods": 275,
       "retained_missile_cases": 307,
-      "final_head_qualification": "pending",
+      "final_head_qualification": "MBA285methods317expandedALLPASS",
       "usable_build_delivered": false,
       "final_head": "5095037228cda687dd7e27ad2a58ffb29018e756",
       "source_review": "MBA combined interactions and285union clean",
-      "final_github_run": 39759461966
+      "final_github_run": 39759461966,
+      "verified_methods": 285,
+      "verified_expanded_cases": 317,
+      "merged_at": "2026-10-22T10:25:03Z",
+      "merge_commit": "abeca025895c71a950e9156a751d5fddcb572963",
+      "incoming_paths_byte_identical": 47,
+      "qualified_prior_domain_files": 15,
+      "archive": "archive/recovered-equipment-20261022-50950372",
+      "superseded_pr_closed": 68
     },
     "media_fingerprint_correction": {
       "issue": 75,
@@ -6232,7 +6260,9 @@
       "final_head": "c0453386a9e837c307e642c64720c605d1ace6ab",
       "final_delta_review": "MBAclean, exactgeneratedmanifest",
       "issue_closed": true,
-      "merge_pending": true
+      "merge_pending": false,
+      "merged_at": "2026-10-22T10:22:46Z",
+      "merge_commit": "5ee08d503a9716e65f66b9b2c648ceda7ac64fdb"
     },
     "safe_gunnery_lesson": {
       "owner": "G4",
