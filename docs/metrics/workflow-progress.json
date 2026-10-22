@@ -5489,6 +5489,24 @@
       "intermediate_draft_quality_cancel_requested": 39775797167,
       "final_quality_gate_retained": true,
       "local_candidate902_unchanged": true
+    },
+    {
+      "event": "Coherent337-method M01 correction pushed; complete tree proof supports cancelling duplicate intermediate335 builds",
+      "date": "2026-10-22",
+      "m01_head": "0c12cb0744d32588a4b271932dbc3c4270a66b87",
+      "m01_run": 39776164699,
+      "m01_methods": 337,
+      "m01_author_core_seconds": 44.65,
+      "review": "pending bounded correction/composition",
+      "qualified_source": "fff52f3734aa6167128597087c55088aa3314f03",
+      "delivered_source": "d731b79859dddffd3533c20360280c7c27825009",
+      "identical_tree": "133ec1545da4665837b064c51bf21f38f91bbc93",
+      "duplicate_intermediate_cancel_requested": [
+        39775785362,
+        39775797409
+      ],
+      "final_required_checks_retained": true,
+      "actual_saved_runtime_seconds": null
     }
   ],
   "two_developer_phase": {
