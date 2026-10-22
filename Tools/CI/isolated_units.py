@@ -24,6 +24,10 @@ METHODS = {
         "storingDriveRevokesCapabilityAndStaleOrUndockedRefitDoesNothing",
         "fittedAlienDriveRetainsFuelElectricalAndOrdinaryDriveGates",
     ),
+    "WantedDossierNameUnitTests": (
+        "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
+        "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
+    ),
     "MarketDisplayOrderUnitTests": (
         "authoredOrderKeepsEachStableCommodityIDAndCargoIndex",
         "arrowSelectionFollowsAuthoredOrderWithoutTradingOrChangingModes",
