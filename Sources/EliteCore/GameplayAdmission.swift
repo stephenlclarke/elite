@@ -99,6 +99,64 @@ extension Game {
     return receipts
   }
 
+  /// Practice uses the native reserve and measured geometry policy for the whole volume.
+  /// No existing actor is moved, replaced or relabelled during this read-only preflight.
+  func gameplayPracticeAdmissionRefusal(
+    _ practice: NativePracticeState, prepared: [SpaceBody], context: EncounterContext
+  ) -> AdmissionRefusal? {
+    let flight = commander.flightSimulation
+    guard practice.valid, practice.endedAt == nil,
+      context.system == systemIdentity, context.visit == flight.visit,
+      context.revision == gameplayRevision, context.physicalTime == flight.physicalTime,
+      prepared.allSatisfy({ practice.beacon(for: $0, pose: flight.pose) != nil }),
+      Set(prepared.compactMap { $0.physical?.identity }).count == prepared.count
+    else { return .staleContext }
+    guard bodies.reduce(0, { $0 + $1.scriptNativeUnits }) + prepared.count <= 1024 else {
+      return .reservedCapacity
+    }
+    var meshes: [Int: Mesh] = [:]
+    for body in bodies where body.energy > 0 {
+      meshes[body.id] = scriptNPCMesh(body) ?? gameplayMesh(for: body)
+    }
+    let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
+    guard
+      NativePracticeAdmission.volumeClear(
+        practice, context: context, bodies: bodies, meshes: meshes, pose: flight.pose,
+        playerRadius: playerRadius)
+    else { return .unsafePosition }
+    let registeredStations = Set(
+      commander.nativeStations?.ledger.records.compactMap { record in
+        record.identity.system == context.system ? record.binding?.bodyID : nil
+      } ?? [])
+    var budget = context.budget
+    for body in prepared {
+      guard let spawn = body.physical?.spawnIdentity else { return .staleContext }
+      var request = SpawnRequest(
+        identity: spawn, population: .mission, hull: .cargo,
+        position: flight.pose.systemPoint(body.position),
+        orientation: practice.permission.frame.orientation, velocity: .init(0, 0, 0),
+        npc: nil, rock: nil, payload: nil, priority: .mission)
+      request.energy = NativePracticeSource.energy
+      if let refusal = admissionCapacityRefusal(request, context: context, budget: budget) {
+        return refusal
+      }
+      guard
+        spawnParametersSafe(
+          request, context: context, measuredRadius: NativePracticeSource.radius,
+          measuredMaximumEnergy: NativePracticeSource.energy)
+      else { return .unsafePosition }
+      if let refusal = Self.gameplayMissionActorSceneClearanceRefusal(
+        original: self, center: request.position, radius: NativePracticeSource.radius,
+        context: context, registeredStationBodies: registeredStations)
+      {
+        return refusal
+      }
+      budget.total += 1
+      budget.active[.mission, default: 0] += 1
+    }
+    return nil
+  }
+
   private mutating func batchRefusal(_ requests: [SpawnRequest]) -> AdmissionRefusal? {
     guard let context = gameplayContext() else { return .staleContext }
     let fresh = requests.filter { request in

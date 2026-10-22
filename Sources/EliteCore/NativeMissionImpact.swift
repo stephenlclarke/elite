@@ -404,6 +404,7 @@ extension Game {
     guard damage.isFinite, damage > 0, hit.point.finite, hit.distance.isFinite,
       hit.distance >= 0, (victimPart == nil) == (component == nil)
     else { throw NativeMissionImpactError.invalidTarget }
+    guard !nativePracticeReservedTarget(hit) else { throw NativeMissionImpactError.invalidTarget }
     var plan = MissionDamagePlan()
     switch hit.target {
     case .player:

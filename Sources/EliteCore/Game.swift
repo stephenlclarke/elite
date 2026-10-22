@@ -895,6 +895,7 @@ public struct Game: Sendable {
       !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
       value.scriptState.savedFleetDiscovery == nil,
       value.scriptState.firstNativeCommoditySale == nil,
+      !NativePracticeSave.hasClaims(value),
       !NativeInductionCrewLogSave.hasClaims(value),
       !NativeInductionArkSave.hasClaims(value),
       !NativeWayfarerInductionSave.hasClaims(value),

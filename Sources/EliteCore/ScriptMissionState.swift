@@ -86,6 +86,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedNativeInductionSeed: NativeInductionSeedContract?
   var savedWayfarerInduction: NativeWayfarerInductionState?
   var savedFlightReception: NativeFlightReceptionState?
+  var savedNativePractice: NativePracticeState?
   var savedMeasuredExtraction: NativeMeasuredExtractionState?
   var savedRecordRecovery: WayfarerRecordRecoveryState?
   var savedIdentifiedSalvage: NativeIdentifiedSalvageState?
@@ -255,6 +256,11 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     _read { yield storage[0].savedWayfarerInduction }
     _modify { yield &storage[0].savedWayfarerInduction }
   }
+  var savedNativePractice: NativePracticeState? {
+    _read { yield storage[0].savedNativePractice }
+    _modify { yield &storage[0].savedNativePractice }
+  }
+
   var savedFlightReception: NativeFlightReceptionState? {
     _read { yield storage[0].savedFlightReception }
     _modify { yield &storage[0].savedFlightReception }

@@ -88,10 +88,12 @@ extension Game {
         profile: .standardMissile, origin: origin,
         target: target.identity, position: position, direction: direction,
         emissionPosition: owner.position),
-      recordCombat(
-        origin: origin, kind: .missile, outcome: .targetedLaunch,
-        target: targetBodyID.map(GameplayHitTarget.body) ?? .player, worldPosition: owner.position,
-        emissionPosition: owner.position) != nil
+      nativePracticeMissileLaunchAllowed(targetBodyID: targetBodyID, owner: owner.identity)
+        || recordCombat(
+          origin: origin, kind: .missile, outcome: .targetedLaunch,
+          target: targetBodyID.map(GameplayHitTarget.body) ?? .player,
+          worldPosition: owner.position,
+          emissionPosition: owner.position) != nil
     else { return false }
     bodies[index].physical?.attackOrigin = origin
     bodies[index].physical?.emissionPosition = owner.position
