@@ -254,6 +254,18 @@ struct NativeWayfarerInductionCharterAuditUnitTests {
     commander.scriptState.instances[id] = mission
     #expect(
       NativeInductionCharterAuditSave.claimsValid(audit, mission: mission, commander: commander))
+    try f.restoreOriginalParentSaveClaims(&commander)
+    let sale = try #require(commander.scriptState.firstNativeCommoditySale)
+    #expect(parent.permission.trade == .sale(sale.operation))
+    #expect(NativeWayfarerInductionSave.validateClaims(commander))
+    let originalSale = commander.scriptState.firstNativeCommoditySale
+    commander.scriptState.firstNativeCommoditySale = nil
+    #expect(!NativeWayfarerInductionSave.validateClaims(commander))
+    commander.scriptState.firstNativeCommoditySale = originalSale
+    let clinicReceiver = try #require(parent.reception?.dock.station)
+    commander.nativeStations?.mainStations.removeAll { $0 == clinicReceiver }
+    #expect(!NativeWayfarerInductionSave.validateClaims(commander))
+    commander.nativeStations?.mainStations.append(clinicReceiver)
     #expect(NativeWayfarerInductionSave.validateClaims(commander))
     commander.scriptState.flightSeconds = 900_499
     #expect(

@@ -157,6 +157,26 @@ final class InductionSeedFixture {
     commander.scriptState.instances[booking.instance] = child(custody: custody)
     return commander
   }
+  /// Full parent-save callers retain the exact original sale and historical receiving stations.
+  func restoreOriginalParentSaveClaims(_ commander: inout Commander) throws {
+    let sale = f.f.f.f.f.f.work.f.originalSale
+    guard held.permission.trade == .sale(sale.operation), sale.owner == held.permission.owner,
+      sale.valid,
+      let state = commander.scriptState.instances[held.permission.mission]?.savedWayfarerInduction
+    else { throw SaveError.invalidCommander }
+    commander.scriptState.firstNativeCommoditySale = sale
+    var docks = [state.permission.dock]
+    docks += [
+      state.crate?.dock, state.reception?.dock, state.cassette?.dock,
+      state.cassetteService?.dock, state.seedKey?.dock, state.seedReception?.playerDock,
+      state.rescueReception?.playerDock, state.utilityReception?.dock,
+      state.charterChoice?.dock, state.charterClinicSource?.issue.dock,
+      state.charterWorkshopSource?.issue.dock, state.charterSeedSource?.issue.dock,
+    ].compactMap { $0 }
+    for dock in docks where commander.nativeStations?.mainStations.contains(dock.station) != true {
+      commander.nativeStations?.mainStations.append(dock.station)
+    }
+  }
   func cancelled() throws -> NativeInductionSeedCustody {
     let contact = WayfarerColdChainContact(
       sequence: 265, dock: issue.dock,

@@ -5,11 +5,13 @@ import Testing
 
 /// Structural source/native-address fixtures only; no test here executes native admission or flight.
 struct CrewLogProducerFixture {
+  let originalSale: NativeFirstCommoditySale
   let parent: NativeWayfarerInductionState
   let source: NativeInductionCrewLogSource
   let authorization: NativeCrewLogAuthorization
   init() throws {
     let f = try ArkReceivingFixture()
+    originalSale = f.f.originalSale
     parent = try f.f.parent.registeringArk(f.f.link).receivingSeedArk(f.receipt())
     source = try .init(parent: parent)
     authorization = try .init(
