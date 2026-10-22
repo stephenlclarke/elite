@@ -5363,6 +5363,17 @@
       "review": "clean",
       "runtime_qualified": false,
       "release_qualified": false
+    },
+    {
+      "event": "T02 test-value-lifetime correction pushed without claiming runtime cause",
+      "date": "2026-10-22",
+      "head": "a32c2544a47c0df621f4e24f470b7bf24b6c6aa1",
+      "run": 39773354817,
+      "issue": 95,
+      "production_changed": false,
+      "review_scope": "bounded fixture lifetime delta; preserve all mixed-codec assertions",
+      "runtime_cause": "unattributed",
+      "qualified": false
     }
   ],
   "two_developer_phase": {
