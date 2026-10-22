@@ -5470,6 +5470,25 @@
       "t03_runtime": "unattributed signal4; no371qualification",
       "t02_runtime": "unattributed signal4; no351qualification",
       "no_new_diagnostic_campaign": true
+    },
+    {
+      "event": "C01 qualified and author-merged; training composition consolidated; premature draft quality cancellation requested",
+      "date": "2026-10-22",
+      "merge": "d731b79859dddffd3533c20360280c7c27825009",
+      "c01_qualified_methods": 335,
+      "c01_expanded_cases": 372,
+      "closed_issues": [
+        80,
+        81,
+        89,
+        90
+      ],
+      "training_author": "G4",
+      "training_final_pr": 87,
+      "expected_training_union": 385,
+      "intermediate_draft_quality_cancel_requested": 39775797167,
+      "final_quality_gate_retained": true,
+      "local_candidate902_unchanged": true
     }
   ],
   "two_developer_phase": {
@@ -6441,8 +6460,8 @@
       "active_assignment": "G11.P01 provider; issue60 source consult complete/no edit, G1 owns combined repair"
     },
     "qualification_queue_note": "Programmer73 prerequisite merged; drive275/307 and missile275/307 verified,74closed; same-author combined285 PR72 pending;69/65 current jobs active. No manual jobs.",
-    "complete_features_merged": 9,
-    "merged_feature_count_scope": "Shared delivery showroom48/help55/inventory51/market+night56/Wanted61, alien drive+missile72 and complete C08 career69 (counted once); custody73/media77/fixes excluded. Source delivery is separate from native gameplay acceptance.",
+    "complete_features_merged": 10,
+    "merged_feature_count_scope": "Source delivery: showroom48/help55/inventory51/market+night56/Wanted61, alien drive+missile72, C08career69 and C01original-recorder recovery79 (one stage, not full campaign). Custody/media/fixes excluded; local app and full native acceptance counted separately.",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
     "accessible_unit_qualified_candidates_delivered": 2,
@@ -6792,6 +6811,23 @@
         "state": "completed",
         "conclusion": "cancelled"
       }
-    ]
+    ],
+    "c01_recovery": {
+      "qualified_head": "fff52f3734aa6167128597087c55088aa3314f03",
+      "run": 39773443382,
+      "methods": 335,
+      "expanded_cases": 372,
+      "conclusion": "all pass",
+      "merge_commit": "d731b79859dddffd3533c20360280c7c27825009",
+      "merged_at": "2026-10-22T12:07:18Z",
+      "closed_issues": [
+        80,
+        81,
+        89,
+        90
+      ],
+      "local_candidate_delivered": false,
+      "full_campaign_complete": false
+    }
   }
 }
