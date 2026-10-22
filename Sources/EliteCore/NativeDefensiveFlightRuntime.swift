@@ -19,6 +19,14 @@ extension Game {
       let radius = commander.playerMesh.vertices.map(\.length).max(),
       NativeDefensiveFlightGeometry.hullFits(radius: radius)
     else { return }
+    if active.state.attemptPlayer == nil {
+      guard let player = commander.flightSimulation.player else { return }
+      var state = active.state
+      do { try state.launched(player: player) } catch { return }
+      var instance = active.instance
+      instance.savedDefensiveFlight = state
+      commander.scriptState.instances[instance.id] = instance
+    }
     if active.state.original != nil {
       if let provider = active.instance.savedNativePractice,
         nativePracticeCurrent(provider, instance: active.instance),
@@ -107,7 +115,7 @@ extension Game {
   /// The tick's outer defer safely handles native loss, failure and completed break-off.
   mutating func closeDefensiveFlightIfNeeded() {
     guard let active = activeDefensiveFlight else { return }
-    if !active.state.workVerified, active.state.original != nil, active.state.failure == nil {
+    if !active.state.workVerified, active.state.attemptPlayer != nil, active.state.failure == nil {
       let reason: NativeDefensiveFlightFailure.Interruption?
       if docked {
         reason = .docked
@@ -115,12 +123,12 @@ extension Game {
         reason = .shipLost
       } else if commander.hullInstanceID != active.state.permission.carrier {
         reason = .hullChanged
-      } else if commander.flightSimulation.player != active.state.original?.permission.player {
+      } else if commander.flightSimulation.player != active.state.attemptPlayer {
         reason = .visitChanged
       } else {
         reason = nil
       }
-      if let reason, let player = active.state.original?.permission.player {
+      if let reason, let player = active.state.attemptPlayer {
         recordDefensiveFlightFailure(
           .interruption(
             player: player, time: commander.flightSimulation.physicalTime, reason: reason))

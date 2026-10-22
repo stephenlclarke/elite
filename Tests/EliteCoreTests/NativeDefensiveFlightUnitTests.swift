@@ -612,6 +612,35 @@ struct NativeDefensiveFlightUnitTests {
         dock: arrival, owner: complete.permission.owner, carrier: UUID()))
   }
 
+  @Test func pendingAdmissionKeepsTheFirstActualLaunchVisitAndCannotRestartOnReturn() throws {
+    var game = try nativeObservationGame()
+    let active = try #require(game.activeDefensiveFlight)
+    let player = try #require(game.commander.flightSimulation.player)
+    var pending = NativeDefensiveFlightState(permission: active.state.permission)
+    try pending.launched(player: player)
+    var instance = active.instance
+    instance.savedDefensiveFlight = pending
+    instance.savedNativePractice = nil
+    instance.milestones = [0]
+    game.commander.scriptState.instances[instance.id] = instance
+    game.bodies = [SpaceBody(id: 90, hull: .cargo, position: .init(10000, 0, 0))]
+    let bodies = game.bodies
+    let law = game.commander.crimeLedger
+    let credits = game.commander.credits
+    #expect(pending.original == nil && pending.attemptPlayer == player && pending.valid)
+    game.commander.flightSimulation.enter(NativeDefensiveFlight.location, arriving: false)
+    game.closeDefensiveFlightIfNeeded()
+    let failed = try #require(game.commander.scriptState.instances[instance.id])
+    #expect(failed.outcome == .failed)
+    #expect(
+      failed.savedDefensiveFlight?.failure
+        == .interruption(
+          player: player, time: 10, reason: .visitChanged))
+    #expect(failed.savedDefensiveFlight?.original == nil && failed.savedNativePractice == nil)
+    #expect(game.bodies == bodies && game.commander.crimeLedger == law)
+    #expect(game.commander.credits == credits && game.commander.scriptState.savedClueJournal == nil)
+  }
+
   @Test func reorderedForeignErasedAndInventedDurationProofsCannotBecomeReady() throws {
     let provider = try fixture()
     let complete = try completedWindows(provider)

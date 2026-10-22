@@ -87,6 +87,7 @@ enum NativeDefensiveFlightFailure: Codable, Sendable, Equatable {
 /// Native interval evidence only. Narrative data and a position assignment cannot advance it.
 struct NativeDefensiveFlightState: Codable, Sendable, Equatable {
   let permission: NativeDefensiveFlightPermission
+  private(set) var attemptPlayer: ActorIdentity?
   private(set) var original: NativePracticeState?
   private(set) var hullRadius: Double?
   private(set) var windows: [NativeDefensiveFlightWindow] = []
@@ -98,7 +99,7 @@ struct NativeDefensiveFlightState: Codable, Sendable, Equatable {
   private(set) var negativeEntry: NativeDefensiveFlightCrossing?
 
   enum CodingKeys: String, CodingKey {
-    case permission, original, hullRadius, windows, crossing, pending, previous
+    case permission, attemptPlayer, original, hullRadius, windows, crossing, pending, previous
     case positiveEntry, negativeEntry, failure, disengagedCalendar, terminalOperation, terminalDock,
       terminalOutcome
   }
@@ -129,6 +130,11 @@ struct NativeDefensiveFlightState: Codable, Sendable, Equatable {
       terminalOutcome.map({ [.complete, .failed, .abandoned].contains($0) }) ?? true,
       (terminalOutcome == nil) == (terminalOperation == nil)
     else { return false }
+    if let attemptPlayer {
+      guard attemptPlayer.entity == 0, attemptPlayer.system == permission.dock.station.system,
+        attemptPlayer.visit > permission.dock.actor.visit, attemptPlayer.visit < UInt64.max
+      else { return false }
+    }
     if let outcome = terminalOutcome {
       guard
         terminalOperation
@@ -158,7 +164,8 @@ struct NativeDefensiveFlightState: Codable, Sendable, Equatable {
         && previous == nil && positiveEntry == nil && negativeEntry == nil
         && terminalOutcome != .complete
     }
-    guard original.valid, original.endedAt == nil, original.hits.isEmpty,
+    guard original.valid, original.permission.player == attemptPlayer,
+      original.endedAt == nil, original.hits.isEmpty,
       original.permission.lesson == .defensiveFlight,
       original.permission.mission == permission.mission,
       original.permission.owner == permission.owner,
@@ -221,6 +228,15 @@ struct NativeDefensiveFlightState: Codable, Sendable, Equatable {
     return previous.map { $0.valid(in: original) && $0.reading.time >= lastTime } ?? true
   }
 
+  /// The first actual launch visit owns this attempt even while traffic delays admission.
+  mutating func launched(player: ActorIdentity) throws {
+    guard valid, failure == nil, terminalOutcome == nil, attemptPlayer == nil,
+      player.entity == 0, player.system == permission.dock.station.system,
+      player.visit > permission.dock.actor.visit, player.visit < UInt64.max
+    else { throw SaveError.invalidCommander }
+    attemptPlayer = player
+  }
+
   mutating func begin(_ provider: NativePracticeState, radius: Double) throws {
     guard valid, original == nil, failure == nil, terminalOutcome == nil,
       provider.valid, provider.endedAt == nil, provider.hits.isEmpty,
@@ -230,8 +246,10 @@ struct NativeDefensiveFlightState: Codable, Sendable, Equatable {
       provider.permission.carrier == permission.carrier,
       provider.permission.consent == permission.consent,
       provider.permission.digest == NativeDefensiveFlight.digest,
-      NativeDefensiveFlightGeometry.hullFits(radius: radius)
+      NativeDefensiveFlightGeometry.hullFits(radius: radius),
+      attemptPlayer == nil || attemptPlayer == provider.permission.player
     else { throw SaveError.invalidCommander }
+    attemptPlayer = provider.permission.player
     original = provider
     hullRadius = radius
   }

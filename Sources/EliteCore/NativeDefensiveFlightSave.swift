@@ -42,6 +42,7 @@ enum NativeDefensiveFlightSave {
     let physicalTime = commander.flightSimulation.physicalTime
     let nextEmission = commander.flightSimulation.nextEmission
     let nextIncident = commander.flightSimulation.nextIncident
+    let currentVisit = commander.flightSimulation.visit
     let own = instances.values.filter(marked)
     guard own.count <= 128, own.filter({ $0.outcome == .active }).count <= 1 else { return false }
     var attempts: Set<Int> = []
@@ -51,6 +52,7 @@ enum NativeDefensiveFlightSave {
         state.permission.consent.valid(for: instance, engine: commander.scriptState),
         NativeFlightReceptionSave.historicalDock(state.permission.dock, commander: commander),
         state.permission.acceptedAt <= physicalTime,
+        state.attemptPlayer.map({ $0.visit <= currentVisit }) ?? true,
         state.previous.map({ $0.reading.time <= physicalTime }) ?? true,
         state.windows.allSatisfy({ $0.last.reading.time <= physicalTime }),
         state.pending.map({ $0.last.reading.time <= physicalTime }) ?? true,
