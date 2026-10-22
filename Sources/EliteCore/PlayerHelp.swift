@@ -24,10 +24,11 @@ public enum PlayerHelp {
           rows: [
             "ARROWS - SELECT OWNER SOURCE / STOCK",
             "RETURN - REVIEW; CONFIRM IS SEPARATE",
-            "BACK / ESC - ISSUE NOTHING",
+            "BACK / ESC - KEEP CURRENT STOCK / BOOKING",
             "ONLY ACTUAL RENAS CAN ISSUE ITS BATCH",
             "VIEW STOCK IS READ-ONLY; NO PICKUP",
-            "QUOTES RESERVE NO STOCK OR WINDOWS",
+            "RESERVE CONFIRM: SAMPLE / WINDOW / 1T",
+            "CANCEL BEFORE PICKUP: RETURN ALL THREE",
             "NO INTEGRITY CLOCK UNTIL REAL PICKUP",
           ]), at: 0)
     }

@@ -1,23 +1,50 @@
 import Foundation
 
 extension NativeWayfarerInductionAction {
-  var isClinicStockAction: Bool { self == .issueClinicStock || self == .viewClinicStock }
+  var isClinicStockAction: Bool {
+    self == .issueClinicStock || self == .viewClinicStock || self == .acceptClinicSample
+      || self == .cancelClinicSample
+  }
 }
 
 extension Game {
   var inductionClinicRows: [ContractBoardRow] {
+    var rows: [ContractBoardRow] = commander.scriptState.instances.values.sorted {
+      $0.id.uuidString < $1.id.uuidString
+    }.compactMap { child in
+      guard let contract = child.savedNativeInductionClinic, contract.close == nil else {
+        return nil
+      }
+      let action = NativeWayfarerInductionAction.cancelClinicSample
+      return .init(
+        board: action.key, offer: nil,
+        title: "Cancel uncollected clinic sample " + contract.booking.unit.uuidString.prefix(8),
+        reason: inductionClinicCancellationIssues(instance: child.id).first,
+        wayfarerInduction: action, inductionClinicReference: child.id)
+    }
     guard systemIdentity == NativeInductionCapacityOperator.clinic.station,
       let state = wayfarerInductionMission?.savedWayfarerInduction,
       state.charterSignatures?.contains(where: { $0.operatorID == .clinic }) == true
-    else { return [] }
+    else { return rows }
     let action: NativeWayfarerInductionAction =
       state.charterClinicSource == nil ? .issueClinicStock : .viewClinicStock
-    return [
+    rows.append(
       .init(
         board: action.key, offer: nil, title: action.title,
-        reason: wayfarerInductionReview(action).issues.first, wayfarerInduction: action)
-    ]
+        reason: wayfarerInductionReview(action).issues.first, wayfarerInduction: action))
+    if let source = state.charterClinicSource {
+      for unit in source.units where unit.status == .available && unit.instance == nil {
+        rows.append(
+          .init(
+            board: NativeWayfarerInductionAction.acceptClinicSample.key, offer: nil,
+            title: "Reserve original clinic sample " + unit.id.uuidString.prefix(8),
+            reason: inductionClinicBookingIssues(unit: unit.id).first,
+            wayfarerInduction: .acceptClinicSample, inductionClinicReference: unit.id))
+      }
+    }
+    return rows
   }
+
   func inductionClinicSourceIssues() -> [String] {
     guard let mission = wayfarerInductionMission, mission.outcome == .active,
       mission.suspension == nil,
@@ -94,6 +121,34 @@ extension Game {
 
   var inductionClinicDetail: [String] {
     let state = wayfarerInductionMission?.savedWayfarerInduction
+    if let review = contractBoard.wayfarerInductionQuote {
+      if review.action == .cancelClinicSample, let id = review.clinicReference,
+        let booking = commander.scriptState.instances[id]?.savedNativeInductionClinic?.booking
+      {
+        return [
+          "CANCEL UNCOLLECTED ORIGINAL CLINIC SAMPLE",
+          "Sample: " + booking.unit.uuidString,
+          "Confirm cancels this booking, returns its same clinic-owned capacity window and frees its reserved1t. The unchanged original sample remains at the warehouse. No timer, payment or success.",
+          "Back/Escape retains the booking.",
+        ] + review.issues
+      }
+      if review.action == .acceptClinicSample, let quote = review.clinicQuote {
+        var lines = [
+          "RESERVE ORIGINAL CLINIC SAMPLE / PICKUP IS SEPARATE",
+          "Sample: " + quote.offer.stockUnit.uuidString,
+          String(
+            format: "Reserve1t actual hold space. Frozen quote %.1fCR / %d legs to Navidor.",
+            Double(quote.offer.rewardNative) / 10, quote.route.distancesLY.count),
+          "Fly any reachable route; quoted hops are not mandatory. Actual pickup, original custody and receiver still apply.",
+          "Confirm reserves this original sample and one eligible window owned by the clinic. The independent maximum of three active contracts still applies.",
+          "No cargo moves and the1800s integrity clock has not started. Separate pickup/custody/receiving is the next adapter. Before pickup, cancel returns the original stock/window/hold space without cash or success.",
+        ]
+        if let window = review.clinicWindow {
+          lines.append("Exact clinic window: " + window.unit.uuidString)
+        }
+        return lines + review.issues
+      }
+    }
     var lines = [
       "ORIGINAL RENAS CLINIC BATCH / NAVIDOR RECEIVER",
       "Separate owner rebrief/Confirm issues one new finite batch: six unique1t samples for this charter epoch. They stay clinic property, separate from induction cargo and the six capacity windows.",
@@ -123,7 +178,7 @@ extension Game {
             Double(quote.offer.rewardNative) / 10, quote.route.distancesLY.count,
             quote.offer.flightAllowance),
           "Sample serial: " + quote.offer.stockUnit.uuidString,
-          "Source revision\(quote.stockRevision); capacity revision\(quote.capacityRevision). No acceptance is exposed yet.",
+          "Source revision\(quote.stockRevision); capacity revision\(quote.capacityRevision). Acceptance is a separate original-sample booking row.",
         ]
       } else {
         lines.append(

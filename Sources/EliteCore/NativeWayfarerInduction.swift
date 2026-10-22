@@ -290,7 +290,11 @@ final class NativeWayfarerInductionState: Codable, Sendable, Equatable {
     }
     if let charterCapacity {
       for event in charterCapacity.events {
-        guard case .released(let release) = event,
+        guard case .released(let release) = event else {
+          guard charterClinicSource?.ownsWindowEvent(event) == true else { return false }
+          continue
+        }
+        guard
           let signature = charterSignatures?.first(where: { $0.operatorID == release.operatorID }),
           release.consent == signature.operation, release.sequence > signature.sequence,
           release.revision >= signature.capacityRevision,

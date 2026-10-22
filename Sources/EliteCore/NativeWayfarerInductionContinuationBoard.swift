@@ -5,7 +5,8 @@ extension NativeWayfarerInductionAction {
     switch self {
     case .accept, .progress, .pooledCharter, .protectedCharter, .allocateCharterCapacity:
       NativeWayfarerInduction.source
-    case .clinicConsent, .releaseClinicCapacity, .issueClinicStock, .viewClinicStock:
+    case .clinicConsent, .releaseClinicCapacity, .issueClinicStock, .viewClinicStock,
+      .acceptClinicSample, .cancelClinicSample:
       NativeWayfarerInduction.clinic
     case .workshopConsent, .releaseWorkshopCapacity: NativeWayfarerInduction.workshop
     case .seedConsent, .releaseSeedCapacity: NativeWayfarerInduction.seedSource

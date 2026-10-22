@@ -8,6 +8,11 @@ extension Game {
     guard let fields = command.object, let op = fields["op"]?.string else {
       throw MissionPackError("Invalid script command.")
     }
+    if NativeInductionClinicPack.marked(state) || state.savedNativeInductionClinic != nil {
+      guard op == "journal.append" else {
+        throw MissionPackError("Use the original clinic's native custody transaction.")
+      }
+    }
     if pack.manifest.fieldRelief != nil || WayfarerFieldRelief.marked(state) {
       guard op == "journal.append" else {
         throw MissionPackError("Use the original native utility and current engineer reception.")

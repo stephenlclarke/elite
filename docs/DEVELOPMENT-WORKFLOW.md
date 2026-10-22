@@ -1,12 +1,12 @@
 # Developer and reviewer workflow
 
-Updated 21 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
+Updated 22 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
 
 ## Developer: keep coding
 
-**Choose -> implement and write isolated unit tests -> push -> request review -> choose next.**
+**Choose one complete feature -> implement and write isolated unit tests -> push -> request review -> continue coding -> author merges when qualified.**
 
-G1/MBP (GPT-6.1 Sol High) is the primary developer and sole integrator/publisher. At each coherent packet boundary, take ready actionable reviewer issues first; otherwise take the next ready ledger item, M01 first. Skip a genuinely unavailable dependency and record it briefly. Do not wait for tests, reviews, Sonar, packaging, an empty issue queue or Orchestrator acknowledgement.
+G1/MBP (GPT-6.1 Sol Medium) is the primary developer and release publisher. There is no separate integrator or integration queue. Each explicitly assigned developer owns its feature through implementation, meaningful unit tests, reviewer corrections, conflict resolution and its own PR merge after the required checks, MBA review and approvals pass. At each coherent packet boundary, take ready actionable reviewer issues first; otherwise take the next ready ledger item, M01 first. Skip a genuinely unavailable dependency and record it briefly. Do not wait for tests, reviews, Sonar, packaging, an empty issue queue or Orchestrator acknowledgement.
 
 Keep one development branch/PR and small complete packets where practical. Preserve other owners' edits; never rewrite published work. Use necessary short local checks to resolve authoring uncertainty; routine isolated-unit execution belongs to GitHub. Update the existing ledger row at assignment and push, without a separate handoff dossier.
 
@@ -19,6 +19,14 @@ Base <SHA> -> head <SHA>; isolated units <selection>; known gap <if any>
 ```
 
 **This is the only packet handoff.** Do not repeat it in issue23, chat or another queue. Do not duplicate same-head review requests. For a correction, reference the original review thread and mark its issue `awaiting-mba`; never auto-close it. Start the next item immediately.
+
+## Two independent feature streams
+
+G1 owns the complete clinic loop. G3 owns M02.P04/F06 showroom comparison, using its existing session01a13ff4-1a89-7711-befa-15701182d113 and an isolated branch/worktree from81d54e74. Each developer owns its PR and merge after MBA review/checks/approvals; showroom targets feature/canonical-mission-composition. No central integration queue. MBA takes ready corrections first, then the oldest ready feature. Root flags review backlog above two ready packets or an oldest source review older than30minutes; this is an orchestration signal, not a developer wait gate.
+
+## High-effort escalation only when needed
+
+Elite Coder2 uses GPT-6.1 Sol High, as confirmed by Stephen. G1 and G3 retain Medium for ordinary implementation. Coder2 has no standing implementation stream: Root escalates only a named difficult blocker, repeated unsuccessful correction, or complex actor/state/security problem with bounded scope. Routine MBA review remains necessary work, not permission for extra implementation or audits. Record reason, scope, start/end and result in the existing metrics events. If Coder2 authors a fix, a different non-author developer provides the independent source review; it cannot approve its own correction. No current coding escalation is assigned.
 
 ## Reviewer: work asynchronously
 
@@ -38,12 +46,14 @@ GitHub runs meaningful isolated component units. Inspect the actual head, select
 
 Root keeps priorities and ownership clear, ensures both machines have work, and batches ledger/scorecard updates from existing PR/issues/Actions evidence. No routine acknowledgements, duplicate reviews, hash inventories, per-event dossiers or extra developer forms. Record assignment/push promptly; record verification/delivery when meaningful. The [scorecard](WORKFLOW-METRICS.md) measures throughput, waiting and rework; it is not another work plan. Issue23 is historical coordination, not a required handoff or work queue.
 
-Activate a spare MBP coder for GitHub issue remediation only if at least two ready defects would delay ledger work, or the ready backlog keeps growing. Reserve disjoint files/hunks first. Exclude external blockers and `awaiting-mba`; keep other workers idle otherwise. MBA may create explicitly requested image assets on separate paths after review work; app/renderer/shader code stays MBP-owned. README media comes from `make readme-media`.
+The two active developer streams are G1 clinic service and G3 showroom comparison. G3 uses an isolated worktree and owns ShowroomDisplay/ShowroomGeometry, showroom-only ShipShowroom comparison hunks and focused showroom units; G1 owns clinic/mission/contract/cargo/save/Game/PlayerHelp work. Shared CI changes require an exact hunk agreement. Do not add further developers without a new scope decision. Ready correctness issues are remediated by their feature owner at packet boundaries. MBA may create explicitly requested image assets on separate paths after review work; app/renderer/shader code stays MBP-owned. README media comes from `make readme-media`.
 
 ## Merge and delivery
 
+**No central integration gate:** Use small feature PRs against the agreed shared delivery branch. Agree disjoint file ownership before adding a second developer. Authors keep their branches current and resolve their own conflicts without overwriting another owner. MBA reviews the actual final head; material conflict changes receive affected units and review. Do not accumulate completed features for a dedicated integration batch. This changes merge ownership, not branch protection or review requirements. The current clinic assignment stays with G1; this rule does not itself activate another developer.
+
 No integration, native gameplay journeys, GUI/system/performance or broad `make ci` campaigns during code completion. Do not weaken tests or branch protections. Sonar scans only clean committed `main`, with the exact lowercase 40-character SHA as projectVersion and the Previous version baseline.
 
-Before merging any project/tap PR, request `@codex review` once as part of the existing handoff and require an independently clean MBA review of the coherent final PR head, answered/resolved actionable threads, required checks and applicable approvals. Human direction supersedes older clean-automated-review requirements when the service returns only an error: ignore that service error and proceed on MBA review; no recovery wait, retries or service investigation. Actual automated code findings still receive MBA disposition and remediation. MBA reviews the actual PR base/head and uncovered changed code/interactions, reusing completed reviews and unaffected unit evidence rather than repeating a whole-app audit. Record exact scope, remaining findings and the final manual outcome. Required GitHub protections are not bypassed or weakened; an unmet required check/approval remains pending while coding continues. G1 alone merges and publishes.
+Before merging any project/tap PR, request `@codex review` once as part of the existing handoff and require an independently clean MBA review of the coherent final PR head, answered/resolved actionable threads, required checks and applicable approvals. Human direction supersedes older clean-automated-review requirements when the service returns only an error: ignore that service error and proceed on MBA review; no recovery wait, retries or service investigation. Actual automated code findings still receive MBA disposition and remediation. MBA reviews the actual PR base/head and uncovered changed code/interactions, reusing completed reviews and unaffected unit evidence rather than repeating a whole-app audit. Record exact scope, remaining findings and the final manual outcome. Required GitHub protections are not bypassed or weakened; an unmet required check/approval remains pending while coding continues. The authoring developer merges its own reviewed feature PR when all applicable final-head checks and approvals pass; no handoff to an integrator is required. G1 remains release publisher, packaging already merged code at useful delivery boundaries without blocking other development.
 
 Keep source push, review, unit verification, integration, usable build, release and Homebrew availability distinct. Slack is only for verified usable player-facing features in an accessible build; Root alone posts, with deduplication. No source-only, test, review or routine status posts.

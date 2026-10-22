@@ -158,9 +158,15 @@ extension Game {
     if pack.manifest.stateID == NativeInductionClinicPack.stateID
       || pack.digest == NativeInductionClinicPack.digest
     {
-      return NativeInductionClinicPack.matches(pack)
-        ? "Use the original clinic owner's actual Renas rebrief. Native consignment pickup remains unavailable."
-        : "Restore the original Renas clinic family content."
+      guard NativeInductionClinicPack.matches(pack) else {
+        return "Restore the original Renas clinic family content."
+      }
+      guard
+        commander.scriptState.instances.values.contains(where: {
+          $0.definition == NativeInductionClinicPack.stateID && $0.digest == pack.digest
+            && $0.savedNativeInductionClinic != nil
+        })
+      else { return "Use the original clinic owner's actual Renas booking review." }
     }
     if pack.manifest.stateID == NativeInductionUtilityPack.stateID
       || pack.digest == NativeInductionUtilityPack.digest

@@ -33,6 +33,10 @@
       {
         "at": "2026-10-21T16:33:36Z",
         "event": "First dispatched GitHub-owned isolated-unit run after action-policy correction; do not reset overall cohort."
+      },
+      {
+        "at": "2026-10-22T05:55:43Z",
+        "event": "Human-authorized two independent developers, asynchronous MBA review and author-owned merge; no central integrator. Preserve original cohort; this starts a separately measured phase."
       }
     ]
   },
@@ -4732,6 +4736,104 @@
       "verified_expanded_cases": 244,
       "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333087491",
       "qualification_scope": "All6Consent/7Capacity/6Charter/9Work/3Binding pass; no native owner-visit/release/stock/booking/audit/stage12/playable/release claim"
+    },
+    {
+      "event": "Original clinic finite stock and read-only quote source pushed; MBA review assigned",
+      "head": "81d54e74919c106381e3b4d3cc66652001ffb218",
+      "base": "eb0fdf58354240d0816ca5a95d6b0ddfb05f7caa",
+      "ledger_parent": "C08.P06.B.quote.clinic",
+      "github_run": 39728009204,
+      "selection_methods": 221,
+      "new_methods": 9,
+      "source_review": "MBA independent clinic source/quote review clean",
+      "unit_status": "SUCCESS; MBA verified221methods253casesPASS,0failures/errors/skips,no crash",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333479179",
+      "next_assigned": "C08.P06.B.clinic.accept",
+      "usable_build_delivered": false,
+      "verified_methods": 221,
+      "verified_expanded_cases": 253,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333643137",
+      "verified_at": "2026-10-22T05:40:10Z",
+      "qualification_scope": "All9ClinicSource and retained6Consent/7Capacity/6Charter/9UtilityWork/3Binding PASS; actual pack-loader digest matches; source/readonly-quote only, no native journey or usable delivery"
     }
-  ]
+  ],
+  "two_developer_phase": {
+    "started_at": "2026-10-22T05:55:43Z",
+    "developers": {
+      "G1": "Complete clinic service loop",
+      "G3": "M02.P04/F06 complete showroom comparison"
+    },
+    "reviewer": "MBA/G2",
+    "merge_owner": "Feature author; no separate integrator",
+    "baseline": {
+      "single_developer_started_at": "2026-10-21T15:53:44Z",
+      "latest_complete_snapshot_at": "2026-10-21T20:11:14.368458+00:00",
+      "latest_complete_snapshot_hours": 4.291769016111111,
+      "feature_packets_pushed": 10,
+      "fix_packets_pushed": 7,
+      "reviewed_unit_qualified_packets": 16,
+      "new_usable_builds": 0,
+      "new_published_releases": 0,
+      "qualifications": [
+        "Packet snapshot is partial, not the full single-developer interval.",
+        "Packet sizes vary and some early packets carry over existing work.",
+        "No comparable earlier complete-feature throughput or exact developer wait measurement; do not claim a percentage speedup."
+      ]
+    },
+    "measures": [
+      "Distinct complete ledger features merged per rolling24h; exclude helper packets/docs/refactors/rework",
+      "Distinct complete features available in an accessible build, and build/release timestamps",
+      "Assignment-to-first-push, assignment-to-feature-complete, push-to-MBA-source-review, final-ready-to-merge",
+      "Open ready review queue count and oldest age; escalation >2 packets or >30min",
+      "Actionable findings, correction-to-verification time, reopened issues, conflicts and developer review-blocked time"
+    ],
+    "observation_policy": "Use existing GitHub commit/PR/review/Actions and ledger timestamps; unknown time is null, not zero; preserve failures; no extra tests, forms, workers or per-event dossiers. Compare rolling24h after a full phase window; report small/unequal feature samples and baseline gaps.",
+    "features": [
+      {
+        "id": "C08 clinic loop",
+        "owner": "G1",
+        "assigned_at": null,
+        "phase_entry_state": "Clinic source/capacity/consent implemented and unit-qualified; acceptance in development",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null
+      },
+      {
+        "id": "M02.P04/F06",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T05:55:43Z",
+        "phase_entry_state": "G3 accepted and active in isolated worktree; compact comparison missing baseline model preview; shared rotation and carried-fit values already exist",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "start_observed_at": null,
+        "start_evidence": "G3 active thread5416f3c1-d481-4bdb-a92b-4292e55ae0f8 cursor3 and direct assignment acceptance; exact start timestamp not recorded",
+        "first_push_observed_at": "2026-10-22T05:59:27Z",
+        "push_timestamp_source": "PR48 creation; observation of push, not exact push event",
+        "head": "1b5c07aa136840b759cee87b0e766307c26ec8ad",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
+        "source_state": "Compact comparison fix and three focused tests pushed; MBA source review assigned, hosted selection pending",
+        "first_push_observed_elapsed_seconds": 224
+      }
+    ],
+    "model_settings": {
+      "source": "Human reports both coder sessions run GPT-6.1 Sol Medium; retain current settings",
+      "G1": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "medium"
+      },
+      "G3": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "medium"
+      },
+      "MBA": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "source": "Human confirms Coder2 High; Coder2 also runs the existing MBA review workflow",
+        "implementation_policy": "Escalation only for a named necessary blocker; no standing implementation stream or self-review"
+      },
+      "comparison_caveat": "Worker count and reported effort settings may differ from the prior period; do not attribute a change solely to parallelism."
+    },
+    "escalations": []
+  }
 }

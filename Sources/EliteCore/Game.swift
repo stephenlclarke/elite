@@ -1912,6 +1912,10 @@ public struct Game: Sendable {
       notify("FREIGHT LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
     }
+    do { try candidate.closeUncollectedInductionClinicOnExit(.escapePod) } catch {
+      notify("CLINIC RESERVATION LOSS NOT SAVED - ESCAPE NOT COMMITTED")
+      return
+    }
     guard candidate.loseWayfarerColdChainOnEscape() else {
       notify("SAMPLE LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
@@ -2641,6 +2645,7 @@ public actor GameRuntime {
     // Acts only on the measured fatal state; retries its durable proposal after writer refusal.
     commitWayfarerInductionCrateLoss()
     commitWayfarerColdChainFatalLoss()
+    commitInductionClinicUncollectedLoss()
     commitWayfarerRepairLoopFatalLoss()
     commitNativeUtilityFatalLoss()
     commitFieldReliefTargetLoss()

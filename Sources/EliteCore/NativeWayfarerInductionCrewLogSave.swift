@@ -1,10 +1,13 @@
 import Foundation
 
 enum NativeInductionCrewLogSave {
-  static let version = 109
-  static let alienVersion = 110
-  static func supportsClinicSource(_ schema: Int?) -> Bool {
+  static let version = 111
+  static let alienVersion = 112
+  static func supportsClinicAcceptance(_ schema: Int?) -> Bool {
     schema == version || schema == alienVersion
+  }
+  static func supportsClinicSource(_ schema: Int?) -> Bool {
+    supportsClinicAcceptance(schema) || schema == 109 || schema == 110
   }
   static func supportsCharterConsent(_ schema: Int?) -> Bool {
     supportsClinicSource(schema) || schema == 107 || schema == 108
@@ -49,6 +52,7 @@ enum NativeInductionCrewLogSave {
     commander.scriptState.instances.values.contains {
       NativeInductionCrewLogPack.marked($0) || NativeInductionUtilityPack.marked($0)
         || $0.savedWayfarerInduction?.charterClinicSource != nil
+        || NativeInductionClinicPack.marked($0) || $0.savedNativeInductionClinic != nil
     }
   }
 

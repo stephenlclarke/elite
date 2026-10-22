@@ -91,7 +91,8 @@ struct NativeInductionClinicSource: Codable, Sendable, Equatable {
   let issue: NativeInductionClinicIssue
   let delegation: NativeInductionClinicAuditDelegation
   var units: [WayfarerColdChainStockUnit]
-  var revision: UInt64 { 0 }  // This source envelope has no accepted consignment/custody transitions.
+  var history: [NativeInductionClinicStockMutation]?
+  var revision: UInt64 { UInt64(history?.count ?? 0) }
   static func identity(parent: UUID, epoch: UUID, owner: UUID) -> UUID {
     ScriptIdentity.uuid("induction-original-clinic-batch-v1:\(parent):\(epoch):\(owner)")
   }
@@ -121,10 +122,7 @@ struct NativeInductionClinicSource: Codable, Sendable, Equatable {
       identity
         == Self.identity(parent: issue.parent, epoch: issue.epoch, owner: issue.operatorOwner),
       units.count == issue.profile.stockUnits,
-      units.enumerated().allSatisfy({ index, unit in
-        unit.id == WayfarerColdChainStockSource.unitIdentity(source: identity, index: index)
-          && unit.status == .available && unit.instance == nil
-      }),
+      units == (try? projectedUnits()),
       delegation.issue == issue.operation, delegation.source == identity,
       delegation.epoch == issue.epoch, delegation.operatorOwner == issue.operatorOwner,
       delegation.auditor == choice.dock.station, delegation.units == units.map(\.id),

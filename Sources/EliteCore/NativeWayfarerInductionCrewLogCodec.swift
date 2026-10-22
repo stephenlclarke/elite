@@ -8,6 +8,8 @@ extension NativeInductionCrewLogSave {
       !root.keys.contains("savedNativeCrewLog"), !root.keys.contains("nativeCrewLog"),
       !root.keys.contains("savedNativeInductionUtility"),
       !root.keys.contains("nativeInductionUtility"),
+      !root.keys.contains("savedNativeInductionClinic"),
+      !root.keys.contains("nativeInductionClinic"),
       !root.keys.contains("charterClinicSource"), !root.keys.contains("nativeInductionClinicSource")
     else { throw SaveError.invalidCommander }
     if part == .missions {
@@ -29,7 +31,8 @@ extension NativeInductionCrewLogSave {
     }
     for entry in instances {
       guard let mission = entry as? [String: Any] else { throw SaveError.invalidCommander }
-      guard !mission.keys.contains("charterClinicSource"),
+      guard !mission.keys.contains("nativeInductionClinic"),
+        !mission.keys.contains("charterClinicSource"),
         !mission.keys.contains("nativeInductionClinicSource")
       else { throw SaveError.invalidCommander }
       try NativeInductionUtilitySave.validateFields(mission, schema: schema, embedded: embedded)
@@ -91,14 +94,32 @@ extension NativeInductionCrewLogSave {
           mission["digest"] as? String == NativeWayfarerInduction.digest
         else { throw SaveError.invalidCommander }
       }
-      if mission["definition"] as? String == NativeInductionClinicPack.stateID
-        || mission["digest"] as? String == NativeInductionClinicPack.digest
-      {
-        throw SaveError.invalidCommander
+      let clinic = mission["definition"] as? String == NativeInductionClinicPack.stateID
+      let clinicPin = mission["digest"] as? String == NativeInductionClinicPack.digest
+      let clinicClaim = mission.keys.contains("savedNativeInductionClinic")
+      guard clinic == clinicPin, clinic == clinicClaim else { throw SaveError.invalidCommander }
+      if clinic {
+        guard supportsClinicAcceptance(schema), !embedded,
+          let leaf = mission["savedNativeInductionClinic"] as? [String: Any]
+        else { throw SaveError.invalidCommander }
+        let bytes = try JSONSerialization.data(withJSONObject: leaf)
+        guard bytes.count <= 131072 else { throw SaveError.invalidCommander }
+        let decoded = try JSONDecoder().decode(NativeInductionClinicContract.self, from: bytes)
+        guard
+          (leaf as NSDictionary).isEqual(
+            try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))
+        else { throw SaveError.invalidCommander }
       }
       if let parent = mission["savedWayfarerInduction"] as? [String: Any],
         parent.keys.contains("charterClinicSource")
       {
+        if let source = parent["charterClinicSource"] as? [String: Any],
+          source.keys.contains("history")
+        {
+          guard supportsClinicAcceptance(schema), !embedded else {
+            throw SaveError.invalidCommander
+          }
+        }
         guard supportsClinicSource(schema), !embedded,
           mission["definition"] as? String == NativeWayfarerInduction.stateID,
           mission["digest"] as? String == NativeWayfarerInduction.digest

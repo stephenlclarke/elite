@@ -22,17 +22,15 @@ Initial snapshot,21 October16:36:52UTC: two game-code packets pushed (one fix an
 
 Do not infer a speedup from this short early sample or extrapolate it to a daily rate. Review the first comparable24-hour window and at least five reviewed product packets with unit outcomes before judging direction; keep observations visible before then. If packet sizes change, compare parent-capability advancement too. Do not claim a billed-credit saving without project-scoped billing evidence.
 
-## Latest observed checkpoint
+## Two-developer comparison phase
 
-The latest independently reviewed and unit-verified source is5fa9c568. Existing hosted run39682596661 passed103 maintained methods/135 expanded cases, including all five new fuel/route methods/six focused cases. The preceding registered-ark source71cbb6b2 passed98 methods/129 cases. MBA found no actionable source defect in either bounded prerequisite. The source and financial models do not yet supply actual ark admission, native docking, supplier purchase, ship-fuel/world publication, save-envelope registration, transit or receiving; G1 owns those remaining producer joins.
+Started22 October2026 at05:55:43UTC under explicit human authorization. G1 owns the complete clinic service loop; G3 owns complete showroom comparison. MBA reviews both and authors own their merges. No dedicated integrator or central integration queue.
 
-Earlier key-loan and Haflinger evidence remains exact to the unchanged descendantb0bb6794:95 methods/126 cases. The cancelled direct key run remains unexecuted, not a PASS. Clinic receiving and cassette pickup passed84 methods/112 cases; cassette service and return passed88 methods/117 cases. Full details and historical outcomes remain in the JSON and ledger.
+Judge improvement by complete ledger features merged per rolling24hours and complete features made available in an accessible build. Record assignment, first push, source-complete, MBA review, final-head qualification, merge, playable build and release separately using existing GitHub/ledger evidence. Track review queue count/oldest age, actionable findings, correction verification, reopened issues, conflicts and confirmed developer waiting. Unknown timestamps remain unknown. Source packets, commits and unit-case counts cannot substitute for finished features.
 
-Corrections34 and35 are closed with source/compiled-file/unit evidence. No ready unimplemented or awaiting-verification defect remains from that batch. Issue27 remains an investigation without an established safe correction;15 and18 retain explicit delivery/acceptance gaps. The MBA has cleared handed review work through5fa9c568 and is ready for the next actual producer delta; the issue-only helper is stopped.
+The retained single-developer snapshot at21 October20:11:14UTC covers4.29hours:10 feature packets,7 fix packets and16 reviewed/unit-qualified packets; zero new usable builds or releases. This snapshot is partial and packet sizes differ. Later source qualification continues through81d54e74:221 methods/253 cases verified by MBA, but no new usable build or release. These figures do not establish a full-period packet rate or percentage speedup. Preserve the old72-hour estimates and baseline limitations above.
 
-No new usable build or published release has been delivered in this cohort. Whole campaigns, live ark arrival, full hull activation and later stages remain unfinished. Component method/case counts do not establish full gameplay acceptance. Historical packet counts and timing samples remain in the JSON; this short window does not establish a causal speedup.
-
-Generic review-service errors are ignored under the latest human direction. MBA independently reviews the actual final PR head, raises actionable issues, verifies corrections and closes them promptly. Required GitHub checks/approvals still apply.
+The first comparison follows a full24-hour two-developer window. Show both complete-feature outcomes and each feature's actual complexity/carry-over; a small unequal sample is directional, not causal proof. Review backlog above two ready packets or oldest source-review age above30minutes triggers orchestration, never a developer wait. Metrics are maintained from existing events without extra testing, forms or per-poll paperwork. The JSON stores the phase baseline and both feature outcomes.
 
 ## Lightweight maintenance
 
