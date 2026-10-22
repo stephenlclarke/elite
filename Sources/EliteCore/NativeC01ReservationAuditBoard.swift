@@ -72,22 +72,44 @@ extension Game {
     guard review.auditPin != nil || value.audit != nil else { return lines + review.issues }
     switch action {
     case .ledgerEntries:
+      let projection = source.projection
       lines += [
         "The port authority issued one lane unit and one original certificate to the clinic.",
         "The contractor then sold freight a paid copy of the same certificate; no second unit was allocated.",
-        "Clinic: 50.0 CR debited. Freight: 50.0 CR debited. Contractor: 100.0 CR received.",
-        "Both customer balances are zero; the original 100.0 CR remains conserved.",
+        "Balances: Clinic \(String(format: "%.1f", Double(projection.balances.clinic) / 10)) CR; Freight \(String(format: "%.1f", Double(projection.balances.freight) / 10)) CR; Contractor \(String(format: "%.1f", Double(projection.balances.contractor) / 10)) CR.",
       ]
-      for (index, claim) in source.projection.claims.enumerated() {
+      for (index, claim) in projection.claims.enumerated() {
+        let customer = claim.customer == source.clinicCustomer ? "Clinic" : "Freight"
         lines.append(
-          "Claim \(index + 1): local [\(claim.localWindow.start), \(claim.localWindow.end))")
+          "Claim \(index + 1): \(claim.id.uuidString); \(customer) customer \(claim.customer.uuidString)"
+        )
+        lines.append(
+          "True [\(claim.trueWindow.start), \(claim.trueWindow.end)); local [\(claim.localWindow.start), \(claim.localWindow.end))"
+        )
+        lines.append("Certificate \(claim.certificate.uuidString)")
+        for payment in projection.payments where payment.claim == claim.id {
+          lines.append(
+            "Payment \(payment.operation.uuidString): \(String(format: "%.1f", Double(payment.amount) / 10)) CR."
+          )
+        }
       }
-      lines.append("Both claims reference certificate \(source.certificate.uuidString).")
     case .recorderCalibration:
+      lines.append(
+        "The original held recorder supplies the independent calibration and both control references."
+      )
+      for clock in source.clocks {
+        let label = clock.ordinal == 0 ? "A" : "B"
+        lines.append(
+          "Clock \(label): local offset \(clock.offset) seconds; reservation counter \(clock.reservationCounter)."
+        )
+        for calibration in source.recorder.calibrations
+        where calibration.clockLineage == clock.lineage {
+          lines.append(
+            "Recorder calibration: \(calibration.offset) seconds; lineage \(calibration.clockLineage.uuidString)."
+          )
+        }
+      }
       lines += [
-        "The original held recorder supplies the independent calibration and both control references.",
-        "Clock A: local offset 0 seconds; reservation counter 1.",
-        "Clock B: local offset +60 seconds; reservation counter 2.",
         "The contents belong to the original commission and clock lineages, before either scan or recorder recovery.",
         "Replacements of an unread clock retain its original contents; a matching label cannot supply a reading.",
       ]

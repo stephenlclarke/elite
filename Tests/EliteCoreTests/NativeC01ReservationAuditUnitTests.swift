@@ -241,6 +241,25 @@ struct NativeC01ReservationAuditUnitTests {
     let review = before.glassMeridianReview(.auditReservations)
     let source = try #require(
       before.glassMeridianMission?.savedGlassMeridian?.reservationCase?.source)
+    let ledger = before.glassMeridianAuditDetail(.ledgerEntries).joined(separator: "\n")
+    let calibration = before.glassMeridianAuditDetail(.recorderCalibration).joined(separator: "\n")
+    for payment in source.projection.payments {
+      #expect(ledger.contains(payment.operation.uuidString))
+      #expect(ledger.contains(String(format: "%.1f", Double(payment.amount) / 10) + " CR"))
+    }
+    for claim in source.projection.claims {
+      #expect(ledger.contains(claim.id.uuidString))
+      #expect(
+        ledger.contains(claim.customer.uuidString) && ledger.contains(claim.certificate.uuidString))
+      #expect(ledger.contains("True [\(claim.trueWindow.start), \(claim.trueWindow.end))"))
+      #expect(ledger.contains("local [\(claim.localWindow.start), \(claim.localWindow.end))"))
+    }
+    for clock in source.clocks {
+      #expect(
+        calibration.contains(
+          "local offset \(clock.offset) seconds; reservation counter \(clock.reservationCounter)"))
+    }
+    #expect(before.commander == (await runtime.snapshot()).commander)
     try await runtime.scriptCommand { game in try game.confirmGlassMeridianReservationAudit(review)
     }
     let after = await runtime.snapshot()
@@ -277,10 +296,14 @@ struct NativeC01ReservationAuditUnitTests {
     let decoded = try ScriptSaveStore.read(pointer, from: f.save)
     #expect(decoded.0.scriptState.instances[mission.id]?.savedGlassMeridian == state)
     #expect(try JSONDecoder().decode(ScriptSavePointer.self, from: pointer).schemaVersion == 137)
+    var historical = after
+    historical.scriptPacks = []
+    #expect(NativeGlassMeridianSave.validateClaims(historical.commander))
   }
 
   @Test(arguments: [
     "paused", "trial", "writer", "epoch", "dock", "carrier", "fit", "clock", "recorder", "source",
+    "removed-pack", "foreign-pack",
   ])
   func staleOrUnattainedNativeInputsCannotGrantSorelAudit(change: String) async throws {
     let f = try await C01ReservationAuditFixture()
@@ -290,6 +313,14 @@ struct NativeC01ReservationAuditUnitTests {
     let review = game.glassMeridianReview(.auditReservations)
     let id = try #require(game.glassMeridianMission?.id)
     switch change {
+    case "removed-pack": game.scriptPacks = []
+    case "foreign-pack":
+      let pack = try #require(game.glassMeridianPack)
+      game.scriptPacks = [
+        ScriptPack(
+          manifest: pack.manifest, source: pack.source, manifestBytes: pack.manifestBytes,
+          digest: String(repeating: "0", count: 64), models: pack.models)
+      ]
     case "paused": game.paused = true
     case "trial": game.isMissionTrial = true
     case "writer": game.scriptDurabilityAvailable = false
