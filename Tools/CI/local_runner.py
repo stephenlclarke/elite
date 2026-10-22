@@ -13,6 +13,12 @@ ROOT = Path(__file__).resolve().parents[2]
 SWIFT = "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
 
 
+def matching_swift_version(version: str) -> bool:
+    """Accept the pinned compiler with its observed Xcode driver prefix."""
+    first_line = version.split("\n", 1)[0]
+    return first_line.removeprefix("swift-driver version: 1.120.5 ") == SWIFT
+
+
 def require_trusted_push(environment: dict[str, str], event: dict) -> None:
     """Reject a misrouted PR, fork, repository or actor before preparing a cache."""
     repository = event.get("repository", {})
@@ -85,7 +91,7 @@ def main() -> None:
         raise ValueError("Local runner must execute inside the isolated macOS VM.")
     swift = output("swift", "--version")
     sdk = output("xcrun", "--sdk", "macosx", "--show-sdk-version")
-    if swift.splitlines()[0] != SWIFT or sdk != "15.5":
+    if not matching_swift_version(swift) or sdk != "15.5":
         raise ValueError("Local runner must match Swift 6.1.2 and macOS SDK 15.5.")
     key = cache_key(ROOT, swift, sdk)
     cache = prepare_build_cache(ROOT, key)

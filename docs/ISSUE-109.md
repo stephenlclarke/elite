@@ -19,3 +19,5 @@ Focused Python tests cover trust and cache preservation boundaries. Workflow lin
 ## Compatibility and remaining risk
 
 The repository variable defaults to the hosted route. There is no game, save, simulation or unit-oracle change. VM resource use must respect the main compiler lease. See [operation and isolation requirements](LOCAL-MACOS-RUNNER.md).
+
+Guest provisioning confirmed macOS 15.7.7, VirtualMac2,1, Swift 6.1.2 and SDK 15.5. The observed Swift driver prefix is now accepted while the exact compiler identity remains required. Nine helper tests pass. Registration and actual job qualification remain pending.

@@ -10,6 +10,8 @@ The runner is dedicated to this repository and has labels `self-hosted`, `macOS`
 
 The VM uses macOS Sequoia and Xcode 16.4. Local preflight requires an Apple Silicon `VirtualMac`, Apple Swift 6.1.2 (`swiftlang-6.1.2.1.2 clang-1700.0.13.5`) and macOS SDK 15.5. It fails rather than silently switching compiler versions.
 
+The pinned image reports the compiler line with a `swift-driver version: 1.120.5` prefix. Preflight accepts this observed prefix or the plain compiler line; the exact compiler identity remains required. The full output still contributes to the cache fingerprint.
+
 ## Persistent build cache
 
 The checkout's `.build` stays a physical directory inside the guest workspace. This preserves the existing crash collector's strict path-confinement checks. The local checkout skips the action's blanket cleanup; verified local preflight runs `git clean -ffdx -e /.build/` to remove other untracked or ignored inputs. Tracked files still come from the action's forced checkout. Failed jobs retain compiled objects too; there is no dependency on a successful cache-upload post-step.

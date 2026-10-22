@@ -15,3 +15,5 @@ Run the focused Python suite and workflow lint. Record actual VM/runner readines
 ## Scope and risk
 
 No gameplay or save changes. The enable variable remains off until the VM is online. Keep forks and deliberately modified external workflows away from the persistent runner. See [the issue](ISSUE-109.md) and [operator instructions](LOCAL-MACOS-RUNNER.md).
+
+Guest provisioning confirmed macOS 15.7.7, VirtualMac2,1, Swift 6.1.2 and SDK 15.5. The observed Swift driver prefix is now accepted while the exact compiler identity remains required. Nine helper tests pass. Registration and actual job qualification remain pending.

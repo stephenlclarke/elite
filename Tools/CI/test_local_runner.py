@@ -114,6 +114,13 @@ class LocalRunnerTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 prepare_build_cache(root, "../foreign")
 
+    def test_observed_swift_driver_prefix_keeps_exact_compiler_identity(self):
+        for prefix in ("", "swift-driver version: 1.120.5 "):
+            self.assertTrue(local_runner.matching_swift_version(prefix + SWIFT + "\nTarget: arm64-apple-macosx15.0"))
+        for version in ("", SWIFT.replace("6.1.2", "6.4.1"),
+                        "swift-driver version: 9.9 " + SWIFT):
+            self.assertFalse(local_runner.matching_swift_version(version))
+
     def test_main_requires_matching_virtual_machine_and_tools(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
