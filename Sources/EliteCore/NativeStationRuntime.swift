@@ -1063,6 +1063,7 @@ extension Game {
   /// Current-course geometry only. Native entry retains its independent clearance gate.
   /// Exact maintained mesh distance and containment distinguish material contact
   /// from overlapping enclosing spheres. Prepared geometry uses the existing bounded cache.
+  @inline(never)
   mutating func nativeStationCourseObstacleAssessment(
     _ body: SpaceBody, from start: Vector3, to end: Vector3, radius: Double,
     mesh actualMesh: Mesh? = nil
@@ -1072,7 +1073,7 @@ extension Game {
       physical.identity.system == systemIdentity, physical.identity.visit == flight.visit,
       physical.velocity.finite, body.rotation.isFinite, body.rotationRate.isFinite,
       bodies.filter({ $0.id == body.id }).count == 1,
-      bodies.first(where: { $0.id == body.id }) == body,
+      NativeStationSnapshot.matches(body, in: bodies),
       bodies.filter({ $0.physical?.identity == physical.identity }).count == 1
     else { return .invalid }
     if let id = physical.catalogueShipID, ShipCatalogue.ship(id) == nil { return .invalid }
