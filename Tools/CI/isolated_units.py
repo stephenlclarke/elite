@@ -337,6 +337,10 @@ METHODS = {
         "returningToALargerHullDoesNotRefitStoredSparesOrRecreateSoldBoundItems",
         "foreignOwnerUnknownNodeAndExhaustedRevisionRefuseWithoutChangingSource",
     ),
+    "ContextControlHintUnitTests": (
+        "systemScrollHintsFollowActualViewportAndHelpReturnContext",
+        "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
+    ),
     "FlightControlAuthorityUnitTests": (
         "allSharedFlightBindingsRoundTripWithoutFunctionKeys",
         "targetSelectionAndFilterInterruptTheHeldToolWithoutBecomingFire",
