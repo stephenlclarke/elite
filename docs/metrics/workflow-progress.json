@@ -4565,11 +4565,13 @@
       "ledger_parent": "M01.I43",
       "pr": 44,
       "issue": 43,
-      "source_review": "MBA assigned; open awaiting-mba",
+      "source_review": "MBA source clean; focused author14+2 synthetic evidence accepted",
       "authoring_validation": "14 collector +2 attribution Python tests PASS; two primary regressions failold/passnew",
-      "integration_status": "not composed; G1 sole integrator",
+      "integration_status": "ready for G1 exact bounded composition; not yet observed",
       "helper_status": "stopped after bounded correction",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "github_run": 39713282582,
+      "unit_status": "existing hosted active; actual ancestry evidence pending for43 closure"
     }
   ]
 }
