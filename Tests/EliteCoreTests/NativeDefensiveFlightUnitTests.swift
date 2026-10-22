@@ -199,10 +199,9 @@ struct NativeDefensiveFlightUnitTests {
     world.currentMainDock = dock
     world.nextMainDockSequence = 2
     game.commander.nativeStations = world
-    game.nativeMainStationDockEvidence = .init(
-      receipt: dock, runtimeEpoch: game.nativeStationRuntimeEpoch)
     game.docked = true
     game.dockedAtMainStation = true
+    try game.rebindNativeStationsAfterLoad()
     game.scriptDurabilityAvailable = true
     game.scriptPacks = [
       try ScriptPackLibrary.read(ScriptPackLibrary.bundledDefensiveFlightDirectory)
@@ -237,8 +236,7 @@ struct NativeDefensiveFlightUnitTests {
       commanderOwner: owner, sequence: 2, calendarSeconds: 501)
     game.commander.nativeStations?.currentMainDock = arrival
     game.commander.nativeStations?.nextMainDockSequence = 3
-    game.nativeMainStationDockEvidence = .init(
-      receipt: arrival, runtimeEpoch: game.nativeStationRuntimeEpoch)
+    try game.rebindNativeStationsAfterLoad()
     try #require(NativeDefensiveFlightSave.validateClaims(game.commander))
     return game
   }
@@ -727,12 +725,11 @@ extension GameRuntime {
   /// Exercise the existing command rollback with a bounded injected publisher, without a disk store.
   fileprivate func defensiveFlightReceivingComponent(publish: ScriptPublisher) throws {
     try scriptCommand { candidate in
-      guard let dock = candidate.commander.nativeStations?.currentMainDock else {
+      guard candidate.commander.nativeStations?.currentMainDock != nil else {
         throw SaveError.invalidCommander
       }
       candidate.scriptDurabilityAvailable = true
-      candidate.nativeMainStationDockEvidence = .init(
-        receipt: dock, runtimeEpoch: candidate.nativeStationRuntimeEpoch)
+      try candidate.rebindNativeStationsAfterLoad()
       try candidate.confirmDefensiveFlight(candidate.defensiveFlightReview(.receive))
       try publish(&candidate)
     }
