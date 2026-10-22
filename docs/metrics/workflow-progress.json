@@ -5507,6 +5507,23 @@
       ],
       "final_required_checks_retained": true,
       "actual_saved_runtime_seconds": null
+    },
+    {
+      "event": "Three redundant intermediate runs confirmed cancelled; release correction review clean; combined training resolves real save/selector joins",
+      "date": "2026-10-22",
+      "cancelled_runs": [
+        39775797167,
+        39775785362,
+        39775797409
+      ],
+      "cancellation_conclusion": "cancelled, not pass",
+      "retained_source_tree": "133ec1545da4665837b064c51bf21f38f91bbc93",
+      "m01_reviewed_head": "0c12cb0744d32588a4b271932dbc3c4270a66b87",
+      "m01_review": "clean bounded correction/composition",
+      "m01_runtime_qualified": false,
+      "training_owner": "G4",
+      "training_scope": "preserve actual C01 validator and join T02/T03 save envelopes/selector once",
+      "final_quality_gate_retained": true
     }
   ],
   "two_developer_phase": {
