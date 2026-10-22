@@ -1,6 +1,8 @@
 import Foundation
 
-enum NativeInductionClinicQuoteScope: String, Sendable { case ownerStation, avenorReadOnlyAudit }
+enum NativeInductionClinicQuoteScope: String, Codable, Sendable {
+  case ownerStation, avenorReadOnlyAudit
+}
 
 /// Read-only source proposal. This value grants no pickup, reservation, custody or settlement.
 struct NativeInductionClinicQuote: Sendable {
@@ -21,6 +23,16 @@ struct NativeInductionClinicQuote: Sendable {
   let terms: WayfarerColdChainDefinition
   let offer: WayfarerColdChainOffer
 
+  static func identity(
+    source: NativeInductionClinicSource, unit: UUID, scope: NativeInductionClinicQuoteScope,
+    stockRevision: UInt64, capacity: NativeInductionCapacityState,
+    dock: NativeMainStationDockReceipt,
+    carrier: UUID, revision: UInt64, runtimeEpoch: UUID, route: NativeInductionClinicRoute
+  ) throws -> UUID {
+    ScriptIdentity.uuid(
+      "induction-clinic-read-only-quote-v1:\(source.issue.operation):\(unit):\(scope.rawValue):\(stockRevision):\(capacity.revision):\(try capacity.fingerprint):\(try NativeFlightReception.hash(dock)):\(carrier):\(revision):\(runtimeEpoch):\(try NativeFlightReception.hash(route))"
+    )
+  }
   static func prepare(
     source: NativeInductionClinicSource, parent: NativeWayfarerInductionState,
     unit: UUID, scope: NativeInductionClinicQuoteScope, dock: NativeMainStationDockReceipt,
@@ -51,9 +63,10 @@ struct NativeInductionClinicQuote: Sendable {
     let route = try NativeInductionClinicRoute(firstReachLY: firstReachLY, fullReachLY: fullReachLY)
     let terms = try source.issue.profile.terms(epoch: source.issue.epoch, route: route)
     let fingerprint = try capacity.fingerprint
-    let id = ScriptIdentity.uuid(
-      "induction-clinic-read-only-quote-v1:\(source.issue.operation):\(unit):\(scope.rawValue):\(source.revision):\(capacity.revision):\(fingerprint):\(try NativeFlightReception.hash(dock)):\(carrier):\(revision):\(runtimeEpoch):\(try NativeFlightReception.hash(route))"
-    )
+    let id = try Self.identity(
+      source: source, unit: unit, scope: scope, stockRevision: source.revision,
+      capacity: capacity, dock: dock, carrier: carrier, revision: revision,
+      runtimeEpoch: runtimeEpoch, route: route)
     let offer = WayfarerColdChainOffer(
       id: id, sourceID: source.identity.uuidString, stockUnit: unit,
       tonnes: terms.tonnes, rewardNative: terms.rewardNative,

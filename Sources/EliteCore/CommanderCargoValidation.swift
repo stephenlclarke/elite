@@ -33,6 +33,11 @@ extension Commander {
         guard !reserved.overflow else { return nil }
         total = reserved.partialValue
       }
+      let clinicTonnes = instance.savedNativeInductionClinic?.reservedCargoTonnes ?? 0
+      guard (0...1).contains(clinicTonnes) else { return nil }
+      let clinic = total.addingReportingOverflow(clinicTonnes)
+      guard !clinic.overflow else { return nil }
+      total = clinic.partialValue
       guard instance.payloads.count <= 128,
         instance.payloads.values.allSatisfy({ (0...1_000_000).contains($0) })
       else { return nil }

@@ -48,7 +48,7 @@ struct NativeInductionCharterSignature: Codable, Sendable, Equatable {
       let snapshot = try? capacity.snapshot(at: capacityRevision),
       capacityFingerprint == (try? snapshot.fingerprint),
       snapshot.events.allSatisfy({ event in
-        guard case .released(let release) = event else { return false }
+        guard case .released(let release) = event else { return true }
         return release.sequence < sequence && release.physicalTime <= physicalTime
           && release.flightSeconds <= flightSeconds
       }),

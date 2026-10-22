@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Source/quote/receipt fixtures only; no actual owner visit, issue, pickup or audit is executed.
-private final class InductionClinicFixture {
+final class InductionClinicFixture {
   let f: InductionConsentFixture
   let signature: NativeInductionCharterSignature
   let signed: NativeWayfarerInductionState

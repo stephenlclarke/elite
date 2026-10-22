@@ -5,7 +5,7 @@ enum NativeWayfarerInductionAction: String, Sendable {
     fundRescueLaunch, startRescueFlight, receiveRescue, authorizeUtility, receiveUtility,
     pooledCharter, protectedCharter, allocateCharterCapacity,
     clinicConsent, workshopConsent, seedConsent, releaseClinicCapacity, releaseWorkshopCapacity,
-    releaseSeedCapacity, issueClinicStock, viewClinicStock,
+    releaseSeedCapacity, issueClinicStock, viewClinicStock, acceptClinicSample, cancelClinicSample,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -36,6 +36,8 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .issueClinicStock:
       "Renas clinic / review six original sample issue and read-only delegation"
     case .viewClinicStock: "Renas clinic / original stock and read-only current route quote"
+    case .acceptClinicSample: "Renas clinic / reserve original sample and window"
+    case .cancelClinicSample: "Clinic booking / cancel before pickup"
     case .progress: "Senn / current induction records"
     }
   }
@@ -55,6 +57,8 @@ struct NativeWayfarerInductionReview: Sendable {
   let capacityUnit: UUID?
   let clinicQuote: NativeInductionClinicQuote?
   let issues: [String]
+  var clinicReference: UUID? = nil
+  var clinicWindow: NativeInductionCapacityReservation? = nil
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
 }
@@ -123,16 +127,38 @@ extension Game {
 
   func wayfarerInductionReview(
     _ action: NativeWayfarerInductionAction, capacityUnit: UUID? = nil,
-    prepareClinicQuote: Bool = false
+    prepareClinicQuote: Bool = false, clinicReference: UUID? = nil
   ) -> NativeWayfarerInductionReview {
     let unit =
       action.isCapacityRelease
       ? (capacityUnit ?? contractBoard.selected?.inductionCapacityUnit) : nil
+    let clinicReference = clinicReference ?? contractBoard.selected?.inductionClinicReference
+    let clinicQuote =
+      prepareClinicQuote && (action == .viewClinicStock || action == .acceptClinicSample)
+      ? try? inductionClinicReadOnlyQuote(unit: clinicReference) : nil
+    let clinicWindow = clinicQuote.flatMap { try? inductionClinicWindow(quote: $0) }
+    var actionIssues =
+      action == .progress
+      ? [] : inductionActionIssues(action, trade: nil, capacityUnit: unit)
+    if action == .acceptClinicSample {
+      actionIssues += inductionClinicBookingIssues(unit: clinicReference)
+      if prepareClinicQuote && (clinicQuote == nil || clinicWindow == nil) {
+        actionIssues.append(
+          "No current reachable quote or eligible clinic-owned window; review again after capacity release or navigation changes."
+        )
+      }
+    }
+    if action == .cancelClinicSample {
+      actionIssues += inductionClinicCancellationIssues(instance: clinicReference)
+    }
     let trade =
       action == .accept
       ? commander.equipmentOwnerID.flatMap {
         NativeInductionTradeEvidence.first(in: commander.scriptState, owner: $0)
       } : wayfarerInductionMission?.savedWayfarerInduction?.permission.trade
+    if action == .accept {
+      actionIssues = inductionActionIssues(action, trade: trade, capacityUnit: unit)
+    }
     return .init(
       action: action, dock: commander.nativeStations?.currentMainDock,
       carrier: commander.hullInstanceID, inventoryRevision: commander.equipmentInventory?.revision,
@@ -145,10 +171,8 @@ extension Game {
       utilityRevision: inductionUtilityChild?.revision,
       capacityRevision: wayfarerInductionMission?.savedWayfarerInduction?.charterCapacity?.revision,
       capacityUnit: unit,
-      clinicQuote: action == .viewClinicStock && prepareClinicQuote
-        ? try? inductionClinicReadOnlyQuote() : nil,
-      issues: action == .progress
-        ? [] : inductionActionIssues(action, trade: trade, capacityUnit: unit))
+      clinicQuote: clinicQuote,
+      issues: actionIssues, clinicReference: clinicReference, clinicWindow: clinicWindow)
   }
 
   private func inductionActionIssues(
@@ -159,7 +183,9 @@ extension Game {
     if isMissionTrial { issues.append("Return to your commander before starting this induction.") }
     if paused { issues.append("Resume before confirming the induction action.") }
     let expected = action.station
-    if !nativeMainStationDockEvidenceIsCurrent || systemIdentity != expected {
+    if !nativeMainStationDockEvidenceIsCurrent
+      || (action != .cancelClinicSample && systemIdentity != expected)
+    {
       issues.append("Use the actual registered main orbital berth for " + action.title + ".")
     }
     if !scriptDurabilityAvailable { issues.append("Choose a writable commander save first.") }
@@ -198,6 +224,7 @@ extension Game {
       issues += [
         "Read-only original source quote; actual pickup/custody/settlement remains unavailable."
       ]
+    case .acceptClinicSample, .cancelClinicSample: break
     case .progress: break
     }
     return issues
@@ -231,7 +258,8 @@ extension Game {
   }
 
   mutating func confirmWayfarerInduction(_ quote: NativeWayfarerInductionReview) throws {
-    let current = wayfarerInductionReview(quote.action)
+    let current = wayfarerInductionReview(
+      quote.action, prepareClinicQuote: quote.action == .acceptClinicSample)
     guard quote.allowed, current.allowed, quote.dock == current.dock,
       quote.carrier == current.carrier, quote.inventoryRevision == current.inventoryRevision,
       quote.trade == current.trade, quote.epoch == current.epoch,
@@ -240,6 +268,9 @@ extension Game {
       quote.utilityRevision == current.utilityRevision,
       quote.capacityRevision == current.capacityRevision,
       quote.capacityUnit == current.capacityUnit,
+      quote.clinicReference == current.clinicReference,
+      quote.clinicWindow == current.clinicWindow,
+      quote.clinicQuote?.offer.id == current.clinicQuote?.offer.id,
       let owner = commander.equipmentOwnerID, let dock = current.dock,
       let carrier = current.carrier, let revision = current.inventoryRevision,
       let pack = wayfarerInductionPack
@@ -351,6 +382,16 @@ extension Game {
     }
     if quote.action == .issueClinicStock {
       try candidate.confirmInductionClinicIssue(dock: dock, carrier: carrier, revision: revision)
+    }
+    if quote.action == .acceptClinicSample {
+      guard let clinic = current.clinicQuote, let window = current.clinicWindow else {
+        throw SaveError.invalidCommander
+      }
+      try candidate.confirmInductionClinicBooking(quote: clinic, window: window)
+    }
+    if quote.action == .cancelClinicSample {
+      guard let instance = current.clinicReference else { throw SaveError.invalidCommander }
+      try candidate.closeInductionClinicBooking(instance: instance)
     }
     self = candidate
   }
