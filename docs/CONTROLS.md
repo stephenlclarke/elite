@@ -137,6 +137,8 @@ K, Command-K or Help > Player Key Guide opens help for the current activity; arr
 
 In the development source, destination registration creates no commander file and does not change the last-successful-save preference. A failed startup restore followed by Start New uses a distinct new destination, preserving the selected file or missing path. The first successful write remembers that location. Fitting changes after native launch and accepted RRS/contract actions save automatically; failed writing refuses the change. Use Command-S for other progress and Command-Shift-S to choose another destination. These startup changes await final quality/release acceptance; they are not claimed for the published 1.4.0 app.
 
+Current-format save loading was checked in local candidate 1.4.904. A completed freight job and its cold Continue remain unverified; historical development save compatibility is not guaranteed. See the [release checkpoint](RELEASE-CHECKPOINT.md).
+
 Delete means the ordinary MacBook key marked Delete or backspace, which erases to the left. Command-Delete clears an active search. Option-Up/Down is the documented paging combination; ordinary arrows and trackpad scrolling are sufficient for essential tasks. External keyboards may also send Page Up/Down and forward Delete; Fn-Up/Down and Fn-Delete remain optional macOS aliases. No essential action requires Home, End, Insert, Clear, a keypad or function keys.
 
 ## XYZZY options
