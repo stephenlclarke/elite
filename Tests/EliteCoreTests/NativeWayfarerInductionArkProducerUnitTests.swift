@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-struct InductionArkProducerFixture {
+final class InductionArkProducerFixture {
   let originalSale: NativeFirstCommoditySale
   let key: NativeInductionVaultKeyLoan
   let parent: NativeWayfarerInductionState

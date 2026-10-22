@@ -4,7 +4,7 @@ import Testing
 @testable import EliteCore
 
 /// Structural source/native-address fixtures only; no test here executes native admission or flight.
-struct CrewLogProducerFixture {
+final class CrewLogProducerFixture {
   let originalSale: NativeFirstCommoditySale
   let parent: NativeWayfarerInductionState
   let source: NativeInductionCrewLogSource

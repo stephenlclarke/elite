@@ -149,6 +149,12 @@ struct NativeWayfarerInductionNetworkUnitTests {
     #expect(!NativeInductionCrewLogSave.validateClaims(commander))
     commander.scriptState.instances[crewID] = originalCrew
     #expect(NativeInductionCrewLogSave.validateClaims(commander))
+    #expect(NativeInductionArkSave.supplierClaimsValid(commander))
+    let paidSuppliers = commander.nativeStations?.arkFuel
+    commander.nativeStations?.arkFuel = nil
+    #expect(!NativeInductionArkSave.supplierClaimsValid(commander))
+    commander.nativeStations?.arkFuel = paidSuppliers
+    #expect(NativeInductionArkSave.supplierClaimsValid(commander))
     let utility = try #require(f.audited.utilityReception)
     commander.scriptState.instances[utility.job] = nil
     #expect(!NativeInductionCrewLogSave.validateClaims(commander))

@@ -193,23 +193,18 @@ final class InductionSeedFixture {
     if commander.scriptState.wormholeTransit == nil {
       commander.scriptState.wormholeTransit = .init(owner: parent.permission.owner)
     }
-    var fuel = rescue.f.authorization.initialFuelLY
-    for (_, originalLeg) in legs {
-      var leg = originalLeg
-      let departure = try #require(leg.departure)
-      let route = try #require(leg.route)
-      let after = fuel - route.distanceLightYears
-      try #require(after >= 0)
-      var body = departure.body
-      body.scriptNPC?.fuel = after
-      leg.departure = .init(
-        hole: departure.hole, nativeActor: departure.nativeActor,
-        calendarSeconds: departure.calendarSeconds, physicalTime: departure.physicalTime,
-        revision: departure.revision, fuelBefore: fuel, fuelAfter: after, body: body)
-      try #require(leg.valid)
+    let service = try rescue.interhopService()
+    for (_, leg) in legs {
       commander.scriptState.wormholeTransit?.legs[leg.id] = leg
-      fuel = after
     }
+    let fuel = try #require(legs.last?.1.departure?.fuelAfter)
+    if commander.nativeStations?.mainStations.contains(service.contact.station) != true {
+      commander.nativeStations?.mainStations.append(service.contact.station)
+    }
+    var supplies = commander.nativeStations?.arkFuel ?? []
+    try #require(!supplies.contains(where: { $0.station == service.supply.station }))
+    supplies.append(service.supply)
+    commander.nativeStations?.arkFuel = supplies
     let encounter = NativeInductionCrewLogPack.encounter
     var group = try #require(crew.ownedEncounters[encounter])
     var launch = try #require(group.actors["launch"])

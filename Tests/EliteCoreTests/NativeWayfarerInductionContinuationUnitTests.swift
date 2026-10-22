@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-struct InductionContinuationFixture {
+final class InductionContinuationFixture {
   let helpers = NativeWayfarerInductionUnitTests()
   let originalSale: NativeFirstCommoditySale
   let held: NativeWayfarerInductionState
