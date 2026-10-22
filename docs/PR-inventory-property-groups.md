@@ -4,6 +4,6 @@ Inventory now separates trade cargo/hold totals, protected property, fitted equi
 
 Three `InventoryGroupingUnitTests` methods in the existing `InventoryActionDisplayTests.swift` cover mixed commodity/reserved quantities and pure projection, exact once-only subjects and unchanged previews in fitted/held groups, empty owned storage and legacy laser visibility. The reserved-property fixture supplies presentation input only; it makes no native acceptance or save-authority claim. Existing display/action methods are unchanged.
 
-Validation: strict Swift formatting/lint and diff checks pass. Hosted selection, Swift compilation/execution and independent MBA review remain pending. No local Swift build, native journey, GUI, integration or broad CI campaign was run. No new usable-build claim. CI selection requires the agreed shared hunk with G1.
+Validation: strict Swift formatting/lint, all 20 Python report-validation fixtures and diff checks pass. The agreed hosted selection includes the three new methods, 244 total with all clinic acceptance/custody methods retained. Hosted Swift compilation/execution and independent MBA review remain pending. No local Swift build, native journey, GUI, integration or broad CI campaign was run. No new usable-build claim.
 
 Compatibility: display grouping only; no persistence or custody changes. Source row positions change with their sections, while item identities and commands remain exact. See the [issue](ISSUE-inventory-property-groups.md). Ledger M02.P05.inventory.
