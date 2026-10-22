@@ -70,3 +70,43 @@ struct NativeIsolationWorkSource: Sendable {
       && fit.models == [Self.model: (try? Self.geometryHash) ?? ""]
   }
 }
+
+enum NativeIsolationWorkPack {
+  static let stateID = "l337.isolation-work-source/native-source"
+  static let version = "1.0.0"
+  static let digest = "3116ca9aa3caed74781f79138d329796bd6ffb52711df2f3f65dccd353fbb42e"
+  static let encounter = "renas-feeders"
+  static let timer = "native-deploy"
+
+  static func instance(source: UUID) -> UUID {
+    ScriptIdentity.uuid("g11-native-isolation-provider-v1:\(source)")
+  }
+  static func actor(job: UUID, role: NativeIsolationWorkRole) -> UUID {
+    ScriptIdentity.uuid("script-actor-v2:\(job):\(digest):\(encounter):\(role.rawValue)")
+  }
+  static func matches(_ pack: ScriptPack) -> Bool {
+    guard pack.manifest.stateID == stateID, pack.manifest.version == version, pack.digest == digest,
+      pack.manifest.npcs == [NativeIsolationWorkSource.profile],
+      pack.models == [NativeIsolationWorkSource.model: NativeIsolationWorkSource.geometry],
+      pack.manifest.models?.count == 1, pack.manifest.trial == nil, pack.manifest.board == nil,
+      pack.manifest.providerContract == nil, pack.manifest.mission.parentOnly == nil,
+      (pack.manifest.children ?? []).isEmpty, pack.manifest.encounters?.count == 1,
+      let group = pack.manifest.encounters?.first, group.id == encounter,
+      group.galaxy == 0, group.system == 185, group.profile == "profiled-local-freeze-v1",
+      group.actors.count == 2,
+      pack.manifest.handlers.map(\.event) == [
+        "mission.accepted", "timer.fired", "encounter.admitted",
+      ],
+      Set(pack.manifest.capabilities)
+        == Set([
+          "script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2",
+          "profiled-encounters-v2",
+        ])
+    else { return false }
+    return NativeIsolationWorkRole.allCases.allSatisfy { role in
+      guard let actor = group.actors.first(where: { $0.id == role.rawValue }) else { return false }
+      return actor.npc == NativeIsolationWorkSource.profile.id && !actor.hostile
+        && Vector3(actor.x, actor.y, actor.z) == role.offset
+    }
+  }
+}

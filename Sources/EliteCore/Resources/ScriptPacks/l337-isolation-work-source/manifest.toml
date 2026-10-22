@@ -1,0 +1,64 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.isolation-work-source"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2", "profiled-encounters-v2"]
+priority = 614
+source = "Native G11 provider for Lerr's original Renas dual-feed spur. Two physical contacts control finite independent utility transfers. Lua grants no isolation, programmer, reward or mission completion."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "native-source"
+title = "Renas dual-feed isolation source"
+briefing = "Internal source for two uncrewed feeder isolators. Actual original programmer custody and native measured work are required; opening alone is not verified isolation."
+destination = "Renas G01-S185 dual-feed service spur"
+reward = "No payment, equipment or clue."
+milestones = ["Original Renas source retained"]
+
+[[models]]
+id = "g11-renas-isolation-enclosure"
+path = "models/enclosure.json"
+sha256 = "d28ebbe9f635af988bccf2335ea7ce61c0b2dd523dc04ad3164e3c92dd52cd64"
+source = "Original Renas dual-feed isolation enclosure, six-metre native box"
+license = "MIT"
+
+[[npcs]]
+id = "g11-renas-isolation-module"
+name = "Renas uncrewed feeder isolator"
+source = "Original Lerr Renas dual-feed service spur"
+basis = "Stationary uncrewed six-metre control enclosure; no cargo, salvage or equipment grant."
+model = "asset:g11-renas-isolation-enclosure"
+scale = 1
+energy = 100
+recharge = 0
+speed = 0
+acceleration = 0
+pitch = 0
+yaw = 0
+roll = 0
+missiles = 0
+fuel = 0
+ecm = false
+bounty = 0
+lasers = []
+components = []
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "timer.fired"
+function = "deploy"
+[[handlers]]
+event = "encounter.admitted"
+function = "admitted"
+
+[[encounters]]
+id = "renas-feeders"
+galaxy = 0
+system = 185
+profile = "profiled-local-freeze-v1"
+actors = [{id="primary-feed",npc="g11-renas-isolation-module",x=66000.0,y=24000.0,z=0.0,hostile=false},{id="reserve-feed",npc="g11-renas-isolation-module",x=66300.0,y=24000.0,z=0.0,hostile=false}]

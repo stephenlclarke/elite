@@ -1,5 +1,32 @@
 import Foundation
 
+/// Input contract for the separate G11 acceptance producer. No factory or fallback
+/// exists here: P02 must authenticate the real parent permission before it can mint this value.
+struct NativeIsolationWorkParentAuthority: Equatable, Sendable {
+  let parentID: UUID
+  let parentDigest: String
+  let authorization: UUID
+  let owner: UUID
+  let issuer: UUID
+  let acceptance: NativeMainStationDockReceipt
+  let carrier: UUID
+  let inventoryRevision: UInt64
+
+  private init(
+    parentID: UUID, parentDigest: String, authorization: UUID, owner: UUID, issuer: UUID,
+    acceptance: NativeMainStationDockReceipt, carrier: UUID, inventoryRevision: UInt64
+  ) {
+    self.parentID = parentID
+    self.parentDigest = parentDigest
+    self.authorization = authorization
+    self.owner = owner
+    self.issuer = issuer
+    self.acceptance = acceptance
+    self.carrier = carrier
+    self.inventoryRevision = inventoryRevision
+  }
+}
+
 /// These accounts are local utility energy, separate from hull integrity and player resources.
 struct NativeIsolationEnergyAccounts: Codable, Equatable, Sendable {
   static let capacity = 10000.0
