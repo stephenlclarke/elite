@@ -4644,13 +4644,19 @@
       "selection_methods": 190,
       "new_methods": 9,
       "source_review": "MBA found45 same-visit native re-admission refusal; assigned G1 at natural boundary",
-      "unit_status": "FAILURE; MBA identified46 prepared-resource fixture and47 stale energy expectation; full artifact count verification pending",
+      "unit_status": "FAILURE; MBA verified190methods222cases,188methods220casesPASS,2failures,0errors/skips,no crash",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332256712",
       "next_assigned": "C08.P06.A",
       "usable_build_delivered": false,
       "finding_url": "https://github.com/stephenlclarke/elite/issues/45",
-      "ready_findings": 3,
-      "correction_owner": "G1;45/46/47 accepted on759a5e24, shared test ownership; no overlapping helper"
+      "ready_findings": 0,
+      "correction_owner": "G1;45/46/47 accepted on759a5e24, shared test ownership; no overlapping helper",
+      "executed_methods": 190,
+      "executed_expanded_cases": 222,
+      "passed_methods": 188,
+      "passed_expanded_cases": 220,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332425646",
+      "awaiting_verification_findings": 3
     },
     {
       "event": "Avenor charter choice pushed; MBA review queued; G1 correcting45",
@@ -4664,6 +4670,20 @@
       "unit_status": "existing hosted run active",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332358871",
       "next_assigned": "C08.P05.B.work.I45",
+      "usable_build_delivered": false
+    },
+    {
+      "event": "Utility re-admission and fixture corrections pushed; MBA verification assigned",
+      "head": "811869b45b9566932857b677f908ab8151a7186e",
+      "base": "759a5e2498a281806477030bc756f6256c3cc9ab",
+      "ledger_parent": "C08.P05.B.work.I45/I46/I47",
+      "github_run": 39720692519,
+      "selection_methods": 199,
+      "new_methods": 3,
+      "source_review": "assigned MBA; correction verification pending",
+      "unit_status": "existing hosted run pending",
+      "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332466901",
+      "next_assigned": "C08.P06.B.capacity",
       "usable_build_delivered": false
     }
   ]
