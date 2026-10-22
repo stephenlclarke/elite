@@ -523,15 +523,18 @@ struct NativeWayfarerInductionSeedUnitTests {
     let clinic = try #require(f.held.charterSignatures?.first(where: { $0.operatorID == .clinic }))
     let unit = try #require(
       capacity.units.first(where: { $0.operatorID == .clinic && $0.slot == 3 }))
+    let laterClinic = f.dock(185, sequence: 110, visit: f.returned.actor.visit + 1)
     let release = try f.f.f.f.f.release(
-      clinic, capacity: capacity, unit: unit, sequence: 270, time: 1_000_270, flightSeconds: 900_270
+      clinic, capacity: capacity, unit: unit, dock: laterClinic, sequence: 270, time: 1_000_270,
+      flightSeconds: 900_270
     )
     let next = try f.held.releasingCharterUnit(release)
     #expect(
       next.charterSeedSource == f.held.charterSeedSource
         && next.charterWorkshopSource == f.held.charterWorkshopSource
         && next.charterClinicSource == f.held.charterClinicSource)
-    let auditor = f.dock(7, sequence: 110, visit: f.returned.actor.visit)
+    #expect(release.dock == laterClinic && release.revision == capacity.revision)
+    let auditor = f.dock(7, sequence: 111, visit: laterClinic.actor.visit + 1)
     let quote = try NativeInductionSeedQuote.prepare(
       source: f.source, parent: f.available, unit: f.source.units[0].id,
       scope: .avenorReadOnlyAudit, dock: auditor, carrier: f.booking.carrier, revision: 1,

@@ -47,9 +47,11 @@ final class InductionConsentFixture {
   func release(
     _ consent: NativeInductionCharterSignature,
     capacity: NativeInductionCapacityState? = nil, unit: NativeInductionCapacityUnit? = nil,
+    dock: NativeMainStationDockReceipt? = nil,
     sequence: UInt64? = nil, time: Double? = nil, flightSeconds: Double? = nil
   ) throws -> NativeInductionCapacityRelease {
     let capacity = capacity ?? f.initial
+    let dock = dock ?? consent.dock
     let selected = try #require(
       unit ?? capacity.units.first { $0.operatorID == consent.operatorID && !$0.protected })
     let sequence = sequence ?? (140 + capacity.revision)
@@ -59,14 +61,14 @@ final class InductionConsentFixture {
     let operation = try NativeInductionCapacityRelease.identity(
       allocation: capacity.allocation.operation,
       unit: selected.identity, owner: selected.owner, revision: capacity.revision, before: before,
-      dock: consent.dock, carrier: consent.carrier, fit: 1, time: time,
+      dock: dock, carrier: consent.carrier, fit: 1, time: time,
       flightSeconds: flightSeconds, sequence: sequence, consent: consent.operation)
     return .init(
       operation: operation, allocation: capacity.allocation.operation,
       epoch: capacity.allocation.epoch, policy: capacity.allocation.policy,
       revision: capacity.revision,
       unit: selected.identity, owner: selected.owner, operatorID: selected.operatorID,
-      dock: consent.dock,
+      dock: dock,
       carrier: consent.carrier, inventoryRevision: 1, physicalTime: time,
       flightSeconds: flightSeconds, sequence: sequence, before: before, consent: consent.operation)
   }
