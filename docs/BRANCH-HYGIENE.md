@@ -29,3 +29,15 @@ git show archive/branch-cleanup-20261022T080946Z:BRANCH-ARCHIVE.json
 ```
 
 Restore selected work from its recorded commit into a new branch when needed. Do not merge the archive metadata commit: its recovery parents intentionally retain unrelated historical work.
+
+## Follow-up cleanup — 22 October09:40UTC
+
+GitHub remote branches reduced from17 to8. Only main, the active delivery branch, Root documentation and five current feature PR heads remain. PR25 now targets main directly; the obsolete candidate layer is removed. Automatic deletion of merged PR branches remains enabled. Active local checkouts, indexes, unfinished files and compiler caches were not altered.
+
+Retired remote heads: seed57, charter audit59 and network certification62 (all exact heads are ancestors of the archived PR69 checkpoint); old candidate21 (ancestor of current delivery); already superseded night58; duplicated Homebrew16/dependency17 work; older bulk19 and diagnostic20 branches. These are closed or superseded PRs, not newly merged or qualified features. PR69 owns the combined C08 qualification. Source from16/17 remains in delivery25; Homebrew acceptance15 and NPC acceptance18 remain open.
+
+New recovery tag: `archive/pr-consolidation-20261022T094058Z`, peeled commit `05fa6dfc443c624a081499538b456e62ef7e1ccb`. Full old16/17/19/20/night history remains in the earlier verified `archive/branch-cleanup-20261022T080946Z`. Deletion used exact expected remote SHAs; no force rewrite or protection bypass occurred.
+
+The [340-file PR19 audit](metrics/branch-pr19-audit-20261022.json) records129 identical files,195 changed successors and16 absent historical/test-support files. One unique four-file native-window helper at `9b8e76e833a9e1755a28b34ee2f41a7e2dce8f5d` is explicitly archived for the later native-test checkpoint: EliteApp window-factory injection, NativeTestWindow, NativeEquipmentViewTests and NativeWorkGuidanceTests. It is not claimed implemented or tested in current delivery; no diagnostic/native campaign was started to revive it. The15 historical validation documents remain in the archive. PR20's older standalone native diagnostic workflow/runner/tests are archived rather than added to the current unit-only workflow.
+
+Issue reconciliation:70 closed on actual corrected test-target compilation plus unchanged assertions;71 closed after actual corrected273methods/305cases passed. Issues60/63/64/66/67/74 have pushed corrections awaiting their own relevant verification. Issues15/18 retain actual delivery acceptance requirements. An unrelated failing aggregate does not reopen a proven compile-only repair, and a source review does not qualify unexecuted runtime assertions.

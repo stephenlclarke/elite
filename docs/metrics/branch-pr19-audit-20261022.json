@@ -1,0 +1,2735 @@
+{
+  "old": "a804f245c4baf3668b22393206a43a048465739a",
+  "new": "be4b781b1328da4a8bda804a4b018b387c8e7198",
+  "scope": "Readonly complete340-file old PR19 audit; history preserved, unique four-file native-window helper explicitly deferred, no current feature completion claim",
+  "groups": {
+    "changed": [
+      ".github/workflows/ci.yml",
+      "AGENTS.md",
+      "Makefile",
+      "README.md",
+      "Sources/EliteCore/AutoTargetControl.swift",
+      "Sources/EliteCore/BlackjackEncounter.swift",
+      "Sources/EliteCore/CargoDebrisLedger.swift",
+      "Sources/EliteCore/CargoScooping.swift",
+      "Sources/EliteCore/CelestialFlight.swift",
+      "Sources/EliteCore/CelestialRendering.swift",
+      "Sources/EliteCore/ChartDisplay.swift",
+      "Sources/EliteCore/CockpitDisplay.swift",
+      "Sources/EliteCore/CommanderCargoValidation.swift",
+      "Sources/EliteCore/CommanderEquipment.swift",
+      "Sources/EliteCore/CommanderFileOperation.swift",
+      "Sources/EliteCore/CommanderSaveInput.swift",
+      "Sources/EliteCore/ComponentFittingSlot.swift",
+      "Sources/EliteCore/ComponentProgression.swift",
+      "Sources/EliteCore/CrimeLedger.swift",
+      "Sources/EliteCore/Display.swift",
+      "Sources/EliteCore/DockedChartDisplay.swift",
+      "Sources/EliteCore/ECMControl.swift",
+      "Sources/EliteCore/EffectiveEquipmentValidation.swift",
+      "Sources/EliteCore/EncounterDirector.swift",
+      "Sources/EliteCore/EquipmentActorTransactions.swift",
+      "Sources/EliteCore/EquipmentDisplay.swift",
+      "Sources/EliteCore/EquipmentGroups.swift",
+      "Sources/EliteCore/EquipmentHullTransfer.swift",
+      "Sources/EliteCore/EquipmentModuleTemplates.swift",
+      "Sources/EliteCore/EquipmentMutations.swift",
+      "Sources/EliteCore/EquipmentPurchaseProgression.swift",
+      "Sources/EliteCore/EquipmentRuntimeCatalog.swift",
+      "Sources/EliteCore/EquipmentTransactions.swift",
+      "Sources/EliteCore/FlightSimulationState.swift",
+      "Sources/EliteCore/FlightWorkGuidance.swift",
+      "Sources/EliteCore/FlightWorkScene.swift",
+      "Sources/EliteCore/FlightWorkTools.swift",
+      "Sources/EliteCore/Game.swift",
+      "Sources/EliteCore/GameplayAdmission.swift",
+      "Sources/EliteCore/GameplayCargo.swift",
+      "Sources/EliteCore/GameplayCombat.swift",
+      "Sources/EliteCore/GameplayContracts.swift",
+      "Sources/EliteCore/GameplayEncounters.swift",
+      "Sources/EliteCore/GameplayOrdnance.swift",
+      "Sources/EliteCore/GameplayOrdnanceRuntime.swift",
+      "Sources/EliteCore/GameplayRaycast.swift",
+      "Sources/EliteCore/GameplayScene.swift",
+      "Sources/EliteCore/GameplayWeapons.swift",
+      "Sources/EliteCore/Geometry.swift",
+      "Sources/EliteCore/HullSweepSafety.swift",
+      "Sources/EliteCore/InventoryInformation.swift",
+      "Sources/EliteCore/InventoryInteraction.swift",
+      "Sources/EliteCore/JumpReach.swift",
+      "Sources/EliteCore/ManualResidualFlight.swift",
+      "Sources/EliteCore/MarketInteraction.swift",
+      "Sources/EliteCore/MiningFields.swift",
+      "Sources/EliteCore/MiningLedger.swift",
+      "Sources/EliteCore/MiningWorkTool.swift",
+      "Sources/EliteCore/MissionGallery.swift",
+      "Sources/EliteCore/NPCPersistenceLedger.swift",
+      "Sources/EliteCore/NPCPersistenceRuntime.swift",
+      "Sources/EliteCore/NPCResourceRuntime.swift",
+      "Sources/EliteCore/NPCResources.swift",
+      "Sources/EliteCore/NativeShipValues.swift",
+      "Sources/EliteCore/NavalCombat.swift",
+      "Sources/EliteCore/NavalMissions.swift",
+      "Sources/EliteCore/NavigationComputer.swift",
+      "Sources/EliteCore/OwnedEquipmentInventory.swift",
+      "Sources/EliteCore/PackRuntime.swift",
+      "Sources/EliteCore/PackTransactions.swift",
+      "Sources/EliteCore/PlayerHelp.swift",
+      "Sources/EliteCore/ProfitScan.swift",
+      "Sources/EliteCore/RecoveredEquipmentRuntime.swift",
+      "Sources/EliteCore/RelativeWorkController.swift",
+      "Sources/EliteCore/Resources/Ships/SH023.toml",
+      "Sources/EliteCore/Resources/Ships/SH171.toml",
+      "Sources/EliteCore/RetaliationControl.swift",
+      "Sources/EliteCore/SalvageAdmission.swift",
+      "Sources/EliteCore/SalvageAlienDefinitions.swift",
+      "Sources/EliteCore/SalvageCatalogue.swift",
+      "Sources/EliteCore/SalvageComponentEffects.swift",
+      "Sources/EliteCore/SalvageDefinitions.swift",
+      "Sources/EliteCore/SalvageLedger.swift",
+      "Sources/EliteCore/SalvageLootProfiles.swift",
+      "Sources/EliteCore/SalvageSites.swift",
+      "Sources/EliteCore/SalvageWorldRuntime.swift",
+      "Sources/EliteCore/ScreenNavigation.swift",
+      "Sources/EliteCore/ShieldBooster.swift",
+      "Sources/EliteCore/ShipPerformance.swift",
+      "Sources/EliteCore/ShipShowroom.swift",
+      "Sources/EliteCore/ShipTrade.swift",
+      "Sources/EliteCore/ShowroomDisplay.swift",
+      "Sources/EliteCore/StationDisplay.swift",
+      "Sources/EliteCore/StationSecurity.swift",
+      "Sources/EliteCore/TargetPanel.swift",
+      "Sources/EliteCore/TargetTelemetry.swift",
+      "Sources/EliteCore/TargetingComputer.swift",
+      "Sources/EliteCore/TrafficIntent.swift",
+      "Sources/EliteCore/WorkTargetRuntime.swift",
+      "Sources/EliteCore/WorkTargetSelection.swift",
+      "Sources/EliteMac/AudioPresenter.swift",
+      "Sources/EliteMac/EliteApp.swift",
+      "Sources/EliteMac/NativeCommanderFileIntent.swift",
+      "Sources/EliteMac/PlanetGPUShader.swift",
+      "Sources/EliteMac/PlanetRenderer.swift",
+      "Tests/EliteCoreTests/AutoTargetHullLimitsTests.swift",
+      "Tests/EliteCoreTests/BlackjackTests.swift",
+      "Tests/EliteCoreTests/CR05ECMElapsedTimeTests.swift",
+      "Tests/EliteCoreTests/CockpitTests.swift",
+      "Tests/EliteCoreTests/CommanderEquipmentMigrationTests.swift",
+      "Tests/EliteCoreTests/DischargeAudioTests.swift",
+      "Tests/EliteCoreTests/DisplayOptionsTests.swift",
+      "Tests/EliteCoreTests/EffectiveEquipmentValidationTests.swift",
+      "Tests/EliteCoreTests/EliteTests.swift",
+      "Tests/EliteCoreTests/EquipmentActorBoundaryTests.swift",
+      "Tests/EliteCoreTests/EquipmentGroupTests.swift",
+      "Tests/EliteCoreTests/EquipmentModuleTemplatesTests.swift",
+      "Tests/EliteCoreTests/EquipmentOwnershipDisplayTests.swift",
+      "Tests/EliteCoreTests/EquipmentPurchaseProgressionTests.swift",
+      "Tests/EliteCoreTests/EquipmentRuntimeTransactionTests.swift",
+      "Tests/EliteCoreTests/FlightWorkGuidanceRuntimeTests.swift",
+      "Tests/EliteCoreTests/FuelStorageTests.swift",
+      "Tests/EliteCoreTests/GalleryTests.swift",
+      "Tests/EliteCoreTests/GameplayCombatTests.swift",
+      "Tests/EliteCoreTests/GameplayOrdnanceRuntimeTests.swift",
+      "Tests/EliteCoreTests/GameplayOrdnanceTests.swift",
+      "Tests/EliteCoreTests/GameplayRaycastTests.swift",
+      "Tests/EliteCoreTests/GameplaySceneTests.swift",
+      "Tests/EliteCoreTests/GameplayWeaponsTests.swift",
+      "Tests/EliteCoreTests/HullSweepPlacementTests.swift",
+      "Tests/EliteCoreTests/HullSweepSafetyTests.swift",
+      "Tests/EliteCoreTests/InventoryActionDisplayTests.swift",
+      "Tests/EliteCoreTests/MarketFlowTests.swift",
+      "Tests/EliteCoreTests/MiningFieldsTests.swift",
+      "Tests/EliteCoreTests/MiningLedgerCR09Tests.swift",
+      "Tests/EliteCoreTests/MiningLedgerTests.swift",
+      "Tests/EliteCoreTests/MiningOreMotionTests.swift",
+      "Tests/EliteCoreTests/MiningOreRuntimeTests.swift",
+      "Tests/EliteCoreTests/MiningWorkToolTests.swift",
+      "Tests/EliteCoreTests/MissionCatalogueReplacementTests.swift",
+      "Tests/EliteCoreTests/MissionEquipmentBridgeTests.swift",
+      "Tests/EliteCoreTests/MissionResourceFractionTests.swift",
+      "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "Tests/EliteCoreTests/NPCProducerFactsTests.swift",
+      "Tests/EliteCoreTests/NPCReferenceRuntimeTests.swift",
+      "Tests/EliteCoreTests/NativeCommanderFileTests.swift",
+      "Tests/EliteCoreTests/NativeEquipmentViewTests.swift",
+      "Tests/EliteCoreTests/NativeViewTests.swift",
+      "Tests/EliteCoreTests/NativeWorkGuidanceTests.swift",
+      "Tests/EliteCoreTests/NavalMissionTests.swift",
+      "Tests/EliteCoreTests/NavigationCustodyTests.swift",
+      "Tests/EliteCoreTests/NavigationTests.swift",
+      "Tests/EliteCoreTests/PlanetGPUShaderTests.swift",
+      "Tests/EliteCoreTests/PlughTests.swift",
+      "Tests/EliteCoreTests/ProfitScanBoundsTests.swift",
+      "Tests/EliteCoreTests/RecoveredFeatureRuntimeTests.swift",
+      "Tests/EliteCoreTests/RelativeWorkControllerTests.swift",
+      "Tests/EliteCoreTests/RenderingReviewRegressionTests.swift",
+      "Tests/EliteCoreTests/SalvageAlienDefinitionsTests.swift",
+      "Tests/EliteCoreTests/SalvageCutterRuntimeTests.swift",
+      "Tests/EliteCoreTests/SalvageDefinitionsTests.swift",
+      "Tests/EliteCoreTests/SalvageLootProfilesTests.swift",
+      "Tests/EliteCoreTests/SalvageWorldRuntimeTests.swift",
+      "Tests/EliteCoreTests/ScreenNavigationTests.swift",
+      "Tests/EliteCoreTests/ShieldTests.swift",
+      "Tests/EliteCoreTests/ShipTradeTests.swift",
+      "Tests/EliteCoreTests/ShowroomTests.swift",
+      "Tests/EliteCoreTests/ShowroomUXTests.swift",
+      "Tests/EliteCoreTests/SolarFlightTests.swift",
+      "Tests/EliteCoreTests/StartupSaveTests.swift",
+      "Tests/EliteCoreTests/StationSecurityTests.swift",
+      "Tests/EliteCoreTests/StationTests.swift",
+      "Tests/EliteCoreTests/TargetDestructionTests.swift",
+      "Tests/EliteCoreTests/TargetingTests.swift",
+      "Tests/EliteCoreTests/TypographyTests.swift",
+      "Tests/EliteCoreTests/WorkTargetSelectionTests.swift",
+      "Tools/distribution/package_macos.py",
+      "Tools/showroom/test_refined_designs.py",
+      "docs/CONTROLS.md",
+      "docs/DELIVERY-BACKLOG.md",
+      "docs/G2-MODULE-HANDOFF.md",
+      "docs/ISSUE-hosted-snapshot-compiler.md",
+      "docs/PR-19.md",
+      "docs/PR-equipment-runtime.md",
+      "docs/PR-hosted-snapshot-compiler.md",
+      "docs/PR-mission-economy-review.md",
+      "docs/PR-rendering-ui-review.md",
+      "docs/PR-review-source-guard.md",
+      "docs/SHIP-FILES.md",
+      "docs/TARGETING-COMPUTERS.md",
+      "docs/elite.png",
+      "docs/images/route-alternatives-galaxy.png",
+      "docs/images/route-alternatives-local.png",
+      "docs/ships/manifest.json",
+      "docs/start-sequence.gif"
+    ],
+    "identical": [
+      "Sources/EliteCore/DischargeAudio.swift",
+      "Sources/EliteCore/EncounterGeography.swift",
+      "Sources/EliteCore/EquipmentSelection.swift",
+      "Sources/EliteCore/FuelStorage.swift",
+      "Sources/EliteCore/LaserSpecification.swift",
+      "Sources/EliteCore/NPCPersistentReferences.swift",
+      "Sources/EliteCore/NavigationDisplay.swift",
+      "Sources/EliteCore/PlanetPreviewRendering.swift",
+      "Sources/EliteCore/RecoveredFeatureDevices.swift",
+      "Sources/EliteCore/RecoveredFeatureRuntime.swift",
+      "Sources/EliteCore/SalvageContracts.swift",
+      "Sources/EliteCore/ScoopApproachController.swift",
+      "Sources/EliteCore/Starfield.swift",
+      "Sources/EliteCore/SystemDisplay.swift",
+      "Sources/EliteCore/TargetDestruction.swift",
+      "Sources/EliteCore/TypedCargoPayload.swift",
+      "Tests/EliteCoreTests/CargoDebrisLedgerTests.swift",
+      "Tests/EliteCoreTests/CelestialDrawingModeTests.swift",
+      "Tests/EliteCoreTests/CelestialRenderingTests.swift",
+      "Tests/EliteCoreTests/CommanderSaveSafetyTests.swift",
+      "Tests/EliteCoreTests/ComponentLoadedStateTests.swift",
+      "Tests/EliteCoreTests/ComponentProgressionTests.swift",
+      "Tests/EliteCoreTests/CrimeLedgerNPCRebindGrowthTests.swift",
+      "Tests/EliteCoreTests/CrimeLedgerRebindEvidenceTests.swift",
+      "Tests/EliteCoreTests/CrimeLedgerRebindRuntimeConsumerTests.swift",
+      "Tests/EliteCoreTests/CrimeLedgerTests.swift",
+      "Tests/EliteCoreTests/DrawingPreferenceTests.swift",
+      "Tests/EliteCoreTests/EncounterDirectorTests.swift",
+      "Tests/EliteCoreTests/EquipmentSelectionTests.swift",
+      "Tests/EliteCoreTests/FlightSimulationStateTests.swift",
+      "Tests/EliteCoreTests/GameplayAdmissionTests.swift",
+      "Tests/EliteCoreTests/GameplayCargoTests.swift",
+      "Tests/EliteCoreTests/GameplayContractTests.swift",
+      "Tests/EliteCoreTests/GameplayEncounterIntegrationTests.swift",
+      "Tests/EliteCoreTests/HullSceneMotionTests.swift",
+      "Tests/EliteCoreTests/HullSweepObstacleClearanceTests.swift",
+      "Tests/EliteCoreTests/InventoryCommandTests.swift",
+      "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "Tests/EliteCoreTests/NativePresentationTests.swift",
+      "Tests/EliteCoreTests/NativeShipShieldComparisonTests.swift",
+      "Tests/EliteCoreTests/OwnedEquipmentInventoryTests.swift",
+      "Tests/EliteCoreTests/RecoveredEquipmentRuntimeTests.swift",
+      "Tests/EliteCoreTests/RecoveredFeatureDevicesTests.swift",
+      "Tests/EliteCoreTests/RelativeWorkCollectionOffsetTests.swift",
+      "Tests/EliteCoreTests/RelativeWorkMotionOutputTests.swift",
+      "Tests/EliteCoreTests/RouteScoreBoundsTests.swift",
+      "Tests/EliteCoreTests/SalvageCatalogueTests.swift",
+      "Tests/EliteCoreTests/SalvageComponentEffectsTests.swift",
+      "Tests/EliteCoreTests/SalvageLedgerTests.swift",
+      "Tests/EliteCoreTests/SalvageSitesTests.swift",
+      "Tests/EliteCoreTests/SalvageWreckTerminalTests.swift",
+      "Tests/EliteCoreTests/ScoopApproachControllerTests.swift",
+      "Tests/EliteCoreTests/StarfieldPoseMotionTests.swift",
+      "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "Tests/EliteCoreTests/TrafficIntentTests.swift",
+      "Tests/EliteCoreTests/WireframeTests.swift",
+      "Tools/distribution/test_sonar_checkpoint.py",
+      "docs/CENTRAL-COMBINED-FOCUS-FAILURE-025.json",
+      "docs/CENTRAL-COMBINED-FOCUSED-VALIDATION-026.json",
+      "docs/CENTRAL-COMBINED-GATE-READINESS-026.json",
+      "docs/CENTRAL-COMBINED-GATE-VALIDATION-026.json",
+      "docs/CENTRAL-COMBINED-GATE-VALIDATION-026.md",
+      "docs/CENTRAL-MATERIAL-GATE-ATTEMPT-015.json",
+      "docs/CENTRAL-MATERIAL-GATE-ATTEMPT-016.json",
+      "docs/CENTRAL-MATERIAL-GATE-ATTEMPT-021.json",
+      "docs/CENTRAL-MATERIAL-GATE-READINESS-021.json",
+      "docs/CENTRAL-MATERIAL-GATE-READINESS.json",
+      "docs/COMPOSED-FOCUSED-VALIDATION.json",
+      "docs/COVERAGE-CORRECTIONS-FOCUS-ATTEMPT-018.json",
+      "docs/COVERAGE-CORRECTIONS-FOCUSED-VALIDATION-020.json",
+      "docs/EQUIPMENT-ACTOR-BOUNDARY.md",
+      "docs/EQUIPMENT-ACTOR-VALIDATION.md",
+      "docs/EQUIPMENT-JOINT-FOCUSED-VALIDATION.json",
+      "docs/EQUIPMENT-MIGRATION-FOCUSED-VALIDATION.json",
+      "docs/EQUIPMENT-ORDNANCE-COMPOSITION.json",
+      "docs/EQUIPMENT-RUNTIME-FOCUSED-VALIDATION.json",
+      "docs/GAMEPLAY-CONTRACTS.md",
+      "docs/INVENTORY-ACTION-FOCUSED-VALIDATION.json",
+      "docs/ISSUE-18.md",
+      "docs/ISSUE-CR-05-ecm-time.md",
+      "docs/ISSUE-CR-06-autopilot-hull-limits.md",
+      "docs/ISSUE-CR-09-mining-save-invariants.md",
+      "docs/ISSUE-CR-10-survivor-threat-bindings.md",
+      "docs/ISSUE-central-runtime-fixtures-021.md",
+      "docs/ISSUE-effective-equipment-statistics.md",
+      "docs/ISSUE-equipment-runtime.md",
+      "docs/ISSUE-inventory-row-whitespace.md",
+      "docs/ISSUE-mission-economy-review.md",
+      "docs/ISSUE-ordered-native-commander-files.md",
+      "docs/ISSUE-rendering-ui-review.md",
+      "docs/ISSUE-review-source-guard.md",
+      "docs/ISSUE-route-score-overflow.md",
+      "docs/ISSUE-salvage-pose-no-op.md",
+      "docs/ISSUE-save-admission-safety.md",
+      "docs/ISSUE-solar-save-set-order.md",
+      "docs/ISSUE-station-market-ux.md",
+      "docs/ISSUE-typed-ordnance-runtime.md",
+      "docs/MANUAL-CAPTION-FOCUSED-VALIDATION.json",
+      "docs/MANUAL-RESIDUAL-FOCUSED-VALIDATION.json",
+      "docs/NATIVE-WORK-GUIDANCE-VALIDATION.json",
+      "docs/NPC-ACCEPTANCE-VALIDATION.json",
+      "docs/NPC-REFERENCE-ACCEPTANCE-VALIDATION.json",
+      "docs/NPC-REFERENCE-BINDINGS.md",
+      "docs/PR-CR-05-ecm-time.md",
+      "docs/PR-CR-06-autopilot-hull-limits.md",
+      "docs/PR-CR-09-mining-save-invariants.md",
+      "docs/PR-CR-10-survivor-threat-bindings.md",
+      "docs/PR-central-runtime-fixtures-021.md",
+      "docs/PR-effective-equipment-statistics.md",
+      "docs/PR-inventory-row-whitespace.md",
+      "docs/PR-ordered-native-commander-files.md",
+      "docs/PR-route-score-overflow.md",
+      "docs/PR-salvage-pose-no-op.md",
+      "docs/PR-save-admission-safety.md",
+      "docs/PR-solar-save-set-order.md",
+      "docs/PR-station-market-ux.md",
+      "docs/PR-typed-ordnance-runtime.md",
+      "docs/RECOVERED-FEATURE-FOCUSED-VALIDATION.json",
+      "docs/SOLAR-SAVE-ORDER-FAILURE-024.json",
+      "docs/TYPED-ORDNANCE-FOCUSED-VALIDATION.json",
+      "docs/WORK-GUIDANCE-FOCUSED-VALIDATION.json",
+      "docs/WORK-TOOLS-FOCUSED-VALIDATION.json",
+      "docs/WORK-VISUAL-FOCUSED-VALIDATION.json",
+      "docs/WORK-VISUAL-SOURCE-HANDOFF.json",
+      "docs/WORLD-ORE-FOCUSED-VALIDATION.json",
+      "docs/validation/salvage-admission-fixed-geometry.json",
+      "docs/validation/salvage-admission-geometry.json",
+      "script/sonar.sh"
+    ],
+    "missing-current": [
+      "Tests/EliteCoreTests/NativeTestWindow.swift",
+      "docs/CENTRAL-REVIEW-REPAIRS-FOCUSED-029.json",
+      "docs/CENTRAL-REVIEW-REPAIRS-FOCUSED-029.md",
+      "docs/CENTRAL-REVIEW-REPAIRS-GATE-029.json",
+      "docs/CENTRAL-REVIEW-REPAIRS-GATE-029.md",
+      "docs/HOSTED-COMPILER-FOCUSED-VALIDATION-031.json",
+      "docs/HOSTED-COMPILER-GATE-VALIDATION-031.json",
+      "docs/HOSTED-COMPILER-GATE-VALIDATION-031.md",
+      "docs/HOSTED-SALVAGE-FIXTURE-VALIDATION-032.json",
+      "docs/HOSTED-SALVAGE-FIXTURE-VALIDATION-032.md",
+      "docs/ISSUE-hosted-native-window.md",
+      "docs/NATIVE-WINDOW-FOCUSED-VALIDATION-035.json",
+      "docs/NATIVE-WINDOW-GATE-VALIDATION-036.json",
+      "docs/NATIVE-WINDOW-GATE-VALIDATION-036.md",
+      "docs/PR-hosted-native-window.md",
+      "docs/SONAR-SOURCE-CHECKPOINT-VALIDATION-027.json"
+    ]
+  },
+  "files": [
+    {
+      "filename": ".github/workflows/ci.yml",
+      "status": "modified",
+      "sha": "16daf908d1dbbe1251c8ab66d039683758e9688b",
+      "additions": 5,
+      "deletions": 1
+    },
+    {
+      "filename": "AGENTS.md",
+      "status": "modified",
+      "sha": "a9ab2f3660e35e51d3a44a8ddc4abb531faa5bde",
+      "additions": 4,
+      "deletions": 0
+    },
+    {
+      "filename": "Makefile",
+      "status": "modified",
+      "sha": "765707f8e4bfa42976f5421a0e263494d7d8d865",
+      "additions": 1,
+      "deletions": 1
+    },
+    {
+      "filename": "README.md",
+      "status": "modified",
+      "sha": "b84802d8655477cf588b4a3f7a8f8cea187c527c",
+      "additions": 26,
+      "deletions": 11
+    },
+    {
+      "filename": "Sources/EliteCore/AutoTargetControl.swift",
+      "status": "modified",
+      "sha": "da4891a6bf880a66aec54498196846e8f6ce8c85",
+      "additions": 153,
+      "deletions": 36
+    },
+    {
+      "filename": "Sources/EliteCore/BlackjackEncounter.swift",
+      "status": "modified",
+      "sha": "974b9c4529e9508307e939c91ace1f06815fb72c",
+      "additions": 16,
+      "deletions": 1
+    },
+    {
+      "filename": "Sources/EliteCore/CargoDebrisLedger.swift",
+      "status": "added",
+      "sha": "6d9197bcf4e79945c4d3ff4f6eac08d3a2b8978e",
+      "additions": 386,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/CargoScooping.swift",
+      "status": "modified",
+      "sha": "f5395c9982c6e9d9e97bc80ae110982310a7f3e2",
+      "additions": 85,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/CelestialFlight.swift",
+      "status": "modified",
+      "sha": "7c8d9ea1264cdbc5a10b775a186ebc6e8cdd2c4b",
+      "additions": 3,
+      "deletions": 2
+    },
+    {
+      "filename": "Sources/EliteCore/CelestialRendering.swift",
+      "status": "modified",
+      "sha": "8366dfa2a706af6d3f14b19608a3caff0474555d",
+      "additions": 21,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/ChartDisplay.swift",
+      "status": "modified",
+      "sha": "7b13828da675e94c0b09373eebcc2ce2e37c6f3c",
+      "additions": 7,
+      "deletions": 2
+    },
+    {
+      "filename": "Sources/EliteCore/CockpitDisplay.swift",
+      "status": "modified",
+      "sha": "53933389a6589ef70f66cd049c36e67b643f3959",
+      "additions": 9,
+      "deletions": 5
+    },
+    {
+      "filename": "Sources/EliteCore/CommanderCargoValidation.swift",
+      "status": "added",
+      "sha": "4a830a8dc9c2abd0cb5d214d4dda8f2be9d7e843",
+      "additions": 39,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/CommanderEquipment.swift",
+      "status": "added",
+      "sha": "90410a1da7ade9f5230bb9af8a4b12750f424888",
+      "additions": 148,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/CommanderFileOperation.swift",
+      "status": "added",
+      "sha": "e27e950c65fef9496391cd8974e7193728d204a9",
+      "additions": 17,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/CommanderSaveInput.swift",
+      "status": "added",
+      "sha": "60ea8815614fccc9bd0aeb93d22bfa6934bd7620",
+      "additions": 30,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/ComponentFittingSlot.swift",
+      "status": "added",
+      "sha": "e3ddd1359b70b1b9fc96ee6a3e35bbbc7c80c6d8",
+      "additions": 35,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/ComponentProgression.swift",
+      "status": "added",
+      "sha": "bc9f615ddee629b60a2e79ed81172c4e5e197582",
+      "additions": 436,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/CrimeLedger.swift",
+      "status": "added",
+      "sha": "3f8dcdb1eecd475d43eae029435841debfd64a72",
+      "additions": 461,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/DischargeAudio.swift",
+      "status": "added",
+      "sha": "b50e05926f01eccb0df3d7a57e2873f0d3d9770f",
+      "additions": 39,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/Display.swift",
+      "status": "modified",
+      "sha": "485d6c6ba75ab81980e247f7bc078ccb385957cf",
+      "additions": 6,
+      "deletions": 3
+    },
+    {
+      "filename": "Sources/EliteCore/DockedChartDisplay.swift",
+      "status": "modified",
+      "sha": "f58b22262711098b3548cb725a5bc3c85bec0853",
+      "additions": 6,
+      "deletions": 6
+    },
+    {
+      "filename": "Sources/EliteCore/ECMControl.swift",
+      "status": "modified",
+      "sha": "d0528d65b0a4904ae0145d24013dee371b9a0686",
+      "additions": 39,
+      "deletions": 11
+    },
+    {
+      "filename": "Sources/EliteCore/EffectiveEquipmentValidation.swift",
+      "status": "added",
+      "sha": "bc42e703875fc20b655843cae49974acf4a7290f",
+      "additions": 48,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EncounterDirector.swift",
+      "status": "added",
+      "sha": "a7672e222f3654a87957dbdccd1ab767b82e3329",
+      "additions": 184,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EncounterGeography.swift",
+      "status": "added",
+      "sha": "5a241eff45064eb1ed6d45c21d02ed000eb60ef5",
+      "additions": 60,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentActorTransactions.swift",
+      "status": "added",
+      "sha": "fa9bdf9be123bafb5536899fb81624e722837b2c",
+      "additions": 181,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentDisplay.swift",
+      "status": "modified",
+      "sha": "b70dbbf7c613b5ce455e323143e840f5876a093d",
+      "additions": 107,
+      "deletions": 32
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentGroups.swift",
+      "status": "modified",
+      "sha": "2f9ddc64471e3b9bc6ef3995f972fa20e56f4cbd",
+      "additions": 6,
+      "deletions": 2
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentHullTransfer.swift",
+      "status": "added",
+      "sha": "785b276f5908ca953532fb7995ccfed54a001599",
+      "additions": 43,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentModuleTemplates.swift",
+      "status": "added",
+      "sha": "eb2ede79932e2be65b4c9ed3592055b78bc03a8f",
+      "additions": 142,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentMutations.swift",
+      "status": "added",
+      "sha": "021acee999b90d8c4a2ba066e6147875e9eb01c8",
+      "additions": 171,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentPurchaseProgression.swift",
+      "status": "added",
+      "sha": "90e58a5a2639d9c2b8c68e084a18aa8870e7da48",
+      "additions": 570,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentRuntimeCatalog.swift",
+      "status": "added",
+      "sha": "932b6a792623ea9cdd181122e9c6c30e8d66394f",
+      "additions": 148,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentSelection.swift",
+      "status": "added",
+      "sha": "8a85e8a557412d61e48b97daab36c455c3edf94c",
+      "additions": 14,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/EquipmentTransactions.swift",
+      "status": "added",
+      "sha": "58e339a721ddeda0640fdb4284d87cdbc14152f7",
+      "additions": 255,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/FlightSimulationState.swift",
+      "status": "added",
+      "sha": "caa1785f61c4375cb478ddeabfc777a931a7fcc7",
+      "additions": 118,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/FlightWorkGuidance.swift",
+      "status": "added",
+      "sha": "0b5c116b9344cc4b074546c62ceb57ab177e2bb3",
+      "additions": 427,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/FlightWorkScene.swift",
+      "status": "added",
+      "sha": "97c82c161c4d26f55d11b48ab5072c9ad61a6222",
+      "additions": 160,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/FlightWorkTools.swift",
+      "status": "added",
+      "sha": "70ffbb417e586106ed292ce534798aac078d2007",
+      "additions": 188,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/FuelStorage.swift",
+      "status": "modified",
+      "sha": "c25e23dfdf6971f2d0b12d7c2c2c5816c3e4591d",
+      "additions": 16,
+      "deletions": 2
+    },
+    {
+      "filename": "Sources/EliteCore/Game.swift",
+      "status": "modified",
+      "sha": "fb2489b77bfb53401a6cf5cd50223161b0cbfb73",
+      "additions": 476,
+      "deletions": 259
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayAdmission.swift",
+      "status": "added",
+      "sha": "cb98295714edc2b7a3b09cef929caf0ddd518087",
+      "additions": 186,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayCargo.swift",
+      "status": "added",
+      "sha": "1f9bd84c6769603057ecf0a4df36aef6f5b3f418",
+      "additions": 115,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayCombat.swift",
+      "status": "added",
+      "sha": "7b37ae9507109776defc296ee1af72b3625cfed6",
+      "additions": 251,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayContracts.swift",
+      "status": "added",
+      "sha": "45e998b375b395ae77ff78c7faf49ea9db5e875a",
+      "additions": 280,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayEncounters.swift",
+      "status": "added",
+      "sha": "af9099ed0632294a2cc3b70e53091c9e2bccb590",
+      "additions": 264,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayOrdnance.swift",
+      "status": "added",
+      "sha": "d6f0930b9a8481730c985fd3de7fb3a7a32d49a9",
+      "additions": 348,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayOrdnanceRuntime.swift",
+      "status": "added",
+      "sha": "b781ec5e2b3be1a017f4030da55d5789def2852d",
+      "additions": 130,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayRaycast.swift",
+      "status": "added",
+      "sha": "4d8ab7e9bb6a29c3b53316827b9844dd7ca62cc0",
+      "additions": 320,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayScene.swift",
+      "status": "added",
+      "sha": "6798362908c8ce7ce103b0ddc9500a3b282d7199",
+      "additions": 194,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/GameplayWeapons.swift",
+      "status": "added",
+      "sha": "27ac484a528dae3121a0d155c96bf2d9491efb45",
+      "additions": 155,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/Geometry.swift",
+      "status": "modified",
+      "sha": "9fee362cf165c21bf13544e7986caa1775b0af2c",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/HullSweepSafety.swift",
+      "status": "added",
+      "sha": "0873e5000f2327eaa1a45ccd953c07cbc3827f81",
+      "additions": 871,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/InventoryInformation.swift",
+      "status": "added",
+      "sha": "7b2cdfa1966b520f8e38689c168bafc009d96fd4",
+      "additions": 95,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/InventoryInteraction.swift",
+      "status": "added",
+      "sha": "d2772ae68df1823bfeea45685d04236645acd3b8",
+      "additions": 383,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/JumpReach.swift",
+      "status": "modified",
+      "sha": "56d744472854ed787b7c321708db37a709f3c682",
+      "additions": 1,
+      "deletions": 1
+    },
+    {
+      "filename": "Sources/EliteCore/LaserSpecification.swift",
+      "status": "modified",
+      "sha": "d8da97cbc4e28bb8b7078d2a3e01abe3c62afd75",
+      "additions": 0,
+      "deletions": 20
+    },
+    {
+      "filename": "Sources/EliteCore/ManualResidualFlight.swift",
+      "status": "added",
+      "sha": "03195eaf5ee24901b0ba30d8e617d946be9295d8",
+      "additions": 45,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/MarketInteraction.swift",
+      "status": "added",
+      "sha": "762ff8af399aea945c018b04c4ce1965f938ed39",
+      "additions": 57,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/MiningFields.swift",
+      "status": "added",
+      "sha": "f93eb6621c1e89d60fc7a997db93fee217a0b288",
+      "additions": 110,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/MiningLedger.swift",
+      "status": "added",
+      "sha": "082cddac0d07e10285889da786dcb65d1d6b6c76",
+      "additions": 329,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/MiningWorkTool.swift",
+      "status": "added",
+      "sha": "f869da7b477f80577328b38cf0144d127d599349",
+      "additions": 70,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/MissionGallery.swift",
+      "status": "modified",
+      "sha": "170815a1ea15cf6bf7f2514a55f71222edc36758",
+      "additions": 25,
+      "deletions": 1
+    },
+    {
+      "filename": "Sources/EliteCore/NPCPersistenceLedger.swift",
+      "status": "added",
+      "sha": "aee1eeee469d87bbbff48907df75b8cfcfe14bbd",
+      "additions": 380,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/NPCPersistenceRuntime.swift",
+      "status": "added",
+      "sha": "3078939bfd3e1243118761c39b48e31d2e31d087",
+      "additions": 156,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/NPCPersistentReferences.swift",
+      "status": "added",
+      "sha": "e0e3f9727ce5e64f996fdae256dc4da3dc02f80d",
+      "additions": 38,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/NPCResourceRuntime.swift",
+      "status": "added",
+      "sha": "86649102ec64e500ab7c7411f6f9594302cf83d4",
+      "additions": 57,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/NPCResources.swift",
+      "status": "added",
+      "sha": "44346343b74a77e2374a99e7e1cc40d8441639cd",
+      "additions": 112,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/NativeShipValues.swift",
+      "status": "modified",
+      "sha": "01d93dd451ebb90732356aa6220f6d8a8b4bf4f8",
+      "additions": 29,
+      "deletions": 7
+    },
+    {
+      "filename": "Sources/EliteCore/NavalCombat.swift",
+      "status": "modified",
+      "sha": "11652c9cb3e224987d9d920ec1cb4bfa6dbc598f",
+      "additions": 7,
+      "deletions": 9
+    },
+    {
+      "filename": "Sources/EliteCore/NavalMissions.swift",
+      "status": "modified",
+      "sha": "75c254820186aa216cc62fe0b732e14fdc13ade8",
+      "additions": 3,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/NavigationComputer.swift",
+      "status": "modified",
+      "sha": "f67379bdc75945390431084b5fc129a9992414e8",
+      "additions": 36,
+      "deletions": 18
+    },
+    {
+      "filename": "Sources/EliteCore/NavigationDisplay.swift",
+      "status": "modified",
+      "sha": "1010fbd538d285efdd1db309fc92ad2c777b4cf3",
+      "additions": 3,
+      "deletions": 1
+    },
+    {
+      "filename": "Sources/EliteCore/OwnedEquipmentInventory.swift",
+      "status": "added",
+      "sha": "472445ac8c3d4b9033f48e5b7174624be23ea761",
+      "additions": 261,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/PackRuntime.swift",
+      "status": "modified",
+      "sha": "daee92c182d06ac5638866e686be3378452d8b24",
+      "additions": 25,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/PackTransactions.swift",
+      "status": "modified",
+      "sha": "17e778b610504119f75b8521fef8aa5b0fb4fde5",
+      "additions": 17,
+      "deletions": 5
+    },
+    {
+      "filename": "Sources/EliteCore/PlanetPreviewRendering.swift",
+      "status": "added",
+      "sha": "d62b22da1e1078a3c346a930628587707b78f694",
+      "additions": 28,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/PlayerHelp.swift",
+      "status": "modified",
+      "sha": "fe880f8a657927f04e1975310f8df3006ea61acb",
+      "additions": 55,
+      "deletions": 10
+    },
+    {
+      "filename": "Sources/EliteCore/ProfitScan.swift",
+      "status": "modified",
+      "sha": "d0a337c959049322d02d9fb4ec51f1219cd906b9",
+      "additions": 27,
+      "deletions": 9
+    },
+    {
+      "filename": "Sources/EliteCore/RecoveredEquipmentRuntime.swift",
+      "status": "added",
+      "sha": "5445b27944e69ee351f266d3597cdf2cd0f499ff",
+      "additions": 112,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/RecoveredFeatureDevices.swift",
+      "status": "added",
+      "sha": "f40710061f22d1522358dcdad8fba8a095f9fed1",
+      "additions": 255,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/RecoveredFeatureRuntime.swift",
+      "status": "added",
+      "sha": "6e98073fe7410e221b4c958cc41fbdf4a4ca5525",
+      "additions": 47,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/RelativeWorkController.swift",
+      "status": "added",
+      "sha": "989d4285e56fbf739dc9d182b048e70ac148efb0",
+      "additions": 483,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/Resources/Ships/SH023.toml",
+      "status": "modified",
+      "sha": "5dd0fd6202083176af7ad8fa3d6003cfc51ac3bd",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/Resources/Ships/SH171.toml",
+      "status": "modified",
+      "sha": "c8e81cba7e3b3670b89c993dc610ea5f92d7f8f6",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/RetaliationControl.swift",
+      "status": "modified",
+      "sha": "6884adcbbc4144e698620fd6356f44177f76b851",
+      "additions": 24,
+      "deletions": 7
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageAdmission.swift",
+      "status": "added",
+      "sha": "a7a7df8fbcc3c5ea558d67ba759f5f7c9ada5428",
+      "additions": 66,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageAlienDefinitions.swift",
+      "status": "added",
+      "sha": "b56b72ebdf68117edb580faff5ea9b31e0f511e8",
+      "additions": 208,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageCatalogue.swift",
+      "status": "added",
+      "sha": "4730921afde0594db020ec476bf18ffc1b23b903",
+      "additions": 321,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageComponentEffects.swift",
+      "status": "added",
+      "sha": "2d98c87c7ce702aa460f0e84070c4e508a6b5088",
+      "additions": 108,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageContracts.swift",
+      "status": "added",
+      "sha": "6077ac0e62d4e61504bbbcb800a930c1efc4bc38",
+      "additions": 50,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageDefinitions.swift",
+      "status": "added",
+      "sha": "cca67add4c9ecc883ef4bce30c5925524c1392f1",
+      "additions": 392,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageLedger.swift",
+      "status": "added",
+      "sha": "bf3e7b7554c8338e6bed6de2a11ca1a9674217d4",
+      "additions": 1211,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageLootProfiles.swift",
+      "status": "added",
+      "sha": "495781c125b8dd70e31527821db52a9934411e23",
+      "additions": 321,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageSites.swift",
+      "status": "added",
+      "sha": "68930262714a8254ef7d451633dd0a8694581bee",
+      "additions": 120,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SalvageWorldRuntime.swift",
+      "status": "added",
+      "sha": "7667dc485b9854f13a28cdb46ca10e3c01a3142c",
+      "additions": 115,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/ScoopApproachController.swift",
+      "status": "added",
+      "sha": "c59351dbcaa34e79e14e1ff7a46f8f6b1c5dd7b2",
+      "additions": 347,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/ScreenNavigation.swift",
+      "status": "modified",
+      "sha": "8b87eab359b0d3d49e515fbda432b9cad73b02a9",
+      "additions": 9,
+      "deletions": 11
+    },
+    {
+      "filename": "Sources/EliteCore/ShieldBooster.swift",
+      "status": "modified",
+      "sha": "1c6c8be6c9d842cdf9b16e9c8282d00de4fb354f",
+      "additions": 42,
+      "deletions": 7
+    },
+    {
+      "filename": "Sources/EliteCore/ShipPerformance.swift",
+      "status": "modified",
+      "sha": "30225c892927ed8b3f921f5a78022a9a55f0c3c4",
+      "additions": 16,
+      "deletions": 3
+    },
+    {
+      "filename": "Sources/EliteCore/ShipShowroom.swift",
+      "status": "modified",
+      "sha": "56e8e1708004f96f05dd3a03c08c9d6ef873e6eb",
+      "additions": 1,
+      "deletions": 4
+    },
+    {
+      "filename": "Sources/EliteCore/ShipTrade.swift",
+      "status": "modified",
+      "sha": "ff5cda25cac5e737dcf39f3e6cb3a85849ca308d",
+      "additions": 26,
+      "deletions": 11
+    },
+    {
+      "filename": "Sources/EliteCore/ShowroomDisplay.swift",
+      "status": "modified",
+      "sha": "c09907264346355613bce55bd1501e2f51c80673",
+      "additions": 4,
+      "deletions": 2
+    },
+    {
+      "filename": "Sources/EliteCore/Starfield.swift",
+      "status": "modified",
+      "sha": "c109f311e30044457e5a81b327ae5724c03e05a8",
+      "additions": 23,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/StationDisplay.swift",
+      "status": "modified",
+      "sha": "d56fad69f4018d8bc4fffb60512185dabb605253",
+      "additions": 191,
+      "deletions": 57
+    },
+    {
+      "filename": "Sources/EliteCore/StationSecurity.swift",
+      "status": "added",
+      "sha": "23bfb137c756543308e0a7ff367ebe3f28f6bce8",
+      "additions": 420,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/SystemDisplay.swift",
+      "status": "modified",
+      "sha": "a844d3f3ea135cee4e32548d7498217e266da4ef",
+      "additions": 5,
+      "deletions": 5
+    },
+    {
+      "filename": "Sources/EliteCore/TargetDestruction.swift",
+      "status": "modified",
+      "sha": "da5bd89896657cdc472d64d7f49651dae3e67019",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/TargetPanel.swift",
+      "status": "modified",
+      "sha": "dbab711d4e40de823b3116e22e51b60515d5c48f",
+      "additions": 74,
+      "deletions": 18
+    },
+    {
+      "filename": "Sources/EliteCore/TargetTelemetry.swift",
+      "status": "added",
+      "sha": "1a3a50ff635acb8a08dcaad45cd2bc0851834dea",
+      "additions": 160,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/TargetingComputer.swift",
+      "status": "modified",
+      "sha": "9bca61efa28ccad40152738f20d3f66ed9398715",
+      "additions": 35,
+      "deletions": 13
+    },
+    {
+      "filename": "Sources/EliteCore/TrafficIntent.swift",
+      "status": "added",
+      "sha": "b36537e9ffc270ae54844ce2a1c829cd7389f019",
+      "additions": 139,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/TypedCargoPayload.swift",
+      "status": "added",
+      "sha": "8295bb45cd04f660e451dada963d41e9c2b09dbb",
+      "additions": 66,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/WorkTargetRuntime.swift",
+      "status": "added",
+      "sha": "5e0dcf5d2ebada54268f2bc91a8281c3b873ccf5",
+      "additions": 184,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteCore/WorkTargetSelection.swift",
+      "status": "added",
+      "sha": "44e9124217e18d9a44c85f7fd29f866450eb8179",
+      "additions": 177,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteMac/AudioPresenter.swift",
+      "status": "modified",
+      "sha": "1120c53e0f2e01a699107525eb9765aa95ab7fb0",
+      "additions": 23,
+      "deletions": 3
+    },
+    {
+      "filename": "Sources/EliteMac/EliteApp.swift",
+      "status": "modified",
+      "sha": "dd3af797b298f1ac03fe530c5ae65750d7bba2f1",
+      "additions": 207,
+      "deletions": 56
+    },
+    {
+      "filename": "Sources/EliteMac/NativeCommanderFileIntent.swift",
+      "status": "added",
+      "sha": "52517796d5a8bfdbe8112ff2b66229c9890bb996",
+      "additions": 20,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteMac/PlanetGPUShader.swift",
+      "status": "added",
+      "sha": "1cc6a9b2e608bfda733530029859c4d05ddc1b22",
+      "additions": 184,
+      "deletions": 0
+    },
+    {
+      "filename": "Sources/EliteMac/PlanetRenderer.swift",
+      "status": "modified",
+      "sha": "c77b1aeb13e9800be3df0a6b6014ce3f843b5f37",
+      "additions": 65,
+      "deletions": 14
+    },
+    {
+      "filename": "Tests/EliteCoreTests/AutoTargetHullLimitsTests.swift",
+      "status": "added",
+      "sha": "6584a8328789571193f74eabef14ddc31d18ec33",
+      "additions": 77,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/BlackjackTests.swift",
+      "status": "modified",
+      "sha": "2fb13f3329131ecaabbf3306eb00b64e2e4ce00c",
+      "additions": 10,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CR05ECMElapsedTimeTests.swift",
+      "status": "added",
+      "sha": "c638ee322d30f36d911ada8485a1bd9ef9c48ca9",
+      "additions": 98,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CargoDebrisLedgerTests.swift",
+      "status": "added",
+      "sha": "bd7d63774562e3ca9f972afd5eabec97dc0da180",
+      "additions": 349,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CelestialDrawingModeTests.swift",
+      "status": "added",
+      "sha": "a62d95195f981af1975de9c47da76481114b4d84",
+      "additions": 93,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CelestialRenderingTests.swift",
+      "status": "modified",
+      "sha": "49b8f94b65f4be8b292d44fe852a014504f15429",
+      "additions": 1,
+      "deletions": 1
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CockpitTests.swift",
+      "status": "modified",
+      "sha": "c3040e2eb3ed9cfa0909c1558508d4ae45019c33",
+      "additions": 11,
+      "deletions": 3
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CommanderEquipmentMigrationTests.swift",
+      "status": "added",
+      "sha": "b80378d13b37f74582b65c5fbec82c0ced4b60bf",
+      "additions": 244,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CommanderSaveSafetyTests.swift",
+      "status": "added",
+      "sha": "d9483320f00610f005686fac2d6e85241b7539d8",
+      "additions": 103,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ComponentLoadedStateTests.swift",
+      "status": "added",
+      "sha": "32a62e47960790d7b583251ce5a643914aa24229",
+      "additions": 262,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ComponentProgressionTests.swift",
+      "status": "added",
+      "sha": "5d9d9722a02ae39ebd3f65b9a41cce24c79f37f3",
+      "additions": 439,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CrimeLedgerNPCRebindGrowthTests.swift",
+      "status": "added",
+      "sha": "c68296882abfc673a818dbc94d1af0c704a45514",
+      "additions": 94,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CrimeLedgerRebindEvidenceTests.swift",
+      "status": "added",
+      "sha": "385eccf1f4c463a0c0cfedf9f8c326d960c0dcec",
+      "additions": 202,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CrimeLedgerRebindRuntimeConsumerTests.swift",
+      "status": "added",
+      "sha": "58a1df61808818f59c8e54adf6dfa1b2e830438f",
+      "additions": 114,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/CrimeLedgerTests.swift",
+      "status": "added",
+      "sha": "3623a96559560f9960d244278850f103d32986b1",
+      "additions": 393,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/DischargeAudioTests.swift",
+      "status": "added",
+      "sha": "d913c3d3e73ca99b90671d4e893ee107ecc64168",
+      "additions": 61,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/DisplayOptionsTests.swift",
+      "status": "modified",
+      "sha": "ce6d36db535e47541cdd3f41536e86225096d3ae",
+      "additions": 26,
+      "deletions": 4
+    },
+    {
+      "filename": "Tests/EliteCoreTests/DrawingPreferenceTests.swift",
+      "status": "added",
+      "sha": "9759786b649c63850a03dead9ee18049372ed8cd",
+      "additions": 51,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EffectiveEquipmentValidationTests.swift",
+      "status": "added",
+      "sha": "2eadb6249608577fbf2f3b064b9747f6a51d8934",
+      "additions": 143,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EliteTests.swift",
+      "status": "modified",
+      "sha": "ea249165f83769ebc71334213765f100f6e94287",
+      "additions": 48,
+      "deletions": 18
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EncounterDirectorTests.swift",
+      "status": "added",
+      "sha": "c0f38b822a27ac52a2ec053df93b98a443a69cd5",
+      "additions": 182,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EquipmentActorBoundaryTests.swift",
+      "status": "added",
+      "sha": "e7c112f3c3a5c29552b54616bfbf8ebefc005b3d",
+      "additions": 234,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EquipmentGroupTests.swift",
+      "status": "modified",
+      "sha": "0055d81ad1acde64f29c835941b3745ea6170e37",
+      "additions": 6,
+      "deletions": 1
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EquipmentModuleTemplatesTests.swift",
+      "status": "added",
+      "sha": "1e4037a3a368b14cb6ee5b5cc8534d56b1885409",
+      "additions": 195,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EquipmentOwnershipDisplayTests.swift",
+      "status": "added",
+      "sha": "39a56738589dc4f896869812b6e51212752f045d",
+      "additions": 230,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EquipmentPurchaseProgressionTests.swift",
+      "status": "added",
+      "sha": "8e984474088d393c6c7c222f984dbfe87e09b3a4",
+      "additions": 460,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EquipmentRuntimeTransactionTests.swift",
+      "status": "added",
+      "sha": "55deb277cd8ebe9900ae2b7f7ab474f0d5fd6b66",
+      "additions": 309,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/EquipmentSelectionTests.swift",
+      "status": "added",
+      "sha": "d35158e090eb017898ac93c28a14bd1d1673abc9",
+      "additions": 56,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/FlightSimulationStateTests.swift",
+      "status": "added",
+      "sha": "35f582b95602f308406ec040e5ba47872847c170",
+      "additions": 63,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/FlightWorkGuidanceRuntimeTests.swift",
+      "status": "added",
+      "sha": "991243101a801fd528720354a8b32bf84fc20089",
+      "additions": 879,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/FuelStorageTests.swift",
+      "status": "modified",
+      "sha": "5e9a41da2d948f79438ecd9bf72fc224f3aba5b7",
+      "additions": 41,
+      "deletions": 9
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GalleryTests.swift",
+      "status": "modified",
+      "sha": "9f3693d06b60e4e9143ab8dcac36a772fcd5dd6a",
+      "additions": 7,
+      "deletions": 6
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayAdmissionTests.swift",
+      "status": "added",
+      "sha": "c15394af7d5a81da703bb198cb3681221c7f22c4",
+      "additions": 134,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayCargoTests.swift",
+      "status": "added",
+      "sha": "59d4e5fab7a490373b071b5ddd1c1bcf673ca3c1",
+      "additions": 136,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayCombatTests.swift",
+      "status": "added",
+      "sha": "cc76fc5a9f998cfda6a655280e8801f8ff13e6c3",
+      "additions": 363,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayContractTests.swift",
+      "status": "added",
+      "sha": "bb20f3424387982b35e07a724a89504dd9ef3aa4",
+      "additions": 56,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayEncounterIntegrationTests.swift",
+      "status": "added",
+      "sha": "2b72e569157d7598c5aac26d1f5335076baca1c5",
+      "additions": 86,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayOrdnanceRuntimeTests.swift",
+      "status": "added",
+      "sha": "a5e47de07255eb9e21739451bc52c98a1e801d58",
+      "additions": 253,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayOrdnanceTests.swift",
+      "status": "added",
+      "sha": "7537bd1aebbb42f107febd35dfb7de34c4f02a7e",
+      "additions": 287,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayRaycastTests.swift",
+      "status": "added",
+      "sha": "9bc3a08ab26ed072e1bbaa1b54ae8e7b902ba84b",
+      "additions": 213,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplaySceneTests.swift",
+      "status": "added",
+      "sha": "017810d23a67d5970753f9b511d3b142296e5752",
+      "additions": 99,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/GameplayWeaponsTests.swift",
+      "status": "added",
+      "sha": "c6952e834133dda4ac2b4e13b75a67a212324ce0",
+      "additions": 143,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/HullSceneMotionTests.swift",
+      "status": "added",
+      "sha": "1161879790e58eda793c471971df1c8ac1ba3208",
+      "additions": 197,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/HullSweepObstacleClearanceTests.swift",
+      "status": "added",
+      "sha": "2310b028bb789478a11b3dda37bfabbfa1784809",
+      "additions": 131,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/HullSweepPlacementTests.swift",
+      "status": "added",
+      "sha": "1efc22cac6a3a9678f058594d27773259ef787dd",
+      "additions": 118,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/HullSweepSafetyTests.swift",
+      "status": "added",
+      "sha": "9017821e07a6a92973a5f5f04a2ef4c8e805ab67",
+      "additions": 307,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/InventoryActionDisplayTests.swift",
+      "status": "added",
+      "sha": "cecf3d0c859970316608be11f03f50574b7f079d",
+      "additions": 154,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/InventoryCommandTests.swift",
+      "status": "added",
+      "sha": "5a0837f0798705e2efe900c259baddce04130861",
+      "additions": 127,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MarketFlowTests.swift",
+      "status": "added",
+      "sha": "e5937a07c5f388d0126f6f454013ec2a88dbf470",
+      "additions": 92,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MiningFieldsTests.swift",
+      "status": "added",
+      "sha": "67d6b5e9c029a6d7554bc92bd0a32d30a4f27378",
+      "additions": 43,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MiningLedgerCR09Tests.swift",
+      "status": "added",
+      "sha": "bfcc24eab6fa7acc9217a571a9d1594ae0a81aca",
+      "additions": 185,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MiningLedgerTests.swift",
+      "status": "added",
+      "sha": "091220351a80fd4be9b284c5e25f72d33862925d",
+      "additions": 316,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MiningOreMotionTests.swift",
+      "status": "added",
+      "sha": "4a9944497ece80cc03a8e82c04749774067334b0",
+      "additions": 197,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MiningOreRuntimeTests.swift",
+      "status": "added",
+      "sha": "80bd651771ebfcff3dd5e96bc44e155860585fbc",
+      "additions": 165,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MiningWorkToolTests.swift",
+      "status": "added",
+      "sha": "9f40beed321dafb6d72f3dcbbf95c201d6bfc94a",
+      "additions": 283,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MissionCatalogueReplacementTests.swift",
+      "status": "added",
+      "sha": "a5f81952d2e7ce9f9ccab18988590be1fc5baae1",
+      "additions": 175,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MissionEquipmentBridgeTests.swift",
+      "status": "added",
+      "sha": "25134c3c3221e6d2fa7f5213a255241b9551d682",
+      "additions": 95,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/MissionResourceFractionTests.swift",
+      "status": "added",
+      "sha": "45a5e987017e61617342ba6fab90b1100d25a0cd",
+      "additions": 82,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "status": "added",
+      "sha": "b94fd2739a4daac2d261ad9ffee719afb30b02f7",
+      "additions": 467,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "status": "added",
+      "sha": "8a43d841fafaee6aa149ea20106d3024b8e8059b",
+      "additions": 228,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NPCProducerFactsTests.swift",
+      "status": "added",
+      "sha": "9e932727631fb67d3dbab79e1dfa85f333ef45c0",
+      "additions": 104,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NPCReferenceRuntimeTests.swift",
+      "status": "added",
+      "sha": "6880950f3d279db7345025999c77ad4b5519c60f",
+      "additions": 300,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "status": "added",
+      "sha": "273ae4f17d1b719e51629953707047a21e24d8a7",
+      "additions": 256,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NativeCommanderFileTests.swift",
+      "status": "added",
+      "sha": "902dc3ce84ffe3731ea705780ea8822c1b23d0d1",
+      "additions": 134,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NativeEquipmentViewTests.swift",
+      "status": "added",
+      "sha": "1a382192b678b0a2095c408980c58068b46bb0b7",
+      "additions": 683,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NativePresentationTests.swift",
+      "status": "added",
+      "sha": "5d3c2ff18c7426cdd524da31af9f1876627550ba",
+      "additions": 90,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NativeShipShieldComparisonTests.swift",
+      "status": "added",
+      "sha": "32b1862fab419e1285d8c52aa6d52a70b142ced3",
+      "additions": 47,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NativeTestWindow.swift",
+      "status": "added",
+      "sha": "cf3c409064bf87610223d0c597583eab94b6cc3b",
+      "additions": 72,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NativeViewTests.swift",
+      "status": "modified",
+      "sha": "e356aa7aa6c323369bbd325cb2a96996cc72d4af",
+      "additions": 55,
+      "deletions": 1
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NativeWorkGuidanceTests.swift",
+      "status": "added",
+      "sha": "8262579ca02213f802e2a396ba1e95799e34f216",
+      "additions": 393,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NavalMissionTests.swift",
+      "status": "modified",
+      "sha": "8a1e26b32f74f27a5f04b1c9502f39ebaa96333c",
+      "additions": 19,
+      "deletions": 2
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NavigationCustodyTests.swift",
+      "status": "added",
+      "sha": "da4ed39ca2a0f6d114cbcdf135efb2a495c16842",
+      "additions": 61,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/NavigationTests.swift",
+      "status": "modified",
+      "sha": "1548f271be4a94e40c105acf3d6d5a0066faaa04",
+      "additions": 27,
+      "deletions": 14
+    },
+    {
+      "filename": "Tests/EliteCoreTests/OwnedEquipmentInventoryTests.swift",
+      "status": "added",
+      "sha": "8bf34f438f697307b3ea473cf02ea636d5219a72",
+      "additions": 263,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/PlanetGPUShaderTests.swift",
+      "status": "added",
+      "sha": "7536f6e2ac84f3395deb3c6ff52fb59f106750b6",
+      "additions": 151,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/PlughTests.swift",
+      "status": "modified",
+      "sha": "44bdd13531a1fd4b184b14f44f285d915524ff63",
+      "additions": 66,
+      "deletions": 6
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ProfitScanBoundsTests.swift",
+      "status": "added",
+      "sha": "d1c20f36c741cde99d4f4f41080aa713e570336b",
+      "additions": 90,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/RecoveredEquipmentRuntimeTests.swift",
+      "status": "added",
+      "sha": "2808b9cd0f3a5ade26a8703a59e65346f57c0cb0",
+      "additions": 263,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/RecoveredFeatureDevicesTests.swift",
+      "status": "added",
+      "sha": "b430ff1db139061ac3960d977755a42a6ab83e21",
+      "additions": 364,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/RecoveredFeatureRuntimeTests.swift",
+      "status": "added",
+      "sha": "ba020e586d27b846fdcc941a18968fa98710cc8e",
+      "additions": 273,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/RelativeWorkCollectionOffsetTests.swift",
+      "status": "added",
+      "sha": "86ac6a48129064d5862a21a8379ae9423f3cc9d4",
+      "additions": 165,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/RelativeWorkControllerTests.swift",
+      "status": "added",
+      "sha": "de3d84d5f87e1d067ab68245b7449328f66bfce0",
+      "additions": 351,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/RelativeWorkMotionOutputTests.swift",
+      "status": "added",
+      "sha": "b9d4aeccd583eab30f161a19f5acc6b2c5ced716",
+      "additions": 148,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/RenderingReviewRegressionTests.swift",
+      "status": "added",
+      "sha": "72f3668fb44e320d44d65c62ac996ce605320424",
+      "additions": 111,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/RouteScoreBoundsTests.swift",
+      "status": "added",
+      "sha": "90ef8ba15a411a19e50fa0774c6d7d7171157f9b",
+      "additions": 30,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageAlienDefinitionsTests.swift",
+      "status": "added",
+      "sha": "36eae42cec98032a984cb7cbc7558e6dc23f3f3e",
+      "additions": 149,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageCatalogueTests.swift",
+      "status": "added",
+      "sha": "92c65d90771a42c36401d88cab4928e1fa417f50",
+      "additions": 132,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageComponentEffectsTests.swift",
+      "status": "added",
+      "sha": "9d153ec243e1f3ae3c1144f64605709ab5962b44",
+      "additions": 360,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageCutterRuntimeTests.swift",
+      "status": "added",
+      "sha": "e2f46aa99bfc6d7e75c4acd7099fc3bcf93284e3",
+      "additions": 401,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageDefinitionsTests.swift",
+      "status": "added",
+      "sha": "d389243c38e01d48d48b57bf7968b51190086151",
+      "additions": 317,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageLedgerTests.swift",
+      "status": "added",
+      "sha": "bfcd5ace5fccd773bcc9ce128fe8a269e333c6aa",
+      "additions": 888,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageLootProfilesTests.swift",
+      "status": "added",
+      "sha": "7aa6eaf1ea85629e57c588b46bdaa0d5fa5055bc",
+      "additions": 268,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageSitesTests.swift",
+      "status": "added",
+      "sha": "732bad0ccd7a08d3ea4d7864589f957932703911",
+      "additions": 65,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageWorldRuntimeTests.swift",
+      "status": "added",
+      "sha": "c583795983c40da04f6876850f2ac698c3a68e6f",
+      "additions": 330,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SalvageWreckTerminalTests.swift",
+      "status": "added",
+      "sha": "901fb9f1e24413119c96f0c5e4a13983515d5587",
+      "additions": 206,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ScoopApproachControllerTests.swift",
+      "status": "added",
+      "sha": "ab5170fb8c5d1655e4c9fbff5bd813f91163a470",
+      "additions": 233,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ScreenNavigationTests.swift",
+      "status": "modified",
+      "sha": "a209e354d3eeedf475fedc053e0652f9cb224626",
+      "additions": 62,
+      "deletions": 4
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ShieldTests.swift",
+      "status": "modified",
+      "sha": "e9227c92a555d1baa64618b976bca30edb785c3a",
+      "additions": 61,
+      "deletions": 20
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ShipTradeTests.swift",
+      "status": "modified",
+      "sha": "4e94317d3291aa824eadaaba995c62dd11f5654d",
+      "additions": 32,
+      "deletions": 8
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ShowroomTests.swift",
+      "status": "modified",
+      "sha": "67bf06c59243f8d1e1c44eafdcf3a0e7fc28e3b5",
+      "additions": 14,
+      "deletions": 7
+    },
+    {
+      "filename": "Tests/EliteCoreTests/ShowroomUXTests.swift",
+      "status": "modified",
+      "sha": "a5d537b4bdadda380a29acf37a5daaad417c73c2",
+      "additions": 14,
+      "deletions": 1
+    },
+    {
+      "filename": "Tests/EliteCoreTests/SolarFlightTests.swift",
+      "status": "modified",
+      "sha": "6eacdaec8cb4585f757f33a8f308133f0ee141d9",
+      "additions": 21,
+      "deletions": 1
+    },
+    {
+      "filename": "Tests/EliteCoreTests/StarfieldPoseMotionTests.swift",
+      "status": "added",
+      "sha": "afcbec106f056e4d36888ec3e4b3e16a18f1ad76",
+      "additions": 148,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/StartupSaveTests.swift",
+      "status": "modified",
+      "sha": "567562292636bd81d766d76e1e3725c998d85176",
+      "additions": 44,
+      "deletions": 7
+    },
+    {
+      "filename": "Tests/EliteCoreTests/StationSecurityTests.swift",
+      "status": "added",
+      "sha": "1bfe89542e166ec47b2669136bd930c94de987c1",
+      "additions": 256,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/StationTests.swift",
+      "status": "modified",
+      "sha": "d06bad7b3d2fbbecfdc8d3d3c3861111a536ef1d",
+      "additions": 36,
+      "deletions": 13
+    },
+    {
+      "filename": "Tests/EliteCoreTests/TargetDestructionTests.swift",
+      "status": "modified",
+      "sha": "97b67d89aeacf070178ba2731195290facd6c9e4",
+      "additions": 21,
+      "deletions": 2
+    },
+    {
+      "filename": "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "status": "added",
+      "sha": "5b4c1f32399ad4a29c684fb3cfb96705fa9b09ac",
+      "additions": 149,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/TargetingTests.swift",
+      "status": "modified",
+      "sha": "13a3825194919ae98ceada58e0534e89ff3b7b42",
+      "additions": 70,
+      "deletions": 1
+    },
+    {
+      "filename": "Tests/EliteCoreTests/TrafficIntentTests.swift",
+      "status": "added",
+      "sha": "2bb4699e03d640b2649b212d0021ca6e52a57b21",
+      "additions": 154,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/TypographyTests.swift",
+      "status": "modified",
+      "sha": "2d080fa25efbf216f19661e41628e0f0bcd5b94d",
+      "additions": 6,
+      "deletions": 2
+    },
+    {
+      "filename": "Tests/EliteCoreTests/WireframeTests.swift",
+      "status": "modified",
+      "sha": "d9193555c6f56d8e79146145726760f7ba509c8d",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "filename": "Tests/EliteCoreTests/WorkTargetSelectionTests.swift",
+      "status": "added",
+      "sha": "bf7e648726a1430f09beeda7f8d74027c5489f1a",
+      "additions": 173,
+      "deletions": 0
+    },
+    {
+      "filename": "Tools/distribution/package_macos.py",
+      "status": "modified",
+      "sha": "f0e69dcb0676cd090b14dd7a55c6458ebeedf07f",
+      "additions": 3,
+      "deletions": 3
+    },
+    {
+      "filename": "Tools/distribution/test_sonar_checkpoint.py",
+      "status": "added",
+      "sha": "3f167a49f9e1f0e9daff805b9c96f8419d863352",
+      "additions": 158,
+      "deletions": 0
+    },
+    {
+      "filename": "Tools/showroom/test_refined_designs.py",
+      "status": "modified",
+      "sha": "a9ae8ab838854855a6c1c2c5087e3412edce08a2",
+      "additions": 10,
+      "deletions": 1
+    },
+    {
+      "filename": "docs/CENTRAL-COMBINED-FOCUS-FAILURE-025.json",
+      "status": "added",
+      "sha": "5b974addbf95bcb6be6f063ca8ebfd26f1f60e88",
+      "additions": 337,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-COMBINED-FOCUSED-VALIDATION-026.json",
+      "status": "added",
+      "sha": "133ccf9607f4413a9e8b70944052300ed977eded",
+      "additions": 120,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-COMBINED-GATE-READINESS-026.json",
+      "status": "added",
+      "sha": "442d2f67d405c3036ccd2ff7a185d7091117385e",
+      "additions": 84,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-COMBINED-GATE-VALIDATION-026.json",
+      "status": "added",
+      "sha": "0940936faabcc2ce1c5ee529480c2bf3e01c1450",
+      "additions": 412,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-COMBINED-GATE-VALIDATION-026.md",
+      "status": "added",
+      "sha": "640c4dd753818fe3dc5d285621da3c45f9de505e",
+      "additions": 22,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-MATERIAL-GATE-ATTEMPT-015.json",
+      "status": "added",
+      "sha": "7af7fca783bc5931723de628661cb10516873423",
+      "additions": 950,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-MATERIAL-GATE-ATTEMPT-016.json",
+      "status": "added",
+      "sha": "46cafb19aec369029cda2400b9490c1213d70678",
+      "additions": 952,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-MATERIAL-GATE-ATTEMPT-021.json",
+      "status": "added",
+      "sha": "adc4ee3639975f67f67a6f69ca727e2174401045",
+      "additions": 1433,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-MATERIAL-GATE-READINESS-021.json",
+      "status": "added",
+      "sha": "159607909222d122e4e75279a1844c973400b509",
+      "additions": 80,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-MATERIAL-GATE-READINESS.json",
+      "status": "added",
+      "sha": "1d285ff56f92865517996f2c3912a5a747c34c6f",
+      "additions": 86,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-REVIEW-REPAIRS-FOCUSED-029.json",
+      "status": "added",
+      "sha": "7aaff699bbc2a61c1768a7e5b2e68257f9b53210",
+      "additions": 715,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-REVIEW-REPAIRS-FOCUSED-029.md",
+      "status": "added",
+      "sha": "e80c52038b69e9ecf983aac03db66d36d2f8228f",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-REVIEW-REPAIRS-GATE-029.json",
+      "status": "added",
+      "sha": "e74cff07cc1c50634a8010b0741c4737d1130ac8",
+      "additions": 1565,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CENTRAL-REVIEW-REPAIRS-GATE-029.md",
+      "status": "added",
+      "sha": "fba33f4bb61a9a741dcd0ba3f0894d10e49227c8",
+      "additions": 22,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/COMPOSED-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "984b4fd04cda01e1c5062ceb64f2b53d87e720e0",
+      "additions": 124,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/CONTROLS.md",
+      "status": "modified",
+      "sha": "e058afdb12a225805994b5ceba460e5098bc79fb",
+      "additions": 11,
+      "deletions": 9
+    },
+    {
+      "filename": "docs/COVERAGE-CORRECTIONS-FOCUS-ATTEMPT-018.json",
+      "status": "added",
+      "sha": "68c93e2329f7a5ae9bbfaf15c34f82040d4ba3ca",
+      "additions": 975,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/COVERAGE-CORRECTIONS-FOCUSED-VALIDATION-020.json",
+      "status": "added",
+      "sha": "1a1199feeaf6191a92dc2e63e52661c09fb47c6e",
+      "additions": 2064,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/DELIVERY-BACKLOG.md",
+      "status": "modified",
+      "sha": "7df3f7ecd2cf03d873a1ec884a296cf0ba4e4bb9",
+      "additions": 5,
+      "deletions": 3
+    },
+    {
+      "filename": "docs/EQUIPMENT-ACTOR-BOUNDARY.md",
+      "status": "added",
+      "sha": "7348b7e218eec57187e3150df2129e2868f3ddfe",
+      "additions": 11,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/EQUIPMENT-ACTOR-VALIDATION.md",
+      "status": "added",
+      "sha": "6f4db14cb1f028eb1e07d26c9477049dc8bad07c",
+      "additions": 35,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/EQUIPMENT-JOINT-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "0e2c04eb45a6f6965dbea4d51e45a2df74349518",
+      "additions": 21,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/EQUIPMENT-MIGRATION-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "23bf2a1c3c68b2790a73dea9516ee1080642beb3",
+      "additions": 21,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/EQUIPMENT-ORDNANCE-COMPOSITION.json",
+      "status": "added",
+      "sha": "3553c1b4f2dae2104ecb3e59d75b8eb6c834a405",
+      "additions": 33,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/EQUIPMENT-RUNTIME-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "b06e0832929380052ac9cbe8a2a26d3d52fe6126",
+      "additions": 43,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/G2-MODULE-HANDOFF.md",
+      "status": "added",
+      "sha": "bf081fad2d945651e0434f89cab7ad5112164a6c",
+      "additions": 55,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/GAMEPLAY-CONTRACTS.md",
+      "status": "added",
+      "sha": "3028adfcfcad1c78f296014bafbf0eaa8824b754",
+      "additions": 39,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/HOSTED-COMPILER-FOCUSED-VALIDATION-031.json",
+      "status": "added",
+      "sha": "016865de56b3bc87470ea23341f1052f0262840b",
+      "additions": 369,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/HOSTED-COMPILER-GATE-VALIDATION-031.json",
+      "status": "added",
+      "sha": "51a29e3016e9255df4944dd47d99405283877746",
+      "additions": 1636,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/HOSTED-COMPILER-GATE-VALIDATION-031.md",
+      "status": "added",
+      "sha": "fb912add591185854302576dfff2912620cb790b",
+      "additions": 22,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/HOSTED-SALVAGE-FIXTURE-VALIDATION-032.json",
+      "status": "added",
+      "sha": "60b73a09def76528e1aaf802b4213e5eb8ed4614",
+      "additions": 161,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/HOSTED-SALVAGE-FIXTURE-VALIDATION-032.md",
+      "status": "added",
+      "sha": "65528acb648fcaf9e17582d45a55984ba5899730",
+      "additions": 11,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/INVENTORY-ACTION-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "67d0b623708d54eca285bf34cdecd0411f6d4bd4",
+      "additions": 108,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-18.md",
+      "status": "added",
+      "sha": "f3553a6cfa878abe65ed163851cbc958271c98e6",
+      "additions": 9,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-CR-05-ecm-time.md",
+      "status": "added",
+      "sha": "5bfe246ab289f44c917b3c2c44447af74daad149",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-CR-06-autopilot-hull-limits.md",
+      "status": "added",
+      "sha": "25b175db96da3757fcd9933b1112ca30e2f8847e",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-CR-09-mining-save-invariants.md",
+      "status": "added",
+      "sha": "dde66e1a2d332039ed8ba5a6a9dde337c16f4603",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-CR-10-survivor-threat-bindings.md",
+      "status": "added",
+      "sha": "a081106f44cbf7f84fee262c7595d56351e10226",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-central-runtime-fixtures-021.md",
+      "status": "added",
+      "sha": "7bf36b3911d0a3c9c90a518a0f1b23011b94aae9",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-effective-equipment-statistics.md",
+      "status": "added",
+      "sha": "2206076345a784244c9b9865c14a357c57bae47c",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-equipment-runtime.md",
+      "status": "added",
+      "sha": "774527d8a0266b6c16525cad9c9dc6621409911a",
+      "additions": 9,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-hosted-native-window.md",
+      "status": "added",
+      "sha": "ea5c6d3237db26d2a9b6ba5f1500a322fdf78e71",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-hosted-snapshot-compiler.md",
+      "status": "added",
+      "sha": "69b068343480f6804f33064cceb0a05f4f98811a",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-inventory-row-whitespace.md",
+      "status": "added",
+      "sha": "3550d7488c670f8710d097b0724098b895cef91d",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-mission-economy-review.md",
+      "status": "added",
+      "sha": "81b8cd349e1b36cfb56994cf2d1081a09782fe63",
+      "additions": 11,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-ordered-native-commander-files.md",
+      "status": "added",
+      "sha": "6ed15334390ef585c4d62fb6a5ce92fc27339975",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-rendering-ui-review.md",
+      "status": "added",
+      "sha": "54b74857c66933dccc153cac142bf556582cb073",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-review-source-guard.md",
+      "status": "added",
+      "sha": "f702959d508f9e9bd7f9b0a57daba2dcb8aaf760",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-route-score-overflow.md",
+      "status": "added",
+      "sha": "36eb28baefa5593d6aff4a5f82383ed732cfd65e",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-salvage-pose-no-op.md",
+      "status": "added",
+      "sha": "ff858ce3a0beac30e898b34cedf2c08c652a4902",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-save-admission-safety.md",
+      "status": "added",
+      "sha": "fa031234b0b64d75367c736f56dcb648ee144a8d",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-solar-save-set-order.md",
+      "status": "added",
+      "sha": "9fe999183b6cba5ba811a7f7863cbe8d58c91e7c",
+      "additions": 5,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-station-market-ux.md",
+      "status": "added",
+      "sha": "2f015ecafe5847b306520e9045bed1024004af31",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ISSUE-typed-ordnance-runtime.md",
+      "status": "added",
+      "sha": "21341debab9166deedaf0dda87bb740453b36c2c",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/MANUAL-CAPTION-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "b185d2809a5b125b226ef7417069c6a489ed60f0",
+      "additions": 1851,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/MANUAL-RESIDUAL-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "01f3b49943ae0167f3c0659be2cab40d40fb8682",
+      "additions": 3084,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/NATIVE-WINDOW-FOCUSED-VALIDATION-035.json",
+      "status": "added",
+      "sha": "1f94c17bfa9e1ce22ab088569563a180869b9512",
+      "additions": 356,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/NATIVE-WINDOW-GATE-VALIDATION-036.json",
+      "status": "added",
+      "sha": "b3427aa4145314876b1eebc894abb5f8b04de35e",
+      "additions": 491,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/NATIVE-WINDOW-GATE-VALIDATION-036.md",
+      "status": "added",
+      "sha": "52daddba73c59070d5aaa43925addd576e171843",
+      "additions": 18,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/NATIVE-WORK-GUIDANCE-VALIDATION.json",
+      "status": "added",
+      "sha": "a44e4776c1f100e0a82812cafc1c9a9d8f30e056",
+      "additions": 957,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/NPC-ACCEPTANCE-VALIDATION.json",
+      "status": "added",
+      "sha": "1d3ab8d5be0e7ad95bfd0ab4b4d90652d55e6ac7",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/NPC-REFERENCE-ACCEPTANCE-VALIDATION.json",
+      "status": "added",
+      "sha": "e9b447558ef9e811a6014f00c3c9ba02fe484615",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/NPC-REFERENCE-BINDINGS.md",
+      "status": "added",
+      "sha": "b9233207e2908bb2553cb490cc64d77ace0fa784",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-19.md",
+      "status": "added",
+      "sha": "0cab359b06b293edd163a8be722ae5bc56885b52",
+      "additions": 15,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-CR-05-ecm-time.md",
+      "status": "added",
+      "sha": "0c46f8897c50d7a820aad82390ed6e86f281a199",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-CR-06-autopilot-hull-limits.md",
+      "status": "added",
+      "sha": "2ad316b43fb11826d49c49ce51dc6c38ea1a6791",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-CR-09-mining-save-invariants.md",
+      "status": "added",
+      "sha": "16906156ec0078bfa54556a69472ce24a93fd126",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-CR-10-survivor-threat-bindings.md",
+      "status": "added",
+      "sha": "c5c8e94e89aac9fb9d7b3d9918a266d00a68b338",
+      "additions": 13,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-central-runtime-fixtures-021.md",
+      "status": "added",
+      "sha": "705e55237fc798c2ca6520127ab96fbae86f24ff",
+      "additions": 11,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-effective-equipment-statistics.md",
+      "status": "added",
+      "sha": "793a4e301e03c088bc8fc7887a9c0f8630542509",
+      "additions": 9,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-equipment-runtime.md",
+      "status": "added",
+      "sha": "0d1b7106e39f04837cff2d3a0c4c13cd081f19a8",
+      "additions": 89,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-hosted-native-window.md",
+      "status": "added",
+      "sha": "d9e7b851617c7d93cee833ecbbfae88b0c9b7dc5",
+      "additions": 9,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-hosted-snapshot-compiler.md",
+      "status": "added",
+      "sha": "96ce65b7159cec0c6fd9dc13c6b9b23046ad8614",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-inventory-row-whitespace.md",
+      "status": "added",
+      "sha": "8a8208fa733e825767d7d3962c5f2ba021338c2c",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-mission-economy-review.md",
+      "status": "added",
+      "sha": "29c82cdbff9ff72c789405aa07782d438ee2d089",
+      "additions": 23,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-ordered-native-commander-files.md",
+      "status": "added",
+      "sha": "cc5c385e370af8393d9af3f327b301b376433ca3",
+      "additions": 9,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-rendering-ui-review.md",
+      "status": "added",
+      "sha": "245abd3a4e5b7c02761749098fdc92c086f19ce9",
+      "additions": 9,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-review-source-guard.md",
+      "status": "added",
+      "sha": "18f7db6c23ac9de9185a8ba11bd76800ef45f3af",
+      "additions": 9,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-route-score-overflow.md",
+      "status": "added",
+      "sha": "d5748dd087b57f61bf5af5ce51e47a1ecb17d54f",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-salvage-pose-no-op.md",
+      "status": "added",
+      "sha": "909e0e81146822e775eb948ed87f9873278fd1e0",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-save-admission-safety.md",
+      "status": "added",
+      "sha": "28180289cdc14b2cbede370e8a390139b54e37d6",
+      "additions": 9,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-solar-save-set-order.md",
+      "status": "added",
+      "sha": "5d7eb1d72acf0e823eab3570b7ae981b501462a8",
+      "additions": 7,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-station-market-ux.md",
+      "status": "added",
+      "sha": "603620c5896766223402c2f05c2a5e02ffe743d3",
+      "additions": 13,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/PR-typed-ordnance-runtime.md",
+      "status": "added",
+      "sha": "62b8cd2b4c118246352901e8d07a0f987a390539",
+      "additions": 15,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/RECOVERED-FEATURE-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "d9d027eb52b38506683259fefb83ecd9fb788c14",
+      "additions": 4377,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/SHIP-FILES.md",
+      "status": "modified",
+      "sha": "bd153112c9c25978cad9d2b71e5b032a19e64fc1",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/SOLAR-SAVE-ORDER-FAILURE-024.json",
+      "status": "added",
+      "sha": "8d89a79f91681e1251c6fb618c7583657143c15f",
+      "additions": 55,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/SONAR-SOURCE-CHECKPOINT-VALIDATION-027.json",
+      "status": "added",
+      "sha": "1f0c5e15ab9fe60d592554f062505ce0389ce42b",
+      "additions": 54,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/TARGETING-COMPUTERS.md",
+      "status": "added",
+      "sha": "e11cdea4d87e454249de7a74b23378ccd1f4c3d7",
+      "additions": 105,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/TYPED-ORDNANCE-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "f0b5d2d238c58ef276493271bf1b873d340e1980",
+      "additions": 46,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/WORK-GUIDANCE-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "d6307f9c8a2b40c6572f958d2114184769f7b360",
+      "additions": 3097,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/WORK-TOOLS-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "f5b05ff5c908463f5cc8aeb4fd3d9e30bae4dff7",
+      "additions": 21,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/WORK-VISUAL-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "925386e0065c600d1f51de2d359738102eb197e7",
+      "additions": 3029,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/WORK-VISUAL-SOURCE-HANDOFF.json",
+      "status": "added",
+      "sha": "8fb240378993ce236de1452d050fd85056ccfeb5",
+      "additions": 539,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/WORLD-ORE-FOCUSED-VALIDATION.json",
+      "status": "added",
+      "sha": "777da3bc9375b3d36a4081fe589a0afc7677246f",
+      "additions": 23,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/elite.png",
+      "status": "modified",
+      "sha": "3f31b69d92c4d7188f5c6bddad46bae1f88c2d3a",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/images/route-alternatives-galaxy.png",
+      "status": "modified",
+      "sha": "c0f28fc26c924c4ea7a729311940b8764449e506",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/images/route-alternatives-local.png",
+      "status": "modified",
+      "sha": "086ee45ffcc5ac237e0ca8151fc772a01eadbaa0",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/ships/manifest.json",
+      "status": "modified",
+      "sha": "ea12c93fee33e72dd3ac6d0c5fe7329991b17ed7",
+      "additions": 168,
+      "deletions": 168
+    },
+    {
+      "filename": "docs/start-sequence.gif",
+      "status": "modified",
+      "sha": "499babd5d7f108fbcb22067c4e73ea5d5d422ffc",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/validation/salvage-admission-fixed-geometry.json",
+      "status": "added",
+      "sha": "4f8877673d2f237d51b308ebff4913903ca3e716",
+      "additions": 22728,
+      "deletions": 0
+    },
+    {
+      "filename": "docs/validation/salvage-admission-geometry.json",
+      "status": "added",
+      "sha": "726aca5c5bfebde75fbc081a73a8f093cf3fe342",
+      "additions": 22720,
+      "deletions": 0
+    },
+    {
+      "filename": "script/sonar.sh",
+      "status": "modified",
+      "sha": "74f5a88adacd2aa81828224edda59f105d44a783",
+      "additions": 28,
+      "deletions": 3
+    }
+  ]
+}
