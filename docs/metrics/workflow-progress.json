@@ -4565,13 +4565,16 @@
       "ledger_parent": "M01.I43",
       "pr": 44,
       "issue": 43,
-      "source_review": "MBA source clean; focused author14+2 synthetic evidence accepted",
+      "source_review": "MBA independent source and exact hosted ancestry verification complete;43 closed",
       "authoring_validation": "14 collector +2 attribution Python tests PASS; two primary regressions failold/passnew",
       "integration_status": "composed on canonical as670aad0490896faabad4f1c5205405f78a2514ec atop17432742; no usable delivery",
       "helper_status": "stopped after bounded correction",
       "usable_build_delivered": false,
       "github_run": 39713282582,
-      "unit_status": "existing hosted active; actual ancestry evidence pending for43 closure"
+      "unit_status": "20 Python/report +11 control checks PASS; separate Swift aggregate FAILED signal4",
+      "verification_url": "https://github.com/stephenlclarke/elite/issues/43#issuecomment-6331653409",
+      "issue_status": "CLOSED; observer root cause verified",
+      "qualification_scope": "Actual root exec and owned helper/image/symbol evidence only; no174 Swift aggregate or41/42 correction proof"
     },
     {
       "event": "Recorder frame and stale assertions corrected; reviewed collector composed",
