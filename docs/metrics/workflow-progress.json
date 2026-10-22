@@ -4987,7 +4987,7 @@
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
       "G1": "C08 complete seed-service loop on feature/wayfarer-seed-service; ready workshop findings at packet boundary",
-      "G3": "M04.P02 physical calibration/clearance;retainsPR51/55/56qualification/merge"
+      "G3": "M05.P01 native pack validation/capability reporting;retainsPR51/55/56qualification/merge"
     },
     "reviewer": "MBA/G2",
     "merge_owner": "Feature author; no separate integrator",
@@ -5196,7 +5196,7 @@
         "obsolete_run": {
           "run": 39742600706,
           "head": "e4772060e3ec4ebe3b1142204b56f37e8ee52e6f",
-          "state": "Cancellationrequested;unqualified",
+          "state": "Cancellationrequested;GitHubstillin_progressatlatestobservation;unqualified",
           "reason": "Actualselectoromitsaffectedmethod;correct93successorjobalreadyexists"
         }
       },
@@ -5265,13 +5265,13 @@
         "assigned_at": "2026-10-22T07:31:56.858334+00:00",
         "phase_entry_state": "Concrete missing-overflow paging-hint gap identified; sixbindings/menu/heldReturn/selection credited",
         "source_complete_at": null,
-        "merged_at": null,
+        "merged_at": "2026-10-22T07:52:43Z",
         "playable_at": null,
         "ownership": "Only PlayerHelp.context system/inventory paging-hint hunks;two pure viewport/help methods;pairednotes;G1missionhunks excluded",
         "head": "dcf22e6b7afe5413fc2bf1fa6da3829fe4358ae9",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/55",
         "first_push_observed_at": "2026-10-22T07:35:56Z",
-        "source_state": "Source/unitqualified;G3authormergepending;notnewapp/release",
+        "source_state": "Author-mergedsource/unitqualifiedfeature;notnewapp/native/release",
         "unit_run": 39741603995,
         "unit_status": "MBAverified39741603995actual257methods289casesALLPASS;bothnewmethodsPASS;zeroerrors/skips/crash",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/55#issuecomment-6335390517",
@@ -5279,7 +5279,9 @@
         "verified_methods": 257,
         "verified_expanded_cases": 289,
         "compile_seconds": 721.24,
-        "execution_seconds": 57.918
+        "execution_seconds": 57.918,
+        "merge_commit": "fd9cf425f5598833ff67f8acb929a86fd56de848",
+        "merged_into": "feature/canonical-mission-composition"
       },
       {
         "id": "M03.P02.world-identity",
@@ -5337,7 +5339,26 @@
         "merged_at": null,
         "playable_at": null,
         "ownership": "Exactcalibrationmetadata/ShowroomGeometryphysicalconversion/pureboundsunits/notes",
-        "limits": "RetainSH025;nounapprovedscales/showroomphysicalnormalization/runtimebypass/newresearch"
+        "limits": "RetainSH025;nounapprovedscales/showroomphysicalnormalization/runtimebypass/newresearch",
+        "disposition": "Existingphysicalpolicy/calibratedhulls correct;noconcreteconversiongap/nochange",
+        "source_evidence": "SH025pinned120mcalibration;SH029metres;SH06120m/sourceunit;rawmesh/origin-basedclearance;previewnormalisationseparate",
+        "remaining_dependencies": [
+          "SH030 approved physical-source contract",
+          "SH062 approved physical-source contract",
+          "Other unapproved hulls require individual physical units/calibration before activation"
+        ],
+        "qualification_scope": "Source/existingtestdefinitionevidenceonly;notall171calibration/nativeacceptance"
+      },
+      {
+        "id": "M05.P01.pack-install",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T07:53:06.857090+00:00",
+        "phase_entry_state": "Boundedactualfolderpackvalidation/capabilitygapimplementationassigned",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "ownership": "MissionPackInput/ScriptPack/PackValidation/narrowNativeMissionMenu/puretests/notes;noG1Director/Game/mission/save",
+        "limits": "Noinvalidpackmutation/rewards;nogenericlanguage/hotreload/replayframework"
       }
     ],
     "model_settings": {
@@ -5367,9 +5388,9 @@
       "model": null,
       "active_assignment": null
     },
-    "qualification_queue_note": "Sourcequeueclear;PR54255/287andPR55257/289verifiedPASS/author mergesready;PR51259andPR56258actualpending;52/53closed",
-    "complete_features_merged": 1,
-    "merged_feature_count_scope": "Shared development branch complete featurePR48 only; source qualification/individual packets do not add counts",
+    "qualification_queue_note": "PR55mergedfd9after257/289PASS;PR54GitHubmarkedmerged;PR51/56actualcurrentheadspending;MBA reviewqueueclear",
+    "complete_features_merged": 2,
+    "merged_feature_count_scope": "DistinctcompletefeaturePR48showroomandPR55controlhints/shareddevelopment;53fixturecorrectionnotanewfeature",
     "new_usable_build_deliveries": 0,
     "new_published_releases": 0,
     "accessible_unit_qualified_candidates_delivered": 1,
