@@ -5673,6 +5673,29 @@
       "approved_scope": "private payload backing directly owns identical53fields; no intermediate stored value; explicit complete referencecopy/equality/all49uniqueness/flatJSON invariant",
       "runtime_fix_proven": false,
       "no_extra_diagnostic_campaign": true
+    },
+    {
+      "event": "NPC target route projection qualified and author-merged",
+      "date": "2026-10-22",
+      "merged_at": "2026-10-22T13:08:01Z",
+      "pr": 83,
+      "qualified_head": "ac50870c39994126499ba4804f1e998fb1c46ae8",
+      "merge_commit": "b46115aa90c356342c186ca9521dd50d3ee8a4a9",
+      "run": 39781532507,
+      "methods_passed": 339,
+      "expanded_cases_passed": 376,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "compile_seconds": 773.86,
+      "test_seconds": 78.223,
+      "review": "MBA clean exact-head source and composition; automated generic service error dispositioned",
+      "merge_owner": "G3",
+      "archive_tag": "archive/merged-pr83-20261022-ac50870c",
+      "remote_feature_branch_removed": true,
+      "playable_build_delivered": false,
+      "published_release": false,
+      "broader_issue18": "open"
     }
   ],
   "two_developer_phase": {
