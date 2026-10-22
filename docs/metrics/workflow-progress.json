@@ -4807,8 +4807,33 @@
         "merged_at": null,
         "playable_at": null,
         "start_observed_at": null,
-        "start_evidence": "G3 active thread5416f3c1-d481-4bdb-a92b-4292e55ae0f8 cursor3 and direct assignment acceptance; exact start timestamp not recorded"
+        "start_evidence": "G3 active thread5416f3c1-d481-4bdb-a92b-4292e55ae0f8 cursor3 and direct assignment acceptance; exact start timestamp not recorded",
+        "first_push_observed_at": "2026-10-22T05:59:27Z",
+        "push_timestamp_source": "PR48 creation; observation of push, not exact push event",
+        "head": "1b5c07aa136840b759cee87b0e766307c26ec8ad",
+        "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
+        "source_state": "Compact comparison fix and three focused tests pushed; MBA source review assigned, hosted selection pending",
+        "first_push_observed_elapsed_seconds": 224
       }
-    ]
+    ],
+    "model_settings": {
+      "source": "Human reports both coder sessions run GPT-6.1 Sol Medium; retain current settings",
+      "G1": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "medium"
+      },
+      "G3": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "medium"
+      },
+      "MBA": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "source": "Human confirms Coder2 High; Coder2 also runs the existing MBA review workflow",
+        "implementation_policy": "Escalation only for a named necessary blocker; no standing implementation stream or self-review"
+      },
+      "comparison_caveat": "Worker count and reported effort settings may differ from the prior period; do not attribute a change solely to parallelism."
+    },
+    "escalations": []
   }
 }

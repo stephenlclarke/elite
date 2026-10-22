@@ -6,7 +6,7 @@ Updated 22 October 2026. This is the current workflow authority; older process i
 
 **Choose one complete feature -> implement and write isolated unit tests -> push -> request review -> continue coding -> author merges when qualified.**
 
-G1/MBP (GPT-6.1 Sol High) is the primary developer and release publisher. There is no separate integrator or integration queue. Each explicitly assigned developer owns its feature through implementation, meaningful unit tests, reviewer corrections, conflict resolution and its own PR merge after the required checks, MBA review and approvals pass. At each coherent packet boundary, take ready actionable reviewer issues first; otherwise take the next ready ledger item, M01 first. Skip a genuinely unavailable dependency and record it briefly. Do not wait for tests, reviews, Sonar, packaging, an empty issue queue or Orchestrator acknowledgement.
+G1/MBP (GPT-6.1 Sol Medium) is the primary developer and release publisher. There is no separate integrator or integration queue. Each explicitly assigned developer owns its feature through implementation, meaningful unit tests, reviewer corrections, conflict resolution and its own PR merge after the required checks, MBA review and approvals pass. At each coherent packet boundary, take ready actionable reviewer issues first; otherwise take the next ready ledger item, M01 first. Skip a genuinely unavailable dependency and record it briefly. Do not wait for tests, reviews, Sonar, packaging, an empty issue queue or Orchestrator acknowledgement.
 
 Keep one development branch/PR and small complete packets where practical. Preserve other owners' edits; never rewrite published work. Use necessary short local checks to resolve authoring uncertainty; routine isolated-unit execution belongs to GitHub. Update the existing ledger row at assignment and push, without a separate handoff dossier.
 
@@ -23,6 +23,10 @@ Base <SHA> -> head <SHA>; isolated units <selection>; known gap <if any>
 ## Two independent feature streams
 
 G1 owns the complete clinic loop. G3 owns M02.P04/F06 showroom comparison, using its existing session01a13ff4-1a89-7711-befa-15701182d113 and an isolated branch/worktree from81d54e74. Each developer owns its PR and merge after MBA review/checks/approvals; showroom targets feature/canonical-mission-composition. No central integration queue. MBA takes ready corrections first, then the oldest ready feature. Root flags review backlog above two ready packets or an oldest source review older than30minutes; this is an orchestration signal, not a developer wait gate.
+
+## High-effort escalation only when needed
+
+Elite Coder2 uses GPT-6.1 Sol High, as confirmed by Stephen. G1 and G3 retain Medium for ordinary implementation. Coder2 has no standing implementation stream: Root escalates only a named difficult blocker, repeated unsuccessful correction, or complex actor/state/security problem with bounded scope. Routine MBA review remains necessary work, not permission for extra implementation or audits. Record reason, scope, start/end and result in the existing metrics events. If Coder2 authors a fix, a different non-author developer provides the independent source review; it cannot approve its own correction. No current coding escalation is assigned.
 
 ## Reviewer: work asynchronously
 
