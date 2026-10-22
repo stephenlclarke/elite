@@ -5089,6 +5089,20 @@
       "scope": "NativeSafeGunnerySave required-leaf snapshot, no predicate/authority weakening",
       "unit_execution": false,
       "new_jobs_started": 0
+    },
+    {
+      "event": "MBA completed real171ship regeneration with identicalGIFoutputs and correctedinputmanifest",
+      "date": "2026-10-22",
+      "source": "f8090b77fb004469e24d6968d8b64e713cc57c0a",
+      "host": "SteveMBA",
+      "build_seconds": 122.69,
+      "rendered_ships": 171,
+      "manifest_input_changes": 171,
+      "manifest_output_changes": 0,
+      "normal_check_passed": true,
+      "issue": 75,
+      "merge_pending": true,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
@@ -6185,20 +6199,29 @@
     "media_fingerprint_correction": {
       "issue": 75,
       "owner": "G4",
-      "state": "actual generation running onSteveMBA",
+      "state": "171actualrenderer generation andnormalcheck complete; G4final77 composition pending",
       "scope": "Truthful ship renderer input dependency hash and Python regression units",
       "limits": "No forged manifests, dropped renderer dependencies, generated-media edits or native/fullCI execution",
       "pr": 77,
       "head": "f8090b77fb004469e24d6968d8b64e713cc57c0a",
       "focused_python_tests_passed": 7,
       "required_renderer_gifs": 171,
-      "assets_generated": false,
+      "assets_generated": true,
       "asset_owner": "MBA on physical SteveMBA, resource coordination pending",
       "source_review": "MBAclean",
       "renderer_session": 76232,
       "renderer_checkout": "/Users/sclarke/Projects/elite-ship-media",
       "renderer_source": "f8090b77fb004469e24d6968d8b64e713cc57c0a",
-      "renderer_jobs": 2
+      "renderer_jobs": 2,
+      "renderer_completed": true,
+      "renderer_build_seconds": 122.69,
+      "manifest_input_changes": 171,
+      "manifest_output_changes": 0,
+      "generated_reference_changes": 0,
+      "normal_check": "All171TOMLs/GIFs/reference sections current",
+      "archive_sha256": "89e77d7c22832084637466c69f4cdfdaf7bda2b9f0e7f00c3da3313c9fb4a135",
+      "manifest_sha256": "6b2e700bc39fa3e52ae5abe184d48f1c2f512e7a89b39b604a1b8fceed2e2205",
+      "mba_renderer_lease": "free"
     },
     "safe_gunnery_lesson": {
       "owner": "G4",
@@ -6214,7 +6237,10 @@
       "source_review": "MBA full production and16methods clean",
       "ready_correction_issue": 78,
       "older_run": 39759361090,
-      "older_result": "EliteCore compile failure; no XML/no unit execution"
+      "older_result": "EliteCore compile failure; no XML/no unit execution",
+      "correction_head": "fa2c4733",
+      "correction_source_review": "MBA bounded snapshot/controlflow clean",
+      "correction_execution": "pending"
     },
     "c08_qualification": {
       "head": "b0bfda8ad2aa3b7b51f63879c6e2fb3f2d0bb7f4",
