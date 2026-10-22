@@ -5476,7 +5476,8 @@
         "correction_handoff_url": "https://github.com/stephenlclarke/elite/pull/59#issuecomment-6336473875",
         "awaiting_verification_findings": [
           63
-        ]
+        ],
+        "correction_source_review": "MBA63loweredpositive+unknownnegativecallsCLEAN;upperstrictassertions/production/279285selectionsunchanged;affectedexecutionpending"
       },
       {
         "id": "M06.P03.appearance",
@@ -5525,7 +5526,8 @@
         "awaiting_verification_findings": [
           63
         ],
-        "finding_kind": "PartialUtilityfixturelosesoriginalsaleandNavidorhistoricalstation;notcrashattribution"
+        "finding_kind": "PartialUtilityfixturelosesoriginalsaleandNavidorhistoricalstation;notcrashattribution",
+        "correction_source_review": "MBA63loweredpositive+unknownnegativecallsCLEAN;upperstrictassertions/production/279285selectionsunchanged;affectedexecutionpending"
       },
       {
         "id": "M07.P01.legal-facts",
@@ -5537,13 +5539,17 @@
         "playable_at": null,
         "ownership": "WantedBoardtwofactlookups+2puredossierunits/notes",
         "limits": "NoG1Game/mission/saveorG4combat/scoop;no fabricatedtraffic/cargo/routes",
-        "source_state": "WantedBoardfixpushed;2puremethods/259selection;MBAreview/actualexecutionpending",
+        "source_state": "Domainqualified;actualselectorconflict/finalcompositionpending;notnewapp/release",
         "credited_behavior": "Nativelegal/bounty/resource mechanics unchanged;no fabricatedtarget/cargo/travelfacts",
         "head": "72f27b77ecd0a75a68aef88b0e09313d1e148509",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/61",
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/61#issuecomment-6336183894",
         "unit_run": 39746993767,
-        "unit_status": "SUCCESS08:35:41;MBAactual259artifactverificationpending"
+        "unit_status": "MBAverified259methods291casesALLPASSincl2Wanted;zeroerrors/skips/crash",
+        "verified_methods": 259,
+        "verified_expanded_cases": 291,
+        "compile_seconds": 778.63,
+        "execution_seconds": 55.139
       },
       {
         "id": "M07.P02.ordnance-attribution",
