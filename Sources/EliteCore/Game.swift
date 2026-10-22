@@ -1663,7 +1663,7 @@ public struct Game: Sendable {
     switch drive.activation {
     case .timed(let seconds): candidate.jumpCountdown = seconds
     case .immediate:
-      // This branch remains unreachable until an authentic alien fitting supplies it.
+      // The fitted recovered alien device uses the same fuel and arrival transaction.
       candidate.arrive()
       guard candidate.commander.system == selectedSystem, candidate.commander.valid else { return }
     }

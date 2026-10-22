@@ -6,7 +6,7 @@ import Testing
 
 // Match the existing native page-store fixtures: every ancestor is a physical
 // directory so the production O_NOFOLLOW checks remain exercised unchanged.
-private func nativeSalvageTestDirectory() throws -> URL {
+func nativeSalvageTestDirectory() throws -> URL {
   let path = FileManager.default.temporaryDirectory.path
   let resolved = path.withCString { realpath($0, nil) }
   let physical = try #require(resolved)
@@ -198,7 +198,7 @@ struct NativeSalvageCollectionRuntimeTests {
   }
 }
 
-private func recoveredModuleAtActualPlughDock(
+func recoveredModuleAtActualPlughDock(
   _ file: URL,
   kind: AlienModuleKind = .energyCapacity
 ) async throws -> (GameRuntime, UUID) {
