@@ -75,6 +75,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedFieldRelief: WayfarerFieldReliefCustody?
   var savedNavigationTrade: ScriptNavigationTradeState?
   var savedOriginalSurvey: NativeOriginalSurveyState?
+  var savedIsolationWorkParent: NativeIsolationWorkParentState?
   var savedGlassMeridian: NativeGlassMeridianState?
   var savedArkReserve: NativeInductionArkReserve?
   var savedArkRecovery: NativeArkRecoveryReceipt?
@@ -214,6 +215,11 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     _read { yield storage[0].savedFieldRelief }
     _modify { yield &storage[0].savedFieldRelief }
   }
+  var savedIsolationWorkParent: NativeIsolationWorkParentState? {
+    _read { yield storage[0].savedIsolationWorkParent }
+    _modify { yield &storage[0].savedIsolationWorkParent }
+  }
+
   var savedGlassMeridian: NativeGlassMeridianState? {
     _read { yield storage[0].savedGlassMeridian }
     _modify { yield &storage[0].savedGlassMeridian }
@@ -600,6 +606,14 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         opening.permission.mission == instance.id, instance.payloads == opening.payloads
       else { return false }
     } else if instance.savedWayfarerInduction != nil {
+      return false
+    }
+    if instance.definition == NativeIsolationWorkParent.stateID {
+      guard let parent = instance.savedIsolationWorkParent,
+        parent.parent == instance.id, parent.digest == instance.digest,
+        instance.contract != nil, instance.payloads.isEmpty
+      else { return false }
+    } else if instance.savedIsolationWorkParent != nil {
       return false
     }
     if instance.definition == NativeGlassMeridian.stateID {

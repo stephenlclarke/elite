@@ -1,0 +1,7 @@
+# G11 genuine parent acceptance and programmer bridge
+
+The physical Renas isolation provider needs an actual accepted Lerr commission and the original programmer issue command. The acquisition-only programmer foundation supplies identity, mass and canonical loan machinery, but cannot confer job permission. A label, generic Lua acceptance or reconstructed command UUID must not authorize either feeder.
+
+Provide an explicit review and Confirm at the actual living Avenor berth. Freeze the approved direct Avenor-Renas-Avenor L2/H0 quote at 970 CR, without a fee, deposit or deadline. Stage the parent contract, source reservation, one actual one-tonne programmer and provider authorization together in the existing actor publication. Retain the real equipment application receipt's command, source and original serial. Preserve historical return proof without requiring current held custody to read it.
+
+Acceptance must reject stale native context or property, a full hold, a fourth active Original contract, historical original issuance and generic acceptance/command bypasses. Publication refusal must retain the original live state. Conditional parent save versions 133/134 validate every present family; provider 131/132 remains independently owned. No replacement stock, duplicate loan ledger, local Swift test campaign or full G11 completion claim belongs to this bridge.

@@ -5,6 +5,14 @@ extension Game {
     _ definition: ScriptGearDefinition, fields: [String: ScriptValue], command: UUID,
     state: inout ScriptInstance, candidate: inout Commander
   ) throws -> (String, [String: ScriptValue])? {
+    try issueScriptGearWithReceipt(
+      definition, fields: fields, command: command, state: &state, candidate: &candidate)?.event
+  }
+
+  func issueScriptGearWithReceipt(
+    _ definition: ScriptGearDefinition, fields: [String: ScriptValue], command: UUID,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> (event: (String, [String: ScriptValue]), receipt: EquipmentIssueReceipt)? {
     if state.gearIssues[definition.id] != nil { return nil }
     let fit: Bool
     if let value = fields["fit"] {
@@ -104,11 +112,14 @@ extension Game {
       returnRemaining: definition.returnPolicy == "remaining", savedGearVersion: 2,
       source: source, node: node, displacements: applied.receipt.displacements)
     return (
-      "equipment.issued",
-      [
-        "gear": .string(definition.id), "items": .array(identities.map { .string($0.uuidString) }),
-        "loan": .bool(definition.loan),
-      ]
+      (
+        "equipment.issued",
+        [
+          "gear": .string(definition.id),
+          "items": .array(identities.map { .string($0.uuidString) }),
+          "loan": .bool(definition.loan),
+        ]
+      ), applied.receipt
     )
   }
 
@@ -116,6 +127,15 @@ extension Game {
     _ record: ScriptGearIssue, release: Bool, command: UUID,
     state: inout ScriptInstance, candidate: inout Commander
   ) throws -> (String, [String: ScriptValue]) {
+    try settleScriptGearWithReceipt(
+      record, release: release, command: command, state: &state, candidate: &candidate
+    ).event
+  }
+
+  func settleScriptGearWithReceipt(
+    _ record: ScriptGearIssue, release: Bool, command: UUID,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> (event: (String, [String: ScriptValue]), receipt: EquipmentIssueReceipt) {
     guard let obligation = record.obligation, let inventory = candidate.equipmentInventory else {
       throw EquipmentIssueError.invalidRequest
     }
@@ -144,15 +164,17 @@ extension Game {
     settled.status = release ? .released : .returned
     state.gearIssues[record.resource] = settled
     return (
-      release ? "equipment.released" : "equipment.returned",
-      [
-        "gear": .string(record.resource),
-        "items": .array(
-          record.items.filter { !record.consumed.contains($0) }.map {
-            .string($0.uuidString)
-          }),
-        "consumed": .integer(Int64(record.consumed.count)),
-      ]
+      (
+        release ? "equipment.released" : "equipment.returned",
+        [
+          "gear": .string(record.resource),
+          "items": .array(
+            record.items.filter { !record.consumed.contains($0) }.map {
+              .string($0.uuidString)
+            }),
+          "consumed": .integer(Int64(record.consumed.count)),
+        ]
+      ), applied.receipt
     )
   }
 

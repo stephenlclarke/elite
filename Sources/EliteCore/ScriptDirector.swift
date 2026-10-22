@@ -232,6 +232,13 @@ extension Game {
         return "Use Station Contracts at Avenor for Senn's induction commission."
       }
     }
+    if pack.manifest.stateID == NativeIsolationWorkParent.stateID {
+      guard NativeIsolationWorkParent.matches(pack) else {
+        return "Restore the approved isolation commission."
+      }
+      return isolationWorkParentMission == nil
+        ? "Use Lerr's native Station Contracts review at Avenor." : nil
+    }
     if pack.manifest.glassMeridian != nil || pack.manifest.stateID == NativeGlassMeridian.stateID {
       if let reason = NativeGlassMeridian.availability(
         pack,
@@ -436,6 +443,9 @@ extension Game {
     guard pack.manifest.wayfarerInduction == nil,
       pack.manifest.stateID != NativeWayfarerInduction.stateID
     else { throw MissionPackError("Use Senn's actual induction commission review.") }
+    guard pack.manifest.stateID != NativeIsolationWorkParent.stateID,
+      pack.digest != NativeIsolationWorkParent.digest
+    else { throw MissionPackError("Use Lerr's actual native isolation review and original issue.") }
     guard pack.manifest.glassMeridian == nil, pack.manifest.stateID != NativeGlassMeridian.stateID
     else { throw MissionPackError("Use the actual Venn commission review.") }
     guard pack.manifest.flightReception == nil,

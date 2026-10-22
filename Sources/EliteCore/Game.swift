@@ -456,7 +456,8 @@ public struct Commander: Sendable, Equatable, Codable {
 
   @inline(never)
   private func validAfterEquipment() -> Bool {
-    guard NativeInductionCrewLogSave.validateClaims(self),
+    guard NativeIsolationWorkParentSave.validateClaims(self),
+      NativeInductionCrewLogSave.validateClaims(self),
       NativeInductionArkSave.validateClaims(self),
       NativeWayfarerInductionSave.validateClaims(self),
       NativeFirstCommoditySaleSave.validateClaims(self),
