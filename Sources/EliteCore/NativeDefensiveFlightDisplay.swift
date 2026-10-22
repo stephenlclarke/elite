@@ -34,8 +34,13 @@ extension Display {
         lines.append("WAITING FOR COHERENT NATIVE OBSERVATION")
       }
     }
-    for (index, line) in lines.enumerated() {
-      frame.label(line, 12, 96 + Double(index) * layout.row, scale: layout.font, ink: .cyan)
+    let columns = max(12, Int((layout.width - 24) / (6 * layout.font)))
+    let availableRows = max(1, Int((layout.flightClip.height - 16) / layout.row))
+    let visible = lines.flatMap { MissionNotice.wrap($0, width: columns) }.prefix(availableRows)
+    for (index, line) in visible.enumerated() {
+      frame.label(
+        line, 12, layout.flightClip.y + 8 + Double(index) * layout.row,
+        scale: layout.font, ink: .cyan)
     }
     if state.failure == nil, !state.workVerified, let original = state.original,
       phase == 1 || phase == 2
