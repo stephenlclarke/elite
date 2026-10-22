@@ -16,13 +16,14 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
-    "MarketInventoryProjectionUnitTests": (
-        "statusSummaryAndInventoryHaveDistinctResponsibilities",
+    "WantedDossierNameUnitTests": (
+        "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
+        "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
     ),
-    "InventoryGroupingUnitTests": (
-        "mixedTradeAndReservedCargoStayInDistinctSectionsWithoutChangingQuantities",
-        "fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce",
-        "emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody",
+    "MarketDisplayOrderUnitTests": (
+        "authoredOrderKeepsEachStableCommodityIDAndCargoIndex",
+        "arrowSelectionFollowsAuthoredOrderWithoutTradingOrChangingModes",
+        "renderedRowsAndClicksUseTheSameStableIDsAtCompactAndWideSizes",
     ),
     "NativeWayfarerInductionWorkshopUnitTests": (
         "originalBatchKeepsSixDistinctFailedSerialsSeparateFromClinicCargoAndAllWindows",
@@ -372,9 +373,18 @@ METHODS = {
     "BundledScriptPackTests": (
         "bundledMeasuredExtractionDeclaresActualTwentyTonneSourceAndClosedTwelveTonneRecipe",
     ),
-    "WantedDossierNameUnitTests": (
-        "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
-        "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
+    "MarketInventoryProjectionUnitTests": (
+        "statusSummaryAndInventoryHaveDistinctResponsibilities",
+    ),
+    "InventoryGroupingUnitTests": (
+        "mixedTradeAndReservedCargoStayInDistinctSectionsWithoutChangingQuantities",
+        "fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce",
+        "emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody",
+    ),
+    "PlanetNightTechnologyUnitTests": (
+        "originalWorldNightProfilesRetainEveryAuthoredTechnologyLevel",
+        "matchedOriginalEconomyAndGovernmentKeepIncreasingNightDevelopmentAboveFifteen",
+        "explicitLegacyNightProfilesKeepTheirExistingCoefficientsAndBounds",
     ),
     "NativeUtilityCustodyTests": (
         "explicitWorldActivationOwnsEightMaterialsWithoutTargetDockAuthority",
