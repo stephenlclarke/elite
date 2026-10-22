@@ -121,7 +121,7 @@ extension Game {
     let incoming = ecmControl.detect(bodies)
     detectRetaliationSources()
     let automatic = (commander.xyzzyActive && commander.autoECM) || stationAutoDockingActive
-    if incoming && automatic && ecmFrames == 0 { ecm() }
+    if incoming && automatic && ecmFrames == 0 { ecm(automatic: true) }
   }
 }
 

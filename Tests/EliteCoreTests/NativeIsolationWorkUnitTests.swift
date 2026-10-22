@@ -438,8 +438,8 @@ struct NativeIsolationWorkUnitTests {
     try fixture.admit()
     try fixture.arm()
     let before = try fixture.state()
-    for token in ["m", "t", "u", "e", "energy-bomb"] {
-      fixture.game.prepareIsolationWorkSafetyKey(token)
+    for token in ["t", "u", "m", "e", "energy-bomb"] {
+      fixture.game.key(token)
       #expect(
         fixture.game.isolationWorkRuntime.arm == nil
           && fixture.game.isolationWorkRuntime.review == nil)
@@ -449,8 +449,38 @@ struct NativeIsolationWorkUnitTests {
       try #require(fixture.game.isolationWorkRuntime.arm != nil)
     }
     fixture.game.missileArmed = false
+    let automaticArm = fixture.game.isolationWorkRuntime.arm
+    #expect(!fixture.game.fireMissile(retaliating: true))
+    #expect(fixture.game.isolationWorkRuntime.arm == automaticArm)
+    fixture.game.ecm(automatic: true)
+    #expect(fixture.game.isolationWorkRuntime.arm == automaticArm)
     #expect(!fixture.game.fireMissile())
     #expect(fixture.game.isolationWorkRuntime.arm == nil)
     #expect(try fixture.state() == before)
+    fixture.game.key("return")
+    fixture.game.key("return")
+    try #require(fixture.game.isolationWorkRuntime.arm != nil)
+    try fixture.tick()
+    fixture.game.commander.unlimitedMissiles = true
+    fixture.game.missileArmed = true
+    fixture.game.weaponsTargetID = try #require(fixture.game.isolationWorkContactBody?.id)
+    let attained = try fixture.state()
+    let inventory = fixture.game.commander.equipmentInventory
+    var launch = fixture.game
+    try #require(launch.fireMissile())
+    #expect(launch.bodies.count > fixture.game.bodies.count)
+    #expect(launch.commander.equipmentInventory == inventory)
+    let files = try ScriptFreightFixture()
+    defer { files.clean() }
+    let runtime = GameRuntime(game: fixture.game)
+    _ = try await runtime.registerNewCommanderDestination(at: files.save)
+    let baseline = await runtime.snapshot()
+    try Data("occupied".utf8).write(to: files.save)
+    await runtime.key("m")
+    let refused = await runtime.snapshot()
+    #expect(refused.commander == baseline.commander && refused.bodies == baseline.bodies)
+    #expect(refused.isolationWorkRuntime.arm == nil && refused.isolationWorkRuntime.review == nil)
+    #expect(refused.isolationWorkChild?.savedIsolationWork == attained)
+    #expect(try String(contentsOf: files.save, encoding: .utf8) == "occupied")
   }
 }

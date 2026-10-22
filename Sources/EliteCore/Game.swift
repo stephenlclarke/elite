@@ -1864,13 +1864,16 @@ public struct Game: Sendable {
     return true
   }
   public mutating func ecm() {
+    ecm(automatic: false)
+  }
+  mutating func ecm(automatic: Bool) {
     guard !docked, !playerEMPDisabled, commander.equipment.contains("E.C.M. System"),
       energy > ECMControl.activationEnergyCost,
       ecmFrames == 0
     else {
       return
     }
-    interruptIsolationWork()
+    if !automatic { interruptIsolationWork() }
     ensurePhysicalActors()
     guard let player = commander.flightSimulation.player, activateOrdnanceECM(emitter: player)
     else { return }
