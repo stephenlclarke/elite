@@ -5716,6 +5716,25 @@
       ],
       "cancelled_not_passed": true,
       "final_release_gates_retained": true
+    },
+    {
+      "event": "Confirmed duplicate route jobs cancelled; isolation actual fit-check trace released to correction owner",
+      "date": "2026-10-22",
+      "cancelled_runs": [
+        39784202700,
+        39784202656,
+        39784191897
+      ],
+      "same_tree_as_qualified_route": true,
+      "new_audit_run_untouched": 39785156893,
+      "g11_failed_run": 39782182054,
+      "g11_compile_seconds": 685.13,
+      "g11_completed_pass": 0,
+      "g11_fault": "BUS10 chkstk retainedMissionActorDescriptor fit-match call58; no ScriptInstance getter frame",
+      "g11_owner": "Mission Coder1",
+      "reviewer": "MBA",
+      "cpu_lease": "G1 released; no new Root compiler job assigned",
+      "runtime_fix_proven": false
     }
   ],
   "two_developer_phase": {
