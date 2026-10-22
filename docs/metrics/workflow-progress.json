@@ -5801,6 +5801,10 @@
       "next_scope": "same ordered prebinding guard frame completes before unchanged fresh native binding check",
       "next_owner": "Mission Coder1",
       "runtime_fix_proven": false
+    },
+    {
+      "at": "2026-10-22T14:33:13.348975+00:00",
+      "event": "G11 exact7c complete XML proves 362 methods,361 pass,1 fail,0 errors;399 expanded cases. MBA closed85,96,98 on actual criteria;97 remains open. Current game issues9/MBA findings7. No full G11 qualification or delivery."
     }
   ],
   "two_developer_phase": {
@@ -6860,8 +6864,8 @@
       "newly_retired_pr": 68,
       "new_source_archive": "archive/recovered-equipment-20261022-50950372",
       "branch_count_scope": "Live count includes main, Root docs, delivery and active feature/repair heads; no inactive branch removed without inclusion/archive proof.",
-      "current_open_app_issues": 12,
-      "current_open_mba_findings": 10,
+      "current_open_app_issues": 9,
+      "current_open_mba_findings": 7,
       "current_open_app_prs": 7
     },
     "g11_parent_bridge": {
