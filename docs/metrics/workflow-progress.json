@@ -4585,6 +4585,19 @@
       "unit_status": "existing hosted active; crash resolution and issue closure unproved",
       "next_assigned": "C08.P05.B.source",
       "usable_build_delivered": false
+    },
+    {
+      "event": "Enron original utility source pushed; timed work assigned",
+      "head": "aaa6f07444a8fa51d644f3ae2c56f478ff844dfd",
+      "base": "670aad0490896faabad4f1c5205405f78a2514ec",
+      "ledger_parent": "C08.P05.B.source",
+      "github_run": 39714460197,
+      "selection_methods": 181,
+      "new_methods": 7,
+      "source_review": "MBA queued exact source/authority/save delta",
+      "unit_status": "existing hosted pending; correction runs retained separately",
+      "next_assigned": "C08.P05.B.work",
+      "usable_build_delivered": false
     }
   ]
 }
