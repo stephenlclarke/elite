@@ -1057,12 +1057,16 @@ public struct Game: Sendable {
     case "up":
       if screen == .equipment {
         moveEquipmentSelection(-1)
+      } else if [.buy, .sell, .market].contains(screen) {
+        selection = MarketDisplayOrder.moved(selection: selection, direction: -1)
       } else {
         selection = max(0, selection - 1)
       }
     case "down":
       if screen == .equipment {
         moveEquipmentSelection(1)
+      } else if [.buy, .sell, .market].contains(screen) {
+        selection = MarketDisplayOrder.moved(selection: selection, direction: 1)
       } else {
         selection = min(Commodity.all.count - 1, selection + 1)
       }
