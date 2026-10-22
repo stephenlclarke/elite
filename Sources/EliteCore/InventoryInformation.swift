@@ -24,6 +24,7 @@ extension Game {
       append(preview.detail, .cyan, subject: subject, preview: preview)
       for line in preview.extraDetails { append(line, .cyan) }
     }
+    append("Trade cargo and hold totals", .yellow)
     append(
       "Cargo: \(commander.cargoTonnes) tonnes"
         + (commander.unlimitedCargo ? " (unlimited capacity)" : "/\(commander.capacity)"), .white)
@@ -33,6 +34,8 @@ extension Game {
           + (index == 10 && commander.markedFirearms > 0 ? " (1 mission item)" : ""),
         CommodityCategory.at(index).ink)
     }
+    append("Protected property - not ordinary trade cargo", .yellow)
+    append("Hold totals include protected and reserved space.", .cyan)
     if commander.nativeCaptiveCount > 0 {
       append(
         "Captured crew: \(commander.nativeCaptiveCount) (included once in Slaves tonnes)", .orange)
@@ -58,7 +61,6 @@ extension Game {
         "Issuer-owned freight: \(cargo.held.count)t \(Commodity.all[cargo.commodity].name); reserved for its destination",
         .cyan)
     }
-    append("Equipment - fitted and held", .yellow)
     if let state = measuredExtractionState,
       let source = commander.scriptState.savedMeasuredExtractionSource,
       let mission = commander.scriptState.instances[state.permission.mission]
@@ -126,39 +128,49 @@ extension Game {
       }
       append("Return to the actual Avenor depot; no sale, fitting or ordinary discard.", .cyan)
     }
+    append("Equipment ownership", .yellow)
     if let history = commander.equipmentPurchaseHistory {
       append("Recorded purchases: \(history.paid.count)", .cyan)
     }
     if let inventory = commander.equipmentInventory {
-      for item in inventory.items.sorted(by: {
+      let items = inventory.items.sorted(by: {
         let left = equipmentName($0)
         let right = equipmentName($1)
         return left == right ? $0.id.uuidString < $1.id.uuidString : left < right
-      }) {
-        append(equipmentName(item), .white)
-        let fitting =
-          item.location.map {
-            equipmentSlot($0.slot)
-              + ($0.hullInstanceID == inventory.activeHull ? "" : " (other hull)")
-          } ?? "Held"
-        append("  " + fitting + " - " + equipmentOrigin(item.provenance), .cyan)
-        if let source = RecoveredFeatureDevices.source(for: item, ledger: commander.salvageLedger),
-          case .technology(_, let quality, let condition) = source.content
-        {
-          append(
-            String(
-              format: "  Recovered quality %d; condition %d%%; mass %.1f kg",
-              quality.rawValue, condition, source.massKg), .cyan)
+      })
+      for (heading, fitted) in [("Equipment - fitted", true), ("Equipment - held", false)] {
+        append(heading, .yellow)
+        let group = items.filter { ($0.location != nil) == fitted }
+        if group.isEmpty { append("None", .cyan) }
+        for item in group {
+          append(equipmentName(item), .white)
+          let fitting =
+            item.location.map {
+              equipmentSlot($0.slot)
+                + ($0.hullInstanceID == inventory.activeHull ? "" : " (other hull)")
+            } ?? "Held"
+          append("  " + fitting + " - " + equipmentOrigin(item.provenance), .cyan)
+          if let source = RecoveredFeatureDevices.source(
+            for: item, ledger: commander.salvageLedger),
+            case .technology(_, let quality, let condition) = source.content
+          {
+            append(
+              String(
+                format: "  Recovered quality %d; condition %d%%; mass %.1f kg",
+                quality.rawValue, condition, source.massKg), .cyan)
+          }
+          action(.equipment(item))
         }
-        action(.equipment(item))
       }
     } else {
-      append("Legacy fittings - acquisition unknown", .cyan)
+      append("Equipment - fitted (legacy acquisition unknown)", .yellow)
       for text in commander.laserMountSummary { append("  " + text, .white) }
       for name in commander.equipment.sorted()
       where LaserKind.from(name) == nil && !["Fuel", "Missile"].contains(name) {
         append("  " + name, .white)
       }
+      append("Equipment - held", .yellow)
+      append("No owned-item storage records in this legacy fit.", .cyan)
     }
     if let native = commander.alienStorageState?.current {
       append("Alien modules - separate physical fittings", .yellow)
