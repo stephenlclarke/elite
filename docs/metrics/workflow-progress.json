@@ -4533,7 +4533,7 @@
       "ledger_parent": "C08.P05.A.I41",
       "github_run": 39711047075,
       "selection_methods": 174,
-      "source_review": "MBA assigned exact8-path CI delta",
+      "source_review": "MBA completed exact8-path delta and necessary collector callers; no actionable finding",
       "unit_status": "normal CI-triggered run pending; no crash fix or aggregate pass",
       "authoring_validation": "10 synthetic crash-evidence Python cases and6 existing report fixtures pass",
       "next_assigned": "C08.P05.B.source",
