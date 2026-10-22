@@ -3,7 +3,7 @@ import Foundation
 enum NativeInductionWorkshopQuoteScope: String, Codable, Sendable {
   case ownerStation, avenorReadOnlyAudit
 }
-struct NativeInductionWorkshopQuote: Sendable {
+struct NativeInductionWorkshopQuote: Codable, Sendable, Equatable {
   let scope: NativeInductionWorkshopQuoteScope
   let issue: UUID
   let familyDigest: String
@@ -32,7 +32,8 @@ struct NativeInductionWorkshopQuote: Sendable {
   static func prepare(
     source: NativeInductionWorkshopSource, parent: NativeWayfarerInductionState,
     unit: UUID, scope: NativeInductionWorkshopQuoteScope, dock: NativeMainStationDockReceipt,
-    carrier: UUID, fit: UInt64, runtimeEpoch: UUID, firstReachLY: Double, fullReachLY: Double
+    carrier: UUID, fit: UInt64, runtimeEpoch: UUID, firstReachLY: Double, fullReachLY: Double,
+    retainedRoute: NativeInductionWorkshopRoute? = nil
   ) throws -> Self {
     guard parent.charterWorkshopSource == source, source.valid(parent: parent),
       let capacity = parent.charterCapacity,
@@ -54,8 +55,13 @@ struct NativeInductionWorkshopQuote: Sendable {
         source.delegation.scope == NativeInductionWorkshopDelegation.readOnlyScope
       else { throw SaveError.invalidCommander }
     }
-    let route = try NativeInductionWorkshopRoute(
-      firstReachLY: firstReachLY, fullReachLY: fullReachLY)
+    let route =
+      try retainedRoute
+      ?? NativeInductionWorkshopRoute(
+        firstReachLY: firstReachLY, fullReachLY: fullReachLY)
+    guard route.valid, route.firstReachLY == firstReachLY, route.fullReachLY == fullReachLY else {
+      throw SaveError.invalidCommander
+    }
     let id = try Self.identity(
       source: source, unit: stock, scope: scope, stockRevision: source.revision,
       capacity: capacity, dock: dock, carrier: carrier, fit: fit, runtimeEpoch: runtimeEpoch,

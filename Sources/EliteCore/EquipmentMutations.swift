@@ -141,7 +141,7 @@ extension Commander {
       {
         throw EquipmentIssueError.foreignLoan(occupied.id)
       }
-      if item.node == EquipmentRuntimeCatalog.standardMissile {
+      if AlienMissileDefinition.profile(for: item.node) != nil {
         let quote = try StandardAmmunitionTransactions.quoteLoad(
           item: item, destination: destination,
           inventory: inventory, context: context, obligations: obligations)

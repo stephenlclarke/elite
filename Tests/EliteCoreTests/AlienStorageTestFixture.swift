@@ -93,7 +93,7 @@ struct AlienStorageTestFixture {
       attachments.append(
         .init(
           id: owned, owner: Self.owner, kind: kind, source: acquisition, disposition: .stored,
-          contributionBasisPoints: AlienModuleDefinition.baseBonusBasisPoints))
+          contributionBasisPoints: kind.initialContribution))
       commands.append(
         .init(
           id: acquisition, owner: Self.owner, revision: UInt64(commands.count + 1),

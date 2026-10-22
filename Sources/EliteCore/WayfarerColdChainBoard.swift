@@ -111,7 +111,7 @@ extension Game {
       else {
         throw MissionPackError("Restore the original native cold-chain provider.")
       }
-      guard terms.hazardTier == 0 else {
+      guard terms.hazardTier == 0 || hasWayfarerAccreditation else {
         throw MissionPackError("Advanced or hazardous services require verified accreditation.")
       }
       switch row.action {

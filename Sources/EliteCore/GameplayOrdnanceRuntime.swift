@@ -26,6 +26,8 @@ extension Game {
       guard candidate.commander.valid,
         candidate.admitGameplayMissile(
           ownerBodyID: nil, targetBodyID: targetBodyID,
+          profile: application.removedItem.flatMap { AlienMissileDefinition.profile(for: $0.node) }
+            ?? .standardMissile,
           playerAmmunition: application.source), candidate.commander.valid
       else { return false }
     } catch {
@@ -50,7 +52,8 @@ extension Game {
   }
 
   private mutating func admitGameplayMissile(
-    ownerBodyID: Int?, targetBodyID: Int?, playerAmmunition: PlayerAmmunitionSource? = nil
+    ownerBodyID: Int?, targetBodyID: Int?, profile: OrdnanceProfile = .standardMissile,
+    playerAmmunition: PlayerAmmunitionSource? = nil
   ) -> Bool {
     if let ownerBodyID {
       guard let body = bodies.first(where: { $0.id == ownerBodyID }), !isEMPDisabled(body)
@@ -85,7 +88,7 @@ extension Game {
         owner: owner.identity, ordnance: actor,
         playerAmmunition: playerAmmunition),
       let state = OrdnanceState(
-        profile: .standardMissile, origin: origin,
+        profile: profile, origin: origin,
         target: target.identity, position: position, direction: direction,
         emissionPosition: owner.position),
       nativePracticeMissileLaunchAllowed(targetBodyID: targetBodyID, owner: owner.identity)

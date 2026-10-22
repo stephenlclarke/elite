@@ -35,7 +35,7 @@ struct NativeSalvageCollectionMutation {
           .init(
             id: property, owner: previous.owner, kind: kind,
             source: operation, disposition: .stored,
-            contributionBasisPoints: AlienModuleDefinition.baseBonusBasisPoints))
+            contributionBasisPoints: kind.initialContribution))
         action = .acquireAttachment(attachment: property, source: operation)
       } else {
         guard

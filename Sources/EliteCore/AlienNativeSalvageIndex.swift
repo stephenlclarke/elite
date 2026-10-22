@@ -22,11 +22,13 @@ struct AlienNativeSalvageIndex: Sendable {
   let pending: [SalvageLotIdentity: Pending]
   let pendingBySystem: [SystemIdentity: [Pending]]
   let storedTechnology: [UUID: StoredTechnology]
+  let missileResearch: [AlienMissileResearchReceipt]
 
   init(_ records: [AlienStorageWorldRecord]) throws {
     var sections: Set<WreckSectionIdentity> = []
     var pending: [SalvageLotIdentity: Pending] = [:]
     var storedTechnology: [UUID: StoredTechnology] = [:]
+    var missileResearch: [AlienMissileResearchReceipt] = []
     let native = try NativeSalvagePlanView(records)
     let plans = native.plans
     var claims: [UUID: AlienStorageLegacyLot] = [:]
@@ -71,6 +73,7 @@ struct AlienNativeSalvageIndex: Sendable {
           value = nil
         }
       case .companion(let item):
+        if case .researched(_, let research) = item.state { missileResearch.append(research) }
         if case .pending(let lot, let time, let offer, let binding) = item.state {
           value = .init(
             record: item.id, lot: lot, physicalTime: time, offer: offer, binding: binding)
@@ -88,6 +91,7 @@ struct AlienNativeSalvageIndex: Sendable {
           }
         }
       case .legacyCurrent(let item):
+        if case .researched(_, let research) = item.state { missileResearch.append(research) }
         if case .pending(let lot, let time, let offer, let binding) = item.state {
           value = .init(
             record: item.id, lot: lot, physicalTime: time, offer: offer, binding: binding)
@@ -114,6 +118,7 @@ struct AlienNativeSalvageIndex: Sendable {
     pendingBySystem = Dictionary(
       grouping: Array(pending.values), by: { $0.lot.identity.section.wreck.system })
     self.storedTechnology = storedTechnology
+    self.missileResearch = missileResearch
   }
 }
 

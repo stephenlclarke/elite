@@ -5,7 +5,7 @@ import Testing
 
 /// Unit work/collection boundary using actual retained producer plans. No owned alien
 /// attachment, EMP custody, native actor admission or installation proof is manufactured.
-private func recoveredAlienBoundaryGame(
+func recoveredAlienBoundaryGame(
   definitionID: String, roles: Set<SalvageSourceRole>, requiredAxis: SalvageUpgradeAxis? = nil
 ) throws -> Game {
   var game = Game(executive: false)
@@ -72,7 +72,7 @@ private func ordinaryAlienAxis(_ axis: SalvageUpgradeAxis) throws -> ComponentAx
 }
 
 struct AlienAttachmentOrdinaryFitTests {
-  @Test(arguments: AlienModuleKind.allCases)
+  @Test(arguments: AlienModuleKind.allCases.filter(\.supportsUpgrade))
   func authenticCollectedModulesAndUpgradesRefuseEveryOrdinaryFittingEntry(kind: AlienModuleKind)
     throws
   {

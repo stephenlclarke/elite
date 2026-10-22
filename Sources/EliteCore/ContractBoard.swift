@@ -451,7 +451,8 @@ extension Game {
     contractBoard.utilityQuote = nil
     if let action = contractBoard.selected?.wayfarerInduction {
       contractBoard.wayfarerInductionQuote = wayfarerInductionReview(
-        action, prepareClinicQuote: true, prepareWorkshopQuote: true, prepareSeedQuote: true)
+        action, prepareClinicQuote: true, prepareWorkshopQuote: true, prepareSeedQuote: true,
+        prepareCharterAudit: true)
       return
     }
     if let action = contractBoard.selected?.glassMeridian {

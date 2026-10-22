@@ -117,7 +117,7 @@ struct AlienStorageSnapshot: Sendable, Equatable {
       else { throw AlienStorageError.invalidJoin }
     }
     for case .companion(let companion) in world {
-      if case .collected(let receipt) = companion.state,
+      if let receipt = companion.state.collection,
         case .technology(let storage) = receipt.effect
       {
         guard attachmentMap[storage] == nil, upgradeMap[storage] == nil else {
@@ -126,7 +126,7 @@ struct AlienStorageSnapshot: Sendable, Equatable {
       }
     }
     for case .legacyCurrent(let current) in world {
-      if case .collected(let receipt) = current.state,
+      if let receipt = current.state.collection,
         case .technology(let storage) = receipt.effect
       {
         guard attachmentMap[storage] == nil, upgradeMap[storage] == nil else {
@@ -240,7 +240,7 @@ private struct AlienStorageReplay {
         try AlienModuleDefinition.kind(for: source.lot) == definition.kind
       else { throw AlienStorageError.invalidJoin }
       attachments[id] = .init(
-        disposition: .stored, bonus: AlienModuleDefinition.baseBonusBasisPoints)
+        disposition: .stored, bonus: definition.kind.initialContribution)
     case .acquireUpgrade(let id, let sourceID), .migrateStoredUpgrade(let id, let sourceID, _, _):
       guard receipts.isEmpty, upgrades[id] == nil, let definition = upgradeDefinitions[id],
         definition.source == sourceID, let source = sources[sourceID],

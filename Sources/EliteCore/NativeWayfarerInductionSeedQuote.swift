@@ -5,7 +5,7 @@ enum NativeInductionSeedQuoteScope: String, Codable, Sendable {
 }
 
 /// Read-only source proposal. This value grants no pickup, reservation, custody or settlement.
-struct NativeInductionSeedQuote: Sendable {
+struct NativeInductionSeedQuote: Codable, Sendable, Equatable {
   let scope: NativeInductionSeedQuoteScope
   let family: String
   let familyDigest: String
@@ -36,7 +36,8 @@ struct NativeInductionSeedQuote: Sendable {
   static func prepare(
     source: NativeInductionSeedSource, parent: NativeWayfarerInductionState,
     unit: UUID, scope: NativeInductionSeedQuoteScope, dock: NativeMainStationDockReceipt,
-    carrier: UUID, revision: UInt64, runtimeEpoch: UUID, firstReachLY: Double, fullReachLY: Double
+    carrier: UUID, revision: UInt64, runtimeEpoch: UUID, firstReachLY: Double, fullReachLY: Double,
+    retainedRoute: NativeInductionSeedRoute? = nil
   ) throws -> Self {
     guard parent.charterSeedSource == source, source.valid(parent: parent),
       let capacity = parent.charterCapacity,
@@ -60,7 +61,12 @@ struct NativeInductionSeedQuote: Sendable {
         source.delegation.scope == NativeInductionSeedAuditDelegation.readOnlyScope
       else { throw SaveError.invalidCommander }
     }
-    let route = try NativeInductionSeedRoute(firstReachLY: firstReachLY, fullReachLY: fullReachLY)
+    let route =
+      try retainedRoute
+      ?? NativeInductionSeedRoute(firstReachLY: firstReachLY, fullReachLY: fullReachLY)
+    guard route.valid, route.firstReachLY == firstReachLY, route.fullReachLY == fullReachLY else {
+      throw SaveError.invalidCommander
+    }
     let terms = try source.issue.profile.terms(epoch: source.issue.epoch, route: route)
     let fingerprint = try capacity.fingerprint
     let id = try Self.identity(
@@ -91,7 +97,8 @@ extension Game {
     throws -> NativeInductionSeedQuote
   {
     guard !isMissionTrial, !paused, docked, energy > 0,
-      let mission = wayfarerInductionMission, mission.outcome == .active, mission.suspension == nil,
+      let mission = wayfarerInductionMission,
+      mission.hasInductionServiceAuthority(in: commander.scriptState), mission.suspension == nil,
       let parent = mission.savedWayfarerInduction, let source = parent.charterSeedSource,
       nativeInductionSeedPack != nil, let dock = commander.nativeStations?.currentMainDock,
       nativeMainStationDockEvidenceIsCurrent,
