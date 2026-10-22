@@ -2,6 +2,7 @@ import Foundation
 
 extension Game {
   /// Resolves real retained ownership. A caller-built descriptor alone has no mission authority.
+  @inline(never)
   func currentMissionActorDescriptor(bodyID: Int) -> MissionActorDescriptor? {
     // Ordinary craft cannot pass the retained factory's existing ownership guard.
     // Keep that rejection outside its Commander and actor-validation stack frames.
@@ -20,6 +21,7 @@ extension Game {
   }
 
   /// Only actual mission-tagged bodies enter the unchanged full retained-owner census.
+  @inline(never)
   private func retainedCurrentMissionActorDescriptor(bodyID: Int) -> MissionActorDescriptor? {
     let source = commander.missionActorSourceValues()
     return Self.retainedMissionActorDescriptor(
@@ -29,9 +31,11 @@ extension Game {
   }
 
   /// Resolve the same immutable authority facts without retaining another complete Game frame.
+  @inline(never)
   private static func retainedMissionActorDescriptor(
-    bodyID: Int, bodies: [SpaceBody], instances: [UUID: ScriptInstance], packs: [ScriptPack],
-    galaxy: Int, system: Int, geometry: [String: ShipDesign]
+    bodyID: Int, bodies: borrowing [SpaceBody], instances: borrowing [UUID: ScriptInstance],
+    packs: borrowing [ScriptPack], galaxy: Int, system: Int,
+    geometry: borrowing [String: ShipDesign]
   ) -> MissionActorDescriptor? {
     guard let body = bodies.first(where: { $0.id == bodyID }),
       bodies.lazy.filter({ $0.id == bodyID }).count == 1,
@@ -73,10 +77,11 @@ extension Game {
       missionActorID: body.missionActorID, missionInstanceID: body.missionInstanceID, body: body)
   }
 
+  @inline(never)
   private static func missionActorFitMatches(
-    _ body: SpaceBody, retained: ScriptOwnedActor, declared: ScriptActorDefinition,
-    pack: ScriptPack, instance: ScriptInstance,
-    geometry: [String: ShipDesign]
+    _ body: borrowing SpaceBody, retained: borrowing ScriptOwnedActor,
+    declared: borrowing ScriptActorDefinition, pack: borrowing ScriptPack,
+    instance: borrowing ScriptInstance, geometry: borrowing [String: ShipDesign]
   ) -> Bool {
     guard let npcID = declared.npc else {
       return declared.hull == body.hull && body.scriptNPC == nil && retained.body.scriptNPC == nil

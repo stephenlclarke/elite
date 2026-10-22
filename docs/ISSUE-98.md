@@ -15,3 +15,9 @@ A focused regression must prove copy/snapshot isolation, nested mutation, indepe
 ## Actual follow-up evidence
 
 Head `e399275a` compiled in 803.25 seconds in automatic run `39778352147`, then crashed with signal 10 / bus error at `ScriptInstance.id.read` on the same actual runtime Tab path. No method completed PASS, and XML is truncated. The reference box still stored one aggregate `value`; `yield storage.value.id` still projected that aggregate. The follow-up removes this intermediate aggregate entirely: the private COW class directly owns the same 53 declared fields and defaults. Its reference-copy initializer and bounded value-equality groups explicitly cover all 53 fields in original order. All 49 unique-before-yield accessors, public value semantics, exact Codable keys and real native input remain. This source correction remains unproven until actual execution.
+
+## Confirmed retained fit-match boundary
+
+The direct-field head `0e80f8ae` compiled in 685.13 seconds in automatic run `39782182054`, then crashed with signal 10 / bus error at the `missionActorFitMatches` call in `retainedMissionActorDescriptor` (`ScriptNativeBridge.swift:58`). The symbolic stack continues through the same native binding, G11 contact filter and real runtime Tab path. It no longer reports a `ScriptInstance` getter. The XML is truncated and qualifies zero methods. Retain the completed direct-field storage audit and change no storage/schema further.
+
+The bounded follow-up borrows read-only inputs and marks the retained lookup, fit match and directly called C01 declaration/profile/design helpers non-inline. Function bodies, predicate order, duplicate-body checks, admitted encounter/tag/location joins and full NPC fit/component/model/geometry equality remain identical. Actual delivered route base `b46115aa` composes once, adding four inherited methods for an exact 362-method union. No cache, authority bypass, new probe or diagnostic job is introduced.

@@ -506,6 +506,12 @@ METHODS = {
         "strictCurrentUtilitySchemaRejectsUnjoinedOrInventedClaims",
         "targetRequiresUtilityStateAndOtherStationsCannotClaimIt",
     ),
+    "TargetTransitRouteUnitTests": (
+        "actualSpoolAndOpenEndpointsReplaceOnlyLocalRouteWithoutChangingCargoOrTier",
+        "foreignActorInstanceVisitAmbiguityAndUnboundPhasesCannotSupplyRoute",
+        "explicitNPCProvenanceAndUnknownCargoRemainIndependentOfTransit",
+        "unavailableWorldAndMissingRouteKeepHonestLocalOrUnknownDisclosure",
+    ),
 }
 
 

@@ -2,8 +2,9 @@ import Foundation
 
 extension NativeC01Surveyor {
   /// Native declarations supplement this one pinned campaign; original pack bytes stay untouched.
+  @inline(never)
   static func encounterDefinition(
-    pack: ScriptPack, state: ScriptInstance, id: String
+    pack: borrowing ScriptPack, state: borrowing ScriptInstance, id: String
   ) -> ScriptEncounterDefinition? {
     if pack.digest == NativeGlassMeridian.digest,
       pack.manifest.stateID == NativeGlassMeridian.stateID,
@@ -13,14 +14,20 @@ extension NativeC01Surveyor {
     }
     return pack.manifest.encounters?.first { $0.id == id }
   }
-  static func profiles(pack: ScriptPack, state: ScriptInstance) -> [ScriptNPCDefinition] {
+  @inline(never)
+  static func profiles(pack: borrowing ScriptPack, state: borrowing ScriptInstance)
+    -> [ScriptNPCDefinition]
+  {
     let original = pack.manifest.npcs ?? []
     guard pack.digest == NativeGlassMeridian.digest, definition(state, id: encounter) != nil else {
       return original
     }
     return original + [profile(recorder: false), profile(recorder: true)]
   }
-  static func designs(pack: ScriptPack, state: ScriptInstance) -> [String: ShipDesign] {
+  @inline(never)
+  static func designs(pack: borrowing ScriptPack, state: borrowing ScriptInstance) -> [String:
+    ShipDesign]
+  {
     guard pack.digest == NativeGlassMeridian.digest, definition(state, id: encounter) != nil,
       let additions = try? models.get()
     else { return pack.models }
