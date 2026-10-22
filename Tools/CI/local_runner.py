@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import shutil
 import subprocess
 
 
@@ -38,21 +39,35 @@ def cache_key(root: Path, swift: str, sdk: str) -> str:
     return digest.hexdigest()
 
 
-def link_build_cache(root: Path, cache_root: Path, key: str) -> Path:
-    """Retain build data outside checkout cleanup without deleting other data."""
+def prepare_build_cache(root: Path, key: str) -> Path:
+    """Keep an owned physical build directory inside crash-evidence confinement."""
     if len(key) != 64 or any(c not in "0123456789abcdef" for c in key):
         raise ValueError("Invalid build-cache identity.")
-    destination = cache_root / key
-    link = root / ".build"
-    if link.is_symlink():
-        if link.resolve() != destination.resolve():
-            raise ValueError("Existing .build points outside the selected cache.")
-    elif link.exists():
-        raise ValueError("Existing .build is not the managed cache link; preserving it.")
-    destination.mkdir(parents=True, exist_ok=True, mode=0o700)
-    if not link.is_symlink():
-        link.symlink_to(destination, target_is_directory=True)
-    return destination
+    build = root / ".build"
+    marker = build / "elite-ci-cache.json"
+    if build.is_symlink() or (build.exists() and not build.is_dir()):
+        raise ValueError("Existing .build is not a physical directory; preserving it.")
+    if build.exists():
+        if marker.is_symlink() or not marker.is_file():
+            raise ValueError("Existing .build has no owned cache identity; preserving it.")
+        previous = json.loads(marker.read_text())
+        if not isinstance(previous, dict) or previous.get("owner") != "elite-ci":
+            raise ValueError("Existing .build has a foreign cache identity; preserving it.")
+        previous_key = previous.get("key", "")
+        if (not isinstance(previous_key, str) or len(previous_key) != 64
+                or any(c not in "0123456789abcdef" for c in previous_key)):
+            raise ValueError("Existing cache identity is malformed; preserving it.")
+        if previous_key != key:
+            shutil.rmtree(build)
+    build.mkdir(parents=True, exist_ok=True, mode=0o700)
+    marker.write_text(json.dumps({"owner": "elite-ci", "key": key}) + "\n")
+    return build
+
+
+def clean_checkout(root: Path) -> None:
+    """Remove other ignored/untracked inputs while retaining only root .build."""
+    subprocess.run(["git", "clean", "-ffdx", "-e", "/.build/"], cwd=root,
+                   check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def output(*args: str) -> str:
@@ -73,7 +88,8 @@ def main() -> None:
     if swift.splitlines()[0] != SWIFT or sdk != "15.5":
         raise ValueError("Local runner must match Swift 6.1.2 and macOS SDK 15.5.")
     key = cache_key(ROOT, swift, sdk)
-    cache = link_build_cache(ROOT, Path.home() / "Library/Caches/elite-ci-builds", key)
+    cache = prepare_build_cache(ROOT, key)
+    clean_checkout(ROOT)
     print(json.dumps({"swift": swift, "sdk": sdk, "cache": str(cache), "key": key}))
 
 

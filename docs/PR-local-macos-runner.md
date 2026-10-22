@@ -6,7 +6,7 @@ Reduce build-feedback latency without weakening the existing qualification job. 
 
 ## Change
 
-An explicit repository variable routes Stephen's internal pushes to the dedicated Apple Silicon VM. Other events remain hosted. Preflight checks the trusted push, VM identity and matching compiler/SDK before linking an external-to-checkout, guest-local SwiftPM cache. Existing unit commands, coverage, selection, report validation and final release gates remain unchanged.
+An explicit repository variable routes Stephen's internal pushes to the dedicated Apple Silicon VM. Other events remain hosted. Preflight checks the trusted push, VM identity and matching compiler/SDK before reusing an owned physical SwiftPM cache inside the checkout. Explicit cleanup removes other untracked/ignored inputs while preserving that cache and the existing crash collector's confinement contract. Existing unit commands, coverage, selection, report validation and final release gates remain unchanged.
 
 ## Validation
 
