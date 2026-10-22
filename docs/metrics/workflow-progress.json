@@ -4922,6 +4922,16 @@
         "original_source_handoff_at": "2026-10-22T06:00:41Z",
         "source_review_url": "https://github.com/stephenlclarke/elite/pull/48#issuecomment-6333946221",
         "queue_delay_note": "Obsolete unselected39731164624 cancelled06:11:18Z; existing correct39731489668 running from06:11:22Z"
+      },
+      {
+        "id": "M02.P05.inventory",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T06:29:40+00:00",
+        "phase_entry_state": "Presentation-only categorization; Equipment heading currently precedes protected mission property",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "dependency": "Independent from pending showroom PR; canonical409d042c base"
       }
     ],
     "model_settings": {
