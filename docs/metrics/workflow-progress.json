@@ -5459,7 +5459,8 @@
         "awaiting_verification_findings": [
           66
         ],
-        "unit_run": 39751691960
+        "unit_run": 39751691960,
+        "source_review_result": "MBA full provider review and correction502ff381 clean; no further actionable finding; actual288-method run pending"
       },
       {
         "id": "C08.commit-charter.audit",
@@ -5487,7 +5488,7 @@
           63,
           64
         ],
-        "correction_source_review": "MBA63loweredpositive+unknownnegativecallsCLEAN;upperstrictassertions/production/279285selectionsunchanged;affectedexecutionpending",
+        "correction_source_review": "MBA currentff6dd/849 exact original sale/historical stations correction clean; retained full CrewLog/utility child graph remains necessary within64; actual execution pending",
         "unit_run": 39751565047
       },
       {
@@ -5541,7 +5542,7 @@
           64
         ],
         "finding_kind": "PartialUtilityfixturelosesoriginalsaleandNavidorhistoricalstation;notcrashattribution",
-        "correction_source_review": "MBA63loweredpositive+unknownnegativecallsCLEAN;upperstrictassertions/production/279285selectionsunchanged;affectedexecutionpending"
+        "correction_source_review": "MBA currentff6dd/849 exact original sale/historical stations correction clean; retained full CrewLog/utility child graph remains necessary within64; actual execution pending"
       },
       {
         "id": "M07.P01.legal-facts",
@@ -5563,7 +5564,8 @@
         "verified_methods": 259,
         "verified_expanded_cases": 291,
         "compile_seconds": 778.63,
-        "execution_seconds": 55.139
+        "execution_seconds": 55.139,
+        "composition_source_review": "MBA currentc641 exact269 union clean; actual execution pending"
       },
       {
         "id": "M07.P02.ordnance-attribution",
@@ -5647,7 +5649,8 @@
           "NativeSalvageCollectionMutation/NativeSalvageImport/AlienStorageRecords/AlienAttachmentLedger exact initial contribution dispatch",
           "HyperspaceDriveRuntime validated actual active-hull fitted drive policy",
           "InventoryInformation narrow drive ability/source identity",
-          "Game.beginHyperspace necessary stale comment only; existing immediate path preserved"
+          "Game.beginHyperspace necessary stale comment only; existing immediate path preserved",
+          "Tools/CI additive six AlienHyperspaceDriveUnitTests and exact expected count; existing push-triggered workflow only"
         ],
         "compatibility_scope": "Human waives old-save compatibility; no legacy deterministic-plan replay fallback authorized"
       },
@@ -5710,6 +5713,17 @@
         "assigned_at": "2026-10-22T09:00:28.612120+00:00",
         "ownership": "Readonly existing NPC native departure/transit/destination source and unit definitions",
         "limits": "Scope actual missing same-ship/resource provider; no new cross-system/schema/AI framework or shared edits without decision; PR61 own merge first when ready",
+        "merged_at": null,
+        "playable_at": null,
+        "disposition": "Existing same living NPC/body/source/resource transit, writer rollback and actual destination re-admission credited; no concrete gap/no change",
+        "qualification_scope": "Source/existing unit definitions only; no fresh execution"
+      },
+      {
+        "id": "M10.P02.moving-receiver",
+        "owner": "G3",
+        "assigned_at": "2026-10-22T09:01:32.794512+00:00",
+        "ownership": "Readonly station clearance/service-origin/NPCResourceRuntime/finite receiving policy preflight",
+        "limits": "Reuse W04; no fabricated arrival/receiver/cargo; actual new shared edits require reservation; no local compiler/native/integration",
         "merged_at": null,
         "playable_at": null
       }
