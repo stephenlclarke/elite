@@ -24,9 +24,9 @@ Base <SHA> -> head <SHA>; isolated units <selection>; known gap <if any>
 
 G1 owns the complete clinic loop. G3 owns M02.P04/F06 showroom comparison, using its existing session01a13ff4-1a89-7711-befa-15701182d113 and an isolated branch/worktree from81d54e74. Each developer owns its PR and merge after MBA review/checks/approvals; showroom targets feature/canonical-mission-composition. No central integration queue. MBA takes ready corrections first, then the oldest ready feature. Root flags review backlog above two ready packets or an oldest source review older than30minutes; this is an orchestration signal, not a developer wait gate.
 
-## High-effort escalation only when needed
+## Difficult-work escalation only when needed
 
-Elite Coder2 uses GPT-6.1 Sol High, as confirmed by Stephen. G1 and G3 retain Medium for ordinary implementation. Coder2 has no standing implementation stream: Root escalates only a named difficult blocker, repeated unsuccessful correction, or complex actor/state/security problem with bounded scope. Routine MBA review remains necessary work, not permission for extra implementation or audits. Record reason, scope, start/end and result in the existing metrics events. If Coder2 authors a fix, a different non-author developer provides the independent source review; it cannot approve its own correction. No current coding escalation is assigned.
+Mission Coder1 (session01a14024-0284-7b43-8d7f-e07a9208b253) is the difficult-work reserve under Stephen's latest instruction. This supersedes the earlier Coder2 coding-escalation designation. G1 and G3 retain Medium for ordinary implementation; Coder2 remains the MBA reviewer. Root escalates only a named difficult blocker, repeated unsuccessful correction, or complex actor/state/security problem with explicit file ownership and bounded scope. No standing third implementation stream, self-assigned audits or adjacent refactors. Record the reason, start/end and outcome in existing metrics events; the actual model setting is not assumed or changed by this role assignment. MBA independently reviews any MC1 correction. No current escalation is assigned.
 
 ## Reviewer: work asynchronously
 

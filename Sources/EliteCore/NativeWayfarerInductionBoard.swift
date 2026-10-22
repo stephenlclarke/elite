@@ -6,6 +6,8 @@ enum NativeWayfarerInductionAction: String, Sendable {
     pooledCharter, protectedCharter, allocateCharterCapacity,
     clinicConsent, workshopConsent, seedConsent, releaseClinicCapacity, releaseWorkshopCapacity,
     releaseSeedCapacity, issueClinicStock, viewClinicStock, acceptClinicSample, cancelClinicSample,
+    pickupClinicSample, receiveClinicSample, cancelHeldClinicSample, returnClinicSample,
+    retryClinicExpiry,
     progress
   var key: String { NativeWayfarerInduction.stateID + "/" + rawValue }
   var title: String {
@@ -38,6 +40,11 @@ enum NativeWayfarerInductionAction: String, Sendable {
     case .viewClinicStock: "Renas clinic / original stock and read-only current route quote"
     case .acceptClinicSample: "Renas clinic / reserve original sample and window"
     case .cancelClinicSample: "Clinic booking / cancel before pickup"
+    case .pickupClinicSample: "Renas clinic / collect reserved original sample"
+    case .receiveClinicSample: "Navidor clinic / receive original sample and pay quote"
+    case .cancelHeldClinicSample: "Clinic sample / cancel delivery and retain return custody"
+    case .returnClinicSample: "Renas clinic / return cancelled original sample"
+    case .retryClinicExpiry: "Clinic sample / retry original pending integrity expiry"
     case .progress: "Senn / current induction records"
     }
   }
@@ -59,6 +66,7 @@ struct NativeWayfarerInductionReview: Sendable {
   let issues: [String]
   var clinicReference: UUID? = nil
   var clinicWindow: NativeInductionCapacityReservation? = nil
+  var clinicChildRevision: UInt64? = nil
   let reviewToken = UUID()
   var allowed: Bool { action != .progress && issues.isEmpty }
 }
@@ -151,6 +159,9 @@ extension Game {
     if action == .cancelClinicSample {
       actionIssues += inductionClinicCancellationIssues(instance: clinicReference)
     }
+    if action.isClinicCustodyAction {
+      actionIssues += inductionClinicCustodyIssues(action, instance: clinicReference)
+    }
     let trade =
       action == .accept
       ? commander.equipmentOwnerID.flatMap {
@@ -172,7 +183,9 @@ extension Game {
       capacityRevision: wayfarerInductionMission?.savedWayfarerInduction?.charterCapacity?.revision,
       capacityUnit: unit,
       clinicQuote: clinicQuote,
-      issues: actionIssues, clinicReference: clinicReference, clinicWindow: clinicWindow)
+      issues: actionIssues, clinicReference: clinicReference, clinicWindow: clinicWindow,
+      clinicChildRevision: clinicReference.flatMap { commander.scriptState.instances[$0]?.revision }
+    )
   }
 
   private func inductionActionIssues(
@@ -184,7 +197,7 @@ extension Game {
     if paused { issues.append("Resume before confirming the induction action.") }
     let expected = action.station
     if !nativeMainStationDockEvidenceIsCurrent
-      || (action != .cancelClinicSample && systemIdentity != expected)
+      || (!action.isClinicAnyBerthAction && systemIdentity != expected)
     {
       issues.append("Use the actual registered main orbital berth for " + action.title + ".")
     }
@@ -222,9 +235,11 @@ extension Game {
     case .issueClinicStock: issues += inductionClinicSourceIssues()
     case .viewClinicStock:
       issues += [
-        "Read-only original source quote; actual pickup/custody/settlement remains unavailable."
+        "Read-only original source quote; use the separate booking, pickup and custody rows."
       ]
-    case .acceptClinicSample, .cancelClinicSample: break
+    case .acceptClinicSample, .cancelClinicSample, .pickupClinicSample, .receiveClinicSample,
+      .cancelHeldClinicSample, .returnClinicSample, .retryClinicExpiry:
+      break
     case .progress: break
     }
     return issues
@@ -269,6 +284,7 @@ extension Game {
       quote.capacityRevision == current.capacityRevision,
       quote.capacityUnit == current.capacityUnit,
       quote.clinicReference == current.clinicReference,
+      quote.clinicChildRevision == current.clinicChildRevision,
       quote.clinicWindow == current.clinicWindow,
       quote.clinicQuote?.offer.id == current.clinicQuote?.offer.id,
       let owner = commander.equipmentOwnerID, let dock = current.dock,
@@ -392,6 +408,17 @@ extension Game {
     if quote.action == .cancelClinicSample {
       guard let instance = current.clinicReference else { throw SaveError.invalidCommander }
       try candidate.closeInductionClinicBooking(instance: instance)
+    }
+    if quote.action.isClinicCustodyAction {
+      guard let id = current.clinicReference else { throw SaveError.invalidCommander }
+      switch quote.action {
+      case .pickupClinicSample: try candidate.confirmInductionClinicPickup(id)
+      case .receiveClinicSample: try candidate.finishInductionClinicCustody(id)
+      case .cancelHeldClinicSample: try candidate.confirmInductionClinicHeldCancellation(id)
+      case .returnClinicSample: try candidate.finishInductionClinicCustody(id, returning: true)
+      case .retryClinicExpiry: try candidate.retryInductionClinicExpiry(id)
+      default: throw SaveError.invalidCommander
+      }
     }
     self = candidate
   }

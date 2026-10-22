@@ -1,7 +1,9 @@
 import Foundation
 
 struct NativeInductionClinicStockMutation: Codable, Sendable, Equatable {
-  enum Kind: String, Codable, Sendable { case reserved, cancelled, failedBeforePickup }
+  enum Kind: String, Codable, Sendable {
+    case reserved, cancelled, failedBeforePickup, received, returnedToOwner, spoiled, carrierLost
+  }
   let kind: Kind
   let operation: UUID
   let instance: UUID
@@ -44,6 +46,12 @@ extension NativeInductionClinicSource {
         else { throw SaveError.invalidCommander }
         result[slot].status = .held
         result[slot].instance = event.instance
+      case .received, .returnedToOwner, .spoiled, .carrierLost:
+        guard result[slot].status == .held, result[slot].instance == event.instance else {
+          throw SaveError.invalidCommander
+        }
+        result[slot].status =
+          [.received, .returnedToOwner].contains(event.kind) ? .received : .failed
       case .cancelled, .failedBeforePickup:
         guard result[slot].status == .held, result[slot].instance == event.instance else {
           throw SaveError.invalidCommander
@@ -82,11 +90,14 @@ extension NativeInductionClinicSource {
             && $0.instance == reservation.consignment
         }
     case .returned(let receipt):
-      guard receipt.owner == issue.operatorOwner, receipt.reason == .cancelled,
+      guard receipt.owner == issue.operatorOwner,
         let closing = (history ?? []).first(where: {
           $0.kind != .reserved && $0.window == receipt.operation
         })
       else { return false }
+      guard receipt.reason == (closing.kind == .received ? .completed : .cancelled) else {
+        return false
+      }
       return (history ?? []).contains {
         $0.kind == .reserved && $0.instance == closing.instance && $0.unit == closing.unit
           && $0.window == receipt.reservation

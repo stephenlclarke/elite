@@ -8,6 +8,9 @@ extension NativeWayfarerInductionAction {
     case .clinicConsent, .releaseClinicCapacity, .issueClinicStock, .viewClinicStock,
       .acceptClinicSample, .cancelClinicSample:
       NativeWayfarerInduction.clinic
+    case .pickupClinicSample, .returnClinicSample, .cancelHeldClinicSample, .retryClinicExpiry:
+      NativeWayfarerInduction.clinic
+    case .receiveClinicSample: NativeWayfarerInduction.receiver
     case .workshopConsent, .releaseWorkshopCapacity: NativeWayfarerInduction.workshop
     case .seedConsent, .releaseSeedCapacity: NativeWayfarerInduction.seedSource
     case .pickup: NativeWayfarerInduction.clinic

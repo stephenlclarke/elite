@@ -169,7 +169,11 @@ extension Commander {
   }
   var requiresContractFit: Bool {
     for state in scriptState.instances.values {
-      if (state.savedNativeInductionClinic?.reservedCargoTonnes ?? 0) > 0 { return true }
+      if state.savedNativeInductionClinic != nil
+        && (state.outcome == .active || state.payloads.values.contains { $0 > 0 })
+      {
+        return true
+      }
       if state.contract != nil
         && (state.outcome == .active || state.payloads.values.contains { $0 > 0 })
       {

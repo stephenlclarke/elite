@@ -4,6 +4,7 @@ extension Game {
   var uncollectedInductionClinicJobs: [UUID] {
     commander.scriptState.instances.values.filter {
       $0.savedNativeInductionClinic?.close == nil && $0.savedNativeInductionClinic != nil
+        && $0.savedNativeInductionClinic?.custody == nil
         && $0.outcome == .active
     }.map(\.id).sorted { $0.uuidString < $1.uuidString }
   }

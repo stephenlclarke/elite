@@ -26,10 +26,12 @@ public enum PlayerHelp {
             "RETURN - REVIEW; CONFIRM IS SEPARATE",
             "BACK / ESC - KEEP CURRENT STOCK / BOOKING",
             "ONLY ACTUAL RENAS CAN ISSUE ITS BATCH",
-            "VIEW STOCK IS READ-ONLY; NO PICKUP",
+            "VIEW STOCK IS READ-ONLY; PICKUP IS SEPARATE",
             "RESERVE CONFIRM: SAMPLE / WINDOW / 1T",
             "CANCEL BEFORE PICKUP: RETURN ALL THREE",
             "NO INTEGRITY CLOCK UNTIL REAL PICKUP",
+            "NAVIDOR: RECEIVE ORIGINAL / FROZEN PAY",
+            "AFTER PICKUP CANCEL: RENAS RETURN",
           ]), at: 0)
     }
     if screen == .contracts,
