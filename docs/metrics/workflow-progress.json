@@ -4723,11 +4723,15 @@
       "github_run": 39723616779,
       "selection_methods": 212,
       "new_methods": 6,
-      "source_review": "queued MBA",
-      "unit_status": "existing hosted run active",
+      "source_review": "MBA independent operator-consent source clean",
+      "unit_status": "SUCCESS; MBA verified212methods244casesPASS,0failures/errors/skips,no crash",
       "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6332863778",
       "next_assigned": "C08.P06.B.quote.clinic",
-      "usable_build_delivered": false
+      "usable_build_delivered": false,
+      "verified_methods": 212,
+      "verified_expanded_cases": 244,
+      "verification_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6333087491",
+      "qualification_scope": "All6Consent/7Capacity/6Charter/9Work/3Binding pass; no native owner-visit/release/stock/booking/audit/stage12/playable/release claim"
     }
   ]
 }
