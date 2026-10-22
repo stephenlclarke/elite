@@ -5557,6 +5557,24 @@
       "author": "Mission Coder1",
       "scope": "readonly descriptor lookup/value lifetime; complete authority unchanged; no generic cache/probe",
       "full_feature_qualified": false
+    },
+    {
+      "event": "Explicit issue98 private COW representation scope approved from actual accessor stack/source evidence",
+      "date": "2026-10-22",
+      "issue": 98,
+      "author": "Mission Coder1",
+      "scope": "replace private one-element Array backing only; all forwarded public value/Codable/Sendable/equality semantics retained",
+      "required_invariants": [
+        "unique-before-every-modify",
+        "no escaped mutable backing",
+        "unchanged flat encoding/no schema change",
+        "same actor/pack/binding authority",
+        "meaningful copy/nested mutation/snapshot/decoded equality tests"
+      ],
+      "actual_delivered_base": "d731b79859dddffd3533c20360280c7c27825009",
+      "expected_union_methods": 358,
+      "runtime_fix_proven": false,
+      "no_new_diagnostic_campaign": true
     }
   ],
   "two_developer_phase": {
