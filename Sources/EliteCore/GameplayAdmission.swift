@@ -341,6 +341,32 @@ extension Game {
     return nil
   }
 
+  /// Practice checks every live scene actor through the strict ordinary body/station rules.
+  @inline(never)
+  private static func gameplayMissionActorSceneClearanceRefusal(
+    original: borrowing Game, center: Vector3, radius: Double, context: EncounterContext,
+    registeredStationBodies: Set<Int>
+  ) -> AdmissionRefusal? {
+    for actorIndex in context.actors.indices where context.actors[actorIndex].energy > 0 {
+      var matchingBodyIndex: Int?
+      for bodyIndex in original.bodies.indices {
+        if original.bodies[bodyIndex].physical?.identity == context.actors[actorIndex].identity {
+          matchingBodyIndex = bodyIndex
+          break
+        }
+      }
+      guard let bodyIndex = matchingBodyIndex else { return .staleContext }
+      if let refusal = Self.gameplayMissionActorSceneBodyRefusal(
+        original: original, center: center, radius: radius,
+        actor: context.actors[actorIndex], body: original.bodies[bodyIndex],
+        registeredStationBodies: registeredStationBodies)
+      {
+        return refusal
+      }
+    }
+    return nil
+  }
+
   /// Borrow the selected scene records; only a downstream body API receives an owned copy.
   @inline(never)
   private static func gameplayMissionActorSceneBodyRefusal(
