@@ -4986,8 +4986,8 @@
   "two_developer_phase": {
     "started_at": "2026-10-22T05:55:43Z",
     "developers": {
-      "G1": "Complete clinic service loop",
-      "G3": "M02.P04/F06 complete showroom comparison"
+      "G1": "C08 complete seed-service loop on feature/wayfarer-seed-service; ready workshop findings at packet boundary",
+      "G3": "M02.P05 inventory grouping; author-owned PR51 qualification and merge"
     },
     "reviewer": "MBA/G2",
     "merge_owner": "Feature author; no separate integrator",
@@ -5028,7 +5028,7 @@
         "latest_packet": "Complete clinic pickup/custody/integrity/receiving/payment/cancel-return/loss loop",
         "unit_run": 39735096653,
         "unit_status": "Clinic10Acceptance+10Custody and affected49/50assertions verifiedPASS in identical8afe artifact244/276; c680ownheadcheckSUCCESS independently observed, no duplicate artifact",
-        "source_state": "Complete clinic source pushed; independent review, execution, merge and accessible-build delivery pending",
+        "source_state": "Complete clinic source independently reviewed and unit-qualified; included in accessible notarized candidate1.4.901; native gameplay/full-M01 acceptance pending",
         "source_review_result": "MBA acceptance source review clean at1523b3ee; actual hosted qualification pending",
         "source_review_completed_at": "2026-10-22T06:05:57Z",
         "latest_handoff_at": "2026-10-22T06:01:52Z",
@@ -5042,13 +5042,13 @@
         "correction_handoff_at": "2026-10-22T06:21:00Z",
         "source_complete_head": "409d042c3a242330c9ae6c71b2316b3678f09180",
         "source_complete_evidence": "Author commit and handoff6334295039; not independent qualification",
-        "correction_unit_status": "existing corrected runpending; predecessor2c38 compileFAIL/no methods retained",
+        "correction_unit_status": "c680 own check SUCCESS; identical clinic source/tests verified in8afe244methods/276cases PASS;49/50closed",
         "correction_failure_kind": "fixture compiler error, not failed unit execution",
         "escalation_decision": "G1 routine local-value latch; no MC1needed",
         "feature_source_review_completed_at": "2026-10-22T06:36:56Z",
         "feature_handoff_to_source_review_seconds": 631,
         "feature_review_scope": "All10Custody methods, actual pickup/frozen receiving/payment/held return/timer dispatcher/retry/completion/loss/stock/window/hold/save113/114",
-        "feature_review_result": "No additional production finding; inherited fixture compile50 remains blocking; actual execution/finalhead qualification pending",
+        "feature_review_result": "Complete clinic source review clean; actual10Acceptance+10Custody methods verifiedPASS in8afe artifact; no full-M01/native acceptance",
         "review_latency_caveat": "Includes priority2c38 failed-artifact interruption, not pure review CPU time",
         "correction_source_review_result": "MBA c680 clean; source issue50 overlap removed,49 retained; actual affectedPASS pending",
         "correction_source_review_completed_at": "2026-10-22T06:40:31Z",
@@ -5078,9 +5078,9 @@
         "push_timestamp_source": "PR48 creation; observation of push, not exact push event",
         "head": "8afe2415bcd47e62bfd1713163dc0e53d3b0dd2d",
         "pr_url": "https://github.com/stephenlclarke/elite/pull/48",
-        "source_state": "G3 composed G1fixture correction; independent final-head review/actual corrected qualification pending",
+        "source_state": "Author-merged PR48 at8b30a311 after clean MBA review and244/276PASS; included in local candidate1.4.901",
         "first_push_observed_elapsed_seconds": 224,
-        "source_review_result": "MBA8afe final composition clean; unchanged showroom3/code/244selector; hosted qualification pending",
+        "source_review_result": "Final8afe composition independently clean and actual244/276PASS",
         "source_review_time_reported": "2026-10-22 06:02 UTC (minute precision)",
         "handoff_at": "2026-10-22T06:27:02Z",
         "source_review_latency_seconds_reported": 88,
@@ -5138,8 +5138,8 @@
         "handoff_url": "https://github.com/stephenlclarke/elite/pull/51#issuecomment-6335090954",
         "unit_run": 39739511461,
         "unit_status": "Existing final258run39739511461active; retainedf791247/279PASS and52CLOSED",
-        "source_state": "Finalsource/selectorreviewCLEAN, actualcorrectedexecution pending;52awaitingMBA",
-        "source_review_result": "MBAff-to-afba source clean, exact3projectionmethods/244selector unchanged; actual execution pending",
+        "source_state": "Issue52 corrected and closed after247/279PASS; actual selector merge conflict resolved by author; finalb3 composition source-clean,258-method run pending",
+        "source_review_result": "MBA finalb3 composition clean; inventory production/tests unchanged from verifiedf791",
         "source_review_completed_at": "2026-10-22T06:40:31Z",
         "handoff_to_source_review_seconds": 378,
         "latest_composition_review_seconds_reported": 119,
@@ -5155,8 +5155,8 @@
         "awaiting_verification_findings": [],
         "correction_handoff_at": "2026-10-22T07:02:04Z",
         "correction_source_review_result": "MBA f791 bounded correction/final composition CLEAN; production unchanged; four literal indentation expectations only; originalassertionsretained",
-        "selector_review": "Exactunion of priorafba244 and merged8b30244 equals247, no missing/unexpectedmethods",
-        "issue_metadata": "mba-finding and awaiting-mba restored;OPEN",
+        "selector_review": "Finalb3 exact union of f791247 and fcf255 equals258; no missing/unexpected methods",
+        "issue_metadata": "52CLOSED after actual correction verification; no ready inventory finding",
         "merge_blocker": "Actualselectorconflict resolved byauthor; finalheadchecks/qualification pending",
         "closed_findings": [
           52
@@ -5174,6 +5174,33 @@
           "execution_seconds": 54.632,
           "scope": "Inventory3/52 and retainedshowroom/clinic passed; does not qualify new258head"
         }
+      },
+      {
+        "id": "C08 workshop loop",
+        "owner": "G1",
+        "head": "fcf0e348fd3fca74f0f484d3e659cd96aac0a182",
+        "source_complete_at": "2026-10-22T07:10:54Z",
+        "handoff_at": "2026-10-22T07:14:38Z",
+        "handoff_url": "https://github.com/stephenlclarke/elite/pull/25#issuecomment-6335036267",
+        "source_review_result": "MBA clean",
+        "source_review_completed_at": "2026-10-22T07:15:12Z",
+        "unit_run": 39738732938,
+        "unit_status": "FAILURE completed2026-10-22T07:24:26Z; MBA artifact classification pending; no passing aggregate claimed",
+        "unit_selection_methods": 255,
+        "new_methods": 11,
+        "merged_at": null,
+        "playable_at": null,
+        "source_state": "Last legacy direct shared-branch source packet; not independently qualified or included in candidate1.4.901"
+      },
+      {
+        "id": "C08.P06.B.seed",
+        "owner": "G1",
+        "branch": "feature/wayfarer-seed-service",
+        "phase_entry_state": "Active complete Enlirin162-to-Lareria091 seed loop, six original3t lots,7200flightseconds from actual pickup",
+        "source_complete_at": null,
+        "merged_at": null,
+        "playable_at": null,
+        "next_ready_scope": "C08 commit-charter actual Avenor audit, then certify-network and once-only terminal; no premature stage/reward credit"
       }
     ],
     "model_settings": {
@@ -5203,7 +5230,7 @@
       "model": null,
       "active_assignment": null
     },
-    "qualification_queue_note": "49/50CLOSED, clinic source qualified, showroom merged byauthor; inventoryafba actual execution remains pending; no source review backlog",
+    "qualification_queue_note": "Workshop39738732938 FAILURE, MBA inspecting existing artifact; inventoryfinal39739511461 active;52CLOSED; no source-review backlog",
     "complete_features_merged": 1,
     "merged_feature_count_scope": "Shared development branch complete featurePR48 only; source qualification/individual packets do not add counts",
     "new_usable_build_deliveries": 0,
