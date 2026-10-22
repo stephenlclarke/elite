@@ -64,6 +64,15 @@ METHODS = {
         "systemScrollHintsFollowActualViewportAndHelpReturnContext",
         "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
     ),
+    "WantedDossierNameUnitTests": (
+        "recordedPlughLocationsAndDestinationsKeepTheirGalaxyAndName",
+        "ordinaryAndUnknownReportsRetainHistoricalWordingWithoutChangingProperty",
+    ),
+    "MarketDisplayOrderUnitTests": (
+        "authoredOrderKeepsEachStableCommodityIDAndCargoIndex",
+        "arrowSelectionFollowsAuthoredOrderWithoutTradingOrChangingModes",
+        "renderedRowsAndClicksUseTheSameStableIDsAtCompactAndWideSizes",
+    ),
     "NativeWayfarerInductionWorkshopUnitTests": (
         "originalBatchKeepsSixDistinctFailedSerialsSeparateFromClinicCargoAndAllWindows",
         "wholeReachableOutAndReturnItinerarySetsExactFrozenPriceWithoutGenericW03Weakening",
@@ -380,6 +389,10 @@ METHODS = {
         "returningToALargerHullDoesNotRefitStoredSparesOrRecreateSoldBoundItems",
         "foreignOwnerUnknownNodeAndExhaustedRevisionRefuseWithoutChangingSource",
     ),
+    "ContextControlHintUnitTests": (
+        "systemScrollHintsFollowActualViewportAndHelpReturnContext",
+        "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
+    ),
     "FlightControlAuthorityUnitTests": (
         "allSharedFlightBindingsRoundTripWithoutFunctionKeys",
         "targetSelectionAndFilterInterruptTheHeldToolWithoutBecomingFire",
@@ -407,6 +420,19 @@ METHODS = {
     ),
     "BundledScriptPackTests": (
         "bundledMeasuredExtractionDeclaresActualTwentyTonneSourceAndClosedTwelveTonneRecipe",
+    ),
+    "MarketInventoryProjectionUnitTests": (
+        "statusSummaryAndInventoryHaveDistinctResponsibilities",
+    ),
+    "InventoryGroupingUnitTests": (
+        "mixedTradeAndReservedCargoStayInDistinctSectionsWithoutChangingQuantities",
+        "fittedAndHeldSectionsKeepEveryExactItemSubjectAndActionPreviewOnce",
+        "emptyOwnedStorageAndLegacyFittingsRemainExplicitWithoutInventedCustody",
+    ),
+    "PlanetNightTechnologyUnitTests": (
+        "originalWorldNightProfilesRetainEveryAuthoredTechnologyLevel",
+        "matchedOriginalEconomyAndGovernmentKeepIncreasingNightDevelopmentAboveFifteen",
+        "explicitLegacyNightProfilesKeepTheirExistingCoefficientsAndBounds",
     ),
     "NativeUtilityCustodyTests": (
         "explicitWorldActivationOwnsEightMaterialsWithoutTargetDockAuthority",
