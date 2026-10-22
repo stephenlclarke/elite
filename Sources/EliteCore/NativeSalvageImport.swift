@@ -174,7 +174,7 @@ struct NativeSalvageImport: Sendable {
         attachments.append(
           .init(
             id: property, owner: owner, kind: kind, source: operation, disposition: .stored,
-            contributionBasisPoints: AlienModuleDefinition.baseBonusBasisPoints))
+            contributionBasisPoints: kind.initialContribution))
         action = .migrateStoredAttachment(
           attachment: property, source: operation, section: section, claim: claim)
         migrationKind = .attachment(kind)

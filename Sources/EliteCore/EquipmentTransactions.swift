@@ -112,7 +112,7 @@ extension Commander {
     if (savedEquipmentVersion ?? 0) >= 2 {
       missiles =
         inventory.items.filter {
-          $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
+          AlienMissileDefinition.profile(for: $0.node) != nil && $0.location != nil
         }.count
     }
   }
@@ -180,6 +180,9 @@ extension Game {
       return passengerCabinQuote(grade).issues.first
     }
     guard equipmentAvailable(item) else {
+      if item.name == AlienMissileDefinition.name {
+        return "Research an alien artefact at PLUGH first"
+      }
       return Equipment.isReward(item.name)
         ? Equipment.rewardLabel(item.name) : "Requires TL\(item.requiredTechnologyLevel)"
     }
@@ -256,7 +259,7 @@ extension Game {
       guard commander.fittedEquipment(at: slot)?.node != node else {
         throw EquipmentRuntimeError.alreadyOwned
       }
-    } else if node == EquipmentRuntimeCatalog.standardMissile {
+    } else if AlienMissileDefinition.profile(for: node) != nil {
       guard
         let pylon = (0..<commander.missileCapacity).first(where: {
           commander.fittedEquipment(at: .missilePylon($0)) == nil

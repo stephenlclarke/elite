@@ -18,7 +18,8 @@ private func attachmentLot(
     identity: identity,
     content: .technology(
       definitionID: id, quality: quality, conditionPercent: 75, axis: upgrade ? kind.axes[0] : nil),
-    effect: .scalar(axes: kind.axes), bonusBasisPoints: upgrade ? quality.bonusBasisPoints : 1000,
+    effect: kind.effect,
+    bonusBasisPoints: upgrade ? quality.bonusBasisPoints : kind.initialContribution,
     massKg: 8, halfExtents: .init(2, 2, 2), provenance: provenance, saleValueTenths: 1000,
     legality: .init(
       commodityIllegal: false, sourceLegalValue: 0, ownership: .abandoned, stolenProvenance: false),
