@@ -21,17 +21,74 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+# exportShipMedia -> Display.shipPortrait -> CatalogueShip.previewMesh / Display.draw
+# -> imageFor / drawFrame (Quartz CPU path; no ShipPanelRenderer is supplied).
+# Keep this boundary in sync when that call path gains a dependency. See docs/PR-75.md.
+RENDER_FILES = (
+    'Package.swift', 'Package.resolved',
+    'Sources/EliteCore/AutoTargetControl.swift',  # Basis3 and SpaceBody.modelVector
+    'Sources/EliteCore/CockpitDisplay.swift',  # Frame.label
+    'Sources/EliteCore/Display.swift',  # palette, bitmap font, frame and Display.draw
+    'Sources/EliteCore/Geometry.swift',
+    'Sources/EliteCore/Graphics.swift',
+    'Sources/EliteCore/OriginalShipTextureAssets.swift',
+    'Sources/EliteCore/ShipAppearance.swift',
+    'Sources/EliteCore/ShipCatalogue.swift',
+    'Sources/EliteCore/ShipCatalogueMetadata.swift',
+    'Sources/EliteCore/ShipPerformance.swift',
+    'Sources/EliteCore/ShipPortrait.swift',
+    'Sources/EliteCore/ShipRendering.swift',
+    'Sources/EliteCore/ShipTextureAssets.swift',
+    'Sources/EliteCore/ShipTextureRaster.swift',
+    'Sources/EliteCore/ShowroomGeometry.swift',
+    'Sources/EliteCore/ScriptNPCRendering.swift',  # Display.draw's beam guard
+    'Sources/EliteMac/NativeGraphics.swift',
+    'Sources/EliteMac/ShipMedia.swift',
+)
+TEXTURE_FOLDERS = (
+    'Sources/EliteCore/Resources/ShipTextures',
+    'Sources/EliteCore/Resources/OriginalShipTextures',
+)
+# The portrait explicitly sets .front and .shadedPanels and supplies its own mesh.
+# Only this view transform is read from Game.swift by that fixed drawing path.
+# Missing, renamed, duplicate or reversed declaration boundaries fail closed.
+VIEW_START = '  public func viewPosition(_ p: Vector3) -> Vector3 {\n'
+VIEW_END = '  private mutating func moveBodies(dt: Double) {\n'
+
+
+def view_transform(root):
+    """Read the renderer's Game transform without hashing unrelated simulation methods."""
+    text = (root/'Sources/EliteCore/Game.swift').read_text()
+    if text.count(VIEW_START) != 1 or text.count(VIEW_END) != 1:
+        raise ValueError('Update ship media view-transform dependency boundaries')
+    start = text.index(VIEW_START)
+    end = text.index(VIEW_END)
+    if end <= start:
+        raise ValueError('Invalid ship media view-transform dependency boundaries')
+    return text[start:end].encode()
+
+
 def shared_hash(root=Path('.')):
-    """Include every simulation/rendering definition and renderer setting."""
-    paths=sorted((root/'Sources/EliteCore').glob('*.swift'))
-    paths += [root/'Sources/EliteMac'/p for p in ['NativeGraphics.swift','ShipMedia.swift']]
-    paths += [root/'Package.resolved']
-    textures=root/'Sources/EliteCore/Resources/ShipTextures'
-    if textures.is_dir():
-        paths += sorted(path for path in textures.rglob('*') if path.is_file())
-    h=hashlib.sha256(SETTINGS)
-    for path in paths:
-        h.update(str(path.relative_to(root)).encode());h.update(path.read_bytes())
+    """Hash the maintained portrait path, settings and both authenticated texture trees."""
+    paths = [root/name for name in RENDER_FILES]
+    for folder in TEXTURE_FOLDERS:
+        textures = root/folder
+        if textures.is_dir():
+            paths.extend(path for path in textures.rglob('*') if path.is_file())
+    h = hashlib.sha256(b'ship-media-render-dependencies-v2')
+
+    def add(name, data):
+        # Framing prevents a file boundary/name change from aliasing concatenated bytes.
+        name = name.encode()
+        h.update(len(name).to_bytes(8, 'big'))
+        h.update(name)
+        h.update(len(data).to_bytes(8, 'big'))
+        h.update(data)
+
+    add('settings', SETTINGS)
+    add('Sources/EliteCore/Game.swift#viewPosition', view_transform(root))
+    for path in sorted(paths):
+        add(path.relative_to(root).as_posix(), path.read_bytes())
     return h.hexdigest()
 
 
