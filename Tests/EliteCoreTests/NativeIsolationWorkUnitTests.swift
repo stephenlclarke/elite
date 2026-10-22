@@ -99,6 +99,23 @@ final class IsolationWorkFixture {
     try #require(game.isolationWorkChild?.savedIsolationWork)
   }
 
+  static func arm(_ runtime: GameRuntime) async throws {
+    // A new runtime invalidates transient authority; earn a fresh arm through actual input.
+    let initial = await runtime.snapshot()
+    try #require(initial.isolationWorkRuntime.arm == nil)
+    await runtime.key("tab")
+    await runtime.key("return")
+    let reviewed = await runtime.snapshot()
+    try #require(reviewed.isolationWorkRuntime.review != nil)
+    try #require(reviewed.isolationWorkRuntime.arm == nil)
+    await runtime.key("return")
+    let armed = await runtime.snapshot()
+    try #require(armed.isolationWorkRuntime.arm != nil && armed.isolationWorkEndpoint() != nil)
+    #expect(
+      armed.isolationWorkChild?.savedIsolationWork == initial.isolationWorkChild?.savedIsolationWork
+    )
+  }
+
   static func returnToAvenor(_ runtime: GameRuntime) async throws {
     await runtime.key("escape")
     await runtime.key("0")
@@ -302,6 +319,8 @@ struct NativeIsolationWorkUnitTests {
       at: files.save.deletingLastPathComponent(), withIntermediateDirectories: true)
     let runtime = GameRuntime(game: fixture.game)
     _ = try await runtime.registerNewCommanderDestination(at: files.save)
+    try await IsolationWorkFixture.arm(runtime)
+    #expect(await runtime.snapshot().isolationWorkChild?.savedIsolationWork == attained)
     // Genuine exclusive pointer refusal; all attained flow remains outside its candidate.
     try Data("occupied".utf8).write(to: files.save)
     let refused = await runtime.advance(delta: 0.05)
@@ -470,16 +489,20 @@ struct NativeIsolationWorkUnitTests {
     fixture.game.weaponsTargetID = try #require(fixture.game.isolationWorkContactBody?.id)
     let attained = try fixture.state()
     let inventory = fixture.game.commander.equipmentInventory
-    var launch = fixture.game
-    let launched = launch.fireMissile()
-    try #require(launched)
-    #expect(launch.bodies.count > fixture.game.bodies.count)
-    #expect(launch.commander.equipmentInventory == inventory)
     let files = try ScriptFreightFixture()
     defer { files.clean() }
+    try FileManager.default.createDirectory(
+      at: files.save.deletingLastPathComponent(), withIntermediateDirectories: true)
     let runtime = GameRuntime(game: fixture.game)
     _ = try await runtime.registerNewCommanderDestination(at: files.save)
+    try await IsolationWorkFixture.arm(runtime)
     let baseline = await runtime.snapshot()
+    try #require(baseline.isolationWorkChild?.savedIsolationWork == attained)
+    var launch = baseline
+    let launched = launch.fireMissile()
+    try #require(launched)
+    #expect(launch.bodies.count > baseline.bodies.count)
+    #expect(launch.commander.equipmentInventory == inventory)
     try Data("occupied".utf8).write(to: files.save)
     await runtime.key("m")
     let refused = await runtime.snapshot()
