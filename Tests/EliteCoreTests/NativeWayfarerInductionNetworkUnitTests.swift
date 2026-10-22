@@ -43,6 +43,7 @@ private final class InductionNetworkFixture {
     mission.acknowledge(300)
     mission.acknowledge(310)
     commander.scriptState.instances[mission.id] = mission
+    try f.restoreOriginalParentSaveClaims(&commander)
     return commander
   }
 }
