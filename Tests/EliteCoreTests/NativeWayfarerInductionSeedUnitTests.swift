@@ -521,7 +521,7 @@ struct NativeWayfarerInductionSeedUnitTests {
     commander.scriptState.instances[child.id] = child
     #expect(NativeInductionSeedSave.pendingExpiry(child, engine: commander.scriptState) == event)
     let money = commander.credits
-    try Game().applyInductionSeedExpiry(event: event, state: &child, candidate: &commander)
+    try Game.applyInductionSeedExpiry(event: event, state: &child, candidate: &commander)
     let end = try #require(child.savedNativeInductionSeed?.custody?.end)
     #expect(end.expiry == event && end.sequence == 300 && end.closedFlightSeconds == 950_000)
     #expect(end.context.flightSeconds == 907_460 && child.outcome == .failed)

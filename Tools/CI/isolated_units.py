@@ -21,6 +21,11 @@ METHODS = {
         "stationGuideNamesTheActualDockAndKeepsEveryDestination",
         "oneUnavailableServiceDoesNotHideOtherAvailableServices",
     ),
+    "NativeStationSnapshotUnitTests": (
+        "inPlaceStationMeshReadPreservesGeometryAndRejectsMissingOrForeignActors",
+        "exactSnapshotRejectsEveryStoredFieldChangeAndDuplicateOrAbsentBodies",
+        "authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget",
+    ),
     "NativeWayfarerInductionAccreditationUnitTests": (
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
         "repeatedSennConfirmationCannotPayOrGrantAnotherClueOrDiscardExistingBookings",

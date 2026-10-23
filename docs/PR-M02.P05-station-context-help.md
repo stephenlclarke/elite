@@ -15,3 +15,5 @@ Swift formatting, six Python report fixtures and whitespace checks pass. Documen
 No save/schema, actor ownership, service authority, prices, navigation or input binding changes. The existing station service and exchange policies remain the authority. This feature is independent of the pending station-validation memo repair and the inventory/showroom stream.
 
 Parent: [M02.P05 / F07,F43](COMPLETION-LEDGER.md). Source and review are delivered through this feature's PR; usable-build and release evidence remain separate.
+
+The actual canonical-base merge conflict is resolved by retaining both the three StationScreenGuide methods and three NativeStationSnapshot methods. The final maintained union is345methods. The original help source and its verified eight cases are unchanged; final-head GitHub checks and independent review remain pending.
