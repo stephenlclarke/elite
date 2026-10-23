@@ -5827,6 +5827,28 @@
       "playable_delivered": false,
       "integration_deferred": true,
       "developer_continues": "M02.P05.status-dock-context code and component cases written"
+    },
+    {
+      "at": "2026-10-23T09:46:41.177034+00:00",
+      "event": "Station-help original feature head independently source and component unit verified",
+      "ledger_id": "M02.P05.station-context-help",
+      "pr": 115,
+      "head": "095f8fa95b7a73391b58d177d2158857ded5abdb",
+      "run": 39932149733,
+      "github_job_completed_at": "2026-10-23T09:43:03Z",
+      "source_review": "MBA clear",
+      "methods_passed": 342,
+      "new_feature_methods_passed": 3,
+      "new_feature_parameter_cases_passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "compile_seconds": 706.31,
+      "test_seconds": 67.879,
+      "actual_merge_blocker": "current-base conflict",
+      "merged": false,
+      "usable_delivered": false,
+      "full_integration_deferred": true
     }
   ],
   "two_developer_phase": {
