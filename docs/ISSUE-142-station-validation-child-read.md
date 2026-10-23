@@ -34,3 +34,9 @@ seconds, before any test ran: the existing checked physical-identity reader
 was fileprivate to NativeStationRuntime. Its read-only access is now internal
 to the module so the relocated shared storage policy can use the same reader.
 Its implementation, presence guard and all validation behavior are unchanged.
+
+The 87d48f22 invocation failed compilation after 56.902194 seconds, before
+execution: Swift requires an owned SpaceBody when the storage closure captures
+the borrowed argument. Each bridge now makes that body copy explicit before
+its synchronous closure. No Commander copy is introduced; the shared policy,
+pointer borrow, absence behavior and validation predicates remain unchanged.

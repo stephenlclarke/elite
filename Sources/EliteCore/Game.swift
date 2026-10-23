@@ -1153,15 +1153,17 @@ public struct Game: Sendable {
 
   @inline(never)
   func nativeStationStoredBodyIsCurrent(_ body: borrowing SpaceBody) -> Bool {
-    commanderStorage.withUnsafeBufferPointer { storage in
-      Self.nativeStationBodyIsCurrent(body, at: storage.baseAddress!)
+    let ownedBody = copy body
+    return commanderStorage.withUnsafeBufferPointer { storage in
+      Self.nativeStationBodyIsCurrent(ownedBody, at: storage.baseAddress!)
     }
   }
 
   @inline(never)
   mutating func nativeStationApproachStoredBodyIsCurrent(_ body: borrowing SpaceBody) -> Bool {
-    commanderStorage.withUnsafeBufferPointer { storage in
-      Self.nativeStationBodyIsCurrent(body, at: storage.baseAddress!)
+    let ownedBody = copy body
+    return commanderStorage.withUnsafeBufferPointer { storage in
+      Self.nativeStationBodyIsCurrent(ownedBody, at: storage.baseAddress!)
     }
   }
 
