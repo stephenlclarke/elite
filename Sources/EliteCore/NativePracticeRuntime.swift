@@ -126,11 +126,37 @@ extension Game {
   }
 
   /// This lookup cannot grant immunity through a mission label or through an ordinary actor.
+  @inline(never)
   func nativePracticeReservation(_ body: SpaceBody) -> NativePracticeState? {
+    guard let owner = nativePracticeReservationOwner(body) else { return nil }
+    return nativePracticeReservationPayload(body, owner: owner)
+  }
+
+  /// Metadata needs membership only; ordinary actors never enter the owned payload scan.
+  @inline(never)
+  func hasNativePracticeReservation(_ body: SpaceBody) -> Bool {
+    guard let owner = nativePracticeReservationOwner(body) else { return false }
+    return nativePracticeReservationPayloadExists(body, owner: owner)
+  }
+
+  @inline(never)
+  private func nativePracticeReservationOwner(_ body: SpaceBody) -> UUID? {
     guard body.hull == .cargo, let physical = body.physical,
       physical.population == .mission, physical.spawnIdentity?.producer == .provider,
       let owner = commander.equipmentOwnerID
     else { return nil }
+    return owner
+  }
+
+  @inline(never)
+  private func nativePracticeReservationPayloadExists(_ body: SpaceBody, owner: UUID) -> Bool {
+    nativePracticeReservationPayload(body, owner: owner) != nil
+  }
+
+  @inline(never)
+  private func nativePracticeReservationPayload(_ body: SpaceBody, owner: UUID)
+    -> NativePracticeState?
+  {
     for instance in commander.scriptState.instances.values {
       if let practice = instance.savedNativePractice, practice.reserves(body),
         NativePracticeSave.valid(

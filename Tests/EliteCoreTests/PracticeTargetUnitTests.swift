@@ -115,6 +115,42 @@ struct PracticeTargetUnitTests {
     #expect(game.gameplayRevision == revision)
   }
 
+  private final class ReservationGame {
+    var value = Game(executive: false)
+  }
+
+  @Test func reservationMembershipRequiresOriginalActorAndCompleteRetainedProof() throws {
+    let f = try fixture()
+    let game = ReservationGame()
+    try game.value.commander.prepareEquipment()
+    let owner = try #require(game.value.commander.equipmentOwnerID)
+    let owned = try replacing(f.state.permission, key: "owner", with: owner.uuidString)
+    let permission = try replacing(
+      owned, key: "carrier", with: try #require(game.value.commander.hullInstanceID).uuidString)
+    let practice = NativePracticeState(permission: permission, beacons: f.state.beacons)
+    var instance = f.instance
+    instance.savedNativePractice = practice
+    game.value.commander.scriptState = f.engine
+    game.value.commander.scriptState.instances[instance.id] = instance
+    game.value.commander.flightSimulation = f.flight
+    let original = try #require(f.bodies.first)
+    #expect(game.value.hasNativePracticeReservation(original))
+
+    var ordinary = original
+    ordinary.hull = .cobra
+    #expect(!game.value.hasNativePracticeReservation(ordinary))
+    ordinary = original
+    ordinary.physical = .init(
+      identity: try #require(original.physical).identity, population: .cargo)
+    #expect(!game.value.hasNativePracticeReservation(ordinary))
+
+    game.value.commander.scriptState.instances[instance.id]?.digest = String(
+      repeating: "b", count: 64)
+    #expect(!game.value.hasNativePracticeReservation(original))
+    game.value.commander.scriptState.instances.removeValue(forKey: instance.id)
+    #expect(!game.value.hasNativePracticeReservation(original))
+  }
+
   @Test func wholePracticeVolumeRequiresActualGeometryAndRefusesTrafficPlanetAndUnknownScene()
     throws
   {

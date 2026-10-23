@@ -186,6 +186,7 @@ METHODS = {
         "providerEndOrMissingTargetsCannotSupplyAHitOrACompletedLesson",
     ),
     "PracticeTargetUnitTests": (
+        "reservationMembershipRequiresOriginalActorAndCompleteRetainedProof",
         "plainCommanderLoadRefusesPracticeWithoutChangingTheExistingCommanderOrScene",
         "wholePracticeVolumeRequiresActualGeometryAndRefusesTrafficPlanetAndUnknownScene",
         "ordinaryTrafficStillRecordsActualLawAndDeathSettlementWhilePracticePolicyCannotMutateThem",
