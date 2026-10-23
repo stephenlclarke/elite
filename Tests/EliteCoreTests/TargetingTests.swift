@@ -161,7 +161,8 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
     game.purchase()
     #expect(game.commander.credits == before - tier.price)
   }
-  #expect(TargetingTier.basic.price == 2 * Equipment.all[4].price)
+  let pulseLaser = try #require(Equipment.all.first { $0.name == "Pulse Laser" })
+  #expect(TargetingTier.basic.price == 2 * pulseLaser.price)
   #expect(
     TargetingTier.military.price == 2 * Equipment.all.first { $0.name == "Military Laser" }!.price)
   game.commander.equipment.insert(TargetingTier.basic.equipmentName)
