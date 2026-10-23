@@ -9255,6 +9255,20 @@
       "methods": 4,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:17:24.538092+00:00",
+      "checkpoint_key": "20261023-m01-c23-distinct-crewlog-guard",
+      "event": "Current run identifies distinct crew-log selection marker guard access; scoped issue and fix assigned",
+      "head": "c23e2e1ca052e2477840a28f125b2f7d3c5e6f2f",
+      "build_seconds": 66.44,
+      "process_seconds": 78.345295375,
+      "result": "runtime FAILURE signal10/exit1",
+      "completed_methods": 0,
+      "scope_limit": "no UUID/hash/conformance semantic defect or earlier issue pass inferred",
+      "developer": "G1",
+      "reviewer": "MBA",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
