@@ -5894,6 +5894,24 @@
       "published_release": false,
       "homebrew_updated": false,
       "integration_testing_deferred": true
+    },
+    {
+      "at": "2026-10-23T10:04:20.607273+00:00",
+      "event": "Burro single-hull runtime packet pushed for independent review",
+      "ledger_id": "M04.H029.runtime",
+      "parent_ledger_id": "M04.H029",
+      "parent_complete": false,
+      "remaining_parent_dependency": "M14 safe-anchor/consumer and later acceptance",
+      "pr": 117,
+      "head": "00e786d1274a33f62e65cc71fab24ab37b73a4f4",
+      "new_component_methods_written": 5,
+      "original_selected_methods": 347,
+      "unit_status": "pending; no pass claim",
+      "source_review": "MBA assigned",
+      "merge_blocker": "actual shared selector conflict; author composing parent without rewrite",
+      "merged": false,
+      "usable_delivered": false,
+      "integration_deferred": true
     }
   ],
   "two_developer_phase": {
