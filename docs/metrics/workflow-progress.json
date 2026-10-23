@@ -9112,6 +9112,18 @@
       "completed_methods": 0,
       "fault_scope": "prepareContractAdmissions+700; no exact statement",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:49:22.660813+00:00",
+      "checkpoint_key": "20261023-m01-161-immutable-carrier-reviewed-run",
+      "event": "Immutable preparation carrier reviewed; construction frame returns before admissions; affected execution active",
+      "head": "f095cf0f",
+      "issue": 161,
+      "reviewed_blob": "f9b610724c2177c850dfe59a973aa25693a82602",
+      "session": 61743,
+      "methods": 4,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
