@@ -9963,6 +9963,18 @@
       "source_blob": "cfe946a80abe01b7a1281cfeada02eed05ecfb54",
       "independent_source_review": "clear",
       "runtime_result": "pending"
+    },
+    {
+      "at": "2026-10-23T23:02:24.531662+00:00",
+      "checkpoint_key": "20261024-m01-169-64de-committed-batch-dispatched",
+      "event": "Issue169 coherent applicability borrowing repair committed; one affected batch dispatched",
+      "head": "64de4321ab3a19fc18e699b3793b88c2ddb6590f",
+      "issue": 169,
+      "source_review": "clear",
+      "unit_result": "running",
+      "artifact_prefix": "/tmp/elite-m01-applicability",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
