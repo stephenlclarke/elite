@@ -7378,6 +7378,29 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T16:46:51Z",
+      "checkpoint_key": "20261023-m01-preview-shop-committed-focused-run-active",
+      "event": "Both release corrections committed and independently source reviewed; one focused batch active",
+      "issues": [
+        147,
+        148
+      ],
+      "issue147_commit": "03fa196f760fc9acadb353a37550b189e6b15684",
+      "issue148_commit": "9b630d784cca708137cc71bc3ad492726ccc3d76",
+      "independent_source_review": "MBA both clear",
+      "focused_methods": 6,
+      "authored_cases": 6,
+      "process_ids_at_observation": [
+        98708,
+        98710
+      ],
+      "report_prefix": "/tmp/elite-147-148-preview-shop-units",
+      "runtime_result": "pending",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
