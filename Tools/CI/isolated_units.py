@@ -60,6 +60,12 @@ METHODS = {
         "equalityPreservesOptionalPresenceInstancesEventsAndEachClock",
         "clockEqualityPreservesNaNAndSignedZeroMemberSemantics",
     ),
+    "GameplayPhysicalAdoptionTests": (
+        "adoptionKeepsMainAnchorAndAllocatesOrdinaryActorsInBodyOrder",
+        "existingOwnershipTagsSkipAdoptionWithoutChangingCursorsOrValues",
+        "systemChangeEntersExactlyOnceEvenWhenNoBodyNeedsAdoption",
+        "failedIdentitySelectionSkipsOnlyThatBodyAndPreservesSpawnCursor",
+    ),
     "NativeStationPopulationLifetimeTests": (
         "missingWorldReturnsBeforeSceneAndCursorValidation",
         "emptyCohortKeepsBindingsWithoutAllocatingFromExhaustedCursors",
