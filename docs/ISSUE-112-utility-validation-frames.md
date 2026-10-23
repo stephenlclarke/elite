@@ -54,3 +54,9 @@ fault0x170493ff0/SP0x170493fa0 in guard0x170490000-0x170494000. Its actual
 boarding path reaches passengerFit/performance before boardOriginalRescue's
 future mutation temporaries are used. No hull, hashing or capacity semantic
 fault is inferred. Capture: `/tmp/elite-112-b464-writer-diagnostic`.
+
+Theb8ff47aa first boarding split failed compilation after18.367seconds, before
+any test ran: Swift requires owned optional values for the header's binding
+and reservation phase's forced member projection. Keep the common readonly
+borrow, and make each required copy explicit inside its own header/reservation
+leaf. Those temporaries remain outside the capacity phase's common frame.

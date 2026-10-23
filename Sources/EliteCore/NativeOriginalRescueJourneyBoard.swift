@@ -173,7 +173,8 @@ extension Game {
   private func originalRescueBoardingHeaderIsCurrent(
     _ state: borrowing NativeOriginalRescueJourneyState?
   ) -> Bool {
-    guard let state, state.boarding == nil, state.terminalOperation == nil,
+    let owned = copy state
+    guard let state = owned, state.boarding == nil, state.terminalOperation == nil,
       contractStation == NativeOriginalRescueJourney.source,
       nativeMainStationDockEvidenceIsCurrent,
       let offer = state.offers.last, offer.dock == commander.nativeStations?.currentMainDock,
@@ -194,7 +195,8 @@ extension Game {
   private func originalRescueBoardingReservationIssue(
     _ state: borrowing NativeOriginalRescueJourneyState?
   ) -> String? {
-    originalRescueReservedBerthIssue(state!, offer: state!.offers.last!)
+    let owned = copy state
+    return originalRescueReservedBerthIssue(owned!, offer: owned!.offers.last!)
   }
 
   @inline(never)
