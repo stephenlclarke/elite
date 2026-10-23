@@ -6517,6 +6517,41 @@
       "candidate_updated": false,
       "next_deliverable": "Issue112 original rescue classifier and six-stage writer-refusal, two methods/seven cases",
       "merge_duplicate_cancellation_requested": 39963719263
+    },
+    {
+      "at": "2026-10-23T13:46:04Z",
+      "checkpoint_key": "20261023-m01-original-rescue-current-image-failure",
+      "event": "Original rescue focused execution fails before any completed case",
+      "issue": 112,
+      "commit": "ba83e0d273849ab96b6bd6aea7da7d513dee9dba",
+      "source_tree": "cd7f016dc22b23a58190d1f5ddef33e45ae47ba3",
+      "built_source_commit": "bcd75d29732ef3447a39ee26a269a353d34d5afb",
+      "built_source_identical_tree": true,
+      "binary_uuid": "UUID: 47C6753F-4A04-3844-AD3F-FCF13F2930DC (arm64) .build/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests",
+      "binary_sha256": "cb43b1a95aa49917877673f1015e2ac4fb0e978b9b890312891fb08e0c162152",
+      "command": [
+        "swift",
+        "test",
+        "--skip-build",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-112-rescue-units.xml",
+        "--filter",
+        "(?:^|\\.)NativeOriginalRescueCapsuleTests/rescueClassifierRejectsDeadForeignEmptyAndReplacedActorsWithoutEMPPersonImpersonation\\(|(?:^|\\.)NativeOriginalRescueRecordTests/rescueActualActionWriterRefusalPreservesCustodyCabinsCargoCashAndPriorFiles\\("
+      ],
+      "exit_code": 1,
+      "seconds": 12.579732874874026,
+      "completed_methods": 0,
+      "completed_cases": 0,
+      "outcome": "signal10, unfinished XML; fault unattributed at this checkpoint",
+      "independent_source_review": "MBA clear, original acceptance/classifier and six-stage writer coverage retained",
+      "independent_result_review": "MBA confirms failure; no passing aggregate or closure",
+      "next_action": "G1 bounded attribution from exact existing image, actual path correction and affected units; MBA reviews in parallel",
+      "usable_delivered": false,
+      "m01_complete": false,
+      "timestamp_scope": "Root recorded terminal evidence; not measured failure instant"
     }
   ],
   "two_developer_phase": {
