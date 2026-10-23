@@ -1,0 +1,9 @@
+# Station body validation and binding lifetimes
+
+[Issue160](https://github.com/stephenlclarke/elite/issues/160) records current637b VM40016581154. The same game binary as prior5acd was reused (compile0.79s); rawSIGBUS10/exit1, no assertions/completed methods and unfinished XML. Matched PID34573 launch20:06:15.7098/capture20:06:47.4841UTC has fault0x16fb07ff8 inside actual stack guard0x16fb04000-0x16fb08000. SP0x16fb08110 remains above the guard. Loaded/retained image7AEB4784-50AC-3EFE-9067-CBA95CCF32FE/SHA256c400c716a18749ae368ddcf4bb43c8ba4cde6b3a5652b61d02a788a90b4a3ba0 independently match.
+
+The exact current path is chkstk, static nativeStationBodyIsCurrent, stored body bridge, mesh/collision, station hazards/guidance, tick/advance and the original NativeStationSnapshot authentic entry test. It is distinct from fleet observer159, closed practice-mesh157 and unattributed historical144. Evidence `/tmp/elite-mba-637b-unit40016581154`.
+
+Keep native body/physical identities, stored world presence and COMPLETE nativeStationStateIsValid in the noninline entry. Only then enter a noninline binding helper containing the original record lookup and exact current-system, tombstone, positive-energy, physical-system, visit and binding checks. Pass the same captured world by borrowing; do not substitute a header-only check or reread a different world. Every guard and read order remains unchanged, while later record/binding temporaries are not reserved during complete validation.
+
+Focused validation retains original authentic entry/evasion and in-place mesh/foreign-or-missing body refusals. These share one build with159's three original methods, preferably in the existing idle Swift6.1.2/SDK15.5 release executor. No new selector, stack setting, diagnostic probe, workflow configuration or broad test run. Actual-source review and execution are pending; final full gates and release remain separate.

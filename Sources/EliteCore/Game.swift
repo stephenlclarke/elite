@@ -1238,6 +1238,7 @@ public struct Game: Sendable {
     }
   }
 
+  @inline(never)
   private static func nativeStationBodyIsCurrent(
     _ body: borrowing SpaceBody, at commander: UnsafePointer<Commander>
   ) -> Bool {
@@ -1245,8 +1246,18 @@ public struct Game: Sendable {
       let physicalIdentity = body.nativeStationPhysicalIdentity,
       let worldStorage = commander.pointer(to: \.nativeStations)
     else { return false }
-    guard let world = worldStorage.pointee, Commander.nativeStationStateIsValid(at: commander),
-      let record = world.ledger.records.first(where: { $0.identity == identity })
+    guard let world = worldStorage.pointee, Commander.nativeStationStateIsValid(at: commander)
+    else { return false }
+    return nativeStationBindingIsCurrent(
+      body, identity: identity, physicalIdentity: physicalIdentity, world: world, at: commander)
+  }
+
+  @inline(never)
+  private static func nativeStationBindingIsCurrent(
+    _ body: borrowing SpaceBody, identity: NativeStationIdentity, physicalIdentity: ActorIdentity,
+    world: borrowing NativeStationWorld, at commander: UnsafePointer<Commander>
+  ) -> Bool {
+    guard let record = world.ledger.records.first(where: { $0.identity == identity })
     else { return false }
     let currentSystem = Commander.nativeStationReadSystem(at: commander)
     guard identity.system == currentSystem, record.tombstone == nil, body.energy > 0,
