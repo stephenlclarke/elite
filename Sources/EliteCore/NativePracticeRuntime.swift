@@ -140,12 +140,17 @@ extension Game {
   }
 
   @inline(never)
-  private func nativePracticeReservationOwner(_ body: SpaceBody) -> UUID? {
+  private func nativePracticeReservationOwner(_ body: borrowing SpaceBody) -> UUID? {
+    guard Self.nativePracticeReservationBodyIsEligible(body) else { return nil }
+    return storedEquipmentOwnerID()
+  }
+
+  @inline(never)
+  private static func nativePracticeReservationBodyIsEligible(_ body: borrowing SpaceBody) -> Bool {
     guard body.hull == .cargo, let physical = body.physical,
-      physical.population == .mission, physical.spawnIdentity?.producer == .provider,
-      let owner = commander.equipmentOwnerID
-    else { return nil }
-    return owner
+      physical.population == .mission, physical.spawnIdentity?.producer == .provider
+    else { return false }
+    return true
   }
 
   @inline(never)

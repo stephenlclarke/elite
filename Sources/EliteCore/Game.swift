@@ -1170,6 +1170,16 @@ public struct Game: Sendable {
     }
   }
 
+  @inline(never)
+  func storedEquipmentOwnerID() -> UUID? {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      guard let inventory = storage.baseAddress!.pointer(to: \.savedEquipmentInventory) else {
+        preconditionFailure("Reservation requires addressable stored equipment.")
+      }
+      return inventory.pointee?.owner
+    }
+  }
+
   // Keep the original full policy and lazy read order without passing a whole Commander value
   // through the generic read callback. Only owned system/anchor values leave this buffer scope.
   @inline(never)
