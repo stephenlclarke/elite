@@ -8032,6 +8032,24 @@
       "next_action": "G1 current evidence attribution and minimal correction; MBA saved evidence review",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:05:33Z",
+      "checkpoint_key": "20261023-m01-fresh-batch-context-lifetime-reviewed",
+      "event": "Current actor-projection fault attributed; batch context lifetime correction source-reviewed",
+      "issue": 151,
+      "fault_source": "49e3e4f2800bb5565406d95d14148c593a0a852b",
+      "diagnostic_path": "/tmp/elite-151-49e-original-mission-fault-capture",
+      "diagnostic_seconds": 17.169931,
+      "diagnostic_not_test_pass": true,
+      "binary_uuid": "0E2BECB8-4FA4-3FA4-B66E-B1A214DF3F2E",
+      "binary_sha256": "2100d119cd158fe42e9cbd62688085465b3c0b91df2cb57d2de1e1d797c20c71",
+      "mapped_noaccess": "0x170148000-0x17014c000",
+      "source_review": "MBA clear: working admission blob fb53e2e6ca3f22fb9f1c5bbd522e95b69e1a90cb preserves exact fresh context and remaining policy",
+      "planned_methods": 4,
+      "runtime_result": "not yet qualified",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
