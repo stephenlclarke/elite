@@ -8119,6 +8119,26 @@
       "runtime_result": "pending",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:21:37Z",
+      "checkpoint_key": "20261023-m01-prepared-missile-partial-pass-npc-assertion",
+      "event": "Prepared missile partial passes; concrete NPC index assertion and mission incomplete",
+      "issue": 151,
+      "head": "a0f832ae5b9a08d402ada2b7f79e00b1ab847ee6",
+      "process_result": "FAILURE",
+      "seconds": 219.528049,
+      "build_seconds": 204.89,
+      "selected_methods": 5,
+      "authored_cases": 6,
+      "completed_pass_methods": 3,
+      "completed_pass_cases": 4,
+      "failed_method": "realNPCLauncherDoesNotLoseItsMissileOwnerWhenTheCraftIsRemoved",
+      "assertion": "GameplayOrdnanceRuntimeTests.swift143 ordnance at bodies[0]",
+      "original_mission": "no completed PASS",
+      "mba_action": "source-backed assertion issue/dedup and exact outcome review",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
