@@ -175,7 +175,10 @@ enum NativeC01Surveyor {
       source.visit > state.permission.dock.actor.visit,
       source.physicalTime >= (state.readings.map { $0.reading.end }.max() ?? .infinity)
     else { return false }
-    guard captureShapeValid(state) else { return false }
+    if case .some = state.surveyor!.capture {
+      guard captureShapeValid(state) else { return false }
+    }
+    if case .none = state.surveyor!.loss { return true }
     return lossShapeValid(state)
   }
 

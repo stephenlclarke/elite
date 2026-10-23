@@ -43,3 +43,11 @@ through allSatisfy, sourceValid, valid and full event publication during the
 existing stale-input fixture's fresh acceptance. This is a newly attributed
 audit-reader path, not an assumed recurrence in the surveyor helper. Capture
 records remain in `/tmp/elite-104-d030-diagnostic`; debugger exit0 is not a pass.
+
+At16c4424c, the normal run compiled in23.93seconds and completed fresh acceptance
+and both closed-corpus cases, then exited signal10 after38.161seconds overall.
+A changed-source capture retained UUID91A1B56D-5428-3F7E-8611-64A260156165,
+PID42508/thread19, fault0x16fe03910/SP0x16fe038f0 inside guard
+0x16fe00000-0x16fe04000. The actual stack enters Surveyor.lossShapeValid before
+its absence guard, through full Sorel publication. Retained capture:
+`/tmp/elite-104-16c4-diagnostic`; no diagnostic completion is a unit pass.
