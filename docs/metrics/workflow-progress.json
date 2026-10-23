@@ -7488,6 +7488,25 @@
       "required_quality_status": "still active",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:12:06Z",
+      "checkpoint_key": "20261023-m01-system-projection-committed-focused-run-active",
+      "event": "Station scalar projection correction committed and source-reviewed; focused batch active",
+      "issue": 149,
+      "head": "d7e292a3df27c8dfbbf70be5baff70fb60ee77f7",
+      "independent_source_review": "MBA clear; helper/five projections only, original policy/read order retained",
+      "focused_methods": 4,
+      "authored_cases": 12,
+      "process_ids_at_observation": [
+        28692,
+        28694
+      ],
+      "report_prefix": "/tmp/elite-149-system-projection-units",
+      "runtime_result": "pending",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
