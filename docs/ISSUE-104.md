@@ -19,3 +19,10 @@ Sorel confirmation method. This is a present-recorder boundary, separate from
 the earlier absent-surveyor split and station-world issue137. Debugger results
 are diagnostic evidence, not test qualification. Existing evidence remains in
 `/tmp/elite-100-composition-diagnostic`; no original failure is relabelled.
+
+The first ownership-only follow-up at1edfe2d9 compiled in80.10seconds but its
+single normal affected run still exited signal10 after94.408seconds, with no
+completed methods and unfinished XML. That result has no new fault stack and
+is not assumed to reproduce an identical frame. The existing captured shape
+boundary remains the source-supported repair target; no second diagnostic
+replay was performed.
