@@ -19,3 +19,11 @@ Strict Swift formatting and diff hygiene pass. Independent actual-source review 
 ## Compatibility and remaining limits
 
 No storage/schema/encoding/equality field, actor boundary, Game state, custody authority or quality gate changes. Runtime/stack savings and earlier issue closure are unestablished until actual original methods complete. Required full coverage/sanitizer/leak checks, completed-save/reopen proof and release remain pending.
+
+## First focused execution
+
+The `7771f9bb` Swift6.1.2/SDK15.5 build passed in199.87seconds; four-method process failed exit1/rawSIGBUS10 after211.6990105seconds. All methods only started, without completion/assertion results; XML remains unfinished52bytes. Existing `/tmp/elite-165-custody-focused` artifacts retain exact source/result, normal report and collected image metadata. Source review is clear; current fault attribution and runtime qualification remain pending.
+
+## Current report identity limitation
+
+The newest normal report initially collected after `7771f9bb` was stale: previous47700106 PID36026/image65F3BF1E rather than current imageF26BBE52-820B-35A5-9455-1FE55BD7EC63/SHA256f859890fea35bb48d70d85c6d31d4640a979633b5cfb4cd31377892b2f0af5b3. A read-only recursive inventory of27 retained swiftpm helper reports in guest user and system DiagnosticReports found no matching current UUID. The stale file is explicitly retained as `/tmp/elite-165-custody-focused-stale-477-report.ips`; image metadata marks the mismatch. No current fault location or165 recurrence is established. The actual compiler pass/runtime SIGBUS/four incomplete methods remain the valid receipt. No new capture, debugger probe or execution was used to fill the missing attribution.

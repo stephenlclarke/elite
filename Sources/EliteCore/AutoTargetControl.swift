@@ -543,6 +543,16 @@ extension Game {
     }
     dockingComputer = false
   }
+  @inline(never)
+  private static func cycleWorkTargetCandidates(
+    in game: borrowing Game, context: borrowing EncounterContext, frontIDs: borrowing Set<Int>
+  ) -> [WorkTargetCandidate] {
+    game.bodies.compactMap {
+      game.workTargetCandidate(
+        for: $0, context: copy context, frontVisible: frontIDs.contains($0.id))
+    }
+  }
+
   mutating func cycleAutoTarget() {
     interruptFlightTool()
     guard !playerEMPDisabled else {
@@ -567,9 +577,7 @@ extension Game {
       bodies.filter {
         Display.visibleInFront($0, game: self, layout: layout)
       }.map(\.id))
-    let candidates = bodies.compactMap {
-      workTargetCandidate(for: $0, context: context, frontVisible: frontIDs.contains($0.id))
-    }
+    let candidates = Self.cycleWorkTargetCandidates(in: self, context: context, frontIDs: frontIDs)
     let choices = WorkTargetSelection.ordered(
       candidates, filter: workTargetFilter, system: context.system, visit: context.visit,
       capabilities: workTargetCapabilities)
