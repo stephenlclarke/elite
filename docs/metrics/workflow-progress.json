@@ -7285,6 +7285,24 @@
       "full_vm_or_quality_qualified": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T16:32:41Z",
+      "checkpoint_key": "20261023-m01-equipment-correction-published",
+      "event": "Qualified equipment correction published after unchanged transient push retry",
+      "head": "e7a9f9d9944aa9c7a19fa8e6bc48ca82c7c92077",
+      "code_identical_to_qualified": "f165fef66d4282cca5e53f707a321b60aa266a12",
+      "root_docs_source": "8ab1359ccd42529bbff6958304ac16930bff0136",
+      "independent_composition_review": "MBA clear",
+      "issue": 146,
+      "push_transport_failure": "GitHub500; same nonforce push then verified remote success",
+      "push_unit_run": 39987539848,
+      "required_quality_run": 39987548236,
+      "nonrequired_duplicate_pr_unit_run": 39987548333,
+      "old_f6_quality_review": "MBA assigned one retained artifact triage",
+      "source_published": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
