@@ -6028,6 +6028,20 @@
       "whole_hulls_complete": false,
       "merged": false,
       "usable_delivered": false
+    },
+    {
+      "at": "2026-10-23T10:27:38.964610+00:00",
+      "event": "Sable Liner runtime source packet pushed",
+      "ledger_id": "M04.H012.runtime",
+      "pr": 123,
+      "head": "b2754f1155d7a8cc76d03929d9cc8528fbcec94a",
+      "new_component_methods_written": 5,
+      "selected_methods": 376,
+      "source_review": "MBA assigned",
+      "unit_status": "pending",
+      "merged": false,
+      "whole_hull_complete": false,
+      "usable_delivered": false
     }
   ],
   "two_developer_phase": {
