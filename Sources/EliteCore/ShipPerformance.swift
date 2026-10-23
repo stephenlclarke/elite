@@ -65,6 +65,7 @@ extension Commander {
     performance.cargo + (equipment.contains("Large Cargo Bay") ? performance.cargoExpansion : 0)
   }
   public var playerMesh: Mesh {
+    if shipID == "SH061", let physical = ShipCatalogue.rawMesh(shipID) { return physical }
     // These activated originals have explicit metre contracts, independent of preview scaling.
     if ["SH025", "SH029"].contains(shipID), let native = ship.nativeDesign {
       return native.rawMesh

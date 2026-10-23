@@ -30,7 +30,7 @@ struct OriginalBurroActivationUnitTests {
     }
     #expect(definition.authored["name"] == .string("Burro"))
     #expect(definition.sourceSHA256 == OriginalBurroActivation.specificationSHA256)
-    for other in ShipCatalogue.all where other.id != "SH029" {
+    for other in ShipCatalogue.all where !["SH029", "SH061"].contains(other.id) {
       #expect(other == (try retained(other.id)))
     }
   }
@@ -99,7 +99,8 @@ struct OriginalBurroActivationUnitTests {
     #expect(
       NativeFleetDiscovery(owner: UUID()).readout(for: ship.id)
         == ["Collection: unknown; no native encounter recorded"])
-    #expect(OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == ["SH029"])
+    #expect(
+      OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == ["SH029", "SH061"])
   }
 
   @Test func invalidRetainedInputsCannotBeRepairedSilentlyByTheActivationAdapter() throws {

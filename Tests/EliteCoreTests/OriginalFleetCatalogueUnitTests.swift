@@ -20,7 +20,7 @@ struct OriginalFleetCatalogueUnitTests {
           && lookup.purchasePolicy == record.purchasePolicy)
       #expect(
         lookup.integrationBlockers == record.integrationBlockers
-          && lookup.runtimeReady == (record.id == "SH029"))
+          && lookup.runtimeReady == ["SH029", "SH061"].contains(record.id))
     }
     #expect(ShipCatalogue.originalDefinition(for: "SH001")?.name == "Mule")
     #expect(
