@@ -6249,7 +6249,10 @@
       "merged": true,
       "m01_complete": false,
       "usable_delivered": false,
-      "next_deliverable": "M01 local installable candidate; actual unit defects first"
+      "next_deliverable": "M01 local installable candidate; actual unit defects first",
+      "merged_tree_matches_reviewed_head": true,
+      "pending_same_tree_duplicate_cancelled": 39949264900,
+      "new_manual_or_full_integration_execution": false
     }
   ],
   "two_developer_phase": {
