@@ -8050,6 +8050,22 @@
       "runtime_result": "not yet qualified",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:07:54Z",
+      "checkpoint_key": "20261023-m01-batch-context-partial-pass-mission-unresolved",
+      "event": "Admission refusal methods pass; original mission still faults after batch context split",
+      "head": "8735407c3e6ec1b55b896428f58a55c01f8667bd",
+      "issue": 151,
+      "process_result": "FAILURE",
+      "seconds": 100.309021,
+      "build_seconds": 85.82,
+      "selected_methods": 4,
+      "completed_pass_methods": 3,
+      "original_mission": "incomplete before helper SIGBUS10",
+      "next_action": "G1 directly attributed enclosing call-chain lifetime assessment; MBA source/result review",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
