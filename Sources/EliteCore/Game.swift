@@ -3244,6 +3244,7 @@ public actor GameRuntime {
     game.viewportHeight = height
   }
   public func selectSystem(x: Double, y: Double) { game.selectSystem(x: x, y: y) }
+  @inline(never)
   public func advance(delta: Double) -> Game {
     guard game.admitFlightWorkAdvance(controls: controls) else { return snapshot() }
     game.pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
@@ -3254,6 +3255,14 @@ public actor GameRuntime {
       game.advanceInductionUtilityWork(from: nil, publish: scriptPublisher())
       return snapshot()
     }
+    return advancePreparedFrame(
+      delta: delta, context: context, utilityWorkStart: utilityWorkStart)
+  }
+
+  @inline(never)
+  private func advancePreparedFrame(
+    delta: Double, context: AdvanceContext, utilityWorkStart: NativeInductionUtilityEndpoint?
+  ) -> Game {
     let glassMeridianStart = game.glassMeridianSample()
     let flightReceptionStart = game.flightReceptionSample()
     let outlookStart = game.orbitalOutlookSample()
@@ -3295,6 +3304,7 @@ public actor GameRuntime {
     startTransitSeconds: Double
   )
   // Release preflight/read buffers before entering the deeper physical simulation.
+  @inline(never)
   private func prepareAdvance(delta: Double) -> AdvanceContext? {
     let wasDocked = game.docked
     let wasLive = game.screen != .gameOver
@@ -3319,6 +3329,17 @@ public actor GameRuntime {
     // Projectile restoration must admit the frame before automatic ammunition can publish.
     // Publish before advancing clocks or exposing the candidate projectile to physics.
     advanceStationAutoMissile(delta: delta)
+    return completeAdvancePreparation(
+      delta: delta, wasDocked: wasDocked, wasLive: wasLive,
+      startPhysicalTime: startPhysicalTime, startPlayer: startPlayer, location: location,
+      localActive: localActive, flightActive: flightActive)
+  }
+
+  @inline(never)
+  private func completeAdvancePreparation(
+    delta: Double, wasDocked: Bool, wasLive: Bool, startPhysicalTime: Double,
+    startPlayer: ActorIdentity?, location: (Int, Int), localActive: Bool, flightActive: Bool
+  ) -> AdvanceContext {
     // Physical facts commit first. A failed script save must never undo a real hit/death.
     let calendarActive = game.calendarActive
     game.scriptEventsDeferred = true
