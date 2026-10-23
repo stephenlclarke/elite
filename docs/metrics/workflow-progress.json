@@ -9528,6 +9528,22 @@
       "matching_reports": 0,
       "capture_scope": "one exact current image/original selection/default settings/no rebuild",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:52:31.901641+00:00",
+      "checkpoint_key": "20261023-m01-9569-capture-courier-resolver-stop",
+      "event": "Exact changed-source capture complete; current courier resolver stop awaiting offline caller symbols",
+      "head": "9569dcb56d45cf2208a900042abac4fc5547765e",
+      "pid": 36575,
+      "process_seconds": 14.071743834,
+      "driver_exit": 1,
+      "debugger_exit": 0,
+      "handed_back": true,
+      "remaining_owned_processes": [],
+      "fault": "resolveCourierTerminals+24 via prepareContractAcceptance",
+      "guard_mapping_available": false,
+      "unit_pass_claim": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
