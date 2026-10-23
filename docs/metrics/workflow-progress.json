@@ -8572,6 +8572,28 @@
       "new_execution_started": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:16:31Z",
+      "checkpoint_key": "20261023-m01-a49f-vm-unattributed-signal-retained",
+      "event": "Current VM artifact has no attributable application fault; retain144 evidence",
+      "head": "a49f5d836a8bce64b0e56d91fdfcb14740d529ac",
+      "run": 40008985885,
+      "build_seconds": 195.87,
+      "result": "FAILURE: unattributed SIGILL",
+      "completed_methods": 0,
+      "assertions": 0,
+      "xml_bytes": 52,
+      "binary_uuid": "19F35DF0-2930-373B-9170-FE1FA09C489B",
+      "binary_sha256": "d85acf0dd837f126a6e6604b720e2628665f955bd7229392a9d5de2ed78314ed",
+      "selected_stack": "main mach_msg2/CFRunLoop/asyncmain only",
+      "app_fault_or_guard_evidence": false,
+      "existing_issue": 144,
+      "new_source_fix_or_rerun_assigned": false,
+      "required_quality": "40008995873 remains active, MBA sole triage on terminal",
+      "prior_focused_qualifications_preserved": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
