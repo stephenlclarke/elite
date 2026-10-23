@@ -52,6 +52,15 @@ private struct CommanderScriptStateStorage: Sendable, Equatable, Codable {
     }
   }
 
+  // Station validation projects child fields before leaving this synchronous storage borrow.
+  func withNativeStationReadOnlyValue<Result>(
+    _ read: (UnsafePointer<ScriptEngineState>) -> Result
+  ) -> Result {
+    values.withUnsafeBufferPointer { storage in
+      read(storage.baseAddress!)
+    }
+  }
+
   init(from decoder: Decoder) throws {
     values = [try ScriptEngineState(from: decoder)]
   }
@@ -144,10 +153,14 @@ public struct Commander: Sendable, Equatable, Codable {
   // Read only child storage here: no Commander value crosses the pointer boundary.
   fileprivate static func nativeStationReadScriptState<Result>(
     at commander: UnsafePointer<Commander>,
-    _ read: (borrowing ScriptEngineState) -> Result
+    _ read: (UnsafePointer<ScriptEngineState>) -> Result
   ) -> Result {
-    if let stored = commander.pointee.savedScriptState { return stored.withReadOnlyValue(read) }
-    return Self.withDefaultScriptState(read)
+    if let stored = commander.pointee.savedScriptState {
+      return stored.withNativeStationReadOnlyValue(read)
+    }
+    return Self.withDefaultScriptState { state in
+      withUnsafePointer(to: state) { pointer in read(pointer) }
+    }
   }
 
   fileprivate static func nativeStationReadFlight(
@@ -170,7 +183,12 @@ public struct Commander: Sendable, Equatable, Codable {
     NativeStationStateValidation.check(
       readWorld: { commander.pointee.nativeStations },
       readResources: {
-        Self.nativeStationReadScriptState(at: commander) { $0.stationResources }
+        Self.nativeStationReadScriptState(at: commander) { state in
+          guard let resources = state.pointer(to: \.savedStationResources) else {
+            preconditionFailure("Native station validation requires addressable stored resources.")
+          }
+          return resources.pointee ?? [:]
+        }
       },
       readSystem: {
         SystemIdentity(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
@@ -186,7 +204,12 @@ public struct Commander: Sendable, Equatable, Codable {
         Self.nativeStationReadFlight(at: commander).anchors?.station.position
       },
       readCalendar: {
-        Self.nativeStationReadScriptState(at: commander) { $0.calendarLedger }
+        Self.nativeStationReadScriptState(at: commander) { state in
+          guard let calendar = state.pointer(to: \.calendarLedger) else {
+            preconditionFailure("Native station validation requires addressable stored calendar.")
+          }
+          return calendar.pointee
+        }
       })
   }
 
