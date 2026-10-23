@@ -9645,6 +9645,16 @@
       "m01_complete": false,
       "independent_source_review": "clear",
       "review_scope": "Exact five-file snapshot only; compiled copy elimination and runtime success pending"
+    },
+    {
+      "at": "2026-10-23T22:14:00.701622+00:00",
+      "checkpoint_key": "20261023-m01-combined-eb5-committed-final-review-clear",
+      "event": "Combined M01 blocker packet committed and final independent source review clear",
+      "source_head": "eb5ab2d865066bfbd199527ded51fdf3af15a566",
+      "final_contract_blob": "a3e546834be3b0de8811117179cae6aa5a2128eb",
+      "unit_batch_passed": false,
+      "usable_delivery": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
