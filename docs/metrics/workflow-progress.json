@@ -9330,6 +9330,21 @@
       "methods": 4,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:28:01.226194+00:00",
+      "checkpoint_key": "20261023-m01-7771-stale-report-rejected",
+      "event": "Current runtime failure retained; stale collected IPS rejected by image identity check",
+      "head": "7771f9bb083d09f504f09916292df8087b626d08",
+      "issue": 165,
+      "build_seconds": 199.87,
+      "process_seconds": 211.6990105,
+      "result": "runtime FAILURE signal10/exit1; cause UNATTRIBUTED",
+      "completed_methods": 0,
+      "stale_report_uuid": "65F3BF1E-D000-3E19-B663-BD7E47BC174C",
+      "current_image_uuid": "F26BBE52-820B-35A5-9455-1FE55BD7EC63",
+      "scope": "existing matching report lookup and bounded shared-caller source ownership inspection",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
