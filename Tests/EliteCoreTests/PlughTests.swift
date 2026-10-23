@@ -232,10 +232,23 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
       item.name == "Fuel"
       ? (game.commander.fuelCapacity - game.commander.fuel) * item.price
       : Plugh.rewardPrices[item.name] ?? item.price
-    #expect(cost == Plugh.discount(undiscounted) && cost > 0 && game.equipmentAvailable(item))
     let cash = game.commander.credits
     let fuel = game.commander.fuel
     let history = game.commander.equipmentPurchaseHistory?.paid.count ?? 0
+    if item.name == AlienMissileDefinition.name {
+      #expect(cost == Plugh.discount(undiscounted) && cost > 0)
+      #expect(!game.commander.hasAlienMissileResearch && !game.equipmentAvailable(item))
+      game.purchase()
+      #expect(game.message == "NOT AVAILABLE")
+      #expect(game.commander.credits == cash && game.commander.fuel == fuel)
+      #expect(game.commander.equipmentPurchaseHistory?.paid.count == history)
+      #expect(
+        game.commander.equipmentInventory?.items.contains {
+          $0.node == AlienMissileDefinition.node
+        } == false)
+      continue
+    }
+    #expect(cost == Plugh.discount(undiscounted) && cost > 0 && game.equipmentAvailable(item))
     game.purchase()
     if item.name == NavigationTier.basic.equipmentName {
       #expect(game.commander.credits == cash && game.commander.navigationTier == .basic)

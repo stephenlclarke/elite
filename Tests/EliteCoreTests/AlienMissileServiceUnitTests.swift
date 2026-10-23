@@ -89,8 +89,12 @@ struct AlienMissileServiceUnitTests {
     game.screen = .equipment
     game.selection = try #require(Equipment.all.firstIndex { $0.name == offer.name })
     let funds = game.commander.credits
+    let paid = game.commander.equipmentPurchaseHistory?.paid.count ?? 0
     game.purchase()
     #expect(game.commander.credits == funds - 450)
+    let receipt = try #require(game.commander.equipmentPurchaseHistory?.paid.last)
+    #expect(receipt.node == AlienMissileDefinition.node && receipt.price == 450)
+    #expect(game.commander.equipmentPurchaseHistory?.paid.count == paid + 1)
     #expect(
       game.commander.equipmentInventory?.items.filter { $0.node == AlienMissileDefinition.node }
         .count == 2)
