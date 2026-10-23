@@ -12,9 +12,12 @@ enum NativeInductionUtilityPack {
   static func actor(job: UUID, role: NativeInductionUtilityRole) -> UUID {
     ScriptIdentity.uuid("script-actor-v2:\(job):\(digest):\(encounter):\(role.rawValue)")
   }
+  @inline(never)
   static func marked(_ state: borrowing ScriptInstance) -> Bool {
-    state.definition == stateID || state.digest == digest
-      || state.savedNativeInductionUtility != nil
+    if state.definition == stateID { return true }
+    if state.digest == digest { return true }
+    if case .some = state.savedNativeInductionUtility { return true }
+    return false
   }
   static func matches(_ pack: ScriptPack) -> Bool {
     guard pack.manifest.stateID == stateID, pack.manifest.version == version, pack.digest == digest,
