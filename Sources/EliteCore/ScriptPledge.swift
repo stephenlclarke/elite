@@ -100,11 +100,20 @@ extension Game {
         provider: definition.provider,
         station: station) ?? 0)
   }
+  @inline(never)
   func pledgePreview(board key: String, offer id: UUID) throws -> ScriptPledgePreview? {
     guard let board = commander.contracts.boards[key],
       let pack = scriptPacks.first(where: { $0.digest == board.digest }),
       let declaration = pack.manifest.pledge
     else { return nil }
+    return try presentPledgePreview(board: board, pack: pack, declaration: declaration, offer: id)
+  }
+
+  @inline(never)
+  private func presentPledgePreview(
+    board: borrowing ScriptContractBoard, pack: borrowing ScriptPack,
+    declaration: ScriptPledgeDefinition, offer id: UUID
+  ) throws -> ScriptPledgePreview? {
     if pack.manifest.stateID == OriginalMutualContribution.stateID
       || declaration.profile == OriginalMutualContribution.profile
     {
