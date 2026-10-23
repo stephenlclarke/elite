@@ -166,7 +166,8 @@ enum NativeC01Surveyor {
         && id == actor(mission: mission.id, alias: aliases[1])
     }
   }
-  static func shapeValid(_ state: NativeGlassMeridianState) -> Bool {
+  @inline(never)
+  static func shapeValid(_ state: borrowing NativeGlassMeridianState) -> Bool {
     guard let surveyor = state.surveyor else { return true }
     let source = surveyor.source
     guard state.readings.count == 2, source.valid, source.mission == state.permission.mission,
