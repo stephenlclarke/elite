@@ -45,6 +45,22 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH002"))
   }
 
+  static let gyrfalconCommand: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH003") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH003"))
+  }
+
+  static let gyrfalconPatrol: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH004") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH004"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -74,6 +90,15 @@ struct OriginalHullPhysicalContract: Sendable {
         model.coordinateUnits == "metres",
         model.sourcePath == "fleet-completion-20261019/batch-01-native-lod/SH002-design.toml",
         model.sourceSHA256 == "5e665c3443a3f1fb2341d418dc9d5cbde7bc1f11d2761c67289defeb26e3c51a"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH003", "SH004":
+      guard let approved = OriginalGyrfalconFamilyActivation.registration(for: definition.id),
+        definition.name == approved.name,
+        definition.sourceSHA256 == approved.specificationSHA256,
+        model.coordinateUnits == "metres", model.sourcePath == approved.modelPath,
+        model.sourceSHA256 == approved.modelSHA256
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
@@ -145,6 +170,8 @@ extension CatalogueShip {
     let result: Result<OriginalHullPhysicalContract, any Error>
     switch id {
     case "SH002": result = OriginalHullPhysicalContract.gyrfalconAssault
+    case "SH003": result = OriginalHullPhysicalContract.gyrfalconCommand
+    case "SH004": result = OriginalHullPhysicalContract.gyrfalconPatrol
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil
