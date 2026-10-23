@@ -4,6 +4,8 @@ Updated 23 October 2026. This is the current workflow authority; older process i
 
 ## Current scope: M01 and existing defect remediation
 
+During the current no-full-integration phase, keep release-composition PR25 closed; making it draft does not prevent its main-target quality workflow from running on every development update. Preserve its branch/review history and reopen the same PR at the release checkpoint. All protected-main final-head checks and approvals remain mandatory. Development PRs retain their focused unit workflow and actual results.
+
 The developer keeps one ordered queue. M01 is the only new feature work; actionable MBA findings may be fixed in any existing component. No new non-M01 feature starts. MBA may triage and review any issue that appears. At each coherent packet boundary, take urgent demonstrated defects first, then the active M01 work. Keep ready fixes separate from corrected code awaiting review or a specific unit result; waiting for verification is not another implementation task. Each finding needs an owner, one next action and explicit closure evidence. Preserve held features, reuse unaffected validation and do not start full integration testing.
 
 ## Current direction: finish code and unit tests first
