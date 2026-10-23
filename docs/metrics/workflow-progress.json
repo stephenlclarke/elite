@@ -9672,6 +9672,19 @@
       "result_path": "/tmp/elite-m01-combined-blockers-result.json",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:25:35.311198+00:00",
+      "checkpoint_key": "20261023-m01-combined-285-remote-checkpoint",
+      "event": "Full combined M01 blocker stack saved remotely as draft PR25 checkpoint",
+      "published_head": "285cfce657b24ea201ff812dfdaa09bd31b473ba",
+      "source_head": "eb5ab2d865066bfbd199527ded51fdf3af15a566",
+      "pr": 25,
+      "is_draft": true,
+      "source_review_clear": true,
+      "unit_batch_passed": false,
+      "usable_delivery": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
