@@ -10176,7 +10176,15 @@
         "contractRevision",
         "refreshSelectedQuote.contractAcceptanceQuote"
       ],
-      "offline_quote_tail_review": "verified"
+      "offline_quote_tail_review": "verified",
+      "final_source_blobs": {
+        "ContractBoard": "9692ade0a583d9ec826f791abd4525136e10255e",
+        "ScriptContractCore": "10e43f86acc40c76e832ba06f5938fddf70d5d36",
+        "ScriptDirector": "43cf99766b464f8666ef4e00996a75df43abcede"
+      },
+      "source_review": "clear",
+      "runtime_result": "pending",
+      "redundant_push_cancelled": 40040203179
     }
   ],
   "two_developer_phase": {
