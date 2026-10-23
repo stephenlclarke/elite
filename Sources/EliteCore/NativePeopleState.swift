@@ -222,15 +222,216 @@ extension NativePeopleTransferReceipt {
 /// Player custody only. Outbound receipts do not assert a permanent station population.
 struct NativePeopleCustodyState: Equatable, Codable, Sendable {
   static let maximumPeople = EMPState.maximumPeople
-  let owner: UUID
-  var revision: UInt64 = 0
-  var stationJourney: NativeStationPassengerJourneyState?
-  var outlookJourney: NativeOrbitalOutlookJourneyState?
-  var originalRescue: NativeOriginalRescueJourneyState?
-  var orbitalEvacuation: NativeOriginalEvacuationState?
-  var admissions: [NativePeopleAdmission] = []
-  var transfers: [NativePeopleTransferReceipt] = []
-  init(owner: UUID) { self.owner = owner }
+  // Storage never escapes this value. Every mutable access detaches a shared reference first.
+  // The unchecked conformance is confined to this private COW backing; callers receive values.
+  private final class Storage: @unchecked Sendable {
+    let owner: UUID
+    var revision: UInt64 = 0
+    var stationJourney: NativeStationPassengerJourneyState? = nil
+    var outlookJourney: NativeOrbitalOutlookJourneyState? = nil
+    var originalRescue: NativeOriginalRescueJourneyState? = nil
+    var orbitalEvacuation: NativeOriginalEvacuationState? = nil
+    var admissions: [NativePeopleAdmission] = []
+    var transfers: [NativePeopleTransferReceipt] = []
+
+    init(owner: UUID) { self.owner = owner }
+
+    @inline(never)
+    convenience init(copying source: Storage) {
+      self.init(owner: source.owner)
+      copyRevision(from: source)
+      copyStationJourney(from: source)
+      copyOutlookJourney(from: source)
+      copyOriginalRescue(from: source)
+      copyOrbitalEvacuation(from: source)
+      copyAdmissions(from: source)
+      copyTransfers(from: source)
+    }
+
+    @inline(never)
+    private func copyRevision(from source: Storage) {
+      revision = source.revision
+    }
+
+    @inline(never)
+    private func copyStationJourney(from source: Storage) {
+      stationJourney = source.stationJourney
+    }
+
+    @inline(never)
+    private func copyOutlookJourney(from source: Storage) {
+      outlookJourney = source.outlookJourney
+    }
+
+    @inline(never)
+    private func copyOriginalRescue(from source: Storage) {
+      originalRescue = source.originalRescue
+    }
+
+    @inline(never)
+    private func copyOrbitalEvacuation(from source: Storage) {
+      orbitalEvacuation = source.orbitalEvacuation
+    }
+
+    @inline(never)
+    private func copyAdmissions(from source: Storage) {
+      admissions = source.admissions
+    }
+
+    @inline(never)
+    private func copyTransfers(from source: Storage) {
+      transfers = source.transfers
+    }
+  }
+
+  private var storage: Storage
+
+  init(owner: UUID) { storage = Storage(owner: owner) }
+
+  @inline(never)
+  private mutating func ensureUniqueStorage() {
+    if !isKnownUniquelyReferenced(&storage) { storage = Storage(copying: storage) }
+  }
+
+  var owner: UUID { storage.owner }
+
+  var revision: UInt64 {
+    _read { yield storage.revision }
+    set {
+      ensureUniqueStorage()
+      storage.revision = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.revision
+    }
+  }
+
+  var stationJourney: NativeStationPassengerJourneyState? {
+    _read { yield storage.stationJourney }
+    set {
+      ensureUniqueStorage()
+      storage.stationJourney = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.stationJourney
+    }
+  }
+
+  var outlookJourney: NativeOrbitalOutlookJourneyState? {
+    _read { yield storage.outlookJourney }
+    set {
+      ensureUniqueStorage()
+      storage.outlookJourney = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.outlookJourney
+    }
+  }
+
+  var originalRescue: NativeOriginalRescueJourneyState? {
+    _read { yield storage.originalRescue }
+    set {
+      ensureUniqueStorage()
+      storage.originalRescue = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.originalRescue
+    }
+  }
+
+  var orbitalEvacuation: NativeOriginalEvacuationState? {
+    _read { yield storage.orbitalEvacuation }
+    set {
+      ensureUniqueStorage()
+      storage.orbitalEvacuation = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.orbitalEvacuation
+    }
+  }
+
+  var admissions: [NativePeopleAdmission] {
+    _read { yield storage.admissions }
+    set {
+      ensureUniqueStorage()
+      storage.admissions = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.admissions
+    }
+  }
+
+  var transfers: [NativePeopleTransferReceipt] {
+    _read { yield storage.transfers }
+    set {
+      ensureUniqueStorage()
+      storage.transfers = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &storage.transfers
+    }
+  }
+
+  @inline(never)
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    guard equalOwner(lhs.storage, rhs.storage) else { return false }
+    guard equalRevision(lhs.storage, rhs.storage) else { return false }
+    guard equalStationJourney(lhs.storage, rhs.storage) else { return false }
+    guard equalOutlookJourney(lhs.storage, rhs.storage) else { return false }
+    guard equalOriginalRescue(lhs.storage, rhs.storage) else { return false }
+    guard equalOrbitalEvacuation(lhs.storage, rhs.storage) else { return false }
+    guard equalAdmissions(lhs.storage, rhs.storage) else { return false }
+    guard equalTransfers(lhs.storage, rhs.storage) else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func equalOwner(_ lhs: Storage, _ rhs: Storage) -> Bool {
+    lhs.owner == rhs.owner
+  }
+
+  @inline(never)
+  private static func equalRevision(_ lhs: Storage, _ rhs: Storage) -> Bool {
+    lhs.revision == rhs.revision
+  }
+
+  @inline(never)
+  private static func equalStationJourney(_ lhs: Storage, _ rhs: Storage) -> Bool {
+    lhs.stationJourney == rhs.stationJourney
+  }
+
+  @inline(never)
+  private static func equalOutlookJourney(_ lhs: Storage, _ rhs: Storage) -> Bool {
+    lhs.outlookJourney == rhs.outlookJourney
+  }
+
+  @inline(never)
+  private static func equalOriginalRescue(_ lhs: Storage, _ rhs: Storage) -> Bool {
+    lhs.originalRescue == rhs.originalRescue
+  }
+
+  @inline(never)
+  private static func equalOrbitalEvacuation(_ lhs: Storage, _ rhs: Storage) -> Bool {
+    lhs.orbitalEvacuation == rhs.orbitalEvacuation
+  }
+
+  @inline(never)
+  private static func equalAdmissions(_ lhs: Storage, _ rhs: Storage) -> Bool {
+    lhs.admissions == rhs.admissions
+  }
+
+  @inline(never)
+  private static func equalTransfers(_ lhs: Storage, _ rhs: Storage) -> Bool {
+    lhs.transfers == rhs.transfers
+  }
+
   func transfer(for person: NativePersonReference) -> NativePeopleTransferReceipt? {
     if person.rescue != nil, let boarding = originalRescue?.boarding {
       return transfers.first { $0.revision > boarding.revision && $0.members.contains(person) }
@@ -248,15 +449,52 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
     }
   }
   func valid(commander: Commander) -> Bool {
+    guard custodyIdentityValid(commander: commander) else { return false }
+    guard custodyStationSourceValid(commander: commander) else { return false }
+    guard custodyOutlookSourceValid(commander: commander) else { return false }
+    guard custodyRescueSourceValid(commander: commander) else { return false }
+    guard custodyEvacuationSourceValid(commander: commander) else { return false }
+    guard custodyAdmissionsValid(commander: commander) else { return false }
+    guard custodyTransfersValid(commander: commander) else { return false }
+    return custodyRevisionsValid(commander: commander)
+  }
+
+  @inline(never)
+  private func custodyIdentityValid(commander: borrowing Commander) -> Bool {
     guard owner == commander.equipmentOwnerID,
       !admissions.isEmpty || stationJourney != nil || outlookJourney != nil
-        || originalRescue != nil || orbitalEvacuation != nil,
-      NativeStationPassengerJourney.validSource(
-        stationJourney, custody: self, commander: commander),
-      NativeOrbitalOutlookJourney.validSource(outlookJourney, custody: self, commander: commander),
-      NativeOriginalRescueJourney.validSource(originalRescue, custody: self, commander: commander),
-      NativeOriginalEvacuation.validSource(orbitalEvacuation, custody: self, commander: commander),
-      admissions.count <= Self.maximumPeople, transfers.count <= Self.maximumPeople,
+        || originalRescue != nil || orbitalEvacuation != nil
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func custodyStationSourceValid(commander: borrowing Commander) -> Bool {
+    return NativeStationPassengerJourney.validSource(
+      stationJourney, custody: self, commander: commander)
+  }
+
+  @inline(never)
+  private func custodyOutlookSourceValid(commander: borrowing Commander) -> Bool {
+    return NativeOrbitalOutlookJourney.validSource(
+      outlookJourney, custody: self, commander: commander)
+  }
+
+  @inline(never)
+  private func custodyRescueSourceValid(commander: borrowing Commander) -> Bool {
+    return NativeOriginalRescueJourney.validSource(
+      originalRescue, custody: self, commander: commander)
+  }
+
+  @inline(never)
+  private func custodyEvacuationSourceValid(commander: borrowing Commander) -> Bool {
+    return NativeOriginalEvacuation.validSource(
+      orbitalEvacuation, custody: self, commander: commander)
+  }
+
+  @inline(never)
+  private func custodyAdmissionsValid(commander: Commander) -> Bool {
+    guard admissions.count <= Self.maximumPeople, transfers.count <= Self.maximumPeople,
       Set(admissions.map(\.person)).count == admissions.count,
       admissions.allSatisfy({ $0.valid(commander: commander) && $0.revision <= revision }),
       Set(transfers.map(\.operation)).count == transfers.count,
@@ -266,6 +504,11 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
             || orbitalEvacuation != nil)))
         && revision <= UInt64(Self.maximumPeople * 2)
     else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func custodyTransfersValid(commander: Commander) -> Bool {
     var terminal: Set<NativePersonReference> = []
     for transfer in transfers {
       guard transfer.owner == owner, (1...Self.maximumPeople).contains(transfer.members.count),
@@ -316,6 +559,11 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
         }
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func custodyRevisionsValid(commander: Commander) -> Bool {
     var revisions = Set(admissions.map(\.revision) + transfers.map(\.revision))
     if let boarding = originalRescue?.boarding { revisions.insert(boarding.revision) }
     return revisions.count == Int(revision) && revisions == (revision == 0 ? [] : Set(1...revision))
@@ -327,7 +575,7 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
   }
   init(from decoder: any Decoder) throws {
     let values = try decoder.container(keyedBy: CodingKeys.self)
-    owner = try values.decode(UUID.self, forKey: .owner)
+    self.init(owner: try values.decode(UUID.self, forKey: .owner))
     revision = try values.decode(UInt64.self, forKey: .revision)
     stationJourney = try values.decodeIfPresent(
       NativeStationPassengerJourneyState.self, forKey: .stationJourney)
@@ -340,6 +588,74 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
     admissions = try Self.bounded(values, key: .admissions, type: NativePeopleAdmission.self)
     transfers = try Self.bounded(values, key: .transfers, type: NativePeopleTransferReceipt.self)
   }
+  func encode(to encoder: any Encoder) throws {
+    var values = encoder.container(keyedBy: CodingKeys.self)
+    try Self.encodeOwner(storage, into: &values)
+    try Self.encodeRevision(storage, into: &values)
+    try Self.encodeStationJourney(storage, into: &values)
+    try Self.encodeOutlookJourney(storage, into: &values)
+    try Self.encodeOriginalRescue(storage, into: &values)
+    try Self.encodeOrbitalEvacuation(storage, into: &values)
+    try Self.encodeAdmissions(storage, into: &values)
+    try Self.encodeTransfers(storage, into: &values)
+  }
+
+  @inline(never)
+  private static func encodeOwner(
+    _ storage: Storage, into values: inout KeyedEncodingContainer<CodingKeys>
+  ) throws {
+    try values.encode(storage.owner, forKey: .owner)
+  }
+
+  @inline(never)
+  private static func encodeRevision(
+    _ storage: Storage, into values: inout KeyedEncodingContainer<CodingKeys>
+  ) throws {
+    try values.encode(storage.revision, forKey: .revision)
+  }
+
+  @inline(never)
+  private static func encodeStationJourney(
+    _ storage: Storage, into values: inout KeyedEncodingContainer<CodingKeys>
+  ) throws {
+    try values.encodeIfPresent(storage.stationJourney, forKey: .stationJourney)
+  }
+
+  @inline(never)
+  private static func encodeOutlookJourney(
+    _ storage: Storage, into values: inout KeyedEncodingContainer<CodingKeys>
+  ) throws {
+    try values.encodeIfPresent(storage.outlookJourney, forKey: .outlookJourney)
+  }
+
+  @inline(never)
+  private static func encodeOriginalRescue(
+    _ storage: Storage, into values: inout KeyedEncodingContainer<CodingKeys>
+  ) throws {
+    try values.encodeIfPresent(storage.originalRescue, forKey: .originalRescue)
+  }
+
+  @inline(never)
+  private static func encodeOrbitalEvacuation(
+    _ storage: Storage, into values: inout KeyedEncodingContainer<CodingKeys>
+  ) throws {
+    try values.encodeIfPresent(storage.orbitalEvacuation, forKey: .orbitalEvacuation)
+  }
+
+  @inline(never)
+  private static func encodeAdmissions(
+    _ storage: Storage, into values: inout KeyedEncodingContainer<CodingKeys>
+  ) throws {
+    try values.encode(storage.admissions, forKey: .admissions)
+  }
+
+  @inline(never)
+  private static func encodeTransfers(
+    _ storage: Storage, into values: inout KeyedEncodingContainer<CodingKeys>
+  ) throws {
+    try values.encode(storage.transfers, forKey: .transfers)
+  }
+
   private static func bounded<T: Decodable>(
     _ values: KeyedDecodingContainer<CodingKeys>, key: CodingKeys, type: T.Type
   ) throws -> [T] {
@@ -359,6 +675,26 @@ extension Commander {
   var nativeCaptiveCount: Int { nativePeople?.heldCaptives.count ?? 0 }
   var rescuedPodTonnes: Int { nativePeople?.heldPods.count ?? 0 }
   var nativePeopleStateValid: Bool {
+    guard nativePeopleSourcesPresent else { return false }
+    guard let state = nativePeople else {
+      return savedEMPState?.records.values.allSatisfy({ $0.crewCaptures.isEmpty }) ?? true
+    }
+    guard cargo.count == Commodity.all.count, state.valid(commander: self),
+      let mass = checkedCargoTonnes, state.held.isEmpty || mass <= standardCargoCapacity
+    else { return false }
+    return savedEMPState?.records.values.allSatisfy { record in
+      record.crewCaptures.allSatisfy { capture in
+        capture.ordinals.allSatisfy { ordinal in
+          state.admissions.contains {
+            $0.person == .emp(.init(source: record.source, ordinal: ordinal))
+              && $0.origin == .capturedCrew && $0.operation == capture.operation
+          }
+        }
+      }
+    } ?? !state.admissions.contains(where: { $0.person.emp != nil })
+  }
+  @inline(never)
+  private var nativePeopleSourcesPresent: Bool {
     if NativeOriginalEvacuation.nativeInstancePresent(self)
       && nativePeople?.orbitalEvacuation == nil
     {
@@ -377,22 +713,7 @@ extension Commander {
     {
       return false
     }
-    guard let state = nativePeople else {
-      return savedEMPState?.records.values.allSatisfy({ $0.crewCaptures.isEmpty }) ?? true
-    }
-    guard cargo.count == Commodity.all.count, state.valid(commander: self),
-      let mass = checkedCargoTonnes, state.held.isEmpty || mass <= standardCargoCapacity
-    else { return false }
-    return savedEMPState?.records.values.allSatisfy { record in
-      record.crewCaptures.allSatisfy { capture in
-        capture.ordinals.allSatisfy { ordinal in
-          state.admissions.contains {
-            $0.person == .emp(.init(source: record.source, ordinal: ordinal))
-              && $0.origin == .capturedCrew && $0.operation == capture.operation
-          }
-        }
-      }
-    } ?? !state.admissions.contains(where: { $0.person.emp != nil })
+    return true
   }
   func worldOwnedPod(_ person: EMPCrewIdentity) -> Bool {
     !(nativePeople?.admissions.contains { $0.person == .emp(person) } ?? false)

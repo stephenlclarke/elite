@@ -8,9 +8,19 @@ final class NativeCrewLogPickupPending: Sendable {
 
 extension NativeInductionCrewLogPack {
   static func marker(_ body: borrowing SpaceBody, commander: borrowing Commander) -> Bool {
+    guard let job = markerJob(body) else { return false }
+    return marker(job: job, commander: commander)
+  }
+
+  static func markerJob(_ body: borrowing SpaceBody) -> UUID? {
     guard let job = body.missionInstanceID, let logical = body.missionActorID,
-      logical == actor(job: job, role: .recorder),
-      let child = commander.scriptState.instances[job], child.definition == stateID,
+      logical == actor(job: job, role: .recorder)
+    else { return nil }
+    return job
+  }
+
+  static func marker(job: UUID, commander: borrowing Commander) -> Bool {
+    guard let child = commander.scriptState.instances[job], child.definition == stateID,
       child.digest == digest, child.savedNativeCrewLog?.authorization.job == job
     else { return false }
     return true
@@ -35,8 +45,24 @@ extension Game {
 
   /// Exact current native address and owning retained alias, never a selected name or serial alone.
   func inductionCrewLogRecorder(_ body: SpaceBody) -> ScriptOwnedActor? {
-    guard NativeInductionCrewLogPack.marker(body, commander: commander),
-      let child = inductionCrewLogChild, child.outcome == .active, child.suspension == nil,
+    guard let job = NativeInductionCrewLogPack.markerJob(body) else { return nil }
+    return inductionCrewLogRecorderAtMarkerAddress(body, job: job)
+  }
+
+  // Body-only refusal must finish before entering any Commander-reading frame.
+  @inline(never)
+  private func inductionCrewLogRecorderAtMarkerAddress(_ body: SpaceBody, job: UUID)
+    -> ScriptOwnedActor?
+  {
+    guard withReadOnlyCommander({ NativeInductionCrewLogPack.marker(job: job, commander: $0) })
+    else { return nil }
+    return inductionCrewLogRecorderAfterMarker(body)
+  }
+
+  // Ordinary targets must reject before reserving the full present-validation frame.
+  @inline(never)
+  private func inductionCrewLogRecorderAfterMarker(_ body: SpaceBody) -> ScriptOwnedActor? {
+    guard let child = inductionCrewLogChild, child.outcome == .active, child.suspension == nil,
       let state = child.savedNativeCrewLog, state.admission != nil, state.capture == nil,
       !state.losses.contains(where: { $0.role == "recorder" }),
       let group = child.ownedEncounters[NativeInductionCrewLogPack.encounter], group.admitted,

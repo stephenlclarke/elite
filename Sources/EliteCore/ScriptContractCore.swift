@@ -473,9 +473,9 @@ extension Game {
   func settleContract(
     _ outcome: ScriptOutcome, state: inout ScriptInstance, candidate: inout Commander
   ) throws {
-    guard var job = state.contract else { return }
+    guard var job = state.retainedSettlementJob else { return }
     guard !job.settled else { throw MissionPackError("This contract is already settled.") }
-    if OriginalServiceReservationPolicy.isContractDefinition(state.definition) {
+    if OriginalServiceReservationPolicy.isContractDefinition(state.retainedSettlementDefinition) {
       _ = try OriginalContractOfferPolicy.advanced(job.boardRevision, by: 2)
     }
     let reward =
@@ -491,7 +491,8 @@ extension Game {
     job.settled = true
     job.settlementOutcome = outcome
     job.settlementAmount = amount
-    job.settledAt = state.courier?.terminal?.proof.clock ?? candidate.scriptState.clock(job.clock)
+    job.settledAt =
+      state.retainedSettlementCourierTerminalClock ?? candidate.scriptState.clock(job.clock)
     state.contract = job
   }
   func contractSnapshot(_ instance: ScriptInstance) -> ScriptValue {

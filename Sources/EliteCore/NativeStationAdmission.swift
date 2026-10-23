@@ -390,14 +390,31 @@ extension NativeStationWorld {
 /// One derived immutable validation witness, shared safely across value snapshots.
 /// Only a complete successful source check may replace it. Neither disk nor UI
 /// can supply the witness, and a hit requires full semantic equality, not an ID.
+private final class NativeStationValidatedContent: Sendable {
+  private let content: NativeStationWorldContent
+
+  init(_ content: consuming NativeStationWorldContent) {
+    self.content = consume content
+  }
+
+  @inline(never)
+  func matches(_ candidate: borrowing NativeStationWorldContent) -> Bool {
+    content == candidate
+  }
+}
+
 private final class NativeStationValidationMemo: Sendable {
-  private let state = OSAllocatedUnfairLock<NativeStationWorldContent?>(initialState: nil)
+  private let state = OSAllocatedUnfairLock<NativeStationValidatedContent?>(initialState: nil)
 
   func contains(_ content: NativeStationWorldContent) -> Bool {
-    state.withLock { $0 == content }
+    state.withLock {
+      guard let cached = $0 else { return false }
+      return cached.matches(content)
+    }
   }
 
   func recordValidated(_ content: NativeStationWorldContent) {
-    state.withLock { $0 = content }
+    let validated = NativeStationValidatedContent(content)
+    state.withLock { $0 = validated }
   }
 }

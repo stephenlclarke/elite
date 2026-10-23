@@ -347,6 +347,34 @@ struct NativeC01SurveyorUnitTests {
     #expect(!NativeC01Surveyor.shapeValid(wrong))
     #expect(!NativeC01Surveyor.approachAllowed(point: .init(40, -45, 55), radius: 0.5, speed: 0))
   }
+  @Test func heldRecorderProjectionKeepsAbsentFalseTrueAndRetainedCodecValuesIndependent() throws {
+    let f = try C01SurveyorFixture()
+    let absent = ScriptInstance(
+      id: UUID(), definition: "test.projection", version: "1.0.0",
+      digest: String(repeating: "a", count: 64))
+    var withoutRecorder = f.state
+    withoutRecorder.surveyor = nil
+    let held = f.mission(try f.held())
+    let samples: [(ScriptInstance, Bool)] = [
+      (absent, false), (f.mission(withoutRecorder), false), (f.mission(f.state), false),
+      (held, true),
+    ]
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+    for (instance, expected) in samples {
+      let retained = instance
+      let bytes = try encoder.encode(instance)
+      #expect(instance.hasHeldGlassMeridianRecorder == expected)
+      #expect(instance == retained)
+      #expect(try encoder.encode(instance) == bytes)
+      let decoded = try JSONDecoder().decode(ScriptInstance.self, from: bytes)
+      #expect(decoded.hasHeldGlassMeridianRecorder == expected && decoded == retained)
+    }
+    var changed = held
+    changed.savedGlassMeridian?.surveyor = nil
+    #expect(!changed.hasHeldGlassMeridianRecorder && held.hasHeldGlassMeridianRecorder)
+  }
+
   @Test func protectedRecorderUsesEightKilogramsAndNoFabricatedMissionTonne() throws {
     let f = try C01SurveyorFixture()
     var commander = Commander()

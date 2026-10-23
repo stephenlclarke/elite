@@ -500,6 +500,8 @@ Station Gossip includes **Most Wanted**, a current-galaxy board of up to ten act
 
 ## Validation and SonarQube
 
+The current M01 repair candidate consolidates the retained value-lifetime and station-validation fixes, including the immutable complete-content memo holder. [Source scope and component evidence](docs/PR-M01-source-consolidation.md) distinguish source integration from the still-unverified dependable launch/flight/jump/job/delivery/completed-save journey and usable release. No full462-method pass or playable M01 completion is claimed.
+
 ```sh
 make unit-ci
 make coverage-check

@@ -54,6 +54,12 @@ enum NativeInductionArkSave {
 
   @inline(never)
   static func validateClaims(_ commander: borrowing Commander) -> Bool {
+    guard arkClaimsValid(commander) else { return false }
+    return supplierClaimsValid(commander)
+  }
+
+  @inline(never)
+  private static func arkClaimsValid(_ commander: borrowing Commander) -> Bool {
     let engine = commander.scriptState
     let jobs = engine.instances.values.filter { NativeInductionArkPack.marked($0) }
     let parents = engine.instances.values.filter {
@@ -107,7 +113,7 @@ enum NativeInductionArkSave {
         fuelHistoryValid(state, child: child, engine: engine)
       else { return false }
     }
-    return supplierClaimsValid(commander)
+    return true
   }
 
   private static func currentBoundsValid(

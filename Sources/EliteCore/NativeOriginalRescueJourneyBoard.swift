@@ -24,6 +24,17 @@ enum NativeOriginalRescueAction: String, Equatable, Sendable {
   }
 }
 
+private struct NativeOriginalRescueAcceptance: Sendable {
+  let owner: UUID
+  let carrier: UUID
+  let definition: NativeOriginalRescueDefinition
+  let slots: [PassengerBerth]
+  let boardKey: String
+  let key: String
+  let offerID: UUID
+  let missionID: UUID
+}
+
 extension Game {
   var originalRescuePack: ScriptPack? {
     scriptPacks.first {
@@ -156,6 +167,13 @@ extension Game {
       offer.epoch == nativeStationRuntimeEpoch, offer.path == [85, 241],
       offer.berths.count == 2, commander.passengerFit?.allowed == true
     else { return "Request fresh native Celalen transport replies at actual Cedamar care." }
+    return originalRescueReservedBerthIssue(state, offer: offer)
+  }
+
+  @inline(never)
+  private func originalRescueReservedBerthIssue(
+    _ state: NativeOriginalRescueJourneyState, offer: NativeStationPassageOffer
+  ) -> String? {
     for ordinal in 0..<2 {
       guard let person = state.references[ordinal].rescue,
         let reply = state.replies.last(where: { $0.person == person && $0.offer == offer.id }),
@@ -213,27 +231,71 @@ extension Game {
   func validateOriginalRescueAction(
     _ quote: NativePeopleStationQuote, action: NativeOriginalRescueAction
   ) throws -> (ScriptPack, NativeMainStationArrivalContext) {
+    guard originalRescueReviewIsCurrent(quote, action: action),
+      originalRescueResourcesMatch(quote), quote.epoch == nativeStationRuntimeEpoch
+    else { throw MissionPackError(Self.originalRescueChangedSourceMessage) }
+    return try originalRescueActionContext(quote)
+  }
+
+  @inline(never)
+  private func originalRescueReviewIsCurrent(
+    _ quote: NativePeopleStationQuote, action: NativeOriginalRescueAction
+  ) -> Bool {
     let current = originalRescueQuote(action)
-    guard screen == .contracts, contractBoard.detail, contractBoard.selected?.people == quote.row,
-      contractBoard.peopleQuote?.reviewToken == quote.reviewToken,
-      quote.allowed, current.allowed, quote.members == current.members,
-      quote.resources == commander.contractQuoteResources, quote.epoch == nativeStationRuntimeEpoch,
-      let context = quote.context, acceptsNativeMainStationArrivalContext(context),
+    return screen == .contracts && contractBoard.detail
+      && contractBoard.selected?.people == quote.row
+      && contractBoard.peopleQuote?.reviewToken == quote.reviewToken
+      && quote.allowed && current.allowed && quote.members == current.members
+  }
+
+  @inline(never)
+  private func originalRescueResourcesMatch(_ quote: NativePeopleStationQuote) -> Bool {
+    quote.resources == commander.contractQuoteResources
+  }
+
+  @inline(never)
+  private func originalRescueActionContext(
+    _ quote: NativePeopleStationQuote
+  ) throws -> (ScriptPack, NativeMainStationArrivalContext) {
+    guard let context = quote.context, acceptsNativeMainStationArrivalContext(context),
       let pack = originalRescuePack
-    else { throw MissionPackError("Original source, custody, fitting or actual receiver changed.") }
+    else { throw MissionPackError(Self.originalRescueChangedSourceMessage) }
     return (pack, context)
   }
+
+  private static let originalRescueChangedSourceMessage =
+    "Original source, custody, fitting or actual receiver changed."
 
   @inline(never)
   private mutating func mutateOriginalRescueAction(
     _ action: NativeOriginalRescueAction, pack: ScriptPack,
     dock: NativeMainStationDockReceipt, operation: UUID
   ) throws {
+    if action == .accept {
+      try acceptAndEmitOriginalRescue(pack, dock: dock, operation: operation)
+      return
+    }
+    try mutateContinuingOriginalRescueAction(
+      action, pack: pack, dock: dock, operation: operation)
+  }
+
+  @inline(never)
+  private mutating func acceptAndEmitOriginalRescue(
+    _ pack: ScriptPack, dock: NativeMainStationDockReceipt, operation: UUID
+  ) throws {
+    let mission = try acceptOriginalRescue(pack, dock: dock, operation: operation)
+    // Script queries drain only after acceptance staging has returned.
+    emitScriptEvent("mission.accepted", only: mission)
+  }
+
+  @inline(never)
+  private mutating func mutateContinuingOriginalRescueAction(
+    _ action: NativeOriginalRescueAction, pack: ScriptPack,
+    dock: NativeMainStationDockReceipt, operation: UUID
+  ) throws {
     switch action {
     case .accept:
-      let mission = try acceptOriginalRescue(pack, dock: dock, operation: operation)
-      // Script queries drain only after acceptance staging has returned.
-      emitScriptEvent("mission.accepted", only: mission)
+      try acceptAndEmitOriginalRescue(pack, dock: dock, operation: operation)
     case .care:
       try transferOriginalRescueCare(
         dock: dock, operation: operation, final: false)
@@ -287,6 +349,17 @@ extension Game {
   private mutating func acceptOriginalRescue(
     _ pack: ScriptPack, dock: NativeMainStationDockReceipt, operation: UUID
   ) throws -> UUID {
+    let acceptance = try prepareOriginalRescueAcceptance(pack, dock: dock)
+    let job = stageOriginalRescueOffer(pack, acceptance: acceptance)
+    try stageOriginalRescueCustody(acceptance, pack: pack, dock: dock, operation: operation)
+    stageOriginalRescueMission(pack, missionID: acceptance.missionID, job: job)
+    return acceptance.missionID
+  }
+
+  @inline(never)
+  private mutating func prepareOriginalRescueAcceptance(
+    _ pack: ScriptPack, dock: NativeMainStationDockReceipt
+  ) throws -> NativeOriginalRescueAcceptance {
     try OriginalServiceReservationPolicy.requireAvailableSlot(commander.scriptState)
     guard let owner = commander.equipmentOwnerID, let carrier = commander.hullInstanceID,
       let definition = pack.manifest.originalRescue, definition.valid,
@@ -306,6 +379,19 @@ extension Game {
     guard commander.scriptState.instances[missionID] == nil else {
       throw SaveError.invalidCommander
     }
+    return .init(
+      owner: owner, carrier: carrier, definition: definition, slots: slots,
+      boardKey: boardKey, key: key, offerID: offerID, missionID: missionID)
+  }
+
+  @inline(never)
+  private mutating func stageOriginalRescueOffer(
+    _ pack: ScriptPack, acceptance: NativeOriginalRescueAcceptance
+  ) -> ScriptContractJob {
+    let boardKey = acceptance.boardKey
+    let key = acceptance.key
+    let offerID = acceptance.offerID
+    let missionID = acceptance.missionID
     let offer = ScriptContractOffer(
       id: offerID, key: key, title: "Neri and Ilan / L1 H0 / 1020 CR / untimed",
       briefing:
@@ -327,13 +413,47 @@ extension Game {
       title: "Original consented custody rescue", station: NativeOriginalRescueJourney.source,
       revision: 0, seed: 0, clock: .local, period: 3600,
       group: NativeOriginalRescueJourney.stateID, offers: [accepted])
+    return job
+  }
+
+  @inline(never)
+  private mutating func stageOriginalRescueCustody(
+    _ acceptance: NativeOriginalRescueAcceptance, pack: ScriptPack,
+    dock: NativeMainStationDockReceipt, operation: UUID
+  ) throws {
+    let owner = acceptance.owner
     var custody = commander.nativePeople ?? .init(owner: owner)
-    let state = NativeOriginalRescueJourneyState(
+    let state = originalRescueAcceptanceState(
+      acceptance, pack: pack, dock: dock, operation: operation)
+    try reserveOriginalRescueAcceptanceBerths(
+      acceptance.slots, state: state, missionID: acceptance.missionID)
+    custody.originalRescue = state
+    commander.savedNativePeopleCustody = custody
+  }
+
+  @inline(never)
+  private func originalRescueAcceptanceState(
+    _ acceptance: NativeOriginalRescueAcceptance, pack: ScriptPack,
+    dock: NativeMainStationDockReceipt, operation: UUID
+  ) -> NativeOriginalRescueJourneyState {
+    let owner = acceptance.owner
+    let definition = acceptance.definition
+    let carrier = acceptance.carrier
+    let slots = acceptance.slots
+    let missionID = acceptance.missionID
+    return NativeOriginalRescueJourneyState(
       owner: owner, definition: definition,
       version: pack.manifest.version, digest: pack.digest, registration: dock,
       registeredAt: commander.flightSimulation.physicalTime,
       inventoryRevision: commander.equipmentInventory?.revision ?? 0,
       operation: operation, mission: missionID, carrier: carrier, reservedBerths: slots.map(\.id))
+  }
+
+  @inline(never)
+  private mutating func reserveOriginalRescueAcceptanceBerths(
+    _ slots: borrowing [PassengerBerth], state: borrowing NativeOriginalRescueJourneyState,
+    missionID: UUID
+  ) throws {
     for ordinal in 0..<2 {
       guard
         let index = commander.accommodation.ownedBerths.firstIndex(where: {
@@ -346,15 +466,18 @@ extension Game {
       commander.accommodation.ownedBerths[index].use = .reserved(
         mission: missionID, person: person.id)
     }
-    custody.originalRescue = state
-    commander.savedNativePeopleCustody = custody
+  }
+
+  @inline(never)
+  private mutating func stageOriginalRescueMission(
+    _ pack: ScriptPack, missionID: UUID, job: ScriptContractJob
+  ) {
     var mission = ScriptInstance(
       id: missionID, definition: NativeOriginalRescueJourney.stateID,
       version: pack.manifest.version, digest: pack.digest)
     mission.contract = job
     mission.milestones = [0]
     commander.scriptState.instances[missionID] = mission
-    return missionID
   }
 
   @inline(never)

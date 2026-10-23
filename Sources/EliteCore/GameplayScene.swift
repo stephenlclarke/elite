@@ -112,25 +112,46 @@ extension Game {
   }
 
   // Release completed adoption buffers before station admission enters its own geometry checks.
+  @inline(never)
   private mutating func adoptNativePhysicalActors() {
-    if commander.flightSimulation.system != systemIdentity {
-      commander.flightSimulation.enter(systemIdentity, arriving: false)
+    let flightSystem = commander.flightSimulation.system
+    let currentSystem = nativePhysicalAdoptionSystemIdentity()
+    if flightSystem != currentSystem {
+      let destination = nativePhysicalAdoptionSystemIdentity()
+      commander.flightSimulation.enter(destination, arriving: false)
     }
     let flight = commander.flightSimulation
-    for index in bodies.indices
-    where bodies[index].physical == nil && bodies[index].scriptShot == nil
-      && bodies[index].nativeStationIdentity == nil
-    {
-      let identity: ActorIdentity?
-      if bodies[index].id == 0 && bodies[index].hull == .station {
-        identity = flight.anchors?.station.identity
-      } else {
-        identity = commander.flightSimulation.allocateActor()
-      }
-      guard let identity else { continue }
-      let body = bodies[index]
-      bodies[index].physical = nativePhysicalActorState(for: body, identity: identity)
+    for index in bodies.indices {
+      guard nativePhysicalActorNeedsAdoption(at: index) else { continue }
+      adoptNativePhysicalActor(at: index, flight: flight)
     }
+  }
+
+  // The one body projection used for eligibility ends before identity allocation/construction.
+  @inline(never)
+  private mutating func nativePhysicalActorNeedsAdoption(at index: Int) -> Bool {
+    Self.nativePhysicalActorIsUnbound(bodies[index])
+  }
+
+  @inline(never)
+  private static func nativePhysicalActorIsUnbound(_ body: borrowing SpaceBody) -> Bool {
+    guard case .none = body.physical else { return false }
+    guard case .none = body.scriptShot else { return false }
+    guard case .none = body.nativeStationIdentity else { return false }
+    return true
+  }
+
+  @inline(never)
+  private mutating func adoptNativePhysicalActor(at index: Int, flight: FlightSimulationState) {
+    let identity: ActorIdentity?
+    if bodies[index].id == 0 && bodies[index].hull == .station {
+      identity = flight.anchors?.station.identity
+    } else {
+      identity = commander.flightSimulation.allocateActor()
+    }
+    guard let identity else { return }
+    let body = bodies[index]
+    bodies[index].physical = nativePhysicalActorState(for: body, identity: identity)
   }
 
   /// The same native adoption policy serves fresh mission admissions without allocating identities.

@@ -1,0 +1,10 @@
+<!-- markdownlint-disable MD013 -->
+# fix(rendering): borrow simulation state for front visibility
+
+Display.visibleInFront and Display.draw now use borrowed Game state with an explicit front-view override. Normal drawing resolves its actual screen, and demo/title drawing still chooses shaded panels locally. Front visibility resolves the front view before considering startup shading, preserving the saved flight display style. The existing view-coordinate switch is extracted into a pure screen-based helper, and scripted beams receive the same resolved view. No simulation state is changed for rendering.
+
+Mesh resolution retains supplied mesh, scripted mesh and gameplay mesh precedence. Explicit lazy branches replace nil-coalescing autoclosures so a borrowed Game cannot be consumed by their captures. Native mesh/current-body authority and every face, texture, material, hidden-face, near-plane, viewport and aperture rule stay intact. AutoTargetControl and the original failing station test are unchanged.
+
+One new regression compares complete frames and visibility for six caller screens and three display styles, verifies caller state is unchanged, and checks ordinary demo/title panel behavior. A wrapper selects all five original failing station-hazard cases without changing their assertions. The maintained selection retains all prior 342 methods / 379 cases and adds two methods / 23 cases, for 344 methods / 402 expected cases.
+
+Validation at author preflight: EliteCore compiled after correcting borrowed-value captures in autoclosures. All test sources compiled successfully in 110.44 seconds without running tests. Formatting, Markdown lint, patch whitespace and selector retention checks passed. Hosted qualification remains pending. No native replay, UI run, broad quality retry, sanitizer, leak, Sonar or release PASS is claimed by this packet. The old 342-method qualification remains retained evidence; the changed renderer requires its own actual focused result and independent review. See [issue #106](ISSUE-106.md).

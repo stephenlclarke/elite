@@ -311,15 +311,28 @@ public enum Display {
     }
   }
   static func draw(
-    _ body: SpaceBody, game: Game, into frame: inout Frame, projection: FlightProjection = .legacy,
-    mesh: Mesh? = nil
+    _ body: SpaceBody, game: borrowing Game, into frame: inout Frame,
+    projection: FlightProjection = .legacy,
+    mesh suppliedMesh: Mesh? = nil, screen: Screen? = nil
   ) {
-    var game = game
-    if game.screen == .demo || game.screen == .title {
-      game.commander.shipDisplayStyle = .shadedPanels
+    let view: Screen
+    if let screen {
+      view = screen
+    } else {
+      view = game.screen
     }
-    let center = game.viewPosition(body.position)
-    let mesh = mesh ?? game.scriptNPCMesh(body) ?? game.gameplayMesh(for: body)
+    let style: ShipDisplayStyle =
+      view == .demo || view == .title
+      ? .shadedPanels : game.withReadOnlyCommander { $0.shipDisplayStyle }
+    let center = Game.viewPosition(body.position, screen: view)
+    let mesh: Mesh
+    if let supplied = suppliedMesh {
+      mesh = supplied
+    } else if let scripted = game.scriptNPCMesh(body) {
+      mesh = scripted
+    } else {
+      mesh = game.gameplayMesh(for: body)
+    }
     let miningFields = game.miningFields
     let oreInk = body.physical?.rock.flatMap { identity in
       miningFields.lazy.flatMap(\.rocks).first { $0.identity == identity }
@@ -327,7 +340,7 @@ public enum Display {
     var vertices: [Vector3] = []
     vertices.reserveCapacity(mesh.vertices.count)
     for vertex in mesh.vertices {
-      let rotated = game.viewPosition(body.modelVector(vertex))
+      let rotated = Game.viewPosition(body.modelVector(vertex), screen: view)
       vertices.append(rotated + center)
     }
     guard vertices.allSatisfy({ $0.x.isFinite && $0.y.isFinite && $0.z.isFinite }),
@@ -347,7 +360,7 @@ public enum Display {
       let normal = (b - a).cross(c - a)
       guard normal.dot(a) < 0 else { continue }
       visibleFaces.insert(entry.index)
-      if game.commander.shipDisplayStyle == .shadedPanels {
+      if style == .shadedPanels {
         let material =
           mesh.faceMaterials.isEmpty ? nil : mesh.materials[mesh.faceMaterials[entry.index]]
         if mesh.faceTextures.indices.contains(entry.index),
@@ -385,7 +398,7 @@ public enum Display {
         continue
       }
       let ink: Ink =
-        game.commander.shipDisplayStyle == .whiteWireframe
+        style == .whiteWireframe
         ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
       for edge in face.indices {
         let i = face[edge]
@@ -400,9 +413,9 @@ public enum Display {
         frame.wire(points.0, points.1, points.2, points.3, ink)
       }
     }
-    if game.commander.shipDisplayStyle != .shadedPanels {
+    if style != .shadedPanels {
       let ink: Ink =
-        game.commander.shipDisplayStyle == .whiteWireframe
+        style == .whiteWireframe
         ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
       for detail in mesh.details where visibleFaces.contains(detail.face) {
         if let line = project(vertices[detail.start], vertices[detail.end], projection: projection)
@@ -411,7 +424,7 @@ public enum Display {
         }
       }
     }
-    drawScriptBeams(body, game: game, into: &frame, projection: projection)
+    drawScriptBeams(body, game: game, into: &frame, projection: projection, screen: view)
     if body.hull == .station {
       let aperture: [Vector3]
       if let identity = body.nativeStationIdentity,
@@ -426,16 +439,16 @@ public enum Display {
       var hatch: [Vector3] = []
       hatch.reserveCapacity(aperture.count)
       for vertex in aperture {
-        hatch.append(game.viewPosition(body.modelVector(vertex)) + center)
+        hatch.append(Game.viewPosition(body.modelVector(vertex), screen: view) + center)
       }
-      let normal = game.viewPosition(body.entranceNormal)
+      let normal = Game.viewPosition(body.entranceNormal, screen: view)
       guard normal.dot(hatch[0]) < 0 else { return }
-      if game.commander.shipDisplayStyle == .shadedPanels {
+      if style == .shadedPanels {
         frame.panel(
           ShipProjection.polygon(hatch, projection: projection), colour: Ink.black.rawValue)
       } else {
         let ink: Ink =
-          game.commander.shipDisplayStyle == .whiteWireframe
+          style == .whiteWireframe
           ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
         for index in hatch.indices {
           if let line = project(

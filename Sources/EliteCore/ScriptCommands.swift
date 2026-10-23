@@ -8,6 +8,84 @@ extension Game {
     guard let fields = command.object, let op = fields["op"]?.string else {
       throw MissionPackError("Invalid script command.")
     }
+    if try applyScriptCommandAuthority1(
+      fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    {
+      return
+    }
+    if try applyScriptCommandAuthority2(
+      fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    {
+      return
+    }
+    if try applyScriptCommandAuthority3(
+      fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    {
+      return
+    }
+    if try applyScriptCommandAuthority4(
+      fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    {
+      return
+    }
+    if try applyScriptCommandAuthority5(
+      fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    {
+      return
+    }
+    if try applyScriptCommandAuthority6(
+      fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    {
+      return
+    }
+    if try applyScriptCommandAuthority7(
+      fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    {
+      return
+    }
+    if try applyScriptCommandAuthority8(
+      fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    {
+      return
+    }
+    try validateScriptCommand(fields, op: op, pack: pack, state: &state)
+    switch op {
+    case "credits", "payload.add", "payload.remove":
+      try applyScriptCommandOperation1(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    case "milestone.ensure":
+      try applyScriptCommandOperation2(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    case "journal.append":
+      try applyScriptCommandOperation3(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    case "mission.finish":
+      try applyScriptCommandOperation4(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    case "dialogue.offer":
+      try applyScriptCommandOperation5(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    case "dialogue.commit":
+      try applyScriptCommandOperation6(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    case "timer.ensure":
+      try applyScriptCommandOperation7(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    case "timer.cancel":
+      try applyScriptCommandOperation8(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    case "timer.counter.ensure", "timer.counter.reset", "timer.counter.enable":
+      try applyScriptCommandOperation9(
+        fields, op: op, event: event, pack: pack, state: &state, candidate: &candidate)
+    default: throw MissionPackError("Unsupported script command.")
+    }
+  }
+
+  @inline(never)
+  private func applyScriptCommandAuthority1(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> Bool {
     if NativeInductionSeedPack.marked(state) || state.savedNativeInductionSeed != nil {
       guard ["journal.append", "cold-chain.expire"].contains(op) else {
         throw MissionPackError("Use the original seed lot's native custody transaction.")
@@ -17,15 +95,31 @@ extension Game {
           throw SaveError.invalidCommander
         }
         try Self.applyInductionSeedExpiry(event: event, state: &state, candidate: &candidate)
-        return
+        return true
       }
     }
+    return false
+  }
+
+  @inline(never)
+  private func applyScriptCommandAuthority2(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> Bool {
     if NativeInductionWorkshopPack.marked(state) || state.savedNativeInductionWorkshop != nil {
       guard op == "journal.append" else {
         throw MissionPackError(
           "Use the original workshop's native serial/service/return transaction.")
       }
     }
+    return false
+  }
+
+  @inline(never)
+  private func applyScriptCommandAuthority3(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> Bool {
     if NativeInductionClinicPack.marked(state) || state.savedNativeInductionClinic != nil {
       guard ["journal.append", "cold-chain.expire"].contains(op) else {
         throw MissionPackError("Use the original clinic's native custody transaction.")
@@ -35,14 +129,30 @@ extension Game {
           throw SaveError.invalidCommander
         }
         try applyInductionClinicExpiry(event: event, state: &state, candidate: &candidate)
-        return
+        return true
       }
     }
+    return false
+  }
+
+  @inline(never)
+  private func applyScriptCommandAuthority4(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> Bool {
     if pack.manifest.fieldRelief != nil || WayfarerFieldRelief.marked(state) {
       guard op == "journal.append" else {
         throw MissionPackError("Use the original native utility and current engineer reception.")
       }
     }
+    return false
+  }
+
+  @inline(never)
+  private func applyScriptCommandAuthority5(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> Bool {
     if pack.manifest.repairLoop != nil || state.savedWayfarerRepairLoop != nil
       || state.definition == WayfarerRepairLoopDefinition.stateID
     {
@@ -50,6 +160,14 @@ extension Game {
         throw MissionPackError("Use the original native unit, workshop and owner return.")
       }
     }
+    return false
+  }
+
+  @inline(never)
+  private func applyScriptCommandAuthority6(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> Bool {
     if pack.manifest.coldChain != nil || state.savedWayfarerColdChain != nil
       || WayfarerColdChainDefinition.isNativeDefinition(state.definition)
     {
@@ -61,17 +179,40 @@ extension Game {
           throw MissionPackError("Native expiry accepts only its admitted timer event.")
         }
         try applyWayfarerColdChainExpiry(event: event, state: &state, candidate: &candidate)
-        return
+        return true
       }
     }
+    return false
+  }
+
+  @inline(never)
+  private func applyScriptCommandAuthority7(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> Bool {
     if state.definition == OriginalVerifiedWarrant.stateID, event.kind == "mission.accepted" {
       try OriginalVerifiedWarrant.requireAcceptance(
         event, game: self, state: state, candidate: candidate)
     }
+    return false
+  }
+
+  @inline(never)
+  private func applyScriptCommandAuthority8(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws -> Bool {
     if state.definition == OriginalCorridorDefence.stateID, event.kind == "mission.accepted" {
       try OriginalCorridorDefence.requireAcceptance(
         event, game: self, state: state, candidate: candidate)
     }
+    return false
+  }
+
+  @inline(never)
+  private func validateScriptCommand(
+    _ fields: [String: ScriptValue], op: String, pack: ScriptPack, state: inout ScriptInstance
+  ) throws {
     let fieldsByOp: [String: Set<String>] = [
       "credits": ["op", "id", "amount"], "payload.add": ["op", "id", "key", "amount"],
       "payload.remove": ["op", "id", "key", "amount"], "milestone.ensure": ["op", "index"],
@@ -102,197 +243,255 @@ extension Game {
     guard state.outcome == .active else {
       throw MissionPackError("Terminal mission cannot issue more actions.")
     }
-    func text(_ key: String) throws -> String {
-      guard let value = fields[key]?.string else {
-        throw MissionPackError("Missing script command field: " + key)
-      }
-      return value
-    }
-    func identifier(_ key: String) throws -> String {
-      let value = try text(key)
-      guard PackValidation.localID(value) else {
-        throw MissionPackError("Invalid action identifier.")
-      }
-      return value
-    }
-    switch op {
-    case "credits", "payload.add", "payload.remove":
-      let id = try identifier("id")
-      if state.receipts.contains(id) { return }
-      guard let amount = fields["amount"]?.integer,
-        (-4_294_967_295...4_294_967_295).contains(amount)
-      else {
-        throw MissionPackError("Action amount is missing or out of range.")
-      }
-      if op == "credits" {
-        let (balance, overflow) = Int64(candidate.credits).addingReportingOverflow(amount)
-        guard !overflow, (0...4_294_967_295).contains(balance) else {
-          throw MissionPackError("Insufficient credits or reward exceeds balance limit.")
-        }
-        candidate.credits = Int(balance)
-      } else {
-        let key = try identifier("key")
-        guard
-          key != ScriptOwnedCargoState.payloadKey
-            || (state.savedOwnedCargo == nil && state.contract?.offer.freightPlan == nil)
-        else {
-          throw MissionPackError(
-            "Native issuer-owned units cannot be manufactured or removed by payload commands.")
-        }
-        guard (1...1_000_000).contains(amount) else {
-          throw MissionPackError("Payload amount must be positive.")
-        }
-        let held = state.payloads[key, default: 0]
-        if op == "payload.add" {
-          guard held <= 1_000_000 - Int(amount) else {
-            throw MissionPackError("Payload quantity exceeded.")
-          }
-          state.payloads[key] = held + Int(amount)
-        } else {
-          guard held >= Int(amount) else {
-            throw MissionPackError("Owned mission payload required.")
-          }
-          state.payloads[key] = held - Int(amount)
-        }
-      }
-      state.receipts.insert(id)
-    case "milestone.ensure":
-      guard let index = fields["index"]?.integer,
-        (0..<Int64(pack.manifest.mission.milestones.count)).contains(index)
-      else {
-        throw MissionPackError("Invalid story milestone index.")
-      }
-      state.milestones.insert(Int(index))
-    case "journal.append":
-      let message: String
-      if state.definition == OriginalCorridorDefence.stateID {
-        guard
-          ["mission.accepted", "actor.destroyed", "contact.requested", "dialogue.confirmed"]
-            .contains(event.kind),
-          event.instance == state.id, OriginalCorridorDefence.validJob(state)
-        else {
-          throw MissionPackError("Corridor progress requires its original native mission event.")
-        }
-        message = OriginalCorridorDefence.progressText(state)
-      } else {
-        message = try text("text")
-      }
-      guard (1...12000).contains(message.utf8.count), state.journal.count < 512 else {
-        throw MissionPackError("Journal budget exceeded.")
-      }
-      state.journal.append(message)
-    case "mission.finish":
-      guard let outcome = ScriptOutcome(rawValue: try text("outcome")) else {
-        throw MissionPackError("Complete every required objective before reporting.")
-      }
-      if state.definition == OriginalVerifiedWarrant.stateID {
-        try OriginalVerifiedWarrant.requireFinish(outcome, event: event, game: self, state: state)
-      }
-      if state.definition == OriginalCorridorDefence.stateID {
-        try OriginalCorridorDefence.requireFinish(outcome, event: event, game: self, state: state)
-      }
-      try finishScriptMission(outcome, pack: pack, state: &state, candidate: &candidate)
-    case "dialogue.offer":
-      let id = try identifier("id")
-      guard pack.manifest.dialogs?.contains(where: { $0.id == id }) == true,
-        docked, dockedAtMainStation
-      else {
-        throw MissionPackError("Dialogue requires a declared contact at the orbital station.")
-      }
-      if let choices = pack.manifest.dialogs?.first(where: { $0.id == id })?.choices,
-        choices.contains(where: { $0.group.map { state.choiceReceipts[$0] != nil } ?? false })
-      {
-        throw MissionPackError("This exclusive station branch has already been chosen.")
-      }
-      var quote: ScriptCollectionQuote?
-      if let collection = pack.manifest.dialogs?.first(where: { $0.id == id })?.collection {
-        guard let actual = collectionQuote(collection, state: state, commander: candidate) else {
-          throw MissionPackError("Material handoffs require their actual assigned main station.")
-        }
-        quote = actual
-      }
-      let baseToken = state.id.uuidString + ":" + String(event.sequence) + ":" + id
-      let contactToken: String
-      if pack.manifest.freight != nil {
-        contactToken = freightDialogueToken(baseToken)
-      } else if pack.manifest.procurement != nil {
-        contactToken = procurementDialogueToken(baseToken)
-      } else {
-        contactToken = baseToken
-      }
-      state.dialogue = ScriptDialogue(
-        collectionQuote: quote,
-        id: id,
-        token: contactToken,
-        galaxy: candidate.galaxy, system: candidate.system, revision: state.revision + 1)
-    case "dialogue.commit":
-      let id = try identifier("id")
-      let token = try text("token")
-      guard event.kind == "dialogue.confirmed", event.values["token"]?.string == token,
-        event.values["dialogue_id"]?.string == id, state.dialogue?.id == id,
-        state.dialogue?.token == token, state.dialogue?.revision == state.revision,
-        state.dialogue?.galaxy == candidate.galaxy, state.dialogue?.system == candidate.system,
-        docked, dockedAtMainStation
-      else { throw MissionPackError("Stale or invalid dialogue confirmation.") }
-      guard let dialogue = pack.manifest.dialogs?.first(where: { $0.id == id }) else {
-        throw MissionPackError("The confirmed dialogue is not declared.")
-      }
-      try commitScriptChoice(fields, event: event, dialogue: dialogue, pack: pack, state: &state)
-      state.dialogue = nil
-    case "timer.ensure":
-      let id = try identifier("id")
-      if state.timers[id] != nil { return }
-      guard let domain = ScriptClockDomain(rawValue: try text("domain")),
-        [.flight, .local].contains(domain)
-          || domain == .calendar && pack.manifest.capabilities.contains("calendar-clocks-v2")
-          || domain == .transit && pack.manifest.capabilities.contains("npc-wormhole-transit-v2"),
-        let policy = ScriptTimerPolicy(rawValue: try text("policy")),
-        let after = fields["after"]?.double, (0...1e9).contains(after),
-        let interval = fields["interval"]?.double, (0...1e9).contains(interval),
-        policy == .once || interval >= 0.001
-      else { throw MissionPackError("Invalid timer or unavailable clock domain.") }
-      state.timers[id] = ScriptTimer(
-        id: id, domain: domain, due: candidate.scriptState.clock(domain) + after,
-        interval: interval, policy: policy)
-    case "timer.cancel": state.timers.removeValue(forKey: try identifier("id"))
-    case "timer.counter.ensure", "timer.counter.reset", "timer.counter.enable":
-      let id = try identifier("id")
-      let name = try identifier("name")
-      guard var timer = state.timers[id] else {
-        throw MissionPackError("A named pulse counter requires its existing timer.")
-      }
-      if op == "timer.counter.ensure" {
-        if timer.counters[name] != nil { return }
-        guard timer.counters.count < 16 else {
-          throw MissionPackError("Pulse counter limit reached.")
-        }
-        var counter = ScriptPulseCounter()
-        if let value = fields["enabled"] {
-          guard case .bool(let enabled) = value else {
-            throw MissionPackError("Pulse counter enabled must be Boolean.")
-          }
-          counter.enabled = enabled
-        }
-        timer.counters[name] = counter
-      } else {
-        guard var counter = timer.counters[name] else {
-          throw MissionPackError("Declare the named pulse counter before changing it.")
-        }
-        if op == "timer.counter.reset" {
-          counter.enabled = true
-          counter.resetOnNextPulse = true
-        } else {
-          guard case .bool(let enabled) = fields["enabled"] else {
-            throw MissionPackError("Pulse counter enabled must be Boolean.")
-          }
-          counter.enabled = enabled
-        }
-        timer.counters[name] = counter
-      }
-      state.timers[id] = timer
-    default: throw MissionPackError("Unsupported script command.")
-    }
   }
+
+  @inline(never)
+  private func applyScriptCommandOperation1(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    let id = try Self.scriptCommandIdentifier(fields, "id")
+    if state.receipts.contains(id) { return }
+    guard let amount = fields["amount"]?.integer,
+      (-4_294_967_295...4_294_967_295).contains(amount)
+    else {
+      throw MissionPackError("Action amount is missing or out of range.")
+    }
+    if op == "credits" {
+      let (balance, overflow) = Int64(candidate.credits).addingReportingOverflow(amount)
+      guard !overflow, (0...4_294_967_295).contains(balance) else {
+        throw MissionPackError("Insufficient credits or reward exceeds balance limit.")
+      }
+      candidate.credits = Int(balance)
+    } else {
+      let key = try Self.scriptCommandIdentifier(fields, "key")
+      guard
+        key != ScriptOwnedCargoState.payloadKey
+          || (state.savedOwnedCargo == nil && state.contract?.offer.freightPlan == nil)
+      else {
+        throw MissionPackError(
+          "Native issuer-owned units cannot be manufactured or removed by payload commands.")
+      }
+      guard (1...1_000_000).contains(amount) else {
+        throw MissionPackError("Payload amount must be positive.")
+      }
+      let held = state.payloads[key, default: 0]
+      if op == "payload.add" {
+        guard held <= 1_000_000 - Int(amount) else {
+          throw MissionPackError("Payload quantity exceeded.")
+        }
+        state.payloads[key] = held + Int(amount)
+      } else {
+        guard held >= Int(amount) else {
+          throw MissionPackError("Owned mission payload required.")
+        }
+        state.payloads[key] = held - Int(amount)
+      }
+    }
+    state.receipts.insert(id)
+  }
+
+  @inline(never)
+  private func applyScriptCommandOperation2(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    guard let index = fields["index"]?.integer,
+      (0..<Int64(pack.manifest.mission.milestones.count)).contains(index)
+    else {
+      throw MissionPackError("Invalid story milestone index.")
+    }
+    state.milestones.insert(Int(index))
+  }
+
+  @inline(never)
+  private func applyScriptCommandOperation3(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    let message: String
+    if state.definition == OriginalCorridorDefence.stateID {
+      guard
+        ["mission.accepted", "actor.destroyed", "contact.requested", "dialogue.confirmed"]
+          .contains(event.kind),
+        event.instance == state.id, OriginalCorridorDefence.validJob(state)
+      else {
+        throw MissionPackError("Corridor progress requires its original native mission event.")
+      }
+      message = OriginalCorridorDefence.progressText(state)
+    } else {
+      message = try Self.scriptCommandText(fields, "text")
+    }
+    guard (1...12000).contains(message.utf8.count), state.journal.count < 512 else {
+      throw MissionPackError("Journal budget exceeded.")
+    }
+    state.journal.append(message)
+  }
+
+  @inline(never)
+  private func applyScriptCommandOperation4(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    guard let outcome = ScriptOutcome(rawValue: try Self.scriptCommandText(fields, "outcome"))
+    else {
+      throw MissionPackError("Complete every required objective before reporting.")
+    }
+    if state.definition == OriginalVerifiedWarrant.stateID {
+      try OriginalVerifiedWarrant.requireFinish(outcome, event: event, game: self, state: state)
+    }
+    if state.definition == OriginalCorridorDefence.stateID {
+      try OriginalCorridorDefence.requireFinish(outcome, event: event, game: self, state: state)
+    }
+    try finishScriptMission(outcome, pack: pack, state: &state, candidate: &candidate)
+  }
+
+  @inline(never)
+  private func applyScriptCommandOperation5(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    let id = try Self.scriptCommandIdentifier(fields, "id")
+    guard pack.manifest.dialogs?.contains(where: { $0.id == id }) == true,
+      docked, dockedAtMainStation
+    else {
+      throw MissionPackError("Dialogue requires a declared contact at the orbital station.")
+    }
+    if let choices = pack.manifest.dialogs?.first(where: { $0.id == id })?.choices,
+      choices.contains(where: { $0.group.map { state.choiceReceipts[$0] != nil } ?? false })
+    {
+      throw MissionPackError("This exclusive station branch has already been chosen.")
+    }
+    var quote: ScriptCollectionQuote?
+    if let collection = pack.manifest.dialogs?.first(where: { $0.id == id })?.collection {
+      guard let actual = collectionQuote(collection, state: state, commander: candidate) else {
+        throw MissionPackError("Material handoffs require their actual assigned main station.")
+      }
+      quote = actual
+    }
+    let baseToken = state.id.uuidString + ":" + String(event.sequence) + ":" + id
+    let contactToken: String
+    if pack.manifest.freight != nil {
+      contactToken = freightDialogueToken(baseToken)
+    } else if pack.manifest.procurement != nil {
+      contactToken = procurementDialogueToken(baseToken)
+    } else {
+      contactToken = baseToken
+    }
+    state.dialogue = ScriptDialogue(
+      collectionQuote: quote,
+      id: id,
+      token: contactToken,
+      galaxy: candidate.galaxy, system: candidate.system, revision: state.revision + 1)
+  }
+
+  @inline(never)
+  private func applyScriptCommandOperation6(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    let id = try Self.scriptCommandIdentifier(fields, "id")
+    let token = try Self.scriptCommandText(fields, "token")
+    guard event.kind == "dialogue.confirmed", event.values["token"]?.string == token,
+      event.values["dialogue_id"]?.string == id, state.dialogue?.id == id,
+      state.dialogue?.token == token, state.dialogue?.revision == state.revision,
+      state.dialogue?.galaxy == candidate.galaxy, state.dialogue?.system == candidate.system,
+      docked, dockedAtMainStation
+    else { throw MissionPackError("Stale or invalid dialogue confirmation.") }
+    guard let dialogue = pack.manifest.dialogs?.first(where: { $0.id == id }) else {
+      throw MissionPackError("The confirmed dialogue is not declared.")
+    }
+    try commitScriptChoice(fields, event: event, dialogue: dialogue, pack: pack, state: &state)
+    state.dialogue = nil
+  }
+
+  @inline(never)
+  private func applyScriptCommandOperation7(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    let id = try Self.scriptCommandIdentifier(fields, "id")
+    if state.timers[id] != nil { return }
+    guard let domain = ScriptClockDomain(rawValue: try Self.scriptCommandText(fields, "domain")),
+      [.flight, .local].contains(domain)
+        || domain == .calendar && pack.manifest.capabilities.contains("calendar-clocks-v2")
+        || domain == .transit && pack.manifest.capabilities.contains("npc-wormhole-transit-v2"),
+      let policy = ScriptTimerPolicy(rawValue: try Self.scriptCommandText(fields, "policy")),
+      let after = fields["after"]?.double, (0...1e9).contains(after),
+      let interval = fields["interval"]?.double, (0...1e9).contains(interval),
+      policy == .once || interval >= 0.001
+    else { throw MissionPackError("Invalid timer or unavailable clock domain.") }
+    state.timers[id] = ScriptTimer(
+      id: id, domain: domain, due: candidate.scriptState.clock(domain) + after,
+      interval: interval, policy: policy)
+  }
+
+  @inline(never)
+  private func applyScriptCommandOperation8(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    state.timers.removeValue(forKey: try Self.scriptCommandIdentifier(fields, "id"))
+  }
+
+  @inline(never)
+  private func applyScriptCommandOperation9(
+    _ fields: [String: ScriptValue], op: String, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    let id = try Self.scriptCommandIdentifier(fields, "id")
+    let name = try Self.scriptCommandIdentifier(fields, "name")
+    guard var timer = state.timers[id] else {
+      throw MissionPackError("A named pulse counter requires its existing timer.")
+    }
+    if op == "timer.counter.ensure" {
+      if timer.counters[name] != nil { return }
+      guard timer.counters.count < 16 else {
+        throw MissionPackError("Pulse counter limit reached.")
+      }
+      var counter = ScriptPulseCounter()
+      if let value = fields["enabled"] {
+        guard case .bool(let enabled) = value else {
+          throw MissionPackError("Pulse counter enabled must be Boolean.")
+        }
+        counter.enabled = enabled
+      }
+      timer.counters[name] = counter
+    } else {
+      guard var counter = timer.counters[name] else {
+        throw MissionPackError("Declare the named pulse counter before changing it.")
+      }
+      if op == "timer.counter.reset" {
+        counter.enabled = true
+        counter.resetOnNextPulse = true
+      } else {
+        guard case .bool(let enabled) = fields["enabled"] else {
+          throw MissionPackError("Pulse counter enabled must be Boolean.")
+        }
+        counter.enabled = enabled
+      }
+      timer.counters[name] = counter
+    }
+    state.timers[id] = timer
+  }
+  private static func scriptCommandText(_ fields: [String: ScriptValue], _ key: String) throws
+    -> String
+  {
+    guard let value = fields[key]?.string else {
+      throw MissionPackError("Missing script command field: " + key)
+    }
+    return value
+  }
+  private static func scriptCommandIdentifier(_ fields: [String: ScriptValue], _ key: String) throws
+    -> String
+  {
+    let value = try scriptCommandText(fields, key)
+    guard PackValidation.localID(value) else {
+      throw MissionPackError("Invalid action identifier.")
+    }
+    return value
+  }
+
   // Native donations and authored finishes share every completion and settlement guard.
   func finishScriptMission(
     _ outcome: ScriptOutcome, pack: ScriptPack,

@@ -118,6 +118,7 @@ METHODS = {
         "inPlaceStationMeshReadPreservesGeometryAndRejectsMissingOrForeignActors",
         "exactSnapshotRejectsEveryStoredFieldChangeAndDuplicateOrAbsentBodies",
         "authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget",
+        "originalCoverSourceStillRequiresItsOwnActualActiveHazard",
     ),
     "NativeWayfarerInductionAccreditationUnitTests": (
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
@@ -477,6 +478,7 @@ METHODS = {
         "recorderDestructionIsTerminalAndHarrierLossAfterSeparationDoesNotDuplicateRecorder",
         "currentRecorderFormatsRejectEarlierEmbeddedUnknownAndExtraClaims",
         "stageThreeRetainsBothReadingsAndHasNoStageFourRewardClueOrTerminalReceipt",
+        "heldRecorderProjectionKeepsAbsentFalseTrueAndRetainedCodecValuesIndependent",
     ),
     "NativeGlassMeridianUnitTests": (
         "unacceptedOpeningRoutesToTheActualBoardAndRejectsChangedPackPins",
@@ -525,10 +527,6 @@ METHODS = {
         "installedFamilyLimitStoresExcessEvenWhenSlotsRemainSupported",
         "returningToALargerHullDoesNotRefitStoredSparesOrRecreateSoldBoundItems",
         "foreignOwnerUnknownNodeAndExhaustedRevisionRefuseWithoutChangingSource",
-    ),
-    "ContextControlHintUnitTests": (
-        "systemScrollHintsFollowActualViewportAndHelpReturnContext",
-        "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
     ),
     "FlightControlAuthorityUnitTests": (
         "allSharedFlightBindingsRoundTripWithoutFunctionKeys",
@@ -585,6 +583,90 @@ METHODS = {
         "foreignActorInstanceVisitAmbiguityAndUnboundPhasesCannotSupplyRoute",
         "explicitNPCProvenanceAndUnknownCargoRemainIndependentOfTransit",
         "unavailableWorldAndMissingRouteKeepHonestLocalOrUnknownDisclosure",
+    ),
+    "ScriptSettlementProjectionTests": (
+        "ownedSettlementReadsPreserveNilValuesClockAndRetainedBytes",
+        "settlementKeepsPaymentRefusalWritebackAndClockFallback",
+    ),
+    "NativePeopleCustodyValueTests": (
+        "equalityAndSettersPreserveEveryOriginalField",
+        "nestedAndArrayModifyDetachAllSevenMutableFields",
+        "readsAndUniqueMutationKeepBackingAndLayoutSmall",
+        "originalFlatLegacyBytesAndAllEightFieldCodecRemainExact",
+        "memberEqualityKeepsNaNAndSignedZeroSemantics",
+    ),
+    "NativePeopleStorageTests": (
+        "populatedNativePeopleCopiesDetachNestedMutationsAndNilTransitions",
+        "nativePeopleCodecRetainsFlatPayloadAndNormalizesAbsentInoutResults",
+        "retainedNativePeopleSnapshotsSurviveRefusedPublicationAndSuccessfulRetry",
+    ),
+    "NativePeopleCargoProjectionTests": (
+        "scalarCargoQueriesPreserveReservationPodsNilAndRetainedState",
+    ),
+    "ScriptCargoProjectionTests": (
+        "navigationStageQueryPreservesEveryStageAndRetainedValues",
+        "reservationQueriesPreserveNilReservedAndRetainedValues",
+        "payloadSnapshotPreservesExactValuesAndDetachesLaterMutation",
+    ),
+    "NativeMainStationReceiptProjectionTests": (
+        "ownedReceiptPreservesDockEvidenceGuardsAndRetainedState",
+    ),
+    "ContractStationProjectionTests": (
+        "ownedStationIdentityPreservesExactCoordinatesAndRetainedState",
+    ),
+    "GameCommanderStorageTests": (
+        "gameCopiesDetachNestedCommanderMutationsAndWholeValueReplacement",
+        "actorSnapshotsRemainIndependentThroughActualXYZzyGrantAndCallerMutation",
+        "failedActualLaunchPublicationRollsBackNestedStateAndRetryKeepsOldSnapshots",
+        "borrowedCommanderReadsPreserveDefaultFlightAndOwnedSnapshots",
+    ),
+    "CommanderEqualityTests": (
+        "equalityDistinguishesChangedResourcesAndPresentDefaultSavedValues",
+        "nestedClockEqualityPreservesNaNAndSignedZeroMemberSemantics",
+    ),
+    "ScriptEngineEqualityTests": (
+        "equalityPreservesOptionalPresenceInstancesEventsAndEachClock",
+        "clockEqualityPreservesNaNAndSignedZeroMemberSemantics",
+    ),
+    "GameplayPhysicalAdoptionTests": (
+        "adoptionKeepsMainAnchorAndAllocatesOrdinaryActorsInBodyOrder",
+        "existingOwnershipTagsSkipAdoptionWithoutChangingCursorsOrValues",
+        "systemChangeEntersExactlyOnceEvenWhenNoBodyNeedsAdoption",
+        "failedIdentitySelectionSkipsOnlyThatBodyAndPreservesSpawnCursor",
+        "adoptionSystemReadPreservesExactScalarsAndRetainedCommanderBytes",
+    ),
+    "NativeStationValidationReadTests": (
+        "fullPolicyPreservesEarlyRefusalAndLazyReaderOrder",
+        "storageHeaderMatchesFullCommanderPolicyAndPreservesRetainedBytes",
+    ),
+    "NativeStationPopulationLifetimeTests": (
+        "missingWorldReturnsBeforeSceneAndCursorValidation",
+        "emptyCohortKeepsBindingsWithoutAllocatingFromExhaustedCursors",
+        "refusedPopulationPreservesTheWholeCandidateAndErrorPriority",
+        "populationPublishesTheWholeCohortInOriginalSourceAndActorOrder",
+    ),
+    "ScriptInstanceStorageTests": (
+        "copiesDetachNestedContractsDialogueReceiptsAndEncounterMutation",
+        "originalUnwrappedJSONAndEngineDictionaryRoundTripWithoutStorageKeys",
+        "decodingKeepsOriginalRequiredKeysOptionalOmissionAndMalformedRefusal",
+        "equalityDistinguishesChangedValuesAndAbsentVersusEmptyStoredCollections",
+        "explicitNullOptionalKeysRetainTheOriginalAbsentSchema",
+        "sharedCloneKeepsLargeNativePayloadsWhenTheContractIsModified",
+        "throwingNestedInoutMutationDetachesAndRemainsWritable",
+        "sharedPayloadEqualityPreservesNaNAndSignedZeroMemberSemantics",
+        "suppliedAndActorSnapshotInstancesKeepIndependentNestedValues",
+        "fieldBuffersDetachLargeNestedValuesAndKeepRetainedNilAndCodec",
+    ),
+    "ScriptNavigationAvailabilityTests": (
+        "onlyExistingNavigationClaimsRequireApprovedContent",
+        "approvedNavigationRetainsDefaultExplicitBindingAndRefusalOrder",
+    ),
+    "NativeCrewLogRecorderBoundaryUnitTests": (
+        "unmarkedTargetsRejectWithoutChangingRetainedCustody",
+        "markedRecorderRetainsEveryPresentAuthorityAndExactReturnedBody",
+    ),
+    "FrontVisibilityRenderUnitTests": (
+        "frontRenderOverridePreservesOutputAndCallerState",
     ),
 }
 

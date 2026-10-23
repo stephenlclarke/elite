@@ -170,20 +170,33 @@ extension Commander {
     Self.nativeStationStateIsValid(self)
   }
 
+}
+
+// One full policy body serves normal Commander validation and private storage projections.
+// Reader closures are synchronous and nonescaping; each is called only at its original read point.
+enum NativeStationStateValidation {
   @inline(never)
-  fileprivate static func nativeStationStateIsValid(_ commander: borrowing Commander) -> Bool {
-    guard let world = commander.nativeStations else { return true }
-    let resources = commander.withReadOnlyScriptState { $0.stationResources }
-    let currentSystem = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
-    guard world.valid, commander.equipmentOwnerID == world.ledger.world else { return false }
-    let physicalTime = commander.flightSimulation.physicalTime
+  static func check(
+    readWorld: () -> NativeStationWorld?,
+    readResources: () -> [String: ScriptStationResource],
+    readSystem: () -> SystemIdentity,
+    readOwner: () -> UUID?,
+    readPhysicalTime: () -> Double,
+    readStationPosition: () -> Vector3?,
+    readCalendar: () -> ScriptCalendarLedger?
+  ) -> Bool {
+    guard let world = readWorld() else { return true }
+    let resources = readResources()
+    let currentSystem = readSystem()
+    guard world.valid, readOwner() == world.ledger.world else { return false }
+    let physicalTime = readPhysicalTime()
     guard world.stationInertia.allSatisfy({ $0.physicalTime <= physicalTime }) else { return false }
     if world.stationInertia.contains(where: { $0.station.system == currentSystem }) {
-      guard commander.flightSimulation.anchors?.station.position == Vector3(0, 0, 0) else {
+      guard readStationPosition() == Vector3(0, 0, 0) else {
         return false
       }
     }
-    guard let calendar = commander.withReadOnlyScriptState({ $0.calendarLedger }), calendar.valid
+    guard let calendar = readCalendar(), calendar.valid
     else {
       return false
     }
@@ -254,12 +267,26 @@ extension Game {
   }
 
   /// All actual geometry and actor-budget checks finish before allocating or publishing a cohort.
+  @inline(never)
   mutating func populateNativeStations() throws {
     guard var world = commander.nativeStations else { return }
-    let system = systemIdentity
-    guard commander.nativeStationStateValid, let anchors = commander.flightSimulation.anchors,
-      anchors.system == systemIdentity, !docked
-    else { throw NativeStationRuntimeError.invalidState }
+    guard let cohort = try nativeStationPopulationCohort(world: world) else { return }
+    let flightBefore = commander.flightSimulation
+    let selected = try selectNativeStationPopulation(
+      world: world, anchors: cohort.anchors, absent: cohort.absent, flightBefore: flightBefore)
+    try admitNativeStationPopulation(world: &world, flightBefore: flightBefore, selected: selected)
+  }
+
+  // Retire the existing-body census before any geometry or candidate-body temporaries exist.
+  // An empty cohort returns here without entering either allocation/placement phase.
+  @inline(never)
+  private mutating func nativeStationPopulationCohort(world: NativeStationWorld) throws -> (
+    anchors: SystemAnchors, absent: [NativeStationRecord]
+  )? {
+    let header = try nativeStationPopulationHeader()
+    let system = header.system
+    let anchors = header.anchors
+    guard !docked else { throw NativeStationRuntimeError.invalidState }
     let current = world.ledger.records.filter { $0.identity.system == system }
     let stationBodies = bodies.filter { $0.nativeStationIdentity != nil }
     guard Set(stationBodies.compactMap(\.nativeStationIdentity)).count == stationBodies.count,
@@ -275,12 +302,19 @@ extension Game {
       record.tombstone == nil
         && !stationBodies.contains { $0.nativeStationIdentity == record.identity }
     }
-    guard !absent.isEmpty else { return }
+    guard !absent.isEmpty else { return nil }
     guard bodies.filter({ $0.energy > 0 }).count + absent.count <= 128,
       bodies.reduce(0, { $0 + $1.scriptNativeUnits }) + absent.count <= 1024,
       nextBodyID > 0, nextBodyID < 1_000_000_000 - absent.count
     else { throw NativeStationRuntimeError.capacity }
-    let flightBefore = commander.flightSimulation
+    return (anchors, absent)
+  }
+
+  @inline(never)
+  private mutating func selectNativeStationPopulation(
+    world: NativeStationWorld, anchors: SystemAnchors, absent: [NativeStationRecord],
+    flightBefore: FlightSimulationState
+  ) throws -> [(NativeStationRecord, NativeStationSavedPose, NativeStationSourceBinding)] {
     var selected: [(NativeStationRecord, NativeStationSavedPose, NativeStationSourceBinding)] = []
     for record in absent {
       guard let source = NativeStationSource.binding(for: record.identity),
@@ -314,6 +348,15 @@ extension Game {
       }
       selected.append((record, saved, source))
     }
+    return selected
+  }
+
+  // Placement has returned before actor construction. Publish only the same fully valid cohort.
+  @inline(never)
+  private mutating func admitNativeStationPopulation(
+    world: inout NativeStationWorld, flightBefore: FlightSimulationState,
+    selected: [(NativeStationRecord, NativeStationSavedPose, NativeStationSourceBinding)]
+  ) throws {
     var flight = flightBefore
     guard let sequence = flight.allocateSpawn() else { throw NativeStationRuntimeError.capacity }
     var admitted: [SpaceBody] = []
@@ -476,7 +519,7 @@ extension Game {
       return false
     }
     guard evidence.runtimeEpoch == nativeStationRuntimeEpoch else { return false }
-    return withReadOnlyCommander { evidence.receipt == $0.nativeStations?.currentMainDock }
+    return evidence.receipt == retainedNativeMainStationDockReceipt
   }
 
   /// Rebind a validated retained scene without replaying docking or reissuing station condition.
