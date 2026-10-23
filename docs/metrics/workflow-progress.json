@@ -8201,6 +8201,29 @@
       "original_mission": "no completed PASS",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:30:19Z",
+      "checkpoint_key": "20261023-m01-enclosing-advance-phase-boundaries-reviewed",
+      "event": "Enclosing advance/preparation lifetimes split; original state/order retained",
+      "issues": [
+        151,
+        154
+      ],
+      "diagnostic_source": "c58113478e4b590a7c7556ba5968ed79d0c2fbf2",
+      "diagnostic_seconds": 16.002407,
+      "diagnostic_not_test_pass": true,
+      "observed_noaccess_region": "0x17048ffa0-0x170490000; not full16KB guard proof",
+      "source_review": "MBA CLEAR: exact original prefacts/scalars/postbodies, same actor and synchronous order",
+      "reviewed_blobs": {
+        "Game.swift": "b5351b4951622d19bcb66295217271812a27c1b7",
+        "GameplayOrdnanceRuntimeTests.swift": "dafc52820dac90fdfaad8fee098736c47bd7e2f9"
+      },
+      "selected_methods": 4,
+      "authored_cases": 4,
+      "runtime_result": "pending",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
