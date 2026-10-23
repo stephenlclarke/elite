@@ -4,6 +4,10 @@ Updated 23 October 2026. This is the current delivery guide, not a content-compl
 
 ## Current execution checkpoint — 22 October, 14:23 UTC
 
+M01 / #112 station-identity scalar projection is AUTHORED IN THE WORKTREE (27-line Game.swift delta), not yet build/runtime-qualified. It retains the same galaxy/system inputs and main-orbital station class under the already approved compiler-offset scope. G1 owns implementation, tests and compile-first gate; MBA is explicitly assigned immediate read-only source/lifetime review in parallel while G1 finishes the test handoff, pinning and rechecking the source hash so concurrent author changes receive only incremental review. No source edits or execution by MBA.
+
+The exact getter/callback must prove no whole Commander copy before runtime. Existing recorder-query and eight-kilogram passes remain separately evidenced; the three genuine rescue methods / eight cases remain incomplete. No new integration or playable-delivery claim is made. M01 remains unreleased.
+
 M01 / #112 recorder compiler-offset query build PASSED in 18.31 seconds and the mandatory copy gate PASSED before runtime. G1 and MBA independently verified the actual getter, specialized callback and thunk assembly: zero whole ScriptInstanceValue copy/destroy calls; callback has no parent metadata call, only selected-field copying. Getter metadata resolves the compiler offset/layout bounds, not a live parent-value copy. Evidence: /tmp/elite-recorder-field-projection-compile-first/copy-gate.json and projection-0/1/2.asm. The earlier failed prototype remains separate with no runtime.
 
 The five-method / ten-case run still reports failure, with two methods/cases PASS in the raw log: original eight-kilogram recorder mass (8.004 seconds) and absent/false/true/retained-codec query behavior (8.009 seconds). Genuine three methods / eight cases remain incomplete. Actual PID 71773 now faults in an outlined Commander copy inside withReadOnlyCommander -> contractStation -> boardingIssue, rather than the recorder query. Evidence: /tmp/elite-recorder-field-rescue-runtime/assessment.json. Source review and focused passes do not qualify the full candidate.
