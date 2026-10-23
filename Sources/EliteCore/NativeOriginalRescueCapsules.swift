@@ -74,6 +74,14 @@ extension Game {
   private func originalRescueFactsForMissionBody(
     _ body: borrowing SpaceBody, context: EncounterContext
   ) -> NativeOriginalRescueSelectionFacts? {
+    guard withReadOnlyCommander({ $0.nativePeopleCustodyIsPresent() }) else { return nil }
+    return originalRescueFactsWithCustody(body, context: context)
+  }
+
+  @inline(never)
+  private func originalRescueFactsWithCustody(
+    _ body: borrowing SpaceBody, context: EncounterContext
+  ) -> NativeOriginalRescueSelectionFacts? {
     let currentBody = copy body
     let currentBodies = bodies
     return withReadOnlyCommander { commander in

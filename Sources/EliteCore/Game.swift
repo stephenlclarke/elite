@@ -281,6 +281,16 @@ public struct Commander: Sendable, Equatable, Codable {
   var savedEMPCharge: EMPChargeState?
   var savedCrimboState: NativeCrimboRegistry?
   private var savedNativePeopleCustodyStorage: CommanderNativePeopleCustodyStorage?
+
+  @inline(never)
+  func nativePeopleCustodyIsPresent() -> Bool {
+    guard let stored = savedNativePeopleCustodyStorage else { return false }
+    return stored.withReadOnlyValue {
+      if case .none = $0 { return false }
+      return true
+    }
+  }
+
   var savedNativePeopleCustody: NativePeopleCustodyState? {
     _read {
       if let stored = savedNativePeopleCustodyStorage {

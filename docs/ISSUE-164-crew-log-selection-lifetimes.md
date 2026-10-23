@@ -17,3 +17,7 @@ Strict Swift formatting and diff hygiene pass. Independent actual-source review 
 ## Compatibility and remaining limits
 
 No Game state, actor boundary, save/schema, authority, marker/hash, UI, reward or quality threshold changes. No source-only proof of stack savings/runtime success is claimed. Current required quality, completed-save/reopen proof, coverage/sanitizer/leak gates and release remain unqualified.
+
+## First focused execution
+
+The `47700106` Swift6.1.2/SDK15.5 build passed in70.81seconds; four-method process failed exit1/rawSIGBUS10 after82.665024791seconds. All methods only started, with no completion/assertion results and unfinished52-byte XML. Existing `/tmp/elite-164-selection-focused` artifacts retain actual source/result, normal report and exact image metadata. Independent actual-source review is clear; current fault attribution and runtime qualification remain pending.
