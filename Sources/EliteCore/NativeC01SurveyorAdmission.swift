@@ -13,15 +13,36 @@ extension NativeC01Surveyor {
     }
     return pack.manifest.encounters?.first { $0.id == id }
   }
-  static func profiles(pack: ScriptPack, state: ScriptInstance) -> [ScriptNPCDefinition] {
+  @inline(never)
+  static func profiles(pack: borrowing ScriptPack, state: borrowing ScriptInstance)
+    -> [ScriptNPCDefinition]
+  {
     let original = pack.manifest.npcs ?? []
-    guard pack.digest == NativeGlassMeridian.digest, definition(state, id: encounter) != nil else {
-      return original
-    }
+    guard pack.digest == NativeGlassMeridian.digest else { return original }
+    return pinnedCampaignProfiles(original, state: state)
+  }
+
+  @inline(never)
+  private static func pinnedCampaignProfiles(
+    _ original: [ScriptNPCDefinition], state: borrowing ScriptInstance
+  ) -> [ScriptNPCDefinition] {
+    guard definition(copy state, id: encounter) != nil else { return original }
     return original + [profile(recorder: false), profile(recorder: true)]
   }
-  static func designs(pack: ScriptPack, state: ScriptInstance) -> [String: ShipDesign] {
-    guard pack.digest == NativeGlassMeridian.digest, definition(state, id: encounter) != nil,
+
+  @inline(never)
+  static func designs(pack: borrowing ScriptPack, state: borrowing ScriptInstance)
+    -> [String: ShipDesign]
+  {
+    guard pack.digest == NativeGlassMeridian.digest else { return pack.models }
+    return pinnedCampaignDesigns(pack: pack, state: state)
+  }
+
+  @inline(never)
+  private static func pinnedCampaignDesigns(
+    pack: borrowing ScriptPack, state: borrowing ScriptInstance
+  ) -> [String: ShipDesign] {
+    guard definition(copy state, id: encounter) != nil,
       let additions = try? models.get()
     else { return pack.models }
     return pack.models.merging(additions) { _, native in native }

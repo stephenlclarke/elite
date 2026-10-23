@@ -88,7 +88,7 @@ extension Game {
     guard let npc = body.scriptNPC, npc.valid,
       npc.fit == retained.body.scriptNPC?.fit,
       missionActorComponentsMatch(npc.components, retained: retained),
-      let definition = NativeC01Surveyor.profiles(pack: copy pack, state: copy instance).first(
+      let definition = NativeC01Surveyor.profiles(pack: pack, state: instance).first(
         where: {
           $0.id == npcID
         }),
@@ -119,7 +119,7 @@ extension Game {
   ) -> Bool {
     for (reference, digest) in copy models {
       guard
-        let installed = NativeC01Surveyor.designs(pack: copy pack, state: copy instance)[reference],
+        let installed = NativeC01Surveyor.designs(pack: pack, state: instance)[reference],
         let retained = geometry[digest]
       else { return false }
       guard installed == retained else { return false }
