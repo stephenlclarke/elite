@@ -176,8 +176,10 @@ public struct Commander: Sendable, Equatable, Codable {
         SystemIdentity(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
       },
       readOwner: {
-        if let inventory = commander.pointee.savedEquipmentInventory { return inventory.owner }
-        return nil
+        guard let inventory = commander.pointer(to: \.savedEquipmentInventory) else {
+          preconditionFailure("Native station validation requires addressable stored equipment.")
+        }
+        return inventory.pointee?.owner
       },
       readPhysicalTime: { Self.nativeStationReadFlight(at: commander).physicalTime },
       readStationPosition: {
