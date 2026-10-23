@@ -8066,6 +8066,26 @@
       "next_action": "G1 directly attributed enclosing call-chain lifetime assessment; MBA source/result review",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:10:41Z",
+      "checkpoint_key": "20261023-m01-coherent-missile-admission-lifetime-source-clear",
+      "event": "Enclosing missile transaction lifetime repair independently source-reviewed",
+      "issue": 151,
+      "diagnostic_source": "8735407c3e6ec1b55b896428f58a55c01f8667bd",
+      "diagnostic_seconds": 16.934591,
+      "not_test_qualification": true,
+      "reviewed_blobs": {
+        "Game.swift": "ffcf962271fad339a2d90dd086f63a99ccb44bbc",
+        "GameplayAdmission.swift": "2c4fc30f6ba500ca3636c7cb9ebba5218ae750e5",
+        "GameplayOrdnanceRuntime.swift": "0e32b110977cc48fedb1f69503b1f37dc9b0d73a"
+      },
+      "source_review": "MBA CLEAR: same candidate, typed identity, all guard/mutation/publication order preserved; NPC launch unchanged",
+      "selected_methods": 6,
+      "authored_cases": 7,
+      "runtime_result": "pending",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
