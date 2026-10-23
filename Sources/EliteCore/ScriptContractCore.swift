@@ -31,6 +31,16 @@ private final class PreparedContractJob: Sendable {
   }
 }
 
+/// Optional payloads stay in immutable synchronous storage until their original consumer needs them.
+private final class PreparedContractPayload<Value: Sendable>: Sendable {
+  let value: Value
+
+  @inline(never)
+  init(_ value: Value) {
+    self.value = value
+  }
+}
+
 /// Immutable synchronous preparation storage keeps future admission payloads off the guard frame.
 private final class PreparedContractAcceptance: Sendable {
   let preparation: PreparedContractJob
@@ -41,20 +51,23 @@ private final class PreparedContractAcceptance: Sendable {
   var offer: ScriptContractOffer { preparation.offer }
   var job: ScriptContractJob { preparation.job }
   var instanceID: UUID { preparation.instanceID }
-  let pledgeAdmission: ScriptPledgeAdmission?
+  private let pledgePayload: PreparedContractPayload<ScriptPledgeAdmission>?
+  var pledgeAdmission: ScriptPledgeAdmission? { pledgePayload?.value }
   let courierAdmission: ScriptCourierAdmission?
-  let freightAdmission: ScriptFreightIssueAdmission?
+  private let freightPayload: PreparedContractPayload<ScriptFreightIssueAdmission>?
+  var freightAdmission: ScriptFreightIssueAdmission? { freightPayload?.value }
 
   @inline(never)
   init(
     preparation: PreparedContractJob,
-    pledgeAdmission: ScriptPledgeAdmission?, courierAdmission: ScriptCourierAdmission?,
-    freightAdmission: ScriptFreightIssueAdmission?
+    pledgeAdmission: PreparedContractPayload<ScriptPledgeAdmission>?,
+    courierAdmission: ScriptCourierAdmission?,
+    freightAdmission: PreparedContractPayload<ScriptFreightIssueAdmission>?
   ) {
     self.preparation = preparation
-    self.pledgeAdmission = pledgeAdmission
+    self.pledgePayload = pledgeAdmission
     self.courierAdmission = courierAdmission
-    self.freightAdmission = freightAdmission
+    self.freightPayload = freightAdmission
   }
 }
 
@@ -412,14 +425,13 @@ extension Game {
     return .init(
       preparation: preparation, pledgeAdmission: pledgeAdmission,
       courierAdmission: courierAdmission,
-      freightAdmission: preparation.offer.freightPlan == nil
-        ? nil : try prepareFreightIssue(job: preparation.job, instance: preparation.instanceID))
+      freightAdmission: try prepareContractFreightAdmission(preparation))
   }
 
   @inline(never)
   private func prepareContractPledgeAdmission(
     _ preparation: PreparedContractJob, pledge: ScriptPledgePreview?
-  ) -> ScriptPledgeAdmission? {
+  ) -> PreparedContractPayload<ScriptPledgeAdmission>? {
     guard let pledge else { return nil }
     return presentContractPledgeAdmission(preparation, pledge: pledge)
   }
@@ -427,15 +439,16 @@ extension Game {
   @inline(never)
   private func presentContractPledgeAdmission(
     _ preparation: PreparedContractJob, pledge: ScriptPledgePreview
-  ) -> ScriptPledgeAdmission {
+  ) -> PreparedContractPayload<ScriptPledgeAdmission> {
     .init(
-      instance: preparation.instanceID, board: preparation.board, offer: preparation.offer,
-      preview: pledge, epoch: ecmControl.epoch,
-      sequence: withReadOnlyScriptState { $0.nextEvent } + 1,
-      cause: scriptEventContext(
-        .init(
-          id: preparation.instanceID, definition: preparation.pack.manifest.stateID,
-          version: preparation.pack.manifest.version, digest: preparation.pack.digest)))
+      .init(
+        instance: preparation.instanceID, board: preparation.board, offer: preparation.offer,
+        preview: pledge, epoch: ecmControl.epoch,
+        sequence: withReadOnlyScriptState { $0.nextEvent } + 1,
+        cause: scriptEventContext(
+          .init(
+            id: preparation.instanceID, definition: preparation.pack.manifest.stateID,
+            version: preparation.pack.manifest.version, digest: preparation.pack.digest))))
   }
 
   @inline(never)
@@ -459,6 +472,21 @@ extension Game {
       kind: .issue, instance: preparation.instanceID,
       item: ScriptCourierCustody.itemIdentity(preparation.instanceID),
       proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: preparation.job)
+  }
+
+  @inline(never)
+  private func prepareContractFreightAdmission(
+    _ preparation: PreparedContractJob
+  ) throws -> PreparedContractPayload<ScriptFreightIssueAdmission>? {
+    guard preparation.offer.freightPlan != nil else { return nil }
+    return try presentContractFreightAdmission(preparation)
+  }
+
+  @inline(never)
+  private func presentContractFreightAdmission(
+    _ preparation: PreparedContractJob
+  ) throws -> PreparedContractPayload<ScriptFreightIssueAdmission> {
+    .init(try prepareFreightIssue(job: preparation.job, instance: preparation.instanceID))
   }
   private mutating func performContractAcceptance(_ preparation: PreparedContractAcceptance)
     throws -> UUID
