@@ -206,6 +206,19 @@ public struct Commander: Sendable, Equatable, Codable {
   }
 
   @inline(never)
+  fileprivate static func nativeStationReadSystem(
+    at commander: UnsafePointer<Commander>
+  ) -> SystemIdentity {
+    guard let galaxy = commander.pointer(to: \.galaxy),
+      let system = commander.pointer(to: \.system)
+    else {
+      preconditionFailure(
+        "Native station validation requires addressable stored system coordinates.")
+    }
+    return SystemIdentity(galaxy: galaxy.pointee, system: system.pointee)
+  }
+
+  @inline(never)
   static func nativeStationStateIsValid(_ commander: borrowing Commander) -> Bool {
     withUnsafePointer(to: commander) { pointer in
       Self.nativeStationStateIsValid(at: pointer)
@@ -231,7 +244,7 @@ public struct Commander: Sendable, Equatable, Codable {
         }
       },
       readSystem: {
-        SystemIdentity(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+        Self.nativeStationReadSystem(at: commander)
       },
       readOwner: {
         guard let inventory = commander.pointer(to: \.savedEquipmentInventory) else {
@@ -1124,7 +1137,7 @@ public struct Game: Sendable {
   mutating func nativePhysicalAdoptionSystemIdentity() -> SystemIdentity {
     commanderStorage.withUnsafeBufferPointer { storage in
       let commander = storage.baseAddress!
-      return .init(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+      return Commander.nativeStationReadSystem(at: commander)
     }
   }
   // Keep the original full policy and lazy read order without passing a whole Commander value
@@ -1135,14 +1148,11 @@ public struct Game: Sendable {
   ) {
     try commanderStorage.withUnsafeBufferPointer { storage in
       let commander = storage.baseAddress!
-      let system = SystemIdentity(
-        galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+      let system = Commander.nativeStationReadSystem(at: commander)
       guard
         Commander.nativeStationStateIsValid(at: commander),
         let anchors = Commander.nativeStationReadFlight(at: commander).anchors,
-        anchors.system
-          == SystemIdentity(
-            galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+        anchors.system == Commander.nativeStationReadSystem(at: commander)
       else { throw NativeStationRuntimeError.invalidState }
       return (system, anchors)
     }
@@ -1198,8 +1208,7 @@ public struct Game: Sendable {
     guard let world = worldStorage.pointee, Commander.nativeStationStateIsValid(at: commander),
       let record = world.ledger.records.first(where: { $0.identity == identity })
     else { return false }
-    let currentSystem = SystemIdentity(
-      galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+    let currentSystem = Commander.nativeStationReadSystem(at: commander)
     guard identity.system == currentSystem, record.tombstone == nil, body.energy > 0,
       physicalIdentity.system == currentSystem,
       physicalIdentity.visit == Commander.nativeStationReadFlight(at: commander).visit,

@@ -1,0 +1,9 @@
+# Station system-coordinate projection lifetime
+
+The exact b53 VM run [39990594695](https://github.com/stephenlclarke/elite/actions/runs/39990594695) compiled in 235.31 seconds, then failed with signal 10 and no completed methods. Its matched normal crash report identifies PID 17683 and image UUID 7ACC41CB-2ACE-31C6-9463-9B31EFDF28BA. Fault address 0x16d987ff8 lies inside the mapped no-access guard 0x16d984000-0x16d988000; SP 0x16d988a50 remains above the guard.
+
+The faulting thread reaches the stack probe, an outlined Commander copy and the nativeStationStateIsValid readSystem closure while it projects galaxy and system through commander.pointee. The original authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget test reaches this policy through physical station collision, evasion and GameRuntime.advance. This concrete [issue149](https://github.com/stephenlclarke/elite/issues/149) is separate from unassigned issue144 and the earlier child-state repair142. Evidence remains at `/tmp/elite-mba-b53-unit39990594695`.
+
+Use typed pointers to the actual stored galaxy and system scalars. Only their SystemIdentity value leaves the synchronous noninline helper. The faulting policy reader and identical native station body, population and physical-adoption projections share this helper. Preserve complete validation, lazy reader order, repeated reads, absence behavior, identity, visit, binding, tombstone and energy checks. No whole Commander value crosses this projection boundary.
+
+Focused validation retains the original authentic entry and in-place mesh tests, full lazy-policy cases and storage/default/retained-value cases: four methods and twelve cases. Execution and independent actual-diff review are pending. Full VM qualification, required coverage/sanitizer/leak checks, native M01 acceptance and release remain separate.
