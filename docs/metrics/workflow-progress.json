@@ -9655,6 +9655,23 @@
       "unit_batch_passed": false,
       "usable_delivery": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T22:17:45.208712+00:00",
+      "checkpoint_key": "20261023-m01-combined-eb5-affected-batch-failed",
+      "event": "Combined blocker affected batch compiled but runtime crashed before any method completed",
+      "source_head": "eb5ab2d865066bfbd199527ded51fdf3af15a566",
+      "swift": "6.1.2",
+      "sdk": "15.5",
+      "build_seconds": 185.42,
+      "wall_seconds": 198.327703625,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_started": 4,
+      "methods_completed": 0,
+      "result_path": "/tmp/elite-m01-combined-blockers-result.json",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
