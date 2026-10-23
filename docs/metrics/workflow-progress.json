@@ -8555,6 +8555,23 @@
       "candidate_changed": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:14:08Z",
+      "checkpoint_key": "20261023-m01-a49f-vm-failed-triage-assigned",
+      "event": "Current a49f VM job fails; exact saved evidence triage assigned",
+      "head": "a49f5d836a8bce64b0e56d91fdfcb14740d529ac",
+      "run": 40008985885,
+      "result": "FAILURE",
+      "cause": "not yet attributed",
+      "artifact_owner": "MBA sole retrieval andtriage",
+      "developer": "G1 minimal currentfinding correction",
+      "required_quality_run": 40008995873,
+      "required_quality_status": "in_progress",
+      "prior_scoped_closures_preserved": true,
+      "new_execution_started": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
