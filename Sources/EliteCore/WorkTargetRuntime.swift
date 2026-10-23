@@ -69,8 +69,8 @@ extension Game {
       identity: identity, kind: kind, isLive: true,
       frontVisible: frontVisible, distance: body.position.length,
       singleScoopCompatible: compatible,
-      nativePod: nativePodFacts(copy body, context: copy context),
-      nativeCrewCapture: nativeCrewCaptureAvailable(copy body, context: copy context)
+      nativePod: nativePodFacts(body, context: context),
+      nativeCrewCapture: nativeCrewCaptureAvailable(body, context: context)
         && freeNativePeopleTonnes > 0,
       originalRescue: originalRescueFacts(body, context: copy context),
       measuredExtraction: measuredExtractionFacts(copy body, context: copy context),

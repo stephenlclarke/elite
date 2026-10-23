@@ -40,7 +40,19 @@ extension Game {
       && commander.fittedEquipment(at: .targetingSalvage) != nil
       && commander.fittedEquipment(at: .utility(.fuelScoops)) != nil
   }
-  func nativePodFacts(_ body: SpaceBody, context: EncounterContext) -> NativePodSelectionFacts? {
+  @inline(never)
+  func nativePodFacts(_ body: borrowing SpaceBody, context: borrowing EncounterContext)
+    -> NativePodSelectionFacts?
+  {
+    guard body.physical?.empCrewPod != nil else { return nil }
+    return nativePodFactsForPresentPod(copy body, context: copy context)
+  }
+
+  // Ordinary targets refuse before reserving the full retained EMP custody-validation frame.
+  @inline(never)
+  private func nativePodFactsForPresentPod(_ body: SpaceBody, context: EncounterContext)
+    -> NativePodSelectionFacts?
+  {
     guard let physical = body.physical, let person = physical.empCrewPod,
       let record = commander.savedEMPState?.records[person.source], record.valid,
       let podIndex = record.podIndex(for: person.ordinal), commander.worldOwnedPod(person),
@@ -63,7 +75,18 @@ extension Game {
     else { return nil }
     return .init(person: person, fits: freeNativePeopleTonnes > 0)
   }
-  func nativeCrewCaptureAvailable(_ body: SpaceBody, context: EncounterContext) -> Bool {
+  @inline(never)
+  func nativeCrewCaptureAvailable(_ body: borrowing SpaceBody, context: borrowing EncounterContext)
+    -> Bool
+  {
+    guard body.physical?.empSource != nil else { return false }
+    return nativeCrewCaptureForPresentSource(copy body, context: copy context)
+  }
+
+  @inline(never)
+  private func nativeCrewCaptureForPresentSource(_ body: SpaceBody, context: EncounterContext)
+    -> Bool
+  {
     guard let physical = body.physical, let source = physical.empSource,
       let record = commander.savedEMPState?.records[source], record.valid,
       isEMPDisabled(body), record.hull.binding == physical.identity,
