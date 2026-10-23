@@ -4,6 +4,8 @@ Updated 23 October 2026. This is the current delivery guide, not a content-compl
 
 ## Current execution checkpoint — 22 October, 14:23 UTC
 
+M01 combined header/count native build PASSED on cac48ee3: compiler 89.01 seconds, command 90.9559 seconds, exit 0; /tmp/elite-station-header-build.log and -build-result.json. G1 proceeds with the minimal actual cohort/reader/header emitted-buffer gate, then affected five methods / 17 cases and actual travel once. Source hashes remain reviewed d2e5a901 / c89a4266 / 3c6abde7; native runtime qualification is still pending.
+
 M01 count/header packets are COMPOSED cleanly as c7530e4e then cac48ee3f6b2d91c7f11f4ba2885035b12de6643. Root independently verified all five final affected path blobs equal reviewed author head 5a9b85d8, including exact count-only correction. The 387-method selection is unchanged. ONE warm build is active at /tmp/elite-station-header-build.log under G1 existing executor handle; no second build, source approval wait or unaffected replay. MBA is ready for minimal cohort/reader/header proof and five-method / 17-case plus actual travel receipts. Compiled/runtime qualification remains pending.
 
 M01 combined count/header source packets are AUTHOR-COMPLETE, reviewed and remotely preserved: count b8d4f6240e81d12cfd2f0cfb35602bf125b98602 then header 5a9b85d85174756df68155ca597b13538a1dc56b (parent b8d4). Root verified checkpoint/UNQUALIFIED-20261023-population-header-5a9b85d8 peels to the exact header commit. Header production d2e5a901 / tests c89a4266 independently MBA REVIEW-CLEAR; Root reviewed paired notes as truthful and bounded. Count-only test 3c6abde7 is separately MBA REVIEW-CLEAR. No remaining author approval or source work is required before execution.
