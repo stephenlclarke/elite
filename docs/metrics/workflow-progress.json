@@ -6495,6 +6495,28 @@
       "merged": false,
       "usable_delivered": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T13:44:25Z",
+      "checkpoint_key": "20261023-m01-pr87-training-composition-merged",
+      "event": "Training source composition integrated with independently verified affected checks",
+      "pr": 87,
+      "head": "bcd75d29732ef3447a39ee26a269a353d34d5afb",
+      "merge_commit": "ba83e0d273849ab96b6bd6aea7da7d513dee9dba",
+      "merged_tree_matches_reviewed_head": true,
+      "focused_methods": 2,
+      "authored_cases": 3,
+      "evidence_scope": "Original observation method at bcd75d29; unchanged normal/alien codec cases at33a57dca. Earlier failed aggregate preserved. Not523/native/release.",
+      "closed_issues": [
+        93
+      ],
+      "independent_source_and_result_review": "MBA clear",
+      "merged": true,
+      "usable_delivered": false,
+      "m01_complete": false,
+      "candidate_updated": false,
+      "next_deliverable": "Issue112 original rescue classifier and six-stage writer-refusal, two methods/seven cases",
+      "merge_duplicate_cancellation_requested": 39963719263
     }
   ],
   "two_developer_phase": {
