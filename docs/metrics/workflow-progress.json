@@ -8176,6 +8176,31 @@
       "runtime_result": "pending",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:26:25Z",
+      "checkpoint_key": "20261023-m01-pickup-units-pass-npc-remaining-assertions",
+      "event": "Two pickup methods pass; exact NPC ownership true but remaining outcome assertions fail",
+      "issues": [
+        151,
+        154
+      ],
+      "head": "c58113478e4b590a7c7556ba5968ed79d0c2fbf2",
+      "process_result": "FAILURE",
+      "seconds": 84.319313,
+      "build_seconds": 70.01,
+      "selected_methods": 4,
+      "completed_pass_methods": 2,
+      "npc_owner_retained": true,
+      "npc_failed_oracles": [
+        "impact",
+        "front shield zero",
+        "credits 1000"
+      ],
+      "energy_comparison": "not evaluated after shield failure",
+      "original_mission": "no completed PASS",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
