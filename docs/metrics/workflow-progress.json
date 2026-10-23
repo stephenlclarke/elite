@@ -9148,6 +9148,18 @@
       "methods": 4,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:57:32.147688+00:00",
+      "checkpoint_key": "20261023-m01-a63-payload-runtime-failed",
+      "event": "Conditional payload correction builds; runtime failure retained for sole report attribution",
+      "head": "a63d79b1d1e66f2de5b0ae4da2a2054cb05eac6b",
+      "issue": 161,
+      "build_seconds": 78.23,
+      "process_seconds": 89.966421209,
+      "result": "runtime FAILURE signal10/exit1",
+      "completed_methods": 0,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
