@@ -536,25 +536,74 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       PackValidation.version(instance.version),
       instance.digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
     else { return false }
+    guard instanceDialoguePrefixValid(instance) else { return false }
+    guard instanceCourierPrefixValid(instance) else { return false }
+    guard instanceProviderPrefixValid(instance) else { return false }
+    guard instanceCargoPrefixValid(instance) else { return false }
+    guard instanceArkRecoveryPrefixValid(instance) else { return false }
+    guard instanceSeedPrefixValid(instance) else { return false }
+    guard instanceWorkshopPrefixValid(instance) else { return false }
+    guard instanceClinicPrefixValid(instance) else { return false }
+    guard instanceUtilityPrefixValid(instance) else { return false }
+    guard instanceCrewLogPrefixValid(instance) else { return false }
+    guard instanceArkPrefixValid(instance) else { return false }
+    guard instanceInductionPrefixValid(instance) else { return false }
+    guard instanceMeridianPrefixValid(instance) else { return false }
+    guard instanceReceptionPrefixValid(instance) else { return false }
+    guard instanceExtractionPrefixValid(instance) else { return false }
+    guard instanceRecordRecoveryPrefixValid(instance) else { return false }
+    guard instanceSalvagePrefixValid(instance) else { return false }
+    guard instanceSurveyPrefixValid(instance) else { return false }
+    guard instanceTradePrefixValid(instance) else { return false }
+    guard instanceConversationsPrefixValid(instance) else { return false }
+    guard instanceChoicesPrefixValid(instance) else { return false }
+    guard instanceCompletionPrefixValid(instance) else { return false }
+    guard instanceJoinsPrefixValid(instance) else { return false }
+    guard instanceAcknowledgementsPrefixValid(instance) else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func instanceDialoguePrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if let dialogue = instance.dialogue {
       guard PackValidation.localID(dialogue.id), dialogue.token.utf8.count <= 256,
         dialogue.revision <= instance.revision, (0..<8).contains(dialogue.galaxy),
         (0...256).contains(dialogue.system)
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceCourierPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if let courier = instance.courier {
       guard courier.valid(state: instance, engine: self) else { return false }
     } else {
       guard instance.contract?.offer.courier == nil else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceProviderPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if let contract = instance.savedProviderContract {
       guard contract.valid(instance: instance) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceCargoPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if let cargo = instance.savedOwnedCargo {
       guard cargo.valid(state: instance, engine: self) else { return false }
     } else {
       guard instance.contract?.offer.freightPlan == nil else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceArkRecoveryPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.savedArkReserve != nil || instance.savedArkRecovery != nil {
       guard instance.definition == NativeWayfarerInduction.stateID,
         instance.digest == NativeWayfarerInduction.digest,
@@ -568,16 +617,36 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         else { return false }
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceSeedPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if NativeInductionSeedPack.marked(instance) || instance.savedNativeInductionSeed != nil {
       guard NativeInductionSeedSave.shapeValid(instance) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceWorkshopPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if NativeInductionWorkshopPack.marked(instance) || instance.savedNativeInductionWorkshop != nil
     {
       guard NativeInductionWorkshopSave.shapeValid(instance) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceClinicPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if NativeInductionClinicPack.marked(instance) || instance.savedNativeInductionClinic != nil {
       guard NativeInductionClinicSave.shapeValid(instance) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceUtilityPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if NativeInductionUtilityPack.marked(instance) {
       guard instance.definition == NativeInductionUtilityPack.stateID,
         instance.digest == NativeInductionUtilityPack.digest,
@@ -587,6 +656,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         instance.payloads.isEmpty
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceCrewLogPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if NativeInductionCrewLogPack.marked(instance) {
       guard instance.definition == NativeInductionCrewLogPack.stateID,
         instance.digest == NativeInductionCrewLogPack.digest,
@@ -595,6 +669,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         instance.payloads.isEmpty
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceArkPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if NativeInductionArkPack.marked(instance) {
       guard instance.definition == NativeInductionArkPack.stateID,
         instance.digest == NativeInductionArkPack.digest,
@@ -603,6 +682,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         instance.payloads.isEmpty
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceInductionPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.definition == NativeWayfarerInduction.stateID {
       guard let opening = instance.savedWayfarerInduction, opening.valid,
         opening.permission.mission == instance.id, instance.payloads == opening.payloads
@@ -610,6 +694,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     } else if instance.savedWayfarerInduction != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceMeridianPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.definition == NativeGlassMeridian.stateID {
       guard let opening = instance.savedGlassMeridian,
         opening.permission.mission == instance.id, instance.payloads.isEmpty,
@@ -619,6 +708,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     } else if instance.savedGlassMeridian != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceReceptionPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.definition == NativeFlightReception.stateID {
       guard let practice = instance.savedFlightReception,
         practice.permission.mission == instance.id, instance.payloads.isEmpty
@@ -626,6 +720,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     } else if instance.savedFlightReception != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceExtractionPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.definition == NativeMeasuredExtraction.stateID {
       guard let extraction = instance.savedMeasuredExtraction, extraction.definition.valid,
         extraction.permission.mission == instance.id,
@@ -638,6 +737,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     } else if instance.savedMeasuredExtraction != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceRecordRecoveryPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.definition == WayfarerRecordRecovery.stateID {
       guard let salvage = instance.savedRecordRecovery, salvage.definition.valid,
         salvage.permission.mission == instance.id,
@@ -651,6 +755,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     } else if instance.savedRecordRecovery != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceSalvagePrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.definition == NativeIdentifiedSalvage.stateID {
       guard let salvage = instance.savedIdentifiedSalvage, salvage.definition.valid,
         salvage.permission.mission == instance.id,
@@ -664,6 +773,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     } else if instance.savedIdentifiedSalvage != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceSurveyPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.definition == NativeOriginalSurvey.stateID {
       guard let survey = instance.savedOriginalSurvey, survey.definition.valid,
         survey.version == instance.version, survey.digest == instance.digest,
@@ -673,9 +787,19 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     } else if instance.savedOriginalSurvey != nil {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceTradePrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if let trade = instance.savedNavigationTrade {
       guard trade.valid(instance: instance, engine: self) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceConversationsPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     guard instance.collectionsValid(engine: self), instance.conversationReceipts.count <= 1024
     else {
       return false
@@ -685,6 +809,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         receipt.value.valid(for: instance, engine: self)
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceChoicesPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     guard instance.choiceReceipts.count <= 64 else { return false }
     for receipt in instance.choiceReceipts {
       guard receipt.key == receipt.value.group, receipt.value.valid(for: instance, engine: self)
@@ -692,9 +821,19 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         return false
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceCompletionPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if let receipt = instance.completionReceipt {
       guard receipt.valid(for: instance, engine: self) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceJoinsPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if let joins = instance.receiptJoins {
       let ownerID = instance.id
       let completionSequence = instance.completionReceipt?.sequence
@@ -711,6 +850,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
         })
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func instanceAcknowledgementsPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     guard instance.revision < UInt64(Int64.max), instance.acknowledgedEvents.count <= 4096,
       instance.acknowledgedEvents.allSatisfy({ $0 > 0 && $0 <= nextEvent }),
       instance.acknowledgedThrough.map({ $0 <= nextEvent }) ?? true,
