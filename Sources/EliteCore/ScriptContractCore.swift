@@ -405,7 +405,7 @@ extension Game {
   }
 
   @inline(never)
-  private func prepareContractJob(
+  private mutating func prepareContractJob(
     key: String, index: Int, pack: borrowing ScriptPack, board: borrowing ScriptContractBoard,
     offer: borrowing ScriptContractOffer, id: UUID
   ) -> PreparedContractJob {
@@ -439,7 +439,7 @@ extension Game {
   }
 
   @inline(never)
-  private func prepareContractPledgeAdmission(
+  private mutating func prepareContractPledgeAdmission(
     _ preparation: PreparedContractJob, pledge: ScriptPledgePreview?
   ) -> PreparedContractPayload<ScriptPledgeAdmission>? {
     guard let pledge else { return nil }
@@ -447,7 +447,7 @@ extension Game {
   }
 
   @inline(never)
-  private func presentContractPledgeAdmission(
+  private mutating func presentContractPledgeAdmission(
     _ preparation: PreparedContractJob, pledge: ScriptPledgePreview
   ) -> PreparedContractPayload<ScriptPledgeAdmission> {
     .init(
@@ -462,7 +462,7 @@ extension Game {
   }
 
   @inline(never)
-  private func prepareContractCourierAdmission(
+  private mutating func prepareContractCourierAdmission(
     _ preparation: PreparedContractJob, confirmationToken: UUID
   ) throws -> ScriptCourierAdmission? {
     guard preparation.offer.courier != nil else { return nil }
@@ -470,7 +470,7 @@ extension Game {
   }
 
   @inline(never)
-  private func presentContractCourierAdmission(
+  private mutating func presentContractCourierAdmission(
     _ preparation: PreparedContractJob, confirmationToken: UUID
   ) throws -> ScriptCourierAdmission {
     guard scriptCourierAdmission == nil,
@@ -485,7 +485,7 @@ extension Game {
   }
 
   @inline(never)
-  private func prepareContractFreightAdmission(
+  private mutating func prepareContractFreightAdmission(
     _ preparation: PreparedContractJob
   ) throws -> PreparedContractPayload<ScriptFreightIssueAdmission>? {
     guard preparation.offer.freightPlan != nil else { return nil }
@@ -493,7 +493,7 @@ extension Game {
   }
 
   @inline(never)
-  private func presentContractFreightAdmission(
+  private mutating func presentContractFreightAdmission(
     _ preparation: PreparedContractJob
   ) throws -> PreparedContractPayload<ScriptFreightIssueAdmission> {
     .init(try prepareFreightIssue(job: preparation.job, instance: preparation.instanceID))
