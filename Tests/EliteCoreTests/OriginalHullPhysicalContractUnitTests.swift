@@ -21,7 +21,7 @@ struct OriginalHullPhysicalContractUnitTests {
     #expect(physical.group == "original-physical-metres")
     #expect(physical.fields.first { $0.key == "original.physical.width" }?.text == "20.00 m")
     #expect(physical.fields.first { $0.key == "original.physical.height" }?.text == "10.04 m")
-    #expect(ship.originalDefinition?.runtimeReady == false)
+    #expect(ship.originalDefinition?.runtimeReady == true)
     let preview = try #require(ship.physicalSourcePreview)
     #expect(abs((preview.vertices.map(\.length).max() ?? 0) - 100) < 1e-9)
     #expect(contract.model.displayMesh.vertices == mesh.vertices)

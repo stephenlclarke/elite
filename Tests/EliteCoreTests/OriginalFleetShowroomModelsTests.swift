@@ -18,7 +18,7 @@ struct OriginalFleetShowroomModelsTests {
   @Test func completeManifestRemainsSeparateFromLiveCatalogue() {
     let expected = (1...171).map { String(format: "SH%03d", $0) }
     #expect(OriginalFleetShowroomModels.ids == expected)
-    #expect(OriginalFleetDefinitionData.staged.allSatisfy { !$0.runtimeReady })
+    #expect(OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == ["SH029"])
   }
 
   @Test(arguments: ["SH001", "SH023", "SH004", "SH108"])

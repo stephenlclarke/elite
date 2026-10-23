@@ -18,6 +18,6 @@ struct OriginalFleetDefinitionTests {
     let optionalMedusa = definitions.first { $0.id == "SH171" }
     let medusa = try #require(optionalMedusa)
     #expect(medusa.purchasePolicy == "plughQuestFabrication")
-    #expect(definitions.allSatisfy { !$0.runtimeReady })
+    #expect(definitions.filter(\.runtimeReady).map(\.id) == ["SH029"])
   }
 }
