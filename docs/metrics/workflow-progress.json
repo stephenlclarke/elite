@@ -8389,6 +8389,31 @@
       "next_action": "G1 coherent publication with current Root docs and required final-head checks/review",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:54:43Z",
+      "checkpoint_key": "20261023-m01-coherent-repair-packet-d2d0-published",
+      "event": "Qualified production and fixture repairs published as one coherent candidate",
+      "head": "d2d0cd0cc9122315b0c7dfe4d02b846b81a7f384",
+      "qualified_code_head": "59f254dc75132594de8bd91263ca76078986623c",
+      "root_snapshot": "4a7f8d140a9599e639b75029945f083f4d7092b3",
+      "independent_composition_review": "MBA CLEAR and Root verifies code zero diff/four doc identity",
+      "closed_issues": [
+        151,
+        153,
+        154,
+        155
+      ],
+      "push_vm_run": 40006985306,
+      "required_quality_run": 40006996339,
+      "dependency_review_run": 40006996332,
+      "dependency_review_result": "SUCCESS",
+      "nonrequired_duplicate_run": 40006996474,
+      "duplicate_disposition": "cancellation requested, not PASS",
+      "codex_review_comment": 6372410395,
+      "final_head_result": "pending",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
