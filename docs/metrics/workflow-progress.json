@@ -9823,6 +9823,23 @@
       "unit_pass": false,
       "artifact_path": "/tmp/elite-m01-offset-owned-capture",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T22:48:13.833064+00:00",
+      "checkpoint_key": "20261023-m01-current164-marker-path-attributed-assigned",
+      "event": "Corrected saved capture authoritatively maps to crew-log marker selection path; bounded same-packet repair assigned G1",
+      "head": "b611d932d19f7b6147913c11109fc0c16541a170",
+      "issues": [
+        144,
+        164
+      ],
+      "owner": "G1",
+      "reviewer": "MBA",
+      "saved_slide": "0x11174c000",
+      "symbol_evidence": "/tmp/elite-m01-offset-owned-capture/offline-atos-mba.txt",
+      "scope": "Equivalent exact retained-child early refusal before marker hashing or lifetime-only entry reduction; preserve full authority and hash/UUID policy",
+      "unit_pass": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
