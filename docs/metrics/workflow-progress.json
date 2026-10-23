@@ -8224,6 +8224,36 @@
       "runtime_result": "pending",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:34:30Z",
+      "checkpoint_key": "20261023-m01-original-mission-completes-runtime-phases",
+      "event": "Original authored board mission completes delivery/payment/repeat-instance assertions",
+      "head": "6fccc4e9d5bacba5ac3e0671237dca13b1d0d601",
+      "issues": [
+        151,
+        154
+      ],
+      "process_result": "FAILURE: NPC impact/damage assertions only",
+      "seconds": 213.729886,
+      "build_seconds": 179.41,
+      "selected_methods": 4,
+      "completed_pass_methods": 3,
+      "mission_pass_seconds": 29.747615,
+      "other_passes": [
+        "invalid actor binding preflight",
+        "paused library clock"
+      ],
+      "npc_failures": [
+        "termination nil",
+        "front shield100 unchanged",
+        "energy380 unchanged"
+      ],
+      "complete_xml_bytes": 1164,
+      "helper_crash": false,
+      "next_action": "MBA verifies scoped151 closure; G1 finishes154 then153",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
