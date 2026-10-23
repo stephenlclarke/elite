@@ -223,68 +223,69 @@ extension Game {
   }
 
   @inline(never)
-  private static func scriptInductionSeedApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.stateID == NativeInductionSeedPack.stateID
-      || pack.digest == NativeInductionSeedPack.digest
+  private static func scriptInductionSeedApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.stateID == NativeInductionSeedPack.stateID { return true }
+    return pack.digest == NativeInductionSeedPack.digest
   }
 
   @inline(never)
-  private static func scriptInductionWorkshopApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.stateID == NativeInductionWorkshopPack.stateID
-      || pack.digest == NativeInductionWorkshopPack.digest
+  private static func scriptInductionWorkshopApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.stateID == NativeInductionWorkshopPack.stateID { return true }
+    return pack.digest == NativeInductionWorkshopPack.digest
   }
 
   @inline(never)
-  private static func scriptInductionClinicApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.stateID == NativeInductionClinicPack.stateID
-      || pack.digest == NativeInductionClinicPack.digest
+  private static func scriptInductionClinicApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.stateID == NativeInductionClinicPack.stateID { return true }
+    return pack.digest == NativeInductionClinicPack.digest
   }
 
   @inline(never)
-  private static func scriptInductionUtilityApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.stateID == NativeInductionUtilityPack.stateID
-      || pack.digest == NativeInductionUtilityPack.digest
+  private static func scriptInductionUtilityApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.stateID == NativeInductionUtilityPack.stateID { return true }
+    return pack.digest == NativeInductionUtilityPack.digest
   }
 
   @inline(never)
-  private static func scriptInductionCrewLogApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.stateID == NativeInductionCrewLogPack.stateID
-      || pack.digest == NativeInductionCrewLogPack.digest
+  private static func scriptInductionCrewLogApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.stateID == NativeInductionCrewLogPack.stateID { return true }
+    return pack.digest == NativeInductionCrewLogPack.digest
   }
 
   @inline(never)
-  private static func scriptInductionArkApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.stateID == NativeInductionArkPack.stateID
-      || pack.digest == NativeInductionArkPack.digest
+  private static func scriptInductionArkApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.stateID == NativeInductionArkPack.stateID { return true }
+    return pack.digest == NativeInductionArkPack.digest
   }
 
   @inline(never)
-  private static func scriptWayfarerInductionApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.wayfarerInduction != nil
-      || pack.manifest.stateID == NativeWayfarerInduction.stateID
+  private static func scriptWayfarerInductionApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.wayfarerInduction != nil { return true }
+    return pack.manifest.stateID == NativeWayfarerInduction.stateID
   }
 
   @inline(never)
-  private static func scriptGlassMeridianApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.glassMeridian != nil
-      || pack.manifest.stateID == NativeGlassMeridian.stateID
+  private static func scriptGlassMeridianApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.glassMeridian != nil { return true }
+    return pack.manifest.stateID == NativeGlassMeridian.stateID
   }
 
   @inline(never)
-  private static func scriptFlightReceptionApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.flightReception != nil
-      || pack.manifest.stateID == NativeFlightReception.stateID
+  private static func scriptFlightReceptionApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.flightReception != nil { return true }
+    return pack.manifest.stateID == NativeFlightReception.stateID
   }
 
   @inline(never)
-  private static func scriptFieldReliefApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.fieldRelief != nil || pack.manifest.stateID == WayfarerFieldRelief.stateID
+  private static func scriptFieldReliefApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.fieldRelief != nil { return true }
+    return pack.manifest.stateID == WayfarerFieldRelief.stateID
   }
 
   @inline(never)
-  private static func scriptNavigationTradeApplies(_ pack: ScriptPack) -> Bool {
-    return pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability)
-      || pack.manifest.stateID == ScriptNavigationTradeContent.sourceID
+  private static func scriptNavigationTradeApplies(_ pack: borrowing ScriptPack) -> Bool {
+    if pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability) { return true }
+    return pack.manifest.stateID == ScriptNavigationTradeContent.sourceID
   }
 
   @inline(never)
