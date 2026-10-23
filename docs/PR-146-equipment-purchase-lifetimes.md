@@ -31,3 +31,13 @@ four-mount replacement(one), stale commander/offer(six), legacy bag migration
 (one). All original assertions remain. Execution is pending; full524, required
 quality, native M01 and release qualification remain separate. The unresolved
 VM SIGILL in144 is not claimed repaired by this source-backed correction.
+
+At sourcef165fef66d4282cca5e53f707a321b60aa266a12 all five unchanged methods
+and ten expanded cases passed with complete XML and zero failures/errors/skips.
+Compilation232.79s; total process247.888367s, exit0. Original four-mount case
+8.742971s; stale six variants8.726370s; legacy migration8.729212s; writer rollback
+9.126874s; concurrent fuel/missile intent8.742985s. Evidence:
+`/tmp/elite-146-equipment-lifetimes-units-result.json`, its raw log and
+`/tmp/elite-146-equipment-lifetimes-units-swift-testing.xml`.
+Independent source/result review closed146 on this affected-case criterion.
+No full VM, protected-main quality, sanitizer/leak or M01/release pass follows.
