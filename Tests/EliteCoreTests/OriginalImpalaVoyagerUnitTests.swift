@@ -63,7 +63,7 @@ struct OriginalImpalaVoyagerUnitTests {
     for other in ShipCatalogue.all
     where ![
       "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
-      "SH031", "SH061",
+      "SH031", "SH032", "SH033", "SH061",
     ]
     .contains(
       other.id)
@@ -129,7 +129,7 @@ struct OriginalImpalaVoyagerUnitTests {
       OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id)
         == [
           "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
-          "SH031", "SH061",
+          "SH031", "SH032", "SH033", "SH061",
         ])
   }
 
