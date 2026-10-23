@@ -101,8 +101,8 @@ struct OriginalDonkeyUnitTests {
     let ship = try #require(ShipCatalogue.ship("SH018"))
     let policy = ship.catalogue
     #expect(
-      policy.family == "donkey" && policy.primaryRole == .leisure
-        && policy.primaryType == .leisure)
+      policy.family == "donkey" && policy.primaryRole == .trader
+        && policy.primaryType == .trader)
     #expect(policy.roleWeights == [.init(role: .trader, weight: 1)])
     #expect(policy.purchasePolicy == .blueprintFabrication && policy.minimumBuildTechLevel == 5)
     #expect(policy.access == .normal && policy.collectionMilestone == .blueprintAndFabrication)
