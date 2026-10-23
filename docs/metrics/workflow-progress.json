@@ -9944,6 +9944,22 @@
       "artifact_path": "/tmp/elite-m01-marker-owned-capture",
       "diagnostic_only": true,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T23:01:20.351333+00:00",
+      "checkpoint_key": "20261023-m01-ABB-scriptdirector-borrow-boundary-assigned",
+      "event": "Current saved stack maps to ScriptDirector Applies argument boundary; eleven-helper coherent borrowing repair assigned",
+      "head": "75eec9bfb4f66ba5ead1602265d9c4c7b178162d",
+      "issues": [
+        144,
+        161
+      ],
+      "owner": "G1",
+      "reviewer": "MBA",
+      "scope": "Eleven pure applicability predicates borrow pack; preserve exact shortcircuit and full downstream validators",
+      "normal_failure_attributed": false,
+      "diagnostic_source_path_confirmed": true,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
