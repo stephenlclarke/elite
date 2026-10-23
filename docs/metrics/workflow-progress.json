@@ -9578,6 +9578,20 @@
       "methods": 4,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:58:14.625027+00:00",
+      "checkpoint_key": "20261023-m01-474-capture-standing-no-ack",
+      "event": "Current resolver run fails without matching report; standing one-per-changed-binary fault capture removes repeated Root ACK wait",
+      "head": "47438127cc96bbfd5576c5182754cfafe35a68ce",
+      "issue": 168,
+      "build_seconds": 72.54,
+      "process_seconds": 84.440013208,
+      "result": "runtime FAILURE signal10/exit1; UNATTRIBUTED",
+      "completed_methods": 0,
+      "matching_reports": 0,
+      "root_ack_required_for_exact_standing_scope": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
