@@ -9499,6 +9499,21 @@
       "developer": "G1",
       "reviewer": "MBA",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:49:09.566710+00:00",
+      "checkpoint_key": "20261023-m01-167-profile-api-reviewed-run",
+      "event": "Exact read-only profile/design API borrowing committed and reviewed; normal affected run active",
+      "head": "9569dcb5",
+      "issue": 167,
+      "reviewed_blobs": {
+        "Admission": "0e0fe2b757827073e4656860d83d3f20461ce4ba",
+        "Bridge": "8edf31d446c9d71b753c5c64b36de053b2875a26"
+      },
+      "methods": 4,
+      "result": "pending",
+      "debugger": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
