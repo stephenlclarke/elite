@@ -9345,6 +9345,17 @@
       "current_image_uuid": "F26BBE52-820B-35A5-9455-1FE55BD7EC63",
       "scope": "existing matching report lookup and bounded shared-caller source ownership inspection",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:29:34.216777+00:00",
+      "checkpoint_key": "20261023-m01-shared-targeting-borrow-source-scope",
+      "event": "Concrete shared targeting receiver-ownership correction scoped from source",
+      "source_head": "7771f9bb083d09f504f09916292df8087b626d08",
+      "developer": "G1",
+      "reviewer": "MBA",
+      "scope": "noninline static borrowing candidate traversal; original order/authority unchanged",
+      "current_crash_attributed": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
