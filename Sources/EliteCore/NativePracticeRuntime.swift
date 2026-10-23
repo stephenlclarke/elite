@@ -238,12 +238,20 @@ extension Game {
     return true
   }
 
+  @inline(never)
   func nativePracticeMesh(_ body: SpaceBody) -> Mesh? {
-    guard let practice = nativePracticeReservation(body) else { return nil }
-    let time = commander.flightSimulation.physicalTime
-    let flashing = practice.hits.contains {
+    guard let owner = nativePracticeReservationOwner(body),
+      let flashing = nativePracticeMeshFlashing(body, owner: owner)
+    else { return nil }
+    return NativePracticeSource.mesh(flashing: flashing)
+  }
+
+  @inline(never)
+  private func nativePracticeMeshFlashing(_ body: SpaceBody, owner: UUID) -> Bool? {
+    guard let practice = nativePracticeReservationPayload(body, owner: owner) else { return nil }
+    let time = storedFlightSimulation().physicalTime
+    return practice.hits.contains {
       $0.actor == body.physical?.identity && time >= $0.time && time - $0.time <= 0.15
     }
-    return NativePracticeSource.mesh(flashing: flashing)
   }
 }

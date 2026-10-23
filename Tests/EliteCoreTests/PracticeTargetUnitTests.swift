@@ -135,20 +135,28 @@ struct PracticeTargetUnitTests {
     game.value.commander.flightSimulation = f.flight
     let original = try #require(f.bodies.first)
     #expect(game.value.hasNativePracticeReservation(original))
+    let mesh = try #require(game.value.nativePracticeMesh(original))
+    let expected = NativePracticeSource.mesh()
+    #expect(mesh.vertices == expected.vertices && mesh.faces == expected.faces)
+    #expect(mesh.materials.first?.colour == Ink.cyan.rawValue)
 
     var ordinary = original
     ordinary.hull = .cobra
     #expect(!game.value.hasNativePracticeReservation(ordinary))
+    #expect(game.value.nativePracticeMesh(ordinary) == nil)
     ordinary = original
     ordinary.physical = .init(
       identity: try #require(original.physical).identity, population: .cargo)
     #expect(!game.value.hasNativePracticeReservation(ordinary))
+    #expect(game.value.nativePracticeMesh(ordinary) == nil)
 
     game.value.commander.scriptState.instances[instance.id] = try replacing(
       instance, key: "digest", with: String(repeating: "b", count: 64))
     #expect(!game.value.hasNativePracticeReservation(original))
+    #expect(game.value.nativePracticeMesh(original) == nil)
     game.value.commander.scriptState.instances.removeValue(forKey: instance.id)
     #expect(!game.value.hasNativePracticeReservation(original))
+    #expect(game.value.nativePracticeMesh(original) == nil)
   }
 
   @Test func wholePracticeVolumeRequiresActualGeometryAndRefusesTrafficPlanetAndUnknownScene()
