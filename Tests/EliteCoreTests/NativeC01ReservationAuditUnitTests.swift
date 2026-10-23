@@ -72,6 +72,17 @@ private final class C01ReservationAuditFixture {
       group.admitted = true
       mission.ownedEncounters[key] = group
     }
+    // The controlled earlier-system history has departed, just as native travel unloads
+    // its present actors. Keep the captured recorder outside and retain every actor/proof.
+    for key in mission.ownedEncounters.keys {
+      guard var group = mission.ownedEncounters[key], group.galaxy != 0 || group.system != 0 else {
+        continue
+      }
+      for alias in group.actors.keys where group.actors[alias]?.presence == .present {
+        group.actors[alias]?.presence = .unloaded
+      }
+      mission.ownedEncounters[key] = group
+    }
     game.commander.scriptState.instances[mission.id] = mission
     game.commander.scriptState.geometry.merge(history.scriptState.geometry) { existing, _ in
       existing

@@ -60,3 +60,13 @@ retains UUID04EB5FB8-E826-37BC-B91F-A958C73D7A92/PID47811/thread19. Fault
 readable boundary. The real caller chain passes full NPC/owned-actor validity,
 Surveyor.original/captureShapeValid and present-surveyor save publication into
 Sorel. No Character, localID or NPC semantic defect is inferred from that stack.
+
+Atf078849d all four methods completed without a crash, but Sorel caught
+invalidCommander; the other three methods/15 cases passed. Compilation71.58s,
+process85.757s. Bounded source-gated diagnosis identifies the writer's scene
+consistency refusal: storeChecks111, all17 family validators true, existing
+observer reports sceneActorPopulation at Enmadan. The historical component
+fixture inserted present clock/Harrier actors at earlier systems before moving
+to its controlled Enmadan scene, without the departure unload precondition.
+Diagnostic records are retained in `/tmp/elite-104-f078-store-refusal` and
+`/tmp/elite-104-f078-scene-refusal`. The unrelated initial TOML throw is excluded.
