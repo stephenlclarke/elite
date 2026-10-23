@@ -7867,6 +7867,33 @@
       "two_known_fixture_followups_pending": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:50:15Z",
+      "checkpoint_key": "20261023-m01-original-mission-capture-supports-admission-preflight-split",
+      "event": "One exact original-mission capture attributes current preflight lifetime fault",
+      "issue": 151,
+      "fixture_issue": 152,
+      "head": "18fb5976b9b09ecbefa19215b6b487fdf767dd69",
+      "diagnostic_path": "/tmp/elite-151-original-mission-fault-capture/runtime-paths-corrected",
+      "diagnostic_seconds": 16.469223,
+      "diagnostic_exit": 0,
+      "not_test_pass": true,
+      "launch_only_failures_retained": 2,
+      "binary_uuid": "97114AA2-3EB4-3CF7-8185-3F7F9223AD04",
+      "binary_sha256": "32e783a9834f1579811d62d931ecf84865b7f5df9de80956e4ce827e5ac694d0",
+      "stack_pointer": "0x16fe03fa0",
+      "fault_address": "0x16fe03fc0",
+      "mapped_noaccess": "0x16fe00000-0x16fe04000",
+      "first_named_test_fault": "NativeStationWorld metadata -> fullpolicy/cohort/populate -> ensurePhysicalActors -> admitNonemptyEncounterPlan16 -> missile -> originalmission211",
+      "owned_helper_killed": 83049,
+      "independent_review": "MBA exact source/image/command/runtime/guard verified; ASTwarnings didnotinvalidate rawcapture",
+      "next_scope": "separate originalpreflight from exactoriginalbatchbody; finish2fixtureconsumers; no morecapture",
+      "affected_original_methods_next": 6,
+      "retained_unaffected_empty_methods": 2,
+      "prior_three_fixture_passes": "historical18fb; newproductionpathrequiresaffectedrerun",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
