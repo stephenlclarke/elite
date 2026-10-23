@@ -190,14 +190,14 @@ extension Game {
       !bodies.contains { $0.physical?.spawnIdentity == request.identity }
     }
     guard Set(fresh.map(\.identity)).count == fresh.count else { return .staleContext }
-    guard UInt64(fresh.count) <= UInt64.max - commander.flightSimulation.nextActor,
+    guard UInt64(fresh.count) <= UInt64.max - storedFlightSimulation().nextActor,
       fresh.count <= Int.max - nextBodyID
     else { return .reservedCapacity }
     let newNPCs = fresh.filter {
       $0.npc != nil && $0.npc?.role != .mission && $0.identity.producer != .persistence
         && $0.identity.producer != .emp
     }.count
-    guard newNPCs <= NPCPersistenceLedger.maximumEntries - commander.npcPersistence.count else {
+    guard newNPCs <= NPCPersistenceLedger.maximumEntries - storedNPCPersistenceCount() else {
       return .reservedCapacity
     }
     var budget = context.budget

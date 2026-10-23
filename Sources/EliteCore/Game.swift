@@ -219,6 +219,14 @@ public struct Commander: Sendable, Equatable, Codable {
   }
 
   @inline(never)
+  fileprivate static func nativeNPCPersistenceCount(at commander: UnsafePointer<Commander>) -> Int {
+    guard let storage = commander.pointer(to: \.savedNPCPersistence) else {
+      preconditionFailure("Admission requires addressable stored NPC persistence.")
+    }
+    return storage.pointee?.count ?? 0
+  }
+
+  @inline(never)
   static func nativeStationStateIsValid(_ commander: borrowing Commander) -> Bool {
     withUnsafePointer(to: commander) { pointer in
       Self.nativeStationStateIsValid(at: pointer)
@@ -1152,6 +1160,13 @@ public struct Game: Sendable {
   func storedFlightSimulation() -> FlightSimulationState {
     commanderStorage.withUnsafeBufferPointer { storage in
       Commander.nativeStationReadFlight(at: storage.baseAddress!)
+    }
+  }
+
+  @inline(never)
+  func storedNPCPersistenceCount() -> Int {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Commander.nativeNPCPersistenceCount(at: storage.baseAddress!)
     }
   }
 

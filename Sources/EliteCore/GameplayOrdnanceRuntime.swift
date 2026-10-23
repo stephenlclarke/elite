@@ -3,38 +3,46 @@ import Foundation
 extension Game {
   /// Admission, ownership and launch evidence are one transaction. A refused launch leaves
   /// ammunition, identities, cash and target state unchanged.
+  @inline(never)
   mutating func launchGameplayMissile(targetBodyID: Int) -> Bool {
     guard !playerEMPDisabled else { return false }
     var candidate = self
     do {
-      try candidate.commander.prepareEquipment()
-      guard let inventory = candidate.commander.equipmentInventory else {
-        throw CommanderEquipmentError.incompleteState
-      }
-      let context = EquipmentRuntimeCatalog.context(
-        owner: inventory.owner, hull: inventory.activeHull,
-        performance: candidate.commander.nativePerformance)
-      let obligations = try candidate.commander.equipmentIssueObligations()
-      let quote = try StandardAmmunitionTransactions.quoteConsumption(
-        unlimited: candidate.commander.unlimitedMissiles, inventory: inventory,
-        context: context, obligations: obligations)
-      let application = try StandardAmmunitionTransactions.applyConsumption(
-        quote: quote, inventory: inventory, context: context, obligations: obligations)
-      candidate.commander.savedEquipmentInventory = application.inventory
-      candidate.commander.mirrorFittedEquipment()
-      if let removed = application.removedItem { try candidate.stageGearConsumption(removed) }
+      let ammunition = try candidate.prepareGameplayMissileConsumption()
       guard candidate.commander.valid,
         candidate.admitGameplayMissile(
           ownerBodyID: nil, targetBodyID: targetBodyID,
-          profile: application.removedItem.flatMap { AlienMissileDefinition.profile(for: $0.node) }
+          profile: ammunition.node.flatMap { AlienMissileDefinition.profile(for: $0) }
             ?? .standardMissile,
-          playerAmmunition: application.source), candidate.commander.valid
+          playerAmmunition: ammunition.source), candidate.commander.valid
       else { return false }
     } catch {
       return false
     }
     self = candidate
     return true
+  }
+
+  @inline(never)
+  private mutating func prepareGameplayMissileConsumption() throws -> (
+    node: EquipmentNodeID?, source: PlayerAmmunitionSource
+  ) {
+    try commander.prepareEquipment()
+    guard let inventory = commander.equipmentInventory else {
+      throw CommanderEquipmentError.incompleteState
+    }
+    let context = EquipmentRuntimeCatalog.context(
+      owner: inventory.owner, hull: inventory.activeHull, performance: commander.nativePerformance)
+    let obligations = try commander.equipmentIssueObligations()
+    let quote = try StandardAmmunitionTransactions.quoteConsumption(
+      unlimited: commander.unlimitedMissiles, inventory: inventory,
+      context: context, obligations: obligations)
+    let application = try StandardAmmunitionTransactions.applyConsumption(
+      quote: quote, inventory: inventory, context: context, obligations: obligations)
+    commander.savedEquipmentInventory = application.inventory
+    commander.mirrorFittedEquipment()
+    if let removed = application.removedItem { try stageGearConsumption(removed) }
+    return (application.removedItem?.node, application.source)
   }
 
   mutating func launchGameplayNPCMissile(bodyID: Int) -> Bool {
