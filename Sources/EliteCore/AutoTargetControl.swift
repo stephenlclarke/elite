@@ -547,10 +547,15 @@ extension Game {
   private static func cycleWorkTargetCandidates(
     in game: borrowing Game, context: borrowing EncounterContext, frontIDs: borrowing Set<Int>
   ) -> [WorkTargetCandidate] {
-    game.bodies.compactMap {
-      game.workTargetCandidate(
-        for: $0, context: copy context, frontVisible: frontIDs.contains($0.id))
+    var candidates: [WorkTargetCandidate] = []
+    for body in game.bodies {
+      if let candidate = game.workTargetCandidate(
+        for: body, context: copy context, frontVisible: frontIDs.contains(body.id))
+      {
+        candidates.append(candidate)
+      }
     }
+    return candidates
   }
 
   mutating func cycleAutoTarget() {

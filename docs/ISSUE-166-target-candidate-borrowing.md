@@ -17,3 +17,9 @@ Strict Swift formatting, diff hygiene and independent actual-source review pass.
 ## Compatibility and remaining limits
 
 No GameRuntime/actor, state/save/schema, policy/provider or quality threshold changes. Current runtime success, compiler-copy elimination and stack/performance savings remain unestablished. No earlier issue closure follows from a different or unavailable fault location. Required full coverage/sanitizer/leak checks, completed-save/reopen qualification and release remain pending.
+
+## Release compiler borrowed-capture correction
+
+The `a7e62895` release-toolchain attempt failed compilation (exit1 after22.444705333seconds) because Swift6.1.2 does not permit borrowed Game/context consumption by this compactMap closure. No test process started and no crash or runtime result is attributed. Retain `/tmp/elite-166-candidates-focused.log` and `-result.json`.
+
+Replace only that helper closure with an explicit array traversal. Each body is queried once in the same source order with identical context and visibility membership; append exactly nonnil candidates. This preserves compactMap traversal/filtering/result order while keeping borrowed Game/context outside closure capture. No provider, selector, authority, selection/state or scheduling change is introduced. Independent source review and the same four original methods remain pending.
