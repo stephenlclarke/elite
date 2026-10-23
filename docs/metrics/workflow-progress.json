@@ -6232,6 +6232,24 @@
       "merged": false,
       "usable_delivered": false,
       "new_manual_or_full_integration_execution": false
+    },
+    {
+      "at": "2026-10-23T11:53:15Z",
+      "event": "M01 retained repair source integrated into development",
+      "checkpoint_key": "20261023-m01-source-merged-dec3df37",
+      "pr": 107,
+      "head": "e59266ccc86868d3dc6bf73f862ff3f5d5983ed1",
+      "merge_commit": "dec3df37e2c90b0add32d42dee499b1a6c31fa60",
+      "retained_repairs_commits": 35,
+      "source_review": "independent composition and style review clear",
+      "unit_run": 39948240459,
+      "unit_run_head": "2948a61e7adf0a32e4767caef6528eaf2892ab5d",
+      "unit_status": "in progress, not passed",
+      "selected_methods": 462,
+      "merged": true,
+      "m01_complete": false,
+      "usable_delivered": false,
+      "next_deliverable": "M01 local installable candidate; actual unit defects first"
     }
   ],
   "two_developer_phase": {
