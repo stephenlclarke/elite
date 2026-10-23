@@ -8925,6 +8925,21 @@
       "result": "FAILURE",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T20:27:35.925624+00:00",
+      "checkpoint_key": "20261023-m01-159-credit-death-followup-attributed",
+      "event": "Saved current fault attributed to later combat credit frame;159 follow-up scoped",
+      "head": "ec83d6f8a5b8223281c33fb435cec4c6bc43bacc",
+      "issue": 159,
+      "fault": "creditCombatDeath via original delayed-report method",
+      "pid": 35199,
+      "image_uuid": "B8819958-FF05-36F5-BC72-5C184BAEDE7A",
+      "guard_membership": "fault inside mapped guard; SP above guard",
+      "image_identity_limit": "UUID matched; SHA supplied by collector, no reviewer-local image recompute",
+      "issue160_result": "unknown; interrupted method",
+      "new_probe_or_run": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
