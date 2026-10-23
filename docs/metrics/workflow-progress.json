@@ -9556,6 +9556,17 @@
       "reviewer": "MBA",
       "scope": "resolver ownership/lifetimes, procurement/RRS/courier order and full rules unchanged",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:53:51.819420+00:00",
+      "checkpoint_key": "20261023-m01-168-courier-resolver-assigned",
+      "event": "Current courier resolver blocker168 logged and assigned",
+      "issue": 168,
+      "developer": "G1",
+      "reviewer": "MBA",
+      "evidence": "exact9569 diagnostic/offline original board-browsing85",
+      "scope": "resolver lifetime reduction; full ordering/terminal semantics preserved",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
