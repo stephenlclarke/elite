@@ -61,7 +61,15 @@ enum NativeC01SurveyorSave {
 
   @inline(never)
   static func valid(_ mission: ScriptInstance, commander: borrowing Commander) -> Bool {
-    guard let state = mission.savedGlassMeridian else { return false }
+    if case .none = mission.savedGlassMeridian { return false }
+    return stateValid(mission.savedGlassMeridian!, mission: mission, commander: commander)
+  }
+
+  @inline(never)
+  private static func stateValid(
+    _ state: borrowing NativeGlassMeridianState, mission: ScriptInstance,
+    commander: borrowing Commander
+  ) -> Bool {
     // shapeValid is unconditionally true for this absent leaf. Do not enter the
     // large present-custody frame just to apply its original missing-group refusal.
     if case .none = state.surveyor {
@@ -75,14 +83,33 @@ enum NativeC01SurveyorSave {
     _ state: borrowing NativeGlassMeridianState, mission: borrowing ScriptInstance,
     commander: borrowing Commander
   ) -> Bool {
-    guard NativeC01Surveyor.shapeValid(state), let surveyor = state.surveyor else { return false }
-    let source = surveyor.source
+    guard NativeC01Surveyor.shapeValid(state) else { return false }
+    if case .none = state.surveyor { return false }
+    let source = state.surveyor!.source
     guard source.physicalTime <= commander.flightSimulation.physicalTime,
       source.visit <= commander.flightSimulation.visit,
       let group = mission.ownedEncounters[NativeC01Surveyor.encounter], group.valid, group.admitted,
       group.galaxy == 0, group.system == 164,
       Set(group.actors.keys) == Set(NativeC01Surveyor.aliases)
     else { return false }
+    guard actorsValid(state, group: group, mission: mission, commander: commander) else {
+      return false
+    }
+    if case .some = state.surveyor!.capture {
+      guard captureValid(state, group: group, commander: commander) else { return false }
+    }
+    if case .some = state.surveyor!.loss {
+      return lossValid(state, commander: commander)
+    }
+    return true
+  }
+
+  @inline(never)
+  private static func actorsValid(
+    _ state: borrowing NativeGlassMeridianState, group: ScriptOwnedEncounter,
+    mission: borrowing ScriptInstance, commander: borrowing Commander
+  ) -> Bool {
+    let source = state.surveyor!.source
     for (index, alias) in NativeC01Surveyor.aliases.enumerated() {
       guard let actor = group.actors[alias],
         NativeC01Surveyor.original(actor, mission: mission.id, recorder: index == 1),
@@ -95,16 +122,24 @@ enum NativeC01SurveyorSave {
           < commander.flightSimulation.nextSpawn
       else { return false }
       if index == 1 {
-        if surveyor.capture != nil {
+        if state.surveyor!.capture != nil {
           guard actor.presence == .outside else { return false }
-        } else if let loss = surveyor.loss, loss.kind == .recorderDestroyed {
+        } else if let loss = state.surveyor!.loss, loss.kind == .recorderDestroyed {
           guard actor.presence == .destroyed, loss.marker == actor else { return false }
         } else if actor.presence == .destroyed {
           return false
         }
       }
     }
-    if let capture = surveyor.capture {
+    return true
+  }
+
+  @inline(never)
+  private static func captureValid(
+    _ state: borrowing NativeGlassMeridianState, group: ScriptOwnedEncounter,
+    commander: borrowing Commander
+  ) -> Bool {
+    if let capture = state.surveyor!.capture {
       guard capture.physicalTime <= commander.flightSimulation.physicalTime,
         capture.collector.visit <= commander.flightSimulation.visit,
         capture.inventoryRevision < UInt64(Int64.max),
@@ -117,7 +152,14 @@ enum NativeC01SurveyorSave {
         commander.equipmentInventory?.owner == owner
       else { return false }
     }
-    if let loss = surveyor.loss {
+    return true
+  }
+
+  @inline(never)
+  private static func lossValid(
+    _ state: borrowing NativeGlassMeridianState, commander: borrowing Commander
+  ) -> Bool {
+    if let loss = state.surveyor!.loss {
       guard loss.physicalTime <= commander.flightSimulation.physicalTime,
         loss.collector.visit <= commander.flightSimulation.visit
       else { return false }

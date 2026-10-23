@@ -51,3 +51,12 @@ PID42508/thread19, fault0x16fe03910/SP0x16fe038f0 inside guard
 0x16fe00000-0x16fe04000. The actual stack enters Surveyor.lossShapeValid before
 its absence guard, through full Sorel publication. Retained capture:
 `/tmp/elite-104-16c4-diagnostic`; no diagnostic completion is a unit pass.
+
+At48b1562d, three normal methods/15 authored cases passed, including the full
+stale-input method; Sorel did not complete and the check failed overall after
+36.182seconds. The changed-source capture at `/tmp/elite-104-48b1-diagnostic`
+retains UUID04EB5FB8-E826-37BC-B91F-A958C73D7A92/PID47811/thread19. Fault
+0x17051ffe0 lies in guard0x17051c000-0x170520000; SP0x170520000 is exactly its
+readable boundary. The real caller chain passes full NPC/owned-actor validity,
+Surveyor.original/captureShapeValid and present-surveyor save publication into
+Sorel. No Character, localID or NPC semantic defect is inferred from that stack.
