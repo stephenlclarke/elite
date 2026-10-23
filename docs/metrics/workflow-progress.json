@@ -9058,6 +9058,21 @@
       "session": 4849,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:42:39.461347+00:00",
+      "checkpoint_key": "20261023-m01-b8-acceptance-helper-guard-followup",
+      "event": "Typed-copy frame absent; current acceptance helper guard fault scopes lifetime split",
+      "head": "b8d0e84909503fecb9d8bddda881cb9baba35b0a",
+      "issue": 161,
+      "result": "FAILURE",
+      "build_seconds": 26.58,
+      "process_seconds": 37.820697375,
+      "completed_methods": 0,
+      "fault_scope": "helper+1576; no exact statement/buffer identified, no Commander getter frame",
+      "developer": "G1",
+      "reviewer": "MBA",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
