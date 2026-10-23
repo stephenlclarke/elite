@@ -1006,6 +1006,15 @@ public struct Game: Sendable {
       storage.baseAddress!.pointee.galaxy
     }
   }
+  // Adoption needs only these scalars; passing the whole pointee to a generic read callback
+  // can require an owned Commander temporary before the callback projects either field.
+  @inline(never)
+  mutating func nativePhysicalAdoptionSystemIdentity() -> SystemIdentity {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      let commander = storage.baseAddress!
+      return .init(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+    }
+  }
   /// Synchronous read-only access; the storage borrow and pointer never escape this call.
   func withReadOnlyCommander<Result>(
     _ read: (borrowing Commander) throws -> Result

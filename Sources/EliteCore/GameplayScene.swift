@@ -114,8 +114,11 @@ extension Game {
   // Release completed adoption buffers before station admission enters its own geometry checks.
   @inline(never)
   private mutating func adoptNativePhysicalActors() {
-    if commander.flightSimulation.system != systemIdentity {
-      commander.flightSimulation.enter(systemIdentity, arriving: false)
+    let flightSystem = commander.flightSimulation.system
+    let currentSystem = nativePhysicalAdoptionSystemIdentity()
+    if flightSystem != currentSystem {
+      let destination = nativePhysicalAdoptionSystemIdentity()
+      commander.flightSimulation.enter(destination, arriving: false)
     }
     let flight = commander.flightSimulation
     for index in bodies.indices {

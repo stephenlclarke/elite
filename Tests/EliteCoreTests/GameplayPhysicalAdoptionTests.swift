@@ -170,6 +170,47 @@ struct GameplayPhysicalAdoptionTests {
     #expect(before.bodies.allSatisfy { $0.physical == nil })
   }
 
+  @Test(arguments: ["default", "changed", "upper", "invalid"])
+  func adoptionSystemReadPreservesExactScalarsAndRetainedCommanderBytes(scenario: String) throws {
+    var game = Game(executive: false)
+    let expected: SystemIdentity
+    switch scenario {
+    case "default":
+      expected = .init(galaxy: NewCommanderDefaults.galaxy, system: NewCommanderDefaults.system)
+    case "changed":
+      game.commander.galaxy = 3
+      game.commander.system = 149
+      expected = .init(galaxy: 3, system: 149)
+    case "upper":
+      game.commander.galaxy = 7
+      game.commander.system = 255
+      expected = .init(galaxy: 7, system: 255)
+    case "invalid":
+      // The existing identity read does not validate or repair caller-owned scalar values.
+      game.commander.galaxy = -1
+      game.commander.system = 256
+      expected = .init(galaxy: -1, system: 256)
+    default:
+      Issue.record(Comment(rawValue: "Unrecognised adoption identity fixture: " + scenario))
+      return
+    }
+    let before = game
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+    let bytes = try encoder.encode(before.commander)
+    let identity = game.nativePhysicalAdoptionSystemIdentity()
+    #expect(identity == expected)
+    #expect(game.commander == before.commander && game.bodies == before.bodies)
+    #expect(try encoder.encode(game.commander) == bytes)
+    var changed = game
+    changed.commander.system = 1
+    let changedIdentity = changed.nativePhysicalAdoptionSystemIdentity()
+    let retainedIdentity = game.nativePhysicalAdoptionSystemIdentity()
+    #expect(changedIdentity == .init(galaxy: expected.galaxy, system: 1))
+    #expect(retainedIdentity == expected)
+    #expect(try encoder.encode(before.commander) == bytes)
+  }
+
   private func prepared() -> Game {
     var game = Game(executive: false)
     game.commander.flightSimulation.enter(game.systemIdentity, arriving: false)
