@@ -7894,6 +7894,35 @@
       "prior_three_fixture_passes": "historical18fb; newproductionpathrequiresaffectedrerun",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:50:56Z",
+      "checkpoint_key": "20261023-m01-preflight-and-all-fixtures-committed-seven-case-run-active",
+      "event": "Evidence-backed preflight split and all fixture refusals corrected; one affected batch active",
+      "issues": [
+        151,
+        152
+      ],
+      "production_commit": "092a49d7739695395fa1829d15e365ed8434010d",
+      "head": "5ba8a787c3248b04ecf8077d6b95ed8d0b4310d0",
+      "production_blob": "b904a68eed2bed534d447313fe5b7f0a2e3c14fa",
+      "fixture_blob": "8343be5ee7e1aacd83d7b22ac995b7b01beb5089",
+      "independent_source_review": "MBA bothclear, original batchbody/policy/order retained; completebaseline/allocator oracles",
+      "focused_methods": 7,
+      "authored_cases": 7,
+      "directly_affected_seventh": "actualRequest/adoption enters changed nonempty preflight",
+      "retained_unaffected_passes": 1,
+      "retained_pass": "emptyAdmissionDoesNotAllocateOrAdoptUnrelatedActors atd5",
+      "process_ids_at_observation": [
+        85620,
+        85622
+      ],
+      "report_prefix": "/tmp/elite-151-152-preflight-admission-units",
+      "runtime_result": "pending",
+      "earlier_three_passes": "historical18fb, not substituted for current sourcequalification",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
