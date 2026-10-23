@@ -6679,6 +6679,25 @@
       "usable_delivered": false,
       "m01_complete": false,
       "next_action": "G1 fresh actual-image writer attribution/correction, MBA independent review"
+    },
+    {
+      "at": "2026-10-23T14:18:25Z",
+      "timestamp_scope": "Root verified GitHub issue disposition",
+      "checkpoint_key": "20261023-m01-original-acceptance-criterion-closed-boarding-defect-separated",
+      "event": "MBA closes proved original acceptance criterion and tracks distinct boarding fault",
+      "closed_issues": [
+        112
+      ],
+      "open_issue": 140,
+      "classifier_head": "6a2b2071e7bb8bb6e4a9407587249d93d064c7c9",
+      "classifier_pass_seconds": 10.407,
+      "later_delta_scope": "b464 care transfer bypassed by classifier; MBA source reviewed",
+      "source_pr": 139,
+      "integrated": false,
+      "writer_method_qualified": false,
+      "usable_delivered": false,
+      "m01_complete": false,
+      "work_assignment_change": "none: G1 continues same actual boarding correction; MBA reviews in parallel"
     }
   ],
   "two_developer_phase": {
