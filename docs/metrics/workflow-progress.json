@@ -9294,6 +9294,18 @@
       "methods": 4,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:21:24.956908+00:00",
+      "checkpoint_key": "20261023-m01-477-distinct-original-rescue-guard",
+      "event": "Current original rescue selection guard fault distinguished; scoped issue and correction assigned",
+      "head": "47700106329865a1a329ead7413ac78d217ea7a0",
+      "build_seconds": 70.81,
+      "process_seconds": 82.665024791,
+      "result": "runtime FAILURE signal10/exit1",
+      "completed_methods": 0,
+      "scope": "full rescue authority preserved; no crew-log recurrence or earlier pass claim",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
