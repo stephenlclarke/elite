@@ -170,7 +170,8 @@ import Testing
   for screen in [Screen.status, .inventory] {
     game.screen = screen
     let initialRows = game.informationRows.map(\.0)
-    #expect(initialRows.contains("Equipment - fitted and held") == (screen == .inventory))
+    #expect(initialRows.contains("Equipment - fitted") == (screen == .inventory))
+    #expect(initialRows.contains("Equipment - held") == (screen == .inventory))
     for mount in LaserMount.allCases {
       #expect(
         initialRows.contains { $0.hasPrefix("Fitted " + mount.label + " combat mount - ") }
