@@ -40,7 +40,14 @@ enum NativeInductionWorkshopSave {
       flightSeconds: end.facts.context.flightSeconds,
       condition: kind == .cancelledBeforePickup ? nil : contract.condition)
   }
+  @inline(never)
   static func validateClaims(_ commander: borrowing Commander) -> Bool {
+    if commander.scriptInstancesAreEmpty() { return true }
+    return validatePresentInstanceClaims(commander)
+  }
+
+  @inline(never)
+  private static func validatePresentInstanceClaims(_ commander: borrowing Commander) -> Bool {
     let engine = commander.scriptState
     for child in engine.instances.values
     where NativeInductionWorkshopPack.marked(child) || child.savedNativeInductionWorkshop != nil {
