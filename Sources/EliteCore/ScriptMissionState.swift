@@ -685,6 +685,63 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     }
   }
 
+  @inline(never)
+  var retainedSettlementJob: ScriptContractJob? {
+    let field: KeyPath<ScriptInstanceValue, ScriptContractJob?> = \.contract
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Settlement queries require an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<ScriptContractJob?>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<ScriptContractJob?>.alignment == 0)
+      // Read only this initialized field; the owned result does not retain the buffer borrow.
+      let fieldValue = address.assumingMemoryBound(to: ScriptContractJob?.self)
+      return fieldValue.pointee
+    }
+  }
+
+  @inline(never)
+  var retainedSettlementDefinition: String {
+    let field: KeyPath<ScriptInstanceValue, String> = \.definition
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Settlement queries require an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<String>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<String>.alignment == 0)
+      // Read only this initialized field; the owned result does not retain the buffer borrow.
+      let fieldValue = address.assumingMemoryBound(to: String.self)
+      return fieldValue.pointee
+    }
+  }
+
+  @inline(never)
+  var retainedSettlementCourierTerminalClock: Double? {
+    let field: KeyPath<ScriptInstanceValue, ScriptCourierCustody?> = \.courier
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Settlement queries require an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<ScriptCourierCustody?>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<ScriptCourierCustody?>.alignment == 0)
+      // Read only this initialized field; the owned result does not retain the buffer borrow.
+      let fieldValue = address.assumingMemoryBound(to: ScriptCourierCustody?.self)
+      return fieldValue.pointee?.terminal?.proof.clock
+    }
+  }
+
   var savedArkReserve: NativeInductionArkReserve? {
     _read { yield storage[0].savedArkReserve }
     _modify { yield &storage[0].savedArkReserve }
