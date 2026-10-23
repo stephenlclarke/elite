@@ -37,6 +37,14 @@ struct OriginalHullPhysicalContract: Sendable {
   let envelope: OriginalHullEnvelope
   let nativeTriangles: Int
 
+  static let gyrfalconAssault: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH002") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH002"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -59,6 +67,16 @@ struct OriginalHullPhysicalContract: Sendable {
       throw Failure.unsupportedSource
     }
     switch definition.id {
+    case "SH002":
+      guard definition.name == "Gyrfalcon Assault",
+        definition.sourceSHA256
+          == "39cd712ae422c7dc47d16ff5ad7a0fd5b01f18cc6cb2b9e30fa965c1505dd7fb",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-01-native-lod/SH002-design.toml",
+        model.sourceSHA256 == "5e665c3443a3f1fb2341d418dc9d5cbde7bc1f11d2761c67289defeb26e3c51a"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH029":
       guard definition.name == "Burro",
         definition.sourceSHA256
@@ -126,6 +144,7 @@ extension CatalogueShip {
   var physicalSourceContract: OriginalHullPhysicalContract? {
     let result: Result<OriginalHullPhysicalContract, any Error>
     switch id {
+    case "SH002": result = OriginalHullPhysicalContract.gyrfalconAssault
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil

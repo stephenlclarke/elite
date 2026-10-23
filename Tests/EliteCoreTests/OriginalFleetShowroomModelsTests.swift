@@ -19,7 +19,9 @@ struct OriginalFleetShowroomModelsTests {
     let expected = (1...171).map { String(format: "SH%03d", $0) }
     #expect(OriginalFleetShowroomModels.ids == expected)
     #expect(
-      OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == ["SH029", "SH061"])
+      OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == [
+        "SH002", "SH029", "SH061",
+      ])
   }
 
   @Test(arguments: ["SH001", "SH023", "SH004", "SH108"])
