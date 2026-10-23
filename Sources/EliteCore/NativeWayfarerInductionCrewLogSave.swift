@@ -175,12 +175,22 @@ enum NativeInductionCrewLogSave {
   @inline(never)
   private static func parentClaimsValid(_ commander: borrowing Commander) -> Bool {
     let engine = commander.scriptState
-    return engine.instances.values.allSatisfy { parent in
-      guard let capture = parent.savedWayfarerInduction?.crewLog else { return true }
-      guard let source = engine.instances[capture.job]?.savedNativeCrewLog else { return false }
-      return source.capture == capture
-        && source.rescueReception == parent.savedWayfarerInduction?.rescueReception
+    for parent in engine.instances.values {
+      if case .none = parent.savedWayfarerInduction { continue }
+      if case .none = parent.savedWayfarerInduction!.crewLog { continue }
+      guard presentParentClaimValid(parent, engine: engine) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private static func presentParentClaimValid(
+    _ parent: borrowing ScriptInstance, engine: borrowing ScriptEngineState
+  ) -> Bool {
+    guard let capture = parent.savedWayfarerInduction?.crewLog else { return true }
+    guard let source = engine.instances[capture.job]?.savedNativeCrewLog else { return false }
+    guard source.capture == capture else { return false }
+    return source.rescueReception == parent.savedWayfarerInduction?.rescueReception
   }
 
   static func actorClaimsValid(

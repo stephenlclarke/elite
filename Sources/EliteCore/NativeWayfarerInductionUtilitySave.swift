@@ -1,45 +1,55 @@
 import Foundation
 
 enum NativeInductionUtilitySave {
+  @inline(never)
   static func validateClaims(_ commander: borrowing Commander) -> Bool {
     let engine = commander.scriptState
     let jobs = engine.instances.values.filter { NativeInductionUtilityPack.marked($0) }
     guard jobs.count <= 1 else { return false }
     for child in jobs {
-      guard let state = child.savedNativeInductionUtility,
-        let parent = engine.instances[state.authorization.parent],
-        parent.definition == NativeWayfarerInduction.stateID,
-        parent.version == NativeWayfarerInduction.version,
-        parent.digest == NativeWayfarerInduction.digest,
-        let leaf = parent.savedWayfarerInduction, state.shapeValid(parent: leaf),
-        let source = try? NativeInductionUtilitySource(parent: leaf),
-        child.id == state.authorization.job, child.definition == NativeInductionUtilityPack.stateID,
-        child.version == NativeInductionUtilityPack.version,
-        child.digest == NativeInductionUtilityPack.digest,
-        child.outcome == .active, child.contract == nil, child.completionReceipt == nil,
-        child.dialogue == nil, child.payloads.isEmpty, child.gearIssues.isEmpty,
-        child.milestones == (state.receiving == nil ? [] : [0]), child.data == .object([:]),
-        child.campaignParent == nil,
-        child.campaignChildren.isEmpty,
-        child.timers.keys.allSatisfy({ $0 == NativeInductionUtilityPack.timer }),
-        source.owner == commander.equipmentOwnerID,
-        state.authorization.sequence <= engine.nextEvent,
-        parent.hasAcknowledged(state.authorization.sequence),
-        child.hasAcknowledged(state.authorization.sequence),
-        state.authorization.physicalTime <= commander.flightSimulation.physicalTime,
-        state.authorization.flightSeconds <= engine.flightSeconds,
-        state.authorization.dock.calendarSeconds <= engine.calendarSeconds,
-        workClaimsValid(state, parent: parent, child: child, commander: commander),
-        state.authorization.dock.actor.visit <= commander.flightSimulation.visit,
-        commander.nativeStations?.mainStations.contains(state.authorization.dock.station) == true,
-        state.authorization.dock.sequence < (commander.nativeStations?.nextMainDockSequence ?? 0),
-        actorClaimsValid(child, state: state, source: source, commander: commander)
-      else { return false }
+      guard jobClaimsValid(child, engine: engine, commander: commander) else { return false }
     }
     return engine.instances.values.allSatisfy { parent in
       guard let receipt = parent.savedWayfarerInduction?.utilityReception else { return true }
       return engine.instances[receipt.job]?.savedNativeInductionUtility?.receiving == receipt
     }
+  }
+
+  /// Present-job payloads must not reserve a frame while unrelated missions are classified.
+  @inline(never)
+  private static func jobClaimsValid(
+    _ child: ScriptInstance, engine: borrowing ScriptEngineState, commander: borrowing Commander
+  ) -> Bool {
+    guard let state = child.savedNativeInductionUtility,
+      let parent = engine.instances[state.authorization.parent],
+      parent.definition == NativeWayfarerInduction.stateID,
+      parent.version == NativeWayfarerInduction.version,
+      parent.digest == NativeWayfarerInduction.digest,
+      let leaf = parent.savedWayfarerInduction, state.shapeValid(parent: leaf),
+      let source = try? NativeInductionUtilitySource(parent: leaf),
+      child.id == state.authorization.job, child.definition == NativeInductionUtilityPack.stateID,
+      child.version == NativeInductionUtilityPack.version,
+      child.digest == NativeInductionUtilityPack.digest,
+      child.outcome == .active, child.contract == nil, child.completionReceipt == nil,
+      child.dialogue == nil, child.payloads.isEmpty, child.gearIssues.isEmpty,
+      child.milestones == (state.receiving == nil ? [] : [0]), child.data == .object([:]),
+      child.campaignParent == nil,
+      child.campaignChildren.isEmpty,
+      child.timers.keys.allSatisfy({ $0 == NativeInductionUtilityPack.timer }),
+      source.owner == commander.equipmentOwnerID,
+      state.authorization.sequence <= engine.nextEvent,
+      parent.hasAcknowledged(state.authorization.sequence),
+      child.hasAcknowledged(state.authorization.sequence),
+      state.authorization.physicalTime <= commander.flightSimulation.physicalTime,
+      state.authorization.flightSeconds <= engine.flightSeconds,
+      state.authorization.dock.calendarSeconds <= engine.calendarSeconds,
+      workClaimsValid(state, parent: parent, child: child, commander: commander),
+      state.authorization.dock.actor.visit <= commander.flightSimulation.visit,
+      commander.nativeStations?.mainStations.contains(state.authorization.dock.station) == true,
+      state.authorization.dock.sequence < (commander.nativeStations?.nextMainDockSequence ?? 0),
+      actorClaimsValid(child, state: state, source: source, commander: commander)
+    else { return false }
+    return true
   }
 
   static func actorClaimsValid(

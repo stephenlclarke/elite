@@ -157,17 +157,46 @@ extension Game {
       row: .rescue(action), commander: commander, context: context, members: members,
       price: 0, stock: 0, epoch: nativeStationRuntimeEpoch, issues: issues)
   }
-  func originalRescueBoardingIssue(_ state: NativeOriginalRescueJourneyState?) -> String? {
-    guard let state, state.boarding == nil, state.terminalOperation == nil,
+  @inline(never)
+  func originalRescueBoardingIssue(_ state: borrowing NativeOriginalRescueJourneyState?) -> String?
+  {
+    guard originalRescueBoardingHeaderIsCurrent(state) else {
+      return "Request fresh native Celalen transport replies at actual Cedamar care."
+    }
+    guard originalRescueBoardingFitIsAllowed() else {
+      return "Request fresh native Celalen transport replies at actual Cedamar care."
+    }
+    return originalRescueBoardingReservationIssue(state)
+  }
+
+  @inline(never)
+  private func originalRescueBoardingHeaderIsCurrent(
+    _ state: borrowing NativeOriginalRescueJourneyState?
+  ) -> Bool {
+    let owned = copy state
+    guard let state = owned, state.boarding == nil, state.terminalOperation == nil,
       contractStation == NativeOriginalRescueJourney.source,
       nativeMainStationDockEvidenceIsCurrent,
       let offer = state.offers.last, offer.dock == commander.nativeStations?.currentMainDock,
       offer.carrier == commander.hullInstanceID,
       offer.inventoryRevision == commander.equipmentInventory?.revision,
       offer.epoch == nativeStationRuntimeEpoch, offer.path == [85, 241],
-      offer.berths.count == 2, commander.passengerFit?.allowed == true
-    else { return "Request fresh native Celalen transport replies at actual Cedamar care." }
-    return originalRescueReservedBerthIssue(state, offer: offer)
+      offer.berths.count == 2
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func originalRescueBoardingFitIsAllowed() -> Bool {
+    commander.passengerFit?.allowed == true
+  }
+
+  @inline(never)
+  private func originalRescueBoardingReservationIssue(
+    _ state: borrowing NativeOriginalRescueJourneyState?
+  ) -> String? {
+    let owned = copy state
+    return originalRescueReservedBerthIssue(owned!, offer: owned!.offers.last!)
   }
 
   @inline(never)
@@ -482,8 +511,15 @@ extension Game {
 
   @inline(never)
   private mutating func boardOriginalRescue(operation: UUID) throws {
-    guard originalRescueBoardingIssue(commander.nativePeople?.originalRescue) == nil,
-      var custody = commander.nativePeople, var state = custody.originalRescue,
+    guard originalRescueBoardingIssue(commander.nativePeople?.originalRescue) == nil else {
+      throw SaveError.invalidCommander
+    }
+    try stageOriginalRescueBoarding(operation: operation)
+  }
+
+  @inline(never)
+  private mutating func stageOriginalRescueBoarding(operation: UUID) throws {
+    guard var custody = commander.nativePeople, var state = custody.originalRescue,
       let offer = state.offers.last,
       custody.revision < UInt64(NativePeopleCustodyState.maximumPeople * 2)
     else { throw SaveError.invalidCommander }
@@ -557,6 +593,13 @@ extension Game {
   @inline(never)
   mutating func finishOriginalRescue(outcome: ScriptOutcome, operation: UUID) throws {
     let revision = try originalRescueFinishRevision(outcome)
+    try finishOriginalRescueAtRevision(outcome: outcome, operation: operation, revision: revision)
+  }
+
+  @inline(never)
+  private mutating func finishOriginalRescueAtRevision(
+    outcome: ScriptOutcome, operation: UUID, revision: UInt64
+  ) throws {
     let cause = Self.scriptEventContext(in: self, revision: revision)
     let (previous, mission, sequence) = try stageOriginalRescueFinish(outcome, operation: operation)
     let committed = Self.scriptEventContext(in: self, revision: mission.revision)
@@ -565,29 +608,57 @@ extension Game {
   }
 
   @inline(never)
-  private func originalRescueFinishRevision(_ outcome: ScriptOutcome) throws -> UInt64 {
+  private mutating func originalRescueFinishRevision(_ outcome: ScriptOutcome) throws -> UInt64 {
+    let revision = try Self.originalRescueFinishHeaderRevision(&commander)
+    if outcome == .complete || outcome == .abandoned {
+      guard nativeMainStationDockEvidenceIsCurrent,
+        Self.originalRescueFinishDockMatches(&commander, outcome: outcome)
+      else { throw SaveError.invalidCommander }
+    }
+    guard Self.originalRescueFinishHasNoHeldPeople(&commander) else {
+      throw SaveError.invalidCommander
+    }
+    return revision
+  }
+
+  @inline(never)
+  private static func originalRescueFinishHeaderRevision(_ commander: inout Commander) throws
+    -> UInt64
+  {
     guard let custody = commander.nativePeople, let state = custody.originalRescue,
       state.terminalOperation == nil,
       let mission = commander.scriptState.instances[state.mission], mission.outcome == .active,
       commander.scriptState.nextEvent < UInt64.max - 1, mission.revision < UInt64.max
     else { throw SaveError.invalidCommander }
-    if outcome == .complete || outcome == .abandoned {
-      guard nativeMainStationDockEvidenceIsCurrent,
-        let dock = commander.nativeStations?.currentMainDock,
-        outcome == .complete
-          ? NativeOriginalRescueJourney.destinationMatches(dock)
-          : NativeOriginalRescueJourney.sourceMatches(dock)
-      else { throw SaveError.invalidCommander }
-    }
-    guard !custody.held.contains(where: { $0.person.rescue != nil }) else {
-      throw SaveError.invalidCommander
-    }
     return mission.revision
+  }
+
+  @inline(never)
+  private static func originalRescueFinishDockMatches(
+    _ commander: inout Commander, outcome: ScriptOutcome
+  ) -> Bool {
+    guard let dock = commander.nativeStations?.currentMainDock else { return false }
+    return outcome == .complete
+      ? NativeOriginalRescueJourney.destinationMatches(dock)
+      : NativeOriginalRescueJourney.sourceMatches(dock)
+  }
+
+  @inline(never)
+  private static func originalRescueFinishHasNoHeldPeople(_ commander: inout Commander) -> Bool {
+    guard let custody = commander.nativePeople else { return false }
+    return !custody.held.contains(where: { $0.person.rescue != nil })
   }
 
   @inline(never)
   private mutating func stageOriginalRescueFinish(
     _ outcome: ScriptOutcome, operation: UUID
+  ) throws -> (ScriptInstance, ScriptInstance, UInt64) {
+    try Self.stageOriginalRescueCommanderFinish(&commander, outcome: outcome, operation: operation)
+  }
+
+  @inline(never)
+  private static func stageOriginalRescueCommanderFinish(
+    _ commander: inout Commander, outcome: ScriptOutcome, operation: UUID
   ) throws -> (ScriptInstance, ScriptInstance, UInt64) {
     // The read-only preconditions and cause extraction completed synchronously; no reentry
     // can change these values before this unpublished mutation stage.
@@ -602,7 +673,7 @@ extension Game {
     }
     let previous = mission
     var candidate = commander
-    try settleContract(outcome, state: &mission, candidate: &candidate)
+    try Self.settleContractCandidate(outcome, state: &mission, candidate: &candidate)
     candidate.scriptState.nextEvent += 1
     let sequence = candidate.scriptState.nextEvent
     mission.outcome = outcome

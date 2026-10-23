@@ -211,14 +211,16 @@ extension Game {
     try closeOrbitalOutlookTransfer(operation)
     try closeOriginalRescueTransfer(operation)
     try closeOriginalEvacuationTransfer(operation)
-    guard Self.transferredNativePeopleCommanderIsValid(self) else {
+    guard Self.transferredNativePeopleCommanderIsValid(&commander) else {
       throw SaveError.invalidCommander
     }
   }
 
   @inline(never)
-  private static func transferredNativePeopleCommanderIsValid(_ game: borrowing Game) -> Bool {
-    game.withReadOnlyCommander { $0.valid }
+  private static func transferredNativePeopleCommanderIsValid(_ commander: inout Commander) -> Bool
+  {
+    // Preserve the staged storage address instead of copying through a generic read callback.
+    commander.valid
   }
 
   @inline(never)

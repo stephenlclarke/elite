@@ -62,57 +62,81 @@ enum NativeInductionArkSave {
   private static func arkClaimsValid(_ commander: borrowing Commander) -> Bool {
     let engine = commander.scriptState
     let jobs = engine.instances.values.filter { NativeInductionArkPack.marked($0) }
-    let parents = engine.instances.values.filter {
-      $0.savedWayfarerInduction != nil || $0.savedArkReserve != nil || $0.savedArkRecovery != nil
-    }
+    let parents = engine.instances.values.filter { parentMarked($0) }
     guard parents.count <= 1, jobs.count <= 2 else { return false }
     var expectedJobs: Set<UUID> = []
     for parent in parents {
-      guard recoveryParentValid(parent, commander: commander) else { return false }
-      if let current = parent.savedWayfarerInduction?.ark { expectedJobs.insert(current.job) }
-      if let retired = parent.savedArkRecovery?.retired { expectedJobs.insert(retired.job) }
+      guard appendParentJobs(parent, commander: commander, expectedJobs: &expectedJobs) else {
+        return false
+      }
     }
     guard Set(jobs.map(\.id)) == expectedJobs else { return false }
     for child in jobs {
-      guard let state = child.savedNativeArk,
-        let parent = engine.instances[state.authorization.parent],
-        let leaf = parent.savedWayfarerInduction, let key = leaf.seedKey,
-        let service = leaf.cassetteService,
-        let link = leaf.ark?.job == child.id ? leaf.ark : parent.savedArkRecovery?.retired,
-        let source = try? NativeInductionArkSource(
-          loan: key, permission: leaf.permission, service: service,
-          reserve: state.authorization.reserve),
-        parent.definition == NativeWayfarerInduction.stateID,
-        parent.digest == NativeWayfarerInduction.digest,
-        child.definition == NativeInductionArkPack.stateID,
-        child.version == NativeInductionArkPack.version,
-        child.digest == NativeInductionArkPack.digest,
-        child.id == state.authorization.job, child.outcome == .active,
-        child.contract == nil, child.completionReceipt == nil, child.dialogue == nil,
-        child.payloads.isEmpty, child.gearIssues.isEmpty,
-        child.milestones == (state.reception == nil ? [] : [0]),
-        child.data == .object([:]), child.campaignParent == nil, child.campaignChildren.isEmpty,
-        child.timers.keys.allSatisfy({ $0 == NativeInductionArkPack.launchTimer }),
-        link.job == child.id, link.registeredArk == source.actor,
-        link.operation == state.authorization.operation, link.loanOperation == key.operation,
-        state.shapeValid(source: source, key: key),
-        child.id == leaf.ark?.job
-          ? (state.reception == leaf.seedReception && state.fuel.closure?.recoveryOperation == nil)
-          : (state.reception == nil && state.loss == parent.savedArkRecovery?.priorLoss),
-        child.id != leaf.ark?.job
-          || state.authorization.reserve
-            == (parent.savedArkRecovery == nil ? nil : parent.savedArkReserve),
-        receivingClaimsValid(state, parent: parent, child: child, engine: engine),
-        state.authorization.sequence <= engine.nextEvent,
-        parent.hasAcknowledged(state.authorization.sequence),
-        child.hasAcknowledged(state.authorization.sequence),
-        commander.equipmentOwnerID == source.owner,
-        currentBoundsValid(state, commander: commander),
-        actorValid(child, state: state, source: source),
-        legsValid(state, source: source, engine: engine),
-        fuelHistoryValid(state, child: child, engine: engine)
-      else { return false }
+      guard arkJobClaimsValid(child, engine: engine, commander: commander) else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private static func parentMarked(_ parent: borrowing ScriptInstance) -> Bool {
+    if case .some = parent.savedWayfarerInduction { return true }
+    if case .some = parent.savedArkReserve { return true }
+    if case .some = parent.savedArkRecovery { return true }
+    return false
+  }
+
+  @inline(never)
+  private static func appendParentJobs(
+    _ parent: ScriptInstance, commander: borrowing Commander, expectedJobs: inout Set<UUID>
+  ) -> Bool {
+    guard recoveryParentValid(parent, commander: commander) else { return false }
+    if let current = parent.savedWayfarerInduction?.ark { expectedJobs.insert(current.job) }
+    if let retired = parent.savedArkRecovery?.retired { expectedJobs.insert(retired.job) }
+    return true
+  }
+
+  @inline(never)
+  private static func arkJobClaimsValid(
+    _ child: ScriptInstance, engine: borrowing ScriptEngineState, commander: borrowing Commander
+  ) -> Bool {
+    guard let state = child.savedNativeArk,
+      let parent = engine.instances[state.authorization.parent],
+      let leaf = parent.savedWayfarerInduction, let key = leaf.seedKey,
+      let service = leaf.cassetteService,
+      let link = leaf.ark?.job == child.id ? leaf.ark : parent.savedArkRecovery?.retired,
+      let source = try? NativeInductionArkSource(
+        loan: key, permission: leaf.permission, service: service,
+        reserve: state.authorization.reserve),
+      parent.definition == NativeWayfarerInduction.stateID,
+      parent.digest == NativeWayfarerInduction.digest,
+      child.definition == NativeInductionArkPack.stateID,
+      child.version == NativeInductionArkPack.version,
+      child.digest == NativeInductionArkPack.digest,
+      child.id == state.authorization.job, child.outcome == .active,
+      child.contract == nil, child.completionReceipt == nil, child.dialogue == nil,
+      child.payloads.isEmpty, child.gearIssues.isEmpty,
+      child.milestones == (state.reception == nil ? [] : [0]),
+      child.data == .object([:]), child.campaignParent == nil, child.campaignChildren.isEmpty,
+      child.timers.keys.allSatisfy({ $0 == NativeInductionArkPack.launchTimer }),
+      link.job == child.id, link.registeredArk == source.actor,
+      link.operation == state.authorization.operation, link.loanOperation == key.operation,
+      state.shapeValid(source: source, key: key),
+      child.id == leaf.ark?.job
+        ? (state.reception == leaf.seedReception && state.fuel.closure?.recoveryOperation == nil)
+        : (state.reception == nil && state.loss == parent.savedArkRecovery?.priorLoss),
+      child.id != leaf.ark?.job
+        || state.authorization.reserve
+          == (parent.savedArkRecovery == nil ? nil : parent.savedArkReserve),
+      receivingClaimsValid(state, parent: parent, child: child, engine: engine),
+      state.authorization.sequence <= engine.nextEvent,
+      parent.hasAcknowledged(state.authorization.sequence),
+      child.hasAcknowledged(state.authorization.sequence),
+      commander.equipmentOwnerID == source.owner,
+      currentBoundsValid(state, commander: commander),
+      actorValid(child, state: state, source: source),
+      legsValid(state, source: source, engine: engine),
+      fuelHistoryValid(state, child: child, engine: engine)
+    else { return false }
     return true
   }
 

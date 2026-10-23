@@ -16,8 +16,12 @@ enum NativeInductionArkPack {
   static func actor(instance: UUID) -> UUID {
     ScriptIdentity.uuid("script-actor-v2:\(instance):\(digest):\(encounter):\(alias)")
   }
+  @inline(never)
   static func marked(_ state: borrowing ScriptInstance) -> Bool {
-    state.definition == stateID || state.digest == digest || state.savedNativeArk != nil
+    if state.definition == stateID { return true }
+    if state.digest == digest { return true }
+    if case .some = state.savedNativeArk { return true }
+    return false
   }
   static func matches(_ pack: ScriptPack) -> Bool {
     guard pack.manifest.stateID == stateID, pack.manifest.version == version,

@@ -1257,19 +1257,21 @@ extension Game {
   ) throws {
     candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
     if let receipt = next.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
-    try validateScriptEventCommander(candidate)
+    try validateScriptEventCommander(&candidate)
     try emitScriptEventResultQueue(candidate: &candidate, next: next, derivedEvents: derivedEvents)
   }
 
   @inline(never)
-  private static func validateScriptEventCommander(_ candidate: borrowing Game) throws {
-    guard scriptEventCommanderIsValid(candidate.commander) else {
+  private static func validateScriptEventCommander(_ candidate: inout Game) throws {
+    // Keep the staged Commander's address through _modify; a computed read argument
+    // otherwise materializes a whole owned Commander before this full policy walk.
+    guard scriptEventCommanderIsValid(&candidate.commander) else {
       throw MissionPackError(scriptEventCommanderFitIssue(candidate))
     }
   }
 
   @inline(never)
-  private static func scriptEventCommanderIsValid(_ commander: borrowing Commander) -> Bool {
+  private static func scriptEventCommanderIsValid(_ commander: inout Commander) -> Bool {
     commander.valid
   }
 
