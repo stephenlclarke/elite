@@ -34,3 +34,13 @@ Commander, escapes, calls a publisher or suspends. This avoids the proven owned
 computed-read argument before the deep validation walk. The candidate is already
 actor-owned and exclusively staged; Array COW and rollback value semantics stay
 intact. The borrow ends before error-message projection or publication.
+
+The remaining care-transfer reader still used the generic callback whose
+emitted Commander copy was already established on this path. Pass the staged
+Commander through its existing _modify projection to a private inout reader
+whose body only invokes Commander.valid. Transfer staging and the same four
+closure operations still precede exactly that full validity check; the same
+invalidCommander refusal follows false. No admission predicate, care policy,
+receipt, state, publication or atomic rollback rule changes. This delta does
+not affect the classifier's accept/launch/classify dependencies, so retain its
+actual6a2b pass and rerun only the remaining original six writer-stage cases.

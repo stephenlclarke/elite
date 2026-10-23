@@ -34,3 +34,12 @@ metadata/dynamic stack allocation and CommanderVWOc at0x731d674. The existing
 safe-read callback still emitted a copy, so merely renaming a borrow would not
 address it. Static records: `/tmp/elite-112-validateScriptEventCommander-prologue.txt`
 and `/tmp/elite-112-arkClaimsValid-prologue.txt`.
+
+At6a2b2071 the genuine classifier completed PASS10.407s; the overall check still
+failed signal10 after137.915s (compile122.59s), with writer cases unfinished.
+Writer-only capture selected PID34918/thread13, imageUUID3064B510-1337-374E-8982-86B9445F8A39,
+fault0x1705abf30/SP0x1705abf10 in guard0x1705a8000-0x1705ac000. Its actual
+path is care transfer through transferredNativePeopleCommanderIsValid and the
+generic withReadOnlyCommander copy, then full custody/admission validation.
+No admission semantic defect is inferred from the top state metadata. Retained
+capture: `/tmp/elite-112-6a2b-writer-diagnostic`; no diagnostic pass is claimed.
