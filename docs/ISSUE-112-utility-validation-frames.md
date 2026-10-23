@@ -43,3 +43,14 @@ path is care transfer through transferredNativePeopleCommanderIsValid and the
 generic withReadOnlyCommander copy, then full custody/admission validation.
 No admission semantic defect is inferred from the top state metadata. Retained
 capture: `/tmp/elite-112-6a2b-writer-diagnostic`; no diagnostic pass is claimed.
+
+The original acceptance/classifier criterion is qualified by its6a2b2071 pass;
+issue112 is closed on that exact scope. The remaining six-stage writer failure
+is tracked separately in [issue140](https://github.com/stephenlclarke/elite/issues/140).
+Atb464854e compilation67.15s passed, but writer cases exited signal10 after
+83.661s with unfinished XML. The current writer-only capture selected
+PID41568/thread10, UUIDEB0EF062-7899-3A62-A06D-A756B472EB2A,
+fault0x170493ff0/SP0x170493fa0 in guard0x170490000-0x170494000. Its actual
+boarding path reaches passengerFit/performance before boardOriginalRescue's
+future mutation temporaries are used. No hull, hashing or capacity semantic
+fault is inferred. Capture: `/tmp/elite-112-b464-writer-diagnostic`.

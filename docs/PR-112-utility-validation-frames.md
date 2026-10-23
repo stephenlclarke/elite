@@ -44,3 +44,16 @@ invalidCommander refusal follows false. No admission predicate, care policy,
 receipt, state, publication or atomic rollback rule changes. This delta does
 not affect the classifier's accept/launch/classify dependencies, so retain its
 actual6a2b pass and rerun only the remaining original six writer-stage cases.
+
+For140's actual boarding path, release header state/offer temporaries before
+capacity validation, and capacity temporaries before reservation checks. Keep
+the original header predicates, passengerFit allowed test, reserved-berth checks,
+refusal text and short-circuit order. The borrowed readonly phases do not mutate,
+escape or suspend; header-proved state/last-offer presence remains stable.
+
+Board mutation starts in a separate non-inlined stage only after the same full
+precheck succeeds. Its original custody/state/offer/revision checks, reply lookup,
+revision, boarding receipt and berth writes remain in order. This keeps future
+mutation payloads out of the precondition's active stack. No test, capacity,
+route, custody, source, epoch, receipt or rollback rule changes. Reuse the actual
+unaffected classifier pass; writer-only six-stage qualification remains pending.

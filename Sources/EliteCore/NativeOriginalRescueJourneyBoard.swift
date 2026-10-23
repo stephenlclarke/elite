@@ -157,7 +157,22 @@ extension Game {
       row: .rescue(action), commander: commander, context: context, members: members,
       price: 0, stock: 0, epoch: nativeStationRuntimeEpoch, issues: issues)
   }
-  func originalRescueBoardingIssue(_ state: NativeOriginalRescueJourneyState?) -> String? {
+  @inline(never)
+  func originalRescueBoardingIssue(_ state: borrowing NativeOriginalRescueJourneyState?) -> String?
+  {
+    guard originalRescueBoardingHeaderIsCurrent(state) else {
+      return "Request fresh native Celalen transport replies at actual Cedamar care."
+    }
+    guard originalRescueBoardingFitIsAllowed() else {
+      return "Request fresh native Celalen transport replies at actual Cedamar care."
+    }
+    return originalRescueBoardingReservationIssue(state)
+  }
+
+  @inline(never)
+  private func originalRescueBoardingHeaderIsCurrent(
+    _ state: borrowing NativeOriginalRescueJourneyState?
+  ) -> Bool {
     guard let state, state.boarding == nil, state.terminalOperation == nil,
       contractStation == NativeOriginalRescueJourney.source,
       nativeMainStationDockEvidenceIsCurrent,
@@ -165,9 +180,21 @@ extension Game {
       offer.carrier == commander.hullInstanceID,
       offer.inventoryRevision == commander.equipmentInventory?.revision,
       offer.epoch == nativeStationRuntimeEpoch, offer.path == [85, 241],
-      offer.berths.count == 2, commander.passengerFit?.allowed == true
-    else { return "Request fresh native Celalen transport replies at actual Cedamar care." }
-    return originalRescueReservedBerthIssue(state, offer: offer)
+      offer.berths.count == 2
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func originalRescueBoardingFitIsAllowed() -> Bool {
+    commander.passengerFit?.allowed == true
+  }
+
+  @inline(never)
+  private func originalRescueBoardingReservationIssue(
+    _ state: borrowing NativeOriginalRescueJourneyState?
+  ) -> String? {
+    originalRescueReservedBerthIssue(state!, offer: state!.offers.last!)
   }
 
   @inline(never)
@@ -482,8 +509,15 @@ extension Game {
 
   @inline(never)
   private mutating func boardOriginalRescue(operation: UUID) throws {
-    guard originalRescueBoardingIssue(commander.nativePeople?.originalRescue) == nil,
-      var custody = commander.nativePeople, var state = custody.originalRescue,
+    guard originalRescueBoardingIssue(commander.nativePeople?.originalRescue) == nil else {
+      throw SaveError.invalidCommander
+    }
+    try stageOriginalRescueBoarding(operation: operation)
+  }
+
+  @inline(never)
+  private mutating func stageOriginalRescueBoarding(operation: UUID) throws {
+    guard var custody = commander.nativePeople, var state = custody.originalRescue,
       let offer = state.offers.last,
       custody.revision < UInt64(NativePeopleCustodyState.maximumPeople * 2)
     else { throw SaveError.invalidCommander }
