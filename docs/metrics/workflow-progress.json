@@ -9269,6 +9269,17 @@
       "developer": "G1",
       "reviewer": "MBA",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:17:49.163813+00:00",
+      "checkpoint_key": "20261023-m01-164-crewlog-assigned",
+      "event": "Distinct crew-log marker selection blocker164 logged and assigned",
+      "issue": 164,
+      "developer": "G1",
+      "reviewer": "MBA",
+      "evidence_head": "c23e2e1ca052e2477840a28f125b2f7d3c5e6f2f",
+      "scope": "authority-preserving owned-body/receiver lifetime reduction, no identity policy change",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
