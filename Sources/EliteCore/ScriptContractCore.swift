@@ -366,6 +366,17 @@ extension Game {
         && pack.manifest.freight == nil
         ? nil : .inclusiveConfirmation)
     let instanceID = Self.contractJobIdentity(id)
+    return try prepareContractAdmissions(
+      key: key, index: index, pack: pack, board: board, offer: offer, job: job,
+      instanceID: instanceID, pledge: pledge, confirmationToken: confirmationToken)
+  }
+
+  @inline(never)
+  private mutating func prepareContractAdmissions(
+    key: String, index: Int, pack: borrowing ScriptPack, board: borrowing ScriptContractBoard,
+    offer: borrowing ScriptContractOffer, job: borrowing ScriptContractJob, instanceID: UUID,
+    pledge: ScriptPledgePreview?, confirmationToken: UUID
+  ) throws -> PreparedContractAcceptance {
     var pledgeAdmission: ScriptPledgeAdmission? = nil
     var courierAdmission: ScriptCourierAdmission? = nil
     if let pledge {
