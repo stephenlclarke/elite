@@ -293,7 +293,7 @@ private func verifyNativePopulation(_ game: inout Game) throws {
   try game.populateNativeStations()
   #expect(game.commander == commander && game.bodies == bodies && game.nextBodyID == nextBodyID)
   #expect(world.ledger.currentDock == nil && world.currentMainDock == nil)
-  #expect(world.ledger.records.count == 372 && world.mainStations.count == 1)
+  #expect(world.ledger.records.count == 382 && world.mainStations.count == 1)
 }
 
 private func verifyNativePopulationCapacity(_ game: inout Game) throws {
