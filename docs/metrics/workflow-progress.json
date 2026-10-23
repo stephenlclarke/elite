@@ -9368,6 +9368,19 @@
       "result": "pending",
       "previous_crash": "7771 unattributed; no matching UUID among27 retained reports",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:33:14.973059+00:00",
+      "checkpoint_key": "20261023-m01-166-borrowed-closure-compile-correction",
+      "event": "Borrowed closure compiler failure retained; equivalent ordered-loop correction reviewed",
+      "issue": 166,
+      "failed_head": "a7e62895",
+      "head": "62315676",
+      "process_seconds": 22.444705333,
+      "result": "compile FAILURE; no runtime",
+      "reviewed_blob": "19a017ca63f441a865904025f93f59395f674ba0",
+      "correction_result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
