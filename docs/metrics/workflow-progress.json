@@ -6838,6 +6838,56 @@
       "m01_complete": false,
       "next_deliverable": "G1 coherent committed release composition, required final-head review/checks and updated signed/notarized local candidate; MBA reviews in parallel",
       "scope_limits": "no new nonM01 feature, held-source import or broad native test campaign; nativejourney/release/Homebrew not proved"
+    },
+    {
+      "at": "2026-10-23T15:02:29Z",
+      "timestamp_scope": "Root recorded actual gate results and independently reviewed artifact",
+      "checkpoint_key": "20261023-m01-release-gates-fail-media-and-station-target-reservation",
+      "event": "Current release checks reveal stale ship media and attributed station target reservation fault",
+      "candidate_head": "162bc42779a4baac5ee5a8828437e7290c105835",
+      "composition": "Four Root docs exactly ca009093; product/tests/tools/workflows same as c40, independently clear",
+      "required_quality_run": 39973778813,
+      "quality_outcome": "FAIL ships-check:171stale renderer-generated GIF fingerprints; before coverage/sanitizer/leak",
+      "dependency_review": "SUCCESS",
+      "full_unit_run": 39973423947,
+      "unit_head": "c40b027eb3f7f6a6580d5ff24ffec78729c442cb",
+      "unit_outcome": "FAIL after212.52scompile; signal4, unfinished52byte XML, zero completed passes",
+      "matched_unit_image_uuid": "1D9221B5-507C-3926-A19B-E71524387AFD",
+      "actual_fault": "nativePracticeReservation\u2192recoverableMetadata\u2192workTargetCandidate\u2192cycleAutoTarget\u2192originalCoverSourceStillRequiresItsOwnActualActiveHazard",
+      "open_issue": 141,
+      "historical95_attributed": false,
+      "superseded_or_nonrequired_jobs_cancelled": [
+        39973774878,
+        39973778772
+      ],
+      "required_final_gate_waived": false,
+      "usable_delivered": false,
+      "m01_complete": false,
+      "next_action": "G1 source-backed141 repair then one renderer refresh on frozen source and next coherent candidate; MBA source/evidence review in parallel"
+    },
+    {
+      "at": "2026-10-23T15:03:21Z",
+      "timestamp_scope": "Root recorded author packaging receipt; independent artifact review separate",
+      "checkpoint_key": "20261023-m01-162bc-unqualified-package-checkpoint",
+      "event": "Signed/notarized candidate checkpoint completed but release gates failed",
+      "head": "162bc42779a4baac5ee5a8828437e7290c105835",
+      "app_path": "/Users/sclarke/Downloads/Elite-M01-162bc427-candidate/Elite.app",
+      "zip_path": "/Users/sclarke/Downloads/Elite-M01-162bc427-candidate/Elite-1.4.1-M01-162bc427-unverified-candidate.zip",
+      "zip_bytes": 49236998,
+      "author_reported_sha256": "8033f37ec4122a3c21e628c1cd0299f8d8c1a301dbf7e71929f4620688d8e237",
+      "author_packaging_checks": "universalarm64/x86_64 mac14; DeveloperID/source/resource checks; AppleAccepted/stapled/Gatekeeper",
+      "independent_artifact_review": "pending separately, not Root-verified here",
+      "release_gates_passed": false,
+      "known_gate_failures": [
+        "171stale rendererGIFfingerprints",
+        "issue141 target reservation unitguardfault"
+      ],
+      "gameplay_verified": false,
+      "usable_delivered": false,
+      "published_release": false,
+      "homebrew_updated": false,
+      "m01_complete": false,
+      "next_action": "G1 actual141fix before finalrendererrefresh and next coherent candidate; MBA reviews source/evidence"
     }
   ],
   "two_developer_phase": {

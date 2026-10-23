@@ -37,3 +37,21 @@ seconds; no test ran. ScriptInstance.digest is read-only. Correct the negative
 fixture through the existing Codable replacement helper, preserving the same
 corrupt-digest refusal assertion. The isolated-report fixture also advances
 its exact expected method count from 523 to 524; all six report checks pass.
+
+At source `2dab4bba6214075b1ddc5538cf3a71fc335b038f`, both focused methods
+passed: all five original station-hazard arguments (9.201 seconds) and the
+new authentic-versus-forged reservation unit (8.598 seconds). The complete
+process exited 0 after 82.337719 seconds. Evidence:
+`/tmp/elite-141-immutable-membership-units-result.json`, its raw log and complete
+Swift Testing XML. This is two methods and six cases, not a full 524-method
+pass. The first compile failure remains retained; issue 95 remains separate.
+
+The normal `make ships` workflow subsequently rendered all 171 ship GIFs and
+the overview from the game renderer; `make ships-check` passed for every
+TOML/GIF/reference section. No renderer fingerprint or validation gate was
+changed. Existing generated references were already current. Logs:
+`/tmp/elite-m01-ship-media-refresh.log` and `/tmp/elite-m01-ships-check.log`.
+The next coherent release head also imports only the four agreed Root-owned
+workflow documents from `2c5c17458073cd3a5dfdef8206d58cda98d47fde`.
+Final-head protected-main quality and the expanded 524-method gate still
+require their own actual results; earlier failures are not relabelled.
