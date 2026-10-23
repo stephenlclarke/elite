@@ -23,6 +23,16 @@ METHODS = {
         "originalTraderPolicyKeepsBlueprintFabricationAndExistingPlacementRequirements",
         "invalidRetainedInputsCannotBeRepairedSilentlyByTheActivationAdapter",
     ),
+    "StationDockLocationTests": (
+        "undockedStatusNeverClaimsAStationFromRetainedDockMetadata",
+        "dockedStatusNamesTheActualMainOrNativeStation",
+        "unknownDockDoesNotInventAMainStationOrClaimTheShipIsInSpace",
+    ),
+    "StationScreenGuideTests": (
+        "flightGuideKeepsFlightDestinationsRegardlessOfDockServices",
+        "stationGuideNamesTheActualDockAndKeepsEveryDestination",
+        "oneUnavailableServiceDoesNotHideOtherAvailableServices",
+    ),
     "NativeStationSnapshotUnitTests": (
         "inPlaceStationMeshReadPreservesGeometryAndRejectsMissingOrForeignActors",
         "exactSnapshotRejectsEveryStoredFieldChangeAndDuplicateOrAbsentBodies",
