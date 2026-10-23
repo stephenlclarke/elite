@@ -9806,6 +9806,23 @@
       "composition_review": "clear",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:47:28.955762+00:00",
+      "checkpoint_key": "20261023-m01-b611-one-corrected-offset-capture-complete",
+      "event": "Single corrected existing-image capture complete with module offsets; MBA saved-symbol review active",
+      "head": "b611d932d19f7b6147913c11109fc0c16541a170",
+      "pid": 41135,
+      "wall_seconds": 14.147784541,
+      "driver_exit": 1,
+      "observer_exit": 0,
+      "handed_back": true,
+      "remaining_owned": [],
+      "image_sha256": "64460dea2e9be39704c2c13bbf9273a98939ce034ff7f49218cb96968fe0fb0c",
+      "diagnostic_only": true,
+      "unit_pass": false,
+      "artifact_path": "/tmp/elite-m01-offset-owned-capture",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
