@@ -8814,6 +8814,22 @@
       "game_source_unchanged_by_158": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T20:10:31.691781+00:00",
+      "checkpoint_key": "20261023-m01-fleet-observer-159-assigned",
+      "event": "Distinct fleet-observer release blocker assigned; current VM artifact triage in parallel",
+      "issue": 159,
+      "developer": "G1",
+      "reviewer": "MBA",
+      "evidence_run": 40013975536,
+      "current_vm_run": 40016581154,
+      "current_vm_result": "FAILURE; cause pending saved-artifact review",
+      "current_quality_run": 40016592456,
+      "current_quality_status": "in_progress",
+      "save_reopen_evidence": "both methods started only; no pass",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
