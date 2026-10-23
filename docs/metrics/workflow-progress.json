@@ -8698,6 +8698,24 @@
       "final_head_result": "pending",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:48:53Z",
+      "checkpoint_key": "20261023-m01-5acd-vm-failed-triage-assigned",
+      "event": "Current mesh-correction candidate VM job fails; saved evidence triage assigned",
+      "head": "5acd5aae7cfab78a371f961f65a15913df8036a3",
+      "run": 40013965796,
+      "result": "FAILURE",
+      "cause": "not yet attributed",
+      "artifact_owner": "MBA sole retrieval/triage",
+      "developer": "G1 only actual source finding correction",
+      "required_quality_run": 40013975536,
+      "required_quality_status": "in_progress",
+      "duplicate_run": 40013975534,
+      "duplicate_result": "CANCELLED, notPASS",
+      "new_execution_started": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
