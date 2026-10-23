@@ -299,11 +299,18 @@ struct ScriptInstanceStorageTests {
     value.timers["pulse"] = .init(
       id: "pulse", domain: .flight, due: .nan, interval: 1, policy: .skip)
     let shared = value
-    #expect(value != shared && shared != value)
+    // Existing Array equality accepts the same outer buffer without visiting its element.
+    #expect(value == shared && shared == value)
     var independentlyCloned = shared
     independentlyCloned.revision += 1
     independentlyCloned.revision -= 1
-    #expect(value != independentlyCloned)
+    // Detaching the payload still shares the original timer dictionary's COW buffer.
+    #expect(value == independentlyCloned && independentlyCloned == value)
+    // A separately allocated dictionary reaches the original timer member comparison.
+    independentlyCloned.timers = [
+      "pulse": .init(id: "pulse", domain: .flight, due: .nan, interval: 1, policy: .skip)
+    ]
+    #expect(value != independentlyCloned && independentlyCloned != value)
     value.timers["pulse"]?.due = -0.0
     independentlyCloned.timers["pulse"]?.due = 0.0
     #expect(value == independentlyCloned && independentlyCloned == value)
