@@ -1223,6 +1223,16 @@ public struct Game: Sendable {
     try withReadOnlyStoredGame { game in try game.withReadOnlyScriptState(read) }
   }
 
+  /// Read only the retained marker's script child; no Commander value leaves its storage.
+  @inline(never)
+  func inductionCrewLogStoredMarkerIsPresent(job: UUID) -> Bool {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Commander.nativeStationReadScriptState(at: storage.baseAddress!) { state in
+        NativeInductionCrewLogPack.marker(job: job, state: state.pointee)
+      }
+    }
+  }
+
   /// Synchronous read-only access; the storage borrow and pointer never escape this call.
   func withReadOnlyCommander<Result>(
     _ read: (borrowing Commander) throws -> Result

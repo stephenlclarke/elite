@@ -34,6 +34,7 @@ struct NativeCrewLogRecorderBoundaryUnitTests {
   @Test(arguments: [
     "ordinary", "missing-job", "missing-actor", "wrong-actor", "missing-child",
     "missing-authorization", "wrong-definition", "wrong-digest", "wrong-authorization",
+    "no-script-state",
   ])
   func unmarkedTargetsRejectWithoutChangingRetainedCustody(condition: String) throws {
     let f = try CrewLogRecorderBoundaryFixture()
@@ -44,6 +45,7 @@ struct NativeCrewLogRecorderBoundaryUnitTests {
       body.missionActorID = nil
     case "missing-job": body.missionInstanceID = nil
     case "missing-actor": body.missionActorID = nil
+    case "no-script-state": f.game.commander.scriptState = ScriptEngineState()
     case "missing-child": f.game.commander.scriptState.instances.removeValue(forKey: f.childID)
     case "missing-authorization":
       f.game.commander.scriptState.instances[f.childID]?.savedNativeCrewLog = nil

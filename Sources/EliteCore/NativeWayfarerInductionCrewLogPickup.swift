@@ -20,7 +20,11 @@ extension NativeInductionCrewLogPack {
   }
 
   static func marker(job: UUID, commander: borrowing Commander) -> Bool {
-    guard let child = commander.scriptState.instances[job], child.definition == stateID,
+    commander.withReadOnlyScriptState { marker(job: job, state: $0) }
+  }
+
+  static func marker(job: UUID, state: borrowing ScriptEngineState) -> Bool {
+    guard let child = state.instances[job], child.definition == stateID,
       child.digest == digest, child.savedNativeCrewLog?.authorization.job == job
     else { return false }
     return true
@@ -55,7 +59,7 @@ extension Game {
   private func inductionCrewLogRecorderAtMarkerAddress(_ body: borrowing SpaceBody, job: UUID)
     -> ScriptOwnedActor?
   {
-    guard withReadOnlyCommander({ NativeInductionCrewLogPack.marker(job: job, commander: $0) })
+    guard inductionCrewLogStoredMarkerIsPresent(job: job)
     else { return nil }
     guard NativeInductionCrewLogPack.markerJob(body) == job else { return nil }
     return inductionCrewLogRecorderAfterMarker(body)

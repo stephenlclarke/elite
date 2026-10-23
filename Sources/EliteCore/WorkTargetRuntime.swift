@@ -32,39 +32,51 @@ extension Game {
       fuelScoops: commander.equipment.contains("Fuel Scoops"))
   }
 
+  @inline(never)
   func workTargetCandidate(
-    for body: SpaceBody, context: EncounterContext, frontVisible: Bool
+    for body: borrowing SpaceBody, context: borrowing EncounterContext, frontVisible: Bool
   ) -> WorkTargetCandidate? {
     guard let physical = body.physical, body.energy.isFinite, body.energy > 0,
       body.position.finite, body.position.length.isFinite,
-      modelPose(of: body).orientation.validRotation
+      modelPose(of: copy body).orientation.validRotation
     else { return nil }
     let kind: WorkTargetKind
     var compatible = false
     if body.hull == .station {
       kind = .activeStation
-    } else if isCapitalHoldVessel(body), physical.salvage == nil {
+    } else if isCapitalHoldVessel(copy body), physical.salvage == nil {
       kind = .capitalShip
     } else if let metadata = recoverableMetadata(for: body, context: context) {
       kind = .recoverable(metadata, payload: physical.payload)
-      compatible = automaticScoopShapeCompatible(body, context: context)
+      compatible = automaticScoopShapeCompatible(copy body, context: copy context)
     } else if body.hull.isTargetShip {
       kind = .ship
     } else {
       return nil
     }
+    return makeWorkTargetCandidate(
+      for: body, context: context, identity: physical.identity, kind: kind,
+      frontVisible: frontVisible, compatible: compatible)
+  }
+
+  // Result buffers are needed only after classification and metadata lookup have returned.
+  @inline(never)
+  private func makeWorkTargetCandidate(
+    for body: borrowing SpaceBody, context: borrowing EncounterContext,
+    identity: ActorIdentity, kind: WorkTargetKind, frontVisible: Bool, compatible: Bool
+  ) -> WorkTargetCandidate {
     return .init(
-      identity: physical.identity, kind: kind, isLive: true,
+      identity: identity, kind: kind, isLive: true,
       frontVisible: frontVisible, distance: body.position.length,
       singleScoopCompatible: compatible,
-      nativePod: nativePodFacts(body, context: context),
-      nativeCrewCapture: nativeCrewCaptureAvailable(body, context: context)
+      nativePod: nativePodFacts(copy body, context: copy context),
+      nativeCrewCapture: nativeCrewCaptureAvailable(copy body, context: copy context)
         && freeNativePeopleTonnes > 0,
-      originalRescue: originalRescueFacts(body, context: context),
-      measuredExtraction: measuredExtractionFacts(body, context: context),
-      recordRecovery: recordRecoveryFacts(body, context: context),
+      originalRescue: originalRescueFacts(body, context: copy context),
+      measuredExtraction: measuredExtractionFacts(copy body, context: copy context),
+      recordRecovery: recordRecoveryFacts(body, context: copy context),
       inductionCrewLog: inductionCrewLogFacts(body),
-      identifiedSalvage: identifiedSalvageFacts(body, context: context))
+      identifiedSalvage: identifiedSalvageFacts(body, context: copy context))
   }
 
   func isCapitalHoldVessel(_ body: SpaceBody) -> Bool {
@@ -89,9 +101,11 @@ extension Game {
         radius: gameplayMesh(for: body).vertices.map(\.length).max() ?? 0), workSurfaces: [])
   }
 
-  func recoverableMetadata(for body: SpaceBody, context: EncounterContext) -> SalvageTargetMetadata?
+  @inline(never)
+  func recoverableMetadata(for body: borrowing SpaceBody, context: borrowing EncounterContext)
+    -> SalvageTargetMetadata?
   {
-    guard !hasNativePracticeReservation(body) else { return nil }
+    guard !hasNativePracticeReservation(copy body) else { return nil }
     guard let physical = body.physical else { return nil }
     if let payload = physical.payload, measuredPayloadIsAllocated(payload),
       commander.miningLedger.boundActor(for: payload) == physical.identity
@@ -100,13 +114,14 @@ extension Game {
         category: .cargo, ownership: .missionProtected, claimant: nil,
         wreck: nil, section: nil, lot: nil,
         bounds: .init(
-          center: .init(0, 0, 0), radius: gameplayMesh(for: body).vertices.map(\.length).max() ?? 0),
+          center: .init(0, 0, 0),
+          radius: gameplayMesh(for: copy body).vertices.map(\.length).max() ?? 0),
         workSurfaces: [])
     }
     if let original = inductionCrewLogMetadata(body) { return original }
-    if let original = recordRecoveryMetadata(body, context: context) { return original }
-    if let original = identifiedSalvageMetadata(body, context: context) { return original }
-    if let original = originalRescueMetadata(body, context: context) { return original }
+    if let original = recordRecoveryMetadata(body, context: copy context) { return original }
+    if let original = identifiedSalvageMetadata(body, context: copy context) { return original }
+    if let original = originalRescueMetadata(body, context: copy context) { return original }
     var result: SalvageTargetMetadata?
     if let supplied = physical.salvage {
       result = supplied
@@ -128,33 +143,45 @@ extension Game {
           commander.cargoDebrisLedger.boundActor(for: payload) == physical.identity
           && commander.cargoDebrisLedger.pendingPayloads.contains { $0.identity == payload }
       case .salvage(let lot):
-        available = currentSalvageLot(for: body)?.identity == lot
+        available = currentSalvageLot(for: copy body)?.identity == lot
       case .mission: available = true
       }
       guard available else { return nil }
       result = .init(
         category: .cargo, ownership: .abandoned, claimant: nil, wreck: nil, section: nil, lot: nil,
         bounds: .init(
-          center: .init(0, 0, 0), radius: gameplayMesh(for: body).vertices.map(\.length).max() ?? 0),
+          center: .init(0, 0, 0),
+          radius: gameplayMesh(for: copy body).vertices.map(\.length).max() ?? 0),
         workSurfaces: [])
-    } else if body.hull == .cargo || (body.hull == .thargon && !body.hostile) {
+    } else {
+      if body.hull != .cargo {
+        guard body.hull == .thargon, !body.hostile else { return nil }
+      }
       result = .init(
         category: body.hull == .thargon ? .disabledDrone : .cargo,
         ownership: .abandoned, claimant: nil, wreck: nil, section: nil, lot: nil,
         bounds: .init(
-          center: .init(0, 0, 0), radius: gameplayMesh(for: body).vertices.map(\.length).max() ?? 0),
+          center: .init(0, 0, 0),
+          radius: gameplayMesh(for: copy body).vertices.map(\.length).max() ?? 0),
         workSurfaces: [])
     }
     guard let metadata = result else { return nil }
     let occupiedEMP =
-      isEMPDisabled(body)
+      isEMPDisabled(copy body)
       && physical.empSource.flatMap { commander.savedEMPState?.records[$0]?.crewAboard }.map {
         $0 > 0
       } == true
-    let protected =
-      context.protection.protectedActors.contains(physical.identity)
-      || physical.payload.map(context.protection.protectedPayloads.contains) == true
-      || (physical.npc != nil && [.wreck, .section].contains(metadata.category) && !occupiedEMP)
+    let protected: Bool
+    if context.protection.protectedActors.contains(physical.identity) {
+      protected = true
+    } else if let payload = physical.payload,
+      context.protection.protectedPayloads.contains(payload)
+    {
+      protected = true
+    } else {
+      protected =
+        physical.npc != nil && [.wreck, .section].contains(metadata.category) && !occupiedEMP
+    }
     guard protected else { return metadata }
     return .init(
       category: metadata.category, ownership: .missionProtected, claimant: metadata.claimant,
