@@ -15,3 +15,7 @@ Formatting, diff hygiene and independent actual-source review pass. The first co
 ## Compatibility and remaining limits
 
 No save, schema, identity, mutation, actor isolation, test selection or quality gate changes. No automatic old-issue reopening or signal attribution. Full current VM/quality, completed-save/reopen qualification and release remain separate.
+
+## Retained two-method follow-up execution
+
+The unchanged original delayed-report and authentic station-entry methods ran at `be90e52c` after the actual credit phase correction. Swift6.1.2/SDK15.5 compilation passed in84.87seconds; the process exited1 with raw signal10 after96.9157105seconds. Both methods started only, with no terminal pass or assertion result; XML remains unfinished. Retained `/tmp/elite-159-credit-focused.log`, `-result.json`, `-crash.ips` and `-image.json` preserve the failed result and exact loaded imageF7EA4912-63A1-38CB-BDEB-61834779E2D1/SHA256b558042848839159e4477d94de2de650276eb28b29a82c8a93671e623add34ac. Attribution remains pending. The three earlier unaffected `ec83d6f8` individual passes are retained separately; no aggregate qualification is claimed.
