@@ -15,3 +15,5 @@ Formatting and diff hygiene pass. The unchanged original method is part of the c
 ## Compatibility and remaining limits
 
 No save schema or player behavior changes. The mission crash remains separate151 and historical144 origins remain unknown. Full VM/quality/native M01/release remain separate.
+
+Thec581 result reaches the exact retained missile and proves original owner equality, but impact and shield assertions fail and the hard-coded credits1000 oracle is invalid for the authored starting commander. The energy clause was not evaluated after the shield clause failed; no damage pass is claimed. Capture initial actual cash and assert it remains unchanged. Split owner, impact, shield, energy, kills and cash assertions so later failures cannot hide another oracle. Keep the original impact/damage requirements and add only a termination diagnostic; no extra elapsed time or production change is guessed. Evidence remains the failed c581 raw log. Scope154 is still open pending actual corrected execution and source-backed impact resolution.

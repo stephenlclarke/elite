@@ -129,6 +129,7 @@ struct GameplayOrdnanceRuntimeTests {
 
   @Test func realNPCLauncherDoesNotLoseItsMissileOwnerWhenTheCraftIsRemoved() throws {
     var game = missileRuntimeGame(distance: 1000)
+    let initialCash = game.commander.credits
     game.frontShield = 100
     let ownerIndex = try #require(game.bodies.firstIndex { $0.id == 70 })
     game.bodies[ownerIndex].missiles = 1
@@ -149,9 +150,14 @@ struct GameplayOrdnanceRuntimeTests {
       game.bodies.first { $0.physical?.identity == missileIdentity })
     #expect(retainedMissile.id == missile.id)
     let state = try #require(retainedMissile.physical?.ordnance)
-    #expect(state.origin.owner == owner && state.termination == .impact)
-    #expect(game.frontShield == 0 && game.energy < game.commander.performance.energy)
-    #expect(game.commander.kills == 0 && game.commander.credits == 1000)
+    #expect(state.origin.owner == owner)
+    #expect(
+      state.termination == .impact,
+      Comment(rawValue: "Native missile termination: \(String(describing: state.termination))"))
+    #expect(game.frontShield == 0)
+    #expect(game.energy < game.commander.performance.energy)
+    #expect(game.commander.kills == 0)
+    #expect(game.commander.credits == initialCash)
   }
 
   @Test func actualECMFieldRespectsTypedPlasmaAndOneActivationSeekerResistance() throws {
