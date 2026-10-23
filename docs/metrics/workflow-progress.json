@@ -9449,6 +9449,18 @@
       "reviewer": "MBA",
       "evidence": "exact623 single diagnostic capture/offline symbols",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:43:19.743183+00:00",
+      "checkpoint_key": "20261023-m01-167-fit-reviewed-normal-run",
+      "event": "Fit matcher borrowing correction committed and independently reviewed; normal affected execution active",
+      "head": "a7b503f1",
+      "issue": 167,
+      "reviewed_blob": "4590904cdff280c5eb0a4d862f5796d8b1910b1e",
+      "methods": 4,
+      "debugger": false,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
