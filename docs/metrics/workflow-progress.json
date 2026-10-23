@@ -9991,6 +9991,46 @@
       "normal_fault_attribution": "unavailable",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:08:02.760852+00:00",
+      "checkpoint_key": "20261024-m01-364-current-typed-marker-boundary",
+      "event": "Published64de repair; current saved path identifies typed marker query boundary for coherent source-backed follow-up",
+      "head": "364bd29c066c233f7219e4df13f1e7cb9b04d5d9",
+      "source_head": "64de4321ab3a19fc18e699b3793b88c2ddb6590f",
+      "capture_seconds": 14.41792625,
+      "saved_slide": "0x111454000",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "scope": "One coherent typed marker query plus candidate classification/result phase lifetimes; preserve all predicates/order/providers/seven facts",
+      "cancel_requested": [
+        40037694283,
+        40036712726
+      ],
+      "required_quality_preserved": 40037697745,
+      "m01_complete": false,
+      "offline_prologue_verified_full_commander_temporary": true,
+      "candidate_result_buffers_observed": true,
+      "recoverable_metadata_fixed_frame_hex": "0x4010",
+      "runtime_success": false
+    },
+    {
+      "at": "2026-10-23T23:10:36.621054+00:00",
+      "checkpoint_key": "20261024-m01-threefile-ownership-delta-source-clear",
+      "event": "Coherent typed marker query and candidate frame separation implemented and independently reviewed",
+      "source_blobs": {
+        "Game": "464f3f60ffa07d93e8cb0ec4a7825320ca2b302c",
+        "Pickup": "37323f013156471d16c0dbf7a2513f015ca5a561",
+        "WorkTarget": "8a1bfc289e5d36d5e84b7cb991b727deef91ede1"
+      },
+      "review": "clear",
+      "runtime_result": "running",
+      "m01_complete": false,
+      "usable_delivery": false,
+      "head": "12cdc2f330672ca3ade01299f2bbe60e2091c2a8",
+      "committed_at_recorded": "2026-10-23T23:12:12.132906+00:00",
+      "new_existing_matrix_case": "absent_saved_script_state",
+      "exec_session": 6904
     }
   ],
   "two_developer_phase": {
