@@ -7507,6 +7507,30 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:16:14Z",
+      "checkpoint_key": "20261023-m01-system-projection-focused-qualified",
+      "event": "Station system projection correction passes original focused units and independent review",
+      "closed_issues": [
+        149
+      ],
+      "head": "d7e292a3df27c8dfbbf70be5baff70fb60ee77f7",
+      "reviewed_game_blob": "949ee56b121f2e3d4ef7ed7978313f0b3a031861",
+      "focused_methods": 4,
+      "authored_cases": 12,
+      "compile_seconds": 214.31,
+      "process_seconds": 229.7755522080697,
+      "exit_code": 0,
+      "report": "/tmp/elite-149-system-projection-units-swift-testing.xml",
+      "report_failures": 0,
+      "report_errors": 0,
+      "report_skips": 0,
+      "independent_review": "MBA source/result clear, exact original cases confirmed, worktree clean",
+      "source_published": false,
+      "next_action": "publish promptly with qualified ledger; exact-head required gates next, no local replay",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
