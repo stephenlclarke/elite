@@ -9614,6 +9614,17 @@
       "execution_policy": "combined known source corrections and independent review, one affected unit batch, reuse unaffected passes; no per-helper gates",
       "publication": "remote checkpoint then mandatory PR25 final-head release gates",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T22:03:44.101658+00:00",
+      "checkpoint_key": "20261023-m01-combined-packet-offline-game-copy-proof",
+      "event": "Offline current resolver assembly proves full Game temporary at borrowing boundary; combined correction scope refined",
+      "source_head": "47438127cc96bbfd5576c5182754cfafe35a68ce",
+      "issue": 168,
+      "evidence_path": "/tmp/elite-168-current-owned-capture/offline-resolver-prologue.txt",
+      "scope": "mutating/inout stored read plus analogous demonstrated targeting/procurement boundaries in same packet",
+      "new_target_execution": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
