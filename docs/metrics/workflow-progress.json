@@ -9878,6 +9878,24 @@
       "pre_dispatch_transfer_rejection_not_test_retry": true,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:56:25.308351+00:00",
+      "checkpoint_key": "20261023-m01-feab-normal-batch-failure-verified",
+      "event": "Final crew-log repair normal batch compiles then crashes without method completion; independently verified",
+      "head": "feab1bcb1d34cad994d3a74012ff33abc122d723",
+      "build_seconds": 285.35,
+      "wall_seconds": 297.460538459,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_started": 6,
+      "methods_completed": 0,
+      "image_uuid": "ABB738A8-4275-3ECC-8436-E96F1E89A6E5",
+      "collector_sha256": "264897d8565edbfc3b1252835062c07d47063855afa11d1639fcf8ae5571142b",
+      "matching_crash_reports": 0,
+      "attribution": "unattributed",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
