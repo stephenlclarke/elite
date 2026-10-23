@@ -15,3 +15,7 @@ Strict Swift formatting and diff hygiene pass. Independent actual-diff review an
 ## Compatibility and remaining limits
 
 No save/schema, actor isolation, authority or quality threshold changes. Required final-head coverage, sanitizer, leak and review gates remain; historical144 is not assigned a cause. Original incomplete methods, completed-save/reopen proof and release remain unqualified until actual results establish them.
+
+## First combined execution
+
+The four original methods ran at `fce2782b` on Swift6.1.2/SDK15.5. Compilation passed in75.03seconds; process exited1/rawSIGBUS10 after86.793152292seconds. All four methods only started, with no terminal pass or assertion result and unfinished52-byte XML. Retained `/tmp/elite-161-163-focused.log`, `-result.json`, `-crash.ips` and `-image.json` preserve exact source/result and loaded image19834FA1-FDB6-33B4-905C-7135D55C59D4/SHA256e6662a218eac6907ad0a33f2f78a82be25dec08f005700cbc4fefa96a7b38202. Independent actual-source review is clear; execution qualification and current fault attribution remain pending.

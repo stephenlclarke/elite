@@ -355,7 +355,7 @@ extension Game {
     key: String, index: Int, pack: ScriptPack, board: ScriptContractBoard,
     offer: ScriptContractOffer, id: UUID, pledge: ScriptPledgePreview?, confirmationToken: UUID
   ) throws -> PreparedContractAcceptance {
-    let acceptedAt = commander.scriptState.clock(board.clock)
+    let acceptedAt = withReadOnlyScriptState { $0.clock(board.clock) }
     let deadline = offer.duration == 0 ? nil : acceptedAt + offer.duration
     let job = ScriptContractJob(
       boardKey: key, provider: board.provider, version: board.version,
@@ -372,7 +372,7 @@ extension Game {
       pledgeAdmission = .init(
         instance: instanceID, board: board, offer: offer,
         preview: pledge, epoch: ecmControl.epoch,
-        sequence: commander.scriptState.nextEvent + 1,
+        sequence: withReadOnlyScriptState { $0.nextEvent } + 1,
         cause: scriptEventContext(
           .init(
             id: instanceID, definition: pack.manifest.stateID,
@@ -380,7 +380,7 @@ extension Game {
     }
     if offer.courier != nil {
       guard scriptCourierAdmission == nil,
-        commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+        withReadOnlyScriptState({ $0.nextEvent }) < UInt64(Int64.max) - 1
       else {
         throw MissionPackError("Courier confirmation cannot start in this context.")
       }
