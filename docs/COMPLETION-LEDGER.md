@@ -4,6 +4,8 @@ Updated 23 October 2026. This is the current delivery guide, not a content-compl
 
 ## Current execution checkpoint — 22 October, 14:23 UTC
 
+M01 / #112 five-query corrected build PASSED in 88.83 seconds. The first build rejected only a new test macro expression; no runtime ran against that rejected form. G1 split the same whole-value and sorted-codec assertions into two expectations, and MBA independently verified the exact assertion-only delta (test prefix 26fe24f9), with production cb06cf0a / ce3df924 unchanged. The five-query emitted-copy gate and one affected ten-method / 26-case execution remain pending; compile and source clearance do not qualify the rescue path. G1 owns execution; MBA owns independent artifact review. M01 remains incomplete and unreleased.
+
 M01 / #112 bounded FIVE mission-cargo queries IMPLEMENTED and independently source/lifetime/test REVIEW-CLEAR at stable review prefixes ScriptMissionState cb06cf0a, cargo ce3df924 and test 46e02a91. MBA inverted only the five queries to recover complete prior b126 source and only the four scalar RHS changes plus phase-local payload snapshot to recover complete prior a195 cargo source byte for byte. Typed field-specific compiler offsets, bounds/alignment/count checks and nonescaping owned scalar/COW-dictionary returns are clear.
 
 Navigation -> seed -> workshop -> clinic -> payload phase order, nil defaults, count/range/overflow checks and exact addition semantics are preserved. The payload snapshot occurs only inside the original payload phase; no earlier hoist or iteration-policy change. Three new methods / 14 cases cover exact query values, whole retained value, sorted codec bytes and COW independence. Maintained selection adds three methods (366 = prior 363 + 3), removing none.
