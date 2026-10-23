@@ -9853,6 +9853,18 @@
       "unit_pass": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:50:05.197998+00:00",
+      "checkpoint_key": "20261023-m01-164-9f4-committed-final-review-clear",
+      "event": "Crew-log marker repair committed with two boundary cases; final independent source/test review clear",
+      "head": "9f4f80f9facd8691630bab9b35518a405248f6e2",
+      "new_argument_cases": 2,
+      "test_blob_prefix": "298f0b0f",
+      "review": "clear",
+      "unit_result": "pending",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
