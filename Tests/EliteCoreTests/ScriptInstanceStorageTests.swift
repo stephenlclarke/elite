@@ -215,4 +215,126 @@ struct ScriptInstanceStorageTests {
         == object as NSDictionary)
   }
 
+  @Test(arguments: [
+    "savedCollections", "savedCampaignChildren", "campaignParent", "savedCampaignReceiptScopes",
+    "savedConversationReceipts", "savedChoiceReceipts", "completionReceipt",
+    "savedProviderContract",
+    "savedOwnedCargo", "savedWayfarerColdChain", "savedWayfarerRepairLoop", "savedFieldRelief",
+    "savedNavigationTrade", "savedOriginalSurvey", "savedGlassMeridian", "savedArkReserve",
+    "savedArkRecovery", "savedNativeArk", "savedNativeCrewLog", "savedNativeInductionUtility",
+    "savedNativeInductionClinic", "savedNativeInductionWorkshop", "savedNativeInductionSeed",
+    "savedWayfarerInduction", "savedFlightReception", "savedMeasuredExtraction",
+    "savedRecordRecovery",
+    "savedIdentifiedSalvage", "courier", "pledgeReceiptID", "receiptJoins", "suspension",
+    "acknowledgedThrough", "dialogue", "contract", "savedGearIssues", "savedOwnedEncounters",
+  ])
+  func explicitNullOptionalKeysRetainTheOriginalAbsentSchema(key: String) throws {
+    let original = originalInstanceObject()
+    var withNull = original
+    withNull[key] = NSNull()
+    let decoded = try JSONDecoder().decode(
+      ScriptInstance.self, from: JSONSerialization.data(withJSONObject: withNull))
+    let encoded = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)) as? NSDictionary)
+    // All fourteen original required keys survive; an optional null has no storage envelope.
+    #expect(encoded == original as NSDictionary)
+    let independent = try JSONDecoder().decode(
+      ScriptInstance.self, from: JSONSerialization.data(withJSONObject: original))
+    #expect(decoded == independent)
+  }
+
+  @Test func sharedCloneKeepsLargeNativePayloadsWhenTheContractIsModified() throws {
+    let fixture = try InductionSeedFixture()
+    var original = storedInstance()
+    original.savedNativeInductionSeed = fixture.child().savedNativeInductionSeed
+    original.savedWayfarerInduction = fixture.held
+    let retained = original
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+    let before = try encoder.encode(original)
+    var changed = original
+    // This is the required Array COW plus inner payload clone at the observed settlement boundary.
+    changed.contract?.settled = true
+    changed.contract?.settlementAmount = 100
+    #expect(changed.contract?.settled == true && original.contract?.settled == false)
+    #expect(changed.savedNativeInductionSeed == original.savedNativeInductionSeed)
+    #expect(changed.savedWayfarerInduction == original.savedWayfarerInduction)
+    #expect(changed.reservedSeedCargoTonnes == original.reservedSeedCargoTonnes)
+    #expect(original == retained)
+    #expect(try encoder.encode(retained) == before)
+    changed.savedNativeInductionSeed = nil
+    changed.savedWayfarerInduction = nil
+    #expect(retained.savedNativeInductionSeed != nil && retained.savedWayfarerInduction != nil)
+    #expect(try encoder.encode(original) == before)
+    #expect(try JSONDecoder().decode(ScriptInstance.self, from: before) == retained)
+  }
+
+  @Test func throwingNestedInoutMutationDetachesAndRemainsWritable() throws {
+    enum Expected: Error { case stop }
+    let original = storedInstance()
+    let retained = original
+    var changed = original
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+    let before = try encoder.encode(original)
+    func mutateThenThrow(_ job: inout ScriptContractJob?) throws {
+      job?.settled = true
+      job?.settlementAmount = 100
+      throw Expected.stop
+    }
+    #expect(throws: Expected.self) { try mutateThenThrow(&changed.contract) }
+    #expect(changed.contract?.settled == true && changed.contract?.settlementAmount == 100)
+    #expect(original.contract?.settled == false && original.contract?.settlementAmount == nil)
+    changed.receiptJoins?["job"]?.append(UUID())
+    changed.journal.append("After throw")
+    #expect(changed.receiptJoins?["job"]?.count == 2 && changed.journal.count == 2)
+    #expect(original.receiptJoins?["job"] == [original.id] && original.journal == ["Accepted"])
+    #expect(original == retained)
+    #expect(try encoder.encode(original) == before)
+    #expect(try JSONDecoder().decode(ScriptInstance.self, from: encoder.encode(changed)) == changed)
+  }
+
+  @Test func sharedPayloadEqualityPreservesNaNAndSignedZeroMemberSemantics() {
+    var value = storedInstance()
+    value.timers["pulse"] = .init(
+      id: "pulse", domain: .flight, due: .nan, interval: 1, policy: .skip)
+    let shared = value
+    #expect(value != shared && shared != value)
+    var independentlyCloned = shared
+    independentlyCloned.revision += 1
+    independentlyCloned.revision -= 1
+    #expect(value != independentlyCloned)
+    value.timers["pulse"]?.due = -0.0
+    independentlyCloned.timers["pulse"]?.due = 0.0
+    #expect(value == independentlyCloned && independentlyCloned == value)
+    #expect(shared.timers["pulse"]?.due.isNaN == true)
+  }
+
+  @Test func suppliedAndActorSnapshotInstancesKeepIndependentNestedValues() async throws {
+    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/scripted-courier")
+    let pack = try ScriptPackLibrary.read(directory)
+    var supplied = Game(executive: false)
+    supplied.screen = .status
+    supplied.scriptPacks = [pack]
+    let id = try supplied.acceptScriptMission(pack, drainAccepted: false)
+    let original = try #require(supplied.commander.scriptState.instances[id])
+    let runtime = GameRuntime(game: supplied)
+    let retained = await runtime.snapshot()
+    let actorInstance = try #require(retained.commander.scriptState.instances[id])
+    var caller = retained
+    caller.commander.scriptState.instances[id]?.data = .object(["caller": .integer(1)])
+    caller.commander.scriptState.instances[id]?.journal.append("Caller only")
+    supplied.commander.scriptState.instances[id]?.payloads["supplied"] = 1
+    supplied.commander.scriptState.instances[id]?.revision += 1
+    let latest = await runtime.snapshot()
+    #expect(latest.commander.scriptState.instances[id] == actorInstance)
+    #expect(retained.commander.scriptState.instances[id] == actorInstance)
+    #expect(actorInstance == original)
+    #expect(caller.commander.scriptState.instances[id] != actorInstance)
+    #expect(supplied.commander.scriptState.instances[id] != actorInstance)
+    #expect(actorInstance.payloads["supplied"] == nil && actorInstance.journal.isEmpty)
+  }
+
 }
