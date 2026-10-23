@@ -346,7 +346,7 @@ extension Game {
     let miningPresence = Self.gameplayMiningPresence(game)
     let depleted = Self.depletedGameplayRocks(game)
     return .init(
-      system: game.withReadOnlyCommander { Self.gameplaySystemIdentity($0) },
+      system: game.storedSystemIdentity(),
       seed: Self.gameplayContextSeed(game),
       government: Self.gameplayCurrentSystem(game).government,
       visit: flight.visit, revision: game.gameplayRevision, physicalTime: flight.physicalTime,
