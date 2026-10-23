@@ -6007,6 +6007,27 @@
       "whole_hull_complete": false,
       "merged": false,
       "usable_delivered": false
+    },
+    {
+      "at": "2026-10-23T10:25:04.670873+00:00",
+      "event": "Gyrfalcon Assault current source and affected parent components unit verified",
+      "pr": 120,
+      "head": "e8ec44d794fd0aeb2fea64f7b1af52b25324d49e",
+      "run": 39937817506,
+      "workflow": "Isolated Unit Tests",
+      "methods_passed": 362,
+      "new_component_methods_passed": 5,
+      "affected_burro_methods_passed": 5,
+      "affected_haflinger_methods_passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "compile_seconds": 217.16,
+      "unit_seconds": 47.721,
+      "parent_final_head_checks_qualified": false,
+      "whole_hulls_complete": false,
+      "merged": false,
+      "usable_delivered": false
     }
   ],
   "two_developer_phase": {
