@@ -21,6 +21,13 @@ extension Game {
         .init(request: $0.identity, actor: nil, refusal: .staleContext)
       }
     }
+    return admitCurrentEncounterPlan(plan, context: context)
+  }
+
+  @inline(never)
+  private mutating func admitCurrentEncounterPlan(
+    _ plan: EncounterPlan, context: EncounterContext
+  ) -> [SpawnReceipt] {
     var receipts: [SpawnReceipt] = []
     for batch in plan.batches {
       if batch.atomic, let refusal = batchRefusal(batch.requests) {
