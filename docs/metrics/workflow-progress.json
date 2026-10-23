@@ -5969,6 +5969,25 @@
       "merged": false,
       "usable_delivered": false,
       "integration_deferred": true
+    },
+    {
+      "at": "2026-10-23T10:20:21.755356+00:00",
+      "event": "Gyrfalcon Command and Patrol coherent runtime packet pushed",
+      "ledger_ids": [
+        "M04.H003.runtime",
+        "M04.H004.runtime"
+      ],
+      "pr": 121,
+      "head": "7217832939018e9fcfa24f28f406a2d0cc00fecf",
+      "new_component_methods_written": 4,
+      "new_parameter_cases_written": 8,
+      "selected_methods": 366,
+      "source_review": "MBA assigned",
+      "unit_status": "pending",
+      "merged": false,
+      "whole_hulls_complete": false,
+      "usable_delivered": false,
+      "integration_deferred": true
     }
   ],
   "two_developer_phase": {
