@@ -7576,6 +7576,30 @@
       "current_status": "both in_progress; duplicate39993737558 cancelled",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:25:13Z",
+      "checkpoint_key": "20261023-m01-current-sigill-context-capture-assigned",
+      "event": "Current-head unexplained signal requires one exact failing-context capture",
+      "issue": 144,
+      "head": "854331da5c12c481e1157ebf52ce8dc32eb87ab5",
+      "run": 39993726359,
+      "status": "failed",
+      "compile_seconds": 224.38,
+      "signal": 4,
+      "completed_methods": 0,
+      "xml_bytes": 52,
+      "recorded_assertion": false,
+      "binary_uuid": "94F09606-55D4-32C0-9A2E-F3A73CD6C3BA",
+      "binary_sha256": "21e3ffb8ec20ef3d2507b076e9c2aaaf7bf6051035e2bc26a3dec763e0b0914a",
+      "selected_thread": "main mach_msg2/CFRunLoop/asyncMain; no application fault or mapped guard",
+      "issue149_recurrence": "not established",
+      "next_owner": "G1",
+      "next_scope": "ONE finite retained exactcurrent VM original524 failing-context LLDB capture, first signal before backtrace, no rebuild/defaultstack/selection change",
+      "diagnosis_only_not_qualification": true,
+      "reviewer": "MBA image/input/cause/diff review, no execution",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
