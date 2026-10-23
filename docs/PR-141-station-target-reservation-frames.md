@@ -31,3 +31,9 @@ acceptance is claimed.
 Original artifact: `/tmp/elite-mba-c40-unit39973423947`. The actual required
 quality run 39973778813 separately failed stale ship media before coverage,
 sanitizer and leak stages; it does not qualify or fail those later stages.
+
+The first focused invocation at 005d3634 failed compilation after 93.218155
+seconds; no test ran. ScriptInstance.digest is read-only. Correct the negative
+fixture through the existing Codable replacement helper, preserving the same
+corrupt-digest refusal assertion. The isolated-report fixture also advances
+its exact expected method count from 523 to 524; all six report checks pass.

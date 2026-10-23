@@ -144,8 +144,8 @@ struct PracticeTargetUnitTests {
       identity: try #require(original.physical).identity, population: .cargo)
     #expect(!game.value.hasNativePracticeReservation(ordinary))
 
-    game.value.commander.scriptState.instances[instance.id]?.digest = String(
-      repeating: "b", count: 64)
+    game.value.commander.scriptState.instances[instance.id] = try replacing(
+      instance, key: "digest", with: String(repeating: "b", count: 64))
     #expect(!game.value.hasNativePracticeReservation(original))
     game.value.commander.scriptState.instances.removeValue(forKey: instance.id)
     #expect(!game.value.hasNativePracticeReservation(original))
