@@ -10126,6 +10126,34 @@
       "exec_session": 20686,
       "unit_methods_selected": 11,
       "vm_preflight": "clean_and_no_worker_compiler_test_debugger"
+    },
+    {
+      "at": "2026-10-23T23:32:29.159440+00:00",
+      "checkpoint_key": "20261024-m01-33cb-normal-guard-availability-parent-assigned",
+      "event": "Metadata batch fails with authoritative normal mappedguard availability stack; coherent parent boundary review assigned",
+      "head": "33cb5f2b3e1a5528d98d2559a1e76a39017ca406",
+      "build_seconds": 145.98,
+      "wall_seconds": 158.54203325,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_completed": 0,
+      "normal_pid": 49332,
+      "image_uuid": "8E39D609-2E8B-397E-A4FC-05F70AC9AC9B",
+      "fault_address": "0x16f82bff0",
+      "sp": "0x16f82bfc0",
+      "mapped_guard": [
+        "0x16f828000",
+        "0x16f82c000"
+      ],
+      "new_capture_needed": false,
+      "issues": [
+        169,
+        161
+      ],
+      "owner": "G1",
+      "reviewer": "MBA",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
