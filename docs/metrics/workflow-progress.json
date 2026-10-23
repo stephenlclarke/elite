@@ -8738,6 +8738,28 @@
       "required_quality_status": "active",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T20:02:53Z",
+      "checkpoint_key": "20261023-m01-crash-printer-158-assigned",
+      "event": "Measured390-second optional crash printer overhead assigned as bounded runner remediation",
+      "issue": 158,
+      "evidence_run": 40008995873,
+      "evidence_make_seconds": 1479.688272,
+      "evidence_build_seconds": 702.1,
+      "explicit_backtrace_seconds": 390.06,
+      "helper_to_backtrace_start_seconds": 39,
+      "backtrace_argument_timeout_seconds": 30,
+      "source": "Tools/CI/crash_artifacts.py runtime_child_environment forcesenable=yes",
+      "developer": "G1 minimaloptionalprinterenable=no + affected Python units",
+      "reviewer": "MBA actualdiff/results",
+      "preserve": "ownedLLDB/normalIPS/source-image/process evidence, all tests/exitstatus/qualitygates",
+      "new_swift_or_benchmark_run": false,
+      "current_required_run": 40013975536,
+      "current_run_untouched": true,
+      "runtime_speedup_claim": "not yet measured for changedsetting",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
