@@ -159,4 +159,60 @@ struct ScriptInstanceStorageTests {
     #expect(encoded["savedChoiceReceipts"] != nil && encoded["savedGearIssues"] != nil)
     #expect(encoded["savedOwnedEncounters"] != nil)
   }
+
+  @Test(arguments: [
+    "id", "definition", "version", "digest", "data", "savedCollections",
+    "savedCampaignChildren", "savedCampaignReceiptScopes", "savedConversationReceipts",
+    "savedChoiceReceipts", "receiptJoins", "savedGearIssues", "savedOwnedEncounters",
+    "pledgeReceiptID", "suspension", "acknowledgedThrough", "outcome-complete",
+    "outcome-failed", "outcome-abandoned", "revision", "acknowledgedEvents", "receipts",
+    "milestones", "payloads", "timers", "dialogue", "journal", "contract", "randomState",
+  ])
+  func equalityDistinguishesChangedValuesAndAbsentVersusEmptyStoredCollections(field: String) throws
+  {
+    let object = originalInstanceObject()
+    let original = try JSONDecoder().decode(
+      ScriptInstance.self, from: JSONSerialization.data(withJSONObject: object))
+    let populated = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(storedInstance())) as? [String: Any])
+    var changed = object
+    switch field {
+    case "id", "pledgeReceiptID": changed[field] = UUID().uuidString
+    case "definition": changed[field] = "test.changed"
+    case "version": changed[field] = "2.0.0"
+    case "digest": changed[field] = String(repeating: "b", count: 64)
+    case "data": changed[field] = ["changed": 1]
+    case "savedCollections", "savedCampaignChildren", "savedCampaignReceiptScopes",
+      "savedChoiceReceipts", "receiptJoins", "savedGearIssues", "savedOwnedEncounters":
+      changed[field] = [String: Any]()
+    case "savedConversationReceipts": changed[field] = [Any]()
+    case "suspension": changed[field] = "Paused"
+    case "acknowledgedThrough", "revision": changed[field] = 1
+    case "outcome-complete": changed["outcome"] = "complete"
+    case "outcome-failed": changed["outcome"] = "failed"
+    case "outcome-abandoned": changed["outcome"] = "abandoned"
+    case "acknowledgedEvents", "milestones": changed[field] = [1]
+    case "receipts", "journal": changed[field] = ["changed"]
+    case "payloads": changed[field] = ["changed": 1]
+    case "timers":
+      let timer = ScriptTimer(id: "pulse", domain: .flight, due: 1, interval: 2, policy: .skip)
+      changed[field] = [
+        "pulse": try JSONSerialization.jsonObject(with: JSONEncoder().encode(timer))
+      ]
+    case "dialogue", "contract": changed[field] = try #require(populated[field])
+    case "randomState": changed[field] = UInt64(0x45_4c49_5446)
+    default: Issue.record(Comment(rawValue: "Unrecognised equality fixture: " + field))
+    }
+    let different = try JSONDecoder().decode(
+      ScriptInstance.self, from: JSONSerialization.data(withJSONObject: changed))
+    #expect(original != different && different != original)
+    let retained = different
+    let reloaded = try JSONDecoder().decode(
+      ScriptInstance.self, from: JSONEncoder().encode(different))
+    #expect(different == retained && retained == reloaded)
+    #expect(
+      try JSONSerialization.jsonObject(with: JSONEncoder().encode(original)) as? NSDictionary
+        == object as NSDictionary)
+  }
+
 }

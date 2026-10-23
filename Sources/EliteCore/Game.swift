@@ -430,6 +430,402 @@ public struct Commander: Sendable, Equatable, Codable {
     case finiteXYZzyCash
   }
 
+  // Preserve complete stored-value equality while retiring each field's temporaries in turn.
+  @inline(never)
+  public static func == (_ lhs: Self, _ rhs: Self) -> Bool {
+    guard equalSavedContracts(lhs, rhs) else { return false }
+    guard equalLegacyOwnedEquipment(lhs, rhs) else { return false }
+    guard equalSavedAccommodation(lhs, rhs) else { return false }
+    guard equalSavedScriptState(lhs, rhs) else { return false }
+    guard equalSavedEquipmentInventory(lhs, rhs) else { return false }
+    guard equalSavedEquipmentPurchaseHistory(lhs, rhs) else { return false }
+    guard equalSavedEMPState(lhs, rhs) else { return false }
+    guard equalSavedPlayerElectrical(lhs, rhs) else { return false }
+    guard equalSavedEMPCharge(lhs, rhs) else { return false }
+    guard equalSavedCrimboState(lhs, rhs) else { return false }
+    guard equalSavedNativePeopleCustodyStorage(lhs, rhs) else { return false }
+    guard equalSavedSalvageLedger(lhs, rhs) else { return false }
+    guard equalSavedAlienStorageReference(lhs, rhs) else { return false }
+    guard equalAlienStorageState(lhs, rhs) else { return false }
+    guard equalSavedEquipmentVersion(lhs, rhs) else { return false }
+    guard equalNativeStations(lhs, rhs) else { return false }
+    guard equalSavedFlightSimulation(lhs, rhs) else { return false }
+    guard equalSavedCrimeLedger(lhs, rhs) else { return false }
+    guard equalSavedStationSecurity(lhs, rhs) else { return false }
+    guard equalEncounterDirector(lhs, rhs) else { return false }
+    guard equalSavedWantedCareers(lhs, rhs) else { return false }
+    guard equalSavedNPCPersistence(lhs, rhs) else { return false }
+    guard equalSavedCargoDebrisLedger(lhs, rhs) else { return false }
+    guard equalSavedMiningLedger(lhs, rhs) else { return false }
+    guard equalSavedMissionProgress(lhs, rhs) else { return false }
+    guard equalWantedAmnesty(lhs, rhs) else { return false }
+    guard equalOwnedShipID(lhs, rhs) else { return false }
+    guard equalOriginalMarkets(lhs, rhs) else { return false }
+    guard equalName(lhs, rhs) else { return false }
+    guard equalCredits(lhs, rhs) else { return false }
+    guard equalFuel(lhs, rhs) else { return false }
+    guard equalGalaxy(lhs, rhs) else { return false }
+    guard equalSystem(lhs, rhs) else { return false }
+    guard equalCargo(lhs, rhs) else { return false }
+    guard equalEquipment(lhs, rhs) else { return false }
+    guard equalMissiles(lhs, rhs) else { return false }
+    guard equalKills(lhs, rhs) else { return false }
+    guard equalLegal(lhs, rhs) else { return false }
+    guard equalUnlimitedMissiles(lhs, rhs) else { return false }
+    guard equalUnlimitedCargo(lhs, rhs) else { return false }
+    guard equalUnlimitedCash(lhs, rhs) else { return false }
+    guard equalUnlimitedFuel(lhs, rhs) else { return false }
+    guard equalUnlimitedJumps(lhs, rhs) else { return false }
+    guard equalAutoTrade(lhs, rhs) else { return false }
+    guard equalSpeech(lhs, rhs) else { return false }
+    guard equalExecutive(lhs, rhs) else { return false }
+    guard equalDiscoveredSecretPorts(lhs, rhs) else { return false }
+    guard equalBlackjackMission(lhs, rhs) else { return false }
+    guard equalDisplayStyle(lhs, rhs) else { return false }
+    guard equalNavalMission(lhs, rhs) else { return false }
+    guard equalXyzzyEnabled(lhs, rhs) else { return false }
+    guard equalAutomaticProfitScan(lhs, rhs) else { return false }
+    guard equalAutomaticECM(lhs, rhs) else { return false }
+    guard equalAutomaticTargeting(lhs, rhs) else { return false }
+    guard equalReturnFireEnabled(lhs, rhs) else { return false }
+    guard equalCapitalReward(lhs, rhs) else { return false }
+    guard equalNavigationRoute(lhs, rhs) else { return false }
+    guard equalStorageUnitCount(lhs, rhs) else { return false }
+    guard equalMountedLasers(lhs, rhs) else { return false }
+    guard equalFiniteXYZzyCash(lhs, rhs) else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func equalSavedContracts(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedContracts == rhs.savedContracts
+  }
+
+  @inline(never)
+  private static func equalLegacyOwnedEquipment(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.legacyOwnedEquipment == rhs.legacyOwnedEquipment
+  }
+
+  @inline(never)
+  private static func equalSavedAccommodation(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedAccommodation == rhs.savedAccommodation
+  }
+
+  @inline(never)
+  private static func equalSavedScriptState(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedScriptState == rhs.savedScriptState
+  }
+
+  @inline(never)
+  private static func equalSavedEquipmentInventory(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedEquipmentInventory == rhs.savedEquipmentInventory
+  }
+
+  @inline(never)
+  private static func equalSavedEquipmentPurchaseHistory(
+    _ lhs: borrowing Self, _ rhs: borrowing Self
+  ) -> Bool {
+    lhs.savedEquipmentPurchaseHistory == rhs.savedEquipmentPurchaseHistory
+  }
+
+  @inline(never)
+  private static func equalSavedEMPState(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedEMPState == rhs.savedEMPState
+  }
+
+  @inline(never)
+  private static func equalSavedPlayerElectrical(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedPlayerElectrical == rhs.savedPlayerElectrical
+  }
+
+  @inline(never)
+  private static func equalSavedEMPCharge(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedEMPCharge == rhs.savedEMPCharge
+  }
+
+  @inline(never)
+  private static func equalSavedCrimboState(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedCrimboState == rhs.savedCrimboState
+  }
+
+  @inline(never)
+  private static func equalSavedNativePeopleCustodyStorage(
+    _ lhs: borrowing Self, _ rhs: borrowing Self
+  ) -> Bool {
+    lhs.savedNativePeopleCustodyStorage == rhs.savedNativePeopleCustodyStorage
+  }
+
+  @inline(never)
+  private static func equalSavedSalvageLedger(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedSalvageLedger == rhs.savedSalvageLedger
+  }
+
+  @inline(never)
+  private static func equalSavedAlienStorageReference(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedAlienStorageReference == rhs.savedAlienStorageReference
+  }
+
+  @inline(never)
+  private static func equalAlienStorageState(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.alienStorageState == rhs.alienStorageState
+  }
+
+  @inline(never)
+  private static func equalSavedEquipmentVersion(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedEquipmentVersion == rhs.savedEquipmentVersion
+  }
+
+  @inline(never)
+  private static func equalNativeStations(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.nativeStations == rhs.nativeStations
+  }
+
+  @inline(never)
+  private static func equalSavedFlightSimulation(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedFlightSimulation == rhs.savedFlightSimulation
+  }
+
+  @inline(never)
+  private static func equalSavedCrimeLedger(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedCrimeLedger == rhs.savedCrimeLedger
+  }
+
+  @inline(never)
+  private static func equalSavedStationSecurity(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedStationSecurity == rhs.savedStationSecurity
+  }
+
+  @inline(never)
+  private static func equalEncounterDirector(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.encounterDirector == rhs.encounterDirector
+  }
+
+  @inline(never)
+  private static func equalSavedWantedCareers(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedWantedCareers == rhs.savedWantedCareers
+  }
+
+  @inline(never)
+  private static func equalSavedNPCPersistence(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedNPCPersistence == rhs.savedNPCPersistence
+  }
+
+  @inline(never)
+  private static func equalSavedCargoDebrisLedger(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedCargoDebrisLedger == rhs.savedCargoDebrisLedger
+  }
+
+  @inline(never)
+  private static func equalSavedMiningLedger(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedMiningLedger == rhs.savedMiningLedger
+  }
+
+  @inline(never)
+  private static func equalSavedMissionProgress(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedMissionProgress == rhs.savedMissionProgress
+  }
+
+  @inline(never)
+  private static func equalWantedAmnesty(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.wantedAmnesty == rhs.wantedAmnesty
+  }
+
+  @inline(never)
+  private static func equalOwnedShipID(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.ownedShipID == rhs.ownedShipID
+  }
+
+  @inline(never)
+  private static func equalOriginalMarkets(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.originalMarkets == rhs.originalMarkets
+  }
+
+  @inline(never)
+  private static func equalName(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.name == rhs.name
+  }
+
+  @inline(never)
+  private static func equalCredits(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.credits == rhs.credits
+  }
+
+  @inline(never)
+  private static func equalFuel(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.fuel == rhs.fuel
+  }
+
+  @inline(never)
+  private static func equalGalaxy(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.galaxy == rhs.galaxy
+  }
+
+  @inline(never)
+  private static func equalSystem(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.system == rhs.system
+  }
+
+  @inline(never)
+  private static func equalCargo(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.cargo == rhs.cargo
+  }
+
+  @inline(never)
+  private static func equalEquipment(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.equipment == rhs.equipment
+  }
+
+  @inline(never)
+  private static func equalMissiles(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.missiles == rhs.missiles
+  }
+
+  @inline(never)
+  private static func equalKills(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.kills == rhs.kills
+  }
+
+  @inline(never)
+  private static func equalLegal(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.legal == rhs.legal
+  }
+
+  @inline(never)
+  private static func equalUnlimitedMissiles(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.unlimitedMissiles == rhs.unlimitedMissiles
+  }
+
+  @inline(never)
+  private static func equalUnlimitedCargo(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.unlimitedCargo == rhs.unlimitedCargo
+  }
+
+  @inline(never)
+  private static func equalUnlimitedCash(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.unlimitedCash == rhs.unlimitedCash
+  }
+
+  @inline(never)
+  private static func equalUnlimitedFuel(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.unlimitedFuel == rhs.unlimitedFuel
+  }
+
+  @inline(never)
+  private static func equalUnlimitedJumps(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.unlimitedJumps == rhs.unlimitedJumps
+  }
+
+  @inline(never)
+  private static func equalAutoTrade(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.autoTrade == rhs.autoTrade
+  }
+
+  @inline(never)
+  private static func equalSpeech(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.speech == rhs.speech
+  }
+
+  @inline(never)
+  private static func equalExecutive(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.executive == rhs.executive
+  }
+
+  @inline(never)
+  private static func equalDiscoveredSecretPorts(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.discoveredSecretPorts == rhs.discoveredSecretPorts
+  }
+
+  @inline(never)
+  private static func equalBlackjackMission(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.blackjackMission == rhs.blackjackMission
+  }
+
+  @inline(never)
+  private static func equalDisplayStyle(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.displayStyle == rhs.displayStyle
+  }
+
+  @inline(never)
+  private static func equalNavalMission(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.navalMission == rhs.navalMission
+  }
+
+  @inline(never)
+  private static func equalXyzzyEnabled(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.xyzzyEnabled == rhs.xyzzyEnabled
+  }
+
+  @inline(never)
+  private static func equalAutomaticProfitScan(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.automaticProfitScan == rhs.automaticProfitScan
+  }
+
+  @inline(never)
+  private static func equalAutomaticECM(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.automaticECM == rhs.automaticECM
+  }
+
+  @inline(never)
+  private static func equalAutomaticTargeting(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.automaticTargeting == rhs.automaticTargeting
+  }
+
+  @inline(never)
+  private static func equalReturnFireEnabled(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.returnFireEnabled == rhs.returnFireEnabled
+  }
+
+  @inline(never)
+  private static func equalCapitalReward(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.capitalReward == rhs.capitalReward
+  }
+
+  @inline(never)
+  private static func equalNavigationRoute(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.navigationRoute == rhs.navigationRoute
+  }
+
+  @inline(never)
+  private static func equalStorageUnitCount(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.storageUnitCount == rhs.storageUnitCount
+  }
+
+  @inline(never)
+  private static func equalMountedLasers(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.mountedLasers == rhs.mountedLasers
+  }
+
+  @inline(never)
+  private static func equalFiniteXYZzyCash(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.finiteXYZzyCash == rhs.finiteXYZzyCash
+  }
+
   public init() {
     ownedShipID = NewCommanderDefaults.shipID
   }

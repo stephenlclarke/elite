@@ -224,16 +224,40 @@ extension Game {
   func validateOriginalRescueAction(
     _ quote: NativePeopleStationQuote, action: NativeOriginalRescueAction
   ) throws -> (ScriptPack, NativeMainStationArrivalContext) {
+    guard originalRescueReviewIsCurrent(quote, action: action),
+      originalRescueResourcesMatch(quote), quote.epoch == nativeStationRuntimeEpoch
+    else { throw MissionPackError(Self.originalRescueChangedSourceMessage) }
+    return try originalRescueActionContext(quote)
+  }
+
+  @inline(never)
+  private func originalRescueReviewIsCurrent(
+    _ quote: NativePeopleStationQuote, action: NativeOriginalRescueAction
+  ) -> Bool {
     let current = originalRescueQuote(action)
-    guard screen == .contracts, contractBoard.detail, contractBoard.selected?.people == quote.row,
-      contractBoard.peopleQuote?.reviewToken == quote.reviewToken,
-      quote.allowed, current.allowed, quote.members == current.members,
-      quote.resources == commander.contractQuoteResources, quote.epoch == nativeStationRuntimeEpoch,
-      let context = quote.context, acceptsNativeMainStationArrivalContext(context),
+    return screen == .contracts && contractBoard.detail
+      && contractBoard.selected?.people == quote.row
+      && contractBoard.peopleQuote?.reviewToken == quote.reviewToken
+      && quote.allowed && current.allowed && quote.members == current.members
+  }
+
+  @inline(never)
+  private func originalRescueResourcesMatch(_ quote: NativePeopleStationQuote) -> Bool {
+    quote.resources == commander.contractQuoteResources
+  }
+
+  @inline(never)
+  private func originalRescueActionContext(
+    _ quote: NativePeopleStationQuote
+  ) throws -> (ScriptPack, NativeMainStationArrivalContext) {
+    guard let context = quote.context, acceptsNativeMainStationArrivalContext(context),
       let pack = originalRescuePack
-    else { throw MissionPackError("Original source, custody, fitting or actual receiver changed.") }
+    else { throw MissionPackError(Self.originalRescueChangedSourceMessage) }
     return (pack, context)
   }
+
+  private static let originalRescueChangedSourceMessage =
+    "Original source, custody, fitting or actual receiver changed."
 
   @inline(never)
   private mutating func mutateOriginalRescueAction(

@@ -109,6 +109,357 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedOwnedEncounters: [String: ScriptOwnedEncounter]?
 
   var randomState: UInt64 = 0x45_4c49_5445
+  // Compare every stored field in declaration order without retaining later field temporaries.
+  @inline(never)
+  static func == (_ lhs: Self, _ rhs: Self) -> Bool {
+    guard equalId(lhs, rhs) else { return false }
+    guard equalDefinition(lhs, rhs) else { return false }
+    guard equalVersion(lhs, rhs) else { return false }
+    guard equalDigest(lhs, rhs) else { return false }
+    guard equalData(lhs, rhs) else { return false }
+    guard equalSavedCollections(lhs, rhs) else { return false }
+    guard equalSavedCampaignChildren(lhs, rhs) else { return false }
+    guard equalCampaignParent(lhs, rhs) else { return false }
+    guard equalSavedCampaignReceiptScopes(lhs, rhs) else { return false }
+    guard equalSavedConversationReceipts(lhs, rhs) else { return false }
+    guard equalSavedChoiceReceipts(lhs, rhs) else { return false }
+    guard equalCompletionReceipt(lhs, rhs) else { return false }
+    guard equalSavedProviderContract(lhs, rhs) else { return false }
+    guard equalSavedOwnedCargo(lhs, rhs) else { return false }
+    guard equalSavedWayfarerColdChain(lhs, rhs) else { return false }
+    guard equalSavedWayfarerRepairLoop(lhs, rhs) else { return false }
+    guard equalSavedFieldRelief(lhs, rhs) else { return false }
+    guard equalSavedNavigationTrade(lhs, rhs) else { return false }
+    guard equalSavedOriginalSurvey(lhs, rhs) else { return false }
+    guard equalSavedGlassMeridian(lhs, rhs) else { return false }
+    guard equalSavedArkReserve(lhs, rhs) else { return false }
+    guard equalSavedArkRecovery(lhs, rhs) else { return false }
+    guard equalSavedNativeArk(lhs, rhs) else { return false }
+    guard equalSavedNativeCrewLog(lhs, rhs) else { return false }
+    guard equalSavedNativeInductionUtility(lhs, rhs) else { return false }
+    guard equalSavedNativeInductionClinic(lhs, rhs) else { return false }
+    guard equalSavedNativeInductionWorkshop(lhs, rhs) else { return false }
+    guard equalSavedNativeInductionSeed(lhs, rhs) else { return false }
+    guard equalSavedWayfarerInduction(lhs, rhs) else { return false }
+    guard equalSavedFlightReception(lhs, rhs) else { return false }
+    guard equalSavedMeasuredExtraction(lhs, rhs) else { return false }
+    guard equalSavedRecordRecovery(lhs, rhs) else { return false }
+    guard equalSavedIdentifiedSalvage(lhs, rhs) else { return false }
+    guard equalCourier(lhs, rhs) else { return false }
+    guard equalPledgeReceiptID(lhs, rhs) else { return false }
+    guard equalReceiptJoins(lhs, rhs) else { return false }
+    guard equalOutcome(lhs, rhs) else { return false }
+    guard equalSuspension(lhs, rhs) else { return false }
+    guard equalRevision(lhs, rhs) else { return false }
+    guard equalAcknowledgedEvents(lhs, rhs) else { return false }
+    guard equalAcknowledgedThrough(lhs, rhs) else { return false }
+    guard equalReceipts(lhs, rhs) else { return false }
+    guard equalMilestones(lhs, rhs) else { return false }
+    guard equalPayloads(lhs, rhs) else { return false }
+    guard equalTimers(lhs, rhs) else { return false }
+    guard equalDialogue(lhs, rhs) else { return false }
+    guard equalJournal(lhs, rhs) else { return false }
+    guard equalContract(lhs, rhs) else { return false }
+    guard equalSavedGearIssues(lhs, rhs) else { return false }
+    guard equalSavedOwnedEncounters(lhs, rhs) else { return false }
+    guard equalRandomState(lhs, rhs) else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func equalId(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.id == rhs.id
+  }
+
+  @inline(never)
+  private static func equalDefinition(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.definition == rhs.definition
+  }
+
+  @inline(never)
+  private static func equalVersion(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.version == rhs.version
+  }
+
+  @inline(never)
+  private static func equalDigest(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.digest == rhs.digest
+  }
+
+  @inline(never)
+  private static func equalData(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.data == rhs.data
+  }
+
+  @inline(never)
+  private static func equalSavedCollections(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedCollections == rhs.savedCollections
+  }
+
+  @inline(never)
+  private static func equalSavedCampaignChildren(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedCampaignChildren == rhs.savedCampaignChildren
+  }
+
+  @inline(never)
+  private static func equalCampaignParent(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.campaignParent == rhs.campaignParent
+  }
+
+  @inline(never)
+  private static func equalSavedCampaignReceiptScopes(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedCampaignReceiptScopes == rhs.savedCampaignReceiptScopes
+  }
+
+  @inline(never)
+  private static func equalSavedConversationReceipts(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedConversationReceipts == rhs.savedConversationReceipts
+  }
+
+  @inline(never)
+  private static func equalSavedChoiceReceipts(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedChoiceReceipts == rhs.savedChoiceReceipts
+  }
+
+  @inline(never)
+  private static func equalCompletionReceipt(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.completionReceipt == rhs.completionReceipt
+  }
+
+  @inline(never)
+  private static func equalSavedProviderContract(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedProviderContract == rhs.savedProviderContract
+  }
+
+  @inline(never)
+  private static func equalSavedOwnedCargo(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedOwnedCargo == rhs.savedOwnedCargo
+  }
+
+  @inline(never)
+  private static func equalSavedWayfarerColdChain(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedWayfarerColdChain == rhs.savedWayfarerColdChain
+  }
+
+  @inline(never)
+  private static func equalSavedWayfarerRepairLoop(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedWayfarerRepairLoop == rhs.savedWayfarerRepairLoop
+  }
+
+  @inline(never)
+  private static func equalSavedFieldRelief(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedFieldRelief == rhs.savedFieldRelief
+  }
+
+  @inline(never)
+  private static func equalSavedNavigationTrade(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedNavigationTrade == rhs.savedNavigationTrade
+  }
+
+  @inline(never)
+  private static func equalSavedOriginalSurvey(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedOriginalSurvey == rhs.savedOriginalSurvey
+  }
+
+  @inline(never)
+  private static func equalSavedGlassMeridian(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedGlassMeridian == rhs.savedGlassMeridian
+  }
+
+  @inline(never)
+  private static func equalSavedArkReserve(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedArkReserve == rhs.savedArkReserve
+  }
+
+  @inline(never)
+  private static func equalSavedArkRecovery(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedArkRecovery == rhs.savedArkRecovery
+  }
+
+  @inline(never)
+  private static func equalSavedNativeArk(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedNativeArk == rhs.savedNativeArk
+  }
+
+  @inline(never)
+  private static func equalSavedNativeCrewLog(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedNativeCrewLog == rhs.savedNativeCrewLog
+  }
+
+  @inline(never)
+  private static func equalSavedNativeInductionUtility(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedNativeInductionUtility == rhs.savedNativeInductionUtility
+  }
+
+  @inline(never)
+  private static func equalSavedNativeInductionClinic(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedNativeInductionClinic == rhs.savedNativeInductionClinic
+  }
+
+  @inline(never)
+  private static func equalSavedNativeInductionWorkshop(
+    _ lhs: borrowing Self, _ rhs: borrowing Self
+  ) -> Bool {
+    lhs.savedNativeInductionWorkshop == rhs.savedNativeInductionWorkshop
+  }
+
+  @inline(never)
+  private static func equalSavedNativeInductionSeed(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedNativeInductionSeed == rhs.savedNativeInductionSeed
+  }
+
+  @inline(never)
+  private static func equalSavedWayfarerInduction(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedWayfarerInduction == rhs.savedWayfarerInduction
+  }
+
+  @inline(never)
+  private static func equalSavedFlightReception(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedFlightReception == rhs.savedFlightReception
+  }
+
+  @inline(never)
+  private static func equalSavedMeasuredExtraction(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedMeasuredExtraction == rhs.savedMeasuredExtraction
+  }
+
+  @inline(never)
+  private static func equalSavedRecordRecovery(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedRecordRecovery == rhs.savedRecordRecovery
+  }
+
+  @inline(never)
+  private static func equalSavedIdentifiedSalvage(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedIdentifiedSalvage == rhs.savedIdentifiedSalvage
+  }
+
+  @inline(never)
+  private static func equalCourier(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.courier == rhs.courier
+  }
+
+  @inline(never)
+  private static func equalPledgeReceiptID(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.pledgeReceiptID == rhs.pledgeReceiptID
+  }
+
+  @inline(never)
+  private static func equalReceiptJoins(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.receiptJoins == rhs.receiptJoins
+  }
+
+  @inline(never)
+  private static func equalOutcome(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.outcome == rhs.outcome
+  }
+
+  @inline(never)
+  private static func equalSuspension(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.suspension == rhs.suspension
+  }
+
+  @inline(never)
+  private static func equalRevision(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.revision == rhs.revision
+  }
+
+  @inline(never)
+  private static func equalAcknowledgedEvents(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.acknowledgedEvents == rhs.acknowledgedEvents
+  }
+
+  @inline(never)
+  private static func equalAcknowledgedThrough(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.acknowledgedThrough == rhs.acknowledgedThrough
+  }
+
+  @inline(never)
+  private static func equalReceipts(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.receipts == rhs.receipts
+  }
+
+  @inline(never)
+  private static func equalMilestones(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.milestones == rhs.milestones
+  }
+
+  @inline(never)
+  private static func equalPayloads(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.payloads == rhs.payloads
+  }
+
+  @inline(never)
+  private static func equalTimers(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.timers == rhs.timers
+  }
+
+  @inline(never)
+  private static func equalDialogue(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.dialogue == rhs.dialogue
+  }
+
+  @inline(never)
+  private static func equalJournal(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.journal == rhs.journal
+  }
+
+  @inline(never)
+  private static func equalContract(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.contract == rhs.contract
+  }
+
+  @inline(never)
+  private static func equalSavedGearIssues(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedGearIssues == rhs.savedGearIssues
+  }
+
+  @inline(never)
+  private static func equalSavedOwnedEncounters(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedOwnedEncounters == rhs.savedOwnedEncounters
+  }
+
+  @inline(never)
+  private static func equalRandomState(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.randomState == rhs.randomState
+  }
+
 }
 
 /// One copy-on-write value; Codable forwards the original instance object without an envelope.
@@ -420,6 +771,185 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
   public var localSeconds = 0.0
   public var calendarSeconds = 0.0
   public var transitSeconds = 0.0
+  // Retire each field comparison before entering the next nested value graph.
+  @inline(never)
+  public static func == (_ lhs: Self, _ rhs: Self) -> Bool {
+    guard equalSavedMeasuredExtractionSource(lhs, rhs) else { return false }
+    guard equalSavedRecordRecoverySource(lhs, rhs) else { return false }
+    guard equalSavedIdentifiedSalvageSource(lhs, rhs) else { return false }
+    guard equalSavedOriginalConsentedFreightSupply(lhs, rhs) else { return false }
+    guard equalSavedWayfarerColdChainStock(lhs, rhs) else { return false }
+    guard equalSavedWayfarerRepairLoopStock(lhs, rhs) else { return false }
+    guard equalSavedFleetDiscovery(lhs, rhs) else { return false }
+    guard equalFirstNativeCommoditySale(lhs, rhs) else { return false }
+    guard equalSavedClueJournal(lhs, rhs) else { return false }
+    guard equalFinanceLedger(lhs, rhs) else { return false }
+    guard equalWormholeTransit(lhs, rhs) else { return false }
+    guard equalMissionCalendar(lhs, rhs) else { return false }
+    guard equalPledgeLedger(lhs, rhs) else { return false }
+    guard equalSavedBooks(lhs, rhs) else { return false }
+    guard equalSavedWorldJobs(lhs, rhs) else { return false }
+    guard equalSavedStationResources(lhs, rhs) else { return false }
+    guard equalCalendarLedger(lhs, rhs) else { return false }
+    guard equalSavedProjectiles(lhs, rhs) else { return false }
+    guard equalSavedGeometry(lhs, rhs) else { return false }
+    guard equalInstances(lhs, rhs) else { return false }
+    guard equalPendingEvents(lhs, rhs) else { return false }
+    guard equalNextEvent(lhs, rhs) else { return false }
+    guard equalFlightSeconds(lhs, rhs) else { return false }
+    guard equalLocalSeconds(lhs, rhs) else { return false }
+    guard equalCalendarSeconds(lhs, rhs) else { return false }
+    guard equalTransitSeconds(lhs, rhs) else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func equalSavedMeasuredExtractionSource(
+    _ lhs: borrowing Self, _ rhs: borrowing Self
+  ) -> Bool {
+    lhs.savedMeasuredExtractionSource == rhs.savedMeasuredExtractionSource
+  }
+
+  @inline(never)
+  private static func equalSavedRecordRecoverySource(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedRecordRecoverySource == rhs.savedRecordRecoverySource
+  }
+
+  @inline(never)
+  private static func equalSavedIdentifiedSalvageSource(
+    _ lhs: borrowing Self, _ rhs: borrowing Self
+  ) -> Bool {
+    lhs.savedIdentifiedSalvageSource == rhs.savedIdentifiedSalvageSource
+  }
+
+  @inline(never)
+  private static func equalSavedOriginalConsentedFreightSupply(
+    _ lhs: borrowing Self, _ rhs: borrowing Self
+  ) -> Bool {
+    lhs.savedOriginalConsentedFreightSupply == rhs.savedOriginalConsentedFreightSupply
+  }
+
+  @inline(never)
+  private static func equalSavedWayfarerColdChainStock(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedWayfarerColdChainStock == rhs.savedWayfarerColdChainStock
+  }
+
+  @inline(never)
+  private static func equalSavedWayfarerRepairLoopStock(
+    _ lhs: borrowing Self, _ rhs: borrowing Self
+  ) -> Bool {
+    lhs.savedWayfarerRepairLoopStock == rhs.savedWayfarerRepairLoopStock
+  }
+
+  @inline(never)
+  private static func equalSavedFleetDiscovery(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool
+  {
+    lhs.savedFleetDiscovery == rhs.savedFleetDiscovery
+  }
+
+  @inline(never)
+  private static func equalFirstNativeCommoditySale(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.firstNativeCommoditySale == rhs.firstNativeCommoditySale
+  }
+
+  @inline(never)
+  private static func equalSavedClueJournal(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedClueJournal == rhs.savedClueJournal
+  }
+
+  @inline(never)
+  private static func equalFinanceLedger(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.financeLedger == rhs.financeLedger
+  }
+
+  @inline(never)
+  private static func equalWormholeTransit(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.wormholeTransit == rhs.wormholeTransit
+  }
+
+  @inline(never)
+  private static func equalMissionCalendar(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.missionCalendar == rhs.missionCalendar
+  }
+
+  @inline(never)
+  private static func equalPledgeLedger(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.pledgeLedger == rhs.pledgeLedger
+  }
+
+  @inline(never)
+  private static func equalSavedBooks(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedBooks == rhs.savedBooks
+  }
+
+  @inline(never)
+  private static func equalSavedWorldJobs(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedWorldJobs == rhs.savedWorldJobs
+  }
+
+  @inline(never)
+  private static func equalSavedStationResources(_ lhs: borrowing Self, _ rhs: borrowing Self)
+    -> Bool
+  {
+    lhs.savedStationResources == rhs.savedStationResources
+  }
+
+  @inline(never)
+  private static func equalCalendarLedger(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.calendarLedger == rhs.calendarLedger
+  }
+
+  @inline(never)
+  private static func equalSavedProjectiles(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedProjectiles == rhs.savedProjectiles
+  }
+
+  @inline(never)
+  private static func equalSavedGeometry(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.savedGeometry == rhs.savedGeometry
+  }
+
+  @inline(never)
+  private static func equalInstances(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.instances == rhs.instances
+  }
+
+  @inline(never)
+  private static func equalPendingEvents(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.pendingEvents == rhs.pendingEvents
+  }
+
+  @inline(never)
+  private static func equalNextEvent(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.nextEvent == rhs.nextEvent
+  }
+
+  @inline(never)
+  private static func equalFlightSeconds(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.flightSeconds == rhs.flightSeconds
+  }
+
+  @inline(never)
+  private static func equalLocalSeconds(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.localSeconds == rhs.localSeconds
+  }
+
+  @inline(never)
+  private static func equalCalendarSeconds(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.calendarSeconds == rhs.calendarSeconds
+  }
+
+  @inline(never)
+  private static func equalTransitSeconds(_ lhs: borrowing Self, _ rhs: borrowing Self) -> Bool {
+    lhs.transitSeconds == rhs.transitSeconds
+  }
+
   public init() {}
   public var payloadTonnes: Int {
     var total = 0
@@ -700,15 +1230,24 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
   @inline(never)
   private func instanceMeridianPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
     if instance.definition == NativeGlassMeridian.stateID {
-      guard let opening = instance.savedGlassMeridian,
-        opening.permission.mission == instance.id, instance.payloads.isEmpty,
-        NativeGlassMeridian.readingsValid(opening), NativeGlassMeridian.lossesValid(opening),
-        NativeC01Surveyor.shapeValid(opening)
-      else { return false }
-    } else if instance.savedGlassMeridian != nil {
-      return false
+      return instanceMeridianBodyValid(instance)
     }
+    return instanceHasNoMeridianState(instance)
+  }
+
+  @inline(never)
+  private func instanceMeridianBodyValid(_ instance: borrowing ScriptInstance) -> Bool {
+    guard let opening = instance.savedGlassMeridian,
+      opening.permission.mission == instance.id, instance.payloads.isEmpty,
+      NativeGlassMeridian.readingsValid(opening), NativeGlassMeridian.lossesValid(opening),
+      NativeC01Surveyor.shapeValid(opening)
+    else { return false }
     return true
+  }
+
+  @inline(never)
+  private func instanceHasNoMeridianState(_ instance: borrowing ScriptInstance) -> Bool {
+    instance.savedGlassMeridian == nil
   }
 
   @inline(never)

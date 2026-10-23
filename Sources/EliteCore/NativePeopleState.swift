@@ -248,15 +248,52 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
     }
   }
   func valid(commander: Commander) -> Bool {
+    guard custodyIdentityValid(commander: commander) else { return false }
+    guard custodyStationSourceValid(commander: commander) else { return false }
+    guard custodyOutlookSourceValid(commander: commander) else { return false }
+    guard custodyRescueSourceValid(commander: commander) else { return false }
+    guard custodyEvacuationSourceValid(commander: commander) else { return false }
+    guard custodyAdmissionsValid(commander: commander) else { return false }
+    guard custodyTransfersValid(commander: commander) else { return false }
+    return custodyRevisionsValid(commander: commander)
+  }
+
+  @inline(never)
+  private func custodyIdentityValid(commander: borrowing Commander) -> Bool {
     guard owner == commander.equipmentOwnerID,
       !admissions.isEmpty || stationJourney != nil || outlookJourney != nil
-        || originalRescue != nil || orbitalEvacuation != nil,
-      NativeStationPassengerJourney.validSource(
-        stationJourney, custody: self, commander: commander),
-      NativeOrbitalOutlookJourney.validSource(outlookJourney, custody: self, commander: commander),
-      NativeOriginalRescueJourney.validSource(originalRescue, custody: self, commander: commander),
-      NativeOriginalEvacuation.validSource(orbitalEvacuation, custody: self, commander: commander),
-      admissions.count <= Self.maximumPeople, transfers.count <= Self.maximumPeople,
+        || originalRescue != nil || orbitalEvacuation != nil
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func custodyStationSourceValid(commander: borrowing Commander) -> Bool {
+    return NativeStationPassengerJourney.validSource(
+      stationJourney, custody: self, commander: commander)
+  }
+
+  @inline(never)
+  private func custodyOutlookSourceValid(commander: borrowing Commander) -> Bool {
+    return NativeOrbitalOutlookJourney.validSource(
+      outlookJourney, custody: self, commander: commander)
+  }
+
+  @inline(never)
+  private func custodyRescueSourceValid(commander: borrowing Commander) -> Bool {
+    return NativeOriginalRescueJourney.validSource(
+      originalRescue, custody: self, commander: commander)
+  }
+
+  @inline(never)
+  private func custodyEvacuationSourceValid(commander: borrowing Commander) -> Bool {
+    return NativeOriginalEvacuation.validSource(
+      orbitalEvacuation, custody: self, commander: commander)
+  }
+
+  @inline(never)
+  private func custodyAdmissionsValid(commander: Commander) -> Bool {
+    guard admissions.count <= Self.maximumPeople, transfers.count <= Self.maximumPeople,
       Set(admissions.map(\.person)).count == admissions.count,
       admissions.allSatisfy({ $0.valid(commander: commander) && $0.revision <= revision }),
       Set(transfers.map(\.operation)).count == transfers.count,
@@ -266,6 +303,11 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
             || orbitalEvacuation != nil)))
         && revision <= UInt64(Self.maximumPeople * 2)
     else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func custodyTransfersValid(commander: Commander) -> Bool {
     var terminal: Set<NativePersonReference> = []
     for transfer in transfers {
       guard transfer.owner == owner, (1...Self.maximumPeople).contains(transfer.members.count),
@@ -316,6 +358,11 @@ struct NativePeopleCustodyState: Equatable, Codable, Sendable {
         }
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func custodyRevisionsValid(commander: Commander) -> Bool {
     var revisions = Set(admissions.map(\.revision) + transfers.map(\.revision))
     if let boarding = originalRescue?.boarding { revisions.insert(boarding.revision) }
     return revisions.count == Int(revision) && revisions == (revision == 0 ? [] : Set(1...revision))
@@ -359,6 +406,26 @@ extension Commander {
   var nativeCaptiveCount: Int { nativePeople?.heldCaptives.count ?? 0 }
   var rescuedPodTonnes: Int { nativePeople?.heldPods.count ?? 0 }
   var nativePeopleStateValid: Bool {
+    guard nativePeopleSourcesPresent else { return false }
+    guard let state = nativePeople else {
+      return savedEMPState?.records.values.allSatisfy({ $0.crewCaptures.isEmpty }) ?? true
+    }
+    guard cargo.count == Commodity.all.count, state.valid(commander: self),
+      let mass = checkedCargoTonnes, state.held.isEmpty || mass <= standardCargoCapacity
+    else { return false }
+    return savedEMPState?.records.values.allSatisfy { record in
+      record.crewCaptures.allSatisfy { capture in
+        capture.ordinals.allSatisfy { ordinal in
+          state.admissions.contains {
+            $0.person == .emp(.init(source: record.source, ordinal: ordinal))
+              && $0.origin == .capturedCrew && $0.operation == capture.operation
+          }
+        }
+      }
+    } ?? !state.admissions.contains(where: { $0.person.emp != nil })
+  }
+  @inline(never)
+  private var nativePeopleSourcesPresent: Bool {
     if NativeOriginalEvacuation.nativeInstancePresent(self)
       && nativePeople?.orbitalEvacuation == nil
     {
@@ -377,22 +444,7 @@ extension Commander {
     {
       return false
     }
-    guard let state = nativePeople else {
-      return savedEMPState?.records.values.allSatisfy({ $0.crewCaptures.isEmpty }) ?? true
-    }
-    guard cargo.count == Commodity.all.count, state.valid(commander: self),
-      let mass = checkedCargoTonnes, state.held.isEmpty || mass <= standardCargoCapacity
-    else { return false }
-    return savedEMPState?.records.values.allSatisfy { record in
-      record.crewCaptures.allSatisfy { capture in
-        capture.ordinals.allSatisfy { ordinal in
-          state.admissions.contains {
-            $0.person == .emp(.init(source: record.source, ordinal: ordinal))
-              && $0.origin == .capturedCrew && $0.operation == capture.operation
-          }
-        }
-      }
-    } ?? !state.admissions.contains(where: { $0.person.emp != nil })
+    return true
   }
   func worldOwnedPod(_ person: EMPCrewIdentity) -> Bool {
     !(nativePeople?.admissions.contains { $0.person == .emp(person) } ?? false)
