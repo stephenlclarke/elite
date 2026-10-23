@@ -8,6 +8,8 @@ Updated 23 October 2026. This is the current delivery guide, not a content-compl
 
 This summary supersedes the historical checkpoints below. Development continues while GitHub unit tests and MBA reviews run asynchronously. No integration tests or new release checks are assigned.
 
+MBA backlog clarification from existing reviews: issues93,101,102 and104 have their implementation and affected unit cases already written and source-reviewed. Remaining criteria are successful execution of those specific cases, not new authoring packets. The prior f582 execution compiled but ended with signal4 and zero completed methods; it proves neither a passing case nor an attributed new defect. Preserve these open criteria without duplicating fixes, relabelling them as full integration prerequisites or interrupting current feature writing.
+
 | Item | Owner | Current evidence | Remaining work |
 | --- | --- | --- | --- |
 | Status docking context, PR116 | G1 / MBA | Merged into development at `1a2275fe` on 23 October, 10:36 UTC. MBA verified 348 selected methods on final source `8380f4a9`. | Playable build and release remain separate. |
