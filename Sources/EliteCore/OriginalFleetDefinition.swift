@@ -24,7 +24,9 @@ public struct OriginalFleetDefinition: Sendable {
   public let nativePerformance: ShipPerformance?
   public let approvedMeshAvailable: Bool
   public let integrationBlockers: [String]
-  public var runtimeReady: Bool { OriginalBurroActivation.supports(self) }
+  public var runtimeReady: Bool {
+    OriginalBurroActivation.supports(self) || OriginalHaflingerActivation.supports(self)
+  }
 }
 
 extension OriginalFleetDefinitionData {
