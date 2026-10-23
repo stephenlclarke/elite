@@ -1,6 +1,16 @@
 import CryptoKit
 import Foundation
 
+// Synchronous quote ownership only; the isolated candidate never escapes this request.
+private final class ContractQuoteAttempt {
+  var candidate: Game
+
+  @inline(never)
+  init(original: borrowing Game) {
+    candidate = copy original
+  }
+}
+
 private enum ContractAcceptancePreflight: Sendable {
   case alreadyAccepted(UUID)
   case ready(PreparedContractAcceptance)
@@ -269,9 +279,9 @@ extension Game {
   }
   public func contractAcceptanceQuote(board key: String, offer id: UUID) -> ContractAcceptanceQuote
   {
-    var candidate = self
+    let attempt = ContractQuoteAttempt(original: self)
     var issues: [String] = []
-    do { _ = try candidate.acceptContract(board: key, offer: id) } catch {
+    do { _ = try attempt.candidate.acceptContract(board: key, offer: id) } catch {
       issues.append(error.localizedDescription)
     }
     return completedContractAcceptanceQuote(board: key, offer: id, issues: issues)
