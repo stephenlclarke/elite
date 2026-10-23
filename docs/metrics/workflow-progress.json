@@ -10114,7 +10114,14 @@
       "independent_review_finding": "Nil-payload presence guard must precede entry into heavy measured helper",
       "finding_detected_before_build": true,
       "semantic_order_review": "otherwise_clear",
-      "correction_owner": "G1"
+      "correction_owner": "G1",
+      "finding_resolved_before_build": true,
+      "final_source_review": "clear",
+      "final_source_blobs": {
+        "WorkTarget": "864370d91ed73cd13e305588ec053ba5018a611b",
+        "Practice": "0407191e773d36b7e00f156c6f838095fc1f47a9"
+      },
+      "runtime_result": "pending"
     }
   ],
   "two_developer_phase": {
