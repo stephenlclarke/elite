@@ -4,6 +4,12 @@ Updated 23 October 2026. This is the current delivery guide, not a content-compl
 
 ## Current execution checkpoint — 22 October, 14:23 UTC
 
+M01 / #112 bounded FIVE mission-cargo queries IMPLEMENTED and independently source/lifetime/test REVIEW-CLEAR at stable review prefixes ScriptMissionState cb06cf0a, cargo ce3df924 and test 46e02a91. MBA inverted only the five queries to recover complete prior b126 source and only the four scalar RHS changes plus phase-local payload snapshot to recover complete prior a195 cargo source byte for byte. Typed field-specific compiler offsets, bounds/alignment/count checks and nonescaping owned scalar/COW-dictionary returns are clear.
+
+Navigation -> seed -> workshop -> clinic -> payload phase order, nil defaults, count/range/overflow checks and exact addition semantics are preserved. The payload snapshot occurs only inside the original payload phase; no earlier hoist or iteration-policy change. Three new methods / 14 cases cover exact query values, whole retained value, sorted codec bytes and COW independence. Maintained selection adds three methods (366 = prior 363 + 3), removing none.
+
+G1 owns the active compile and mandatory copy gate for ALL five actual getters/callbacks/thunks before ONE affected runtime run. MBA independently reviews the retained gate and results; source/test clearance is not compiled or runtime qualification. Prior components retain separate pass evidence; genuine rescue and M01 delivery remain incomplete and unreleased.
+
 M01 / #112 reviewed terminal cargo/recorder/station/docking packet is committed at 8c6aa1d7a7c4eeff907a843a625dfb13f8d25495 under checkpoint/unqualified-dock-projections-20261023. The author worktree was clean at this safe point. Root verified the remote checkpoint tag exists; it remains explicitly UNQUALIFIED because the genuine rescue path is still incomplete. This is source preservation, not a merge, playable candidate or release.
 
 G1 continues the already assigned five-read mission-cargo batch; MBA has the exact preservation criteria and reviews in parallel. No additional feature or diagnostic campaign is assigned. All current cargo arithmetic, validation order and earlier pass evidence remain required; each new query/callback must pass its whole-parent-copy-absence gate before one affected run. M01 remains incomplete and unreleased.
