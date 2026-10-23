@@ -8760,6 +8760,24 @@
       "runtime_speedup_claim": "not yet measured for changedsetting",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T20:05:43Z",
+      "checkpoint_key": "20261023-m01-optional-printer-158-closed",
+      "event": "Optional crash printer disabled with focused Python proof; MBA closes158",
+      "issue": 158,
+      "state": "CLOSED",
+      "head": "97ef5fd7f9b8053eb1e9f6355559863059b81ef2",
+      "python_tests": 70,
+      "unit_seconds": 0.158,
+      "process_seconds": 0.313852583,
+      "exit_code": 0,
+      "independent_review": "MBA exact source/result CLEAR; capture hooks/exitstatus/sanitizerprofile/parentimmutability preserved",
+      "swift_build_or_probe": false,
+      "observed_runtime_savings": "not yet measured",
+      "next_action": "G1 coherent publication with notes/latest Root docs, current gates preserved",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
