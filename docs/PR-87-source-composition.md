@@ -21,3 +21,9 @@ Strict scoped Swift formatting, whitespace, six Python report fixtures and25
 equality fixtures pass. Independent actual composition/codec/unit review and
 focused Swift execution are pending. No523-method, native journey, full quality
 gate or release pass is claimed. The existing af706a13 candidate is unchanged.
+
+The new mixed-codec method's two cases pass at33a57dca; retain that unchanged
+boundary's result. The original93 method failed only during setup: its second
+flight had not adopted the original provider frame. Add that one assignment
+before preparation and rerun only the affected93 method. No production policy,
+view-loop assertion, codec code or new-codec fixture changes in this correction.

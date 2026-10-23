@@ -142,6 +142,7 @@ struct NativeDefensiveFlightUnitTests {
     flight.enter(provider.permission.player.system, arriving: false)
     flight.enter(provider.permission.player.system, arriving: false)
     flight.physicalTime = 10
+    flight.pose = provider.permission.frame
     let allocated = try NativePracticeState.prepare(
       permission: provider.permission, flight: &flight)
     try #require(allocated == provider)

@@ -16,3 +16,12 @@ training-only and mixed records, version precedence, roundtrip state, refused
 older/unknown/embedded fields and training-field COW/equality. It uses existing
 valid component fixtures and does not simulate a mixed native journey. Retain
 the original93 physical observation method in the minimal affected batch.
+
+The first33a57dca run compiled in261.39seconds and passed the new normal/alien
+codec cases, but the original93 method caught staleContext. Exact source-gated
+inspection at NativePracticeState.prepare's refusal confirmed predicate tuple
+(true,true,true,false,true): permission, flight, player and time match; pose
+alone differs. The second native-observation fixture omitted the explicit
+provider-frame assignment used by its first preparation. Set that pose before
+prepare, retaining the guard and every original manual/camera observation
+assertion. Retained diagnosis: `/tmp/elite-93-33a5-refusal`; not a test pass.
