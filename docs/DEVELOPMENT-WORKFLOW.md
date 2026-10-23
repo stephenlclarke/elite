@@ -1,6 +1,29 @@
 # Developer and reviewer workflow
 
-Updated 22 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
+Updated 23 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
+
+## Current direction: finish code and unit tests first
+
+Stephen reaffirmed this priority on 23 October. This section overrides older M01-only execution holds, debugger-first flight protocols and routine qualification handoffs. Implement ledger features in priority order, with meaningful component unit tests. Full integration testing comes later. Do not make a cross-system flight, native player journey, GUI run, debugger session, emitted-assembly survey, performance run, packaging or release acceptance a prerequisite for starting the next feature. Preserve existing failures honestly as deferred integration work; do not mark the playable milestone complete from component passes.
+
+The main developer takes the earliest ready ledger feature or an actionable correctness issue at a packet boundary. A difficult bounded repair can remain with the existing specialist under explicit disjoint file ownership, while the main developer continues feature implementation. This does not restart every held developer stream. No worker waits for Root acknowledgements, another worker's broad test run, a public release or a completely empty issue queue.
+
+| Stage | Required result | Next action |
+| --- | --- | --- |
+| Assigned | Ledger ID, owner, feature acceptance and owned files | Implement immediately |
+| Source ready | Complete feature code, meaningful component tests and a pushed commit/PR | Request review once; start next ready packet |
+| Unit verified | Relevant component tests pass on the recorded source; failures remain explicit | MBA reviews the diff and results asynchronously |
+| Reviewed | One independent bugs/performance/style review; actionable findings addressed | Author merges after applicable final-head checks and approvals |
+| Integration deferred | Cross-feature journeys, broad integration/system/performance and release acceptance remain unverified | Batch these later; do not block unrelated source completion |
+| Delivered | Actual accessible build/release evidence | Report usable behavior separately |
+
+Use existing GitHub component-unit jobs; use a focused local unit command only for an authoring uncertainty or an actual failing component. Reuse unchanged unit results. No increasing whole-project selector on every helper correction, duplicate same-head execution, or passing-case replay without an affected dependency. A unit that itself crashes is still a real unit failure and needs an issue; narrowing its scope must preserve its original behavior assertions. Do not rename a journey as a unit to evade this rule or replace a useful unit with implementation-mirroring checks.
+
+Keep one short PR handoff and one ledger row update per packet. Add only required matching issue/PR documentation, updated concisely; do not create per-build reports, repeated hash inventories or parallel chat dossiers. Store raw evidence once and link it. Batch routine ledger and metrics reconciliation; record assignment and source push promptly. No separate Root approval gate for already authorised work.
+
+MBA closes a bounded defect when its own source review and applicable component evidence satisfy that defect. A separate unresolved journey does not hold that closure open. Delivery-only issues remain open with their exact missing delivery criterion. Sonar findings stay pending until the next authoritative main scan. No required GitHub protection, final-head approval, project review request, committed-main analysis or final release requirement is removed; a pending merge gate must not idle the developer.
+
+Measure completed feature packets pushed, independently reviewed/unit-passed packets, merged features, open actionable defects and oldest ready review age separately. Report elapsed-hour rates with a consistent definition. Keep usable deliveries separate, and exclude workflow documents, helper-only corrections and test executions from new-feature throughput. Root uses existing PR/issues/Actions timestamps rather than new reporting tasks. If review work accumulates, Root redirects reviewer capacity instead of stopping development or adding an integrator.
 
 ## Developer: keep coding
 
