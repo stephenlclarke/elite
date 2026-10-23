@@ -9396,6 +9396,24 @@
       "retained_reports_checked": 27,
       "capture_scope": "one current already-built binary/original selection/default stack/concurrency/environment; no rebuild",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:38:59.326577+00:00",
+      "checkpoint_key": "20261023-m01-623-owned-capture-complete",
+      "event": "One exact current fault capture complete; identity preserved and saved attribution assigned",
+      "head": "62315676",
+      "issue": 166,
+      "pid": 36284,
+      "process_seconds": 14.290532292,
+      "driver_exit": 1,
+      "debugger_exit": 0,
+      "fault_captured": true,
+      "handed_back": true,
+      "remaining_owned_processes": [],
+      "same_image_before_after": true,
+      "unit_pass_claim": false,
+      "reviewer": "MBA",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
