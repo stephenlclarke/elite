@@ -7022,6 +7022,37 @@
       "homebrew_updated": false,
       "m01_complete": false,
       "next_action": "G1 source-backed142 repair with MBA source/evidence review, preserve full validation; no repeated attribution probe"
+    },
+    {
+      "at": "2026-10-23T15:34:01Z",
+      "timestamp_scope": "Root recorded independent source/compiler receipts and actual quality terminal status",
+      "checkpoint_key": "20261023-m01-station-reader-correction-compile-followups",
+      "event": "Station reader repair authored; compiler ownership/access followups remain focused",
+      "issue": 142,
+      "local_head": "ebc01d9cf91579fc562a56069f0fec17844e9910",
+      "compile_only_failed_attempts": [
+        {
+          "head_prefix": "3b8501fc",
+          "seconds": 7.8041,
+          "cause": "cross-file fileprivate checked identity accessor",
+          "tests_executed": false
+        },
+        {
+          "head": "87d48f2291877195460849ba9c4a559e1659cc35",
+          "seconds": 56.90219433326274,
+          "cause": "borrowed SpaceBody captured by storage closure",
+          "tests_executed": false
+        }
+      ],
+      "independent_source_review": "MBA clear: minimal accessor visibility and explicit body copy, fullvalidation/default/order preserved",
+      "affected_existing_methods": 4,
+      "affected_cases": 12,
+      "current_result": "pending at observation",
+      "required_quality_run": 39975810822,
+      "required_quality_outcome": "FAIL, actualcause under separateMBAtriage",
+      "usable_delivered": false,
+      "m01_complete": false,
+      "next_action": "G1 focused correction; currentfull524 gate before any final media regeneration, no required finalgate waived"
     }
   ],
   "two_developer_phase": {
