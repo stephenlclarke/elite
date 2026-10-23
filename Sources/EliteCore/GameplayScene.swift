@@ -15,7 +15,7 @@ extension Commander {
 
 extension Game {
   var systemIdentity: SystemIdentity {
-    withReadOnlyCommander { Self.gameplaySystemIdentity($0) }
+    storedSystemIdentity()
   }
 
   var gameplaySeed: UInt64 {
@@ -438,11 +438,6 @@ extension Game {
   @inline(never)
   private static func gameplayGalaxy(_ commander: borrowing Commander) -> Int {
     commander.galaxy
-  }
-
-  @inline(never)
-  private static func gameplaySystemIdentity(_ commander: borrowing Commander) -> SystemIdentity {
-    .init(galaxy: commander.galaxy, system: commander.system)
   }
 
   @inline(never)

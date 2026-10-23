@@ -1140,6 +1140,14 @@ public struct Game: Sendable {
       return Commander.nativeStationReadSystem(at: commander)
     }
   }
+
+  @inline(never)
+  func storedSystemIdentity() -> SystemIdentity {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Commander.nativeStationReadSystem(at: storage.baseAddress!)
+    }
+  }
+
   // Keep the original full policy and lazy read order without passing a whole Commander value
   // through the generic read callback. Only owned system/anchor values leave this buffer scope.
   @inline(never)
