@@ -53,6 +53,11 @@ extension Game {
     guard body.missionInstanceID != nil, body.missionActorID != nil,
       body.hull == .cobra, body.position.finite, body.orientation.validRotation
     else { return nil }
+    return presentRecordRecoveryAlias(body)
+  }
+
+  @inline(never)
+  private func presentRecordRecoveryAlias(_ body: borrowing SpaceBody) -> String? {
     let currentBody = copy body
     let retained = withReadOnlyScriptState { ($0.savedRecordRecoverySource, $0.instances) }
     let currentSystem = systemIdentity
