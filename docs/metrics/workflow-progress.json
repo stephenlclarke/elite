@@ -10049,6 +10049,24 @@
       "new_target_execution_for_metadata_review": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:18:25.166756+00:00",
+      "checkpoint_key": "20261024-m01-d441-native-pod-boundary-assigned",
+      "event": "Reviewed source published; common layout review rejects speculative rewrite and current prologue supports native pod early-refusal repair",
+      "head": "d441d1642808c25a2b66cf135a917ac4738a95d2",
+      "source_head": "12cdc2f330672ca3ade01299f2bbe60e2091c2a8",
+      "capture_seconds": 14.41792625,
+      "saved_slide": "0x112070000",
+      "mapped_boundary": "nativePodFacts+808/PhysicalActorState probe before pod presence refusal",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "existing_cow_storage_confirmed": true,
+      "initialized_type_sizes_available_offline": false,
+      "speculative_representation_change_rejected": true,
+      "cancel_requested": 40038748856,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
