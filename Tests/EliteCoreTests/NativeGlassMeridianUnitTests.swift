@@ -44,9 +44,10 @@ struct NativeGlassMeridianUnitTests {
         visited: [origin, station(owner: owner, system: 185), station(owner: owner, system: 93)],
         identified: identified, physicalTime: 0))
   }
-  func sealed(_ state: NativeGlassMeridianState, ordinal: Int, start: Double = 10) throws
-    -> NativeGlassMeridianReading
-  {
+  func sealed(
+    _ state: NativeGlassMeridianState, ordinal: Int, start: Double = 10,
+    scanEquipment: EquipmentPurchaseItem? = nil
+  ) throws -> NativeGlassMeridianReading {
     let p = state.permission
     let epoch = UUID()
     let generation = state.losses.filter { $0.ordinal == ordinal }.count
@@ -74,7 +75,7 @@ struct NativeGlassMeridianUnitTests {
     let marker = ScriptOwnedActor(
       identity: markerID, alias: NativeGlassMeridian.targets[ordinal],
       body: body, presence: .present)
-    let equipment = try #require(p.fit.first)
+    let equipment = try #require(scanEquipment ?? p.fit.first)
     let operation = NativeGlassMeridian.readingOperation(permission: p.operation, ordinal: ordinal)
     let authority = try NativeOriginalSurvey.authorityIdentity(
       operation: operation,

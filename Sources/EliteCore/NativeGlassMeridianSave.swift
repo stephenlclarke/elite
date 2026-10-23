@@ -45,7 +45,8 @@ enum NativeGlassMeridianSave {
       let discovery = commander.scriptState.savedFleetDiscovery,
       state.permission.owner == owner, discovery.owner == owner,
       NativeGlassMeridian.readingsValid(state), NativeGlassMeridian.lossesValid(state),
-      NativeC01SurveyorSave.valid(mission, commander: commander)
+      NativeC01SurveyorSave.valid(mission, commander: commander),
+      NativeC01ReservationAuditSave.valid(mission, commander: commander)
     else { return false }
     let p = state.permission
     guard p.mission == mission.id,
@@ -72,8 +73,10 @@ enum NativeGlassMeridianSave {
           && $0.physicalTime <= p.physicalTime && $0.actor.visit <= p.dock.actor.visit
       }),
       mission.milestones
-        == (state.surveyor?.capture != nil
-          ? Set([0, 1, 2]) : state.readings.count == 2 ? Set([0, 1]) : Set([0])),
+        == (state.reservationCase?.audit != nil
+          ? Set([0, 1, 2, 3])
+          : state.surveyor?.capture != nil
+            ? Set([0, 1, 2]) : state.readings.count == 2 ? Set([0, 1]) : Set([0])),
       Set(mission.ownedEncounters.keys).isSubset(
         of: Set(
           NativeGlassMeridian.encounters
@@ -114,6 +117,19 @@ enum NativeGlassMeridianSave {
     return true
   }
 
+  /// Bound parent arrays before either the opening or reservation envelope decodes them.
+  static func boundedFields(_ value: [String: Any]) -> Bool {
+    guard let readings = value["readings"] as? [Any], readings.count <= 2,
+      let losses = value["losses"] as? [Any], losses.count <= 128,
+      let permission = value["permission"] as? [String: Any],
+      let fit = permission["fit"] as? [Any], fit.count <= OwnedEquipmentInventory.maximumCount + 1,
+      let visited = permission["visited"] as? [Any],
+      visited.count <= NativeMainStationIdentity.maximumCount,
+      let identified = permission["identified"] as? [Any], identified.count <= 171
+    else { return false }
+    return true
+  }
+
   static func validateFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int?,
     supportsSurveyor: Bool = false
@@ -149,14 +165,7 @@ enum NativeGlassMeridianSave {
         if own {
           guard contains(schema), !embedded,
             let value = mission["savedGlassMeridian"] as? [String: Any],
-            let readings = value["readings"] as? [Any], readings.count <= 2,
-            let losses = value["losses"] as? [Any], losses.count <= 128,
-            let permission = value["permission"] as? [String: Any],
-            let fit = permission["fit"] as? [Any],
-            fit.count <= OwnedEquipmentInventory.maximumCount + 1,
-            let visited = permission["visited"] as? [Any],
-            visited.count <= NativeMainStationIdentity.maximumCount,
-            let identified = permission["identified"] as? [Any], identified.count <= 171
+            boundedFields(value)
           else {
             throw SaveError.invalidCommander
           }

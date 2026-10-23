@@ -119,3 +119,25 @@ extension GameRuntime {
     }
   }
 }
+
+extension NativeGlassMeridian {
+  /// A completed authentic scan resolves the contents assigned to its original lineage.
+  /// An unread-clock replacement changes native identity, never the preassigned booking data.
+  static func reservationContents(
+    for sealed: NativeGlassMeridianReading, in state: NativeGlassMeridianState
+  ) -> NativeC01ClockContents? {
+    guard readingsValid(state), lossesValid(state), state.readings.contains(sealed),
+      let source = state.reservationCase?.source,
+      source.terms.permission == state.permission.operation,
+      source.terms.mission == state.permission.mission,
+      source.terms.owner == state.permission.owner,
+      source.terms.epoch <= sealed.reading.start,
+      (0..<source.clocks.count).contains(sealed.reading.ordinal)
+    else { return nil }
+    let contents = source.clocks[sealed.reading.ordinal]
+    guard
+      contents.lineage == actor(mission: state.permission.mission, ordinal: sealed.reading.ordinal)
+    else { return nil }
+    return contents
+  }
+}

@@ -166,59 +166,75 @@ enum NativeC01Surveyor {
         && id == actor(mission: mission.id, alias: aliases[1])
     }
   }
-  static func shapeValid(_ state: NativeGlassMeridianState) -> Bool {
-    guard let surveyor = state.surveyor else { return true }
-    let source = surveyor.source
+  @inline(never)
+  static func shapeValid(_ state: borrowing NativeGlassMeridianState) -> Bool {
+    if case .none = state.surveyor { return true }
+    let source = state.surveyor!.source
     guard state.readings.count == 2, source.valid, source.mission == state.permission.mission,
       source.permission == state.permission.operation,
       source.visit > state.permission.dock.actor.visit,
       source.physicalTime >= (state.readings.map { $0.reading.end }.max() ?? .infinity)
     else { return false }
-    if let capture = surveyor.capture {
-      let marker = capture.marker
-      let radius = NativeC01SurveyorGeometry.recorder.rawMesh.vertices.map(\.length).max()!
-      guard capture.operation == captureOperation(permission: source.permission),
-        original(marker, mission: source.mission, recorder: true), marker.presence == .present,
-        marker.body.energy > 0, marker.body.position == capture.capturePoint,
-        let native = marker.body.physical, nativeValid(native, recorder: true),
-        native.identity.system == location, native.identity.visit >= source.visit,
-        native.identity.entity > 1, native.identity.system == capture.collector.system,
-        native.identity.visit == capture.collector.visit, capture.collector.entity == 0,
-        capture.scoop.node == EquipmentRuntimeCatalog.node(for: "Fuel Scoops"),
-        capture.scoop.location?.hull == capture.carrier,
-        capture.scoop.location?.slot == "utility.fuelScoops",
-        capture.inventoryRevision < UInt64(Int64.max),
-        capture.startTime.isFinite, capture.startTime >= source.physicalTime,
-        capture.physicalTime.isFinite, capture.physicalTime > capture.startTime,
-        capture.physicalTime - capture.startTime <= 0.1 + 1e-9,
-        approachAllowed(point: capture.capturePoint, radius: radius, speed: capture.relativeSpeed)
-      else { return false }
+    if case .some = state.surveyor!.capture {
+      guard captureShapeValid(state) else { return false }
     }
-    if let loss = surveyor.loss {
-      guard loss.physicalTime.isFinite, loss.physicalTime >= source.physicalTime,
-        loss.energy.isFinite, loss.collector.entity == 0
+    if case .none = state.surveyor!.loss { return true }
+    return lossShapeValid(state)
+  }
+
+  // Keep capture and loss payload temporaries out of the common validation frame.
+  @inline(never)
+  private static func captureShapeValid(_ state: borrowing NativeGlassMeridianState) -> Bool {
+    guard let capture = state.surveyor!.capture else { return true }
+    let source = state.surveyor!.source
+    let marker = capture.marker
+    let radius = NativeC01SurveyorGeometry.recorder.rawMesh.vertices.map(\.length).max()!
+    guard capture.operation == captureOperation(permission: source.permission),
+      original(marker, mission: source.mission, recorder: true), marker.presence == .present,
+      marker.body.energy > 0, marker.body.position == capture.capturePoint,
+      let native = marker.body.physical, nativeValid(native, recorder: true),
+      native.identity.system == location, native.identity.visit >= source.visit,
+      native.identity.entity > 1, native.identity.system == capture.collector.system,
+      native.identity.visit == capture.collector.visit, capture.collector.entity == 0,
+      capture.scoop.node == EquipmentRuntimeCatalog.node(for: "Fuel Scoops"),
+      capture.scoop.location?.hull == capture.carrier,
+      capture.scoop.location?.slot == "utility.fuelScoops",
+      capture.inventoryRevision < UInt64(Int64.max),
+      capture.startTime.isFinite, capture.startTime >= source.physicalTime,
+      capture.physicalTime.isFinite, capture.physicalTime > capture.startTime,
+      capture.physicalTime - capture.startTime <= 0.1 + 1e-9,
+      approachAllowed(point: capture.capturePoint, radius: radius, speed: capture.relativeSpeed)
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func lossShapeValid(_ state: borrowing NativeGlassMeridianState) -> Bool {
+    guard let loss = state.surveyor!.loss else { return true }
+    let source = state.surveyor!.source
+    guard loss.physicalTime.isFinite, loss.physicalTime >= source.physicalTime,
+      loss.energy.isFinite, loss.collector.entity == 0
+    else { return false }
+    switch loss.kind {
+    case .recorderDestroyed:
+      guard state.surveyor!.capture == nil, let marker = loss.marker,
+        original(marker, mission: source.mission, recorder: true), marker.presence == .destroyed,
+        marker.body.energy == 0, loss.escapePod == nil,
+        marker.body.physical?.identity.system == location,
+        marker.body.physical?.identity.visit ?? 0 >= source.visit,
+        marker.body.physical.map({ nativeValid($0, recorder: true) }) == true
       else { return false }
-      switch loss.kind {
-      case .recorderDestroyed:
-        guard surveyor.capture == nil, let marker = loss.marker,
-          original(marker, mission: source.mission, recorder: true), marker.presence == .destroyed,
-          marker.body.energy == 0, loss.escapePod == nil,
-          marker.body.physical?.identity.system == location,
-          marker.body.physical?.identity.visit ?? 0 >= source.visit,
-          marker.body.physical.map({ nativeValid($0, recorder: true) }) == true
+    case .carrierDestroyed, .escape:
+      guard let capture = state.surveyor!.capture, loss.marker == nil,
+        loss.physicalTime >= capture.physicalTime
+      else { return false }
+      if loss.kind == .carrierDestroyed {
+        guard loss.energy <= 0, loss.escapePod == nil else { return false }
+      } else {
+        guard loss.energy > 0, let pod = loss.escapePod,
+          pod.node == EquipmentRuntimeCatalog.node(for: "Escape Pod"),
+          pod.location?.hull == loss.carrier, pod.location?.slot == "utility.escapePod"
         else { return false }
-      case .carrierDestroyed, .escape:
-        guard let capture = surveyor.capture, loss.marker == nil,
-          loss.physicalTime >= capture.physicalTime
-        else { return false }
-        if loss.kind == .carrierDestroyed {
-          guard loss.energy <= 0, loss.escapePod == nil else { return false }
-        } else {
-          guard loss.energy > 0, let pod = loss.escapePod,
-            pod.node == EquipmentRuntimeCatalog.node(for: "Escape Pod"),
-            pod.location?.hull == loss.carrier, pod.location?.slot == "utility.escapePod"
-          else { return false }
-        }
       }
     }
     return true

@@ -32,6 +32,7 @@ struct NativeGlassMeridianState: Codable, Sendable, Equatable {
   var readings: [NativeGlassMeridianReading] = []
   var losses: [NativeGlassMeridianMarkerLoss] = []
   var surveyor: NativeC01SurveyorState?
+  var reservationCase: NativeC01ReservationState?
 }
 final class NativeGlassMeridianPending: Sendable {
   let sealed: NativeGlassMeridianReading
@@ -177,11 +178,22 @@ extension Game {
   }
   var glassMeridianScanStatus: String? {
     guard let state = glassMeridianMission?.savedGlassMeridian else { return nil }
+    if state.reservationCase?.audit != nil {
+      return state.surveyor?.loss == nil
+        ? "MERIDIAN SOREL AUDIT VERIFIED - 8KG RECORDER ABOARD / ENLIRIN STAGE UNAVAILABLE"
+        : "MERIDIAN SOREL AUDIT VERIFIED - ORIGINAL RECORDER LOST / ENLIRIN STAGE UNAVAILABLE"
+    }
     if state.surveyor?.loss != nil { return "MERIDIAN RECORDER LOST - ORIGINAL CANNOT BE REISSUED" }
     if state.surveyor?.held == true {
-      return "MERIDIAN ORIGINAL RECORDER ABOARD - 8KG PROTECTED / STAGE FOUR UNAVAILABLE"
+      return state.reservationCase == nil
+        ? "MERIDIAN ORIGINAL RECORDER ABOARD - 8KG PROTECTED / UNBOUND AUDIT UNAVAILABLE"
+        : "MERIDIAN ORIGINAL RECORDER ABOARD - 8KG PROTECTED / VISIT SOREL AT ENMADAN"
     }
-    if state.readings.count == 2 { return NativeGlassMeridian.laterStages }
+    if state.readings.count == 2 {
+      return state.reservationCase == nil
+        ? NativeGlassMeridian.laterStages
+        : "MERIDIAN CLOCKS VERIFIED - RECOVER NAVIDOR RECORDER, THEN SOREL AT ENMADAN"
+    }
     let elapsed = nativeGlassMeridianRuntime?.observation?.seconds ?? 0
     return "MERIDIAN \(state.readings.count)/2 \(String(format: "%.1f", elapsed))/12s - "
       + (nativeGlassMeridianRuntime?.reason ?? "Select either unread clock.")
