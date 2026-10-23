@@ -6431,6 +6431,37 @@
       "usable_delivered": false,
       "m01_complete": false,
       "full_integration_run": false
+    },
+    {
+      "at": "2026-10-23T13:19:40Z",
+      "checkpoint_key": "20261023-m01-pr100-qualified-and-merged",
+      "event": "Reservation audit source integrated after verified focused defect resolution",
+      "pr": 100,
+      "head": "5ee20948e0320d19f4ff3448270c004f93b01c23",
+      "merge_commit": "16b1c5f75cf0fa761d54d008c47d38f947fd95e1",
+      "merged_tree_matches_reviewed_head": true,
+      "focused_methods": 4,
+      "authored_cases": 16,
+      "exit_code": 0,
+      "total_seconds": 69.81686604162678,
+      "compile_seconds": 53.5,
+      "xml_failures": 0,
+      "xml_errors": 0,
+      "xml_skips": 0,
+      "independent_source_and_result_review": "MBA clear, exact actual criteria verified",
+      "closed_issues": [
+        101,
+        102,
+        104
+      ],
+      "automated_review": "requested; service failure without current-head findings; explicit human manual fallback",
+      "qualification": "local Swift6.4.1 focused components, not472/VM/nativejourney/release",
+      "merged": true,
+      "usable_delivered": false,
+      "m01_complete": false,
+      "candidate_updated": false,
+      "next_deliverable": "PR87 training source composition, five conflicts, retained COW/codec/current fixes",
+      "merge_duplicate_cancellation_requested": 39960275261
     }
   ],
   "two_developer_phase": {
