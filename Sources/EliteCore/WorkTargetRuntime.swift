@@ -116,7 +116,21 @@ extension Game {
     if let original = recordRecoveryMetadata(body, context: copy context) { return original }
     if let original = identifiedSalvageMetadata(body, context: copy context) { return original }
     if let original = originalRescueMetadata(body, context: copy context) { return original }
+    guard Self.ordinaryRecoverableCarrierIsPresent(body, physical: physical) else { return nil }
     return ordinaryRecoverableMetadata(for: body, context: context, physical: physical)
+  }
+
+  // Header presence permits full validation; it never supplies recovery authority itself.
+  @inline(never)
+  private static func ordinaryRecoverableCarrierIsPresent(
+    _ body: borrowing SpaceBody, physical: borrowing PhysicalActorState
+  ) -> Bool {
+    if physical.salvage != nil { return true }
+    if physical.rock != nil { return true }
+    if physical.payload != nil { return true }
+    if body.hull == .cargo { return true }
+    guard body.hull == .thargon else { return false }
+    return !body.hostile
   }
 
   @inline(never)
