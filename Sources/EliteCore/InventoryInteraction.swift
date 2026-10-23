@@ -1,5 +1,15 @@
 import Foundation
 
+/// A synchronous preview owns its independent mutable Commander away from caller frames.
+private final class InventoryEquipmentProjection {
+  var commander: Commander
+
+  @inline(never)
+  init(_ game: borrowing Game) {
+    commander = game.commander
+  }
+}
+
 /// Ephemeral interaction context, separate from persistent commander and hull identities.
 public struct InventoryContextEpoch: Sendable, Equatable {
   private let value: UUID
@@ -131,14 +141,14 @@ extension Game {
     guard inventory.items.contains(item), docked else {
       return .init(label: "", detail: "Dock to change physical fittings", command: nil)
     }
-    var projected = commander
+    let projected = InventoryEquipmentProjection(self)
     if item.location != nil {
       guard inventoryMayStore(item) else {
         return .init(
           label: "", detail: "Required ship system - replace with a compatible device",
           command: nil)
       }
-      try projected.storeEquipment(
+      try projected.commander.storeEquipment(
         item, expectedRevision: inventory.revision,
         command: inventoryContextEpoch.planningCommandID)
       return .init(
@@ -146,7 +156,7 @@ extension Game {
         command: inventoryCommand(.store(item), inventory: inventory))
     }
     let slot = try inventoryFitSlot(item.node)
-    try projected.fitEquipment(
+    try projected.commander.fitEquipment(
       item, at: slot, expectedRevision: inventory.revision,
       command: inventoryContextEpoch.planningCommandID)
     return .init(

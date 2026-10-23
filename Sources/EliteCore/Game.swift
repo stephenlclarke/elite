@@ -52,6 +52,16 @@ private struct CommanderScriptStateStorage: Sendable, Equatable, Codable {
     }
   }
 
+  @inline(never)
+  func instancesAreEmpty() -> Bool {
+    values.withUnsafeBufferPointer { storage in
+      guard let instances = storage.baseAddress!.pointer(to: \.instances) else {
+        preconditionFailure("Script claim validation requires addressable stored instances.")
+      }
+      return instances.pointee.isEmpty
+    }
+  }
+
   // Station validation projects child fields before leaving this synchronous storage borrow.
   func withNativeStationReadOnlyValue<Result>(
     _ read: (UnsafePointer<ScriptEngineState>) -> Result
@@ -146,6 +156,12 @@ public struct Commander: Sendable, Equatable, Codable {
   ) rethrows -> Result {
     if let stored = savedScriptState { return try stored.withReadOnlyValue(read) }
     return try Self.withDefaultScriptState(read)
+  }
+
+  @inline(never)
+  func scriptInstancesAreEmpty() -> Bool {
+    guard let stored = savedScriptState else { return true }
+    return stored.instancesAreEmpty()
   }
 
   @inline(never)
