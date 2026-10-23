@@ -53,7 +53,8 @@ struct GameplayPhysicalAdoptionTests {
   @Test(arguments: ["physical", "physical-nan", "shot", "station", "combined"])
   func existingOwnershipTagsSkipAdoptionWithoutChangingCursorsOrValues(scenario: String) throws {
     var game = prepared()
-    let actor = try #require(game.commander.flightSimulation.allocateActor())
+    let allocated = game.commander.flightSimulation.allocateActor()
+    let actor = try #require(allocated)
     let spawn = SpawnIdentity(
       system: game.systemIdentity, visit: actor.visit, sequence: 9, member: 0, producer: .mission)
     var body = SpaceBody(id: 70, hull: .cobra, position: .init(0, 0, 1000))
@@ -97,7 +98,8 @@ struct GameplayPhysicalAdoptionTests {
   @Test(arguments: [false, true])
   func systemChangeEntersExactlyOnceEvenWhenNoBodyNeedsAdoption(empty: Bool) throws {
     var game = prepared()
-    let originalActor = try #require(game.commander.flightSimulation.allocateActor())
+    let allocated = game.commander.flightSimulation.allocateActor()
+    let originalActor = try #require(allocated)
     var bound = SpaceBody(id: 70, hull: .cobra, position: .init(0, 0, 1000))
     bound.physical = .init(identity: originalActor, population: .civilian, velocity: .init(3, 4, 5))
     game.commander.flightSimulation.physicalTime = 25
