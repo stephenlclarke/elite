@@ -320,6 +320,7 @@ extension Game {
     creditCombatDeath(resolution.death, target: target, context: context)
   }
 
+  @inline(never)
   private mutating func creditCombatDeath(
     _ death: DeathSettlement?, target: GameplayHitTarget?, context: EncounterContext
   ) {
@@ -327,6 +328,11 @@ extension Game {
       let body = bodies.first(where: { $0.id == id }), body.hull.isTargetShip,
       !isGlassMeridianClock(body), !isC01Surveyor(body)
     else { return }
+    creditQualifiedCombatDeath(death)
+  }
+
+  @inline(never)
+  private mutating func creditQualifiedCombatDeath(_ death: DeathSettlement) {
     let previousRank = commander.rank
     commander.kills = (commander.kills &+ 1) & 0xffff
     commander.credits = (commander.credits &+ death.bountyTenths) & 0xffff_ffff
