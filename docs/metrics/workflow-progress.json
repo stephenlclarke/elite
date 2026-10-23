@@ -8523,6 +8523,24 @@
       "old_d2d0_failure": "retained, scoped156corrected",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:10:56Z",
+      "checkpoint_key": "20261023-m01-superseded-quality-queue-optimisation",
+      "event": "Obsolete quality cancellation requested to unblock dispatched current final-head check",
+      "superseded_run": 40006996339,
+      "superseded_head": "d2d0cd0cc9122315b0c7dfe4d02b846b81a7f384",
+      "current_run": 40008995873,
+      "current_head": "a49f5d836a8bce64b0e56d91fdfcb14740d529ac",
+      "fresh_head_event_status_verification": true,
+      "cancellation_result": "requested, terminal pending",
+      "current_required_gate": "untouched, must pass",
+      "nonrequired_duplicate": 40008995883,
+      "duplicate_result": "CANCELLED, not PASS",
+      "workflow_config_or_protection_changed": false,
+      "reason": "samePRconcurrency older obsolete run blocks current required run; avoid redundant full cycle",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
