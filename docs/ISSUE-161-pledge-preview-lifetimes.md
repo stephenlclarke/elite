@@ -85,3 +85,7 @@ Change only the seven private job/pledge/courier/freight helper receiver convent
 ## Receiver-convention execution
 
 The `5105b8bf` Swift6.1.2/SDK15.5 build passed in78.63seconds; four-method process failed exit1/rawSIGBUS10 after90.542046416seconds. All methods only started, with no completion/assertion results and unfinished52-byte XML. Existing `/tmp/elite-161-receiver-focused` artifacts retain actual source/result, normal report and exact image metadata. Source review is clear; current copy-chain/fault attribution and runtime qualification remain pending.
+
+## Combined acceptance receiver/projection correction
+
+The final159-168 pass reuses the synchronous mutating/inout stored Game/script readers established by the exact168 emitted whole-Game-copy proof. The already-demonstrated pledge preview/resource reads run against the same read-only current Game borrow, retaining errors/authority/order. All four local event/clock reads retain their exact positions and defaults via the same stored script-state API. A thin noninline acceptance entry always resolves courier then freight before entering the unchanged full current-board/resource guards, so their owned board/pack/offer buffers are not reserved during prerequisite resolution. No acceptance guard, payload, deadline, error, authority or publication policy is changed. This is part of one combined packet/review/affected batch, not another helper gate; earlier incomplete results remain unqualified.

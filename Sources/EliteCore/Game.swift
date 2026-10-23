@@ -1207,6 +1207,22 @@ public struct Game: Sendable {
       return (system, anchors)
     }
   }
+  /// A synchronous read of current inout storage, without an owned Game receiver temporary.
+  /// The pointer and borrowed receiver never escape this call; the callback cannot mutate them.
+  @inline(never)
+  mutating func withReadOnlyStoredGame<Result>(
+    _ read: (borrowing Game) throws -> Result
+  ) rethrows -> Result {
+    try withUnsafePointer(to: &self) { pointer in try read(pointer.pointee) }
+  }
+
+  @inline(never)
+  mutating func withReadOnlyStoredScriptState<Result>(
+    _ read: (borrowing ScriptEngineState) throws -> Result
+  ) rethrows -> Result {
+    try withReadOnlyStoredGame { game in try game.withReadOnlyScriptState(read) }
+  }
+
   /// Synchronous read-only access; the storage borrow and pointer never escape this call.
   func withReadOnlyCommander<Result>(
     _ read: (borrowing Commander) throws -> Result

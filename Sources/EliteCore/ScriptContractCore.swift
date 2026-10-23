@@ -323,11 +323,20 @@ extension Game {
     case .ready(let preparation): return try performContractAcceptance(preparation)
     }
   }
+  @inline(never)
   private mutating func prepareContractAcceptance(
     board key: String, offer id: UUID, confirmationToken: UUID
   ) throws -> ContractAcceptancePreflight {
     resolveCourierTerminals()
     resolveFreightTerminals()
+    return try prepareCurrentContractAcceptance(
+      board: key, offer: id, confirmationToken: confirmationToken)
+  }
+
+  @inline(never)
+  private mutating func prepareCurrentContractAcceptance(
+    board key: String, offer id: UUID, confirmationToken: UUID
+  ) throws -> ContractAcceptancePreflight {
     guard docked, dockedAtMainStation, !paused, let board = commander.contracts.boards[key],
       board.station == contractStation, let index = board.offers.firstIndex(where: { $0.id == id }),
       let pack = scriptPacks.first(where: { $0.digest == board.digest }),
@@ -378,11 +387,13 @@ extension Game {
       try requireFreightResources(plan)
     }
     if let terms = offer.courier { try requireCourierResources(terms) }
-    let pledge = try pledgePreview(board: key, offer: id)
+    let pledge = try withReadOnlyStoredGame { game in
+      try game.pledgePreview(board: key, offer: id)
+    }
     if let pledge {
-      try requirePledgeResources(pledge)
+      try withReadOnlyStoredGame { game in try game.requirePledgeResources(pledge) }
       guard scriptPledgeAdmission == nil,
-        commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+        withReadOnlyStoredScriptState({ $0.nextEvent }) < UInt64(Int64.max) - 1
       else { throw MissionPackError("A pledge confirmation cannot start in this context.") }
     }
     return .ready(
@@ -409,7 +420,7 @@ extension Game {
     key: String, index: Int, pack: borrowing ScriptPack, board: borrowing ScriptContractBoard,
     offer: borrowing ScriptContractOffer, id: UUID
   ) -> PreparedContractJob {
-    let acceptedAt = withReadOnlyScriptState { $0.clock(board.clock) }
+    let acceptedAt = withReadOnlyStoredScriptState { $0.clock(board.clock) }
     let deadline = offer.duration == 0 ? nil : acceptedAt + offer.duration
     let job = ScriptContractJob(
       boardKey: key, provider: board.provider, version: board.version,
@@ -454,7 +465,7 @@ extension Game {
       .init(
         instance: preparation.instanceID, board: preparation.board, offer: preparation.offer,
         preview: pledge, epoch: ecmControl.epoch,
-        sequence: withReadOnlyScriptState { $0.nextEvent } + 1,
+        sequence: withReadOnlyStoredScriptState { $0.nextEvent } + 1,
         cause: scriptEventContext(
           .init(
             id: preparation.instanceID, definition: preparation.pack.manifest.stateID,
@@ -474,7 +485,7 @@ extension Game {
     _ preparation: PreparedContractJob, confirmationToken: UUID
   ) throws -> ScriptCourierAdmission {
     guard scriptCourierAdmission == nil,
-      withReadOnlyScriptState({ $0.nextEvent }) < UInt64(Int64.max) - 1
+      withReadOnlyStoredScriptState({ $0.nextEvent }) < UInt64(Int64.max) - 1
     else {
       throw MissionPackError("Courier confirmation cannot start in this context.")
     }

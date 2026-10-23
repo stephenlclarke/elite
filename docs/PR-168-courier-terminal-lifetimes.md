@@ -19,3 +19,19 @@ Strict Swift formatting and diff hygiene pass. Independent actual-source review 
 ## Compatibility and remaining limits
 
 No actor/Game state/save/schema, courier deadline/publication/reward, provider or quality threshold changes. Required complete normal tests, coverage/sanitizer/leak checks, completed-save/reopen proof and release remain unqualified until actual results establish them.
+
+## First focused execution
+
+The `47438127` Swift6.1.2/SDK15.5 build passed in72.54seconds; four-method process failed exit1/rawSIGBUS10 after84.440013208seconds. All methods only started, without completion/assertion results and unfinished52-byte XML. Existing `/tmp/elite-168-terminal-focused` log/result/image artifacts retain exact source/result and UUID-validated normal report availability. Source review is clear; current fault attribution and runtime qualification remain pending. The old9569 diagnostic cannot establish this changed source's current fault or168 recurrence.
+
+## Current changed-source capture
+
+No matching current normal report exists among27 retained reports; image metadata records ips_path null. Under standing changed-source authority, one exact already-built474 capture used the same four methods/default stack/concurrency/environment/toolchain via SwiftPM skip-build and existing owned observer. PID36757/full argv/start/current UUIDA84E4D17 matched; first fault captured, detached handedBack true, driver1/debugger0 after14.863766458seconds, no owned processes remained. Source and SHAc16bb3ac223989296f7ee6645e4f61f05ce0623673fb5d749bcf8ed96dd05d35 stayed unchanged. `/tmp/elite-168-current-owned-capture` retains all evidence. Diagnostic only; original84.440013208second failure remains separate and unqualified. Saved offline attribution confirms the resolver entry in the same board-browsing path; the following prologue evidence ties reservation to the owned Game copy. No mapped guard bounds, normal-run fault attribution or passing result is established.
+
+## Concrete emitted-copy correction in the combined packet
+
+Offline disassembly of the exact474 image (`/tmp/elite-168-current-owned-capture/offline-resolver-prologue.txt`) establishes Game value-witness sizing, aligned dynamic Game-sized stack reservation and chkstk at+116. After explicit non-inlined procurement and RRS calls, emitted GameVWOc copies into that buffer for the static borrowed empty-instance query, followed by GameVWOh destruction. Therefore procurement inlining is not established: its explicit call remains, and the whole-Game receiver buffer for the borrowed call is concrete. No guard mapping or runtime savings are inferred.
+
+The combined159-168 source pass replaces that mutating-to-borrowed value boundary with a synchronous mutating/inout read of current Game storage through standard withUnsafePointer(to:&self). Only a borrowed Game reaches the nonescaping callback; no pointer, storage owner, state field, snapshot cache or actor hop is introduced. An equivalent stored-script reader composes the same existing script-state/default reader. Courier emptiness uses the identical existing actual-instance query; present loop uses the same per-ID and clock reads through the stored reader. Procurement now/instance projections use that same stored reader with identical clock-before-census, predicate/UUID sort/finalization order, and its entry becomes noninline. All publication, rollback and prerequisite order remain.
+
+The same pass finishes the already demonstrated acceptance/candidate copy boundaries, documented under161/166. One combined source review and affected batch follow; this is not a separate helper delivery or compile gate. All earlier raw failures, diagnostics, unavailable reports and partial passes remain separate. Current source questions are confined to compiler/runtime verification; no known policy/authority defect remains in the reviewed combined delta.

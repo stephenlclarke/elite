@@ -582,7 +582,9 @@ extension Game {
       bodies.filter {
         Display.visibleInFront($0, game: self, layout: layout)
       }.map(\.id))
-    let candidates = Self.cycleWorkTargetCandidates(in: self, context: context, frontIDs: frontIDs)
+    let candidates = withReadOnlyStoredGame { game in
+      Self.cycleWorkTargetCandidates(in: game, context: context, frontIDs: frontIDs)
+    }
     let choices = WorkTargetSelection.ordered(
       candidates, filter: workTargetFilter, system: context.system, visit: context.visit,
       capabilities: workTargetCapabilities)

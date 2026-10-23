@@ -90,18 +90,21 @@ extension Game {
   }
 
   /// The no-due frame path holds no plan, candidate or receipt buffers and replays no routes.
+  @inline(never)
   mutating func resolveProcurementTerminals(publish: ScriptPublisher?) {
-    let now = commander.scriptState.clock(.missionCalendar)
-    let due = commander.scriptState.instances.compactMap { id, state -> UUID? in
-      guard state.outcome == .active, let job = state.contract, !job.settled,
-        job.offer.courier == nil, job.clock == .missionCalendar,
-        job.deadlinePolicy == .inclusiveConfirmation,
-        job.group == job.provider + "/" + ScriptProcurementPlan.group,
-        ScriptProcurementPlan.isMarked(job.offer.parameters), let deadline = job.deadline,
-        now > deadline
-      else { return nil }
-      return id
-    }.sorted { $0.uuidString < $1.uuidString }
+    let now = withReadOnlyStoredScriptState { $0.clock(.missionCalendar) }
+    let due = withReadOnlyStoredScriptState { script in
+      script.instances.compactMap { id, state -> UUID? in
+        guard state.outcome == .active, let job = state.contract, !job.settled,
+          job.offer.courier == nil, job.clock == .missionCalendar,
+          job.deadlinePolicy == .inclusiveConfirmation,
+          job.group == job.provider + "/" + ScriptProcurementPlan.group,
+          ScriptProcurementPlan.isMarked(job.offer.parameters), let deadline = job.deadline,
+          now > deadline
+        else { return nil }
+        return id
+      }.sorted { $0.uuidString < $1.uuidString }
+    }
     for id in due { finalizeProcurementExpiry(id, publish: publish) }
   }
 

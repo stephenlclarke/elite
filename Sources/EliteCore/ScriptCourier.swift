@@ -248,22 +248,21 @@ extension Game {
   mutating func resolveCourierTerminals(escape: Bool = false, publish: ScriptPublisher? = nil) {
     resolveProcurementTerminals(publish: publish)
     resolveRRSCourierTerminals(publish: publish)
-    guard !Self.courierTerminalInstancesAreEmpty(in: self) else { return }
+    guard
+      !withReadOnlyStoredGame({ game in
+        game.withReadOnlyCommander { $0.scriptInstancesAreEmpty() }
+      })
+    else { return }
     resolveNativeCourierTerminals(escape: escape, publish: publish)
-  }
-
-  @inline(never)
-  private static func courierTerminalInstancesAreEmpty(in game: borrowing Game) -> Bool {
-    game.withReadOnlyCommander { $0.scriptInstancesAreEmpty() }
   }
 
   @inline(never)
   private mutating func resolveNativeCourierTerminals(escape: Bool, publish: ScriptPublisher?) {
     for id in orderedScriptInstances {
-      guard let old = commander.scriptState.instances[id], old.outcome == .active,
+      guard let old = withReadOnlyStoredScriptState({ $0.instances[id] }), old.outcome == .active,
         let custody = old.courier, let terms = old.contract?.offer.courier
       else { continue }
-      let now = commander.scriptState.clock(.missionCalendar)
+      let now = withReadOnlyStoredScriptState { $0.clock(.missionCalendar) }
       let cause: ScriptCourierTerminalCause
       if custody.pendingLoss != nil {
         cause = .shipDestroyed
