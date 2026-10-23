@@ -10110,7 +10110,11 @@
       "reviewer": "MBA",
       "cancel_requested": 40039445799,
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "independent_review_finding": "Nil-payload presence guard must precede entry into heavy measured helper",
+      "finding_detected_before_build": true,
+      "semantic_order_review": "otherwise_clear",
+      "correction_owner": "G1"
     }
   ],
   "two_developer_phase": {
