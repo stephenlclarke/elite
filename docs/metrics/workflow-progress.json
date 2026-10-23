@@ -8364,6 +8364,31 @@
       "retained_passes": "three workshop methods at677, mission/NPC retained separately",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:52:19Z",
+      "checkpoint_key": "20261023-m01-workshop-browse-153-155-closed",
+      "event": "Original equipment browse passes; MBA closes153 and155; coherent publication active",
+      "issues": [
+        153,
+        155
+      ],
+      "state": "CLOSED",
+      "head": "59f254dc75132594de8bd91263ca76078986623c",
+      "process_result": "PASS",
+      "seconds": 156.162784,
+      "build_seconds": 49.65,
+      "method_seconds": 100.885971,
+      "selected_methods": 1,
+      "complete_xml_rows": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "retained_domain_passes": "three workshop methods at677, explicitly separate source scope",
+      "independent_review": "MBA source/result clear; all original browse/mount/layout assertions preserved",
+      "next_action": "G1 coherent publication with current Root docs and required final-head checks/review",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
