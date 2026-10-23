@@ -10188,6 +10188,30 @@
       "committed_at_recorded": "2026-10-23T23:38:14.377080+00:00",
       "exec_session": 78436,
       "unit_methods_selected": 11
+    },
+    {
+      "at": "2026-10-23T23:42:21.892898+00:00",
+      "checkpoint_key": "20261024-m01-254-normal-fallback-presence-assigned",
+      "event": "Parent repair published; normal mapped ordinary-fallback guard fault supports necessary carrier refusal",
+      "head": "254dff847471cb4f73baa2c93b1be64dbd12fce1",
+      "source_head": "c514fcae576af00ac35cee99935326c6d5e9a431",
+      "build_seconds": 161.36,
+      "wall_seconds": 173.450900875,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_completed": 0,
+      "image_uuid": "E5327AD5-1CA9-3585-A73F-587FCBE8DB69",
+      "fault_address": "0x16fcfbff8",
+      "mapped_guard": [
+        "0x16fcf8000",
+        "0x16fcfc000"
+      ],
+      "repair_owner": "G1",
+      "reviewer": "MBA",
+      "new_capture_needed": false,
+      "cancel_requested": 40040975112,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
