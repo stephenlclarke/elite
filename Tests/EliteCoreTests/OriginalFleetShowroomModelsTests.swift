@@ -20,7 +20,7 @@ struct OriginalFleetShowroomModelsTests {
     #expect(OriginalFleetShowroomModels.ids == expected)
     #expect(
       OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == [
-        "SH002", "SH003", "SH004", "SH029", "SH061",
+        "SH002", "SH003", "SH004", "SH007", "SH029", "SH061",
       ])
   }
 

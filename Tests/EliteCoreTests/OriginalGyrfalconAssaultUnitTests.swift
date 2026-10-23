@@ -62,7 +62,7 @@ struct OriginalGyrfalconAssaultUnitTests {
             ? "historical-project-refit-v1" : profile.group))
     }
     for other in ShipCatalogue.all
-    where !["SH002", "SH003", "SH004", "SH029", "SH061"].contains(other.id) {
+    where !["SH002", "SH003", "SH004", "SH007", "SH029", "SH061"].contains(other.id) {
       #expect(other == (try retained(other.id)))
     }
   }
@@ -112,7 +112,7 @@ struct OriginalGyrfalconAssaultUnitTests {
         == ["Collection: unknown; no native encounter recorded"])
     #expect(
       OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id)
-        == ["SH002", "SH003", "SH004", "SH029", "SH061"])
+        == ["SH002", "SH003", "SH004", "SH007", "SH029", "SH061"])
   }
 
   @Test func standardFitKeepsMilitaryCargoAndMountLimitsAndRefusesMalformedRetainedInput() throws {

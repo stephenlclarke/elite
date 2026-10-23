@@ -61,6 +61,14 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH004"))
   }
 
+  static let impalaVoyager: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH007") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH007"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -99,6 +107,16 @@ struct OriginalHullPhysicalContract: Sendable {
         definition.sourceSHA256 == approved.specificationSHA256,
         model.coordinateUnits == "metres", model.sourcePath == approved.modelPath,
         model.sourceSHA256 == approved.modelSHA256
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH007":
+      guard definition.name == "Impala Voyager",
+        definition.sourceSHA256
+          == "a75681f60d15795e2db03b783671fbe3d572bfd75a39f62658a7dca09ac666ea",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-01-native-lod/SH007-design.toml",
+        model.sourceSHA256 == "911be33ac10be443afd3d33c6d20f65079bb9a5c20b58752597c52d50d12aad3"
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
@@ -172,6 +190,7 @@ extension CatalogueShip {
     case "SH002": result = OriginalHullPhysicalContract.gyrfalconAssault
     case "SH003": result = OriginalHullPhysicalContract.gyrfalconCommand
     case "SH004": result = OriginalHullPhysicalContract.gyrfalconPatrol
+    case "SH007": result = OriginalHullPhysicalContract.impalaVoyager
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil

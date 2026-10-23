@@ -1,0 +1,11 @@
+# feat(fleet): bind original Impala Voyager leisure hull
+
+SH007 now resolves to the original Impala Voyager instead of the historical Argent's Quest runtime refit. It uses the approved authored mechanics: 38t hold, 15t expansion, speed38.6, acceleration11, 14-LY fuel, 10-LY drive, five pylons, four laser facings and 208,000CR base price. Its leisure role remains leisure rather than inheriting a trader/military classification.
+
+The new physical contract authenticates its exact specification/model identity, hashes, source path and declared metre units. Physical/player meshes use every unnormalized approved vertex and all material/UV assignments. The shared player-hull projection now permits explicit leisure alongside trader/military and derives the matching typed display category. Earlier role mappings and their standard-fit mechanics remain unchanged.
+
+Historical profiles and raw assets remain intact. Blueprint fabrication retains technology fourteen. The retained rare, authored/pending placement and empty natural galaxy/region ranges remain unchanged; this source binding creates no natural spawn, discovery, ownership, blueprint, equipment or passenger berth.
+
+Five new component methods cover exact source/negative cases, original mechanics/history and unchanged other hulls, complete physical/player appearance, leisure/earlier-role mapping and pending placement policy, plus original standard fit and malformed retained-input refusal. The maintained selection retains all366 parent methods and adds five, for371. Six Python report fixtures, Swift syntax parsing, strict formatting, Markdown and whitespace checks pass. Actual hosted Swift execution and independent review remain pending; parsing is not a unit pass.
+
+This packet stacks on the coherent family72178329 and current reviewed Mac runner configuration. Retarget after the parent merges without rewriting history. It implements the physical prerequisite and runtime/source portion of [M04.H007](ISSUE-original-impala-voyager.md); authored placement and M14 safe anchors remain open, as do actual flight/docking and full hull acceptance. No GUI/performance journey, broad coverage/sanitizer/leak gate or usable release is claimed. Source assets and README media are unchanged.
