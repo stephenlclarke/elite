@@ -5849,6 +5849,27 @@
       "merged": false,
       "usable_delivered": false,
       "full_integration_deferred": true
+    },
+    {
+      "at": "2026-10-23T09:49:06.692742+00:00",
+      "event": "Status dock context original head independently source and component unit verified",
+      "ledger_id": "M02.P05.status-dock-context",
+      "pr": 116,
+      "head": "4c4bd8e1b1cd347348146f3478d580a5e2453008",
+      "run": 39932723377,
+      "source_review": "MBA clear",
+      "methods_passed": 342,
+      "new_feature_methods_passed": 3,
+      "new_feature_parameter_cases_passed": 7,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "compile_seconds": 718.99,
+      "test_seconds": 67.502,
+      "merged": false,
+      "usable_delivered": false,
+      "actual_merge_blocker": "shared selector conflict; owner resolving",
+      "integration_deferred": true
     }
   ],
   "two_developer_phase": {
