@@ -4,6 +4,21 @@ import Foundation
 enum OriginalPlayerHullActivation {
   enum Failure: Error { case missingStandardFit, invalidCatalogue }
 
+  /// Closed per-ID routing; a family name or runtime-ready flag never selects an adapter.
+  static func resolve(_ retained: CatalogueShip) throws -> CatalogueShip {
+    switch retained.id {
+    case "SH002": return try OriginalGyrfalconAssaultActivation.resolve(retained)
+    case "SH003", "SH004": return try OriginalGyrfalconFamilyActivation.resolve(retained)
+    case "SH007": return try OriginalImpalaVoyagerActivation.resolve(retained)
+    case "SH012": return try OriginalSableLinerActivation.resolve(retained)
+    case "SH018": return try OriginalDonkeyActivation.resolve(retained)
+    case "SH019": return try OriginalGazelleExplorerActivation.resolve(retained)
+    case "SH029": return try OriginalBurroActivation.resolve(retained)
+    case "SH061": return try OriginalHaflingerActivation.resolve(retained)
+    default: return retained
+    }
+  }
+
   static func resolve(
     _ retained: CatalogueShip, definition: OriginalFleetDefinition,
     physical: OriginalHullPhysicalContract
