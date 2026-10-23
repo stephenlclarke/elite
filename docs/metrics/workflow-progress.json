@@ -8139,6 +8139,24 @@
       "mba_action": "source-backed assertion issue/dedup and exact outcome review",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:22:32Z",
+      "checkpoint_key": "20261023-m01-npc-identity-fixture-assigned-save-fault-attributed",
+      "event": "NPC fixture154 assigned; current mission reaches save-preparation fault",
+      "issues": [
+        151,
+        154
+      ],
+      "head": "a0f832ae5b9a08d402ada2b7f79e00b1ab847ee6",
+      "fixture_owner": "G1",
+      "fixture_reviewer": "MBA",
+      "fixture_scope": "exact launched missile and original owner identity, original oracles retained",
+      "current_diagnostic_path": "retryInductionCrewLogCapture -> prepareNativeSaveState -> writeCommander -> station auto missile -> original mission",
+      "diagnostic_seconds": 15.096647,
+      "not_test_qualification": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
