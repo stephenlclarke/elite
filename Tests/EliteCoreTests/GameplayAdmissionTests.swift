@@ -89,16 +89,24 @@ struct GameplayAdmissionTests {
 
   @Test func atomicPackRejectsDuplicateIdentityAndIntersectingMembers() {
     var game = admissionGame()
+    let before = preparedAdmissionBodies(&game)
+    let actor = game.commander.flightSimulation.nextActor
     let request = admissionRequest(game)
     let duplicate = game.admitEncounterPlan(admissionPlan(game, requests: [request, request]))
     #expect(duplicate.allSatisfy { $0.refusal == .staleContext })
+    #expect(game.bodies == before)
+    #expect(game.commander.flightSimulation.nextActor == actor)
     let overlap = admissionRequest(game, member: 1)
     let collision = game.admitEncounterPlan(admissionPlan(game, requests: [request, overlap]))
-    #expect(collision.allSatisfy { $0.refusal == .unsafePosition } && game.bodies.count == 1)
+    #expect(collision.allSatisfy { $0.refusal == .unsafePosition })
+    #expect(game.bodies == before)
+    #expect(game.commander.flightSimulation.nextActor == actor)
   }
 
   @Test func unsafePlanetSunPlayerAndNonfiniteSpawnsAreRefused() throws {
     var game = admissionGame()
+    let before = preparedAdmissionBodies(&game)
+    let actor = game.commander.flightSimulation.nextActor
     let context = try #require(game.gameplayContext())
     for point in [
       context.anchors.planet.position, context.anchors.sun.position,
@@ -106,7 +114,9 @@ struct GameplayAdmissionTests {
     ] {
       let receipt = game.admitEncounterPlan(
         admissionPlan(game, requests: [admissionRequest(game, position: point)]))
-      #expect(receipt.first?.refusal == .unsafePosition && game.bodies.count == 1)
+      #expect(receipt.first?.refusal == .unsafePosition)
+      #expect(game.bodies == before)
+      #expect(game.commander.flightSimulation.nextActor == actor)
     }
   }
 

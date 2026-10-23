@@ -15,3 +15,7 @@ Formatting and diff hygiene are checked. Four unresolved original methods will r
 ## Compatibility and remaining limits
 
 Tests only; no save schema, authority or gameplay change. Earlier duplicate/intersection and safety tests keep their original setup. This fixture correction does not explain signal10 or historical144. Full VM/required quality and native M01/release remain separate.
+
+At18fb5976 the three corrected admission methods passed individually with no assertion issues: stale8.765s, successful admission/replay8.769s and atomic/partial8.796s. The batch nevertheless failed with the separate original mission signal10 and unfinished XML; no four-method pass is claimed. Two additional consumers of the same fixture, duplicate/intersection and unsafe-point refusal, now also prepare real native population and retain complete baseline bodies plus independent allocator checks after every refusal. All original refusal predicates remain. The general fixture and other methods stay unchanged.
+
+A subsequent source-backed151 production preflight/body split affects nonempty admission, so the final affected selection includes these five admission methods, original mission and existing actual-request/adoption method (seven methods/cases). The unchanged empty-plan/no-effects case retains its actual d5 pass; no synthetic aggregate XML is claimed. Final focused execution and independent result review remain pending.
