@@ -5988,6 +5988,25 @@
       "whole_hulls_complete": false,
       "usable_delivered": false,
       "integration_deferred": true
+    },
+    {
+      "at": "2026-10-23T10:24:13.998551+00:00",
+      "event": "Impala Voyager runtime packet pushed with pending placement preserved",
+      "ledger_id": "M04.H007.runtime",
+      "pr": 122,
+      "head": "eb3f5cb6b411233bfc8a1d5ffd86336f8770b4d4",
+      "new_component_methods_written": 5,
+      "selected_methods": 371,
+      "source_review": "MBA assigned",
+      "unit_status": "pending",
+      "remaining_parent_obligations": [
+        "placement",
+        "M14 anchors",
+        "later flight and delivery acceptance"
+      ],
+      "whole_hull_complete": false,
+      "merged": false,
+      "usable_delivered": false
     }
   ],
   "two_developer_phase": {
