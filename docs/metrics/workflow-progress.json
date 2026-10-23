@@ -8271,6 +8271,23 @@
       "aggregate_pass_claim": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:40:23Z",
+      "checkpoint_key": "20261023-m01-npc-front-surface-fixture-source-clear",
+      "event": "NPC fixture uses proved current-hull front contact; production geometry unchanged",
+      "issue": 154,
+      "diagnostic_head": "8ea34c63076306aac67a58d9df7aa66761682111",
+      "diagnostic_seconds": 59.802815,
+      "diagnostic_result": "FAIL: moved through z-3608 at clock2/2, no impact",
+      "source_review": "MBA CLEAR actual testc84c310cf9c572aad5ac5b87f403868c42a21163",
+      "fixture_change": "nondegenerate front triangle radial launcher and native player-front contact prerequisite",
+      "preserved": "current hull, exact identities, original2s, impact/damage/cash/kills/finiteammo assertions",
+      "selected_methods": 1,
+      "mission_replayed": false,
+      "runtime_result": "pending",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
