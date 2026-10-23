@@ -6552,6 +6552,37 @@
       "usable_delivered": false,
       "m01_complete": false,
       "timestamp_scope": "Root recorded terminal evidence; not measured failure instant"
+    },
+    {
+      "at": "2026-10-23T13:52:19Z",
+      "timestamp_scope": "Root recorded terminal evidence",
+      "checkpoint_key": "20261023-m01-rescue-utility-frame-patch-failure",
+      "event": "Bounded utility validation frame patch still fails original rescue cases",
+      "issue": 112,
+      "pr": 139,
+      "commit": "4334da1967ebf7c301cc157ccbfb10b1d5a837ff",
+      "command": [
+        "swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-112-utility-units.xml",
+        "--filter",
+        "(?:^|\\.)NativeOriginalRescueCapsuleTests/rescueClassifierRejectsDeadForeignEmptyAndReplacedActorsWithoutEMPPersonImpersonation\\(|(?:^|\\.)NativeOriginalRescueRecordTests/rescueActualActionWriterRefusalPreservesCustodyCabinsCargoCashAndPriorFiles\\("
+      ],
+      "exit_code": 1,
+      "seconds": 90.00508729182184,
+      "compile_seconds": 75.39,
+      "completed_methods": 0,
+      "completed_cases": 0,
+      "outcome": "unexpected signal10 before completion",
+      "independent_source_review": "MBA clear, validation predicates unchanged",
+      "merged": false,
+      "usable_delivered": false,
+      "m01_complete": false,
+      "next_action": "Fresh exact-current-image attribution owned by G1, necessary actual path correction, MBA review parallel"
     }
   ],
   "two_developer_phase": {
