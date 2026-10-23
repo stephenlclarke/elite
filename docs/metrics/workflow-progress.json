@@ -10154,6 +10154,29 @@
       "reviewer": "MBA",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:34:36.252221+00:00",
+      "checkpoint_key": "20261024-m01-1128-coherent-parent-frame-scope",
+      "event": "Matching normal failure published; offlineparentframes support coherent availability/acceptance/quote boundary repair",
+      "head": "1128fb0b20ca996347bc2a7c74050cc00d9b9d50",
+      "source_head": "33cb5f2b3e1a5528d98d2559a1e76a39017ca406",
+      "availability_fixed_frame_bytes": 12448,
+      "availability_script_state_temporaries": 2,
+      "availability_commander_temporaries": 2,
+      "owner": "G1",
+      "reviewer": "MBA",
+      "quote_isolation_copy_preserved": true,
+      "cancel_requested": 40040203179,
+      "m01_complete": false,
+      "usable_delivery": false,
+      "proven_additional_game_receiver_copy_sites": [
+        "contractStation",
+        "scriptUnavailable",
+        "contractRevision",
+        "refreshSelectedQuote.contractAcceptanceQuote"
+      ],
+      "offline_quote_tail_review": "verified"
     }
   ],
   "two_developer_phase": {
