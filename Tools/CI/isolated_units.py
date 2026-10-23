@@ -65,6 +65,7 @@ METHODS = {
         "existingOwnershipTagsSkipAdoptionWithoutChangingCursorsOrValues",
         "systemChangeEntersExactlyOnceEvenWhenNoBodyNeedsAdoption",
         "failedIdentitySelectionSkipsOnlyThatBodyAndPreservesSpawnCursor",
+        "adoptionSystemReadPreservesExactScalarsAndRetainedCommanderBytes",
     ),
     "NativeStationPopulationLifetimeTests": (
         "missingWorldReturnsBeforeSceneAndCursorValidation",
