@@ -9356,6 +9356,18 @@
       "scope": "noninline static borrowing candidate traversal; original order/authority unchanged",
       "current_crash_attributed": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:31:21.153952+00:00",
+      "checkpoint_key": "20261023-m01-166-shared-targeting-reviewed-run",
+      "event": "Shared candidate borrowing166 committed and reviewed; affected execution active",
+      "head": "a7e62895",
+      "issue": 166,
+      "reviewed_blob": "5c2bd9727723512b45071601af98b06a88431e25",
+      "methods": 4,
+      "result": "pending",
+      "previous_crash": "7771 unattributed; no matching UUID among27 retained reports",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
