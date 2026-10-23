@@ -618,6 +618,17 @@ public struct Game: Sendable {
       try read(storage.baseAddress!.pointee)
     }
   }
+  /// Native station reads borrow current storage without an owned Game receiver temporary.
+  /// The synchronous buffer borrow and pointer cannot escape this call.
+  @inline(never)
+  mutating func withNativeStationReadOnlyCommander<Result>(
+    _ read: (borrowing Commander) throws -> Result
+  ) rethrows -> Result {
+    try commanderStorage.withUnsafeBufferPointer { storage in
+      try read(storage.baseAddress!.pointee)
+    }
+  }
+
   func withReadOnlyScriptState<Result>(
     _ read: (borrowing ScriptEngineState) throws -> Result
   ) rethrows -> Result {

@@ -11,3 +11,5 @@ Three pure component methods cover seven cases, including retained dock metadata
 Formatting, six Python report fixtures, documentation lint and whitespace checks are the authoring checks. No application build, integration, native journey, GUI, performance or release acceptance is claimed. This packet is disjoint from the station help, Inventory/Showroom and memo repair streams.
 
 Parent: [M02.P05 / F07,F43](COMPLETION-LEDGER.md). The feature PR is the source/review handoff; usable-build and release states remain separate.
+
+The actual canonical-base merge conflict is resolved by retaining both the three StationDockLocation methods and three NativeStationSnapshot methods. The final maintained union is345methods. Status source and its seven authored cases are unchanged; final-head GitHub checks and independent review remain pending.

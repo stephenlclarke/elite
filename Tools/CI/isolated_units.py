@@ -21,6 +21,11 @@ METHODS = {
         "dockedStatusNamesTheActualMainOrNativeStation",
         "unknownDockDoesNotInventAMainStationOrClaimTheShipIsInSpace",
     ),
+    "NativeStationSnapshotUnitTests": (
+        "inPlaceStationMeshReadPreservesGeometryAndRejectsMissingOrForeignActors",
+        "exactSnapshotRejectsEveryStoredFieldChangeAndDuplicateOrAbsentBodies",
+        "authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget",
+    ),
     "NativeWayfarerInductionAccreditationUnitTests": (
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
         "repeatedSennConfirmationCannotPayOrGrantAnotherClueOrDiscardExistingBookings",
