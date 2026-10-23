@@ -85,6 +85,14 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH018"))
   }
 
+  static let gazelleExplorer: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH019") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH019"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -153,6 +161,16 @@ struct OriginalHullPhysicalContract: Sendable {
         model.coordinateUnits == "metres",
         model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH018-design.toml",
         model.sourceSHA256 == "40e2a5fdd0f7945141cb55701deab76a64f974a38133f86333bb4fd8d199fbf6"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH019":
+      guard definition.name == "Gazelle Explorer",
+        definition.sourceSHA256
+          == "b238e019f63d5675f48ddb8e4bcb0339fc9ca5b7b582dc996348e52eac10dc2e",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-01-native-lod/SH019-design.toml",
+        model.sourceSHA256 == "56172839f14cc1aca09814de34d181b98832e87e071130d0c4c930a760d66944"
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
@@ -229,6 +247,7 @@ extension CatalogueShip {
     case "SH007": result = OriginalHullPhysicalContract.impalaVoyager
     case "SH012": result = OriginalHullPhysicalContract.sableLiner
     case "SH018": result = OriginalHullPhysicalContract.donkey
+    case "SH019": result = OriginalHullPhysicalContract.gazelleExplorer
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil
