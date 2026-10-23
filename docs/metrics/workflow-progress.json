@@ -9231,6 +9231,19 @@
       "methods": 4,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:13:49.204495+00:00",
+      "checkpoint_key": "20261023-m01-5105-distinct-recovery-alias-followup",
+      "event": "Receiver correction compiles; current fault is distinct record recovery alias163",
+      "head": "5105b8bf049c6b7fb26681d98e9d43ce18121daf",
+      "issue": 163,
+      "build_seconds": 78.63,
+      "process_seconds": 90.542046416,
+      "result": "runtime FAILURE signal10/exit1",
+      "completed_methods": 0,
+      "issue161": "unqualified; no recurrence or pass proved",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
