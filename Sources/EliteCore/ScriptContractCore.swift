@@ -381,7 +381,7 @@ extension Game {
     var courierAdmission: ScriptCourierAdmission? = nil
     if let pledge {
       pledgeAdmission = .init(
-        instance: instanceID, board: board, offer: offer,
+        instance: instanceID, board: copy board, offer: copy offer,
         preview: pledge, epoch: ecmControl.epoch,
         sequence: withReadOnlyScriptState { $0.nextEvent } + 1,
         cause: scriptEventContext(
@@ -398,14 +398,14 @@ extension Game {
       courierAdmission = .init(
         kind: .issue, instance: instanceID,
         item: ScriptCourierCustody.itemIdentity(instanceID),
-        proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: job)
+        proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: copy job)
     }
     return .init(
-      key: key, index: index, pack: pack, board: board, offer: offer, job: job,
+      key: key, index: index, pack: copy pack, board: copy board, offer: copy offer, job: copy job,
       instanceID: instanceID, pledgeAdmission: pledgeAdmission,
       courierAdmission: courierAdmission,
       freightAdmission: offer.freightPlan == nil
-        ? nil : try prepareFreightIssue(job: job, instance: instanceID))
+        ? nil : try prepareFreightIssue(job: copy job, instance: instanceID))
   }
   private mutating func performContractAcceptance(_ preparation: PreparedContractAcceptance)
     throws -> UUID
