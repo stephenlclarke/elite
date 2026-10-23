@@ -8103,6 +8103,22 @@
       "original_mission": "STARTED, no PASS, helper SIGBUS10",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:17:25Z",
+      "checkpoint_key": "20261023-m01-missile-scene-preparation-combat-boundary-reviewed",
+      "event": "Mission reaches combat recording; launch-facts lifetime boundary reviewed",
+      "issue": 151,
+      "diagnostic_source": "ed35473a1a712f0dfb9854f9271eec2ed2aef188",
+      "diagnostic_seconds": 15.367784,
+      "diagnostic_not_test_pass": true,
+      "binary_uuid": "5B241ABB-5F2C-3B57-8663-E67D20195C96",
+      "source_review": "MBA CLEAR at working Ordnance6c65a238; same order and combat authority, immutable facts only",
+      "selected_methods": 5,
+      "authored_cases": 6,
+      "runtime_result": "pending",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
