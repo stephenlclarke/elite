@@ -9086,6 +9086,19 @@
       "result": "pending",
       "stack_reduction_measured": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:45:02.696538+00:00",
+      "checkpoint_key": "20261023-m01-161-phases-compile-ownership-correction",
+      "event": "Phase split compile ownership failure retained; explicit payload-copy source correction reviewed",
+      "head": "5530373d",
+      "issue": 161,
+      "result": "compile FAILURE; no runtime/tests",
+      "exit_code": 1,
+      "process_seconds": 22.207302292,
+      "reviewed_correction_blob": "826b14174b30f2d3d8fccf58edb8c250edd98eb5",
+      "source_review": "CLEAR",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
