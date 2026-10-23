@@ -29,7 +29,8 @@ struct NativeStationPopulationLifetimeTests {
   }
 
   @Test(arguments: [
-    "docked", "missing-anchors", "duplicate", "binding", "body-budget", "body-cursor",
+    "docked", "missing-anchors", "invalid-world", "system-mismatch", "duplicate", "binding",
+    "body-budget", "body-cursor",
     "source", "clearance", "spawn-cursor", "second-rebind", "final-flight",
   ])
   func refusedPopulationPreservesTheWholeCandidateAndErrorPriority(scenario: String) throws {
@@ -43,6 +44,17 @@ struct NativeStationPopulationLifetimeTests {
       expected = .invalidState
     case "missing-anchors":
       try changeFlight(&game) { $0["anchors"] = NSNull() }
+      expected = .invalidState
+    case "invalid-world":
+      game.commander.nativeStations?.poses.removeLast()
+      game.nextBodyID = 0
+      expected = .invalidState
+    case "system-mismatch":
+      try changeFlight(&game) { values in
+        var anchors = try #require(values["anchors"] as? [String: Any])
+        anchors["system"] = ["galaxy": 0, "system": 7]
+        values["anchors"] = anchors
+      }
       expected = .invalidState
     case "duplicate":
       let body = try #require(game.bodies.first { $0.nativeStationIdentity != nil })

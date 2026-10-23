@@ -267,13 +267,15 @@ extension Game {
   // Retire the existing-body census before any geometry or candidate-body temporaries exist.
   // An empty cohort returns here without entering either allocation/placement phase.
   @inline(never)
-  private func nativeStationPopulationCohort(world: NativeStationWorld) throws -> (
+  private mutating func nativeStationPopulationCohort(world: NativeStationWorld) throws -> (
     anchors: SystemAnchors, absent: [NativeStationRecord]
   )? {
-    let system = systemIdentity
-    guard commander.nativeStationStateValid, let anchors = commander.flightSimulation.anchors,
-      anchors.system == systemIdentity, !docked
-    else { throw NativeStationRuntimeError.invalidState }
+    let header = try withNativeStationReadOnlyCommander {
+      try Self.nativeStationPopulationHeader($0)
+    }
+    let system = header.system
+    let anchors = header.anchors
+    guard !docked else { throw NativeStationRuntimeError.invalidState }
     let current = world.ledger.records.filter { $0.identity.system == system }
     let stationBodies = bodies.filter { $0.nativeStationIdentity != nil }
     guard Set(stationBodies.compactMap(\.nativeStationIdentity)).count == stationBodies.count,
@@ -295,6 +297,20 @@ extension Game {
       nextBodyID > 0, nextBodyID < 1_000_000_000 - absent.count
     else { throw NativeStationRuntimeError.capacity }
     return (anchors, absent)
+  }
+
+  // Keep the original Commander-dependent guards inside one synchronous read. The census
+  // receives only these owned header values, without owning whole Commander projections.
+  @inline(never)
+  private static func nativeStationPopulationHeader(_ commander: borrowing Commander) throws -> (
+    system: SystemIdentity, anchors: SystemAnchors
+  ) {
+    let system = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
+    guard Commander.nativeStationStateIsValid(commander),
+      let anchors = commander.flightSimulation.anchors,
+      anchors.system == SystemIdentity(galaxy: commander.galaxy, system: commander.system)
+    else { throw NativeStationRuntimeError.invalidState }
+    return (system, anchors)
   }
 
   @inline(never)
