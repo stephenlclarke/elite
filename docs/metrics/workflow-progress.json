@@ -9544,6 +9544,18 @@
       "guard_mapping_available": false,
       "unit_pass_claim": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:53:21.337639+00:00",
+      "checkpoint_key": "20261023-m01-current-courier-resolver-scoped",
+      "event": "Current offline symbols confirm board-browsing courier resolver; bounded correction assigned",
+      "head": "9569dcb56d45cf2208a900042abac4fc5547765e",
+      "fault": "resolveCourierTerminals247 via board browsing85",
+      "guard_mapping_available": false,
+      "developer": "G1",
+      "reviewer": "MBA",
+      "scope": "resolver ownership/lifetimes, procurement/RRS/courier order and full rules unchanged",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
