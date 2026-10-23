@@ -8086,6 +8086,23 @@
       "runtime_result": "pending",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:14:49Z",
+      "checkpoint_key": "20261023-m01-missile-transaction-six-cases-pass-mission-incomplete",
+      "event": "Five missile/admission methods complete; original mission still faults",
+      "head": "ed35473a1a712f0dfb9854f9271eec2ed2aef188",
+      "issue": 151,
+      "process_result": "FAILURE",
+      "seconds": 231.708835,
+      "build_seconds": 217.3,
+      "selected_methods": 6,
+      "authored_cases": 7,
+      "completed_pass_methods": 5,
+      "completed_pass_cases": 6,
+      "original_mission": "STARTED, no PASS, helper SIGBUS10",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
