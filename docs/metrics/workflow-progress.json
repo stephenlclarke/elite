@@ -9723,11 +9723,19 @@
       "head": "285cfce657b24ea201ff812dfdaa09bd31b473ba",
       "run_id": 40033448991,
       "conclusion": "failure",
-      "attribution": "pending_independent_saved_artifact_review",
+      "attribution": "independently_verified_no_matching_fault_report",
       "renderer_compile_observed": true,
       "renderer_toolchain": "Swift6.4.1",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "build_seconds": 297.9,
+      "signal": 10,
+      "methods_completed": 0,
+      "unfinished_xml_bytes": 52,
+      "image_uuid": "EDA40267-E98B-3F03-B8CD-63AD5C54144B",
+      "image_sha256": "64460dea2e9be39704c2c13bbf9273a98939ce034ff7f49218cb96968fe0fb0c",
+      "review_artifact_path": "/tmp/elite-mba-285-unit40033448991",
+      "issue_comment": "https://github.com/stephenlclarke/elite/issues/144#issuecomment-6376055300"
     }
   ],
   "two_developer_phase": {
