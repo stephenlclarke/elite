@@ -152,65 +152,85 @@ extension Game {
       }
     }
   }
+  @inline(never)
   func scriptUnavailable(
-    _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
+    _ pack: borrowing ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
     if Self.scriptInductionSeedApplies(pack) {
-      if let reason = scriptInductionSeedUnavailable(pack) { return reason }
+      if let reason = scriptInductionSeedUnavailable(copy pack) { return reason }
     }
     if Self.scriptInductionWorkshopApplies(pack) {
-      if let reason = scriptInductionWorkshopUnavailable(pack) { return reason }
+      if let reason = scriptInductionWorkshopUnavailable(copy pack) { return reason }
     }
     if Self.scriptInductionClinicApplies(pack) {
-      if let reason = scriptInductionClinicUnavailable(pack) { return reason }
+      if let reason = scriptInductionClinicUnavailable(copy pack) { return reason }
     }
     if Self.scriptInductionUtilityApplies(pack) {
-      if let reason = scriptInductionUtilityUnavailable(pack) { return reason }
+      if let reason = scriptInductionUtilityUnavailable(copy pack) { return reason }
     }
     if Self.scriptInductionCrewLogApplies(pack) {
-      if let reason = scriptInductionCrewLogUnavailable(pack) { return reason }
+      if let reason = scriptInductionCrewLogUnavailable(copy pack) { return reason }
     }
     if Self.scriptInductionArkApplies(pack) {
-      if let reason = scriptInductionArkUnavailable(pack) { return reason }
+      if let reason = scriptInductionArkUnavailable(copy pack) { return reason }
     }
     if Self.scriptWayfarerInductionApplies(pack) {
-      if let reason = scriptWayfarerInductionUnavailable(pack) { return reason }
+      if let reason = scriptWayfarerInductionUnavailable(copy pack) { return reason }
     }
     if Self.scriptGlassMeridianApplies(pack) {
-      if let reason = scriptGlassMeridianUnavailable(pack) { return reason }
+      if let reason = scriptGlassMeridianUnavailable(copy pack) { return reason }
     }
     if pack.manifest.stateID == NativeDefensiveFlight.stateID {
-      guard pack.digest == NativeDefensiveFlight.digest else {
-        return "Restore approved manual defensive flight content."
-      }
-      if !commander.scriptState.instances.values.contains(where: {
-        $0.definition == NativeDefensiveFlight.stateID && $0.digest == pack.digest
-      }) {
-        return "Use Station Contracts at actual Avenor for manual defensive flight consent."
-      }
+      if let reason = scriptDefensiveFlightContentUnavailable(copy pack) { return reason }
     }
     if pack.manifest.stateID == NativeSafeGunnery.stateID {
-      guard pack.digest == NativeSafeGunnery.digest else {
-        return "Restore approved safe gunnery content."
-      }
-      if !commander.scriptState.instances.values.contains(where: {
-        $0.definition == NativeSafeGunnery.stateID && $0.digest == pack.digest
-      }) {
-        return "Use Station Contracts at actual Avenor for safe gunnery consent."
-      }
+      if let reason = scriptSafeGunneryContentUnavailable(copy pack) { return reason }
     }
     if Self.scriptFlightReceptionApplies(pack) {
-      if let reason = scriptFlightReceptionUnavailable(pack) { return reason }
+      if let reason = scriptFlightReceptionUnavailable(copy pack) { return reason }
     }
     if Self.scriptFieldReliefApplies(pack) {
-      if let reason = scriptFieldReliefUnavailable(pack) { return reason }
+      if let reason = scriptFieldReliefUnavailable(copy pack) { return reason }
     }
     // Unrelated missions do not use a navigation binding; decide that before resolving one.
     if Self.scriptNavigationTradeApplies(pack) {
-      if let reason = scriptNavigationTradeUnavailable(pack, navigationBinding: navigationBinding) {
+      if let reason = scriptNavigationTradeUnavailable(
+        copy pack, navigationBinding: navigationBinding)
+      {
         return reason
       }
     }
+    return scriptBuildRequirementsUnavailable(pack)
+  }
+
+  @inline(never)
+  private func scriptDefensiveFlightContentUnavailable(_ pack: ScriptPack) -> String? {
+    guard pack.digest == NativeDefensiveFlight.digest else {
+      return "Restore approved manual defensive flight content."
+    }
+    if !commander.scriptState.instances.values.contains(where: {
+      $0.definition == NativeDefensiveFlight.stateID && $0.digest == pack.digest
+    }) {
+      return "Use Station Contracts at actual Avenor for manual defensive flight consent."
+    }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptSafeGunneryContentUnavailable(_ pack: ScriptPack) -> String? {
+    guard pack.digest == NativeSafeGunnery.digest else {
+      return "Restore approved safe gunnery content."
+    }
+    if !commander.scriptState.instances.values.contains(where: {
+      $0.definition == NativeSafeGunnery.stateID && $0.digest == pack.digest
+    }) {
+      return "Use Station Contracts at actual Avenor for safe gunnery consent."
+    }
+    return nil
+  }
+
+  @inline(never)
+  private func scriptBuildRequirementsUnavailable(_ pack: borrowing ScriptPack) -> String? {
     if !pack.missingCapabilities.isEmpty {
       return "Not available in this build: "
         + Set(pack.missingCapabilities.map(ScriptCapabilities.playerFeatureName)).sorted().joined(
@@ -219,7 +239,7 @@ extension Game {
     if pack.manifest.capabilities.contains("durable-commands-v2"), !scriptDurabilityAvailable {
       return "Choose a commander save before running this mission."
     }
-    return scriptDependenciesUnavailable(pack)
+    return scriptDependenciesUnavailable(copy pack)
   }
 
   @inline(never)

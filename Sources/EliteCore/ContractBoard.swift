@@ -522,7 +522,10 @@ extension Game {
     contractBoard.financeQuote = nil
     contractBoard.rrsQuote = contractBoard.selected?.rrs.map { rrsCourierQuote(for: $0) }
     if let row = contractBoard.selected, let offer = row.offer {
-      contractBoard.quote = contractAcceptanceQuote(board: row.board, offer: offer.id)
+      let quote = withReadOnlyStoredGame {
+        $0.contractAcceptanceQuote(board: row.board, offer: offer.id)
+      }
+      contractBoard.quote = quote
     } else {
       contractBoard.quote = nil
     }
@@ -619,7 +622,7 @@ extension Game {
         return
       }
       if let action = contractBoard.selected?.glassMeridian {
-        guard (action == .accept || action == .auditReservations), contractBoard.action == .accept,
+        guard action == .accept || action == .auditReservations, contractBoard.action == .accept,
           let quote = contractBoard.glassMeridianQuote
         else {
           throw MissionPackError("Read the current investigation; Back preserves it.")

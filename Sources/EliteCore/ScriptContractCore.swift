@@ -338,22 +338,26 @@ extension Game {
     board key: String, offer id: UUID, confirmationToken: UUID
   ) throws -> ContractAcceptancePreflight {
     guard docked, dockedAtMainStation, !paused, let board = commander.contracts.boards[key],
-      board.station == contractStation, let index = board.offers.firstIndex(where: { $0.id == id }),
+      board.station == withReadOnlyStoredGame({ $0.contractStation }),
+      let index = board.offers.firstIndex(where: { $0.id == id }),
       let pack = scriptPacks.first(where: { $0.digest == board.digest }),
       let definition = pack.manifest.board,
-      scriptUnavailable(pack) == nil
+      withReadOnlyStoredGame({ $0.scriptUnavailable(pack) }) == nil
     else {
       throw MissionPackError(
         "The contract board changed or is unavailable. Return to its current offers.")
     }
     let offer = board.offers[index]
     if !OriginalServiceReservationPolicy.isContractDefinition(pack.manifest.stateID),
-      contractRevision(definition) != board.revision
+      withReadOnlyStoredGame({ $0.contractRevision(definition) }) != board.revision
     {
       throw MissionPackError("The contract board changed. Review its current offers.")
     }
     if case .accepted(let existing) = offer.status { return .alreadyAccepted(existing) }
-    guard try contractRevision(definition, pack: pack) == board.revision else {
+    guard
+      try withReadOnlyStoredGame({ try $0.contractRevision(definition, pack: pack) })
+        == board.revision
+    else {
       throw MissionPackError("The contract board changed. Review its current offers.")
     }
     guard offer.status == .available else { throw MissionPackError("This offer was declined.") }
@@ -380,13 +384,15 @@ extension Game {
       else {
         throw MissionPackError("Procurement terms do not match their native provider.")
       }
-      try requireProcurementResources(plan)
+      try withReadOnlyStoredGame { try $0.requireProcurementResources(plan) }
     }
     if let plan = offer.freightPlan {
       guard plan.matches(pack) else { throw SaveError.invalidCommander }
-      try requireFreightResources(plan)
+      try withReadOnlyStoredGame { try $0.requireFreightResources(plan) }
     }
-    if let terms = offer.courier { try requireCourierResources(terms) }
+    if let terms = offer.courier {
+      try withReadOnlyStoredGame { try $0.requireCourierResources(terms) }
+    }
     let pledge = try withReadOnlyStoredGame { game in
       try game.pledgePreview(board: key, offer: id)
     }
