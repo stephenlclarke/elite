@@ -11,7 +11,8 @@ enum OriginalPlayerHullActivation {
     guard retained.id == definition.id, physical.id == definition.id,
       physical.specificationSHA256 == definition.sourceSHA256,
       let role = ShipCatalogueRole(rawValue: definition.role),
-      [ShipCatalogueRole.trader, .military].contains(role), definition.playerFlyable,
+      [ShipCatalogueRole.trader, .military, .leisure].contains(role),
+      let type = ShipCatalogueType(rawValue: definition.role), definition.playerFlyable,
       definition.purchasePolicy == "blueprintFabrication",
       let performance = definition.nativePerformance
     else { throw Failure.invalidCatalogue }
@@ -41,7 +42,7 @@ enum OriginalPlayerHullActivation {
         standardProfile(from: standard, performance: performance, definition: definition)
       ],
       game: performance,
-      catalogue: metadata(from: retained.catalogue, definition: definition, role: role),
+      catalogue: metadata(from: retained.catalogue, definition: definition, role: role, type: type),
       design: physical.model.nativeDesign, nativeHull: retained.nativeHull,
       nativeDesign: physical.model.nativeDesign, nativeCombat: retained.nativeCombat)
     guard
@@ -53,11 +54,11 @@ enum OriginalPlayerHullActivation {
 
   private static func metadata(
     from retained: ShipCatalogueMetadata, definition: OriginalFleetDefinition,
-    role: ShipCatalogueRole
+    role: ShipCatalogueRole, type: ShipCatalogueType
   ) -> ShipCatalogueMetadata {
     .init(
       schemaVersion: retained.schemaVersion, family: definition.family, aliases: retained.aliases,
-      objectKind: .ship, origin: .human, primaryType: role == .trader ? .trader : .military,
+      objectKind: .ship, origin: .human, primaryType: type,
       primaryRole: role,
       roleWeights: [.init(role: role, weight: 1)], access: .normal, playerFlyable: true,
       normalPurchaseEligible: true, purchasePolicy: .blueprintFabrication,

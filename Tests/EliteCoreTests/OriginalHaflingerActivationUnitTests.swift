@@ -30,7 +30,7 @@ struct OriginalHaflingerActivationUnitTests {
     }
     #expect(ship.profiles.filter { $0.group == "project-refit-v1" }.count == 1)
     for other in ShipCatalogue.all
-    where !["SH002", "SH003", "SH004", "SH029", "SH061"].contains(other.id) {
+    where !["SH002", "SH003", "SH004", "SH007", "SH029", "SH061"].contains(other.id) {
       #expect(other == (try retained(other.id)))
     }
   }
@@ -100,7 +100,7 @@ struct OriginalHaflingerActivationUnitTests {
         == ["Collection: unknown; no native encounter recorded"])
     #expect(
       OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == [
-        "SH002", "SH003", "SH004", "SH029", "SH061",
+        "SH002", "SH003", "SH004", "SH007", "SH029", "SH061",
       ])
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
