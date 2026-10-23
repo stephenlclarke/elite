@@ -61,7 +61,7 @@ extension Commander {
     _ instance: borrowing ScriptInstance, total: inout Int
   ) -> Bool {
     // The confirmed practice reserves one slot, then transfers that same slot to actual cargo.
-    if instance.savedNavigationTrade?.stage == .awaitingBuy {
+    if instance.hasAwaitingBuyNavigationTrade {
       let reserved = total.addingReportingOverflow(1)
       guard !reserved.overflow else { return false }
       total = reserved.partialValue
@@ -73,7 +73,7 @@ extension Commander {
   private static func addCheckedSeedInstanceCargo(
     _ instance: borrowing ScriptInstance, total: inout Int
   ) -> Bool {
-    let seedTonnes = instance.savedNativeInductionSeed?.reservedCargoTonnes ?? 0
+    let seedTonnes = instance.reservedSeedCargoTonnes
     guard (0...3).contains(seedTonnes) else { return false }
     let seed = total.addingReportingOverflow(seedTonnes)
     guard !seed.overflow else { return false }
@@ -85,7 +85,7 @@ extension Commander {
   private static func addCheckedWorkshopInstanceCargo(
     _ instance: borrowing ScriptInstance, total: inout Int
   ) -> Bool {
-    let workshopTonnes = instance.savedNativeInductionWorkshop?.reservedCargoTonnes ?? 0
+    let workshopTonnes = instance.reservedWorkshopCargoTonnes
     guard (0...2).contains(workshopTonnes) else { return false }
     let workshop = total.addingReportingOverflow(workshopTonnes)
     guard !workshop.overflow else { return false }
@@ -97,7 +97,7 @@ extension Commander {
   private static func addCheckedClinicInstanceCargo(
     _ instance: borrowing ScriptInstance, total: inout Int
   ) -> Bool {
-    let clinicTonnes = instance.savedNativeInductionClinic?.reservedCargoTonnes ?? 0
+    let clinicTonnes = instance.reservedClinicCargoTonnes
     guard (0...1).contains(clinicTonnes) else { return false }
     let clinic = total.addingReportingOverflow(clinicTonnes)
     guard !clinic.overflow else { return false }
@@ -109,10 +109,11 @@ extension Commander {
   private static func addCheckedPayloadsInstanceCargo(
     _ instance: borrowing ScriptInstance, total: inout Int
   ) -> Bool {
-    guard instance.payloads.count <= 128,
-      instance.payloads.values.allSatisfy({ (0...1_000_000).contains($0) })
+    let payloads = instance.retainedCargoPayloads
+    guard payloads.count <= 128,
+      payloads.values.allSatisfy({ (0...1_000_000).contains($0) })
     else { return false }
-    for payload in instance.payloads.values {
+    for payload in payloads.values {
       let addition = total.addingReportingOverflow(payload)
       guard !addition.overflow else { return false }
       total = addition.partialValue

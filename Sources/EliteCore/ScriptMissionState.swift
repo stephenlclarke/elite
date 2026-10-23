@@ -590,6 +590,101 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     }
   }
 
+  @inline(never)
+  var hasAwaitingBuyNavigationTrade: Bool {
+    let field: KeyPath<ScriptInstanceValue, ScriptNavigationTradeState?> = \.savedNavigationTrade
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Cargo queries require an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<ScriptNavigationTradeState?>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<ScriptNavigationTradeState?>.alignment == 0)
+      // Read only this initialized subobject; the owned result outlives this scoped buffer.
+      let fieldValue = address.assumingMemoryBound(to: ScriptNavigationTradeState?.self)
+      return fieldValue.pointee?.stage == .awaitingBuy
+    }
+  }
+
+  @inline(never)
+  var reservedSeedCargoTonnes: Int {
+    let field: KeyPath<ScriptInstanceValue, NativeInductionSeedContract?> = \.savedNativeInductionSeed
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Cargo queries require an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<NativeInductionSeedContract?>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<NativeInductionSeedContract?>.alignment == 0)
+      // Read only this initialized subobject; the owned result outlives this scoped buffer.
+      let fieldValue = address.assumingMemoryBound(to: NativeInductionSeedContract?.self)
+      return fieldValue.pointee?.reservedCargoTonnes ?? 0
+    }
+  }
+
+  @inline(never)
+  var reservedWorkshopCargoTonnes: Int {
+    let field: KeyPath<ScriptInstanceValue, NativeInductionWorkshopContract?> = \.savedNativeInductionWorkshop
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Cargo queries require an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<NativeInductionWorkshopContract?>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<NativeInductionWorkshopContract?>.alignment == 0)
+      // Read only this initialized subobject; the owned result outlives this scoped buffer.
+      let fieldValue = address.assumingMemoryBound(to: NativeInductionWorkshopContract?.self)
+      return fieldValue.pointee?.reservedCargoTonnes ?? 0
+    }
+  }
+
+  @inline(never)
+  var reservedClinicCargoTonnes: Int {
+    let field: KeyPath<ScriptInstanceValue, NativeInductionClinicContract?> = \.savedNativeInductionClinic
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Cargo queries require an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<NativeInductionClinicContract?>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<NativeInductionClinicContract?>.alignment == 0)
+      // Read only this initialized subobject; the owned result outlives this scoped buffer.
+      let fieldValue = address.assumingMemoryBound(to: NativeInductionClinicContract?.self)
+      return fieldValue.pointee?.reservedCargoTonnes ?? 0
+    }
+  }
+
+  @inline(never)
+  var retainedCargoPayloads: [String: Int] {
+    let field: KeyPath<ScriptInstanceValue, [String: Int]> = \.payloads
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Cargo queries require an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<[String: Int]>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<[String: Int]>.alignment == 0)
+      // Read only this initialized subobject; the owned result outlives this scoped buffer.
+      let fieldValue = address.assumingMemoryBound(to: [String: Int].self)
+      return fieldValue.pointee
+    }
+  }
+
   var savedArkReserve: NativeInductionArkReserve? {
     _read { yield storage[0].savedArkReserve }
     _modify { yield &storage[0].savedArkReserve }
