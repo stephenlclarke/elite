@@ -18,3 +18,10 @@ This is issue145. Retained evidence:
 `/tmp/elite-mba-e2-unit39980120332`. The original e2 aggregate remains failed,
 with zero completed methods and unfinished XML; no full524 qualification is
 claimed. Focused execution of the unchanged writer-refusal method is pending.
+
+At source6355088e395d7fd1a4c1cdacbaba83f4bcf0638a the original writer test
+passed with complete XML and zero failures/errors/skips. Compilation48.51s,
+method9.562963s, total process63.792762s, exit0. Evidence:
+`/tmp/elite-145-initial-pointer-units-result.json`, raw log and Swift Testing
+XML. Independent source/result review closed issue145 on that criterion.
+This does not establish the cause of the separate SIGILL or qualify full524.
