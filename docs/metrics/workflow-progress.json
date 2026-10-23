@@ -8347,6 +8347,23 @@
       "next_action": "G1 source-backed exact expectation repair, MBA issue/review, retain policy passes",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:48:38Z",
+      "checkpoint_key": "20261023-m01-inventory-heading-fixture-155-source-clear",
+      "event": "Two current inventory heading assertions implemented and independently reviewed",
+      "issues": [
+        153,
+        155
+      ],
+      "head": "59f254dc75132594de8bd91263ca76078986623c",
+      "reviewed_blob": "5119cc5d06b9d3dfbe5540243c76a65428443d3d",
+      "source_review": "MBA CLEAR: two independent current headings, original mount/browse/layout/scroll/shop assertions unchanged",
+      "selected_methods": 1,
+      "runtime_result": "pending",
+      "retained_passes": "three workshop methods at677, mission/NPC retained separately",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
