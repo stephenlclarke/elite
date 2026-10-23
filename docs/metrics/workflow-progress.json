@@ -9207,6 +9207,19 @@
       "methods": 4,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:10:00.032363+00:00",
+      "checkpoint_key": "20261023-m01-eb7-game-receiver-copy-attributed",
+      "event": "Current saved report proves Game receiver-copy chain; bounded helper receiver correction assigned",
+      "head": "eb7eb14138b63f455939435f10d5a88ad9462d75",
+      "issue": 161,
+      "build_seconds": 214.28,
+      "process_seconds": 225.839711458,
+      "result": "runtime FAILURE signal10/exit1",
+      "completed_methods": 0,
+      "fault_scope": "outlined Game copy from admissions+304; no precise helper call",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
