@@ -29,20 +29,20 @@ class RuntimeChildEnvironmentTests(unittest.TestCase):
         child['PATH'] = '/changed-child'
         self.assertEqual(parent, before)
 
-    def test_conflicting_inherited_options_cannot_enable_interaction_or_file_output(self):
-        parent = {'SWIFT_BACKTRACE': 'enable=no,interactive=yes,output-to=/tmp/report',
+    def test_inherited_options_cannot_enable_the_runtime_printer_or_interaction(self):
+        parent = {'SWIFT_BACKTRACE': 'enable=yes,interactive=yes,output-to=/tmp/report',
                   'UNRELATED': 'preserved'}
         child = artifacts.runtime_child_environment(parent)
         self.assertEqual(parent['SWIFT_BACKTRACE'],
-                         'enable=no,interactive=yes,output-to=/tmp/report')
+                         'enable=yes,interactive=yes,output-to=/tmp/report')
         self.assertEqual(child['UNRELATED'], 'preserved')
         self.assertEqual(child['SWIFT_BACKTRACE'],
                          artifacts.runtime_child_environment({})['SWIFT_BACKTRACE'])
 
-    def test_effective_options_are_noninteractive_crashed_thread_stderr_only(self):
+    def test_effective_options_disable_only_the_optional_runtime_printer(self):
         setting = artifacts.runtime_child_environment({})['SWIFT_BACKTRACE']
         options = dict(item.split('=', 1) for item in setting.split(','))
-        self.assertEqual(options, {'enable': 'yes', 'interactive': 'no', 'color': 'no',
+        self.assertEqual(options, {'enable': 'no', 'interactive': 'no', 'color': 'no',
                                    'output-to': 'stderr', 'threads': 'crashed',
                                    'registers': 'crashed', 'images': 'mentioned'})
         self.assertEqual(len(setting.split(',')), len(options))

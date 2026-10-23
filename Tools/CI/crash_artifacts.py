@@ -14,12 +14,13 @@ import threading
 
 ARTIFACT_LIMIT = 512 * 1024 * 1024
 REPORT_SUFFIXES = {'.ips', '.crash'}
-RUNTIME_BACKTRACE = ('enable=yes,interactive=no,color=no,output-to=stderr,'
+# The optional printer can outlive its timeout; OS and owned debugger evidence remain separate.
+RUNTIME_BACKTRACE = ('enable=no,interactive=no,color=no,output-to=stderr,'
                      'threads=crashed,registers=crashed,images=mentioned')
 
 
 def runtime_child_environment(parent):
-    """Enable bounded, noninteractive crash output only for the owned CI child."""
+    """Disable the optional runtime printer only for the owned CI child."""
     child = dict(parent)
     child['SWIFT_BACKTRACE'] = RUNTIME_BACKTRACE
     return child

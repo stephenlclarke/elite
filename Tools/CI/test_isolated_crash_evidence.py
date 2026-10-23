@@ -194,6 +194,7 @@ class IsolatedCrashEvidenceTests(unittest.TestCase):
         self.assertNotIn('never log this', json.dumps(saved))
         child_env = launch.call_args.kwargs['env']
         self.assertEqual(child_env['FIXTURE_SECRET'], 'never log this')
+        self.assertIn('enable=no', child_env['SWIFT_BACKTRACE'])
         self.assertIn('interactive=no', child_env['SWIFT_BACKTRACE'])
         hook.return_value.start.assert_called_once_with(process)
         hook.return_value.finish.assert_called_once_with('d' * 40, failed=True)

@@ -1,0 +1,9 @@
+# Optional Swift crash printer outlives its declared timeout
+
+[Issue158](https://github.com/stephenlclarke/elite/issues/158) records measured release-workflow overhead, not a game fault. The retained a49 quality log explicitly reports `Backtrace took 390.06s`. Its owned swift-backtrace child starts39seconds after the test helper and carries `--timeout 30`, yet the supplementary printer adds minutes. The existing shared runtime_child_environment forces SWIFT_BACKTRACE enable=yes for CI children.
+
+Disable only that optional runtime printer with enable=no in the existing child-only setting. Keep the original noninteractive/color/output/thread/register/image options unchanged. Preserve the caller environment, profile output, sanitizer injection, actual test commands/selections/assertions, failure exit status and all required coverage/sanitizer/leak thresholds. Normal OS crash reports, owned debugger capture and exact source/binary/process evidence remain unchanged. Do not infer that disabling this printer fixes historical144 or any application fault.
+
+Update the existing Python environment tests to reject inherited enable=yes, require effective enable=no, preserve parent immutability/unrelated sanitizer/profile values, and prove the isolated failed-test exit and evidence hooks remain authoritative. Run only the affected crash-artifact and isolated-evidence Python suites, which use synthetic evidence/process fixtures. No Swift/game build, probe, environment audit, workflow configuration change or new test gate is introduced.
+
+Focused Python execution and independent actual-source/result review are pending. Current5acd required quality remains untouched until a qualified replacement head has its own dispatched required run; any superseded cancellation must be independently verified and recorded as cancelled, not passed.
