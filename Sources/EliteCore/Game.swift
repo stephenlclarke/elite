@@ -1053,9 +1053,50 @@ public struct Game: Sendable {
     withReadOnlyScriptState { $0.worldJobs[id] }
   }
 
+  @inline(never)
   var contractStation: ContractStationIdentity {
-    withReadOnlyCommander { commander in
-      .init(galaxy: commander.galaxy, system: commander.system, stationClass: "main-orbital")
+    let galaxyField: KeyPath<Commander, Int> = \.galaxy
+    let systemField: KeyPath<Commander, Int> = \.system
+    guard let galaxyOffset = MemoryLayout<Commander>.offset(of: galaxyField),
+      let systemOffset = MemoryLayout<Commander>.offset(of: systemField)
+    else { preconditionFailure("Contract stations require addressable stored coordinates.") }
+    let galaxyEnd = galaxyOffset.addingReportingOverflow(MemoryLayout<Int>.size)
+    let systemEnd = systemOffset.addingReportingOverflow(MemoryLayout<Int>.size)
+    precondition(
+      galaxyOffset >= 0 && !galaxyEnd.overflow
+        && galaxyEnd.partialValue <= MemoryLayout<Commander>.size)
+    precondition(
+      systemOffset >= 0 && !systemEnd.overflow
+        && systemEnd.partialValue <= MemoryLayout<Commander>.size)
+    return commanderStorage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let base = UnsafeRawPointer(buffer.baseAddress!)
+      let galaxyAddress = base.advanced(by: galaxyOffset)
+      let systemAddress = base.advanced(by: systemOffset)
+      precondition(Int(bitPattern: galaxyAddress) % MemoryLayout<Int>.alignment == 0)
+      precondition(Int(bitPattern: systemAddress) % MemoryLayout<Int>.alignment == 0)
+      // Both addresses refer to initialized Int subobjects in this same live Commander.
+      let galaxy = galaxyAddress.assumingMemoryBound(to: Int.self).pointee
+      let system = systemAddress.assumingMemoryBound(to: Int.self).pointee
+      return .init(galaxy: galaxy, system: system, stationClass: "main-orbital")
+    }
+  }
+
+  @inline(never)
+  var retainedNativeMainStationDockReceipt: NativeMainStationDockReceipt? {
+    let field: KeyPath<Commander, NativeStationWorld?> = \.nativeStations
+    guard let offset = MemoryLayout<Commander>.offset(of: field) else {
+      preconditionFailure("Dock receipts require addressable stored station state.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<NativeStationWorld?>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<Commander>.size)
+    return commanderStorage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(Int(bitPattern: address) % MemoryLayout<NativeStationWorld?>.alignment == 0)
+      // This initialized optional station subobject belongs to the same live Commander.
+      return address.assumingMemoryBound(to: NativeStationWorld?.self).pointee?.currentMainDock
     }
   }
 

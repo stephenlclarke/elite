@@ -167,6 +167,13 @@ extension Game {
       offer.epoch == nativeStationRuntimeEpoch, offer.path == [85, 241],
       offer.berths.count == 2, commander.passengerFit?.allowed == true
     else { return "Request fresh native Celalen transport replies at actual Cedamar care." }
+    return originalRescueReservedBerthIssue(state, offer: offer)
+  }
+
+  @inline(never)
+  private func originalRescueReservedBerthIssue(
+    _ state: NativeOriginalRescueJourneyState, offer: NativeStationPassageOffer
+  ) -> String? {
     for ordinal in 0..<2 {
       guard let person = state.references[ordinal].rescue,
         let reply = state.replies.last(where: { $0.person == person && $0.offer == offer.id }),

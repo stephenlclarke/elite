@@ -570,6 +570,26 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     _read { yield storage[0].savedGlassMeridian }
     _modify { yield &storage[0].savedGlassMeridian }
   }
+  @inline(never)
+  var hasHeldGlassMeridianRecorder: Bool {
+    let field: KeyPath<ScriptInstanceValue, NativeGlassMeridianState?> = \.savedGlassMeridian
+    guard let offset = MemoryLayout<ScriptInstanceValue>.offset(of: field) else {
+      preconditionFailure("Recorder cargo requires an addressable stored mission field.")
+    }
+    let end = offset.addingReportingOverflow(MemoryLayout<NativeGlassMeridianState?>.size)
+    precondition(
+      offset >= 0 && !end.overflow && end.partialValue <= MemoryLayout<ScriptInstanceValue>.size)
+    return storage.withUnsafeBufferPointer { buffer in
+      precondition(buffer.count == 1)
+      let address = UnsafeRawPointer(buffer.baseAddress!).advanced(by: offset)
+      precondition(
+        Int(bitPattern: address) % MemoryLayout<NativeGlassMeridianState?>.alignment == 0)
+      // This is the existing initialized Optional subobject; do not rebind the enclosing value.
+      let recorder = address.assumingMemoryBound(to: NativeGlassMeridianState?.self)
+      return recorder.pointee?.surveyor?.held == true
+    }
+  }
+
   var savedArkReserve: NativeInductionArkReserve? {
     _read { yield storage[0].savedArkReserve }
     _modify { yield &storage[0].savedArkReserve }

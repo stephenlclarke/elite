@@ -476,7 +476,7 @@ extension Game {
       return false
     }
     guard evidence.runtimeEpoch == nativeStationRuntimeEpoch else { return false }
-    return withReadOnlyCommander { evidence.receipt == $0.nativeStations?.currentMainDock }
+    return evidence.receipt == retainedNativeMainStationDockReceipt
   }
 
   /// Rebind a validated retained scene without replaying docking or reissuing station condition.

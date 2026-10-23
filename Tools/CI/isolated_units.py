@@ -16,6 +16,12 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeMainStationReceiptProjectionTests": (
+        "ownedReceiptPreservesDockEvidenceGuardsAndRetainedState",
+    ),
+    "ContractStationProjectionTests": (
+        "ownedStationIdentityPreservesExactCoordinatesAndRetainedState",
+    ),
     "GameCommanderStorageTests": (
         "gameCopiesDetachNestedCommanderMutationsAndWholeValueReplacement",
         "actorSnapshotsRemainIndependentThroughActualXYZzyGrantAndCallerMutation",
@@ -401,6 +407,7 @@ METHODS = {
         "silhouetteClipsNearPlaneAndViewportAndRefusesNonFiniteProjectionInputs",
     ),
     "NativeC01SurveyorUnitTests": (
+        "heldRecorderProjectionKeepsAbsentFalseTrueAndRetainedCodecValuesIndependent",
         "unchangedOriginalContactFrameCompletesWithTheSameClosedC01Geometry",
         "passiveOriginalInertiaMovesOnceInsideManualAndWorkSweeps",
         "harrierKeepsEveryVisualFaceAt65MetresAndUsesClosedConservativeCollision",
