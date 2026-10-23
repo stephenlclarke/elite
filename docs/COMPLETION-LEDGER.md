@@ -1,8 +1,12 @@
 # L337 completion ledger
 
-Updated 22 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
+Updated 23 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
 ## Current execution checkpoint — 22 October, 14:23 UTC
+
+M01 / #112 custody-validation correction IMPLEMENTED and independently SOURCE-REVIEWED at corrected source 1bac1778. MBA reconstructed both extracted regions into the entire prior file byte for byte: eight ordered validation phases and four source preflight checks preserve all identity/custody joins, admissions/transfers, revision/cargo checks, authority, refusal order and schema. The public normal-Commander signature is unchanged. Two compile-preparation attempts failed on a borrowed-parameter/autoclosure ownership annotation; G1 corrected the actual transfers helper to its original normal ownership convention and restored admissions borrowing. Neither rejected build ran tests. The corrected build is running; no runtime or copy-elimination claim is made.
+
+G1 retains build and affected-unit ownership; planned execution is the remaining genuine rescue/hazard/writer four methods / 13 cases plus the existing named-sale and care custody components (six methods / 15 cases). MBA reviews retained terminal evidence without duplicate execution. Earlier passes retain their own provenance. M01 remains incomplete and unreleased; final-head gates remain required.
 
 M01 / #112 Meridian refinement build PASSED in 136.16 seconds. The single six-method / 15-case run FAILED after 12.373 seconds with SIGBUS: both existing Meridian reading/loss components passed (8.314 / 8.324 seconds), while the genuine rescue/hazard/writer four methods / 13 cases remain incomplete. G1 and MBA independently matched PID 83415 / image B7669B16-C0FC-3681-89FD-CF81A67AD60D to a guard fault in NativePeopleCustodyState.valid during final Commander validation. The entire script-engine/prefix validation had returned; the Meridian correction's prior source review remains clear. Evidence: /tmp/elite-meridian-rescue-runtime/assessment.json.
 
