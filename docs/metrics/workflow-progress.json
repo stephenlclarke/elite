@@ -5809,6 +5809,24 @@
     {
       "at": "2026-10-22T15:04:24.446668+00:00",
       "event": "G11 exact4ac fullXML verified362methods399expanded ALLPASS,0failure/error/skip,noomissions;97closed. Source qualification complete, author-owned merge awaits current automated review and actual final-head check settlement. No merge/newusableapp claim."
+    },
+    {
+      "event": "Station-context help source pushed and independently reviewed; component checks asynchronous",
+      "at": "2026-10-23T09:33:01.436515+00:00",
+      "pr": 115,
+      "head": "095f8fa95b7a73391b58d177d2158857ded5abdb",
+      "pr_created_at": "2026-10-23T09:29:29Z",
+      "ledger_id": "M02.P05.station-context-help",
+      "feature_source_pushed": true,
+      "source_review": "MBA clear",
+      "component_methods": 3,
+      "expanded_cases": 8,
+      "unit_run": 39932149733,
+      "unit_status": "in_progress; not a pass",
+      "merged": false,
+      "playable_delivered": false,
+      "integration_deferred": true,
+      "developer_continues": "M02.P05.status-dock-context code and component cases written"
     }
   ],
   "two_developer_phase": {
