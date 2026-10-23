@@ -65,6 +65,11 @@ METHODS = {
         "originalUnwrappedJSONAndEngineDictionaryRoundTripWithoutStorageKeys",
         "decodingKeepsOriginalRequiredKeysOptionalOmissionAndMalformedRefusal",
         "equalityDistinguishesChangedValuesAndAbsentVersusEmptyStoredCollections",
+        "explicitNullOptionalKeysRetainTheOriginalAbsentSchema",
+        "sharedCloneKeepsLargeNativePayloadsWhenTheContractIsModified",
+        "throwingNestedInoutMutationDetachesAndRemainsWritable",
+        "sharedPayloadEqualityPreservesNaNAndSignedZeroMemberSemantics",
+        "suppliedAndActorSnapshotInstancesKeepIndependentNestedValues",
     ),
     "ScriptNavigationAvailabilityTests": (
         "onlyExistingNavigationClaimsRequireApprovedContent",
