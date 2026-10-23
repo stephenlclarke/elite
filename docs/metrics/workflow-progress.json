@@ -9034,6 +9034,19 @@
       "source_review": "CLEAR",
       "reviewer": "MBA",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:40:23.476857+00:00",
+      "checkpoint_key": "20261023-m01-161-acceptance-clock-copy-attributed",
+      "event": "Current crash attributed to acceptance clock Commander copy;161 follow-up assigned",
+      "head": "fce2782b9ea35cbbd5786fe885a6d2c6ada4be01",
+      "issue": 161,
+      "pid": 35331,
+      "image_uuid": "19834FA1-FDB6-33B4-905C-7135D55C59D4",
+      "fault": "prepareValidatedContractAcceptance clock read via Commander copy",
+      "reviewer": "MBA",
+      "scope": "existing read-only script-state scalar projection with unchanged acceptance semantics",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
