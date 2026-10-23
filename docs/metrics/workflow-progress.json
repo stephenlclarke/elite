@@ -7359,6 +7359,25 @@
       "paired_test_issue": 148,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T16:44:53Z",
+      "checkpoint_key": "20261023-m01-preview-and-research-fixture-authored",
+      "event": "Both current release corrections authored; focused qualification next",
+      "issues": [
+        147,
+        148
+      ],
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issue147_status": "three source files authored; source review clear",
+      "issue148_status": "two original test files authored; actual review in progress",
+      "qualification_status": "not yet passed",
+      "test_scope": "four original preview/claim methods plus bounded shop/research cases, one necessary build if not already live",
+      "production_research_gate": "unchanged",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
