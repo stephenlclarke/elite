@@ -9381,6 +9381,21 @@
       "reviewed_blob": "19a017ca63f441a865904025f93f59395f674ba0",
       "correction_result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:35:28.961939+00:00",
+      "checkpoint_key": "20261023-m01-623-unattributed-owned-capture-authorised",
+      "event": "Loop correction builds; current unmatched-report crash permits one exact owned fault capture",
+      "head": "62315676",
+      "issue": 166,
+      "build_seconds": 81.02,
+      "process_seconds": 92.930397084,
+      "result": "runtime FAILURE signal10/exit1; UNATTRIBUTED",
+      "completed_methods": 0,
+      "retained_matching_reports": 0,
+      "retained_reports_checked": 27,
+      "capture_scope": "one current already-built binary/original selection/default stack/concurrency/environment; no rebuild",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
