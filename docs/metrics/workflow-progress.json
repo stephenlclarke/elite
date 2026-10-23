@@ -8608,6 +8608,33 @@
       "new_execution_started": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:39:18Z",
+      "checkpoint_key": "20261023-m01-practice-mesh-157-assigned",
+      "event": "Required quality fault attributed to native practice mesh;157 assigned G1",
+      "issue": 157,
+      "head": "a49f5d836a8bce64b0e56d91fdfcb14740d529ac",
+      "synthetic_source": "b218ea9e80b7956cfe129f14f22b8001b34852fd",
+      "run": 40008995873,
+      "result": "FAILURE at coverage-check",
+      "seconds": 1479.688272,
+      "build_seconds": 702.1,
+      "media_checks_passed": 171,
+      "raw_signal": 10,
+      "completed_methods": 0,
+      "assertions": 0,
+      "later_sanitizer_leak_gates": "unreached",
+      "binary_uuid": "E783F297-7771-3DD7-9F21-4A47B9158ADA",
+      "binary_sha256": "d70da93e0f5cbf30d8e93995c31b7f95c5649ee3ba378059db70122634a88de3",
+      "fault_address": "0x16d133ff8",
+      "mapped_guard": "0x16d130000-0x16d134000",
+      "stack_pointer": "0x16d135dd0 aboveguard",
+      "developer": "G1 minimal mesh/reservation lifetime correction",
+      "reviewer": "MBA actualsource/results",
+      "completed_save_reload_proof": "unestablished, no method terminalPASS",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
