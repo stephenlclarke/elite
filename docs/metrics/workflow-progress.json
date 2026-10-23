@@ -10211,6 +10211,24 @@
       "new_capture_needed": false,
       "cancel_requested": 40040975112,
       "m01_complete": false,
+      "usable_delivery": false,
+      "repair_head": "3b85c914a95ba993b9c8ec25284068acb46ea08f",
+      "repair_source_blob": "d6b185e1c2fedc05762457382e4ab33879788c12",
+      "repair_review": "clear",
+      "repair_exec_session": 32794,
+      "repair_runtime_result": "running"
+    },
+    {
+      "at": "2026-10-23T23:45:29.163853+00:00",
+      "checkpoint_key": "20261024-m01-conditional-outergame-value-storage",
+      "event": "Conditional common outerGame CoW scope authorized only after current guard batch verified stack failure; no migration started",
+      "condition": "If3b85passes, no migration; ifverifiedstackfailure, onebounded privateArrayCoW outerGame values correction in sameM01",
+      "evidence": "OuterGame inline; observed17520-byte wholeGame reservations/copies, existingchildCoW does not remove outer copies",
+      "value_actor_save_semantics_preserved": true,
+      "implementation_started": false,
+      "owner": "G1",
+      "reviewer": "MBA",
+      "m01_complete": false,
       "usable_delivery": false
     }
   ],
