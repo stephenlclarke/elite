@@ -6614,6 +6614,40 @@
       "usable_delivered": false,
       "m01_complete": false,
       "next_action": "G1 exact-current-image attribution and bounded correction; MBA verifies actual evidence"
+    },
+    {
+      "at": "2026-10-23T14:08:35Z",
+      "timestamp_scope": "Root recorded terminal evidence",
+      "checkpoint_key": "20261023-m01-coherent-rescue-classifier-pass-writer-unfinished",
+      "event": "Coherent frame repair passes original rescue classifier; writer still crashes",
+      "issue": 112,
+      "pr": 139,
+      "commit": "6a2b2071e7bb8bb6e4a9407587249d93d064c7c9",
+      "command": [
+        "swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-112-coherent-units.xml",
+        "--filter",
+        "(?:^|\\.)NativeOriginalRescueCapsuleTests/rescueClassifierRejectsDeadForeignEmptyAndReplacedActorsWithoutEMPPersonImpersonation\\(|(?:^|\\.)NativeOriginalRescueRecordTests/rescueActualActionWriterRefusalPreservesCustodyCabinsCargoCashAndPriorFiles\\("
+      ],
+      "exit_code": 1,
+      "seconds": 137.91463050013408,
+      "compile_seconds": 122.59,
+      "completed_methods_from_raw_log": 1,
+      "classifier_seconds": 10.407,
+      "classifier_pass": true,
+      "writer_method_complete": false,
+      "xml_status": "unfinished52bytes, not complete aggregate",
+      "outcome": "unexpected signal10 after classifier completed",
+      "independent_source_review": "MBA coherent delta clear; predicates and rollback retained",
+      "merged": false,
+      "usable_delivered": false,
+      "m01_complete": false,
+      "next_action": "G1 remaining writer attribution/correction; retain unaffected classifier evidence with actual head"
     }
   ],
   "two_developer_phase": {
