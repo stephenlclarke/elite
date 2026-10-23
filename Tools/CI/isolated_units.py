@@ -60,6 +60,12 @@ METHODS = {
         "equalityPreservesOptionalPresenceInstancesEventsAndEachClock",
         "clockEqualityPreservesNaNAndSignedZeroMemberSemantics",
     ),
+    "NativeStationPopulationLifetimeTests": (
+        "missingWorldReturnsBeforeSceneAndCursorValidation",
+        "emptyCohortKeepsBindingsWithoutAllocatingFromExhaustedCursors",
+        "refusedPopulationPreservesTheWholeCandidateAndErrorPriority",
+        "populationPublishesTheWholeCohortInOriginalSourceAndActorOrder",
+    ),
     "ScriptInstanceStorageTests": (
         "copiesDetachNestedContractsDialogueReceiptsAndEncounterMutation",
         "originalUnwrappedJSONAndEngineDictionaryRoundTripWithoutStorageKeys",
