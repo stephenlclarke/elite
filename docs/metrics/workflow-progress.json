@@ -9317,6 +9317,19 @@
       "evidence_head": "47700106329865a1a329ead7413ac78d217ea7a0",
       "scope": "refusal/projection lifetime correction with all rescue authority intact",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:24:23.383057+00:00",
+      "checkpoint_key": "20261023-m01-165-custody-refusal-reviewed-run",
+      "event": "Absent custody refusal equivalence independently verified; original affected execution active",
+      "issue": 165,
+      "reviewed_blobs": {
+        "Game": "97f3bb24b79463440d7eb8a15fd309b6dba0efeb",
+        "RescueCapsules": "0c88e0f62d1de2c0d3a61c740735ea31f5219f9d"
+      },
+      "methods": 4,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
