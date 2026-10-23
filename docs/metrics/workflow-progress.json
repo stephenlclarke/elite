@@ -7947,6 +7947,48 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:56:38Z",
+      "checkpoint_key": "20261023-m01-changed-mission-capture-attributes-atomic-batch-frame",
+      "event": "Current changed-source capture identifies distinct atomic preflight caller pressure",
+      "issue": 151,
+      "source_head": "5ba8a787c3248b04ecf8077d6b95ed8d0b4310d0",
+      "diagnostic_path": "/tmp/elite-151-5ba-original-mission-fault-capture",
+      "diagnostic_seconds": 17.07956,
+      "not_test_pass": true,
+      "binary_uuid": "E0EC0017-C3EB-34CE-83D4-8E4521128430",
+      "binary_sha256": "17d7959121e1f4caa084100e993c7677d88817d1ed1ab3cbc145e33ddf5825d8",
+      "stack_pointer": "0x1702ee6e0",
+      "fault_address": "0x1702ee700",
+      "mapped_noaccess": "0x1702ec000-0x1702f0000",
+      "actual_named_test_path": "metadata -> batchRefusal -> admitCurrentEncounterPlan33 atomicpreflight -> missile -> originalmission211",
+      "independent_review": "MBA exact image/runtime/input/current mappedguard verified",
+      "owned_helper_killed": 91032,
+      "previous_capture_cause_transferred": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:56:38Z",
+      "checkpoint_key": "20261023-m01-body-construction-leaf-focused-run-active",
+      "event": "Evidence-backed request construction leaf committed; minimum affected batch active",
+      "issue": 151,
+      "head": "318d6c30f74a2cf9324397ecc1c1057ede67c76b",
+      "source_review": "MBA exact construction-order/refusal/allocator/receipt review clear",
+      "focused_methods": 5,
+      "authored_cases": 5,
+      "process_ids_at_observation": [
+        92894,
+        92896
+      ],
+      "report_prefix": "/tmp/elite-151-construction-leaf-units",
+      "runtime_result": "pending",
+      "retained_unaffected": "Empty/adoption/stale at recorded prior heads; not syntheticcurrentaggregate",
+      "workflow_improvement": "same-packet changed-source actualfault/currentevidenceinsufficient permits one bounded exactbuilt originalmethodcapture, no RootACK, no unchangedserialprobes",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
