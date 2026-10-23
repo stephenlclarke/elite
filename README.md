@@ -85,6 +85,8 @@ For keyboard flight, **arrows steer**, **Space accelerates**, **Delete brakes**,
 
 Escape never launches an escape pod. Use **Flight > Launch Escape Pod** or **Command-Shift-E** deliberately. Help and pause close before the screen beneath them; search closes before its browser. Mission dialogs return without transferring anything when you press Escape.
 
+Status names the current main orbital or RRS dock. In flight it reports “Not docked”; an unknown dock is reported as unavailable rather than assumed to be the main station.
+
 Everything essential works on a built-in MacBook keyboard. Delete means its normal backspace key; scrolling also works with the trackpad or arrows. **Option-Up / Option-Down** moves a page at a time, and **Command-Delete** clears an active search. No function keys, keypad or dedicated paging keys are required. Held flight inputs clear when you change screens, pause or lose focus.
 
 Press P on charts or the navigation screen to toggle the automatic top-five profit scan, enabled by XYZZY. Ranked gold markers show profitable destinations within current jump range; navigation lists conservative estimates based on cargo, cash and local stock, before fuel and risk.

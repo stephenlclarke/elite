@@ -69,7 +69,11 @@ extension Game {
     var rows: [(String, Ink)] = [
       ("Ship: " + commander.ship.name, .cyan),
       ("Present system: " + currentSystem.name, .white),
-      ("Station: " + (nativeStationName ?? "Main orbital station"), .white),
+      (
+        StationDockLocation.row(
+          docked: docked, atMainStation: dockedAtMainStation, nativeStationName: nativeStationName),
+        .white
+      ),
       ("Hyperspace: " + targetSystem.name, .white),
       ("Condition: " + flightStatus, .white),
       (
