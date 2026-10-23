@@ -7531,6 +7531,25 @@
       "next_action": "publish promptly with qualified ledger; exact-head required gates next, no local replay",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:17:41Z",
+      "checkpoint_key": "20261023-m01-system-projection-correction-published",
+      "event": "Qualified station projection correction published; final checks queued/running",
+      "head": "854331da5c12c481e1157ebf52ce8dc32eb87ab5",
+      "code_identical_to_qualified": "d7e292a3df27c8dfbbf70be5baff70fb60ee77f7",
+      "frozen_root_docs_source": "7bd5e3f7ef19adc3ed0dd01ef13762eaf8b191e9",
+      "later_qualified_root_docs": "15aecdf3c47895176d783382d40945f1456574d1",
+      "documentation_race_disposition": "older snapshot confirmed via actual4path diff; MBA erroneous15a claim corrected, no source/head churn",
+      "issue": 149,
+      "push_unit_run": 39993726359,
+      "required_quality_run": 39993737582,
+      "nonrequired_duplicate_pr_unit_run": 39993737558,
+      "old_required_quality_run": 39990605589,
+      "review_request": 6370583747,
+      "source_published": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
