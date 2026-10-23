@@ -7338,6 +7338,27 @@
       "status": "assigned",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T16:40:22Z",
+      "checkpoint_key": "20261023-m01-e7-vm-signal-and-preview-patch-review",
+      "event": "Latest VM signal retained; concrete preview validation correction proceeds",
+      "head": "e7a9f9d9944aa9c7a19fa8e6bc48ca82c7c92077",
+      "run": 39987539848,
+      "status": "failed",
+      "compile_seconds": 235.75,
+      "signal": 4,
+      "complete_report": false,
+      "recorded_test_issue": false,
+      "binary_uuid": "DD736A47-74C8-3AB1-82C0-9F690581AA9D",
+      "selected_thread": "main mach_msg2/CFRunLoop/asyncMain; no application fault frame",
+      "signal_issue": 144,
+      "signal_cause": "unproved; no146/147 recurrence established",
+      "active_code_issue": 147,
+      "implementation_status": "three-file source change authored, MBA review pending",
+      "paired_test_issue": 148,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
