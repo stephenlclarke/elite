@@ -10024,9 +10024,13 @@
         "WorkTarget": "8a1bfc289e5d36d5e84b7cb991b727deef91ede1"
       },
       "review": "clear",
-      "runtime_result": "pending",
+      "runtime_result": "running",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "head": "12cdc2f330672ca3ade01299f2bbe60e2091c2a8",
+      "committed_at_recorded": "2026-10-23T23:12:12.132906+00:00",
+      "new_existing_matrix_case": "absent_saved_script_state",
+      "exec_session": 6904
     }
   ],
   "two_developer_phase": {
