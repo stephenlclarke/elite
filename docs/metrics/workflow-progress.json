@@ -9878,6 +9878,119 @@
       "pre_dispatch_transfer_rejection_not_test_retry": true,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:56:25.308351+00:00",
+      "checkpoint_key": "20261023-m01-feab-normal-batch-failure-verified",
+      "event": "Final crew-log repair normal batch compiles then crashes without method completion; independently verified",
+      "head": "feab1bcb1d34cad994d3a74012ff33abc122d723",
+      "build_seconds": 285.35,
+      "wall_seconds": 297.460538459,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_started": 6,
+      "methods_completed": 0,
+      "image_uuid": "ABB738A8-4275-3ECC-8436-E96F1E89A6E5",
+      "collector_sha256": "264897d8565edbfc3b1252835062c07d47063855afa11d1639fcf8ae5571142b",
+      "matching_crash_reports": 0,
+      "attribution": "unattributed",
+      "m01_complete": false,
+      "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:56:57.375009+00:00",
+      "checkpoint_key": "20261023-m01-75-marker-published-current-evidence-assigned",
+      "event": "Reviewed marker repair and failed receipt published; exact composition verified; one changed-image evidence capture assigned",
+      "head": "75eec9bfb4f66ba5ead1602265d9c4c7b178162d",
+      "game_source_head": "feab1bcb1d34cad994d3a74012ff33abc122d723",
+      "root_snapshot": "c9d24ec7e513fc740f013c8c604fc9df2038cd24",
+      "composition_review": "clear",
+      "capture_scope": "One existing built changed image/default runtime/same affected selection/skip-build/owned first fault",
+      "m01_complete": false,
+      "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:58:20.101996+00:00",
+      "checkpoint_key": "20261023-m01-remove-redundant75-unit-vm-block",
+      "event": "Cancel redundant nonrequired75 unit rebuild and superseded quality to free evidence path; current required quality preserved",
+      "head": "75eec9bfb4f66ba5ead1602265d9c4c7b178162d",
+      "cancel_requested": [
+        40036708606,
+        40035400887
+      ],
+      "required_quality_preserved": 40036712726,
+      "verified_protection_contexts": [
+        "quality"
+      ],
+      "reason": "Exact source already has independently verified failed focused normal batch; redundant rebuild blocks current fault capture VM",
+      "count_as_pass": false,
+      "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T23:00:03.608687+00:00",
+      "checkpoint_key": "20261023-m01-ABB-capture-and-ci-release",
+      "event": "Redundant CI terminalcancelled; current required quality active; single changed-image fault captured cleanly",
+      "head": "75eec9bfb4f66ba5ead1602265d9c4c7b178162d",
+      "cancelled_runs": [
+        40035400887,
+        40036708606
+      ],
+      "active_required_quality": 40036712726,
+      "capture_pid": 43019,
+      "capture_seconds": 14.079190333,
+      "driver_exit": 1,
+      "observer_exit": 0,
+      "remaining_owned": [],
+      "artifact_path": "/tmp/elite-m01-marker-owned-capture",
+      "diagnostic_only": true,
+      "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T23:01:20.351333+00:00",
+      "checkpoint_key": "20261023-m01-ABB-scriptdirector-borrow-boundary-assigned",
+      "event": "Current saved stack maps to ScriptDirector Applies argument boundary; eleven-helper coherent borrowing repair assigned",
+      "head": "75eec9bfb4f66ba5ead1602265d9c4c7b178162d",
+      "issues": [
+        144,
+        161
+      ],
+      "owner": "G1",
+      "reviewer": "MBA",
+      "scope": "Eleven pure applicability predicates borrow pack; preserve exact shortcircuit and full downstream validators",
+      "normal_failure_attributed": false,
+      "diagnostic_source_path_confirmed": true,
+      "m01_complete": false,
+      "source_blob": "cfe946a80abe01b7a1281cfeada02eed05ecfb54",
+      "independent_source_review": "clear",
+      "runtime_result": "pending"
+    },
+    {
+      "at": "2026-10-23T23:02:24.531662+00:00",
+      "checkpoint_key": "20261024-m01-169-64de-committed-batch-dispatched",
+      "event": "Issue169 coherent applicability borrowing repair committed; one affected batch dispatched",
+      "head": "64de4321ab3a19fc18e699b3793b88c2ddb6590f",
+      "issue": 169,
+      "source_review": "clear",
+      "unit_result": "running",
+      "artifact_prefix": "/tmp/elite-m01-applicability",
+      "m01_complete": false,
+      "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:05:16.563824+00:00",
+      "checkpoint_key": "20261024-m01-169-64de-normal-runtime-failure",
+      "event": "Applicability borrowing normal batch compiles then crashes without method completion; changed-image evidence scope active",
+      "head": "64de4321ab3a19fc18e699b3793b88c2ddb6590f",
+      "issue": 169,
+      "build_seconds": 140.36,
+      "wall_seconds": 152.211963458,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_completed": 0,
+      "image_uuid": "163278C9-71B7-3C8B-BD43-AD63FC00D3DE",
+      "normal_fault_attribution": "unavailable",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {

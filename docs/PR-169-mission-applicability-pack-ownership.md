@@ -19,3 +19,9 @@ Strict Swift formatting and diff hygiene pass. Independent actual-source review 
 ## Compatibility and remaining limits
 
 No Game/Commander state, actor isolation, pack identity/hash, save/schema, UI, mission behaviour, dispatch order or quality threshold changes. Source ownership reduction is not proof of compiled stack savings or runtime success. Required final-head quality, coverage, sanitizer/leak gates and original-method completion remain unqualified.
+
+## Actual combined result
+
+Source `64de4321ab3a19fc18e699b3793b88c2ddb6590f` passed the Swift6.1.2/SDK15.5 build in140.36seconds. Its single normal six-method original-four plus recorder-boundary batch exited1/rawSIGBUS10 after152.211963458seconds. All six methods started, with zero terminal completions/assertions and unfinished52-byte Swift Testing XML. `/tmp/elite-m01-applicability` retains the log/start/result/image/XML receipts, independently reviewed. Current UUID163278C9-71B7-3C8B-BD43-AD63FC00D3DE and collector SHA25617ea7e1398ec90a05447228f0447ea0b1d6640d111b71cd936657f359b4f48de have no matching normal report among27 retained reports. Normal failure remains unattributed; no method or issue is qualified.
+
+One subsequent diagnostic reused that exact binary with `--skip-build` and unchanged six-method selection, environment, stack and jobs3. PID43299/start23:04:57UTC stopped at the read-only Commander callback; saved module slide0x111454000 identifies the exact image. `/tmp/elite-m01-applicability-owned-capture` retains stack/identity/result/offsets and the guest retains the binary. SHA is unchanged before/after. The14.41792625-second capture exited driver1/debugger0, detached and left no owned process. Independent current-stack source attribution is pending; there is no saved guard map or proof of the exact buffer. This is diagnostic evidence only, not a normal pass or attribution of earlier failures. No extra retry or capture was run.
