@@ -9752,6 +9752,23 @@
       "published": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:38:08.909313+00:00",
+      "checkpoint_key": "20261023-m01-media-offset-combined-review-unit-clear",
+      "event": "Combined generated media and existing capture offset correction independently reviewed; existing Python units pass",
+      "manifest_blob": "d1064539faf9ba6bc5a309c254a064af8b9ab5ca",
+      "logger_blob": "050d3716acf4eaa8aba7334a1e4dc01310c7de22",
+      "test_blob": "98288f6fe6a694f9b43ea9bfd30eea29c0a151ec",
+      "python_tests_passed": 70,
+      "python_test_seconds": 0.155,
+      "wrapper_seconds": 0.281966667,
+      "ships_check_seconds": 3.881144084,
+      "source_review": "clear",
+      "new_target_execution": false,
+      "published": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
