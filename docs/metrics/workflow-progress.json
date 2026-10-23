@@ -7837,6 +7837,36 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:46:53Z",
+      "checkpoint_key": "20261023-m01-corrected-admission-fixtures-pass-mission-fault-remains",
+      "event": "Three corrected admission cases pass; unresolved mission faults and needs one exact capture",
+      "issues": [
+        151,
+        152
+      ],
+      "head": "18fb5976b9b09ecbefa19215b6b487fdf767dd69",
+      "exit_code": 1,
+      "process_seconds": 62.76278029102832,
+      "compile_seconds": 48.18,
+      "passed_methods": 3,
+      "case_seconds": {
+        "stale": 8.765,
+        "success": 8.769,
+        "atomic": 8.796
+      },
+      "assertion_issues": 0,
+      "original_mission": "started only, no pass",
+      "signal": 10,
+      "xml_bytes": 52,
+      "aggregate_qualified": false,
+      "independent_review": "MBA exact partial scope verified",
+      "next_owner": "G1 one bounded samebuilt originalmission-only firstfault capture, no rebuild/defaultstackchange; no edits during capture",
+      "retained_pass_scope": "three fixture cases at18fb; no synthetic4caseaggregate",
+      "two_known_fixture_followups_pending": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
