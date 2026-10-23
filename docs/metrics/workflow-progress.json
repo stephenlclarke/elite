@@ -8447,6 +8447,28 @@
       "new_execution_started": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:01:33Z",
+      "checkpoint_key": "20261023-m01-practice-owner-156-assigned",
+      "event": "Current VM fault attributed to practice ownership frame;156 assignedG1",
+      "issue": 156,
+      "head": "d2d0cd0cc9122315b0c7dfe4d02b846b81a7f384",
+      "run": 40006985306,
+      "build_seconds": 271.37,
+      "raw_signal": 4,
+      "completed_methods": 0,
+      "xml_bytes": 52,
+      "binary_uuid": "A96B00DC-DACE-3C5D-B8F1-4BCD670A8D57",
+      "binary_sha256": "2583c97ab02589cdfc90586d4dc19832abf3acd914aa1a754cbf1b0eaf375991",
+      "fault_address": "0x16d5afff8",
+      "mapped_guard": "0x16d5ac000-0x16d5b0000",
+      "stack_pointer": "0x16d5b01a0 aboveguard",
+      "developer": "G1 minimaltypedowner/framecorrection",
+      "reviewer": "MBA actualsource/result review",
+      "prior_scoped_closures_preserved": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
