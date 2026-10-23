@@ -9014,6 +9014,26 @@
       "toolchain": "Swift6.1.2 / SDK15.5",
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:36:55.361034+00:00",
+      "checkpoint_key": "20261023-m01-fce-four-method-failed",
+      "event": "Four affected methods failed before completion; current saved report review assigned",
+      "head": "fce2782b9ea35cbbd5786fe885a6d2c6ada4be01",
+      "issues": [
+        163,
+        161,
+        162
+      ],
+      "result": "FAILURE",
+      "exit_code": 1,
+      "signal": 10,
+      "build_seconds": 75.03,
+      "process_seconds": 86.793152292,
+      "completed_methods": 0,
+      "source_review": "CLEAR",
+      "reviewer": "MBA",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
