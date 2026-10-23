@@ -10126,6 +10126,68 @@
       "exec_session": 20686,
       "unit_methods_selected": 11,
       "vm_preflight": "clean_and_no_worker_compiler_test_debugger"
+    },
+    {
+      "at": "2026-10-23T23:32:29.159440+00:00",
+      "checkpoint_key": "20261024-m01-33cb-normal-guard-availability-parent-assigned",
+      "event": "Metadata batch fails with authoritative normal mappedguard availability stack; coherent parent boundary review assigned",
+      "head": "33cb5f2b3e1a5528d98d2559a1e76a39017ca406",
+      "build_seconds": 145.98,
+      "wall_seconds": 158.54203325,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_completed": 0,
+      "normal_pid": 49332,
+      "image_uuid": "8E39D609-2E8B-397E-A4FC-05F70AC9AC9B",
+      "fault_address": "0x16f82bff0",
+      "sp": "0x16f82bfc0",
+      "mapped_guard": [
+        "0x16f828000",
+        "0x16f82c000"
+      ],
+      "new_capture_needed": false,
+      "issues": [
+        169,
+        161
+      ],
+      "owner": "G1",
+      "reviewer": "MBA",
+      "m01_complete": false,
+      "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:34:36.252221+00:00",
+      "checkpoint_key": "20261024-m01-1128-coherent-parent-frame-scope",
+      "event": "Matching normal failure published; offlineparentframes support coherent availability/acceptance/quote boundary repair",
+      "head": "c514fcae576af00ac35cee99935326c6d5e9a431",
+      "source_head": "33cb5f2b3e1a5528d98d2559a1e76a39017ca406",
+      "availability_fixed_frame_bytes": 12448,
+      "availability_script_state_temporaries": 2,
+      "availability_commander_temporaries": 2,
+      "owner": "G1",
+      "reviewer": "MBA",
+      "quote_isolation_copy_preserved": true,
+      "cancel_requested": 40040203179,
+      "m01_complete": false,
+      "usable_delivery": false,
+      "proven_additional_game_receiver_copy_sites": [
+        "contractStation",
+        "scriptUnavailable",
+        "contractRevision",
+        "refreshSelectedQuote.contractAcceptanceQuote"
+      ],
+      "offline_quote_tail_review": "verified",
+      "final_source_blobs": {
+        "ContractBoard": "9692ade0a583d9ec826f791abd4525136e10255e",
+        "ScriptContractCore": "10e43f86acc40c76e832ba06f5938fddf70d5d36",
+        "ScriptDirector": "43cf99766b464f8666ef4e00996a75df43abcede"
+      },
+      "source_review": "clear",
+      "runtime_result": "running",
+      "redundant_push_cancelled": 40040203179,
+      "committed_at_recorded": "2026-10-23T23:38:14.377080+00:00",
+      "exec_session": 78436,
+      "unit_methods_selected": 11
     }
   ],
   "two_developer_phase": {
