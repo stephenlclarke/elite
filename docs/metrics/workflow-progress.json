@@ -6462,6 +6462,39 @@
       "candidate_updated": false,
       "next_deliverable": "PR87 training source composition, five conflicts, retained COW/codec/current fixes",
       "merge_duplicate_cancellation_requested": 39960275261
+    },
+    {
+      "at": "2026-10-23T13:41:33Z",
+      "checkpoint_key": "20261023-m01-pr87-codec-pass-observation-fixture-correction",
+      "event": "Training composition codec cases pass; original observation case needs fixture correction",
+      "pr": 87,
+      "head": "33a57dcab823076783441a1c1e1426c738fc04d7",
+      "focused_methods": 2,
+      "authored_cases": 3,
+      "exit_code": 1,
+      "total_seconds": 274.231,
+      "compile_seconds": 261.39,
+      "xml_failures": 1,
+      "xml_errors": 0,
+      "xml_skips": 0,
+      "passing_cases": 2,
+      "failure": "Existing issue93 method caught staleContext; no crash. Exact admission predicate identifies second fixture flight pose mismatch.",
+      "correction_head": "bcd75d29732ef3447a39ee26a269a353d34d5afb",
+      "independent_source_review": "MBA clear for composition and one-line fixture correction",
+      "affected_rerun": {
+        "head": "bcd75d29732ef3447a39ee26a269a353d34d5afb",
+        "methods": 1,
+        "exit_code": 0,
+        "total_seconds": 68.67748495796695,
+        "compile_seconds": 52.25,
+        "method_seconds": 9.871,
+        "independent_result_review": "requested; source delta already clear",
+        "unchanged_codec_pass_retained": true
+      },
+      "duplicate_cancellation_requested": 39963311162,
+      "merged": false,
+      "usable_delivered": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
