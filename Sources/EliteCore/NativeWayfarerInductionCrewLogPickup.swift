@@ -139,8 +139,16 @@ extension Game {
   }
 
   @discardableResult
+  @inline(never)
   mutating func retryInductionCrewLogCapture() throws -> Bool {
     guard let pending = nativeCrewLogPickupPending else { return false }
+    return try retryPresentInductionCrewLogCapture(pending)
+  }
+
+  @inline(never)
+  private mutating func retryPresentInductionCrewLogCapture(
+    _ pending: NativeCrewLogPickupPending
+  ) throws -> Bool {
     let contact = pending.capture
     guard !docked, energy.isFinite, energy > 0, screen != .gameOver,
       var child = commander.scriptState.instances[contact.job],
