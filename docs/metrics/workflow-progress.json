@@ -10257,6 +10257,22 @@
       "cancel_requested": 40041516252,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:58:14.360528+00:00",
+      "checkpoint_key": "20261024-m01-outergame-cow-source-reviewed-one-batch",
+      "event": "Single M01 blocker packet: outer Game storage committed and independently reviewed; one combined unit batch active",
+      "source_head": "e1516c6830fdcc914504c2e5645d810c61f1bcc1",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "source_review": "clear",
+      "stored_field_count": 159,
+      "planned_methods": 19,
+      "original_affected_methods": 11,
+      "additional_storage_snapshot_rollback_methods": 8,
+      "unit_result": "pending",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
