@@ -8469,6 +8469,20 @@
       "prior_scoped_closures_preserved": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:03:32Z",
+      "checkpoint_key": "20261023-m01-practice-owner-156-committed-focused-active",
+      "event": "Typed practice ownership correction committed; original affected cases active",
+      "issue": 156,
+      "head": "74bf5eca2c072ff4432ba1e1f9e0eaba8aab9988",
+      "source_scope": "stored equipment owner UUID after original eligibility phase, full policy unchanged",
+      "selected_methods": 3,
+      "authored_cases": 7,
+      "review": "MBA actual committed diff requested parallel with build",
+      "runtime_result": "pending",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
