@@ -243,13 +243,22 @@ extension Game {
     return nil
   }
 
+  @inline(never)
   mutating func resolveRRSCourierTerminals(publish: ScriptPublisher? = nil) {
-    guard !paused, scriptDurabilityAvailable, let active = commander.contracts.rrs?.active,
+    guard !paused, scriptDurabilityAvailable,
+      let active = Commander.activeRRSCourierJob(in: &commander),
       let cause = rrsCourierFailure(for: active)
     else { return }
+    publishRRSCourierFailure(active.id, cause: cause, publish: publish)
+  }
+
+  @inline(never)
+  private mutating func publishRRSCourierFailure(
+    _ id: UUID, cause: RRSCourierOutcome, publish: ScriptPublisher?
+  ) {
     do {
       var candidate = self
-      try candidate.settleRRSCourier(active.id, outcome: cause)
+      try candidate.settleRRSCourier(id, outcome: cause)
       candidate.notify("RRS ASSIGNMENT FAILED - 0 CR / REPUTATION -10")
       try publish?(&candidate)
       self = candidate

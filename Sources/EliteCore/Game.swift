@@ -106,6 +106,11 @@ public struct Commander: Sendable, Equatable, Codable {
     get { savedContracts ?? ScriptContractState() }
     set { savedContracts = newValue == ScriptContractState() ? nil : newValue }
   }
+
+  @inline(never)
+  static func activeRRSCourierJob(in commander: inout Commander) -> RRSCourierJob? {
+    commander.savedContracts?.rrs?.active
+  }
   var legacyOwnedEquipment: LegacyOwnedEquipmentInventory?
   private var savedAccommodation: ShipAccommodation?
   public var accommodation: ShipAccommodation {

@@ -40,3 +40,11 @@ execution: Swift requires an owned SpaceBody when the storage closure captures
 the borrowed argument. Each bridge now makes that body copy explicit before
 its synchronous closure. No Commander copy is introduced; the shared policy,
 pointer borrow, absence behavior and validation predicates remain unchanged.
+
+At source ebc01d9cf91579fc562a56069f0fec17844e9910, all four existing methods
+and twelve cases passed, with complete XML and zero failures/errors/skips.
+Compilation took 182.49 seconds; total process duration was 196.950125 seconds.
+The authentic entry regression completed in 9.433 seconds. Evidence:
+`/tmp/elite-142-owned-body-units-result.json`, its raw log and Swift Testing
+XML. Independent review closed issue142 on this focused criterion; no full
+524-method or protected-main quality pass is inferred.
