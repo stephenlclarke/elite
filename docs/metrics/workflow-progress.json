@@ -9925,6 +9925,25 @@
       "reason": "Exact source already has independently verified failed focused normal batch; redundant rebuild blocks current fault capture VM",
       "count_as_pass": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T23:00:03.608687+00:00",
+      "checkpoint_key": "20261023-m01-ABB-capture-and-ci-release",
+      "event": "Redundant CI terminalcancelled; current required quality active; single changed-image fault captured cleanly",
+      "head": "75eec9bfb4f66ba5ead1602265d9c4c7b178162d",
+      "cancelled_runs": [
+        40035400887,
+        40036708606
+      ],
+      "active_required_quality": 40036712726,
+      "capture_pid": 43019,
+      "capture_seconds": 14.079190333,
+      "driver_exit": 1,
+      "observer_exit": 0,
+      "remaining_owned": [],
+      "artifact_path": "/tmp/elite-m01-marker-owned-capture",
+      "diagnostic_only": true,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
