@@ -7433,6 +7433,34 @@
       "next_action": "publish corrected packet promptly then exact-head required gates, no extra local replay",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T16:55:32Z",
+      "checkpoint_key": "20261023-m01-preview-shop-corrections-published",
+      "event": "Qualified inventory preview and research shop corrections published for final checks",
+      "head": "b53a091f7d6b0714b90c717c0ecc9ad2d45cbfea",
+      "code_identical_to_qualified": "9b630d784cca708137cc71bc3ad492726ccc3d76",
+      "root_docs_source": "05e5d7f1dfb00c29c9f67b7858edecc6a073259b",
+      "independent_composition_review": "MBA clear",
+      "issues": [
+        147,
+        148
+      ],
+      "push_unit_run": 39990594695,
+      "required_quality_run": 39990605589,
+      "nonrequired_duplicate_pr_unit_run": 39990605835,
+      "older_e7_quality": {
+        "run": 39987548236,
+        "status": "failed coverage-check",
+        "seconds": 1077.438564,
+        "compile_seconds": 662.77,
+        "ships_passed": 171,
+        "cause_scope": "same pre-fix147 path; no new issue",
+        "sanitizers_leaks_reached": false
+      },
+      "source_published": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
