@@ -8778,6 +8778,26 @@
       "next_action": "G1 coherent publication with notes/latest Root docs, current gates preserved",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T20:07:21Z",
+      "checkpoint_key": "20261023-m01-optional-printer-637b-published",
+      "event": "Qualified printer remediation published without game changes; new required checks active",
+      "head": "637b49519bd4b7b64a6afd24ece0e2a85f98220f",
+      "qualified_code_head": "97ef5fd7f9b8053eb1e9f6355559863059b81ef2",
+      "qualified_game_head": "19539681df7f2754e26e82f0ddfb01de1575bb78",
+      "root_snapshot": "109ea7c9a0b29dee0c0d22c6e261c8bddc30b055",
+      "composition_review": "MBA CLEAR, no code/test/tool/workflow delta from qualified97ef",
+      "push_vm_run": 40016581154,
+      "required_quality_run": 40016592456,
+      "dependency_review_run": 40016592237,
+      "dependency_review_result": "SUCCESS",
+      "nonrequired_duplicate": 40016592500,
+      "obsolete_quality": 40013975536,
+      "cancellation_owner": "G1 fresh exacthead rule; notPASS",
+      "runtime_savings": "not yet observed",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
