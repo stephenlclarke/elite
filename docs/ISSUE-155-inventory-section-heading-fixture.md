@@ -1,0 +1,11 @@
+# Inventory test must require both maintained ownership sections
+
+[Issue155](https://github.com/stephenlclarke/elite/issues/155) records one obsolete heading assertion in the original statusEquipmentAndInventoryShowAllMountsAndCanBrowseEveryEquipmentRow method. At67761181, inventory browsing completes102.485809s and its only failed assertion expects the removed combined heading `Equipment - fitted and held`.
+
+Maintained InventoryInformation unconditionally appends `Equipment - fitted` and `Equipment - held` for typed inventory, including empty groups. Require each exact heading independently iff the screen is inventory, and require neither on status. Keep all mount labels, all row traversal at three widths, bounds, page scrolling and equipment shop assertions. No production screen or grouping behavior changes.
+
+The original failed four-method process and complete XML remain retained at `/tmp/elite-153-workshop-claims-units-result.json` and companion files. The three workshop domain methods passed separately at that source. Execute only the corrected original browse method; qualification and independent actual-source/result review are pending.
+
+At exact59f254dc75132594de8bd91263ca76078986623c, the corrected original inventory browse method passed100.885971s, with process exit0, complete one-row XML and zero failures/errors/skips. Compile49.65s/total156.162784s on local Swift Testing6.4.1 arm64. Evidence `/tmp/elite-inventory-headings-browse-units-result.json`, raw log and `-swift-testing.xml`. All original mount, complete row traversal at three widths, viewport bounds, page scrolling and shop assertions passed; the two maintained headings are independently required iff inventory.
+
+The three workshop domain passes remain at source67761181 with unchanged WorkshopSavee23b0630, while this original browse pass is at59f254dc. These source-specific receipts are reused without inventing an aggregate four-row passing process. Independent actual-source/result review closed153 and155 on these exact source-specific criteria; full VM/required quality/native M01/release remain separate. No further passed-case execution or candidate/media build is needed for this documentation composition.
