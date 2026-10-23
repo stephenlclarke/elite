@@ -84,7 +84,7 @@ struct GameCommanderStorageTests {
     try #require(committed.commander.name == "CLARKE" && committed.commander.xyzzyActive)
     try #require(committed.commander.valid)
     #expect(retained.commander == authorityBefore && initial.commander == supplied)
-    #expect(retained.commander.name == "JAMESON" && !retained.commander.xyzzyActive)
+    #expect(retained.commander.name == NewCommanderDefaults.name && !retained.commander.xyzzyActive)
     #expect(committed.commander.equipmentInventory != retained.commander.equipmentInventory)
     var caller = committed
     caller.commander.credits = 0
