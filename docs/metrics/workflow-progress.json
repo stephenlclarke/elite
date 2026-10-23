@@ -7241,7 +7241,11 @@
       "developer": "G1 next coherent boundary",
       "reviewer": "MBA exact-image issue and source/result review",
       "m01_complete": false,
-      "usable_feature_delivery_claim": false
+      "usable_feature_delivery_claim": false,
+      "issue": 146,
+      "binary_uuid": "C4D3B4B4-6C4B-3D52-AA07-3A9665163F83",
+      "binary_sha256": "ac0edc3f23f7bb056763f38d90264fef0b598f3abb2cc37b83d170fa6ef5c2d0",
+      "assignment": "G1 explicit deliverable; MBA independent diff and original regression review"
     }
   ],
   "two_developer_phase": {
