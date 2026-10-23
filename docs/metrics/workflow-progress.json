@@ -9171,6 +9171,17 @@
       "developer": "G1",
       "reviewer": "MBA",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:00:35.774306+00:00",
+      "checkpoint_key": "20261023-m01-161-aggregate-carriers-reviewed-run",
+      "event": "Pledge/freight aggregate scratch carriers reviewed and committed; affected execution active",
+      "head": "72fb39fa",
+      "issue": 161,
+      "reviewed_blob": "3f060c9517a4217f110ea6314737d5508d52cdb3",
+      "methods": 4,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
