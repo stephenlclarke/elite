@@ -9280,6 +9280,20 @@
       "evidence_head": "c23e2e1ca052e2477840a28f125b2f7d3c5e6f2f",
       "scope": "authority-preserving owned-body/receiver lifetime reduction, no identity policy change",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:18:52.358506+00:00",
+      "checkpoint_key": "20261023-m01-164-selection-reviewed-run",
+      "event": "Crew-log selection borrowed-body correction committed and reviewed; affected execution active",
+      "head": "47700106",
+      "issue": 164,
+      "reviewed_blobs": {
+        "Pickup": "eafa82fcaf7d6a42c18dd583fac2d2dc236b4211",
+        "Status": "1525ca5e642d544b1e174fe47e0c9e71ae122f4a"
+      },
+      "methods": 4,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
