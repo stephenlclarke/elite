@@ -7923,6 +7923,30 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:53:45Z",
+      "checkpoint_key": "20261023-m01-all-fixture-oracles-pass-original-mission-still-faults",
+      "event": "All affected fixture methods qualify individually; original mission still blocks151",
+      "head": "5ba8a787c3248b04ecf8077d6b95ed8d0b4310d0",
+      "process_seconds": 103.4033019579947,
+      "compile_seconds": 88.54,
+      "exit_code": 1,
+      "individual_passed_methods": 6,
+      "affected_fixture_passed_methods": 5,
+      "closed_scoped_issues": [
+        152
+      ],
+      "open_production_issue": 151,
+      "mission": "started/noPASS beforeSIGBUS10",
+      "signal": 10,
+      "xml_bytes": 52,
+      "aggregate_qualified": false,
+      "independent_review": "MBA exact source/rawindividual completion verified, explicitfailedaggregate",
+      "next_scope": "ONE bounded samebuilt changed5ba originalmission capture; old18fb stack not currentproof, no rebuild/defaultstackchange",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
