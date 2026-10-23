@@ -9473,6 +9473,20 @@
       "reviewed_correction_blob": "012a0041504b2c2271378942297646bafdf6b5e1",
       "correction_result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:47:11.989181+00:00",
+      "checkpoint_key": "20261023-m01-553-matcher-runtime-failed-source-boundary-inspection",
+      "event": "Compiler-compatible matcher builds; current runtime failure retained and exact owned API boundaries inspected",
+      "head": "553bb0e152ceceb97c750d97594efd3cf0e5de02",
+      "issue": 167,
+      "build_seconds": 68.67,
+      "process_seconds": 80.630353292,
+      "result": "runtime FAILURE signal10/exit1",
+      "completed_methods": 0,
+      "current_fault_attributed": false,
+      "new_capture_authorised": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
