@@ -15,3 +15,5 @@ Formatting and diff hygiene pass. The original authentic entry, five active-haza
 ## Compatibility and remaining limits
 
 No save schema, state mutation, actor ownership or player behavior changes. No synthetic passed aggregate, historical signal attribution or151 reopening. Final full VM, required quality, signing and release remain separate; no broad native or performance campaign is started.
+
+At exact74bf5eca2c072ff4432ba1e1f9e0eaba8aab9988, all three original methods/seven cases passed with process exit0, complete XML and zero failures/errors/skips. Original authentic entry/evasion9.487s, five active-hazard cases9.351s and reservation membership8.726s; compile193.74s/total209.023129s under local Swift Testing6.4.1 arm64. Evidence `/tmp/elite-156-practice-owner-units-result.json`, raw log and `-swift-testing.xml`. Independent source review cleared the exact typed owner and eligibility phase change; independent actual-source/result verification closed156 on this affected scope. Full VM/required quality and release remain separate. No unchanged focused rerun, new test selector, media or package is required for documentation composition.
