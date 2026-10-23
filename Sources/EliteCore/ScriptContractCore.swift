@@ -6,6 +6,31 @@ private enum ContractAcceptancePreflight: Sendable {
   case ready(PreparedContractAcceptance)
 }
 
+/// Immutable job storage lets its construction frame return before admissions are prepared.
+private final class PreparedContractJob: Sendable {
+  let key: String
+  let index: Int
+  let pack: ScriptPack
+  let board: ScriptContractBoard
+  let offer: ScriptContractOffer
+  let job: ScriptContractJob
+  let instanceID: UUID
+
+  @inline(never)
+  init(
+    key: String, index: Int, pack: ScriptPack, board: ScriptContractBoard,
+    offer: ScriptContractOffer, job: ScriptContractJob, instanceID: UUID
+  ) {
+    self.key = key
+    self.index = index
+    self.pack = pack
+    self.board = board
+    self.offer = offer
+    self.job = job
+    self.instanceID = instanceID
+  }
+}
+
 /// Immutable synchronous preparation storage keeps future admission payloads off the guard frame.
 private final class PreparedContractAcceptance: Sendable {
   let key: String
@@ -352,60 +377,71 @@ extension Game {
   // These job/admission buffers are needed only after every resource guard has returned.
   @inline(never)
   private mutating func prepareValidatedContractAcceptance(
-    key: String, index: Int, pack: ScriptPack, board: ScriptContractBoard,
-    offer: ScriptContractOffer, id: UUID, pledge: ScriptPledgePreview?, confirmationToken: UUID
+    key: String, index: Int, pack: borrowing ScriptPack, board: borrowing ScriptContractBoard,
+    offer: borrowing ScriptContractOffer, id: UUID, pledge: ScriptPledgePreview?,
+    confirmationToken: UUID
   ) throws -> PreparedContractAcceptance {
+    let preparation = prepareContractJob(
+      key: key, index: index, pack: pack, board: board, offer: offer, id: id)
+    return try prepareContractAdmissions(
+      preparation, pledge: pledge, confirmationToken: confirmationToken)
+  }
+
+  @inline(never)
+  private func prepareContractJob(
+    key: String, index: Int, pack: borrowing ScriptPack, board: borrowing ScriptContractBoard,
+    offer: borrowing ScriptContractOffer, id: UUID
+  ) -> PreparedContractJob {
     let acceptedAt = withReadOnlyScriptState { $0.clock(board.clock) }
     let deadline = offer.duration == 0 ? nil : acceptedAt + offer.duration
     let job = ScriptContractJob(
       boardKey: key, provider: board.provider, version: board.version,
       digest: board.digest, station: board.station, boardRevision: board.revision,
       group: board.group,
-      offer: offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline,
+      offer: copy offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline,
       deadlinePolicy: offer.courier == nil && pack.manifest.procurement == nil
         && pack.manifest.freight == nil
         ? nil : .inclusiveConfirmation)
     let instanceID = Self.contractJobIdentity(id)
-    return try prepareContractAdmissions(
-      key: key, index: index, pack: pack, board: board, offer: offer, job: job,
-      instanceID: instanceID, pledge: pledge, confirmationToken: confirmationToken)
+    return .init(
+      key: key, index: index, pack: copy pack, board: copy board, offer: copy offer,
+      job: job, instanceID: instanceID)
   }
 
   @inline(never)
   private mutating func prepareContractAdmissions(
-    key: String, index: Int, pack: borrowing ScriptPack, board: borrowing ScriptContractBoard,
-    offer: borrowing ScriptContractOffer, job: borrowing ScriptContractJob, instanceID: UUID,
-    pledge: ScriptPledgePreview?, confirmationToken: UUID
+    _ preparation: PreparedContractJob, pledge: ScriptPledgePreview?, confirmationToken: UUID
   ) throws -> PreparedContractAcceptance {
     var pledgeAdmission: ScriptPledgeAdmission? = nil
     var courierAdmission: ScriptCourierAdmission? = nil
     if let pledge {
       pledgeAdmission = .init(
-        instance: instanceID, board: copy board, offer: copy offer,
+        instance: preparation.instanceID, board: preparation.board, offer: preparation.offer,
         preview: pledge, epoch: ecmControl.epoch,
         sequence: withReadOnlyScriptState { $0.nextEvent } + 1,
         cause: scriptEventContext(
           .init(
-            id: instanceID, definition: pack.manifest.stateID,
-            version: pack.manifest.version, digest: pack.digest)))
+            id: preparation.instanceID, definition: preparation.pack.manifest.stateID,
+            version: preparation.pack.manifest.version, digest: preparation.pack.digest)))
     }
-    if offer.courier != nil {
+    if preparation.offer.courier != nil {
       guard scriptCourierAdmission == nil,
         withReadOnlyScriptState({ $0.nextEvent }) < UInt64(Int64.max) - 1
       else {
         throw MissionPackError("Courier confirmation cannot start in this context.")
       }
       courierAdmission = .init(
-        kind: .issue, instance: instanceID,
-        item: ScriptCourierCustody.itemIdentity(instanceID),
-        proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: copy job)
+        kind: .issue, instance: preparation.instanceID,
+        item: ScriptCourierCustody.itemIdentity(preparation.instanceID),
+        proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: preparation.job)
     }
     return .init(
-      key: key, index: index, pack: copy pack, board: copy board, offer: copy offer, job: copy job,
-      instanceID: instanceID, pledgeAdmission: pledgeAdmission,
+      key: preparation.key, index: preparation.index, pack: preparation.pack,
+      board: preparation.board, offer: preparation.offer, job: preparation.job,
+      instanceID: preparation.instanceID, pledgeAdmission: pledgeAdmission,
       courierAdmission: courierAdmission,
-      freightAdmission: offer.freightPlan == nil
-        ? nil : try prepareFreightIssue(job: copy job, instance: instanceID))
+      freightAdmission: preparation.offer.freightPlan == nil
+        ? nil : try prepareFreightIssue(job: preparation.job, instance: preparation.instanceID))
   }
   private mutating func performContractAcceptance(_ preparation: PreparedContractAcceptance)
     throws -> UUID
