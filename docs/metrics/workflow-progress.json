@@ -10031,6 +10031,66 @@
       "committed_at_recorded": "2026-10-23T23:12:12.132906+00:00",
       "new_existing_matrix_case": "absent_saved_script_state",
       "exec_session": 6904
+    },
+    {
+      "at": "2026-10-23T23:16:47.868448+00:00",
+      "checkpoint_key": "20261024-m01-12cdc-failed-recovery-pr-closed",
+      "event": "Coherent ownership batch fails; recovery closes draftPR and pauses obsolete broad check; bounded existing-value metadata review assigned",
+      "head": "12cdc2f330672ca3ade01299f2bbe60e2091c2a8",
+      "build_seconds": 231.97,
+      "wall_seconds": 244.020039167,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_completed": 0,
+      "pr25_state": "closed_draft",
+      "cancel_requested": 40037697745,
+      "final_required_gates_preserved": true,
+      "metadata_review_owner": "MBA",
+      "new_target_execution_for_metadata_review": false,
+      "m01_complete": false,
+      "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:18:25.166756+00:00",
+      "checkpoint_key": "20261024-m01-d441-native-pod-boundary-assigned",
+      "event": "Reviewed source published; common layout review rejects speculative rewrite and current prologue supports native pod early-refusal repair",
+      "head": "d441d1642808c25a2b66cf135a917ac4738a95d2",
+      "source_head": "12cdc2f330672ca3ade01299f2bbe60e2091c2a8",
+      "capture_seconds": 14.41792625,
+      "saved_slide": "0x112070000",
+      "mapped_boundary": "nativePodFacts+808/PhysicalActorState probe before pod presence refusal",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "existing_cow_storage_confirmed": true,
+      "initialized_type_sizes_available_offline": false,
+      "speculative_representation_change_rejected": true,
+      "cancel_requested": 40038748856,
+      "m01_complete": false,
+      "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:19:27.216511+00:00",
+      "checkpoint_key": "20261024-m01-native-people-present-frame-source-clear",
+      "event": "Coherent native pod and crew present-only frame correction implemented and independently source-reviewed",
+      "source_blobs": {
+        "NativePeople": "4969b986ccb6c01395e0a47c936b2dbb6f048d31",
+        "WorkTarget": "a08f67f1465738af7d73122c43f38fdb688e276e"
+      },
+      "review": "clear",
+      "runtime_result": "running",
+      "obsolete_quality_cancelled": 40037697745,
+      "m01_complete": false,
+      "usable_delivery": false,
+      "planned_one_batch_methods": 11,
+      "preserved_original_methods": 6,
+      "added_existing_methods": {
+        "NativePodProtectionTests": 3,
+        "NativeCrewCaptureTests": 2
+      },
+      "head": "4d369066057b42c8cd21bb6ad1a83433aff124c1",
+      "committed_at_recorded": "2026-10-23T23:21:47.917470+00:00",
+      "app_linked": true,
+      "redundant_push_cancelled": 40038748856
     }
   ],
   "two_developer_phase": {
