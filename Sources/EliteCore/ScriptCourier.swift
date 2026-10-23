@@ -244,9 +244,21 @@ extension Game {
       $0.outcome == .active && $0.contract?.offer.courier?.variant == .package
     }
   }
+  @inline(never)
   mutating func resolveCourierTerminals(escape: Bool = false, publish: ScriptPublisher? = nil) {
     resolveProcurementTerminals(publish: publish)
     resolveRRSCourierTerminals(publish: publish)
+    guard !Self.courierTerminalInstancesAreEmpty(in: self) else { return }
+    resolveNativeCourierTerminals(escape: escape, publish: publish)
+  }
+
+  @inline(never)
+  private static func courierTerminalInstancesAreEmpty(in game: borrowing Game) -> Bool {
+    game.withReadOnlyCommander { $0.scriptInstancesAreEmpty() }
+  }
+
+  @inline(never)
+  private mutating func resolveNativeCourierTerminals(escape: Bool, publish: ScriptPublisher?) {
     for id in orderedScriptInstances {
       guard let old = commander.scriptState.instances[id], old.outcome == .active,
         let custody = old.courier, let terms = old.contract?.offer.courier
