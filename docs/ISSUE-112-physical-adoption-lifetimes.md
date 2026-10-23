@@ -1,0 +1,5 @@
+# Issue 112: physical adoption entry lifetimes
+
+The matching normal `C23EE38B` report reaches compiler type instantiation from `Game.adoptNativePhysicalActors` at offset 664, below encounter admission, native missile admission and the actual authored board-travel test. Fault `0x16d0ebe10` falls inside guard `0x16d0e8000..0x16d0ec000`. Evidence remains in `/tmp/elite-station-header-runtime`. The source and retained emitted path reserve paired payload/optional argument buffers for three nil comparisons before visit handling or body iteration. This is a real stack fault; earlier header and companion passes do not qualify travel.
+
+Preserve visit entry, captured flight state, body order, ownership eligibility, main-anchor versus ordinary actor identities, failed-identity continuation and the original physical-state producer. Remove the nil-comparison payloads together and finish eligibility projection before construction. No Game/state/schema rewrite, new validation, weakened authority or gameplay policy change is assigned. See [the packet handoff](PR-107-physical-adoption-lifetimes.md).
