@@ -5870,6 +5870,30 @@
       "usable_delivered": false,
       "actual_merge_blocker": "shared selector conflict; owner resolving",
       "integration_deferred": true
+    },
+    {
+      "at": "2026-10-23T10:01:53.404395+00:00",
+      "event": "Station-context help author-merged after exact final-head review and units",
+      "ledger_id": "M02.P05.station-context-help",
+      "pr": 115,
+      "head": "7a2ff395a3cc6e5e9d17cb6aa3560e2a8813b4cf",
+      "merged_at": "2026-10-23T10:01:20Z",
+      "merge_commit": "071501df06cfddf4c74424c4fd06c269aa8e46b8",
+      "run": 39934445254,
+      "methods_passed": 345,
+      "new_feature_methods_passed": 3,
+      "new_feature_parameter_cases_passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "compile_seconds": 548.84,
+      "unit_seconds": 54.039,
+      "source_review": "MBA original and material composition clear",
+      "merged_into": "feature/canonical-mission-composition",
+      "usable_build_delivered": false,
+      "published_release": false,
+      "homebrew_updated": false,
+      "integration_testing_deferred": true
     }
   ],
   "two_developer_phase": {
