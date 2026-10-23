@@ -6406,6 +6406,31 @@
       "usable_delivered": false,
       "m01_complete": false,
       "full_integration_run": false
+    },
+    {
+      "at": "2026-10-23",
+      "checkpoint_key": "20261023-m01-f078-crash-free-semantic-refusal",
+      "event": "All four audit methods complete; Sorel save refuses candidate",
+      "pr": 100,
+      "tracked_issue": 104,
+      "head": "f078849d35d9dcb0f563fec6bdb4166b5164b078",
+      "selected_methods": 4,
+      "completed_methods": 4,
+      "passing_methods": 3,
+      "passing_authored_cases": 15,
+      "xml_failures": 1,
+      "xml_errors": 0,
+      "xml_skips": 0,
+      "exit_code": 1,
+      "total_seconds": 85.75710724992678,
+      "compile_seconds": 71.58,
+      "outcome": "caught SaveError.invalidCommander in Sorel confirmation; no signal/crash",
+      "independent_result_review": "MBA exact result/XML/raw log verified",
+      "qualification": "focused path now reaches semantic validation; overall failed",
+      "merged": false,
+      "usable_delivered": false,
+      "m01_complete": false,
+      "full_integration_run": false
     }
   ],
   "two_developer_phase": {
