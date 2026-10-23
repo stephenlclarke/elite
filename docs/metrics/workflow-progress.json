@@ -8328,6 +8328,25 @@
       "next_action": "coherent reviewed source publication after153 qualification",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:47:42Z",
+      "checkpoint_key": "20261023-m01-workshop-policy-pass-browse-heading-assertion",
+      "event": "Workshop validation no longer crashes; remaining browse heading assertion identified",
+      "issue": 153,
+      "head": "677611811b978e7ae99a3aff3735aacdfa683c4f",
+      "process_result": "FAILURE",
+      "seconds": 176.990774,
+      "build_seconds": 70.61,
+      "selected_methods": 4,
+      "completed_pass_methods": 3,
+      "browse_seconds": 102.485,
+      "browse_failure": "StationTests173 obsolete combined fitted-and-held heading",
+      "source_fact": "InventoryInformation146 renders separate fitted and held headings",
+      "helper_crash": false,
+      "next_action": "G1 source-backed exact expectation repair, MBA issue/review, retain policy passes",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
