@@ -314,7 +314,7 @@ extension Game {
   }
 
   @inline(never)
-  private func selectNativeStationPopulation(
+  private mutating func selectNativeStationPopulation(
     world: NativeStationWorld, anchors: SystemAnchors, absent: [NativeStationRecord],
     flightBefore: FlightSimulationState
   ) throws -> [(NativeStationRecord, NativeStationSavedPose, NativeStationSourceBinding)] {

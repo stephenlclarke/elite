@@ -31,7 +31,7 @@ struct NativeStationPopulationLifetimeTests {
   @Test(arguments: [
     "docked", "missing-anchors", "invalid-world", "system-mismatch", "duplicate", "binding",
     "body-budget", "body-cursor",
-    "source", "clearance", "spawn-cursor", "second-rebind", "final-flight",
+    "source", "clearance", "second-clearance", "spawn-cursor", "second-rebind", "final-flight",
   ])
   func refusedPopulationPreservesTheWholeCandidateAndErrorPriority(scenario: String) throws {
     var game =
@@ -92,6 +92,33 @@ struct NativeStationPopulationLifetimeTests {
           id: 100, hull: .asteroid,
           position: game.commander.flightSimulation.pose.shipPoint(station.position))
       ]
+      expected = .unsafePlacement
+    case "second-clearance":
+      let world = try #require(game.commander.nativeStations)
+      let records = world.ledger.records.filter { $0.identity.system == game.systemIdentity }
+      try #require(records.count == 2)
+      let first = try #require(world.pose(for: records[0].identity))
+      let second = try #require(world.pose(for: records[1].identity))
+      let source = try #require(NativeStationSource.binding(for: records[0].identity))
+      let obstacle = SpaceBody(
+        id: 100, hull: .asteroid,
+        position: game.commander.flightSimulation.pose.shipPoint(second.position))
+      let stationRadius = try #require(source.geometry.mesh.vertices.map(\.length).max())
+      let obstacleRadius = try #require(
+        game.gameplayMesh(for: obstacle).vertices.map(\.length).max())
+      // Prove the first placement clear so this refusal exercises the second cohort member.
+      let flight = game.commander.flightSimulation
+      let anchors = try #require(flight.anchors)
+      try #require(source.geometry.position(in: anchors) == first.position)
+      try #require(world.currentOrientation(for: first.station, at: flight.physicalTime) != nil)
+      let firstPosition = try #require(
+        world.currentPosition(for: .rrs(first.station), at: flight.physicalTime))
+      for celestial in [anchors.planet, anchors.sun] {
+        try #require(
+          (firstPosition - celestial.position).length > stationRadius + celestial.radius + 8)
+      }
+      try #require((firstPosition - second.position).length > stationRadius + obstacleRadius + 8)
+      game.bodies = [obstacle]
       expected = .unsafePlacement
     case "spawn-cursor":
       try changeFlight(&game) { $0["nextSpawn"] = UInt64.max }
