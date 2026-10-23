@@ -8414,6 +8414,22 @@
       "final_head_result": "pending",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:57:32Z",
+      "checkpoint_key": "20261023-m01-completed-save-source-coverage-result-pending",
+      "event": "Existing completed-contract save/reopen coverage mapped without new execution",
+      "source_methods": [
+        "ScriptCourierTests/courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact",
+        "ScriptFreightTests/freightRealPartialChoiceAndFailedFinalWriterPreserveUnitsAndPayOnce"
+      ],
+      "fresh_runtime_reload": "courier after delivered terminal and reward",
+      "retained_passing_receipt": "not established",
+      "current_required_coverage": "script/coverage.sh unfiltered swift test; inspect actual outcomes on completion",
+      "new_execution_started": false,
+      "candidate_changed": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
