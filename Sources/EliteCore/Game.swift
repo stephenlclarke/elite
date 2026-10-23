@@ -151,22 +151,36 @@ public struct Commander: Sendable, Equatable, Codable {
     return try read(empty)
   }
   // Read only child storage here: no Commander value crosses the pointer boundary.
+  @inline(never)
   fileprivate static func nativeStationReadScriptState<Result>(
     at commander: UnsafePointer<Commander>,
     _ read: (UnsafePointer<ScriptEngineState>) -> Result
   ) -> Result {
-    if let stored = commander.pointee.savedScriptState {
+    guard let storage = commander.pointer(to: \.savedScriptState) else {
+      preconditionFailure("Native station validation requires addressable stored script state.")
+    }
+    if let stored = storage.pointee {
       return stored.withNativeStationReadOnlyValue(read)
     }
-    return Self.withDefaultScriptState { state in
-      withUnsafePointer(to: state) { pointer in read(pointer) }
-    }
+    return Self.nativeStationReadDefaultScriptState(read)
   }
 
+  @inline(never)
+  private static func nativeStationReadDefaultScriptState<Result>(
+    _ read: (UnsafePointer<ScriptEngineState>) -> Result
+  ) -> Result {
+    let empty = ScriptEngineState()
+    return withUnsafePointer(to: empty) { pointer in read(pointer) }
+  }
+
+  @inline(never)
   fileprivate static func nativeStationReadFlight(
     at commander: UnsafePointer<Commander>
   ) -> FlightSimulationState {
-    if let flight = commander.pointee.savedFlightSimulation { return flight }
+    guard let storage = commander.pointer(to: \.savedFlightSimulation) else {
+      preconditionFailure("Native station validation requires addressable stored flight state.")
+    }
+    if let flight = storage.pointee { return flight }
     return FlightSimulationState()
   }
 
@@ -1135,6 +1149,40 @@ public struct Game: Sendable {
     _ read: (borrowing ScriptEngineState) throws -> Result
   ) rethrows -> Result {
     try withReadOnlyCommander { try $0.withReadOnlyScriptState(read) }
+  }
+
+  @inline(never)
+  func nativeStationStoredBodyIsCurrent(_ body: borrowing SpaceBody) -> Bool {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Self.nativeStationBodyIsCurrent(body, at: storage.baseAddress!)
+    }
+  }
+
+  @inline(never)
+  mutating func nativeStationApproachStoredBodyIsCurrent(_ body: borrowing SpaceBody) -> Bool {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Self.nativeStationBodyIsCurrent(body, at: storage.baseAddress!)
+    }
+  }
+
+  private static func nativeStationBodyIsCurrent(
+    _ body: borrowing SpaceBody, at commander: UnsafePointer<Commander>
+  ) -> Bool {
+    guard let identity = body.nativeStationIdentity,
+      let physicalIdentity = body.nativeStationPhysicalIdentity,
+      let worldStorage = commander.pointer(to: \.nativeStations)
+    else { return false }
+    guard let world = worldStorage.pointee, Commander.nativeStationStateIsValid(at: commander),
+      let record = world.ledger.records.first(where: { $0.identity == identity })
+    else { return false }
+    let currentSystem = SystemIdentity(
+      galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+    guard identity.system == currentSystem, record.tombstone == nil, body.energy > 0,
+      physicalIdentity.system == currentSystem,
+      physicalIdentity.visit == Commander.nativeStationReadFlight(at: commander).visit,
+      record.binding == .init(actor: physicalIdentity, bodyID: body.id)
+    else { return false }
+    return true
   }
 
   var missionActorAdmissionSystemIdentity: SystemIdentity {

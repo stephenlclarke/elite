@@ -460,33 +460,12 @@ extension Game {
   }
 
   func nativeStationBodyIsCurrent(_ body: SpaceBody) -> Bool {
-    withReadOnlyCommander { commander in
-      Self.nativeStationBodyIsCurrent(body, commander: commander)
-    }
+    nativeStationStoredBodyIsCurrent(body)
   }
 
   @inline(never)
   mutating func nativeStationApproachBodyIsCurrent(_ body: SpaceBody) -> Bool {
-    withNativeStationReadOnlyCommander { commander in
-      Self.nativeStationBodyIsCurrent(body, commander: commander)
-    }
-  }
-
-  private static func nativeStationBodyIsCurrent(
-    _ body: borrowing SpaceBody, commander: borrowing Commander
-  ) -> Bool {
-    guard let identity = body.nativeStationIdentity,
-      let physicalIdentity = body.nativeStationPhysicalIdentity,
-      let world = commander.nativeStations, Commander.nativeStationStateIsValid(commander),
-      let record = world.ledger.records.first(where: { $0.identity == identity })
-    else { return false }
-    let currentSystem = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
-    guard identity.system == currentSystem, record.tombstone == nil, body.energy > 0,
-      physicalIdentity.system == currentSystem,
-      physicalIdentity.visit == commander.flightSimulation.visit,
-      record.binding == .init(actor: physicalIdentity, bodyID: body.id)
-    else { return false }
-    return true
+    nativeStationApproachStoredBodyIsCurrent(body)
   }
 
   mutating func invalidateNativeStationAuthority() {
