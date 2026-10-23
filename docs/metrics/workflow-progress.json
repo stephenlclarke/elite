@@ -9124,6 +9124,19 @@
       "methods": 4,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:53:52.974251+00:00",
+      "checkpoint_key": "20261023-m01-f095-admissions-buffer-followup",
+      "event": "Job frame absent; remaining admissions entry fault scopes conditional payload buffers",
+      "head": "f095cf0fba242f607ef0fb02dfb19e628bcc79c5",
+      "issue": 161,
+      "build_seconds": 210.81,
+      "process_seconds": 222.42528275,
+      "result": "runtime FAILURE signal10/exit1",
+      "completed_methods": 0,
+      "fault_scope": "admissions+636, no exact branch/field",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
