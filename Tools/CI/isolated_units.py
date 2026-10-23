@@ -70,6 +70,7 @@ METHODS = {
         "throwingNestedInoutMutationDetachesAndRemainsWritable",
         "sharedPayloadEqualityPreservesNaNAndSignedZeroMemberSemantics",
         "suppliedAndActorSnapshotInstancesKeepIndependentNestedValues",
+        "fieldBuffersDetachLargeNestedValuesAndKeepRetainedNilAndCodec",
     ),
     "ScriptNavigationAvailabilityTests": (
         "onlyExistingNavigationClaimsRequireApprovedContent",
