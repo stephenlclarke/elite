@@ -7600,6 +7600,31 @@
       "reviewer": "MBA image/input/cause/diff review, no execution",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:29:03Z",
+      "checkpoint_key": "20261023-m01-exact-context-capture-attributes-system-reader-guard",
+      "event": "Single exact-context capture identifies current general system-reader guard defect",
+      "issue": 150,
+      "head": "854331da5c12c481e1157ebf52ce8dc32eb87ab5",
+      "diagnostic_path": "/tmp/elite-144-854-vm-full-context-diagnostic",
+      "diagnostic_seconds": 40.598584,
+      "diagnostic_exit": 0,
+      "not_a_test_qualification": true,
+      "filter_bytes": 61700,
+      "filter_identity": "MBA exactmatch original failed524result",
+      "binary_uuid": "94F09606-55D4-32C0-9A2E-F3A73CD6C3BA",
+      "binary_sha256": "21e3ffb8ec20ef3d2507b076e9c2aaaf7bf6051035e2bc26a3dec763e0b0914a",
+      "first_fault": "Game.withReadOnlyCommander entry -> GameplayScene.systemIdentity -> evacuationquote/action -> originalpeople storage rollback/retry test",
+      "stack_pointer": "0x16ffa7fc0",
+      "store_destination": "0x16ffa7fd8",
+      "mapped_noaccess": "0x16ffa4000-0x16ffa8000",
+      "independent_review": "MBA exactinput/runtime/image/guard/ownedcleanup verified",
+      "owner": "G1 minimal scalar-identity correction and affected original units",
+      "issue144_historical_signal_cause": "unproved; no blanketattribution",
+      "second_capture_assigned": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
