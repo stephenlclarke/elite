@@ -130,17 +130,25 @@ struct GameplayOrdnanceRuntimeTests {
   @Test func realNPCLauncherDoesNotLoseItsMissileOwnerWhenTheCraftIsRemoved() throws {
     var game = missileRuntimeGame(distance: 1000)
     game.frontShield = 100
-    game.bodies[0].missiles = 1
-    let owner = try #require(game.bodies[0].physical?.identity)
+    let ownerIndex = try #require(game.bodies.firstIndex { $0.id == 70 })
+    game.bodies[ownerIndex].missiles = 1
+    let owner = try #require(game.bodies[ownerIndex].physical?.identity)
     let launched = game.launchGameplayNPCMissile(bodyID: 70)
     #expect(launched)
     let secondLaunch = game.launchGameplayNPCMissile(bodyID: 70)
-    #expect(game.bodies[0].missiles == 0 && !secondLaunch)
-    let missile = try #require(game.bodies.last)
+    let spentOwner = try #require(game.bodies.first { $0.physical?.identity == owner })
+    #expect(spentOwner.missiles == 0)
+    #expect(!secondLaunch)
+    let missile = try #require(game.bodies.first { $0.physical?.ordnance?.origin.owner == owner })
+    let missileIdentity = try #require(missile.physical?.identity)
     #expect(missile.enemyMissile && missile.missileSourceID == 70)
-    game.bodies.removeFirst()
+    game.bodies.removeAll { $0.physical?.identity == owner }
+    #expect(!game.bodies.contains { $0.physical?.identity == owner })
     missileRuntimeAdvance(&game, delta: 2)
-    let state = try #require(game.bodies[0].physical?.ordnance)
+    let retainedMissile = try #require(
+      game.bodies.first { $0.physical?.identity == missileIdentity })
+    #expect(retainedMissile.id == missile.id)
+    let state = try #require(retainedMissile.physical?.ordnance)
     #expect(state.origin.owner == owner && state.termination == .impact)
     #expect(game.frontShield == 0 && game.energy < game.commander.performance.energy)
     #expect(game.commander.kills == 0 && game.commander.credits == 1000)
