@@ -10013,6 +10013,20 @@
       "candidate_result_buffers_observed": true,
       "recoverable_metadata_fixed_frame_hex": "0x4010",
       "runtime_success": false
+    },
+    {
+      "at": "2026-10-23T23:10:36.621054+00:00",
+      "checkpoint_key": "20261024-m01-threefile-ownership-delta-source-clear",
+      "event": "Coherent typed marker query and candidate frame separation implemented and independently reviewed",
+      "source_blobs": {
+        "Game": "464f3f60ffa07d93e8cb0ec4a7825320ca2b302c",
+        "Pickup": "37323f013156471d16c0dbf7a2513f015ca5a561",
+        "WorkTarget": "8a1bfc289e5d36d5e84b7cb991b727deef91ede1"
+      },
+      "review": "clear",
+      "runtime_result": "pending",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
