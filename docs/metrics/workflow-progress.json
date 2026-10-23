@@ -8963,6 +8963,20 @@
       "reviewer": "MBA",
       "current_affected_run_uninterrupted": true,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:30:50.357137+00:00",
+      "checkpoint_key": "20261023-m01-be90-two-method-failed",
+      "event": "Two affected original methods incomplete after current process crash; saved report attribution queued",
+      "head": "be90e52c2ba68d3705a7daf63261b8d0c3580dc8",
+      "result": "FAILURE",
+      "exit_code": 1,
+      "signal": 10,
+      "build_seconds": 84.87,
+      "process_seconds": 96.9157105,
+      "completed_methods": 0,
+      "retained_prior_individual_passes": 3,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
