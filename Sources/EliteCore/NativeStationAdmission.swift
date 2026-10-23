@@ -394,7 +394,10 @@ private final class NativeStationValidationMemo: Sendable {
   private let state = OSAllocatedUnfairLock<NativeStationWorldContent?>(initialState: nil)
 
   func contains(_ content: NativeStationWorldContent) -> Bool {
-    state.withLock { $0 == content }
+    state.withLock {
+      guard let cached = $0 else { return false }
+      return cached == content
+    }
   }
 
   func recordValidated(_ content: NativeStationWorldContent) {
