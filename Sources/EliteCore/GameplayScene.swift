@@ -209,19 +209,12 @@ extension Game {
   }
 
   func gameplayContext() -> EncounterContext? {
-    let flight = withReadOnlyCommander { Self.currentGameplayFlight($0) }
+    let flight = storedFlightSimulation()
     guard let playerID = flight.player, let canonical = flight.anchors else { return nil }
     let anchors = Self.gameplayAnchors(bodies, flight: flight, canonical: canonical)
     let actors = Self.gameplayActors(bodies, pose: flight.pose)
     return Self.finishGameplayContext(
       self, flight: flight, playerID: playerID, anchors: anchors, actors: actors)
-  }
-
-  @inline(never)
-  private static func currentGameplayFlight(_ commander: borrowing Commander)
-    -> FlightSimulationState
-  {
-    commander.flightSimulation
   }
 
   // Station and actor projection finish before the later protection/player/mining phases.

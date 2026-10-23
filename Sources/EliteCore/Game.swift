@@ -1148,6 +1148,13 @@ public struct Game: Sendable {
     }
   }
 
+  @inline(never)
+  func storedFlightSimulation() -> FlightSimulationState {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Commander.nativeStationReadFlight(at: storage.baseAddress!)
+    }
+  }
+
   // Keep the original full policy and lazy read order without passing a whole Commander value
   // through the generic read callback. Only owned system/anchor values leave this buffer scope.
   @inline(never)
