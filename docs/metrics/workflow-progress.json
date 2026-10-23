@@ -9975,6 +9975,22 @@
       "artifact_prefix": "/tmp/elite-m01-applicability",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:05:16.563824+00:00",
+      "checkpoint_key": "20261024-m01-169-64de-normal-runtime-failure",
+      "event": "Applicability borrowing normal batch compiles then crashes without method completion; changed-image evidence scope active",
+      "head": "64de4321ab3a19fc18e699b3793b88c2ddb6590f",
+      "issue": 169,
+      "build_seconds": 140.36,
+      "wall_seconds": 152.211963458,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_completed": 0,
+      "image_uuid": "163278C9-71B7-3C8B-BD43-AD63FC00D3DE",
+      "normal_fault_attribution": "unavailable",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
