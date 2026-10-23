@@ -136,19 +136,11 @@ public enum PlayerHelp {
       && !(screen == .showroom && game.showroom.trading)
     {
       pages.append(
-        .init(
-          title: game.docked ? "STATION SCREENS" : "SCREENS IN SPACE",
-          rows: [
-            game.docked ? "0 - LAUNCH" : "0 / 1 / 2 / 3 - FRONT/REAR/LEFT/RIGHT",
-            game.docked ? "3 - EQUIPMENT" : "4 / 5 - GALACTIC / LOCAL CHART",
-            game.docked ? "4 / 5 - CHARTS WITH PLANET DATA" : "6 - SYSTEM DATA / PLANET VIEW",
-            game.docked ? "6 - SHIP SHOWROOM" : "7 - MARKET PRICES",
-            game.docked ? "7 - MARKET: BUY / SELL" : "8 / 9 - STATUS / INVENTORY",
-            game.docked ? "8 / 9 - STATUS / INVENTORY" : "ESC - PREVIOUS SCREEN / COCKPIT",
-            "ARROWS - MOVE; RETURN - CHOOSE",
-            "ESC - BACK ONE LEVEL; K - HELP",
-            "SCREENS MENU HAS THE SAME DESTINATIONS",
-          ]))
+        StationScreenGuide.page(
+          docked: game.docked, stationName: game.nativeStationName,
+          equipmentAvailable: game.stationAllowsEquipmentServices,
+          marketAvailable: game.stationAllowsMarketServices,
+          exchangeAvailable: game.docked && game.dockedAtMainStation))
       pages.append(
         .init(
           title: "MORE ACTIONS",
