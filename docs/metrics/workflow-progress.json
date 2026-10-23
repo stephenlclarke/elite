@@ -9592,6 +9592,28 @@
       "matching_reports": 0,
       "root_ack_required_for_exact_standing_scope": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T22:00:32.296839+00:00",
+      "checkpoint_key": "20261023-m01-human-all-blockers-one-packet",
+      "event": "Human directs all known M01 blockers fixed in one coherent work packet",
+      "issues": [
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168
+      ],
+      "developer": "G1",
+      "reviewer": "MBA",
+      "execution_policy": "combined known source corrections and independent review, one affected unit batch, reuse unaffected passes; no per-helper gates",
+      "publication": "remote checkpoint then mandatory PR25 final-head release gates",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
