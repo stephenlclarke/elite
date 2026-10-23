@@ -8254,6 +8254,23 @@
       "next_action": "MBA verifies scoped151 closure; G1 finishes154 then153",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:35:15Z",
+      "checkpoint_key": "20261023-m01-admission-runtime-151-closed",
+      "event": "MBA closes scoped mission admission/runtime crash151 after complete original mission proof",
+      "issue": 151,
+      "state": "CLOSED",
+      "head": "6fccc4e9d5bacba5ac3e0671237dca13b1d0d601",
+      "independent_review": "MBA source and complete XML/raw results verified; original mission and two parent-frame controls pass",
+      "overall_batch": "FAILED solely three NPC154 impact/damage assertions",
+      "remaining_code_queue": [
+        154,
+        153
+      ],
+      "aggregate_pass_claim": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
