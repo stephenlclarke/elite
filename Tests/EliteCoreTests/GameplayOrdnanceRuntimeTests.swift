@@ -153,7 +153,10 @@ struct GameplayOrdnanceRuntimeTests {
     #expect(state.origin.owner == owner)
     #expect(
       state.termination == .impact,
-      Comment(rawValue: "Native missile termination: \(String(describing: state.termination))"))
+      Comment(
+        rawValue:
+          "Native missile termination: \(String(describing: state.termination)); position: \(state.position); clock: \(state.lastUpdatedAt)/\(game.commander.flightSimulation.physicalTime); message: \(game.message)"
+      ))
     #expect(game.frontShield == 0)
     #expect(game.energy < game.commander.performance.energy)
     #expect(game.commander.kills == 0)
