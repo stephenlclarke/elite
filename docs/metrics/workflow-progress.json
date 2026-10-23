@@ -9865,6 +9865,19 @@
       "unit_result": "pending",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:50:36.868988+00:00",
+      "checkpoint_key": "20261023-m01-164-feab-final-five-cases-batch-live",
+      "event": "Final coherent marker repair includes five boundary categories and one cached affected batch dispatched",
+      "head": "feab1bcb1d34cad994d3a74012ff33abc122d723",
+      "new_argument_categories": 5,
+      "review": "clear",
+      "exec_session": 49003,
+      "unit_result": "running",
+      "pre_dispatch_transfer_rejection_not_test_retry": true,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
