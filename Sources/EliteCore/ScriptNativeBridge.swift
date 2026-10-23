@@ -80,7 +80,10 @@ extension Game {
     instance: borrowing ScriptInstance, geometry: borrowing [String: ShipDesign]
   ) -> Bool {
     guard let npcID = declared.npc else {
-      return declared.hull == body.hull && body.scriptNPC == nil && retained.body.scriptNPC == nil
+      guard declared.hull == body.hull, body.scriptNPC == nil, retained.body.scriptNPC == nil else {
+        return false
+      }
+      return true
     }
     guard let npc = body.scriptNPC, npc.valid,
       npc.fit == retained.body.scriptNPC?.fit,
@@ -101,7 +104,7 @@ extension Game {
   private static func missionActorComponentsMatch(
     _ components: borrowing [String: ScriptNPCComponentState], retained: borrowing ScriptOwnedActor
   ) -> Bool {
-    for (alias, component) in components {
+    for (alias, component) in copy components {
       guard retained.body.scriptNPC?.components[alias]?.identity == component.identity else {
         return false
       }
@@ -114,7 +117,7 @@ extension Game {
     _ models: borrowing [String: String], pack: borrowing ScriptPack,
     instance: borrowing ScriptInstance, geometry: borrowing [String: ShipDesign]
   ) -> Bool {
-    for (reference, digest) in models {
+    for (reference, digest) in copy models {
       guard
         let installed = NativeC01Surveyor.designs(pack: copy pack, state: copy instance)[reference],
         let retained = geometry[digest]

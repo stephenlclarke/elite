@@ -19,3 +19,9 @@ Strict Swift formatting and diff hygiene pass. Independent actual-diff review an
 ## Compatibility and remaining limits
 
 No actor/state/save/schema, provider ordering, combat entitlement/reward, UI or quality threshold changes. All original incomplete methods, required coverage/sanitizer/leak checks, completed-save/reopen proof and release remain unqualified until actual results establish them.
+
+## Release compiler ownership correction
+
+The `a7b503f1` Swift6.1.2 attempt failed compilation, exit1 after21.864851125seconds. Short-circuit autoclosures consumed borrowed body/retained values, and dictionary iteration consumed the borrowed components/models collections. No runtime/test process started. `/tmp/elite-167-fit-focused.log` and `-result.json` retain exact compiler failure.
+
+Use ordered guard conditions for the exact original nonNPC hull/body-nil/retained-nil short circuit, returning true only after all three. Explicitly copy only each same dictionary header at its existing iterator boundary. This retains iteration order, empty=true and first-failure results while avoiding borrowed-variable consumption; no full body/actor/pack/instance copy is introduced there. All NPC/profile/design policy remains unchanged. Actual-source review and the same four original methods remain pending.
