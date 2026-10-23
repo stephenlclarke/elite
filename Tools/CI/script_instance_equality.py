@@ -113,12 +113,15 @@ def inspect_equality(source: str, type_name: str = "ScriptInstanceValue") -> lis
     fields = stored_fields(inventory_body, type_name)
     helpers = re.findall(
         r"private static func (equal\w+)\([^)]*\)\s*->\s*Bool\s*\{\s*"
-        r"lhs\.(\w+) == rhs\.(\w+)\s*\}",
+        r"lhs\.(\w+)(!\.value)? == rhs\.(\w+)(!\.value)?\s*\}",
         body,
     )
-    if any(left != right for _, left, right in helpers):
+    if any(left != right or left_path != right_path for _, left, left_path, right, right_path in helpers):
         raise ValueError("Equality must compare the same member on both operands")
-    mapping = {name: left for name, left, _ in helpers}
+    mapping = {name: left for name, left, _, _, _ in helpers}
+    wrapped = set(re.findall(r"^  var (\w+): Field<[^\n]+>\?", inventory_body, re.M))
+    if any(bool(path) != (field in wrapped) for _, field, path, _, _ in helpers):
+        raise ValueError("Equality must compare logical field values, not storage handles")
     if len(mapping) != len(helpers):
         raise ValueError("Duplicate equality helpers")
     calls = re.findall(rf"guard (equal\w+)\({re.escape(arguments)}\) else \{{ return false \}}", body)
@@ -155,13 +158,19 @@ def inspect_instance_storage(source: str) -> list[str]:
     if uniqueness is None or compact(uniqueness[1]) != compact(expected_uniqueness):
         raise ValueError("Mutations must clone shared payload storage")
     mutable = [name for mode, name, _ in declarations if mode == "var"]
+    wrapped = {
+        name: match[1]
+        for _, name, declaration in declarations
+        if (match := re.fullmatch(r"Field<(.+)>\?", declaration))
+    }
     for mode, name, _ in declarations:
         accessor = re.search(rf"^  var {name}: [^\n]+ \{{(.*?)^  \}}", body, re.M | re.S)
-        expected = f"_read {{ yield payload.{name} }}"
+        projection = name + ("!.value" if name in wrapped else "")
+        expected = f"_read {{ yield payload.{projection} }}"
         if mode == "var":
             expected += (
-                f"set {{ ensureUniqueStorage() payload.{name} = newValue }}"
-                f"_modify {{ ensureUniqueStorage() yield &payload.{name} }}"
+                f"set {{ ensureUniqueStorage() payload.{projection} = newValue }}"
+                f"_modify {{ ensureUniqueStorage() yield &payload.{projection} }}"
             )
         if accessor is None or compact(accessor[1]) != compact(expected):
             raise ValueError(f"Mutable projections must detach before write/yield: {name}")
@@ -174,13 +183,50 @@ def inspect_instance_storage(source: str) -> list[str]:
     if [left for _, left, _ in copies] != mutable:
         raise ValueError("Clone must cover every mutable field once in order")
     clone = re.search(r"convenience init\(copying source: Storage\) \{(.*?)\n  \}", payload, re.S)
-    expected = "self.init(id: source.id, definition: source.definition, version: source.version, digest: source.digest)"
+    expected = "self.init(emptyID: source.id, definition: source.definition, version: source.version, digest: source.digest)"
     expected += "".join(f"{helper}(from: source)" for helper, _, _ in copies)
     if clone is None or compact(clone[1]) != compact(expected):
         raise ValueError("Clone must allocate first then call each bounded field helper")
     for helper, _, _ in copies:
         if not re.search(rf"@inline\(never\)\s+private func {helper}\(", payload):
             raise ValueError("Clone helpers must retain separate frames")
+    default_init = re.search(r"convenience init\(id: UUID, definition: String, version: String, digest: String\) \{(.*?)\n  \}", payload, re.S)
+    expected = "self.init(emptyID: id, definition: definition, version: version, digest: digest)"
+    for name, value_type in wrapped.items():
+        helper = "initialize" + name[0].upper() + name[1:]
+        expected += f"{helper}()"
+        match = re.search(rf"@inline\(never\)\s+private func {helper}\(\) \{{(.*?)\n  \}}", payload, re.S)
+        if match is None or compact(match[1]) != compact(f"{name} = Field<{value_type}>()"):
+            raise ValueError("Default construction must initialize every field handle separately")
+    if default_init is None or compact(default_init[1]) != compact(expected):
+        raise ValueError("Default construction must cover every field handle once in order")
+    empty_init = re.search(r"private init\(emptyID id: UUID, definition: String, version: String, digest: String\) \{(.*?)\n  \}", payload, re.S)
+    expected = "self.id = id self.definition = definition self.version = version self.digest = digest"
+    if empty_init is None or compact(empty_init[1]) != compact(expected):
+        raise ValueError("Clone allocation must not construct default child values")
+    field = body.split("  private struct Field<Value: Sendable>: Sendable {", 1)[1].split("\n  }", 1)[0]
+    field = re.sub(r"//[^\n]*", "", field)
+    expected = """
+        private final class InitialNil { var value: Value? }
+        private var values: [Value?]
+        init() {
+          let initial = InitialNil()
+          values = withUnsafePointer(to: &initial.value) { source in
+            Array(unsafeUninitializedCapacity: 1) { destination, initializedCount in
+              destination.baseAddress!.initialize(from: source, count: 1)
+              initializedCount = 1
+            }
+          }
+        }
+        init(_ value: consuming Value?) { values = [consume value] }
+        var value: Value? {
+          _read { yield values[0] }
+          set { values[0] = newValue }
+          _modify { yield &values[0] }
+        }
+    """
+    if compact(field) != compact(expected):
+        raise ValueError("Field storage must retain typed Array COW and initialized heap-to-heap nil construction")
     keys = re.search(r"private enum CodingKeys: String, CodingKey \{(.*?)\n  \}", body, re.S)
     if keys is None or re.findall(r"case (\w+)", keys[1]) != fields:
         raise ValueError("Codec must retain every logical key once in order")
@@ -189,12 +235,15 @@ def inspect_instance_storage(source: str) -> list[str]:
     expected_decoder = "let values = try decoder.container(keyedBy: CodingKeys.self)"
     expected_encoder = "var values = encoder.container(keyedBy: CodingKeys.self)"
     for mode, name, declaration in declarations:
-        field_type = declaration.split(" = ", 1)[0]
+        field_type = wrapped[name] + "?" if name in wrapped else declaration.split(" = ", 1)[0]
         optional = field_type.endswith("?")
         value_type = field_type[:-1] if optional else field_type
         suffix = name[0].upper() + name[1:]
         decode = f"{name} = try values.decode{'IfPresent' if optional else ''}({value_type}.self, forKey: .{name})"
-        encode = f"try values.encode{'IfPresent' if optional else ''}({name}, forKey: .{name})"
+        projection = name + ("!.value" if name in wrapped else "")
+        encode = f"try values.encode{'IfPresent' if optional else ''}({projection}, forKey: .{name})"
+        if name in wrapped:
+            decode = decode.replace(f"{name} = ", f"{name} = Field(") + ")"
         if mode == "let":
             expected_decoder += decode
         else:

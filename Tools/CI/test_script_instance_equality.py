@@ -84,6 +84,8 @@ class ScriptInstanceStorageInventoryTests(unittest.TestCase):
     def setUp(self):
         self.source = SOURCE.read_text()
         self.fields = inspect_instance_storage(self.source)
+        import re
+        self.wrapped = set(re.findall(r"^    var (\w+): Field<[^\n]+>\?", self.source, re.M))
         self.assertEqual(len(self.fields), 51)
 
     def changed(self, before, after):
@@ -100,6 +102,7 @@ class ScriptInstanceStorageInventoryTests(unittest.TestCase):
 
     def test_every_mutable_projection_requires_both_detaches(self):
         for field in self.fields[4:]:
+            field = field + ("!.value" if field in self.wrapped else "")
             for projection in [
                 f"      ensureUniqueStorage()\n      payload.{field} = newValue",
                 f"      ensureUniqueStorage()\n      yield &payload.{field}",
@@ -139,6 +142,32 @@ class ScriptInstanceStorageInventoryTests(unittest.TestCase):
             ("values.encodeIfPresent(suspension, forKey: .suspension)", "values.encode(suspension, forKey: .suspension)"),
         ]:
             with self.subTest(before=before), self.assertRaisesRegex(ValueError, "Codec"):
+                inspect_instance_storage(self.changed(before, after))
+
+
+    def test_default_constructor_and_each_field_initializer_are_required(self):
+        for name in self.wrapped:
+            helper = "initialize" + name[0].upper() + name[1:]
+            before = f"      {helper}()\n"
+            with self.subTest(field=name), self.assertRaisesRegex(ValueError, "Default construction"):
+                inspect_instance_storage(self.changed(before, ""))
+        with self.assertRaisesRegex(ValueError, "Clone allocation"):
+            inspect_instance_storage(self.changed(
+                "      self.digest = digest", "      self.digest = digest\n      initializeSavedGlassMeridian()"))
+
+    def test_child_handle_cannot_replace_the_original_logical_equality(self):
+        with self.assertRaisesRegex(ValueError, "logical field values"):
+            inspect_instance_storage(self.changed(
+                "lhs.savedGlassMeridian!.value == rhs.savedGlassMeridian!.value",
+                "lhs.savedGlassMeridian == rhs.savedGlassMeridian"))
+
+    def test_typed_field_cow_and_initialized_count_cannot_be_removed(self):
+        for before, after in [
+            ("_modify { yield &values[0] }", "_modify { fatalError() }"),
+            ("initializedCount = 1", "initializedCount = 0"),
+            ("initialize(from: source, count: 1)", "initialize(to: source.pointee)"),
+        ]:
+            with self.subTest(before=before), self.assertRaisesRegex(ValueError, "typed Array COW"):
                 inspect_instance_storage(self.changed(before, after))
 
 
