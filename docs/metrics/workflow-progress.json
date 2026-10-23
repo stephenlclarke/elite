@@ -8977,6 +8977,25 @@
       "completed_methods": 0,
       "retained_prior_individual_passes": 3,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:33:17.155133+00:00",
+      "checkpoint_key": "20261023-m01-161-162-163-assigned",
+      "event": "Three distinct demonstrated blockers assigned as one coherent focused packet",
+      "issues_in_order": [
+        163,
+        161,
+        162
+      ],
+      "developer": "G1",
+      "reviewer": "MBA",
+      "evidence": [
+        "current be90 saved normal IPS",
+        "older637b required quality artifact"
+      ],
+      "save_reopen_results": "started only; no pass",
+      "execution_policy": "one cached affected build; retain unaffected passes separately",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
