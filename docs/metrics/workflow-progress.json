@@ -8541,6 +8541,20 @@
       "reason": "samePRconcurrency older obsolete run blocks current required run; avoid redundant full cycle",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:11:57Z",
+      "checkpoint_key": "20261023-m01-current-quality-unblocked",
+      "event": "Superseded run cancellation completes; current required quality starts",
+      "superseded_run": 40006996339,
+      "superseded_result": "CANCELLED, not PASS",
+      "old_diagnostics_upload": "SUCCESS, retained metadata/logs",
+      "current_required_run": 40008995873,
+      "current_status": "in_progress",
+      "gate_weakened": false,
+      "candidate_changed": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
