@@ -1137,9 +1137,180 @@ public struct Controls: Sendable {
 }
 
 public struct Game: Sendable {
+  // Runtime snapshots are values. Array CoW copies the existing payload on first mutation;
+  // cloning never reinitializes epochs, random state or universe defaults.
+  private struct Values: Sendable {
+    var commanderStorage = [Commander()]
+    var systems = Universe.systemsIncludingPlugh()
+    var screen: Screen = .title
+    var paused = false
+    var isMissionTrial = false
+    var contractBoard = ContractBoardUI()
+    var scriptPledgeAdmission: ScriptPledgeAdmission?
+    var scriptCourierAdmission: ScriptCourierAdmission?
+    var trialTitle: String?
+    var trialDigest: String?
+    var trialSeed: UInt64?
+    var docked = true
+    var dockedAtMainStation = true
+    var scriptReferenceFrame: ScriptReferenceFrame?
+    var scriptDispatching = false
+    var scriptEventsDeferred = false
+    var scriptDurabilityAvailable = false
+    var pendingNewSaveDestination: URL?
+    var newCommanderSaveReceipt: CommanderFileReceipt?
+    var nativeStationRuntimeEpoch = UUID()
+    var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
+    var nativeOriginalSurveyRuntime: NativeOriginalSurveyRuntime?
+    var nativeGlassMeridianRuntime: NativeGlassMeridianRuntime?
+    var nativeFlightReceptionPending: NativeFlightReceptionPending?
+    var nativeMeasuredExtractionPending: NativeMeasuredExtractionPending?
+    var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending?
+    var nativeCrewLogPickupPending: NativeCrewLogPickupPending?
+    var nativeC01SurveyorPending: NativeC01SurveyorPending?
+    var nativeRecordRecoveryIdentificationPending: WayfarerRecordRecoveryIdentificationPending?
+    var nativeIdentifiedSalvagePending: NativeIdentifiedSalvagePending?
+    var nativeCrimboMotionSample: NativeCrimboMotionSample?
+    var nativeCrimboAttainedMotion: NativeCrimboAttainedMotion?
+    var nativeCrimboLifecycleAvailable = false
+    var nativeSalvageMotion: [SalvageLotIdentity: NativeSalvageMotion] = [:]
+    var nativeSalvageWreckMotion: [WreckIdentity: NativeSalvageWreckObservation] = [:]
+    var nativeSalvageWork: NativeSalvageHotWork?
+    var pendingNativeSalvageCollections: [NativeSalvageCollectionObservation] = []
+    var pendingNativeStationDock: NativeStationEntryProof?
+    var inductionArkDockPublicationPending = false
+    var inductionRescueDockPublicationPending = false
+    var inductionUtilityWorkRuntime = NativeInductionUtilityWorkRuntime()
+    var nativeStationDockEvidence: NativeStationDockEvidence?
+    var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
+    var scriptPacks: [ScriptPack] = []
+    var scriptAvailablePackDigest: String?
+    var scriptOffer: UUID?
+    var scriptPresentedDialogue: ScriptDialogue?
+    var scriptConfirmSelected = true
+    var scriptChoiceSelection = 0
+    var missionPacks = MissionPackLibrary.bundled
+    var packOffer: PackOffer?
+    var packOfferElapsed = 0.0
+    var packDialogScroll = 0
+    var blackjackOffer: BlackjackOffer?
+    var showroom = ShowroomState()
+    var galacticBrowse = GalaxyBrowseState()
+    var systemInspection: SystemInspection?
+    var rumourReturn: Screen = .status
+    var wantedSelection: ActorIdentity?
+    var wantedPlayerSelected = false
+    var wantedDetail = false
+    var wantedRumourDetail = false
+    var wantedScroll = 0
+    var wantedReadContext: WantedReadContext?
+    var blackjackReturn: Screen = .status
+    var screenHistory: [Screen] = []
+    var flightReturn: Screen = .front
+    var selectedSystem = 7
+    var selection = 0
+    var informationScroll = 0
+    var chartInformationScroll = 0
+    var bodies: [SpaceBody] = []
+    var miningFields: [MiningField] = []
+    var salvageSites: [SalvageSite] = []
+    var gameplayRevision: UInt64 = 0
+    var stationImpactRevision: UInt64?
+    var consumedMissionLaserEmission: UInt64 = 0
+    var salvageAdmissionGeometry: [String: PreparedSalvageAdmissionHull] = [:]
+    var starfield = Starfield()
+    var speed = 0.0
+    var pitch = 0.0
+    var roll = 0.0
+    var yaw = 0.0
+    var spin = SpinControl()
+    var autoPilot = AutoTargetControl()
+    var stationAutoDefence: StationAutoDefenceState?
+    var workTargetFilter: WorkTargetFilter = .ships
+    var workGuidance: FlightWorkGuidance?
+    var workBraking: FlightWorkBraking?
+    var workRecoveryRock: RockIdentity?
+    var workRecoveryAdmissionDeadline: Double?
+    var approvedWorkMotion: HullSceneMotion?
+    var lastAppliedWorkMotion: HullSceneMotion?
+    var plannedLegacyWorkMotion: [Int: HullSweepObstacle] = [:]
+    var workScenePlanned = false
+    var workFireSuspended = false
+    var flightTrigger = FlightTriggerState()
+    var selectedToolActivity: FlightToolActivity?
+    var flightWeaponDisplay = FlightWeaponDisplay(
+      weapon: "UNAVAILABLE", status: "SNAPSHOT REQUIRED")
+    var manualResidualFlight = false
+    var viewportWidth = 768.0
+    var viewportHeight = 768.0
+    var targetPanelExpanded: Bool?
+    var targetPanelScroll = 0
+    var weaponsTargetID: Int?
+    var secretScroll = 0
+    var energy = 256.0
+    var frontShield = 255.0
+    var rearShield = 255.0
+    var laserHeat = 0.0
+    var laserFlash = 0.0
+    var dischargeAudio = DischargeAudioState()
+    var gameplayCombatTrace: GameplayCombatTrace?
+    var altitude = 1.0
+    var celestials: [CelestialBody] = []
+    var solarScoopState: SolarScoopState = .inactive
+    var solarFuelRemainder = 0.0
+    var cabinTemperature = 0.0
+    var equipmentMount: LaserMount = .front
+    var equipmentWorkTool = false
+    var selectedFlightTool: FlightWorkTool = .combatLaser
+    var inventoryContextEpoch = InventoryContextEpoch()
+    var inventoryActionSelection = 0
+    var inventoryUpgradeChoice = 0
+    var dockingComputer = false
+    var missileArmed = false
+    var message = ""
+    var messageTime = 0.0
+    var jumpCountdown: Double? = nil
+    var time = 0.0
+    var scriptStartupTime: Double?
+    var secretBuffer = ""
+    var secretReturn: Screen = .status
+    var helpReturn: Screen = .title
+    var helpPage = 0
+    var gallery = MissionGalleryState()
+    var library = ScriptLibraryState()
+    var mapColour: MapColourMode = .economy
+    var mapZoom: MapZoom = .jump
+    var mapSearch = PlanetSearchState()
+    var navigationOptions: [RouteAlternative] = []
+    var navigationSelection = 0
+    var navigationScroll = 0
+    var navigationReturn: Screen = .chart
+    var missionNotice: MissionNotice?
+    var missionPage = 0
+    var missionClue: String?
+    var missionElapsed = 0.0
+    var fireCooldown = 0.0
+    var missionLoopCounter: UInt8 = 0
+    var missionSpawnDelay = 0
+    var enemyECMSource: Int?
+    var activeECMActivation: ECMActivationIdentity?
+    var ecmControl = ECMControl()
+    var retaliation = RetaliationControl()
+    var missileCooldown = 0.0
+    var nextBodyID = 10
+    var legacySimulationSpawnClock: Double?
+    var randomState: UInt64 = 0x45_4c49_5445
+
+    init() {}
+  }
+  private var valueStorage = [Values()]
+
   // Exactly one value lives in checked copy-on-write storage. Game copies retain independent
   // nested commander mutations without reserving the whole commander in every Game temporary.
-  private var commanderStorage = [Commander()]
+  private var commanderStorage: [Commander] {
+    _read { yield valueStorage[0].commanderStorage }
+    _modify { yield &valueStorage[0].commanderStorage }
+  }
   public var commander: Commander {
     _read { yield commanderStorage[0] }
     _modify { yield &commanderStorage[0] }
@@ -1401,27 +1572,83 @@ public struct Game: Sendable {
     }
     return eligible
   }
-  public var systems = Universe.systemsIncludingPlugh()
-  public var screen: Screen = .title
-  public var paused = false
-  public var isMissionTrial = false
-  public var contractBoard = ContractBoardUI()
-  var scriptPledgeAdmission: ScriptPledgeAdmission?
-  var scriptCourierAdmission: ScriptCourierAdmission?
-  public var trialTitle: String?
-  var trialDigest: String?
-  var trialSeed: UInt64?
-  public var docked = true
-  public var dockedAtMainStation = true
-  var scriptReferenceFrame: ScriptReferenceFrame?
-  var scriptDispatching = false
-  var scriptEventsDeferred = false
-  var scriptDurabilityAvailable = false
+  public var systems: [StarSystem] {
+    _read { yield valueStorage[0].systems }
+    _modify { yield &valueStorage[0].systems }
+  }
+  public var screen: Screen {
+    _read { yield valueStorage[0].screen }
+    _modify { yield &valueStorage[0].screen }
+  }
+  public var paused: Bool {
+    _read { yield valueStorage[0].paused }
+    _modify { yield &valueStorage[0].paused }
+  }
+  public var isMissionTrial: Bool {
+    _read { yield valueStorage[0].isMissionTrial }
+    _modify { yield &valueStorage[0].isMissionTrial }
+  }
+  public var contractBoard: ContractBoardUI {
+    _read { yield valueStorage[0].contractBoard }
+    _modify { yield &valueStorage[0].contractBoard }
+  }
+  var scriptPledgeAdmission: ScriptPledgeAdmission? {
+    _read { yield valueStorage[0].scriptPledgeAdmission }
+    _modify { yield &valueStorage[0].scriptPledgeAdmission }
+  }
+  var scriptCourierAdmission: ScriptCourierAdmission? {
+    _read { yield valueStorage[0].scriptCourierAdmission }
+    _modify { yield &valueStorage[0].scriptCourierAdmission }
+  }
+  public var trialTitle: String? {
+    _read { yield valueStorage[0].trialTitle }
+    _modify { yield &valueStorage[0].trialTitle }
+  }
+  var trialDigest: String? {
+    _read { yield valueStorage[0].trialDigest }
+    _modify { yield &valueStorage[0].trialDigest }
+  }
+  var trialSeed: UInt64? {
+    _read { yield valueStorage[0].trialSeed }
+    _modify { yield &valueStorage[0].trialSeed }
+  }
+  public var docked: Bool {
+    _read { yield valueStorage[0].docked }
+    _modify { yield &valueStorage[0].docked }
+  }
+  public var dockedAtMainStation: Bool {
+    _read { yield valueStorage[0].dockedAtMainStation }
+    _modify { yield &valueStorage[0].dockedAtMainStation }
+  }
+  var scriptReferenceFrame: ScriptReferenceFrame? {
+    _read { yield valueStorage[0].scriptReferenceFrame }
+    _modify { yield &valueStorage[0].scriptReferenceFrame }
+  }
+  var scriptDispatching: Bool {
+    _read { yield valueStorage[0].scriptDispatching }
+    _modify { yield &valueStorage[0].scriptDispatching }
+  }
+  var scriptEventsDeferred: Bool {
+    _read { yield valueStorage[0].scriptEventsDeferred }
+    _modify { yield &valueStorage[0].scriptEventsDeferred }
+  }
+  var scriptDurabilityAvailable: Bool {
+    _read { yield valueStorage[0].scriptDurabilityAvailable }
+    _modify { yield &valueStorage[0].scriptDurabilityAvailable }
+  }
   // Runtime-only destination ownership and acknowledgment; never encoded in Commander saves.
-  var pendingNewSaveDestination: URL?
-  var newCommanderSaveReceipt: CommanderFileReceipt?
-  var nativeStationRuntimeEpoch = UUID() {
-    didSet {
+  var pendingNewSaveDestination: URL? {
+    _read { yield valueStorage[0].pendingNewSaveDestination }
+    _modify { yield &valueStorage[0].pendingNewSaveDestination }
+  }
+  var newCommanderSaveReceipt: CommanderFileReceipt? {
+    _read { yield valueStorage[0].newCommanderSaveReceipt }
+    _modify { yield &valueStorage[0].newCommanderSaveReceipt }
+  }
+  var nativeStationRuntimeEpoch: UUID {
+    _read { yield valueStorage[0].nativeStationRuntimeEpoch }
+    set {
+      valueStorage[0].nativeStationRuntimeEpoch = newValue
       nativeOrbitalOutlookRuntime = .init()
       nativeOriginalSurveyRuntime = nil
       nativeGlassMeridianRuntime = nil
@@ -1433,162 +1660,583 @@ public struct Game: Sendable {
       nativeRecordRecoveryIdentificationPending = nil
       nativeIdentifiedSalvagePending = nil
     }
+    _modify {
+      var epoch = valueStorage[0].nativeStationRuntimeEpoch
+      defer { nativeStationRuntimeEpoch = epoch }
+      yield &epoch
+    }
   }
-  var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
-  var nativeOriginalSurveyRuntime: NativeOriginalSurveyRuntime?
-  var nativeGlassMeridianRuntime: NativeGlassMeridianRuntime?
-  var nativeFlightReceptionPending: NativeFlightReceptionPending?
-  var nativeMeasuredExtractionPending: NativeMeasuredExtractionPending?
-  var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending?
-  var nativeCrewLogPickupPending: NativeCrewLogPickupPending?
-  var nativeC01SurveyorPending: NativeC01SurveyorPending?
-  var nativeRecordRecoveryIdentificationPending: WayfarerRecordRecoveryIdentificationPending?
-  var nativeIdentifiedSalvagePending: NativeIdentifiedSalvagePending?
-  var nativeCrimboMotionSample: NativeCrimboMotionSample?
-  var nativeCrimboAttainedMotion: NativeCrimboAttainedMotion?
+  var nativeOrbitalOutlookRuntime: NativeOrbitalOutlookRuntime {
+    _read { yield valueStorage[0].nativeOrbitalOutlookRuntime }
+    _modify { yield &valueStorage[0].nativeOrbitalOutlookRuntime }
+  }
+  var nativeOriginalSurveyRuntime: NativeOriginalSurveyRuntime? {
+    _read { yield valueStorage[0].nativeOriginalSurveyRuntime }
+    _modify { yield &valueStorage[0].nativeOriginalSurveyRuntime }
+  }
+  var nativeGlassMeridianRuntime: NativeGlassMeridianRuntime? {
+    _read { yield valueStorage[0].nativeGlassMeridianRuntime }
+    _modify { yield &valueStorage[0].nativeGlassMeridianRuntime }
+  }
+  var nativeFlightReceptionPending: NativeFlightReceptionPending? {
+    _read { yield valueStorage[0].nativeFlightReceptionPending }
+    _modify { yield &valueStorage[0].nativeFlightReceptionPending }
+  }
+  var nativeMeasuredExtractionPending: NativeMeasuredExtractionPending? {
+    _read { yield valueStorage[0].nativeMeasuredExtractionPending }
+    _modify { yield &valueStorage[0].nativeMeasuredExtractionPending }
+  }
+  var nativeRecordRecoveryPending: WayfarerRecordRecoveryPending? {
+    _read { yield valueStorage[0].nativeRecordRecoveryPending }
+    _modify { yield &valueStorage[0].nativeRecordRecoveryPending }
+  }
+  var nativeCrewLogPickupPending: NativeCrewLogPickupPending? {
+    _read { yield valueStorage[0].nativeCrewLogPickupPending }
+    _modify { yield &valueStorage[0].nativeCrewLogPickupPending }
+  }
+  var nativeC01SurveyorPending: NativeC01SurveyorPending? {
+    _read { yield valueStorage[0].nativeC01SurveyorPending }
+    _modify { yield &valueStorage[0].nativeC01SurveyorPending }
+  }
+  var nativeRecordRecoveryIdentificationPending: WayfarerRecordRecoveryIdentificationPending? {
+    _read { yield valueStorage[0].nativeRecordRecoveryIdentificationPending }
+    _modify { yield &valueStorage[0].nativeRecordRecoveryIdentificationPending }
+  }
+  var nativeIdentifiedSalvagePending: NativeIdentifiedSalvagePending? {
+    _read { yield valueStorage[0].nativeIdentifiedSalvagePending }
+    _modify { yield &valueStorage[0].nativeIdentifiedSalvagePending }
+  }
+  var nativeCrimboMotionSample: NativeCrimboMotionSample? {
+    _read { yield valueStorage[0].nativeCrimboMotionSample }
+    _modify { yield &valueStorage[0].nativeCrimboMotionSample }
+  }
+  var nativeCrimboAttainedMotion: NativeCrimboAttainedMotion? {
+    _read { yield valueStorage[0].nativeCrimboAttainedMotion }
+    _modify { yield &valueStorage[0].nativeCrimboAttainedMotion }
+  }
   // Enabled only by G1 after supported native save/world/durability validation. Never saved.
-  var nativeCrimboLifecycleAvailable = false
-  var nativeSalvageMotion: [SalvageLotIdentity: NativeSalvageMotion] = [:]
-  var nativeSalvageWreckMotion: [WreckIdentity: NativeSalvageWreckObservation] = [:]
-  var nativeSalvageWork: NativeSalvageHotWork?
-  var pendingNativeSalvageCollections: [NativeSalvageCollectionObservation] = []
-  var pendingNativeStationDock: NativeStationEntryProof?
-  var inductionArkDockPublicationPending = false
-  var inductionRescueDockPublicationPending = false
-  var inductionUtilityWorkRuntime = NativeInductionUtilityWorkRuntime()
-  var nativeStationDockEvidence: NativeStationDockEvidence?
-  var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
-  public var scriptPacks: [ScriptPack] = []
-  public var scriptAvailablePackDigest: String?
-  public var scriptOffer: UUID?
-  public var scriptPresentedDialogue: ScriptDialogue?
-  public var scriptConfirmSelected = true
-  public var scriptChoiceSelection = 0
-  public var missionPacks = MissionPackLibrary.bundled
-  public var packOffer: PackOffer?
-  public var packOfferElapsed = 0.0
-  public var packDialogScroll = 0
-  public var blackjackOffer: BlackjackOffer?
-  public var showroom = ShowroomState()
-  public var galacticBrowse = GalaxyBrowseState()
-  public var systemInspection: SystemInspection?
-  public var rumourReturn: Screen = .status
-  var wantedSelection: ActorIdentity?
-  var wantedPlayerSelected = false
-  var wantedDetail = false
-  var wantedRumourDetail = false
-  var wantedScroll = 0
-  var wantedReadContext: WantedReadContext?
-  public var blackjackReturn: Screen = .status
-  var screenHistory: [Screen] = []
-  var flightReturn: Screen = .front
-  public var selectedSystem = 7
-  public var selection = 0
-  public var informationScroll = 0
-  public var chartInformationScroll = 0
+  var nativeCrimboLifecycleAvailable: Bool {
+    _read { yield valueStorage[0].nativeCrimboLifecycleAvailable }
+    _modify { yield &valueStorage[0].nativeCrimboLifecycleAvailable }
+  }
+  var nativeSalvageMotion: [SalvageLotIdentity: NativeSalvageMotion] {
+    _read { yield valueStorage[0].nativeSalvageMotion }
+    _modify { yield &valueStorage[0].nativeSalvageMotion }
+  }
+  var nativeSalvageWreckMotion: [WreckIdentity: NativeSalvageWreckObservation] {
+    _read { yield valueStorage[0].nativeSalvageWreckMotion }
+    _modify { yield &valueStorage[0].nativeSalvageWreckMotion }
+  }
+  var nativeSalvageWork: NativeSalvageHotWork? {
+    _read { yield valueStorage[0].nativeSalvageWork }
+    _modify { yield &valueStorage[0].nativeSalvageWork }
+  }
+  var pendingNativeSalvageCollections: [NativeSalvageCollectionObservation] {
+    _read { yield valueStorage[0].pendingNativeSalvageCollections }
+    _modify { yield &valueStorage[0].pendingNativeSalvageCollections }
+  }
+  var pendingNativeStationDock: NativeStationEntryProof? {
+    _read { yield valueStorage[0].pendingNativeStationDock }
+    _modify { yield &valueStorage[0].pendingNativeStationDock }
+  }
+  var inductionArkDockPublicationPending: Bool {
+    _read { yield valueStorage[0].inductionArkDockPublicationPending }
+    _modify { yield &valueStorage[0].inductionArkDockPublicationPending }
+  }
+  var inductionRescueDockPublicationPending: Bool {
+    _read { yield valueStorage[0].inductionRescueDockPublicationPending }
+    _modify { yield &valueStorage[0].inductionRescueDockPublicationPending }
+  }
+  var inductionUtilityWorkRuntime: NativeInductionUtilityWorkRuntime {
+    _read { yield valueStorage[0].inductionUtilityWorkRuntime }
+    _modify { yield &valueStorage[0].inductionUtilityWorkRuntime }
+  }
+  var nativeStationDockEvidence: NativeStationDockEvidence? {
+    _read { yield valueStorage[0].nativeStationDockEvidence }
+    _modify { yield &valueStorage[0].nativeStationDockEvidence }
+  }
+  var nativeMainStationDockEvidence: NativeMainStationDockEvidence? {
+    _read { yield valueStorage[0].nativeMainStationDockEvidence }
+    _modify { yield &valueStorage[0].nativeMainStationDockEvidence }
+  }
+  public var scriptPacks: [ScriptPack] {
+    _read { yield valueStorage[0].scriptPacks }
+    _modify { yield &valueStorage[0].scriptPacks }
+  }
+  public var scriptAvailablePackDigest: String? {
+    _read { yield valueStorage[0].scriptAvailablePackDigest }
+    _modify { yield &valueStorage[0].scriptAvailablePackDigest }
+  }
+  public var scriptOffer: UUID? {
+    _read { yield valueStorage[0].scriptOffer }
+    _modify { yield &valueStorage[0].scriptOffer }
+  }
+  public var scriptPresentedDialogue: ScriptDialogue? {
+    _read { yield valueStorage[0].scriptPresentedDialogue }
+    _modify { yield &valueStorage[0].scriptPresentedDialogue }
+  }
+  public var scriptConfirmSelected: Bool {
+    _read { yield valueStorage[0].scriptConfirmSelected }
+    _modify { yield &valueStorage[0].scriptConfirmSelected }
+  }
+  public var scriptChoiceSelection: Int {
+    _read { yield valueStorage[0].scriptChoiceSelection }
+    _modify { yield &valueStorage[0].scriptChoiceSelection }
+  }
+  public var missionPacks: MissionPackLibrary {
+    _read { yield valueStorage[0].missionPacks }
+    _modify { yield &valueStorage[0].missionPacks }
+  }
+  public var packOffer: PackOffer? {
+    _read { yield valueStorage[0].packOffer }
+    _modify { yield &valueStorage[0].packOffer }
+  }
+  public var packOfferElapsed: Double {
+    _read { yield valueStorage[0].packOfferElapsed }
+    _modify { yield &valueStorage[0].packOfferElapsed }
+  }
+  public var packDialogScroll: Int {
+    _read { yield valueStorage[0].packDialogScroll }
+    _modify { yield &valueStorage[0].packDialogScroll }
+  }
+  public var blackjackOffer: BlackjackOffer? {
+    _read { yield valueStorage[0].blackjackOffer }
+    _modify { yield &valueStorage[0].blackjackOffer }
+  }
+  public var showroom: ShowroomState {
+    _read { yield valueStorage[0].showroom }
+    _modify { yield &valueStorage[0].showroom }
+  }
+  public var galacticBrowse: GalaxyBrowseState {
+    _read { yield valueStorage[0].galacticBrowse }
+    _modify { yield &valueStorage[0].galacticBrowse }
+  }
+  public var systemInspection: SystemInspection? {
+    _read { yield valueStorage[0].systemInspection }
+    _modify { yield &valueStorage[0].systemInspection }
+  }
+  public var rumourReturn: Screen {
+    _read { yield valueStorage[0].rumourReturn }
+    _modify { yield &valueStorage[0].rumourReturn }
+  }
+  var wantedSelection: ActorIdentity? {
+    _read { yield valueStorage[0].wantedSelection }
+    _modify { yield &valueStorage[0].wantedSelection }
+  }
+  var wantedPlayerSelected: Bool {
+    _read { yield valueStorage[0].wantedPlayerSelected }
+    _modify { yield &valueStorage[0].wantedPlayerSelected }
+  }
+  var wantedDetail: Bool {
+    _read { yield valueStorage[0].wantedDetail }
+    _modify { yield &valueStorage[0].wantedDetail }
+  }
+  var wantedRumourDetail: Bool {
+    _read { yield valueStorage[0].wantedRumourDetail }
+    _modify { yield &valueStorage[0].wantedRumourDetail }
+  }
+  var wantedScroll: Int {
+    _read { yield valueStorage[0].wantedScroll }
+    _modify { yield &valueStorage[0].wantedScroll }
+  }
+  var wantedReadContext: WantedReadContext? {
+    _read { yield valueStorage[0].wantedReadContext }
+    _modify { yield &valueStorage[0].wantedReadContext }
+  }
+  public var blackjackReturn: Screen {
+    _read { yield valueStorage[0].blackjackReturn }
+    _modify { yield &valueStorage[0].blackjackReturn }
+  }
+  var screenHistory: [Screen] {
+    _read { yield valueStorage[0].screenHistory }
+    _modify { yield &valueStorage[0].screenHistory }
+  }
+  var flightReturn: Screen {
+    _read { yield valueStorage[0].flightReturn }
+    _modify { yield &valueStorage[0].flightReturn }
+  }
+  public var selectedSystem: Int {
+    _read { yield valueStorage[0].selectedSystem }
+    _modify { yield &valueStorage[0].selectedSystem }
+  }
+  public var selection: Int {
+    _read { yield valueStorage[0].selection }
+    _modify { yield &valueStorage[0].selection }
+  }
+  public var informationScroll: Int {
+    _read { yield valueStorage[0].informationScroll }
+    _modify { yield &valueStorage[0].informationScroll }
+  }
+  public var chartInformationScroll: Int {
+    _read { yield valueStorage[0].chartInformationScroll }
+    _modify { yield &valueStorage[0].chartInformationScroll }
+  }
   /// Mutable station stock is commander-owned and survives departure, save and reload.
   public var market: [MarketItem] {
     get { commander.originalMarkets.items(galaxy: commander.galaxy, system: currentSystem) }
     set { commander.originalMarkets.set(newValue, galaxy: commander.galaxy, system: currentSystem) }
   }
-  public var bodies: [SpaceBody] = []
-  public var miningFields: [MiningField] = []
-  public var salvageSites: [SalvageSite] = []
-  var gameplayRevision: UInt64 = 0
+  public var bodies: [SpaceBody] {
+    _read { yield valueStorage[0].bodies }
+    _modify { yield &valueStorage[0].bodies }
+  }
+  public var miningFields: [MiningField] {
+    _read { yield valueStorage[0].miningFields }
+    _modify { yield &valueStorage[0].miningFields }
+  }
+  public var salvageSites: [SalvageSite] {
+    _read { yield valueStorage[0].salvageSites }
+    _modify { yield &valueStorage[0].salvageSites }
+  }
+  var gameplayRevision: UInt64 {
+    _read { yield valueStorage[0].gameplayRevision }
+    _modify { yield &valueStorage[0].gameplayRevision }
+  }
   /// Actual contact disqualifies this physical frame from attained-motion credit.
-  var stationImpactRevision: UInt64?
+  var stationImpactRevision: UInt64? {
+    _read { yield valueStorage[0].stationImpactRevision }
+    _modify { yield &valueStorage[0].stationImpactRevision }
+  }
   // A laser capability is consumed synchronously in the same actor turn that emitted it.
   // Bounded and ephemeral: capabilities are never restored from a commander save.
-  var consumedMissionLaserEmission: UInt64 = 0
-  var salvageAdmissionGeometry: [String: PreparedSalvageAdmissionHull] = [:]
-  public var starfield = Starfield()
-  public var speed = 0.0
-  public var pitch = 0.0
-  public var roll = 0.0
-  public var yaw = 0.0
-  public var spin = SpinControl()
-  public var autoPilot = AutoTargetControl()
-  var stationAutoDefence: StationAutoDefenceState?
-  public var workTargetFilter: WorkTargetFilter = .ships
-  var workGuidance: FlightWorkGuidance?
-  var workBraking: FlightWorkBraking?
-  var workRecoveryRock: RockIdentity?
-  var workRecoveryAdmissionDeadline: Double?
-  var approvedWorkMotion: HullSceneMotion?
-  var lastAppliedWorkMotion: HullSceneMotion?
-  var plannedLegacyWorkMotion: [Int: HullSweepObstacle] = [:]
-  var workScenePlanned = false
-  var workFireSuspended = false
-  var flightTrigger = FlightTriggerState()
-  var selectedToolActivity: FlightToolActivity?
+  var consumedMissionLaserEmission: UInt64 {
+    _read { yield valueStorage[0].consumedMissionLaserEmission }
+    _modify { yield &valueStorage[0].consumedMissionLaserEmission }
+  }
+  var salvageAdmissionGeometry: [String: PreparedSalvageAdmissionHull] {
+    _read { yield valueStorage[0].salvageAdmissionGeometry }
+    _modify { yield &valueStorage[0].salvageAdmissionGeometry }
+  }
+  public var starfield: Starfield {
+    _read { yield valueStorage[0].starfield }
+    _modify { yield &valueStorage[0].starfield }
+  }
+  public var speed: Double {
+    _read { yield valueStorage[0].speed }
+    _modify { yield &valueStorage[0].speed }
+  }
+  public var pitch: Double {
+    _read { yield valueStorage[0].pitch }
+    _modify { yield &valueStorage[0].pitch }
+  }
+  public var roll: Double {
+    _read { yield valueStorage[0].roll }
+    _modify { yield &valueStorage[0].roll }
+  }
+  public var yaw: Double {
+    _read { yield valueStorage[0].yaw }
+    _modify { yield &valueStorage[0].yaw }
+  }
+  public var spin: SpinControl {
+    _read { yield valueStorage[0].spin }
+    _modify { yield &valueStorage[0].spin }
+  }
+  public var autoPilot: AutoTargetControl {
+    _read { yield valueStorage[0].autoPilot }
+    _modify { yield &valueStorage[0].autoPilot }
+  }
+  var stationAutoDefence: StationAutoDefenceState? {
+    _read { yield valueStorage[0].stationAutoDefence }
+    _modify { yield &valueStorage[0].stationAutoDefence }
+  }
+  public var workTargetFilter: WorkTargetFilter {
+    _read { yield valueStorage[0].workTargetFilter }
+    _modify { yield &valueStorage[0].workTargetFilter }
+  }
+  var workGuidance: FlightWorkGuidance? {
+    _read { yield valueStorage[0].workGuidance }
+    _modify { yield &valueStorage[0].workGuidance }
+  }
+  var workBraking: FlightWorkBraking? {
+    _read { yield valueStorage[0].workBraking }
+    _modify { yield &valueStorage[0].workBraking }
+  }
+  var workRecoveryRock: RockIdentity? {
+    _read { yield valueStorage[0].workRecoveryRock }
+    _modify { yield &valueStorage[0].workRecoveryRock }
+  }
+  var workRecoveryAdmissionDeadline: Double? {
+    _read { yield valueStorage[0].workRecoveryAdmissionDeadline }
+    _modify { yield &valueStorage[0].workRecoveryAdmissionDeadline }
+  }
+  var approvedWorkMotion: HullSceneMotion? {
+    _read { yield valueStorage[0].approvedWorkMotion }
+    _modify { yield &valueStorage[0].approvedWorkMotion }
+  }
+  var lastAppliedWorkMotion: HullSceneMotion? {
+    _read { yield valueStorage[0].lastAppliedWorkMotion }
+    _modify { yield &valueStorage[0].lastAppliedWorkMotion }
+  }
+  var plannedLegacyWorkMotion: [Int: HullSweepObstacle] {
+    _read { yield valueStorage[0].plannedLegacyWorkMotion }
+    _modify { yield &valueStorage[0].plannedLegacyWorkMotion }
+  }
+  var workScenePlanned: Bool {
+    _read { yield valueStorage[0].workScenePlanned }
+    _modify { yield &valueStorage[0].workScenePlanned }
+  }
+  var workFireSuspended: Bool {
+    _read { yield valueStorage[0].workFireSuspended }
+    _modify { yield &valueStorage[0].workFireSuspended }
+  }
+  var flightTrigger: FlightTriggerState {
+    _read { yield valueStorage[0].flightTrigger }
+    _modify { yield &valueStorage[0].flightTrigger }
+  }
+  var selectedToolActivity: FlightToolActivity? {
+    _read { yield valueStorage[0].selectedToolActivity }
+    _modify { yield &valueStorage[0].selectedToolActivity }
+  }
   /// Immutable presentation for the delivered runtime snapshot, prepared off the paint path.
-  public internal(set) var flightWeaponDisplay = FlightWeaponDisplay(
-    weapon: "UNAVAILABLE", status: "SNAPSHOT REQUIRED")
-  var manualResidualFlight = false
-  public var viewportWidth = 768.0
-  public var viewportHeight = 768.0
-  public var targetPanelExpanded: Bool?
-  public var targetPanelScroll = 0
-  public var weaponsTargetID: Int?
-  public var secretScroll = 0
-  public var energy = 256.0
-  public var frontShield = 255.0
-  public var rearShield = 255.0
-  public var laserHeat = 0.0
-  public var laserFlash = 0.0
-  public var dischargeAudio = DischargeAudioState()
-  var gameplayCombatTrace: GameplayCombatTrace?
-  public var altitude = 1.0
-  public var celestials: [CelestialBody] = []
-  public var solarScoopState: SolarScoopState = .inactive
-  var solarFuelRemainder = 0.0
-  public var cabinTemperature = 0.0
-  public var equipmentMount: LaserMount = .front
-  public var equipmentWorkTool = false
-  public var selectedFlightTool: FlightWorkTool = .combatLaser
-  public internal(set) var inventoryContextEpoch = InventoryContextEpoch()
-  public var inventoryActionSelection = 0
-  public var inventoryUpgradeChoice = 0
-  public var dockingComputer = false
-  public var missileArmed = false
-  public var message = ""
-  public var messageTime = 0.0
-  public var jumpCountdown: Double? = nil
-  public var time = 0.0
-  var scriptStartupTime: Double?
-  public var secretBuffer = ""
-  public var secretReturn: Screen = .status
-  public var helpReturn: Screen = .title
-  public var helpPage = 0
-  public var gallery = MissionGalleryState()
-  public var library = ScriptLibraryState()
-  public var mapColour: MapColourMode = .economy
-  public var mapZoom: MapZoom = .jump
-  public var mapSearch = PlanetSearchState()
-  public var navigationOptions: [RouteAlternative] = []
-  public var navigationSelection = 0
-  public var navigationScroll = 0
-  public var navigationReturn: Screen = .chart
-  public var missionNotice: MissionNotice?
-  public var missionPage = 0
-  public var missionClue: String?
-  public var missionElapsed = 0.0
-  var fireCooldown = 0.0
-  var missionLoopCounter: UInt8 = 0
-  var missionSpawnDelay = 0
+  public internal(set) var flightWeaponDisplay: FlightWeaponDisplay {
+    _read { yield valueStorage[0].flightWeaponDisplay }
+    _modify { yield &valueStorage[0].flightWeaponDisplay }
+  }
+  var manualResidualFlight: Bool {
+    _read { yield valueStorage[0].manualResidualFlight }
+    _modify { yield &valueStorage[0].manualResidualFlight }
+  }
+  public var viewportWidth: Double {
+    _read { yield valueStorage[0].viewportWidth }
+    _modify { yield &valueStorage[0].viewportWidth }
+  }
+  public var viewportHeight: Double {
+    _read { yield valueStorage[0].viewportHeight }
+    _modify { yield &valueStorage[0].viewportHeight }
+  }
+  public var targetPanelExpanded: Bool? {
+    _read { yield valueStorage[0].targetPanelExpanded }
+    _modify { yield &valueStorage[0].targetPanelExpanded }
+  }
+  public var targetPanelScroll: Int {
+    _read { yield valueStorage[0].targetPanelScroll }
+    _modify { yield &valueStorage[0].targetPanelScroll }
+  }
+  public var weaponsTargetID: Int? {
+    _read { yield valueStorage[0].weaponsTargetID }
+    _modify { yield &valueStorage[0].weaponsTargetID }
+  }
+  public var secretScroll: Int {
+    _read { yield valueStorage[0].secretScroll }
+    _modify { yield &valueStorage[0].secretScroll }
+  }
+  public var energy: Double {
+    _read { yield valueStorage[0].energy }
+    _modify { yield &valueStorage[0].energy }
+  }
+  public var frontShield: Double {
+    _read { yield valueStorage[0].frontShield }
+    _modify { yield &valueStorage[0].frontShield }
+  }
+  public var rearShield: Double {
+    _read { yield valueStorage[0].rearShield }
+    _modify { yield &valueStorage[0].rearShield }
+  }
+  public var laserHeat: Double {
+    _read { yield valueStorage[0].laserHeat }
+    _modify { yield &valueStorage[0].laserHeat }
+  }
+  public var laserFlash: Double {
+    _read { yield valueStorage[0].laserFlash }
+    _modify { yield &valueStorage[0].laserFlash }
+  }
+  public var dischargeAudio: DischargeAudioState {
+    _read { yield valueStorage[0].dischargeAudio }
+    _modify { yield &valueStorage[0].dischargeAudio }
+  }
+  var gameplayCombatTrace: GameplayCombatTrace? {
+    _read { yield valueStorage[0].gameplayCombatTrace }
+    _modify { yield &valueStorage[0].gameplayCombatTrace }
+  }
+  public var altitude: Double {
+    _read { yield valueStorage[0].altitude }
+    _modify { yield &valueStorage[0].altitude }
+  }
+  public var celestials: [CelestialBody] {
+    _read { yield valueStorage[0].celestials }
+    _modify { yield &valueStorage[0].celestials }
+  }
+  public var solarScoopState: SolarScoopState {
+    _read { yield valueStorage[0].solarScoopState }
+    _modify { yield &valueStorage[0].solarScoopState }
+  }
+  var solarFuelRemainder: Double {
+    _read { yield valueStorage[0].solarFuelRemainder }
+    _modify { yield &valueStorage[0].solarFuelRemainder }
+  }
+  public var cabinTemperature: Double {
+    _read { yield valueStorage[0].cabinTemperature }
+    _modify { yield &valueStorage[0].cabinTemperature }
+  }
+  public var equipmentMount: LaserMount {
+    _read { yield valueStorage[0].equipmentMount }
+    _modify { yield &valueStorage[0].equipmentMount }
+  }
+  public var equipmentWorkTool: Bool {
+    _read { yield valueStorage[0].equipmentWorkTool }
+    _modify { yield &valueStorage[0].equipmentWorkTool }
+  }
+  public var selectedFlightTool: FlightWorkTool {
+    _read { yield valueStorage[0].selectedFlightTool }
+    _modify { yield &valueStorage[0].selectedFlightTool }
+  }
+  public internal(set) var inventoryContextEpoch: InventoryContextEpoch {
+    _read { yield valueStorage[0].inventoryContextEpoch }
+    _modify { yield &valueStorage[0].inventoryContextEpoch }
+  }
+  public var inventoryActionSelection: Int {
+    _read { yield valueStorage[0].inventoryActionSelection }
+    _modify { yield &valueStorage[0].inventoryActionSelection }
+  }
+  public var inventoryUpgradeChoice: Int {
+    _read { yield valueStorage[0].inventoryUpgradeChoice }
+    _modify { yield &valueStorage[0].inventoryUpgradeChoice }
+  }
+  public var dockingComputer: Bool {
+    _read { yield valueStorage[0].dockingComputer }
+    _modify { yield &valueStorage[0].dockingComputer }
+  }
+  public var missileArmed: Bool {
+    _read { yield valueStorage[0].missileArmed }
+    _modify { yield &valueStorage[0].missileArmed }
+  }
+  public var message: String {
+    _read { yield valueStorage[0].message }
+    _modify { yield &valueStorage[0].message }
+  }
+  public var messageTime: Double {
+    _read { yield valueStorage[0].messageTime }
+    _modify { yield &valueStorage[0].messageTime }
+  }
+  public var jumpCountdown: Double? {
+    _read { yield valueStorage[0].jumpCountdown }
+    _modify { yield &valueStorage[0].jumpCountdown }
+  }
+  public var time: Double {
+    _read { yield valueStorage[0].time }
+    _modify { yield &valueStorage[0].time }
+  }
+  var scriptStartupTime: Double? {
+    _read { yield valueStorage[0].scriptStartupTime }
+    _modify { yield &valueStorage[0].scriptStartupTime }
+  }
+  public var secretBuffer: String {
+    _read { yield valueStorage[0].secretBuffer }
+    _modify { yield &valueStorage[0].secretBuffer }
+  }
+  public var secretReturn: Screen {
+    _read { yield valueStorage[0].secretReturn }
+    _modify { yield &valueStorage[0].secretReturn }
+  }
+  public var helpReturn: Screen {
+    _read { yield valueStorage[0].helpReturn }
+    _modify { yield &valueStorage[0].helpReturn }
+  }
+  public var helpPage: Int {
+    _read { yield valueStorage[0].helpPage }
+    _modify { yield &valueStorage[0].helpPage }
+  }
+  public var gallery: MissionGalleryState {
+    _read { yield valueStorage[0].gallery }
+    _modify { yield &valueStorage[0].gallery }
+  }
+  public var library: ScriptLibraryState {
+    _read { yield valueStorage[0].library }
+    _modify { yield &valueStorage[0].library }
+  }
+  public var mapColour: MapColourMode {
+    _read { yield valueStorage[0].mapColour }
+    _modify { yield &valueStorage[0].mapColour }
+  }
+  public var mapZoom: MapZoom {
+    _read { yield valueStorage[0].mapZoom }
+    _modify { yield &valueStorage[0].mapZoom }
+  }
+  public var mapSearch: PlanetSearchState {
+    _read { yield valueStorage[0].mapSearch }
+    _modify { yield &valueStorage[0].mapSearch }
+  }
+  public var navigationOptions: [RouteAlternative] {
+    _read { yield valueStorage[0].navigationOptions }
+    _modify { yield &valueStorage[0].navigationOptions }
+  }
+  public var navigationSelection: Int {
+    _read { yield valueStorage[0].navigationSelection }
+    _modify { yield &valueStorage[0].navigationSelection }
+  }
+  public var navigationScroll: Int {
+    _read { yield valueStorage[0].navigationScroll }
+    _modify { yield &valueStorage[0].navigationScroll }
+  }
+  public var navigationReturn: Screen {
+    _read { yield valueStorage[0].navigationReturn }
+    _modify { yield &valueStorage[0].navigationReturn }
+  }
+  public var missionNotice: MissionNotice? {
+    _read { yield valueStorage[0].missionNotice }
+    _modify { yield &valueStorage[0].missionNotice }
+  }
+  public var missionPage: Int {
+    _read { yield valueStorage[0].missionPage }
+    _modify { yield &valueStorage[0].missionPage }
+  }
+  public var missionClue: String? {
+    _read { yield valueStorage[0].missionClue }
+    _modify { yield &valueStorage[0].missionClue }
+  }
+  public var missionElapsed: Double {
+    _read { yield valueStorage[0].missionElapsed }
+    _modify { yield &valueStorage[0].missionElapsed }
+  }
+  var fireCooldown: Double {
+    _read { yield valueStorage[0].fireCooldown }
+    _modify { yield &valueStorage[0].fireCooldown }
+  }
+  var missionLoopCounter: UInt8 {
+    _read { yield valueStorage[0].missionLoopCounter }
+    _modify { yield &valueStorage[0].missionLoopCounter }
+  }
+  var missionSpawnDelay: Int {
+    _read { yield valueStorage[0].missionSpawnDelay }
+    _modify { yield &valueStorage[0].missionSpawnDelay }
+  }
   // Legacy callers share ECMControl's physical-time clock; there is no second countdown.
   var ecmFrames: Int {
     get { ecmControl.legacyFrames }
     set { ecmControl.setLegacyFrames(newValue) }
   }
-  var enemyECMSource: Int?
-  var activeECMActivation: ECMActivationIdentity?
-  public var ecmControl = ECMControl()
-  public var retaliation = RetaliationControl()
-  var missileCooldown = 0.0
-  var nextBodyID = 10
-  private var legacySimulationSpawnClock: Double?
-  private var randomState: UInt64 = 0x45_4c49_5445
+  var enemyECMSource: Int? {
+    _read { yield valueStorage[0].enemyECMSource }
+    _modify { yield &valueStorage[0].enemyECMSource }
+  }
+  var activeECMActivation: ECMActivationIdentity? {
+    _read { yield valueStorage[0].activeECMActivation }
+    _modify { yield &valueStorage[0].activeECMActivation }
+  }
+  public var ecmControl: ECMControl {
+    _read { yield valueStorage[0].ecmControl }
+    _modify { yield &valueStorage[0].ecmControl }
+  }
+  public var retaliation: RetaliationControl {
+    _read { yield valueStorage[0].retaliation }
+    _modify { yield &valueStorage[0].retaliation }
+  }
+  var missileCooldown: Double {
+    _read { yield valueStorage[0].missileCooldown }
+    _modify { yield &valueStorage[0].missileCooldown }
+  }
+  var nextBodyID: Int {
+    _read { yield valueStorage[0].nextBodyID }
+    _modify { yield &valueStorage[0].nextBodyID }
+  }
+  private var legacySimulationSpawnClock: Double? {
+    _read { yield valueStorage[0].legacySimulationSpawnClock }
+    _modify { yield &valueStorage[0].legacySimulationSpawnClock }
+  }
+  private var randomState: UInt64 {
+    _read { yield valueStorage[0].randomState }
+    _modify { yield &valueStorage[0].randomState }
+  }
   public init(executive: Bool = true) {
     energy = commander.performance.energy
     frontShield = commander.shieldCapacity
