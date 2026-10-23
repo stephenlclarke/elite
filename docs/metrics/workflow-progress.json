@@ -7104,6 +7104,66 @@
       "source_published": true,
       "usable_feature_delivery_claim": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T15:48:27Z",
+      "timestamp_scope": "Root recorded independently verified focused result/issue closure",
+      "checkpoint_key": "20261023-m01-courier-frame-focused-qualified",
+      "event": "Courier terminal frame fix and rollback checks qualify",
+      "closed_issues": [
+        143
+      ],
+      "head": "97819770c82e854651118bf6904ee26216989691",
+      "command": [
+        "swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-143-preflight-units.xml",
+        "--filter",
+        "(?:^|\\.)(?:acceptedCancellationRequiresItsOriginalStationContactAndReturnsOnlyItsOwnCargo|RRSCourierTests/(?:actualSystemOrGalaxyDepartureFailsExactlyOnce|failedAutonomousDepartureWriterKeepsPacketAndRetriesExactlyOnce))\\("
+      ],
+      "exit_code": 0,
+      "seconds": 261.8293277081102,
+      "published_identical_code_head": "e2f0498c558d28503c4f3d486a91a2efda830277",
+      "focused_methods": 3,
+      "authored_cases": 4,
+      "compile_seconds": 244.29,
+      "case_seconds": {
+        "original_cancellation": 10.408813,
+        "writer_rollback": 10.54018,
+        "departure_two_arguments": 10.876932
+      },
+      "independent_source_and_result_review": "MBA clear; completeXML0fail/error/skip, localSwift6.4.1scope",
+      "full524_or_quality_qualified": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false,
+      "next_action": "await actual current combined unit/requiredquality outcomes; no extra tests, media or build"
+    },
+    {
+      "at": "2026-10-23T15:58:22Z",
+      "checkpoint_key": "20261023-m01-audit-fixture-qualified-current-vm-signal-unresolved",
+      "event": "Audit fixture original regression passes; current combined VM signal remains under bounded investigation",
+      "closed_issues": [
+        145
+      ],
+      "open_blocker": 144,
+      "head": "6355088e395d7fd1a4c1cdacbaba83f4bcf0638a",
+      "focused_methods": 1,
+      "authored_cases": 1,
+      "seconds": 63.79276233399287,
+      "compile_seconds": 48.51,
+      "exit_code": 0,
+      "independent_review": "MBA source and complete original unit report clear",
+      "combined_run": 39980120332,
+      "combined_status": "failed SIGILL; cause unproved, sampled Kite location not attribution",
+      "required_quality_run": 39980129381,
+      "required_quality_status": "pending at observation",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false,
+      "next_action": "G1 bounded current-image diagnosis, MBA independent evidence review; preserve unaffected passes"
     }
   ],
   "two_developer_phase": {
