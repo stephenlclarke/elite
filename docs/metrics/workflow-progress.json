@@ -7625,6 +7625,32 @@
       "second_capture_assigned": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:31:17Z",
+      "checkpoint_key": "20261023-m01-system-reader-caller-correction-focused-run-active",
+      "event": "Concrete missed caller corrected after retained compiler-only failure; focused batch active",
+      "issue": 150,
+      "initial_head": "56f5283de1f91cf7f9481ecff91cdc0781fa8950",
+      "initial_result": {
+        "exit_code": 1,
+        "seconds": 19.002448624931276,
+        "phase": "compiler only; no test execution",
+        "cause": "remaining removed gameplaySystemIdentity call at finishGameplayContext349"
+      },
+      "corrected_head": "33343f8ac1901e102ee1a369d5bf125bd8623bf1",
+      "independent_source_review": "MBA revised diff clear, no removed-leaf refs, tests unchanged",
+      "focused_methods": 3,
+      "authored_cases": 11,
+      "process_ids_at_observation": [
+        54745,
+        54747
+      ],
+      "report_prefix": "/tmp/elite-150-stored-system-units",
+      "runtime_result": "pending",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
