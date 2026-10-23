@@ -93,3 +93,29 @@ unchanged. The settlement body moves unchanged into a static helper because
 it reads no Game state; the existing instance entry forwards to that helper.
 The rescue staging path calls the static helper directly. Focused writer and
 affected settlement qualification remain pending; no broad suite is claimed.
+
+
+## Focused qualification
+
+At source commit `1d7cfec2739d6152a4eb1b500b8899802b648000`, the unchanged
+writer-refusal method passed all six stage arguments in 18.411 seconds.
+Compilation and execution completed with exit 0 in 120.562300 seconds.
+Evidence: `/tmp/elite-140-staging-writer-units-result.json`,
+`/tmp/elite-140-staging-writer-units.log`, and
+`/tmp/elite-140-staging-writer-units-swift-testing.xml`.
+
+The same compiled image then passed the existing settlement method's eight
+scenarios with `--skip-build`: missing contract, complete, failed with and
+without refund, abandoned, already settled, cash limit and courier clock.
+The method completed in 8.644 seconds; the process exited 0 after 12.442915
+seconds. Evidence: `/tmp/elite-140-staging-settlement-units-result.json`,
+`/tmp/elite-140-staging-settlement-units.log`, and
+`/tmp/elite-140-staging-settlement-units-swift-testing.xml`.
+
+These are two methods and fourteen argument cases, not fourteen XML methods.
+The earlier classifier pass remains attributed to source `6a2b2071`; subsequent
+care, boarding, finish and settlement-only changes do not touch its acceptance
+and launch path. Earlier failures and diagnostic captures remain retained.
+No full isolated suite, native journey, M01, release or broad CI pass is claimed.
+The same-head automatic broad development run 39972292672 was cancelled as a
+duplicate; that cancellation is not a successful test result.
