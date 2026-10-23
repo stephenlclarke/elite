@@ -9991,6 +9991,24 @@
       "normal_fault_attribution": "unavailable",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T23:08:02.760852+00:00",
+      "checkpoint_key": "20261024-m01-364-current-typed-marker-boundary",
+      "event": "Published64de repair; current saved path identifies typed marker query boundary for coherent source-backed follow-up",
+      "head": "364bd29c066c233f7219e4df13f1e7cb9b04d5d9",
+      "source_head": "64de4321ab3a19fc18e699b3793b88c2ddb6590f",
+      "capture_seconds": 14.41792625,
+      "saved_slide": "0x111454000",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "scope": "Existing stored script-state Bool query with identical marker predicate and Commander delegation; no speculative body/context changes",
+      "cancel_requested": [
+        40037694283,
+        40036712726
+      ],
+      "required_quality_preserved": 40037697745,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
