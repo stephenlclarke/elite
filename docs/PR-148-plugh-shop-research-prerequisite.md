@@ -19,3 +19,15 @@ gate change is introduced.
 The two existing methods share one focused build with147's four methods.
 Execution is pending. This is not a full524, quality, native M01 or release
 qualification, and no cause is inferred for unrelated VM signal144.
+
+At source9b630d784cca708137cc71bc3ad492726ccc3d76 the combined six unchanged
+methods/six cases passed: complete XML with zero failures/errors/skips,
+compile227.02s, total278.959303s/exit0. Evidence:
+`/tmp/elite-147-148-preview-shop-units-result.json`, raw log and
+`/tmp/elite-147-148-preview-shop-units-swift-testing.xml`.
+Independent review cleared exact source and each affected criterion. This is
+local Swift6.4.1 qualification; full VM/required quality and144 remain separate.
+
+The two148 cases completed: generic shop/locked refusal11.229s and genuine
+research supply/paid receipt9.731s. Issue148 is closed on this affected scope;
+no product research, availability or price rule was weakened.

@@ -23,3 +23,15 @@ actual fit/store identity/history case and original valid/refused clinic-join
 case. Four methods/four cases are planned alongside the two148 shop/research
 methods in one affected build. No new test selector or wider equipment audit.
 Qualification is pending; full524/required quality/M01/release remain separate.
+
+At source9b630d784cca708137cc71bc3ad492726ccc3d76 the combined six unchanged
+methods/six cases passed: complete XML with zero failures/errors/skips,
+compile227.02s, total278.959303s/exit0. Evidence:
+`/tmp/elite-147-148-preview-shop-units-result.json`, raw log and
+`/tmp/elite-147-148-preview-shop-units-swift-testing.xml`.
+Independent review cleared exact source and each affected criterion. This is
+local Swift6.4.1 qualification; full VM/required quality and144 remain separate.
+
+The four147 cases completed: original scroll45.846s, pure rows9.006s,
+actual fit/store8.971s and valid/refused clinic joins9.043s. Issue147 is closed
+on this affected scope, with all original assertions retained.
