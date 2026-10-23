@@ -29,3 +29,11 @@ Records: `/tmp/elite-mba-e2-unit39980120332`,
 Issue144 remains unattributed. The next changed-fixture gate must retain all
 524 original selected methods; any successful result must not be relabelled
 as proof that145 causally repaired this signal.
+
+## Preserve module slides in future existing owned captures
+
+Current combined285/eb5 evidence confirms the saved owned-capture image list retains UUIDs/paths but omits load addresses/slides. When no matching normal report exists, raw game PCs cannot be authoritatively mapped from those records. No mapping may be guessed from old captures, current processes or unproven main offsets. This is an evidence completeness defect; it does not establish the cause of historical SIGILL or current SIGBUS, or imply they share a cause.
+
+Add only the standard image-list offset flag to the existing fault-output command: image list -o -u -f. Local LLDB help confirms -o emits the image load offset from its base file address (slide). Keep the same minimal thread/frame formats, UUID/path metadata, first-fault observation, identity matching, detach/cleanup, capture count/budget and original exit status. Update the existing protocol fixture expectation and run existing capture tests. No new workflow, target run, probe, replay or Swift source change is introduced; old captures remain unchanged and cannot gain missing information retroactively. Issue144 remains open and unattributed.
+
+The existing capture suites passed70 tests (unittest0.155seconds; wrapper0.281966667seconds/exit0) with tool blob050d3716acf4eaa8aba7334a1e4dc01310c7de22 and protocol fixture98288f6fe6a694f9b43ea9bfd30eea29c0a151ec. Receipts `/tmp/elite-m01-capture-metadata-tests` retain command/log/result. No Swift/game test or new diagnostic target ran for this metadata correction.

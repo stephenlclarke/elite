@@ -395,7 +395,7 @@ class OwnedFaultStackTests(unittest.TestCase):
             self.assertLess(calls.index(command), calls.index('thread backtrace all -c 64'))
         self.assertTrue(result['handedBack'])
         self.assertIn('register read', calls)
-        self.assertIn('image list -u -f', calls)
+        self.assertIn('image list -o -u -f', calls)
 
     def test_format_refusal_stops_before_attachment_or_default_backtrace(self):
         result, calls = self.run_session('format-refusal')

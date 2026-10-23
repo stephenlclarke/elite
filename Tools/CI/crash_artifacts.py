@@ -319,7 +319,7 @@ def run_owned_fault_session(debugger, identity_path, session_path, cancel_path):
                     for thread in process)
                 result['status'] = 'fault-captured' if fatal else 'unexpected-stop'
                 if fatal:
-                    for command in ('thread backtrace all -c 64', 'register read', 'image list -u -f'):
+                    for command in ('thread backtrace all -c 64', 'register read', 'image list -o -u -f'):
                         output = lldb.SBCommandReturnObject()
                         debugger.GetCommandInterpreter().HandleCommand(command, output)
                         print(command, flush=True)
