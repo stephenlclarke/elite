@@ -20,3 +20,17 @@ method. UUID1E03F81D-24C7-3509-B1C3-268EF67F6E23/PID16093, fault0x17051ffd0
 and SP0x17051ffb0 lie in guard0x17051c000-0x170520000. Retained capture:
 `/tmp/elite-112-4334-diagnostic`. This is current-image attribution, not an
 assumed recurrence of the earlier utility marker frame.
+
+Atd2d31c1a, compilation86.77seconds passed and the original check exited
+signal10 after100.325seconds, zero completions. Its actual selected thread14
+(PID22584/UUIDA8BDD177-0B96-33D8-841B-124059C95F42) enters ArkSave.arkClaimsValid
+through Commander/event/rescue acceptance. Fault0x170637fa0 and SP0x170637f80
+lie in guard0x170634000-0x170638000. Capture:
+`/tmp/elite-112-d2d3-diagnostic`; no previous-frame recurrence is assumed.
+
+Source and static emitted-code inspection of this same path also identify a
+whole Commander copy in validateScriptEventCommander before the policy walk:
+metadata/dynamic stack allocation and CommanderVWOc at0x731d674. The existing
+safe-read callback still emitted a copy, so merely renaming a borrow would not
+address it. Static records: `/tmp/elite-112-validateScriptEventCommander-prologue.txt`
+and `/tmp/elite-112-arkClaimsValid-prologue.txt`.
