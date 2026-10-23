@@ -9137,6 +9137,17 @@
       "completed_methods": 0,
       "fault_scope": "admissions+636, no exact branch/field",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:55:25.246652+00:00",
+      "checkpoint_key": "20261023-m01-161-payload-carrier-reviewed-run",
+      "event": "Conditional admission buffers and retained job carrier correction reviewed; affected execution active",
+      "head": "a63d79b1",
+      "issue": 161,
+      "reviewed_blob": "701c09f319f593a8c8c63fe397ffd9fc4be24c2a",
+      "methods": 4,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
