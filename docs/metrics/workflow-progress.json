@@ -7726,6 +7726,27 @@
       "current_head": "ec333d904d8a607aed8a6f06883b464d341bc113",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:39:50Z",
+      "checkpoint_key": "20261023-m01-admission-two-phase-focused-run-active",
+      "event": "Minimal encounter admission correction committed and independently reviewed; focused batch active",
+      "issue": 151,
+      "head": "d5d6da32556fd73578d6ac081453927a56780d06",
+      "source_blob": "6e93b40a24c4c790795beb5d84d432de50713b40",
+      "independent_source_review": "MBA exact amended two-phase diff clear, original nonemptybody unchanged",
+      "superseded_review_proposal": "8d1a1082 three-phase/eight-case proposal; not current execution/qualification",
+      "focused_methods": 6,
+      "authored_cases": 6,
+      "process_ids_at_observation": [
+        68785,
+        68787
+      ],
+      "report_prefix": "/tmp/elite-151-admission-lifetimes-units",
+      "runtime_result": "pending",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
