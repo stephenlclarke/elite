@@ -9779,6 +9779,17 @@
       "reason": "Prior saved capture omitted module load offsets and cannot be reliably symbolised",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:44:08.164228+00:00",
+      "checkpoint_key": "20261023-m01-b611-media-offset-published",
+      "event": "Qualified media freshness and diagnostic offset repair published in same M01 packet",
+      "head": "b611d932d19f7b6147913c11109fc0c16541a170",
+      "root_snapshot": "dbda3e5f77038bc3f45af414911f85bd60fcf92c",
+      "game_source_unchanged": true,
+      "pr": 25,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
