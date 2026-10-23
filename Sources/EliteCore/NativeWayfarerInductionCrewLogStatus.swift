@@ -6,7 +6,8 @@ public struct NativeInductionCrewLogSelectionFacts: Sendable, Equatable {
 }
 
 extension Game {
-  func inductionCrewLogFacts(_ body: SpaceBody) -> NativeInductionCrewLogSelectionFacts? {
+  @inline(never)
+  func inductionCrewLogFacts(_ body: borrowing SpaceBody) -> NativeInductionCrewLogSelectionFacts? {
     guard inductionCrewLogRecorder(body) != nil else { return nil }
     return inductionCrewLogFactsAfterRecorder()
   }
@@ -19,10 +20,17 @@ extension Game {
       fits: commander.tradeCargoCapacity - commander.cargoTonnes >= 1)
   }
 
-  func inductionCrewLogMetadata(_ body: SpaceBody) -> SalvageTargetMetadata? {
-    guard inductionCrewLogFacts(body) != nil,
-      let mesh = inductionCrewLogCompatibleMesh(body)
-    else { return nil }
+  @inline(never)
+  func inductionCrewLogMetadata(_ body: borrowing SpaceBody) -> SalvageTargetMetadata? {
+    guard inductionCrewLogFacts(body) != nil else { return nil }
+    return inductionCrewLogMetadataAfterFacts(body)
+  }
+
+  @inline(never)
+  private func inductionCrewLogMetadataAfterFacts(_ body: borrowing SpaceBody)
+    -> SalvageTargetMetadata?
+  {
+    guard let mesh = inductionCrewLogCompatibleMesh(copy body) else { return nil }
     return .init(
       category: .cargo, ownership: .missionProtected, claimant: nil,
       wreck: nil, section: nil, lot: nil,

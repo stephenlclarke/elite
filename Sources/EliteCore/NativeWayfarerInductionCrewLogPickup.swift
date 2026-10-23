@@ -44,14 +44,15 @@ extension Game {
   }
 
   /// Exact current native address and owning retained alias, never a selected name or serial alone.
-  func inductionCrewLogRecorder(_ body: SpaceBody) -> ScriptOwnedActor? {
+  @inline(never)
+  func inductionCrewLogRecorder(_ body: borrowing SpaceBody) -> ScriptOwnedActor? {
     guard let job = NativeInductionCrewLogPack.markerJob(body) else { return nil }
     return inductionCrewLogRecorderAtMarkerAddress(body, job: job)
   }
 
   // Body-only refusal must finish before entering any Commander-reading frame.
   @inline(never)
-  private func inductionCrewLogRecorderAtMarkerAddress(_ body: SpaceBody, job: UUID)
+  private func inductionCrewLogRecorderAtMarkerAddress(_ body: borrowing SpaceBody, job: UUID)
     -> ScriptOwnedActor?
   {
     guard withReadOnlyCommander({ NativeInductionCrewLogPack.marker(job: job, commander: $0) })
@@ -61,7 +62,8 @@ extension Game {
 
   // Ordinary targets must reject before reserving the full present-validation frame.
   @inline(never)
-  private func inductionCrewLogRecorderAfterMarker(_ body: SpaceBody) -> ScriptOwnedActor? {
+  private func inductionCrewLogRecorderAfterMarker(_ body: borrowing SpaceBody) -> ScriptOwnedActor?
+  {
     guard let child = inductionCrewLogChild, child.outcome == .active, child.suspension == nil,
       let state = child.savedNativeCrewLog, state.admission != nil, state.capture == nil,
       !state.losses.contains(where: { $0.role == "recorder" }),
@@ -80,7 +82,7 @@ extension Game {
         NativeInductionCrewLogSource.recorderModel: NativeInductionCrewLogSource.recorderGeometry
       ]
     else { return nil }
-    original.body = body
+    original.body = copy body
     return original
   }
 
