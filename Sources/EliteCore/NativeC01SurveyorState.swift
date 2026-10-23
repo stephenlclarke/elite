@@ -175,7 +175,8 @@ enum NativeC01Surveyor {
       source.visit > state.permission.dock.actor.visit,
       source.physicalTime >= (state.readings.map { $0.reading.end }.max() ?? .infinity)
     else { return false }
-    return captureShapeValid(state) && lossShapeValid(state)
+    guard captureShapeValid(state) else { return false }
+    return lossShapeValid(state)
   }
 
   // Keep capture and loss payload temporaries out of the common validation frame.

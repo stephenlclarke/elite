@@ -26,3 +26,8 @@ completed methods and unfinished XML. That result has no new fault stack and
 is not assumed to reproduce an identical frame. The existing captured shape
 boundary remains the source-supported repair target; no second diagnostic
 replay was performed.
+
+The first helper-split head2eb32553 failed compilation in17.028seconds: the
+right-hand autoclosure of `&&` consumed the borrowed state. No tests ran at that
+head. Replace that expression with an explicit capture guard and loss return,
+preserving left-to-right short-circuit behaviour without an autoclosure.
