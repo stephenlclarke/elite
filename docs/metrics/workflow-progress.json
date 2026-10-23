@@ -8157,6 +8157,25 @@
       "not_test_qualification": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:23:54Z",
+      "checkpoint_key": "20261023-m01-crew-log-retry-npc-fixture-source-clear",
+      "event": "Retry absence lifetime and exact NPC identity fixture implemented and reviewed",
+      "issues": [
+        151,
+        154
+      ],
+      "reviewed_blobs": {
+        "CrewLogPickup.swift": "d12e86924e28d02a5a44cbe441b0dff0de47f249",
+        "GameplayOrdnanceRuntimeTests.swift": "9a2a9a998603fa42e42749d4b4d92a5e7b620c97"
+      },
+      "source_review": "MBA CLEAR: original full present guards/order retained, exact NPC ownership/damage/resource oracles retained",
+      "selected_methods": 4,
+      "authored_cases": 4,
+      "runtime_result": "pending",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
