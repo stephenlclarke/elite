@@ -1,0 +1,11 @@
+# feat(fleet): bind original Serval Fighter military hull
+
+SH041 now resolves to the original Serval Fighter instead of the historical F63 Condor runtime refit. It uses the authored 18t hold, 5t expansion, speed42.3, acceleration13.4, energy360, shield300, 12-LY tank, 8-LY drive, seven pylons, four laser facings and 262,000CR price. Military classification, technology-nine blueprint rules and retained uncommon natural placement in galaxies one, two and eight remain intact.
+
+The physical contract authenticates exact specification/model identities, hashes, source path and declared metres. Every vertex supplies native bounds and origin-based clearance. Physical/player meshes preserve unnormalized geometry and complete material/UV assignments; raw assets and historical profile fields remain unchanged. The shared role/fit projection is reused unchanged, with only exact-ID and native player registrations added. No discovery, ownership, equipment, blueprint, allegiance or passenger berth is granted.
+
+Five new component methods cover source/negative cases, original mechanics/history and unchanged hulls, complete physical/player appearance, military/placement/access and earlier-role policy, plus standard fit and malformed-input refusal. All415 parent methods remain and five are added, for420. Six Python report fixtures, Swift syntax parsing, strict formatting, Markdown and whitespace checks pass. Own/corrected parent player routes were explicitly checked in source. Actual Swift execution and independent review are pending; parsing is not a unit pass.
+
+README consolidates the accumulated development-hull descriptions into one comparison table, using the same approved original fields and retained fabrication tiers. Source contracts, historical retention and acceptance limits stay explicit; no media changes.
+
+This packet stacks on Zebu50833456 with reviewed current Mac runner configuration. Retarget after the parent merges using normal development merge commits to preserve tested ancestry. It implements the physical prerequisite and runtime/source portion of [M04.H041](ISSUE-original-serval-fighter.md). M14 anchors, actual flight/docking and full hull acceptance remain open. No GUI/performance journey, broad coverage/sanitizer/leak gate or usable release is claimed. Source assets are unchanged.
