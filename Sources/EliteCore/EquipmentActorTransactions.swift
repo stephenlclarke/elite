@@ -180,16 +180,7 @@ extension Game {
         let berth = try confirmPassengerBerth(passengerCabinQuote(grade))
         receipt = .purchase(item: item.name, physicalItem: berth, fitted: true)
       } else if item.name == "Fuel" {
-        guard equipmentAvailable(item), commander.availableCredits >= context.price else {
-          throw ShopRefusal(.unavailable)
-        }
-        var planned = commander
-        planned.fuel = commander.fuelCapacity
-        if !commander.unlimitedCash { planned.credits -= context.price }
-        try planned.recordNavigationTradeFuelPurchase(before: commander, paid: context.price)
-        guard planned.valid else { throw ShopRefusal(.invalidState) }
-        commander = planned
-        receipt = .purchase(item: item.name, physicalItem: nil, fitted: true)
+        receipt = try performFuelPurchase(item, price: context.price)
       } else {
         let quote = try quoteEquipmentPurchase(item)
         let fitted = try applyEquipmentPurchase(quote)
@@ -221,6 +212,22 @@ extension Game {
     }
     notify(refusal.message)
     return .refused(refusal)
+  }
+
+  @inline(never)
+  private mutating func performFuelPurchase(_ item: Equipment, price: Int) throws
+    -> EquipmentMutationReceipt
+  {
+    guard equipmentAvailable(item), commander.availableCredits >= price else {
+      throw ShopRefusal(.unavailable)
+    }
+    var planned = commander
+    planned.fuel = commander.fuelCapacity
+    if !commander.unlimitedCash { planned.credits -= price }
+    try planned.recordNavigationTradeFuelPurchase(before: commander, paid: price)
+    guard planned.valid else { throw ShopRefusal(.invalidState) }
+    commander = planned
+    return .purchase(item: item.name, physicalItem: nil, fitted: true)
   }
 }
 

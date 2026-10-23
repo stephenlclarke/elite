@@ -104,7 +104,7 @@ extension Commander {
       } else {
         provenance = legacy ? .legacyUnknown : .standard
       }
-      let component = try migratedComponent(node: node, name: name, id: id)
+      let component = try Self.migratedComponent(node: node, name: name, id: id)
       let originalAlias =
         name == Equipment.legacyDockingComputer
         || (name == TargetingTier.docking.equipmentName
@@ -193,7 +193,8 @@ extension Commander {
     savedEquipmentVersion = 3
   }
 
-  func migratedComponent(node: EquipmentNodeID, name: String, id: UUID) throws
+  @inline(never)
+  static func migratedComponent(node: EquipmentNodeID, name: String, id: UUID) throws
     -> ComponentInstance?
   {
     guard let definition = EquipmentRuntimeCatalog.definition(for: node.family) else { return nil }

@@ -19,7 +19,7 @@ enum PreDriveCommanderSaveFixture {
     for (name, slot) in fittings {
       let node = try #require(EquipmentRuntimeCatalog.node(for: name))
       let id = UUID()
-      let component = try commander.migratedComponent(node: node, name: name, id: id)
+      let component = try Commander.migratedComponent(node: node, name: name, id: id)
       items.append(
         .init(
           id: id, node: node,

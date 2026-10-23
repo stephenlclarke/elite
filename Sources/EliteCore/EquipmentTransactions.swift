@@ -6,7 +6,8 @@ enum EquipmentRuntimeError: Error, Equatable {
 
 /// The simulation owns the trusted offer and complete pre-mutation commander binding.
 /// A later Save remains explicit; this transaction never chooses an autosave destination.
-struct EquipmentRuntimePurchaseQuote: Sendable {
+/// Immutable heap storage keeps both complete Commander bindings off active caller frames.
+final class EquipmentRuntimePurchaseQuote: Sendable {
   let source: Commander
   let prepared: Commander
   let item: Equipment
@@ -16,6 +17,22 @@ struct EquipmentRuntimePurchaseQuote: Sendable {
   let location: ComponentFittingLocation?
   let request: EquipmentPurchaseRequest
   let purchase: EquipmentPurchaseQuote
+
+  init(
+    source: Commander, prepared: Commander, item: Equipment, mount: LaserMount,
+    workTool: Bool, shop: String, location: ComponentFittingLocation?,
+    request: EquipmentPurchaseRequest, purchase: EquipmentPurchaseQuote
+  ) {
+    self.source = source
+    self.prepared = prepared
+    self.item = item
+    self.mount = mount
+    self.workTool = workTool
+    self.shop = shop
+    self.location = location
+    self.request = request
+    self.purchase = purchase
+  }
 }
 
 extension Commander {
@@ -150,6 +167,7 @@ extension Commander {
 }
 
 extension Game {
+  @inline(never)
   func quoteEquipmentPurchase(_ item: Equipment) throws -> EquipmentRuntimePurchaseQuote {
     guard stationAllowsEquipmentServices, equipmentAvailable(item),
       let authoritative = Equipment.all.first(where: { $0.name == item.name }),
@@ -158,6 +176,13 @@ extension Game {
     else { throw EquipmentRuntimeError.unavailable }
     var prepared = commander
     try prepared.prepareEquipment()
+    return try preparedEquipmentPurchaseQuote(item, node: node, commander: prepared)
+  }
+
+  @inline(never)
+  private func preparedEquipmentPurchaseQuote(
+    _ item: Equipment, node: EquipmentNodeID, commander prepared: Commander
+  ) throws -> EquipmentRuntimePurchaseQuote {
     let history = prepared.equipmentPurchaseHistory!
     let location = try equipmentPurchaseLocation(node, commander: prepared)
     let newID = UUID()

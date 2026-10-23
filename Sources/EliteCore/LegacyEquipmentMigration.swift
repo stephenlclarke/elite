@@ -62,7 +62,7 @@ extension Commander {
       let slot = item.fittedSlot?.canonicalSlot
       return .init(
         id: item.id, node: node, provenance: provenance,
-        component: try migratedComponent(node: node, name: item.kind.name, id: item.id),
+        component: try Self.migratedComponent(node: node, name: item.kind.name, id: item.id),
         location: slot.map { .init(hullInstanceID: hull, slot: $0) },
         boundHull: item.kind == .module("Large Cargo Bay") ? hull : nil,
         preferredSlot: preferred,
@@ -98,7 +98,7 @@ extension Commander {
         let identity = allocatingItemIDs()
         foundation = .init(
           id: identity, node: node, provenance: .standard,
-          component: try migratedComponent(node: node, name: name, id: identity))
+          component: try Self.migratedComponent(node: node, name: name, id: identity))
         items.append(foundation)
       }
       let location = ComponentFittingLocation(hullInstanceID: hull, slot: slot)
