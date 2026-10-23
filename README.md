@@ -500,7 +500,7 @@ Station Gossip includes **Most Wanted**, a current-galaxy board of up to ten act
 
 ### Original hull bindings in development
 
-These original runtime bindings preserve their complete source assets and historical profiles. Each retains its blueprint and fabrication requirements; this table grants no ownership or equipment. SH025's existing original binding also remains intact.
+These original runtime bindings preserve their complete source assets and historical profiles. Purchase restrictions remain intact: blueprint hulls require fabrication, while Eagle Cruiser is not for sale. This table grants no ownership or equipment. SH025's existing original binding also remains intact.
 
 | ID | Hull | Role | Cargo (t) | Drive (LY) | Pylons | Fabrication tech |
 | --- | --- | --- | ---: | ---: | ---: | ---: |
@@ -521,6 +521,7 @@ These original runtime bindings preserve their complete source assets and histor
 | SH036 | Zebu | Trader | 58 | 11 | 5 | 6 |
 | SH041 | Serval Fighter | Military | 18 | 8 | 7 | 9 |
 | SH042 | Saker | Military | 16 | 10 | 7 | 7 |
+| SH043 | Eagle Cruiser | Military | 172 | 7 | 10 | Not for sale |
 | SH061 | Haflinger | Trader | 78 | 9 | 5 | 5 |
 
 Physical/player meshes use each approved metre contract, independently of Showroom normalization. Haflinger retains its approved 20-metres-per-source-unit calibration. Impala Voyager's authored placement remains pending and adds no natural spawn. Per-hull decal anchors, actual flight/docking acceptance and full release qualification remain pending. These development bindings remain outside the linked preview/release; per-PR reviews/checks and later hull acceptance are separate.
