@@ -8505,6 +8505,24 @@
       "old_d2d0_quality": "separate existing job; no blocking publication wait",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:08:58Z",
+      "checkpoint_key": "20261023-m01-practice-owner-a49f-published",
+      "event": "Qualified practice ownership correction published; new final-head gates dispatched",
+      "head": "a49f5d836a8bce64b0e56d91fdfcb14740d529ac",
+      "qualified_code_head": "74bf5eca2c072ff4432ba1e1f9e0eaba8aab9988",
+      "root_snapshot": "72a8184119687664d2148d691542ba114f4f67d8",
+      "independent_composition_review": "MBA CLEAR, zero code/test/tool/workflowdiff",
+      "push_vm_run": 40008985885,
+      "required_quality_run": 40008995873,
+      "dependency_review_run": 40008995870,
+      "dependency_review_result": "SUCCESS",
+      "nonrequired_duplicate_run": 40008995883,
+      "final_head_result": "pending",
+      "old_d2d0_failure": "retained, scoped156corrected",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
