@@ -117,6 +117,22 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH031"))
   }
 
+  static let pantherExplorer: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH032") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH032"))
+  }
+
+  static let pantherScout: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH033") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH033"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -228,6 +244,15 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH032", "SH033":
+      guard let approved = OriginalPantherFamilyActivation.registration(for: definition.id),
+        definition.name == approved.name, definition.role == approved.role.rawValue,
+        definition.sourceSHA256 == approved.specificationSHA256,
+        model.coordinateUnits == "metres", model.sourcePath == approved.modelPath,
+        model.sourceSHA256 == approved.modelSHA256
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH029":
       guard definition.name == "Burro",
         definition.sourceSHA256
@@ -305,6 +330,8 @@ extension CatalogueShip {
     case "SH027": result = OriginalHullPhysicalContract.ibex
     case "SH030": result = OriginalHullPhysicalContract.sparrowhawk
     case "SH031": result = OriginalHullPhysicalContract.kiteInterceptor
+    case "SH032": result = OriginalHullPhysicalContract.pantherExplorer
+    case "SH033": result = OriginalHullPhysicalContract.pantherScout
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil
