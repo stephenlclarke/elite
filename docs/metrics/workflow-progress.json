@@ -7989,6 +7989,30 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:01:40Z",
+      "checkpoint_key": "20261023-m01-flight-projection-active-workshop-queued",
+      "event": "Current original-mission projection corrected; separate demonstrated workshop failure queued",
+      "issue": 151,
+      "prior_head": "318d6c30f74a2cf9324397ecc1c1057ede67c76b",
+      "prior_result": "FAILED: four admission methods PASS, original mission incomplete/SIGBUS",
+      "prior_process_seconds": 101.679151,
+      "prior_build_seconds": 86.6,
+      "head_prefix": "49e3e4f2",
+      "source_review": "MBA clear; direct typed flight child and unchanged default",
+      "focused_methods": 3,
+      "authored_cases": 7,
+      "observed_process_ids": [
+        98450,
+        98452
+      ],
+      "runtime_result": "pending",
+      "queued_issue": 153,
+      "required_quality_run": 39996239357,
+      "required_quality_result": "FAILURE",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
