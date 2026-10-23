@@ -9790,6 +9790,22 @@
       "pr": 25,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:45:40.743009+00:00",
+      "checkpoint_key": "20261023-m01-b611-composition-and-unattributed-reused-unit-failure",
+      "event": "Published media/logger composition verified; normal unit failure reuses exact previous binary and lacks fault report",
+      "head": "b611d932d19f7b6147913c11109fc0c16541a170",
+      "run_id": 40035395171,
+      "conclusion": "failure",
+      "build_seconds": 0.89,
+      "binary_reused": true,
+      "image_sha256": "64460dea2e9be39704c2c13bbf9273a98939ce034ff7f49218cb96968fe0fb0c",
+      "methods_completed": 0,
+      "matching_crash_reports": 0,
+      "composition_review": "clear",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
