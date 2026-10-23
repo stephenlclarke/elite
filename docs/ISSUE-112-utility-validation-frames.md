@@ -60,3 +60,21 @@ any test ran: Swift requires owned optional values for the header's binding
 and reservation phase's forced member projection. Keep the common readonly
 borrow, and make each required copy explicit inside its own header/reservation
 leaf. Those temporaries remain outside the capacity phase's common frame.
+
+
+At c3b7a743 the writer-only check compiled successfully in 65.28 seconds,
+then exited with signal 10 after 87.806661 seconds. No writer case completed.
+The retained current-image capture selected PID 56603/thread 4, image UUID
+06C74F7C-4D32-3FEB-8E77-47C6AD6CFF04. SP 0x170493670 and fault
+0x170493690 lie in guard 0x170490000-0x170494000. The actual path reaches
+Game.commander.read through originalRescueFinishRevision, finishOriginalRescue
+and closeOriginalRescueTransfer. This is a new finish-path attribution, not
+recurrence of the boarding frame or evidence of a settlement semantic defect.
+Evidence: `/tmp/elite-140-owned-leaves-writer-units-result.json` and
+`/tmp/elite-140-c3b7-writer-diagnostic`. Diagnostic completion is not a test pass.
+
+The bounded finish correction obtains the revision before entering a separate
+noninline helper containing the unchanged cause/stage/committed/publication
+sequence. Dedicated addressable Commander readers preserve the header, dock
+and no-held-person checks in their original order. Settlement staging and its
+atomic candidate are unchanged. Focused writer qualification remains pending.

@@ -593,6 +593,13 @@ extension Game {
   @inline(never)
   mutating func finishOriginalRescue(outcome: ScriptOutcome, operation: UUID) throws {
     let revision = try originalRescueFinishRevision(outcome)
+    try finishOriginalRescueAtRevision(outcome: outcome, operation: operation, revision: revision)
+  }
+
+  @inline(never)
+  private mutating func finishOriginalRescueAtRevision(
+    outcome: ScriptOutcome, operation: UUID, revision: UInt64
+  ) throws {
     let cause = Self.scriptEventContext(in: self, revision: revision)
     let (previous, mission, sequence) = try stageOriginalRescueFinish(outcome, operation: operation)
     let committed = Self.scriptEventContext(in: self, revision: mission.revision)
@@ -601,24 +608,45 @@ extension Game {
   }
 
   @inline(never)
-  private func originalRescueFinishRevision(_ outcome: ScriptOutcome) throws -> UInt64 {
+  private mutating func originalRescueFinishRevision(_ outcome: ScriptOutcome) throws -> UInt64 {
+    let revision = try Self.originalRescueFinishHeaderRevision(&commander)
+    if outcome == .complete || outcome == .abandoned {
+      guard nativeMainStationDockEvidenceIsCurrent,
+        Self.originalRescueFinishDockMatches(&commander, outcome: outcome)
+      else { throw SaveError.invalidCommander }
+    }
+    guard Self.originalRescueFinishHasNoHeldPeople(&commander) else {
+      throw SaveError.invalidCommander
+    }
+    return revision
+  }
+
+  @inline(never)
+  private static func originalRescueFinishHeaderRevision(_ commander: inout Commander) throws
+    -> UInt64
+  {
     guard let custody = commander.nativePeople, let state = custody.originalRescue,
       state.terminalOperation == nil,
       let mission = commander.scriptState.instances[state.mission], mission.outcome == .active,
       commander.scriptState.nextEvent < UInt64.max - 1, mission.revision < UInt64.max
     else { throw SaveError.invalidCommander }
-    if outcome == .complete || outcome == .abandoned {
-      guard nativeMainStationDockEvidenceIsCurrent,
-        let dock = commander.nativeStations?.currentMainDock,
-        outcome == .complete
-          ? NativeOriginalRescueJourney.destinationMatches(dock)
-          : NativeOriginalRescueJourney.sourceMatches(dock)
-      else { throw SaveError.invalidCommander }
-    }
-    guard !custody.held.contains(where: { $0.person.rescue != nil }) else {
-      throw SaveError.invalidCommander
-    }
     return mission.revision
+  }
+
+  @inline(never)
+  private static func originalRescueFinishDockMatches(
+    _ commander: inout Commander, outcome: ScriptOutcome
+  ) -> Bool {
+    guard let dock = commander.nativeStations?.currentMainDock else { return false }
+    return outcome == .complete
+      ? NativeOriginalRescueJourney.destinationMatches(dock)
+      : NativeOriginalRescueJourney.sourceMatches(dock)
+  }
+
+  @inline(never)
+  private static func originalRescueFinishHasNoHeldPeople(_ commander: inout Commander) -> Bool {
+    guard let custody = commander.nativePeople else { return false }
+    return !custody.held.contains(where: { $0.person.rescue != nil })
   }
 
   @inline(never)
