@@ -5952,6 +5952,23 @@
       "whole_hull_complete": false,
       "merged": false,
       "usable_delivered": false
+    },
+    {
+      "at": "2026-10-23T10:16:40.370390+00:00",
+      "event": "Gyrfalcon Assault runtime and declared-unit contract pushed",
+      "ledger_id": "M04.H002.runtime",
+      "physical_contract": "M04.P02.H002",
+      "pr": 120,
+      "head": "e8ec44d794fd0aeb2fea64f7b1af52b25324d49e",
+      "new_component_methods_written": 5,
+      "selected_methods": 362,
+      "source_review": "MBA assigned",
+      "unit_status": "pending",
+      "has_merged_local_runner_routing": true,
+      "whole_hull_complete": false,
+      "merged": false,
+      "usable_delivered": false,
+      "integration_deferred": true
     }
   ],
   "two_developer_phase": {
