@@ -9700,6 +9700,18 @@
       "sanitizers_started": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:28:38.841000+00:00",
+      "checkpoint_key": "20261023-m01-285-duplicate-unit-cancellation-request",
+      "event": "Requested cancellation of same-head nonrequired duplicate PR unit workflow",
+      "head": "285cfce657b24ea201ff812dfdaa09bd31b473ba",
+      "duplicate_run": 40033454844,
+      "retained_authoritative_run": 40033448991,
+      "cancellation_requested": true,
+      "cancellation_terminal_verified": false,
+      "count_as_pass": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
