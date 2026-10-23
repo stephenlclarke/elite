@@ -8635,6 +8635,23 @@
       "completed_save_reload_proof": "unestablished, no method terminalPASS",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:42:16Z",
+      "checkpoint_key": "20261023-m01-practice-mesh-157-source-clear",
+      "event": "Practice mesh lifetime and meaningful existing regression extensions source-reviewed",
+      "issue": 157,
+      "reviewed_blobs": {
+        "NativePractice": "14fb81c02089262590f9dccb1d0e2f3679e4a7f4",
+        "tests": "141e0430d5a266ebb4dc2c7e40ac663068dd3f06"
+      },
+      "source_review": "MBA CLEAR: one full reservation scan, exact hit timing/defaults, nil refusal, mesh after projection",
+      "selected_methods": 3,
+      "authored_cases": 3,
+      "new_selector": false,
+      "runtime_result": "pending",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
