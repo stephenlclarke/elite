@@ -165,7 +165,9 @@ extension Game {
       if value != commander.scriptState.savedFleetDiscovery {
         commander.scriptState.savedFleetDiscovery = value
       }
-    } catch { /* A refused observation grants no collection or fabrication entitlement. */  }
+    } catch {
+      // A refused observation grants no collection or fabrication entitlement.
+    }
   }
 
   mutating func observeSelectedFleetDiscovery() {
@@ -198,19 +200,28 @@ extension Game {
         death: nil, mainDock: nil, secondaryDock: nil))
   }
 
+  @inline(never)
   mutating func observeFleetDestruction(
     _ death: DeathSettlement?, target: GameplayHitTarget?, context: EncounterContext
   ) {
-    guard let death, death.owner == context.player.identity, case .body(let bodyID) = target,
-      let body = bodies.first(where: { $0.id == bodyID }),
+    guard let death, death.owner == context.player.identity, case .body(let bodyID) = target
+    else { return }
+    observePlayerFleetDestruction(death, bodyID: bodyID, context: context)
+  }
+
+  @inline(never)
+  private mutating func observePlayerFleetDestruction(
+    _ death: DeathSettlement, bodyID: Int, context: EncounterContext
+  ) {
+    guard let body = bodies.first(where: { $0.id == bodyID }),
       body.energy <= 0, body.physical?.identity == death.victim,
-      let id = fleetShip(body, context: context), let owner = commander.equipmentOwnerID
+      let id = fleetShip(body, context: context), let owner = storedEquipmentOwnerID()
     else { return }
     recordFleetEvidence(
       .init(
         owner: owner, ship: id, kind: .playerDestruction,
         actor: death.victim, player: context.player.identity,
-        physicalTime: commander.flightSimulation.physicalTime,
+        physicalTime: storedFlightSimulation().physicalTime,
         death: death, mainDock: nil, secondaryDock: nil))
   }
 
