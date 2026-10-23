@@ -8798,6 +8798,22 @@
       "runtime_savings": "not yet observed",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T20:07:44Z",
+      "checkpoint_key": "20261023-m01-older-5acd-quality-failed-triage-assigned",
+      "event": "Superseded quality finishes failure before cancellation; sole evidence triage assigned",
+      "head": "5acd5aae7cfab78a371f961f65a15913df8036a3",
+      "run": 40013975536,
+      "result": "FAILURE, not CANCELLED",
+      "cause": "not yet attributed",
+      "reviewer": "MBA sole artifact classification and actual save-reopen method outcomes",
+      "current_head": "637b49519bd4b7b64a6afd24ece0e2a85f98220f",
+      "current_quality_run": 40016592456,
+      "current_run_untouched": true,
+      "game_source_unchanged_by_158": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
