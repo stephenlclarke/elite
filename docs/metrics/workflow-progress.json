@@ -9896,6 +9896,18 @@
       "attribution": "unattributed",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:56:57.375009+00:00",
+      "checkpoint_key": "20261023-m01-75-marker-published-current-evidence-assigned",
+      "event": "Reviewed marker repair and failed receipt published; exact composition verified; one changed-image evidence capture assigned",
+      "head": "75eec9bfb4f66ba5ead1602265d9c4c7b178162d",
+      "game_source_head": "feab1bcb1d34cad994d3a74012ff33abc122d723",
+      "root_snapshot": "c9d24ec7e513fc740f013c8c604fc9df2038cd24",
+      "composition_review": "clear",
+      "capture_scope": "One existing built changed image/default runtime/same affected selection/skip-build/owned first fault",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
