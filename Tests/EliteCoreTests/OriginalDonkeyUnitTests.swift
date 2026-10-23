@@ -61,9 +61,11 @@ struct OriginalDonkeyUnitTests {
             ? "historical-project-refit-v1" : profile.group))
     }
     for other in ShipCatalogue.all
-    where !["SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH029", "SH061"]
-      .contains(
-        other.id)
+    where ![
+      "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH061",
+    ]
+    .contains(
+      other.id)
     {
       #expect(other == (try retained(other.id)))
     }
@@ -101,8 +103,8 @@ struct OriginalDonkeyUnitTests {
     let ship = try #require(ShipCatalogue.ship("SH018"))
     let policy = ship.catalogue
     #expect(
-      policy.family == "donkey" && policy.primaryRole == .leisure
-        && policy.primaryType == .leisure)
+      policy.family == "donkey" && policy.primaryRole == .trader
+        && policy.primaryType == .trader)
     #expect(policy.roleWeights == [.init(role: .trader, weight: 1)])
     #expect(policy.purchasePolicy == .blueprintFabrication && policy.minimumBuildTechLevel == 5)
     #expect(policy.access == .normal && policy.collectionMilestone == .blueprintAndFabrication)
@@ -126,7 +128,9 @@ struct OriginalDonkeyUnitTests {
     }
     #expect(
       OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id)
-        == ["SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH029", "SH061"])
+        == [
+          "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH061",
+        ])
   }
 
   @Test func originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings() throws {

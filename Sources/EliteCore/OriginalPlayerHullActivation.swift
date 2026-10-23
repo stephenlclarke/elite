@@ -13,6 +13,7 @@ enum OriginalPlayerHullActivation {
     case "SH012": return try OriginalSableLinerActivation.resolve(retained)
     case "SH018": return try OriginalDonkeyActivation.resolve(retained)
     case "SH019": return try OriginalGazelleExplorerActivation.resolve(retained)
+    case "SH027": return try OriginalIbexActivation.resolve(retained)
     case "SH029": return try OriginalBurroActivation.resolve(retained)
     case "SH061": return try OriginalHaflingerActivation.resolve(retained)
     default: return retained

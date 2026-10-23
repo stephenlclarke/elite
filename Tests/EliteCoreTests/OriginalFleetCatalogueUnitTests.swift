@@ -21,7 +21,10 @@ struct OriginalFleetCatalogueUnitTests {
       #expect(
         lookup.integrationBlockers == record.integrationBlockers
           && lookup.runtimeReady
-            == ["SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH029", "SH061"]
+            == [
+              "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029",
+              "SH061",
+            ]
             .contains(
               record.id)
       )
