@@ -344,4 +344,52 @@ struct ScriptInstanceStorageTests {
     #expect(actorInstance.payloads["supplied"] == nil && actorInstance.journal.isEmpty)
   }
 
+  @Test(arguments: ["absent", "populated"])
+  func fieldBuffersDetachLargeNestedValuesAndKeepRetainedNilAndCodec(scenario: String) throws {
+    enum Expected: Error { case stop }
+    var original = storedInstance()
+    if scenario == "populated" {
+      let fixture = NativeGlassMeridianUnitTests()
+      var glass = try fixture.fixture()
+      glass.readings = [
+        try fixture.sealed(glass, ordinal: 0), try fixture.sealed(glass, ordinal: 1, start: 22),
+      ]
+      original.savedGlassMeridian = glass
+    }
+    let retained = original
+    let ownedChild = original.savedGlassMeridian
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+    let bytes = try encoder.encode(original)
+    var changed = original
+    changed.contract?.settled = true
+    changed.contract?.settlementAmount = 100
+    #expect(changed.savedGlassMeridian == ownedChild)
+    #expect(original.contract?.settled == false && original.contract?.settlementAmount == nil)
+    func clearReadingsThenThrow(_ child: inout NativeGlassMeridianState?) throws {
+      child?.readings.removeAll()
+      throw Expected.stop
+    }
+    #expect(throws: Expected.self) { try clearReadingsThenThrow(&changed.savedGlassMeridian) }
+    if scenario == "populated" {
+      #expect(changed.savedGlassMeridian?.readings.isEmpty == true)
+      #expect(original.savedGlassMeridian?.readings.count == 2)
+      #expect(ownedChild?.readings.count == 2 && retained.savedGlassMeridian == ownedChild)
+      var ownedMutation = ownedChild
+      ownedMutation?.readings.removeAll()
+      #expect(ownedMutation != ownedChild && original.savedGlassMeridian == ownedChild)
+    } else {
+      #expect(changed.savedGlassMeridian == nil && original.savedGlassMeridian == nil)
+    }
+    changed.savedGlassMeridian = nil
+    #expect(changed.savedGlassMeridian == nil)
+    #expect(original == retained)
+    #expect(try encoder.encode(retained) == bytes)
+    #expect(try JSONDecoder().decode(ScriptInstance.self, from: bytes) == original)
+    let fields = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(retained)) as? [String: Any])
+    #expect((fields["savedGlassMeridian"] != nil) == (scenario == "populated"))
+    #expect(fields["payload"] == nil && fields["storage"] == nil && fields["values"] == nil)
+  }
+
 }

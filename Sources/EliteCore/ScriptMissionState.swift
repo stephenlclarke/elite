@@ -49,6 +49,35 @@ public struct ScriptDialogue: Codable, Sendable, Equatable {
   public var revision: UInt64
 }
 private struct ScriptInstanceValue: Codable, Sendable, Equatable {
+  // Each large optional value has its own standard Array COW buffer. Parent cloning
+  // shares these small handles; only mutation of that field detaches its initialized value.
+  private struct Field<Value: Sendable>: Sendable {
+    private final class InitialNil {
+      var value: Value?
+    }
+    private var values: [Value?]
+
+    init() {
+      // This fresh, unshared heap slot supplies nil without a child-sized value argument.
+      // Only this constructor takes inout access; shared source fields are always read only.
+      let initial = InitialNil()
+      values = withUnsafePointer(to: &initial.value) { source in
+        Array(unsafeUninitializedCapacity: 1) { destination, initializedCount in
+          destination.baseAddress!.initialize(from: source, count: 1)
+          initializedCount = 1
+        }
+      }
+    }
+
+    init(_ value: consuming Value?) { values = [consume value] }
+
+    var value: Value? {
+      _read { yield values[0] }
+      set { values[0] = newValue }
+      _modify { yield &values[0] }
+    }
+  }
+
   // The payload never escapes. Distinct instance values share only read access; every
   // mutable projection detaches before yielding. Actor ownership still serializes simulation.
   private final class Storage: @unchecked Sendable {
@@ -59,33 +88,33 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     var data: ScriptValue = .object([:])
     var savedCollections: [String: ScriptCollection]?
     var savedCampaignChildren: [String: ScriptChildBinding]?
-    var campaignParent: ScriptChildBinding?
+    var campaignParent: Field<ScriptChildBinding>?
     var savedCampaignReceiptScopes: [String: String]?
     var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]?
     var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
-    var completionReceipt: ScriptCompletionReceipt?
-    var savedProviderContract: ScriptProviderContractState?
-    var savedOwnedCargo: ScriptOwnedCargoState?
+    var completionReceipt: Field<ScriptCompletionReceipt>?
+    var savedProviderContract: Field<ScriptProviderContractState>?
+    var savedOwnedCargo: Field<ScriptOwnedCargoState>?
     var savedWayfarerColdChain: WayfarerColdChainCustody?
     var savedWayfarerRepairLoop: WayfarerRepairLoopCustody?
     var savedFieldRelief: WayfarerFieldReliefCustody?
-    var savedNavigationTrade: ScriptNavigationTradeState?
-    var savedOriginalSurvey: NativeOriginalSurveyState?
-    var savedGlassMeridian: NativeGlassMeridianState?
-    var savedArkReserve: NativeInductionArkReserve?
-    var savedArkRecovery: NativeArkRecoveryReceipt?
+    var savedNavigationTrade: Field<ScriptNavigationTradeState>?
+    var savedOriginalSurvey: Field<NativeOriginalSurveyState>?
+    var savedGlassMeridian: Field<NativeGlassMeridianState>?
+    var savedArkReserve: Field<NativeInductionArkReserve>?
+    var savedArkRecovery: Field<NativeArkRecoveryReceipt>?
     var savedNativeArk: NativeInductionArkState?
-    var savedNativeCrewLog: NativeInductionCrewLogState?
-    var savedNativeInductionUtility: NativeInductionUtilityState?
+    var savedNativeCrewLog: Field<NativeInductionCrewLogState>?
+    var savedNativeInductionUtility: Field<NativeInductionUtilityState>?
     var savedNativeInductionClinic: NativeInductionClinicContract?
     var savedNativeInductionWorkshop: NativeInductionWorkshopContract?
     var savedNativeInductionSeed: NativeInductionSeedContract?
     var savedWayfarerInduction: NativeWayfarerInductionState?
-    var savedFlightReception: NativeFlightReceptionState?
-    var savedMeasuredExtraction: NativeMeasuredExtractionState?
-    var savedRecordRecovery: WayfarerRecordRecoveryState?
-    var savedIdentifiedSalvage: NativeIdentifiedSalvageState?
-    var courier: ScriptCourierCustody?
+    var savedFlightReception: Field<NativeFlightReceptionState>?
+    var savedMeasuredExtraction: Field<NativeMeasuredExtractionState>?
+    var savedRecordRecovery: Field<WayfarerRecordRecoveryState>?
+    var savedIdentifiedSalvage: Field<NativeIdentifiedSalvageState>?
+    var courier: Field<ScriptCourierCustody>?
     var pledgeReceiptID: UUID?
     var receiptJoins: [String: [UUID]]?
     var outcome: ScriptOutcome = .active
@@ -97,25 +126,138 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     var milestones: Set<Int> = []
     var payloads: [String: Int] = [:]
     var timers: [String: ScriptTimer] = [:]
-    var dialogue: ScriptDialogue?
+    var dialogue: Field<ScriptDialogue>?
     var journal: [String] = []
-    var contract: ScriptContractJob?
+    var contract: Field<ScriptContractJob>?
     var savedGearIssues: [String: ScriptGearIssue]?
     var savedOwnedEncounters: [String: ScriptOwnedEncounter]?
     var randomState: UInt64 = 0x45_4c49_5445
 
-    init(id: UUID, definition: String, version: String, digest: String) {
+    private init(emptyID id: UUID, definition: String, version: String, digest: String) {
       self.id = id
       self.definition = definition
       self.version = version
       self.digest = digest
     }
 
-    // Allocate the destination first, then copy one field per returned helper frame.
+    convenience init(id: UUID, definition: String, version: String, digest: String) {
+      self.init(emptyID: id, definition: definition, version: version, digest: digest)
+      initializeCampaignParent()
+      initializeCompletionReceipt()
+      initializeSavedProviderContract()
+      initializeSavedOwnedCargo()
+      initializeSavedNavigationTrade()
+      initializeSavedOriginalSurvey()
+      initializeSavedGlassMeridian()
+      initializeSavedArkReserve()
+      initializeSavedArkRecovery()
+      initializeSavedNativeCrewLog()
+      initializeSavedNativeInductionUtility()
+      initializeSavedFlightReception()
+      initializeSavedMeasuredExtraction()
+      initializeSavedRecordRecovery()
+      initializeSavedIdentifiedSalvage()
+      initializeCourier()
+      initializeDialogue()
+      initializeContract()
+    }
+
+    @inline(never)
+    private func initializeCampaignParent() {
+      campaignParent = Field<ScriptChildBinding>()
+    }
+
+    @inline(never)
+    private func initializeCompletionReceipt() {
+      completionReceipt = Field<ScriptCompletionReceipt>()
+    }
+
+    @inline(never)
+    private func initializeSavedProviderContract() {
+      savedProviderContract = Field<ScriptProviderContractState>()
+    }
+
+    @inline(never)
+    private func initializeSavedOwnedCargo() {
+      savedOwnedCargo = Field<ScriptOwnedCargoState>()
+    }
+
+    @inline(never)
+    private func initializeSavedNavigationTrade() {
+      savedNavigationTrade = Field<ScriptNavigationTradeState>()
+    }
+
+    @inline(never)
+    private func initializeSavedOriginalSurvey() {
+      savedOriginalSurvey = Field<NativeOriginalSurveyState>()
+    }
+
+    @inline(never)
+    private func initializeSavedGlassMeridian() {
+      savedGlassMeridian = Field<NativeGlassMeridianState>()
+    }
+
+    @inline(never)
+    private func initializeSavedArkReserve() {
+      savedArkReserve = Field<NativeInductionArkReserve>()
+    }
+
+    @inline(never)
+    private func initializeSavedArkRecovery() {
+      savedArkRecovery = Field<NativeArkRecoveryReceipt>()
+    }
+
+    @inline(never)
+    private func initializeSavedNativeCrewLog() {
+      savedNativeCrewLog = Field<NativeInductionCrewLogState>()
+    }
+
+    @inline(never)
+    private func initializeSavedNativeInductionUtility() {
+      savedNativeInductionUtility = Field<NativeInductionUtilityState>()
+    }
+
+    @inline(never)
+    private func initializeSavedFlightReception() {
+      savedFlightReception = Field<NativeFlightReceptionState>()
+    }
+
+    @inline(never)
+    private func initializeSavedMeasuredExtraction() {
+      savedMeasuredExtraction = Field<NativeMeasuredExtractionState>()
+    }
+
+    @inline(never)
+    private func initializeSavedRecordRecovery() {
+      savedRecordRecovery = Field<WayfarerRecordRecoveryState>()
+    }
+
+    @inline(never)
+    private func initializeSavedIdentifiedSalvage() {
+      savedIdentifiedSalvage = Field<NativeIdentifiedSalvageState>()
+    }
+
+    @inline(never)
+    private func initializeCourier() {
+      courier = Field<ScriptCourierCustody>()
+    }
+
+    @inline(never)
+    private func initializeDialogue() {
+      dialogue = Field<ScriptDialogue>()
+    }
+
+    @inline(never)
+    private func initializeContract() {
+      contract = Field<ScriptContractJob>()
+    }
+
+    // Allocate empty handle slots first. Copy helpers never construct or load large children.
     @inline(never)
     convenience init(copying source: Storage) {
       self.init(
-        id: source.id, definition: source.definition, version: source.version, digest: source.digest
+        emptyID: source.id, definition: source.definition, version: source.version,
+        digest: source.digest
       )
       copyData(from: source)
       copySavedCollections(from: source)
@@ -476,7 +618,8 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
     @inline(never)
     private func decodeCampaignParent(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      campaignParent = try values.decodeIfPresent(ScriptChildBinding.self, forKey: .campaignParent)
+      campaignParent = Field(
+        try values.decodeIfPresent(ScriptChildBinding.self, forKey: .campaignParent))
     }
 
     @inline(never)
@@ -503,21 +646,24 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
     @inline(never)
     private func decodeCompletionReceipt(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      completionReceipt = try values.decodeIfPresent(
-        ScriptCompletionReceipt.self, forKey: .completionReceipt)
+      completionReceipt = Field(
+        try values.decodeIfPresent(
+          ScriptCompletionReceipt.self, forKey: .completionReceipt))
     }
 
     @inline(never)
     private func decodeSavedProviderContract(from values: KeyedDecodingContainer<CodingKeys>) throws
     {
-      savedProviderContract = try values.decodeIfPresent(
-        ScriptProviderContractState.self, forKey: .savedProviderContract)
+      savedProviderContract = Field(
+        try values.decodeIfPresent(
+          ScriptProviderContractState.self, forKey: .savedProviderContract))
     }
 
     @inline(never)
     private func decodeSavedOwnedCargo(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      savedOwnedCargo = try values.decodeIfPresent(
-        ScriptOwnedCargoState.self, forKey: .savedOwnedCargo)
+      savedOwnedCargo = Field(
+        try values.decodeIfPresent(
+          ScriptOwnedCargoState.self, forKey: .savedOwnedCargo))
     }
 
     @inline(never)
@@ -545,32 +691,37 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     @inline(never)
     private func decodeSavedNavigationTrade(from values: KeyedDecodingContainer<CodingKeys>) throws
     {
-      savedNavigationTrade = try values.decodeIfPresent(
-        ScriptNavigationTradeState.self, forKey: .savedNavigationTrade)
+      savedNavigationTrade = Field(
+        try values.decodeIfPresent(
+          ScriptNavigationTradeState.self, forKey: .savedNavigationTrade))
     }
 
     @inline(never)
     private func decodeSavedOriginalSurvey(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      savedOriginalSurvey = try values.decodeIfPresent(
-        NativeOriginalSurveyState.self, forKey: .savedOriginalSurvey)
+      savedOriginalSurvey = Field(
+        try values.decodeIfPresent(
+          NativeOriginalSurveyState.self, forKey: .savedOriginalSurvey))
     }
 
     @inline(never)
     private func decodeSavedGlassMeridian(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      savedGlassMeridian = try values.decodeIfPresent(
-        NativeGlassMeridianState.self, forKey: .savedGlassMeridian)
+      savedGlassMeridian = Field(
+        try values.decodeIfPresent(
+          NativeGlassMeridianState.self, forKey: .savedGlassMeridian))
     }
 
     @inline(never)
     private func decodeSavedArkReserve(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      savedArkReserve = try values.decodeIfPresent(
-        NativeInductionArkReserve.self, forKey: .savedArkReserve)
+      savedArkReserve = Field(
+        try values.decodeIfPresent(
+          NativeInductionArkReserve.self, forKey: .savedArkReserve))
     }
 
     @inline(never)
     private func decodeSavedArkRecovery(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      savedArkRecovery = try values.decodeIfPresent(
-        NativeArkRecoveryReceipt.self, forKey: .savedArkRecovery)
+      savedArkRecovery = Field(
+        try values.decodeIfPresent(
+          NativeArkRecoveryReceipt.self, forKey: .savedArkRecovery))
     }
 
     @inline(never)
@@ -581,16 +732,18 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
     @inline(never)
     private func decodeSavedNativeCrewLog(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      savedNativeCrewLog = try values.decodeIfPresent(
-        NativeInductionCrewLogState.self, forKey: .savedNativeCrewLog)
+      savedNativeCrewLog = Field(
+        try values.decodeIfPresent(
+          NativeInductionCrewLogState.self, forKey: .savedNativeCrewLog))
     }
 
     @inline(never)
     private func decodeSavedNativeInductionUtility(from values: KeyedDecodingContainer<CodingKeys>)
       throws
     {
-      savedNativeInductionUtility = try values.decodeIfPresent(
-        NativeInductionUtilityState.self, forKey: .savedNativeInductionUtility)
+      savedNativeInductionUtility = Field(
+        try values.decodeIfPresent(
+          NativeInductionUtilityState.self, forKey: .savedNativeInductionUtility))
     }
 
     @inline(never)
@@ -628,35 +781,39 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     @inline(never)
     private func decodeSavedFlightReception(from values: KeyedDecodingContainer<CodingKeys>) throws
     {
-      savedFlightReception = try values.decodeIfPresent(
-        NativeFlightReceptionState.self, forKey: .savedFlightReception)
+      savedFlightReception = Field(
+        try values.decodeIfPresent(
+          NativeFlightReceptionState.self, forKey: .savedFlightReception))
     }
 
     @inline(never)
     private func decodeSavedMeasuredExtraction(from values: KeyedDecodingContainer<CodingKeys>)
       throws
     {
-      savedMeasuredExtraction = try values.decodeIfPresent(
-        NativeMeasuredExtractionState.self, forKey: .savedMeasuredExtraction)
+      savedMeasuredExtraction = Field(
+        try values.decodeIfPresent(
+          NativeMeasuredExtractionState.self, forKey: .savedMeasuredExtraction))
     }
 
     @inline(never)
     private func decodeSavedRecordRecovery(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      savedRecordRecovery = try values.decodeIfPresent(
-        WayfarerRecordRecoveryState.self, forKey: .savedRecordRecovery)
+      savedRecordRecovery = Field(
+        try values.decodeIfPresent(
+          WayfarerRecordRecoveryState.self, forKey: .savedRecordRecovery))
     }
 
     @inline(never)
     private func decodeSavedIdentifiedSalvage(from values: KeyedDecodingContainer<CodingKeys>)
       throws
     {
-      savedIdentifiedSalvage = try values.decodeIfPresent(
-        NativeIdentifiedSalvageState.self, forKey: .savedIdentifiedSalvage)
+      savedIdentifiedSalvage = Field(
+        try values.decodeIfPresent(
+          NativeIdentifiedSalvageState.self, forKey: .savedIdentifiedSalvage))
     }
 
     @inline(never)
     private func decodeCourier(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      courier = try values.decodeIfPresent(ScriptCourierCustody.self, forKey: .courier)
+      courier = Field(try values.decodeIfPresent(ScriptCourierCustody.self, forKey: .courier))
     }
 
     @inline(never)
@@ -716,7 +873,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
     @inline(never)
     private func decodeDialogue(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      dialogue = try values.decodeIfPresent(ScriptDialogue.self, forKey: .dialogue)
+      dialogue = Field(try values.decodeIfPresent(ScriptDialogue.self, forKey: .dialogue))
     }
 
     @inline(never)
@@ -726,7 +883,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
     @inline(never)
     private func decodeContract(from values: KeyedDecodingContainer<CodingKeys>) throws {
-      contract = try values.decodeIfPresent(ScriptContractJob.self, forKey: .contract)
+      contract = Field(try values.decodeIfPresent(ScriptContractJob.self, forKey: .contract))
     }
 
     @inline(never)
@@ -842,7 +999,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
     @inline(never)
     private func encodeCampaignParent(to values: inout KeyedEncodingContainer<CodingKeys>) throws {
-      try values.encodeIfPresent(campaignParent, forKey: .campaignParent)
+      try values.encodeIfPresent(campaignParent!.value, forKey: .campaignParent)
     }
 
     @inline(never)
@@ -869,19 +1026,19 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     @inline(never)
     private func encodeCompletionReceipt(to values: inout KeyedEncodingContainer<CodingKeys>) throws
     {
-      try values.encodeIfPresent(completionReceipt, forKey: .completionReceipt)
+      try values.encodeIfPresent(completionReceipt!.value, forKey: .completionReceipt)
     }
 
     @inline(never)
     private func encodeSavedProviderContract(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedProviderContract, forKey: .savedProviderContract)
+      try values.encodeIfPresent(savedProviderContract!.value, forKey: .savedProviderContract)
     }
 
     @inline(never)
     private func encodeSavedOwnedCargo(to values: inout KeyedEncodingContainer<CodingKeys>) throws {
-      try values.encodeIfPresent(savedOwnedCargo, forKey: .savedOwnedCargo)
+      try values.encodeIfPresent(savedOwnedCargo!.value, forKey: .savedOwnedCargo)
     }
 
     @inline(never)
@@ -908,32 +1065,32 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     private func encodeSavedNavigationTrade(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedNavigationTrade, forKey: .savedNavigationTrade)
+      try values.encodeIfPresent(savedNavigationTrade!.value, forKey: .savedNavigationTrade)
     }
 
     @inline(never)
     private func encodeSavedOriginalSurvey(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedOriginalSurvey, forKey: .savedOriginalSurvey)
+      try values.encodeIfPresent(savedOriginalSurvey!.value, forKey: .savedOriginalSurvey)
     }
 
     @inline(never)
     private func encodeSavedGlassMeridian(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedGlassMeridian, forKey: .savedGlassMeridian)
+      try values.encodeIfPresent(savedGlassMeridian!.value, forKey: .savedGlassMeridian)
     }
 
     @inline(never)
     private func encodeSavedArkReserve(to values: inout KeyedEncodingContainer<CodingKeys>) throws {
-      try values.encodeIfPresent(savedArkReserve, forKey: .savedArkReserve)
+      try values.encodeIfPresent(savedArkReserve!.value, forKey: .savedArkReserve)
     }
 
     @inline(never)
     private func encodeSavedArkRecovery(to values: inout KeyedEncodingContainer<CodingKeys>) throws
     {
-      try values.encodeIfPresent(savedArkRecovery, forKey: .savedArkRecovery)
+      try values.encodeIfPresent(savedArkRecovery!.value, forKey: .savedArkRecovery)
     }
 
     @inline(never)
@@ -945,14 +1102,15 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     private func encodeSavedNativeCrewLog(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedNativeCrewLog, forKey: .savedNativeCrewLog)
+      try values.encodeIfPresent(savedNativeCrewLog!.value, forKey: .savedNativeCrewLog)
     }
 
     @inline(never)
     private func encodeSavedNativeInductionUtility(
       to values: inout KeyedEncodingContainer<CodingKeys>
     ) throws {
-      try values.encodeIfPresent(savedNativeInductionUtility, forKey: .savedNativeInductionUtility)
+      try values.encodeIfPresent(
+        savedNativeInductionUtility!.value, forKey: .savedNativeInductionUtility)
     }
 
     @inline(never)
@@ -988,33 +1146,33 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     private func encodeSavedFlightReception(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedFlightReception, forKey: .savedFlightReception)
+      try values.encodeIfPresent(savedFlightReception!.value, forKey: .savedFlightReception)
     }
 
     @inline(never)
     private func encodeSavedMeasuredExtraction(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedMeasuredExtraction, forKey: .savedMeasuredExtraction)
+      try values.encodeIfPresent(savedMeasuredExtraction!.value, forKey: .savedMeasuredExtraction)
     }
 
     @inline(never)
     private func encodeSavedRecordRecovery(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedRecordRecovery, forKey: .savedRecordRecovery)
+      try values.encodeIfPresent(savedRecordRecovery!.value, forKey: .savedRecordRecovery)
     }
 
     @inline(never)
     private func encodeSavedIdentifiedSalvage(to values: inout KeyedEncodingContainer<CodingKeys>)
       throws
     {
-      try values.encodeIfPresent(savedIdentifiedSalvage, forKey: .savedIdentifiedSalvage)
+      try values.encodeIfPresent(savedIdentifiedSalvage!.value, forKey: .savedIdentifiedSalvage)
     }
 
     @inline(never)
     private func encodeCourier(to values: inout KeyedEncodingContainer<CodingKeys>) throws {
-      try values.encodeIfPresent(courier, forKey: .courier)
+      try values.encodeIfPresent(courier!.value, forKey: .courier)
     }
 
     @inline(never)
@@ -1078,7 +1236,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
     @inline(never)
     private func encodeDialogue(to values: inout KeyedEncodingContainer<CodingKeys>) throws {
-      try values.encodeIfPresent(dialogue, forKey: .dialogue)
+      try values.encodeIfPresent(dialogue!.value, forKey: .dialogue)
     }
 
     @inline(never)
@@ -1088,7 +1246,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
     @inline(never)
     private func encodeContract(to values: inout KeyedEncodingContainer<CodingKeys>) throws {
-      try values.encodeIfPresent(contract, forKey: .contract)
+      try values.encodeIfPresent(contract!.value, forKey: .contract)
     }
 
     @inline(never)
@@ -1173,14 +1331,14 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   }
 
   var campaignParent: ScriptChildBinding? {
-    _read { yield payload.campaignParent }
+    _read { yield payload.campaignParent!.value }
     set {
       ensureUniqueStorage()
-      payload.campaignParent = newValue
+      payload.campaignParent!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.campaignParent
+      yield &payload.campaignParent!.value
     }
   }
 
@@ -1221,38 +1379,38 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   }
 
   var completionReceipt: ScriptCompletionReceipt? {
-    _read { yield payload.completionReceipt }
+    _read { yield payload.completionReceipt!.value }
     set {
       ensureUniqueStorage()
-      payload.completionReceipt = newValue
+      payload.completionReceipt!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.completionReceipt
+      yield &payload.completionReceipt!.value
     }
   }
 
   var savedProviderContract: ScriptProviderContractState? {
-    _read { yield payload.savedProviderContract }
+    _read { yield payload.savedProviderContract!.value }
     set {
       ensureUniqueStorage()
-      payload.savedProviderContract = newValue
+      payload.savedProviderContract!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedProviderContract
+      yield &payload.savedProviderContract!.value
     }
   }
 
   var savedOwnedCargo: ScriptOwnedCargoState? {
-    _read { yield payload.savedOwnedCargo }
+    _read { yield payload.savedOwnedCargo!.value }
     set {
       ensureUniqueStorage()
-      payload.savedOwnedCargo = newValue
+      payload.savedOwnedCargo!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedOwnedCargo
+      yield &payload.savedOwnedCargo!.value
     }
   }
 
@@ -1293,62 +1451,62 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   }
 
   var savedNavigationTrade: ScriptNavigationTradeState? {
-    _read { yield payload.savedNavigationTrade }
+    _read { yield payload.savedNavigationTrade!.value }
     set {
       ensureUniqueStorage()
-      payload.savedNavigationTrade = newValue
+      payload.savedNavigationTrade!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedNavigationTrade
+      yield &payload.savedNavigationTrade!.value
     }
   }
 
   var savedOriginalSurvey: NativeOriginalSurveyState? {
-    _read { yield payload.savedOriginalSurvey }
+    _read { yield payload.savedOriginalSurvey!.value }
     set {
       ensureUniqueStorage()
-      payload.savedOriginalSurvey = newValue
+      payload.savedOriginalSurvey!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedOriginalSurvey
+      yield &payload.savedOriginalSurvey!.value
     }
   }
 
   var savedGlassMeridian: NativeGlassMeridianState? {
-    _read { yield payload.savedGlassMeridian }
+    _read { yield payload.savedGlassMeridian!.value }
     set {
       ensureUniqueStorage()
-      payload.savedGlassMeridian = newValue
+      payload.savedGlassMeridian!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedGlassMeridian
+      yield &payload.savedGlassMeridian!.value
     }
   }
 
   var savedArkReserve: NativeInductionArkReserve? {
-    _read { yield payload.savedArkReserve }
+    _read { yield payload.savedArkReserve!.value }
     set {
       ensureUniqueStorage()
-      payload.savedArkReserve = newValue
+      payload.savedArkReserve!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedArkReserve
+      yield &payload.savedArkReserve!.value
     }
   }
 
   var savedArkRecovery: NativeArkRecoveryReceipt? {
-    _read { yield payload.savedArkRecovery }
+    _read { yield payload.savedArkRecovery!.value }
     set {
       ensureUniqueStorage()
-      payload.savedArkRecovery = newValue
+      payload.savedArkRecovery!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedArkRecovery
+      yield &payload.savedArkRecovery!.value
     }
   }
 
@@ -1365,26 +1523,26 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   }
 
   var savedNativeCrewLog: NativeInductionCrewLogState? {
-    _read { yield payload.savedNativeCrewLog }
+    _read { yield payload.savedNativeCrewLog!.value }
     set {
       ensureUniqueStorage()
-      payload.savedNativeCrewLog = newValue
+      payload.savedNativeCrewLog!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedNativeCrewLog
+      yield &payload.savedNativeCrewLog!.value
     }
   }
 
   var savedNativeInductionUtility: NativeInductionUtilityState? {
-    _read { yield payload.savedNativeInductionUtility }
+    _read { yield payload.savedNativeInductionUtility!.value }
     set {
       ensureUniqueStorage()
-      payload.savedNativeInductionUtility = newValue
+      payload.savedNativeInductionUtility!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedNativeInductionUtility
+      yield &payload.savedNativeInductionUtility!.value
     }
   }
 
@@ -1437,62 +1595,62 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   }
 
   var savedFlightReception: NativeFlightReceptionState? {
-    _read { yield payload.savedFlightReception }
+    _read { yield payload.savedFlightReception!.value }
     set {
       ensureUniqueStorage()
-      payload.savedFlightReception = newValue
+      payload.savedFlightReception!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedFlightReception
+      yield &payload.savedFlightReception!.value
     }
   }
 
   var savedMeasuredExtraction: NativeMeasuredExtractionState? {
-    _read { yield payload.savedMeasuredExtraction }
+    _read { yield payload.savedMeasuredExtraction!.value }
     set {
       ensureUniqueStorage()
-      payload.savedMeasuredExtraction = newValue
+      payload.savedMeasuredExtraction!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedMeasuredExtraction
+      yield &payload.savedMeasuredExtraction!.value
     }
   }
 
   var savedRecordRecovery: WayfarerRecordRecoveryState? {
-    _read { yield payload.savedRecordRecovery }
+    _read { yield payload.savedRecordRecovery!.value }
     set {
       ensureUniqueStorage()
-      payload.savedRecordRecovery = newValue
+      payload.savedRecordRecovery!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedRecordRecovery
+      yield &payload.savedRecordRecovery!.value
     }
   }
 
   var savedIdentifiedSalvage: NativeIdentifiedSalvageState? {
-    _read { yield payload.savedIdentifiedSalvage }
+    _read { yield payload.savedIdentifiedSalvage!.value }
     set {
       ensureUniqueStorage()
-      payload.savedIdentifiedSalvage = newValue
+      payload.savedIdentifiedSalvage!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.savedIdentifiedSalvage
+      yield &payload.savedIdentifiedSalvage!.value
     }
   }
 
   var courier: ScriptCourierCustody? {
-    _read { yield payload.courier }
+    _read { yield payload.courier!.value }
     set {
       ensureUniqueStorage()
-      payload.courier = newValue
+      payload.courier!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.courier
+      yield &payload.courier!.value
     }
   }
 
@@ -1629,14 +1787,14 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   }
 
   var dialogue: ScriptDialogue? {
-    _read { yield payload.dialogue }
+    _read { yield payload.dialogue!.value }
     set {
       ensureUniqueStorage()
-      payload.dialogue = newValue
+      payload.dialogue!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.dialogue
+      yield &payload.dialogue!.value
     }
   }
 
@@ -1653,14 +1811,14 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   }
 
   var contract: ScriptContractJob? {
-    _read { yield payload.contract }
+    _read { yield payload.contract!.value }
     set {
       ensureUniqueStorage()
-      payload.contract = newValue
+      payload.contract!.value = newValue
     }
     _modify {
       ensureUniqueStorage()
-      yield &payload.contract
+      yield &payload.contract!.value
     }
   }
 
@@ -1796,7 +1954,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
   @inline(never)
   private static func equalCampaignParent(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.campaignParent == rhs.campaignParent
+    lhs.campaignParent!.value == rhs.campaignParent!.value
   }
 
   @inline(never)
@@ -1820,19 +1978,19 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
   @inline(never)
   private static func equalCompletionReceipt(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.completionReceipt == rhs.completionReceipt
+    lhs.completionReceipt!.value == rhs.completionReceipt!.value
   }
 
   @inline(never)
   private static func equalSavedProviderContract(_ lhs: Storage, _ rhs: Storage)
     -> Bool
   {
-    lhs.savedProviderContract == rhs.savedProviderContract
+    lhs.savedProviderContract!.value == rhs.savedProviderContract!.value
   }
 
   @inline(never)
   private static func equalSavedOwnedCargo(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.savedOwnedCargo == rhs.savedOwnedCargo
+    lhs.savedOwnedCargo!.value == rhs.savedOwnedCargo!.value
   }
 
   @inline(never)
@@ -1858,27 +2016,27 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   private static func equalSavedNavigationTrade(_ lhs: Storage, _ rhs: Storage)
     -> Bool
   {
-    lhs.savedNavigationTrade == rhs.savedNavigationTrade
+    lhs.savedNavigationTrade!.value == rhs.savedNavigationTrade!.value
   }
 
   @inline(never)
   private static func equalSavedOriginalSurvey(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.savedOriginalSurvey == rhs.savedOriginalSurvey
+    lhs.savedOriginalSurvey!.value == rhs.savedOriginalSurvey!.value
   }
 
   @inline(never)
   private static func equalSavedGlassMeridian(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.savedGlassMeridian == rhs.savedGlassMeridian
+    lhs.savedGlassMeridian!.value == rhs.savedGlassMeridian!.value
   }
 
   @inline(never)
   private static func equalSavedArkReserve(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.savedArkReserve == rhs.savedArkReserve
+    lhs.savedArkReserve!.value == rhs.savedArkReserve!.value
   }
 
   @inline(never)
   private static func equalSavedArkRecovery(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.savedArkRecovery == rhs.savedArkRecovery
+    lhs.savedArkRecovery!.value == rhs.savedArkRecovery!.value
   }
 
   @inline(never)
@@ -1888,14 +2046,14 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
   @inline(never)
   private static func equalSavedNativeCrewLog(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.savedNativeCrewLog == rhs.savedNativeCrewLog
+    lhs.savedNativeCrewLog!.value == rhs.savedNativeCrewLog!.value
   }
 
   @inline(never)
   private static func equalSavedNativeInductionUtility(_ lhs: Storage, _ rhs: Storage)
     -> Bool
   {
-    lhs.savedNativeInductionUtility == rhs.savedNativeInductionUtility
+    lhs.savedNativeInductionUtility!.value == rhs.savedNativeInductionUtility!.value
   }
 
   @inline(never)
@@ -1930,31 +2088,31 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   private static func equalSavedFlightReception(_ lhs: Storage, _ rhs: Storage)
     -> Bool
   {
-    lhs.savedFlightReception == rhs.savedFlightReception
+    lhs.savedFlightReception!.value == rhs.savedFlightReception!.value
   }
 
   @inline(never)
   private static func equalSavedMeasuredExtraction(_ lhs: Storage, _ rhs: Storage)
     -> Bool
   {
-    lhs.savedMeasuredExtraction == rhs.savedMeasuredExtraction
+    lhs.savedMeasuredExtraction!.value == rhs.savedMeasuredExtraction!.value
   }
 
   @inline(never)
   private static func equalSavedRecordRecovery(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.savedRecordRecovery == rhs.savedRecordRecovery
+    lhs.savedRecordRecovery!.value == rhs.savedRecordRecovery!.value
   }
 
   @inline(never)
   private static func equalSavedIdentifiedSalvage(_ lhs: Storage, _ rhs: Storage)
     -> Bool
   {
-    lhs.savedIdentifiedSalvage == rhs.savedIdentifiedSalvage
+    lhs.savedIdentifiedSalvage!.value == rhs.savedIdentifiedSalvage!.value
   }
 
   @inline(never)
   private static func equalCourier(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.courier == rhs.courier
+    lhs.courier!.value == rhs.courier!.value
   }
 
   @inline(never)
@@ -2014,7 +2172,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
   @inline(never)
   private static func equalDialogue(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.dialogue == rhs.dialogue
+    lhs.dialogue!.value == rhs.dialogue!.value
   }
 
   @inline(never)
@@ -2024,7 +2182,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
 
   @inline(never)
   private static func equalContract(_ lhs: Storage, _ rhs: Storage) -> Bool {
-    lhs.contract == rhs.contract
+    lhs.contract!.value == rhs.contract!.value
   }
 
   @inline(never)
