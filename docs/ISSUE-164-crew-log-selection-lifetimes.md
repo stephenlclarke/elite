@@ -21,3 +21,7 @@ No Game state, actor boundary, save/schema, authority, marker/hash, UI, reward o
 ## First focused execution
 
 The `47700106` Swift6.1.2/SDK15.5 build passed in70.81seconds; four-method process failed exit1/rawSIGBUS10 after82.665024791seconds. All methods only started, with no completion/assertion results and unfinished52-byte XML. Existing `/tmp/elite-164-selection-focused` artifacts retain actual source/result, normal report and exact image metadata. Independent actual-source review is clear; current fault attribution and runtime qualification remain pending.
+
+## Combined checkpoint result
+
+The source-reviewed combined159-168 packet `eb5ab2d8` compiled successfully, then its one normal four-original-method batch failed signal10/exit1 after198.327703625seconds with zero completed methods/assertions. No matching normal report exists; the separate exact-image capture is diagnostic only. No issue is closed or runtime-qualified by source review. [The combined packet inventory](PR-25-M01-RELEASE-BLOCKERS.md) records exact source, evidence limits, retained unaffected passes and remaining required gates.

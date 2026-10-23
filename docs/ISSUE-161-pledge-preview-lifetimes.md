@@ -89,3 +89,7 @@ The `5105b8bf` Swift6.1.2/SDK15.5 build passed in78.63seconds; four-method proce
 ## Combined acceptance receiver/projection correction
 
 The final159-168 pass reuses the synchronous mutating/inout stored Game/script readers established by the exact168 emitted whole-Game-copy proof. The already-demonstrated pledge preview/resource reads run against the same read-only current Game borrow, retaining errors/authority/order. All four local event/clock reads retain their exact positions and defaults via the same stored script-state API. A thin noninline acceptance entry always resolves courier then freight before entering the unchanged full current-board/resource guards, so their owned board/pack/offer buffers are not reserved during prerequisite resolution. No acceptance guard, payload, deadline, error, authority or publication policy is changed. This is part of one combined packet/review/affected batch, not another helper gate; earlier incomplete results remain unqualified.
+
+## Combined checkpoint result
+
+The source-reviewed combined159-168 packet `eb5ab2d8` compiled successfully, then its one normal four-original-method batch failed signal10/exit1 after198.327703625seconds with zero completed methods/assertions. No matching normal report exists; the separate exact-image capture is diagnostic only. No issue is closed or runtime-qualified by source review. [The combined packet inventory](PR-25-M01-RELEASE-BLOCKERS.md) records exact source, evidence limits, retained unaffected passes and remaining required gates.

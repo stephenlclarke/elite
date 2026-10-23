@@ -37,3 +37,7 @@ This is diagnostic evidence, not unit qualification or a replacement for the ori
 ## Combined inout receiver correction
 
 Exact168 offline code proves that a static borrowing Game call from a mutating receiver can still reserve and populate a full Game stack buffer under the pinned compiler. The analogous already-demonstrated candidate collection now receives current Game only through the same synchronous mutating/inout stored read, then invokes its existing borrowed candidate-list helper. No storage/state redesign or heap snapshot is introduced. The existing body loop, each context/visibility query, nil filtering, provider authority/order and subsequent selection state remain unchanged. This is the shared-boundary component of the combined159-168 pass; no runtime saving or resolution is inferred before the one affected batch.
+
+## Combined checkpoint result
+
+The source-reviewed combined159-168 packet `eb5ab2d8` compiled successfully, then its one normal four-original-method batch failed signal10/exit1 after198.327703625seconds with zero completed methods/assertions. No matching normal report exists; the separate exact-image capture is diagnostic only. No issue is closed or runtime-qualified by source review. [The combined packet inventory](PR-25-M01-RELEASE-BLOCKERS.md) records exact source, evidence limits, retained unaffected passes and remaining required gates.

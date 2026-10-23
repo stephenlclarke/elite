@@ -27,3 +27,7 @@ The `7771f9bb` Swift6.1.2/SDK15.5 build passed in199.87seconds; four-method proc
 ## Current report identity limitation
 
 The newest normal report initially collected after `7771f9bb` was stale: previous47700106 PID36026/image65F3BF1E rather than current imageF26BBE52-820B-35A5-9455-1FE55BD7EC63/SHA256f859890fea35bb48d70d85c6d31d4640a979633b5cfb4cd31377892b2f0af5b3. A read-only recursive inventory of27 retained swiftpm helper reports in guest user and system DiagnosticReports found no matching current UUID. The stale file is explicitly retained as `/tmp/elite-165-custody-focused-stale-477-report.ips`; image metadata marks the mismatch. No current fault location or165 recurrence is established. The actual compiler pass/runtime SIGBUS/four incomplete methods remain the valid receipt. No new capture, debugger probe or execution was used to fill the missing attribution.
+
+## Combined checkpoint result
+
+The source-reviewed combined159-168 packet `eb5ab2d8` compiled successfully, then its one normal four-original-method batch failed signal10/exit1 after198.327703625seconds with zero completed methods/assertions. No matching normal report exists; the separate exact-image capture is diagnostic only. No issue is closed or runtime-qualified by source review. [The combined packet inventory](PR-25-M01-RELEASE-BLOCKERS.md) records exact source, evidence limits, retained unaffected passes and remaining required gates.

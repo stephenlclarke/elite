@@ -19,3 +19,7 @@ No save/schema, actor isolation, authority or quality threshold changes. Require
 ## First combined execution
 
 The four original methods ran at `fce2782b` on Swift6.1.2/SDK15.5. Compilation passed in75.03seconds; process exited1/rawSIGBUS10 after86.793152292seconds. All four methods only started, with no terminal pass or assertion result and unfinished52-byte XML. Retained `/tmp/elite-161-163-focused.log`, `-result.json`, `-crash.ips` and `-image.json` preserve exact source/result and loaded image19834FA1-FDB6-33B4-905C-7135D55C59D4/SHA256e6662a218eac6907ad0a33f2f78a82be25dec08f005700cbc4fefa96a7b38202. Independent actual-source review is clear; execution qualification and current fault attribution remain pending.
+
+## Combined checkpoint result
+
+The source-reviewed combined159-168 packet `eb5ab2d8` compiled successfully, then its one normal four-original-method batch failed signal10/exit1 after198.327703625seconds with zero completed methods/assertions. No matching normal report exists; the separate exact-image capture is diagnostic only. No issue is closed or runtime-qualified by source review. [The combined packet inventory](PR-25-M01-RELEASE-BLOCKERS.md) records exact source, evidence limits, retained unaffected passes and remaining required gates.

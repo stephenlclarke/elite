@@ -39,3 +39,7 @@ The `9569dcb5` Swift6.1.2/SDK15.5 build passed in29.79seconds; four-method proce
 ## One changed-source current capture
 
 With current normal report absence verified, Root authorised one capture on the exact already-built9569 image and original four-method/default stack/concurrency/environment through SwiftPM skip-build and the existing owned-session tool. PID36575/full argv/start/current UUID27849A0A matched before observation. The first fault was captured; observer detached with handedBack true, driver exited1/debugger0 after14.071743834seconds, no owned test processes remained. Source and SHA2569cb7012f9e873209919cc25842acfa837f51770fe783380d6f2a53a63aa66e3d stayed identical before/after. `/tmp/elite-167-current-owned-capture` retains all evidence. Diagnostic only; original41.51199525second normal failure remains separate and unchanged. Saved-evidence attribution is pending; no new source cause, recurrence, guard mapping or passing result is inferred.
+
+## Combined checkpoint result
+
+The source-reviewed combined159-168 packet `eb5ab2d8` compiled successfully, then its one normal four-original-method batch failed signal10/exit1 after198.327703625seconds with zero completed methods/assertions. No matching normal report exists; the separate exact-image capture is diagnostic only. No issue is closed or runtime-qualified by source review. [The combined packet inventory](PR-25-M01-RELEASE-BLOCKERS.md) records exact source, evidence limits, retained unaffected passes and remaining required gates.
