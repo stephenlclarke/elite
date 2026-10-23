@@ -9769,6 +9769,16 @@
       "published": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:38:51.225235+00:00",
+      "checkpoint_key": "20261023-m01-one-corrected-offset-capture-scope",
+      "event": "Authorized one corrected existing-image first-fault capture to repair demonstrated missing-offset evidence gap",
+      "issue": 144,
+      "scope": "After qualified repair publication; existing binary/original selection/skip-build/default runtime/owned cleanup; no second capture or build",
+      "reason": "Prior saved capture omitted module load offsets and cannot be reliably symbolised",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
