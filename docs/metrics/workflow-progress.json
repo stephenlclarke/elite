@@ -9244,6 +9244,17 @@
       "completed_methods": 0,
       "issue161": "unqualified; no recurrence or pass proved",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:15:22.425595+00:00",
+      "checkpoint_key": "20261023-m01-163-alias-reviewed-run",
+      "event": "Recovery alias eligibility/projection split committed and independently reviewed; affected execution active",
+      "head": "c23e2e1c",
+      "issue": 163,
+      "reviewed_blob": "b682a665a9e2c6cb0c3d961dc9bdb9a483df7388",
+      "methods": 4,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
