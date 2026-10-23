@@ -7651,6 +7651,36 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:34:25Z",
+      "checkpoint_key": "20261023-m01-general-system-reader-focused-qualified",
+      "event": "Current system-reader guard correction passes original focused cases and independent review",
+      "closed_issues": [
+        150
+      ],
+      "head": "33343f8ac1901e102ee1a369d5bf125bd8623bf1",
+      "focused_methods": 3,
+      "authored_cases": 11,
+      "compile_seconds": 187.77,
+      "process_seconds": 202.7368762921542,
+      "exit_code": 0,
+      "report": "/tmp/elite-150-stored-system-units-swift-testing.xml",
+      "report_failures": 0,
+      "report_errors": 0,
+      "report_skips": 0,
+      "case_seconds": {
+        "original_people_rollback_retry": 9.474073042,
+        "five_policy_scenarios": 0.081156458,
+        "five_storage_scenarios": 8.776391125
+      },
+      "independent_review": "MBA exact source/result clear, worktree clean",
+      "initial_compile_failure_retained": true,
+      "historical144_cause": "unproved",
+      "source_published": false,
+      "next_action": "publish promptly then exact-head required gates, no local replay",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
