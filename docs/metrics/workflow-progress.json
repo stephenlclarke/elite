@@ -9461,6 +9461,18 @@
       "debugger": false,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:44:29.539681+00:00",
+      "checkpoint_key": "20261023-m01-167-borrow-compile-correction",
+      "event": "Fit matcher borrowed autoclosure/iterator compiler failure retained; exact compatibility correction reviewed",
+      "head": "a7b503f1",
+      "issue": 167,
+      "process_seconds": 21.864851125,
+      "result": "compile FAILURE; no runtime",
+      "reviewed_correction_blob": "012a0041504b2c2271378942297646bafdf6b5e1",
+      "correction_result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
