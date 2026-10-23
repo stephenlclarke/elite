@@ -132,6 +132,26 @@ struct GameplayOrdnanceRuntimeTests {
     let initialCash = game.commander.credits
     game.frontShield = 100
     let ownerIndex = try #require(game.bodies.firstIndex { $0.id == 70 })
+    let mesh = game.commander.playerMesh
+    let surface = try #require(
+      mesh.faces.lazy.compactMap { face -> Vector3? in
+        guard face.count == 3, face.allSatisfy(mesh.vertices.indices.contains) else { return nil }
+        let a = mesh.vertices[face[0]]
+        let b = mesh.vertices[face[1]]
+        let c = mesh.vertices[face[2]]
+        guard (b - a).cross(c - a).length > 0 else { return nil }
+        let center = (a + b + c) * (1 / 3.0)
+        return center.finite && center.z > 0 && center.length > 0 ? center : nil
+      }.first)
+    let outward = surface.unit
+    let launch = outward * 1000
+    #expect(launch.length > (mesh.vertices.map(\.length).max() ?? 0) + 24)
+    game.bodies[ownerIndex].position = launch
+    let contact = try #require(
+      try game.nearestMissionCollision(
+        from: launch - outward * 24, direction: outward * -1, range: 1000,
+        radius: 0, excludingBodyIDs: [70], includePlayer: true))
+    try #require(contact.hit.target == .player && contact.hit.point.z > 0)
     game.bodies[ownerIndex].missiles = 1
     let owner = try #require(game.bodies[ownerIndex].physical?.identity)
     let launched = game.launchGameplayNPCMissile(bodyID: 70)
