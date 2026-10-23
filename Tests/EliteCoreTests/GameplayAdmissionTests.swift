@@ -33,9 +33,18 @@ private func admissionPlan(_ game: Game, requests: [SpawnRequest], atomic: Bool 
     batches: [.init(requests: requests, atomic: atomic)], intents: [])
 }
 
+private func preparedAdmissionBodies(_ game: inout Game) -> [SpaceBody] {
+  game.ensurePhysicalActors()
+  let stations = game.bodies.filter { $0.nativeStationIdentity != nil }
+  #expect(!stations.isEmpty)
+  #expect(stations.allSatisfy { game.nativeStationStoredBodyIsCurrent($0) })
+  return game.bodies
+}
+
 struct GameplayAdmissionTests {
   @Test func admittedBodiesUseOneAllocatorAndWorldToViewTransform() throws {
     var game = admissionGame()
+    let before = preparedAdmissionBodies(&game)
     let request = admissionRequest(game)
     let receipts = game.admitEncounterPlan(admissionPlan(game, requests: [request]))
     let actor = try #require(receipts.first?.actor)
@@ -43,31 +52,39 @@ struct GameplayAdmissionTests {
     #expect(body.physical?.spawnIdentity == request.identity)
     #expect(body.physical?.velocity == request.velocity)
     #expect(game.commander.flightSimulation.pose.systemPoint(body.position) == request.position)
-    #expect(receipts.first?.refusal == nil && game.bodies.count == 2)
+    #expect(receipts.first?.refusal == nil && game.bodies.count == before.count + 1)
+    #expect(Array(game.bodies.prefix(before.count)) == before)
     let replay = game.admitEncounterPlan(admissionPlan(game, requests: [request]))
-    #expect(replay == receipts && game.bodies.count == 2)
+    #expect(replay == receipts && game.bodies.count == before.count + 1)
+    #expect(Array(game.bodies.prefix(before.count)) == before)
   }
 
   @Test func stalePlanCannotMutateTheSceneOrAllocator() {
     var game = admissionGame()
+    let before = preparedAdmissionBodies(&game)
     let plan = admissionPlan(game, requests: [admissionRequest(game)])
     let actor = game.commander.flightSimulation.nextActor
     game.gameplayRevision += 1
     let receipts = game.admitEncounterPlan(plan)
     #expect(receipts.first?.refusal == .staleContext)
-    #expect(game.bodies.count == 1 && game.commander.flightSimulation.nextActor == actor)
+    #expect(game.bodies == before)
+    #expect(game.commander.flightSimulation.nextActor == actor)
   }
 
   @Test func atomicPackCannotBePartiallyAdmittedOnPopulationLimit() {
     var game = admissionGame()
+    let before = preparedAdmissionBodies(&game)
+    let actor = game.commander.flightSimulation.nextActor
     let requests = (0..<9).map {
       admissionRequest(game, member: UInt16($0), position: .init(Double($0) * 500, 0, -3000))
     }
     let receipts = game.admitEncounterPlan(admissionPlan(game, requests: requests))
     #expect(receipts.count == 9 && receipts.allSatisfy { $0.refusal == .populationLimit })
-    #expect(game.bodies.count == 1)
+    #expect(game.bodies == before)
+    #expect(game.commander.flightSimulation.nextActor == actor)
     let partial = game.admitEncounterPlan(admissionPlan(game, requests: requests, atomic: false))
-    #expect(partial.filter { $0.actor != nil }.count == 8 && game.bodies.count == 9)
+    #expect(partial.filter { $0.actor != nil }.count == 8 && game.bodies.count == before.count + 8)
+    #expect(Array(game.bodies.prefix(before.count)) == before)
   }
 
   @Test func atomicPackRejectsDuplicateIdentityAndIntersectingMembers() {

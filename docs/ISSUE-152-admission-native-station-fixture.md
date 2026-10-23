@@ -1,0 +1,9 @@
+# Admission fixtures must retain actual native station population
+
+[Issue152](https://github.com/stephenlclarke/elite/issues/152) is a test-fixture defect, separate from production lifetime issue151 and its uncompleted mission test. The first151 focused run at d5d6da32 records five body-count assertion failures across three admission tests. The fixture launches a real game, removes every body except legacy station0, but retains the native station ledger. Real admission calls ensurePhysicalActors/populateNativeStations and restores missing non-tombstoned registered station bodies. A hard-coded one-body baseline is therefore invalid.
+
+Prepare the real native population before the three affected tests capture their complete baseline. Assert actual native station presence and current physical bindings. Preserve exact original bodies on refusal/replay, exact one additional admitted actor, exact eight partial admissions, complete original body preservation and independent allocator checks. Leave the shared legacy fixture and unrelated methods unchanged, so this correction does not silently change their setup. No production admission, station, reserve, safety or persistence rule is changed.
+
+Retain the original failed151 result/log and incomplete XML. The stale allocator subexpression was not evaluated after its failed count clause; no passing allocator claim is made for that run. The corrected test asserts allocator state independently. The same run's signal10 has no fresh attributable crash report and is not explained by these assertion failures.
+
+The two empty-plan/adoption methods passed at unchanged production source d5d6da32 and retain that exact evidence. Execute only the four unresolved original methods after this correction: three admission fixtures and the authored-board travel/delivery/repeat method. Execution and actual source/result review are pending; no aggregate six-method rerun is planned.
