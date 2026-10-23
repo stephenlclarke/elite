@@ -7788,6 +7788,25 @@
       "new_probe": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:43:45Z",
+      "checkpoint_key": "20261023-m01-admission-native-baseline-fixture-assigned",
+      "event": "Source-proven native station baseline correction assigned to affected admission fixtures",
+      "issue": 152,
+      "owner": "G1",
+      "reviewer": "MBA actual fixture diff/results",
+      "production_issue": 151,
+      "scope": "legitimate nativepopulation baseline; exactdelta/retainedactor/allocator/replay/stale/atomic/partial and samefixture safety oracles",
+      "previous_stale_allocator_assertion": "not evaluated due short-circuit countfailure; no pass claim",
+      "planned_original_methods": 6,
+      "retained_unaffected_empty_methods": 2,
+      "retained_pass_head": "d5d6da32556fd73578d6ac081453927a56780d06",
+      "reason_for_two_added_methods": "same changed fixture duplicate/intersection and unsafe consumers",
+      "production_policy_change": false,
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
