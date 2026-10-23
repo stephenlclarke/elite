@@ -653,6 +653,13 @@ extension Game {
   private mutating func stageOriginalRescueFinish(
     _ outcome: ScriptOutcome, operation: UUID
   ) throws -> (ScriptInstance, ScriptInstance, UInt64) {
+    try Self.stageOriginalRescueCommanderFinish(&commander, outcome: outcome, operation: operation)
+  }
+
+  @inline(never)
+  private static func stageOriginalRescueCommanderFinish(
+    _ commander: inout Commander, outcome: ScriptOutcome, operation: UUID
+  ) throws -> (ScriptInstance, ScriptInstance, UInt64) {
     // The read-only preconditions and cause extraction completed synchronously; no reentry
     // can change these values before this unpublished mutation stage.
     guard var custody = commander.nativePeople, var state = custody.originalRescue,
@@ -666,7 +673,7 @@ extension Game {
     }
     let previous = mission
     var candidate = commander
-    try settleContract(outcome, state: &mission, candidate: &candidate)
+    try Self.settleContractCandidate(outcome, state: &mission, candidate: &candidate)
     candidate.scriptState.nextEvent += 1
     let sequence = candidate.scriptState.nextEvent
     mission.outcome = outcome

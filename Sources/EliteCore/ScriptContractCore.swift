@@ -473,6 +473,13 @@ extension Game {
   func settleContract(
     _ outcome: ScriptOutcome, state: inout ScriptInstance, candidate: inout Commander
   ) throws {
+    try Self.settleContractCandidate(outcome, state: &state, candidate: &candidate)
+  }
+
+  @inline(never)
+  static func settleContractCandidate(
+    _ outcome: ScriptOutcome, state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
     guard var job = state.retainedSettlementJob else { return }
     guard !job.settled else { throw MissionPackError("This contract is already settled.") }
     if OriginalServiceReservationPolicy.isContractDefinition(state.retainedSettlementDefinition) {

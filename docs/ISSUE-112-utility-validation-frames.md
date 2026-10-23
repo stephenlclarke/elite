@@ -78,3 +78,21 @@ noninline helper containing the unchanged cause/stage/committed/publication
 sequence. Dedicated addressable Commander readers preserve the header, dock
 and no-held-person checks in their original order. Settlement staging and its
 atomic candidate are unchanged. Focused writer qualification remains pending.
+
+
+The fcbb7941 finish-preflight repair compiled in 71.78 seconds; its original
+six-case writer check still exited with signal 10 after 95.475646 seconds,
+zero completions and unfinished XML. The exact-image diagnostic selected
+PID 67982/thread 4, UUID 2F43E199-D613-3EB4-9A1B-F9C4AB009855. SP
+0x16fe8fdc0 and fault 0x16fe8fde0 lie in guard 0x16fe8c000-0x16fe90000.
+The new path enters stageOriginalRescueFinish through ContractBoardReview
+metadata, not the previous revision reader. Retained normal evidence:
+`/tmp/elite-140-finish-writer-units-result.json`; diagnostic:
+`/tmp/elite-140-fcbb-writer-diagnostic`. Neither is a writer pass.
+
+The next bounded correction gives staging a typed addressable Commander
+parameter. Its owned atomic candidate and mutation/publication order remain
+unchanged. The settlement body moves unchanged into a static helper because
+it reads no Game state; the existing instance entry forwards to that helper.
+The rescue staging path calls the static helper directly. Focused writer and
+affected settlement qualification remain pending; no broad suite is claimed.
