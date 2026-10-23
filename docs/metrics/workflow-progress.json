@@ -8952,6 +8952,17 @@
       "earlier_individual_passes_retained_separately": 3,
       "result": "pending",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:30:29.706004+00:00",
+      "checkpoint_key": "20261023-m01-637b-quality-terminal-failure",
+      "event": "Older published candidate quality terminal failure; sole retained-artifact review assigned",
+      "head": "637b49519bd4b7b64a6afd24ece0e2a85f98220f",
+      "run": 40016592456,
+      "result": "FAILURE",
+      "reviewer": "MBA",
+      "current_affected_run_uninterrupted": true,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
