@@ -9439,6 +9439,16 @@
       "developer": "G1",
       "reviewer": "MBA",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:41:02.619400+00:00",
+      "checkpoint_key": "20261023-m01-167-fit-matcher-assigned",
+      "event": "Distinct combat fit matcher blocker167 logged and assigned",
+      "issue": 167,
+      "developer": "G1",
+      "reviewer": "MBA",
+      "evidence": "exact623 single diagnostic capture/offline symbols",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
