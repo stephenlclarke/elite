@@ -1,0 +1,5 @@
+# Issue 112: station population stack lifetimes
+
+The retained debugger capture for the actual authored board-travel test reaches `StationInertialIdentity` metadata from `Game.populateNativeStations`, below physical-actor adoption and native missile admission. The matching image is `C7D84BAD`; fault `0x16fe019e0` and SP `0x16fe019c0` fall inside guard `0x16fe00000..0x16fe04000`. Evidence remains in `/tmp/elite-child-buffer-station-flight-debugger`. This capture is diagnostic evidence, not a passing test.
+
+Keep the original missing-world and empty-cohort no-ops, guard/error order, source and geometry checks, actor/body budgets and identities, rebind order and final atomic publication. Separate census, geometry selection and admission into private returned helper frames. No station representation, source authority, schema, timing or gameplay policy change is assigned. See [the packet handoff](PR-107-station-population-lifetimes.md) and [issue 112](https://github.com/stephenlclarke/elite/issues/112).

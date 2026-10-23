@@ -254,8 +254,22 @@ extension Game {
   }
 
   /// All actual geometry and actor-budget checks finish before allocating or publishing a cohort.
+  @inline(never)
   mutating func populateNativeStations() throws {
     guard var world = commander.nativeStations else { return }
+    guard let cohort = try nativeStationPopulationCohort(world: world) else { return }
+    let flightBefore = commander.flightSimulation
+    let selected = try selectNativeStationPopulation(
+      world: world, anchors: cohort.anchors, absent: cohort.absent, flightBefore: flightBefore)
+    try admitNativeStationPopulation(world: &world, flightBefore: flightBefore, selected: selected)
+  }
+
+  // Retire the existing-body census before any geometry or candidate-body temporaries exist.
+  // An empty cohort returns here without entering either allocation/placement phase.
+  @inline(never)
+  private func nativeStationPopulationCohort(world: NativeStationWorld) throws -> (
+    anchors: SystemAnchors, absent: [NativeStationRecord]
+  )? {
     let system = systemIdentity
     guard commander.nativeStationStateValid, let anchors = commander.flightSimulation.anchors,
       anchors.system == systemIdentity, !docked
@@ -275,12 +289,19 @@ extension Game {
       record.tombstone == nil
         && !stationBodies.contains { $0.nativeStationIdentity == record.identity }
     }
-    guard !absent.isEmpty else { return }
+    guard !absent.isEmpty else { return nil }
     guard bodies.filter({ $0.energy > 0 }).count + absent.count <= 128,
       bodies.reduce(0, { $0 + $1.scriptNativeUnits }) + absent.count <= 1024,
       nextBodyID > 0, nextBodyID < 1_000_000_000 - absent.count
     else { throw NativeStationRuntimeError.capacity }
-    let flightBefore = commander.flightSimulation
+    return (anchors, absent)
+  }
+
+  @inline(never)
+  private func selectNativeStationPopulation(
+    world: NativeStationWorld, anchors: SystemAnchors, absent: [NativeStationRecord],
+    flightBefore: FlightSimulationState
+  ) throws -> [(NativeStationRecord, NativeStationSavedPose, NativeStationSourceBinding)] {
     var selected: [(NativeStationRecord, NativeStationSavedPose, NativeStationSourceBinding)] = []
     for record in absent {
       guard let source = NativeStationSource.binding(for: record.identity),
@@ -314,6 +335,15 @@ extension Game {
       }
       selected.append((record, saved, source))
     }
+    return selected
+  }
+
+  // Placement has returned before actor construction. Publish only the same fully valid cohort.
+  @inline(never)
+  private mutating func admitNativeStationPopulation(
+    world: inout NativeStationWorld, flightBefore: FlightSimulationState,
+    selected: [(NativeStationRecord, NativeStationSavedPose, NativeStationSourceBinding)]
+  ) throws {
     var flight = flightBefore
     guard let sequence = flight.allocateSpawn() else { throw NativeStationRuntimeError.capacity }
     var admitted: [SpaceBody] = []
