@@ -7303,6 +7303,25 @@
       "source_published": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T16:35:45Z",
+      "checkpoint_key": "20261023-m01-inventory-validation-frame-assigned",
+      "event": "Retained older quality result identifies separate inventory-preview validation fault",
+      "run": 39983992820,
+      "source": "f6a1f25d11bc63ce554c3024a4364b25b070a123",
+      "make_ci_exit": 2,
+      "process_seconds": 1126.461937,
+      "compile_seconds": 765.23,
+      "ships_passed": 171,
+      "sanitizers_leaks_reached": false,
+      "fault_path": "ScriptEngineState.init/scriptState.read -> Clinic/CrewLog validation -> Commander.valid -> equipment inventory preview -> original scroll-hints test",
+      "binary_uuid": "0317AE32",
+      "owner": "G1 next explicit code correction",
+      "reviewer": "MBA matched-image issue/source/result review",
+      "separate_plugh_assertions": "MBA bounded classification pending, no speculative implementation",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
