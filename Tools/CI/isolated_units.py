@@ -67,6 +67,10 @@ METHODS = {
         "failedIdentitySelectionSkipsOnlyThatBodyAndPreservesSpawnCursor",
         "adoptionSystemReadPreservesExactScalarsAndRetainedCommanderBytes",
     ),
+    "NativeStationValidationReadTests": (
+        "fullPolicyPreservesEarlyRefusalAndLazyReaderOrder",
+        "storageHeaderMatchesFullCommanderPolicyAndPreservesRetainedBytes",
+    ),
     "NativeStationPopulationLifetimeTests": (
         "missingWorldReturnsBeforeSceneAndCursorValidation",
         "emptyCohortKeepsBindingsWithoutAllocatingFromExhaustedCursors",
