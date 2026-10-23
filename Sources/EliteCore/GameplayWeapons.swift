@@ -79,7 +79,7 @@ extension Game {
     guard let origin = makeAttackOrigin(owner: player) else { return }
     let emissionPosition = commander.flightSimulation.pose.position
     guard let contact else {
-      recordPlayerLaserDischarge(laser)
+      recordPlayerLaserDischarge(laser, emission: origin.emissionID)
       recordCombat(
         origin: origin, kind: .laser, outcome: .discharge, target: nil,
         worldPosition: emissionPosition, emissionPosition: emissionPosition,
@@ -88,6 +88,11 @@ extension Game {
       return
     }
     let hit = contact.hit
+    if handleNativePracticeContact(contact, origin: origin, kind: .laser) {
+      recordPlayerLaserDischarge(laser, emission: origin.emissionID)
+      commander.crimeLedger.finishEmission(origin.emissionID)
+      return
+    }
     if contact.selectedTargetBody?.scriptNPC != nil {
       do {
         let receipt = try applyNativeMissionContact(
@@ -103,11 +108,13 @@ extension Game {
         hit, origin: origin, kind: .laser, damage: damage, laser: laser, mount: mount,
         emissionPosition: emissionPosition)
     }
-    recordPlayerLaserDischarge(laser)
+    recordPlayerLaserDischarge(laser, emission: origin.emissionID)
     commander.crimeLedger.finishEmission(origin.emissionID)
   }
 
-  private mutating func recordPlayerLaserDischarge(_ laser: LaserKind) {
+  private mutating func recordPlayerLaserDischarge(_ laser: LaserKind, emission: UInt64) {
+    observeSafeGunneryDischarge(emission: emission)
+    observeDefensiveFlightDischarge(emission: emission)
     fireCooldown = laser.firingInterval
     laserHeat += 10
     energy -= Self.combatLaserEnergyCost
@@ -235,7 +242,7 @@ extension Game {
       let origin = makeAttackOrigin(owner: player)
     else { return false }
     let launch = commander.flightSimulation.pose.position
-    for body in bodies where body.energy > 0 {
+    for body in bodies where body.energy > 0 && nativePracticeReservation(body) == nil {
       guard
         applyCombatHit(
           .init(target: .body(body.id), distance: body.position.length, point: body.position),
@@ -272,7 +279,8 @@ extension Game {
   var gameplayMeshOverrides: [Int: Mesh] {
     var result: [Int: Mesh] = [:]
     for body in bodies {
-      if body.physical?.catalogueShipID != nil || body.physical?.rock != nil
+      if nativePracticeReservation(body) != nil
+        || body.physical?.catalogueShipID != nil || body.physical?.rock != nil
         || body.physical?.salvage?.lot != nil || body.nativeStationIdentity != nil
         || body.physical?.ordnance?.profile == .alienSeeker
       {
@@ -283,6 +291,7 @@ extension Game {
   }
 
   func gameplayMesh(for body: SpaceBody) -> Mesh {
+    if let mesh = nativePracticeMesh(body) { return mesh }
     if body.physical?.ordnance?.profile == .alienSeeker { return AlienMissileMesh.mesh }
     if let identity = body.nativeStationIdentity {
       guard nativeStationBodyIsCurrent(body),

@@ -1487,6 +1487,7 @@ extension Game {
   /// effects or translating any other actor twice. Reproject their current world
   /// poses through the retained player frame; station rotation/time still advances.
   mutating func stopAtStationImpact(at before: ShipPose) {
+    observeDefensiveFlightCollision()
     stationImpactRevision = gameplayRevision
     let attempted = commander.flightSimulation.pose
     rotateScriptNPCVelocities(from: attempted, to: before)

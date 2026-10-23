@@ -27,6 +27,11 @@ extension Game {
     target: GameplayHitTarget?, worldPosition: Vector3, emissionPosition: Vector3? = nil,
     laser: LaserKind? = nil, mount: LaserMount? = nil, victimPart: String? = nil
   ) -> CombatIncident? {
+    if case .body(let id) = target,
+      let body = bodies.first(where: { $0.id == id }), nativePracticeReservation(body) != nil
+    {
+      return nil
+    }
     ensurePhysicalActors()
     guard let context = gameplayContext() else { return nil }
     return recordCombatWithEntitlement(
@@ -66,6 +71,10 @@ extension Game {
     guard resolution.accepted else { return nil }
     gameplayCombatTrace?.append(incident)
     applyCrimeResolution(resolution, target: target, origin: origin, context: context)
+    if outcome == .hit {
+      observeSafeGunneryOrdinaryHit(incident)
+      observeDefensiveFlightOrdinaryHit(incident)
+    }
     return incident
   }
 
@@ -79,6 +88,8 @@ extension Game {
     guard damage.isFinite, damage >= 0, hit.distance.isFinite, hit.distance >= 0,
       hit.point.finite, energyMultiplier.isFinite, energyMultiplier >= 0
     else { return nil }
+    // Practice attribution belongs to the sealed native contact route, never raw damage.
+    if nativePracticeReservedTarget(hit) { return nil }
     ensurePhysicalActors()
     switch hit.target {
     case .body:

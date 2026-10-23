@@ -20,7 +20,7 @@ extension Display {
     case .rumour: wantedBoard(game, width: width, height: height)
     case .secret, .mission, .gameOver:
       compactScreen(game, width: width, height: height)
-    case .front, .rear, .left, .right: cockpit(game, width: width, height: height)
+    case .front, .rear, .left, .right: defensiveFlightCockpit(game, width: width, height: height)
     }
   }
   static func helpScreen(_ game: Game, width: Double, height: Double) -> Frame {

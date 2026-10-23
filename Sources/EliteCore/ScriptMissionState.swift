@@ -111,6 +111,9 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     var savedNativeInductionSeed: NativeInductionSeedContract?
     var savedWayfarerInduction: NativeWayfarerInductionState?
     var savedFlightReception: Field<NativeFlightReceptionState>?
+    var savedNativePractice: Field<NativePracticeState>?
+    var savedSafeGunnery: Field<NativeSafeGunneryState>?
+    var savedDefensiveFlight: Field<NativeDefensiveFlightState>?
     var savedMeasuredExtraction: Field<NativeMeasuredExtractionState>?
     var savedRecordRecovery: Field<WayfarerRecordRecoveryState>?
     var savedIdentifiedSalvage: Field<NativeIdentifiedSalvageState>?
@@ -154,6 +157,9 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
       initializeSavedNativeCrewLog()
       initializeSavedNativeInductionUtility()
       initializeSavedFlightReception()
+      initializeSavedNativePractice()
+      initializeSavedSafeGunnery()
+      initializeSavedDefensiveFlight()
       initializeSavedMeasuredExtraction()
       initializeSavedRecordRecovery()
       initializeSavedIdentifiedSalvage()
@@ -223,6 +229,21 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     }
 
     @inline(never)
+    private func initializeSavedNativePractice() {
+      savedNativePractice = Field<NativePracticeState>()
+    }
+
+    @inline(never)
+    private func initializeSavedSafeGunnery() {
+      savedSafeGunnery = Field<NativeSafeGunneryState>()
+    }
+
+    @inline(never)
+    private func initializeSavedDefensiveFlight() {
+      savedDefensiveFlight = Field<NativeDefensiveFlightState>()
+    }
+
+    @inline(never)
     private func initializeSavedMeasuredExtraction() {
       savedMeasuredExtraction = Field<NativeMeasuredExtractionState>()
     }
@@ -285,6 +306,9 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
       copySavedNativeInductionSeed(from: source)
       copySavedWayfarerInduction(from: source)
       copySavedFlightReception(from: source)
+      copySavedNativePractice(from: source)
+      copySavedSafeGunnery(from: source)
+      copySavedDefensiveFlight(from: source)
       copySavedMeasuredExtraction(from: source)
       copySavedRecordRecovery(from: source)
       copySavedIdentifiedSalvage(from: source)
@@ -439,6 +463,21 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     }
 
     @inline(never)
+    private func copySavedNativePractice(from source: Storage) {
+      savedNativePractice = source.savedNativePractice
+    }
+
+    @inline(never)
+    private func copySavedSafeGunnery(from source: Storage) {
+      savedSafeGunnery = source.savedSafeGunnery
+    }
+
+    @inline(never)
+    private func copySavedDefensiveFlight(from source: Storage) {
+      savedDefensiveFlight = source.savedDefensiveFlight
+    }
+
+    @inline(never)
     private func copySavedMeasuredExtraction(from source: Storage) {
       savedMeasuredExtraction = source.savedMeasuredExtraction
     }
@@ -575,6 +614,9 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
       try decodeSavedNativeInductionSeed(from: values)
       try decodeSavedWayfarerInduction(from: values)
       try decodeSavedFlightReception(from: values)
+      try decodeSavedNativePractice(from: values)
+      try decodeSavedSafeGunnery(from: values)
+      try decodeSavedDefensiveFlight(from: values)
       try decodeSavedMeasuredExtraction(from: values)
       try decodeSavedRecordRecovery(from: values)
       try decodeSavedIdentifiedSalvage(from: values)
@@ -787,6 +829,28 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     }
 
     @inline(never)
+    private func decodeSavedNativePractice(from values: KeyedDecodingContainer<CodingKeys>) throws {
+      savedNativePractice = Field(
+        try values.decodeIfPresent(
+          NativePracticeState.self, forKey: .savedNativePractice))
+    }
+
+    @inline(never)
+    private func decodeSavedSafeGunnery(from values: KeyedDecodingContainer<CodingKeys>) throws {
+      savedSafeGunnery = Field(
+        try values.decodeIfPresent(
+          NativeSafeGunneryState.self, forKey: .savedSafeGunnery))
+    }
+
+    @inline(never)
+    private func decodeSavedDefensiveFlight(from values: KeyedDecodingContainer<CodingKeys>) throws
+    {
+      savedDefensiveFlight = Field(
+        try values.decodeIfPresent(
+          NativeDefensiveFlightState.self, forKey: .savedDefensiveFlight))
+    }
+
+    @inline(never)
     private func decodeSavedMeasuredExtraction(from values: KeyedDecodingContainer<CodingKeys>)
       throws
     {
@@ -936,6 +1000,9 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
       try encodeSavedNativeInductionSeed(to: &values)
       try encodeSavedWayfarerInduction(to: &values)
       try encodeSavedFlightReception(to: &values)
+      try encodeSavedNativePractice(to: &values)
+      try encodeSavedSafeGunnery(to: &values)
+      try encodeSavedDefensiveFlight(to: &values)
       try encodeSavedMeasuredExtraction(to: &values)
       try encodeSavedRecordRecovery(to: &values)
       try encodeSavedIdentifiedSalvage(to: &values)
@@ -1147,6 +1214,27 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
       throws
     {
       try values.encodeIfPresent(savedFlightReception!.value, forKey: .savedFlightReception)
+    }
+
+    @inline(never)
+    private func encodeSavedNativePractice(to values: inout KeyedEncodingContainer<CodingKeys>)
+      throws
+    {
+      try values.encodeIfPresent(savedNativePractice!.value, forKey: .savedNativePractice)
+    }
+
+    @inline(never)
+    private func encodeSavedSafeGunnery(to values: inout KeyedEncodingContainer<CodingKeys>)
+      throws
+    {
+      try values.encodeIfPresent(savedSafeGunnery!.value, forKey: .savedSafeGunnery)
+    }
+
+    @inline(never)
+    private func encodeSavedDefensiveFlight(to values: inout KeyedEncodingContainer<CodingKeys>)
+      throws
+    {
+      try values.encodeIfPresent(savedDefensiveFlight!.value, forKey: .savedDefensiveFlight)
     }
 
     @inline(never)
@@ -1605,6 +1693,39 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
       yield &payload.savedFlightReception!.value
     }
   }
+  var savedNativePractice: NativePracticeState? {
+    _read { yield payload.savedNativePractice!.value }
+    set {
+      ensureUniqueStorage()
+      payload.savedNativePractice!.value = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &payload.savedNativePractice!.value
+    }
+  }
+  var savedSafeGunnery: NativeSafeGunneryState? {
+    _read { yield payload.savedSafeGunnery!.value }
+    set {
+      ensureUniqueStorage()
+      payload.savedSafeGunnery!.value = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &payload.savedSafeGunnery!.value
+    }
+  }
+  var savedDefensiveFlight: NativeDefensiveFlightState? {
+    _read { yield payload.savedDefensiveFlight!.value }
+    set {
+      ensureUniqueStorage()
+      payload.savedDefensiveFlight!.value = newValue
+    }
+    _modify {
+      ensureUniqueStorage()
+      yield &payload.savedDefensiveFlight!.value
+    }
+  }
 
   var savedMeasuredExtraction: NativeMeasuredExtractionState? {
     _read { yield payload.savedMeasuredExtraction!.value }
@@ -1891,6 +2012,9 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     guard equalSavedNativeInductionSeed(lhs.payload, rhs.payload) else { return false }
     guard equalSavedWayfarerInduction(lhs.payload, rhs.payload) else { return false }
     guard equalSavedFlightReception(lhs.payload, rhs.payload) else { return false }
+    guard equalSavedNativePractice(lhs.payload, rhs.payload) else { return false }
+    guard equalSavedSafeGunnery(lhs.payload, rhs.payload) else { return false }
+    guard equalSavedDefensiveFlight(lhs.payload, rhs.payload) else { return false }
     guard equalSavedMeasuredExtraction(lhs.payload, rhs.payload) else { return false }
     guard equalSavedRecordRecovery(lhs.payload, rhs.payload) else { return false }
     guard equalSavedIdentifiedSalvage(lhs.payload, rhs.payload) else { return false }
@@ -2090,6 +2214,24 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   {
     lhs.savedFlightReception!.value == rhs.savedFlightReception!.value
   }
+  @inline(never)
+  private static func equalSavedNativePractice(_ lhs: Storage, _ rhs: Storage)
+    -> Bool
+  {
+    lhs.savedNativePractice!.value == rhs.savedNativePractice!.value
+  }
+  @inline(never)
+  private static func equalSavedSafeGunnery(_ lhs: Storage, _ rhs: Storage)
+    -> Bool
+  {
+    lhs.savedSafeGunnery!.value == rhs.savedSafeGunnery!.value
+  }
+  @inline(never)
+  private static func equalSavedDefensiveFlight(_ lhs: Storage, _ rhs: Storage)
+    -> Bool
+  {
+    lhs.savedDefensiveFlight!.value == rhs.savedDefensiveFlight!.value
+  }
 
   @inline(never)
   private static func equalSavedMeasuredExtraction(_ lhs: Storage, _ rhs: Storage)
@@ -2233,6 +2375,9 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
     case savedNativeInductionSeed
     case savedWayfarerInduction
     case savedFlightReception
+    case savedNativePractice
+    case savedSafeGunnery
+    case savedDefensiveFlight
     case savedMeasuredExtraction
     case savedRecordRecovery
     case savedIdentifiedSalvage
@@ -2454,6 +2599,21 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     _read { yield storage[0].savedWayfarerInduction }
     _modify { yield &storage[0].savedWayfarerInduction }
   }
+  var savedDefensiveFlight: NativeDefensiveFlightState? {
+    _read { yield storage[0].savedDefensiveFlight }
+    _modify { yield &storage[0].savedDefensiveFlight }
+  }
+
+  var savedSafeGunnery: NativeSafeGunneryState? {
+    _read { yield storage[0].savedSafeGunnery }
+    _modify { yield &storage[0].savedSafeGunnery }
+  }
+
+  var savedNativePractice: NativePracticeState? {
+    _read { yield storage[0].savedNativePractice }
+    _modify { yield &storage[0].savedNativePractice }
+  }
+
   var savedFlightReception: NativeFlightReceptionState? {
     _read { yield storage[0].savedFlightReception }
     _modify { yield &storage[0].savedFlightReception }
@@ -3100,6 +3260,12 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
 
   @inline(never)
   private func instanceReceptionPrefixValid(_ instance: borrowing ScriptInstance) -> Bool {
+    if NativeDefensiveFlightSave.marked(instance), !NativeDefensiveFlightSave.shapeValid(instance) {
+      return false
+    }
+    if NativeSafeGunnerySave.marked(instance), !NativeSafeGunnerySave.shapeValid(instance) {
+      return false
+    }
     if instance.definition == NativeFlightReception.stateID {
       guard let practice = instance.savedFlightReception,
         practice.permission.mission == instance.id, instance.payloads.isEmpty
