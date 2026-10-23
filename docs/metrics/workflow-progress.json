@@ -9099,6 +9099,19 @@
       "reviewed_correction_blob": "826b14174b30f2d3d8fccf58edb8c250edd98eb5",
       "source_review": "CLEAR",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T20:47:54.710498+00:00",
+      "checkpoint_key": "20261023-m01-d80-admissions-entry-fault",
+      "event": "Ownership compiler correction builds; current admissions entry fault scopes live-buffer reduction",
+      "head": "d80ba7b436f31664bc9d4bed2a8b77c51b6bbcdc",
+      "issue": 161,
+      "build_seconds": 73.12,
+      "process_seconds": 84.662752458,
+      "result": "runtime FAILURE signal10/exit1",
+      "completed_methods": 0,
+      "fault_scope": "prepareContractAdmissions+700; no exact statement",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
