@@ -175,7 +175,10 @@ public struct Commander: Sendable, Equatable, Codable {
       readSystem: {
         SystemIdentity(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
       },
-      readOwner: { commander.pointee.savedEquipmentInventory?.owner },
+      readOwner: {
+        if let inventory = commander.pointee.savedEquipmentInventory { return inventory.owner }
+        return nil
+      },
       readPhysicalTime: { Self.nativeStationReadFlight(at: commander).physicalTime },
       readStationPosition: {
         Self.nativeStationReadFlight(at: commander).anchors?.station.position
