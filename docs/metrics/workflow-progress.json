@@ -9840,6 +9840,19 @@
       "scope": "Equivalent exact retained-child early refusal before marker hashing or lifetime-only entry reduction; preserve full authority and hash/UUID policy",
       "unit_pass": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T22:49:03.547933+00:00",
+      "checkpoint_key": "20261023-m01-164-prehash-refusal-source-clear",
+      "event": "Current crew-log marker early refusal implemented and independently source-reviewed; affected batch pending",
+      "source_blob": "9d6a225f0ac93c6fa217328c5d895ed4277334e6",
+      "issue": 164,
+      "owner": "G1",
+      "reviewer": "MBA",
+      "source_review": "clear",
+      "unit_pass": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
