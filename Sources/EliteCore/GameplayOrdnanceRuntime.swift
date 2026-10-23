@@ -1,5 +1,24 @@
 import Foundation
 
+private final class PreparedGameplayMissile {
+  let index: Int
+  let owner: ActorIdentity
+  let emissionPosition: Vector3
+  let origin: AttackOrigin
+  let state: OrdnanceState
+
+  init(
+    index: Int, owner: ActorIdentity, emissionPosition: Vector3,
+    origin: AttackOrigin, state: OrdnanceState
+  ) {
+    self.index = index
+    self.owner = owner
+    self.emissionPosition = emissionPosition
+    self.origin = origin
+    self.state = state
+  }
+}
+
 extension Game {
   /// Admission, ownership and launch evidence are one transaction. A refused launch leaves
   /// ammunition, identities, cash and target state unchanged.
@@ -59,13 +78,49 @@ extension Game {
     return true
   }
 
+  @inline(never)
   private mutating func admitGameplayMissile(
     ownerBodyID: Int?, targetBodyID: Int?, profile: OrdnanceProfile = .standardMissile,
     playerAmmunition: PlayerAmmunitionSource? = nil
   ) -> Bool {
+    guard
+      let prepared = prepareAdmittedGameplayMissile(
+        ownerBodyID: ownerBodyID, targetBodyID: targetBodyID, profile: profile,
+        playerAmmunition: playerAmmunition)
+    else { return false }
+    guard
+      nativePracticeMissileLaunchAllowed(targetBodyID: targetBodyID, owner: prepared.owner)
+        || recordCombat(
+          origin: prepared.origin, kind: .missile, outcome: .targetedLaunch,
+          target: targetBodyID.map(GameplayHitTarget.body) ?? .player,
+          worldPosition: prepared.emissionPosition,
+          emissionPosition: prepared.emissionPosition) != nil
+    else { return false }
+
+    bodies[prepared.index].physical?.attackOrigin = prepared.origin
+    bodies[prepared.index].physical?.emissionPosition = prepared.emissionPosition
+    bodies[prepared.index].physical?.ordnance = prepared.state
+    bodies[prepared.index].physical?.velocity = prepared.state.velocity
+    bodies[prepared.index].rotationRate = 0
+    bodies[prepared.index].playerMissileTarget = targetBodyID
+    bodies[prepared.index].enemyMissile = ownerBodyID != nil
+    bodies[prepared.index].hostile = ownerBodyID != nil
+    bodies[prepared.index].missileSourceID = ownerBodyID
+    observeSafeGunneryMissileLaunch(prepared.origin)
+    if prepared.origin.owner == commander.flightSimulation.player {
+      observeDefensiveFlightDischarge(emission: prepared.origin.emissionID)
+    }
+    return true
+  }
+
+  @inline(never)
+  private mutating func prepareAdmittedGameplayMissile(
+    ownerBodyID: Int?, targetBodyID: Int?, profile: OrdnanceProfile,
+    playerAmmunition: PlayerAmmunitionSource?
+  ) -> PreparedGameplayMissile? {
     if let ownerBodyID {
       guard let body = bodies.first(where: { $0.id == ownerBodyID }), !isEMPDisabled(body)
-      else { return false }
+      else { return nil }
     }
     ensurePhysicalActors()
     guard let context = gameplayContext(), energy > 0,
@@ -73,10 +128,10 @@ extension Game {
       let target = missileActor(bodyID: targetBodyID, context: context), target.energy > 0,
       target.identity != owner.identity,
       let sequence = commander.flightSimulation.allocateSpawn()
-    else { return false }
+    else { return nil }
     let direction =
       ownerBodyID == nil ? owner.orientation.z : (target.position - owner.position).unit
-    guard direction.length > 0 else { return false }
+    guard direction.length > 0 else { return nil }
     let position = owner.position + direction * 24
     let request = SpawnRequest(
       identity: .init(
@@ -98,28 +153,11 @@ extension Game {
       let state = OrdnanceState(
         profile: profile, origin: origin,
         target: target.identity, position: position, direction: direction,
-        emissionPosition: owner.position),
-      nativePracticeMissileLaunchAllowed(targetBodyID: targetBodyID, owner: owner.identity)
-        || recordCombat(
-          origin: origin, kind: .missile, outcome: .targetedLaunch,
-          target: targetBodyID.map(GameplayHitTarget.body) ?? .player,
-          worldPosition: owner.position,
-          emissionPosition: owner.position) != nil
-    else { return false }
-    bodies[index].physical?.attackOrigin = origin
-    bodies[index].physical?.emissionPosition = owner.position
-    bodies[index].physical?.ordnance = state
-    bodies[index].physical?.velocity = state.velocity
-    bodies[index].rotationRate = 0
-    bodies[index].playerMissileTarget = targetBodyID
-    bodies[index].enemyMissile = ownerBodyID != nil
-    bodies[index].hostile = ownerBodyID != nil
-    bodies[index].missileSourceID = ownerBodyID
-    observeSafeGunneryMissileLaunch(origin)
-    if origin.owner == commander.flightSimulation.player {
-      observeDefensiveFlightDischarge(emission: origin.emissionID)
-    }
-    return true
+        emissionPosition: owner.position)
+    else { return nil }
+    return PreparedGameplayMissile(
+      index: index, owner: owner.identity, emissionPosition: owner.position, origin: origin,
+      state: state)
   }
 
   private func missileActor(bodyID: Int?, context: EncounterContext) -> ActorSnapshot? {
