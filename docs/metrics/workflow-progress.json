@@ -7246,6 +7246,23 @@
       "binary_uuid": "C4D3B4B4-6C4B-3D52-AA07-3A9665163F83",
       "binary_sha256": "ac0edc3f23f7bb056763f38d90264fef0b598f3abb2cc37b83d170fa6ef5c2d0",
       "assignment": "G1 explicit deliverable; MBA independent diff and original regression review"
+    },
+    {
+      "at": "2026-10-23T16:21:10Z",
+      "checkpoint_key": "20261023-m01-equipment-frame-correction-authored",
+      "event": "Equipment purchase frame correction authored for independent review and focused units",
+      "issue": 146,
+      "owner": "G1",
+      "reviewer": "MBA",
+      "working_tree": "station-entry-value-lifetimes",
+      "changed_files": 4,
+      "implementation_status": "authored, not yet qualified or published",
+      "delta": "immutable internal quote snapshot storage; migration/detail lifetime separation; unused receiver removed; fuel planned-value frame separated",
+      "review_status": "in progress",
+      "focused_units_status": "preparing existing original affected selection",
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
