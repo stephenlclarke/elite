@@ -9908,6 +9908,23 @@
       "capture_scope": "One existing built changed image/default runtime/same affected selection/skip-build/owned first fault",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-23T22:58:20.101996+00:00",
+      "checkpoint_key": "20261023-m01-remove-redundant75-unit-vm-block",
+      "event": "Cancel redundant nonrequired75 unit rebuild and superseded quality to free evidence path; current required quality preserved",
+      "head": "75eec9bfb4f66ba5ead1602265d9c4c7b178162d",
+      "cancel_requested": [
+        40036708606,
+        40035400887
+      ],
+      "required_quality_preserved": 40036712726,
+      "verified_protection_contexts": [
+        "quality"
+      ],
+      "reason": "Exact source already has independently verified failed focused normal batch; redundant rebuild blocks current fault capture VM",
+      "count_as_pass": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
