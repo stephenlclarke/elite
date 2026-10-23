@@ -33,31 +33,25 @@ private final class PreparedContractJob: Sendable {
 
 /// Immutable synchronous preparation storage keeps future admission payloads off the guard frame.
 private final class PreparedContractAcceptance: Sendable {
-  let key: String
-  let index: Int
-  let pack: ScriptPack
-  let board: ScriptContractBoard
-  let offer: ScriptContractOffer
-  let job: ScriptContractJob
-  let instanceID: UUID
+  let preparation: PreparedContractJob
+  var key: String { preparation.key }
+  var index: Int { preparation.index }
+  var pack: ScriptPack { preparation.pack }
+  var board: ScriptContractBoard { preparation.board }
+  var offer: ScriptContractOffer { preparation.offer }
+  var job: ScriptContractJob { preparation.job }
+  var instanceID: UUID { preparation.instanceID }
   let pledgeAdmission: ScriptPledgeAdmission?
   let courierAdmission: ScriptCourierAdmission?
   let freightAdmission: ScriptFreightIssueAdmission?
 
   @inline(never)
   init(
-    key: String, index: Int, pack: ScriptPack, board: ScriptContractBoard,
-    offer: ScriptContractOffer, job: ScriptContractJob, instanceID: UUID,
+    preparation: PreparedContractJob,
     pledgeAdmission: ScriptPledgeAdmission?, courierAdmission: ScriptCourierAdmission?,
     freightAdmission: ScriptFreightIssueAdmission?
   ) {
-    self.key = key
-    self.index = index
-    self.pack = pack
-    self.board = board
-    self.offer = offer
-    self.job = job
-    self.instanceID = instanceID
+    self.preparation = preparation
     self.pledgeAdmission = pledgeAdmission
     self.courierAdmission = courierAdmission
     self.freightAdmission = freightAdmission
@@ -412,36 +406,59 @@ extension Game {
   private mutating func prepareContractAdmissions(
     _ preparation: PreparedContractJob, pledge: ScriptPledgePreview?, confirmationToken: UUID
   ) throws -> PreparedContractAcceptance {
-    var pledgeAdmission: ScriptPledgeAdmission? = nil
-    var courierAdmission: ScriptCourierAdmission? = nil
-    if let pledge {
-      pledgeAdmission = .init(
-        instance: preparation.instanceID, board: preparation.board, offer: preparation.offer,
-        preview: pledge, epoch: ecmControl.epoch,
-        sequence: withReadOnlyScriptState { $0.nextEvent } + 1,
-        cause: scriptEventContext(
-          .init(
-            id: preparation.instanceID, definition: preparation.pack.manifest.stateID,
-            version: preparation.pack.manifest.version, digest: preparation.pack.digest)))
-    }
-    if preparation.offer.courier != nil {
-      guard scriptCourierAdmission == nil,
-        withReadOnlyScriptState({ $0.nextEvent }) < UInt64(Int64.max) - 1
-      else {
-        throw MissionPackError("Courier confirmation cannot start in this context.")
-      }
-      courierAdmission = .init(
-        kind: .issue, instance: preparation.instanceID,
-        item: ScriptCourierCustody.itemIdentity(preparation.instanceID),
-        proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: preparation.job)
-    }
+    let pledgeAdmission = prepareContractPledgeAdmission(preparation, pledge: pledge)
+    let courierAdmission = try prepareContractCourierAdmission(
+      preparation, confirmationToken: confirmationToken)
     return .init(
-      key: preparation.key, index: preparation.index, pack: preparation.pack,
-      board: preparation.board, offer: preparation.offer, job: preparation.job,
-      instanceID: preparation.instanceID, pledgeAdmission: pledgeAdmission,
+      preparation: preparation, pledgeAdmission: pledgeAdmission,
       courierAdmission: courierAdmission,
       freightAdmission: preparation.offer.freightPlan == nil
         ? nil : try prepareFreightIssue(job: preparation.job, instance: preparation.instanceID))
+  }
+
+  @inline(never)
+  private func prepareContractPledgeAdmission(
+    _ preparation: PreparedContractJob, pledge: ScriptPledgePreview?
+  ) -> ScriptPledgeAdmission? {
+    guard let pledge else { return nil }
+    return presentContractPledgeAdmission(preparation, pledge: pledge)
+  }
+
+  @inline(never)
+  private func presentContractPledgeAdmission(
+    _ preparation: PreparedContractJob, pledge: ScriptPledgePreview
+  ) -> ScriptPledgeAdmission {
+    .init(
+      instance: preparation.instanceID, board: preparation.board, offer: preparation.offer,
+      preview: pledge, epoch: ecmControl.epoch,
+      sequence: withReadOnlyScriptState { $0.nextEvent } + 1,
+      cause: scriptEventContext(
+        .init(
+          id: preparation.instanceID, definition: preparation.pack.manifest.stateID,
+          version: preparation.pack.manifest.version, digest: preparation.pack.digest)))
+  }
+
+  @inline(never)
+  private func prepareContractCourierAdmission(
+    _ preparation: PreparedContractJob, confirmationToken: UUID
+  ) throws -> ScriptCourierAdmission? {
+    guard preparation.offer.courier != nil else { return nil }
+    return try presentContractCourierAdmission(preparation, confirmationToken: confirmationToken)
+  }
+
+  @inline(never)
+  private func presentContractCourierAdmission(
+    _ preparation: PreparedContractJob, confirmationToken: UUID
+  ) throws -> ScriptCourierAdmission {
+    guard scriptCourierAdmission == nil,
+      withReadOnlyScriptState({ $0.nextEvent }) < UInt64(Int64.max) - 1
+    else {
+      throw MissionPackError("Courier confirmation cannot start in this context.")
+    }
+    return .init(
+      kind: .issue, instance: preparation.instanceID,
+      item: ScriptCourierCustody.itemIdentity(preparation.instanceID),
+      proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: preparation.job)
   }
   private mutating func performContractAcceptance(_ preparation: PreparedContractAcceptance)
     throws -> UUID
