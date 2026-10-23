@@ -69,7 +69,7 @@ extension Commander {
     // These activated originals have explicit metre contracts, independent of preview scaling.
     if [
       "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH025", "SH027", "SH029",
-      "SH030",
+      "SH030", "SH031",
     ]
     .contains(
       shipID),
