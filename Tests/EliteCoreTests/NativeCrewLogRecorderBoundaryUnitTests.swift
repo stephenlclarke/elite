@@ -31,7 +31,10 @@ private final class CrewLogRecorderBoundaryFixture {
 }
 
 struct NativeCrewLogRecorderBoundaryUnitTests {
-  @Test(arguments: ["ordinary", "missing-job", "missing-actor", "wrong-actor"])
+  @Test(arguments: [
+    "ordinary", "missing-job", "missing-actor", "wrong-actor", "missing-child",
+    "missing-authorization", "wrong-definition", "wrong-digest", "wrong-authorization",
+  ])
   func unmarkedTargetsRejectWithoutChangingRetainedCustody(condition: String) throws {
     let f = try CrewLogRecorderBoundaryFixture()
     var body = f.expected.body
@@ -41,6 +44,25 @@ struct NativeCrewLogRecorderBoundaryUnitTests {
       body.missionActorID = nil
     case "missing-job": body.missionInstanceID = nil
     case "missing-actor": body.missionActorID = nil
+    case "missing-child": f.game.commander.scriptState.instances.removeValue(forKey: f.childID)
+    case "missing-authorization":
+      f.game.commander.scriptState.instances[f.childID]?.savedNativeCrewLog = nil
+    case "wrong-definition", "wrong-digest":
+      let original = try #require(f.game.commander.scriptState.instances[f.childID])
+      var child = ScriptInstance(
+        id: original.id,
+        definition: condition == "wrong-definition" ? "other-mission" : original.definition,
+        version: original.version,
+        digest: condition == "wrong-digest" ? "other-digest" : original.digest)
+      child.savedNativeCrewLog = original.savedNativeCrewLog
+      child.ownedEncounters = original.ownedEncounters
+      f.game.commander.scriptState.instances[f.childID] = child
+    case "wrong-authorization":
+      let job = UUID()
+      body.missionInstanceID = job
+      body.missionActorID = NativeInductionCrewLogPack.actor(job: job, role: .recorder)
+      f.game.commander.scriptState.instances[job] =
+        f.game.commander.scriptState.instances[f.childID]
     default: body.missionActorID = UUID()
     }
     let before = f.game.commander

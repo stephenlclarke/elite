@@ -46,17 +46,18 @@ extension Game {
   /// Exact current native address and owning retained alias, never a selected name or serial alone.
   @inline(never)
   func inductionCrewLogRecorder(_ body: borrowing SpaceBody) -> ScriptOwnedActor? {
-    guard let job = NativeInductionCrewLogPack.markerJob(body) else { return nil }
+    guard let job = body.missionInstanceID, body.missionActorID != nil else { return nil }
     return inductionCrewLogRecorderAtMarkerAddress(body, job: job)
   }
 
-  // Body-only refusal must finish before entering any Commander-reading frame.
+  // Reject unrelated retained children before deriving the recorder actor identity.
   @inline(never)
   private func inductionCrewLogRecorderAtMarkerAddress(_ body: borrowing SpaceBody, job: UUID)
     -> ScriptOwnedActor?
   {
     guard withReadOnlyCommander({ NativeInductionCrewLogPack.marker(job: job, commander: $0) })
     else { return nil }
+    guard NativeInductionCrewLogPack.markerJob(body) == job else { return nil }
     return inductionCrewLogRecorderAfterMarker(body)
   }
 
