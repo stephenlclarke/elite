@@ -7681,6 +7681,25 @@
       "next_action": "publish promptly then exact-head required gates, no local replay",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:35:52Z",
+      "checkpoint_key": "20261023-m01-general-system-reader-correction-published",
+      "event": "Qualified current-system reader correction published for final-head gates",
+      "head": "ec333d904d8a607aed8a6f06883b464d341bc113",
+      "code_identical_to_qualified": "33343f8ac1901e102ee1a369d5bf125bd8623bf1",
+      "root_docs_source": "41d127de8e1acb860fd84bb0ea324d36ea068033",
+      "independent_composition_review": "MBA clear; exactactualpathdiffs verified",
+      "issue": 150,
+      "push_unit_run": 39996228917,
+      "required_quality_run": 39996239357,
+      "nonrequired_duplicate_pr_unit_run": 39996239377,
+      "old_required_quality_run": 39993737582,
+      "review_request": 6370921199,
+      "dependency_review": "passed39996239254",
+      "source_published": true,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
