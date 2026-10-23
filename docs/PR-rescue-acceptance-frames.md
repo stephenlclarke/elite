@@ -267,7 +267,6 @@ All five existing memo methods/five cases passed in0.109seconds, process5.485sec
 
 The first original flight attempt on this image ran under the established debugger. It crashed rather than completing the test. PID84190 stopped at fault0x16fe03ff8/SP0x16fe03fd0 inside no-access guard0x16fe00000–0x16fe04000. The visible top symbol is ___lldb_unnamed_symbol_6110834+48; no further semantic attribution is inferred from that name. Its visible caller is the actual contains lock closure at NativeStationAdmission.swift398, binding present cached content, then contains397, world.valid248 and the unchanged full validator/header/cohort/nested admission path. Exact command, binary, log and result remain in `/tmp/elite-station-memo-compare-travel-debugger`. The owned debuggee was killed after capture; debugger exit0 and17.496seconds are diagnostic, not a test pass. No ordinary flight replay ran after this diagnostic failure. The source owner has the current cache-side frame, and earlier focused results retain their original image attribution.
 
-
 ## Current source-only consolidation disposition
 
 The retained debugger and original-flight failures above remain historical diagnostic evidence, not a current execution plan. The current human instruction defers native journeys, debugger runs and broad performance/integration campaigns while the written M01 repairs are consolidated and integrated.

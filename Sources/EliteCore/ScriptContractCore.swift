@@ -491,7 +491,8 @@ extension Game {
     job.settled = true
     job.settlementOutcome = outcome
     job.settlementAmount = amount
-    job.settledAt = state.retainedSettlementCourierTerminalClock ?? candidate.scriptState.clock(job.clock)
+    job.settledAt =
+      state.retainedSettlementCourierTerminalClock ?? candidate.scriptState.clock(job.clock)
     state.contract = job
   }
   func contractSnapshot(_ instance: ScriptInstance) -> ScriptValue {

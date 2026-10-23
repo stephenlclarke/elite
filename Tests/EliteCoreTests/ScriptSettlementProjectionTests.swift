@@ -84,8 +84,11 @@ struct ScriptSettlementProjectionTests {
       return
     }
     let expectedAmount =
-      scenario == "abandoned" ? 0 : scenario == "failed-refund" ? 70
-      : scenario == "failed-no-refund" ? 20 : 250
+      scenario == "abandoned"
+      ? 0
+      : scenario == "failed-refund"
+        ? 70
+        : scenario == "failed-no-refund" ? 20 : 250
     let settled = try #require(state.contract)
     #expect(settled.settled && settled.settlementOutcome == outcome)
     #expect(settled.settlementAmount == expectedAmount)
@@ -128,8 +131,9 @@ struct ScriptSettlementProjectionTests {
     let terminal = clock.map { clock in
       ScriptCourierTerminalReceipt(
         id: UUID(), item: item, cause: .delivered,
-        proof: .init(sequence: 2, token: "terminal", revision: 1, epoch: UUID(), clock: clock,
-                     station: station), amount: 250)
+        proof: .init(
+          sequence: 2, token: "terminal", revision: 1, epoch: UUID(), clock: clock,
+          station: station), amount: 250)
     }
     return .init(item: item, issue: issue, terminal: terminal)
   }

@@ -24,10 +24,13 @@ struct NativePeopleCargoProjectionTests {
       let count = scenario == "two-pods" ? 2 : 1
       state.admissions = (0..<count).map { ordinal in
         .init(
-          person: .rescue(.init(owner: state.owner, batch: NativeOriginalRescueJourney.batch,
-                               ordinal: ordinal)),
+          person: .rescue(
+            .init(
+              owner: state.owner, batch: NativeOriginalRescueJourney.batch,
+              ordinal: ordinal)),
           origin: scenario == "captive" ? .capturedCrew : .originalRescuedPod,
-          operation: UUID(), actor: .init(system: .init(galaxy: 0, system: 85), visit: 1, entity: 2),
+          operation: UUID(),
+          actor: .init(system: .init(galaxy: 0, system: 85), visit: 1, entity: 2),
           collector: .init(system: .init(galaxy: 0, system: 85), visit: 1, entity: 0),
           owner: state.owner, hull: UUID(), tool: UUID(), inventoryRevision: 1,
           physicalTime: 0, epoch: UUID(), revision: 1)
@@ -67,7 +70,8 @@ struct NativePeopleCargoProjectionTests {
   private func fixture() -> NativePeopleCustodyState {
     let owner = UUID()
     var state = NativePeopleCustodyState(owner: owner)
-    let dock = NativeWayfarerInductionUnitTests().dock(owner: owner, system: 85, visit: 1, sequence: 1)
+    let dock = NativeWayfarerInductionUnitTests().dock(
+      owner: owner, system: 85, visit: 1, sequence: 1)
     state.originalRescue = .init(
       owner: owner,
       definition: .init(

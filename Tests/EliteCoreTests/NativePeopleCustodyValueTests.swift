@@ -110,7 +110,9 @@ struct NativePeopleCustodyValueTests {
   }
 
   @Test func originalFlatLegacyBytesAndAllEightFieldCodecRemainExact() throws {
-    let bytes = Data(#"{"admissions":[],"owner":"00000000-0000-0000-0000-000000000001","revision":0,"transfers":[]}"#.utf8)
+    let bytes = Data(
+      #"{"admissions":[],"owner":"00000000-0000-0000-0000-000000000001","revision":0,"transfers":[]}"#
+        .utf8)
     let empty = try JSONDecoder().decode(NativePeopleCustodyState.self, from: bytes)
     #expect(empty == NativePeopleCustodyState(owner: owner))
     #expect(try sortedEncoder().encode(empty) == bytes)
@@ -121,13 +123,16 @@ struct NativePeopleCustodyValueTests {
     #expect(restored == full)
     #expect(try sortedEncoder().encode(restored) == originalBytes)
     let root = try #require(JSONSerialization.jsonObject(with: originalBytes) as? [String: Any])
-    #expect(Set(root.keys) == [
-      "owner", "revision", "stationJourney", "outlookJourney", "originalRescue", "orbitalEvacuation",
-      "admissions", "transfers",
-    ])
+    #expect(
+      Set(root.keys) == [
+        "owner", "revision", "stationJourney", "outlookJourney", "originalRescue",
+        "orbitalEvacuation",
+        "admissions", "transfers",
+      ])
     for field in ["admissions", "transfers"] {
       var oversized = root
-      oversized[field] = Array(repeating: [String: String](), count: NativePeopleCustodyState.maximumPeople + 1)
+      oversized[field] = Array(
+        repeating: [String: String](), count: NativePeopleCustodyState.maximumPeople + 1)
       do {
         _ = try JSONDecoder().decode(
           NativePeopleCustodyState.self, from: JSONSerialization.data(withJSONObject: oversized))
@@ -165,16 +170,22 @@ struct NativePeopleCustodyValueTests {
     addOriginalRescue(to: &state, clock: clock)
     addEvacuation(to: &state)
     let actor = ActorIdentity(system: .init(galaxy: 0, system: 7), visit: 1, entity: 0)
-    let person = NativePersonReference.rescue(.init(
-      owner: owner, batch: NativeOriginalRescueJourney.batch, ordinal: 0))
-    state.admissions = [.init(
-      person: person, origin: .originalRescuedPod, operation: token, actor: actor, collector: actor,
-      owner: owner, hull: token, tool: token, inventoryRevision: 1, physicalTime: 0, epoch: token,
-      revision: 1)]
-    state.transfers = [.init(
-      operation: token, members: [person], kind: .care, dock: nil, collector: actor, owner: owner,
-      physicalTime: 0, calendarSeconds: 0, beforeCash: 0, afterCash: 0, beforeSlaves: 0,
-      afterSlaves: 0, price: 0, epoch: token, revision: 1)]
+    let person = NativePersonReference.rescue(
+      .init(
+        owner: owner, batch: NativeOriginalRescueJourney.batch, ordinal: 0))
+    state.admissions = [
+      .init(
+        person: person, origin: .originalRescuedPod, operation: token, actor: actor,
+        collector: actor,
+        owner: owner, hull: token, tool: token, inventoryRevision: 1, physicalTime: 0, epoch: token,
+        revision: 1)
+    ]
+    state.transfers = [
+      .init(
+        operation: token, members: [person], kind: .care, dock: nil, collector: actor, owner: owner,
+        physicalTime: 0, calendarSeconds: 0, beforeCash: 0, afterCash: 0, beforeSlaves: 0,
+        afterSlaves: 0, price: 0, epoch: token, revision: 1)
+    ]
     return state
   }
 
@@ -186,7 +197,8 @@ struct NativePeopleCustodyValueTests {
   private func addStationJourney(to state: inout NativePeopleCustodyState) {
     let dock = dock()
     state.stationJourney = .init(
-      owner: owner, definition: .init(
+      owner: owner,
+      definition: .init(
         batch: NativeStationPassengerJourney.batch, sourceGalaxy: 0, sourceSystem: 7,
         destinationGalaxy: 0, destinationSystem: 185, people: []),
       version: "1", digest: NativeStationPassengerJourney.digest, source: dock.station,
@@ -197,7 +209,8 @@ struct NativePeopleCustodyValueTests {
   private func addOutlookJourney(to state: inout NativePeopleCustodyState) {
     let dock = dock()
     state.outlookJourney = .init(
-      owner: owner, definition: .init(
+      owner: owner,
+      definition: .init(
         batch: NativeOrbitalOutlookJourney.batch, sourceGalaxy: 0, sourceSystem: 7,
         destinationGalaxy: 0, destinationSystem: 7, itinerary: [], people: []),
       version: "1", digest: NativeOrbitalOutlookJourney.digest, source: dock.station,
@@ -208,7 +221,8 @@ struct NativePeopleCustodyValueTests {
   private func addOriginalRescue(to state: inout NativePeopleCustodyState, clock: Double) {
     let dock = dock()
     state.originalRescue = .init(
-      owner: owner, definition: .init(
+      owner: owner,
+      definition: .init(
         batch: NativeOriginalRescueJourney.batch, sourceGalaxy: 0, sourceSystem: 85,
         destinationGalaxy: 0, destinationSystem: 241, people: []),
       version: "1", digest: NativeOriginalRescueJourney.digest, registration: dock,
@@ -220,7 +234,8 @@ struct NativePeopleCustodyValueTests {
   private func addEvacuation(to state: inout NativePeopleCustodyState) {
     let dock = dock()
     state.orbitalEvacuation = .init(
-      owner: owner, definition: .init(
+      owner: owner,
+      definition: .init(
         batch: NativeOriginalEvacuation.batch, sourceGalaxy: 0, sourceSystem: 7,
         destinationGalaxy: 0, destinationSystem: 185, people: []),
       version: "1", digest: NativeOriginalEvacuation.digest, source: dock.station,

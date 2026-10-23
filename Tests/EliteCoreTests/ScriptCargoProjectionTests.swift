@@ -68,8 +68,9 @@ struct ScriptCargoProjectionTests {
     case "empty": child.payloads = [:]
     case "bounds": child.payloads = ["zero": 0, "upper": 1_000_000]
     case "invalid": child.payloads = ["negative": -1, "large": Int.max]
-    case "too-many": child.payloads = Dictionary(
-      uniqueKeysWithValues: (0..<129).map { (String($0), $0) })
+    case "too-many":
+      child.payloads = Dictionary(
+        uniqueKeysWithValues: (0..<129).map { (String($0), $0) })
     default:
       Issue.record(Comment(rawValue: "Unrecognised payload fixture: " + scenario))
       return
@@ -89,10 +90,16 @@ struct ScriptCargoProjectionTests {
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.sortedKeys]
     let bytes = try encoder.encode(child)
-    #expect(child.hasAwaitingBuyNavigationTrade == (child.savedNavigationTrade?.stage == .awaitingBuy))
-    #expect(child.reservedSeedCargoTonnes == (child.savedNativeInductionSeed?.reservedCargoTonnes ?? 0))
-    #expect(child.reservedWorkshopCargoTonnes == (child.savedNativeInductionWorkshop?.reservedCargoTonnes ?? 0))
-    #expect(child.reservedClinicCargoTonnes == (child.savedNativeInductionClinic?.reservedCargoTonnes ?? 0))
+    #expect(
+      child.hasAwaitingBuyNavigationTrade == (child.savedNavigationTrade?.stage == .awaitingBuy))
+    #expect(
+      child.reservedSeedCargoTonnes == (child.savedNativeInductionSeed?.reservedCargoTonnes ?? 0))
+    #expect(
+      child.reservedWorkshopCargoTonnes
+        == (child.savedNativeInductionWorkshop?.reservedCargoTonnes ?? 0))
+    #expect(
+      child.reservedClinicCargoTonnes
+        == (child.savedNativeInductionClinic?.reservedCargoTonnes ?? 0))
     #expect(child.retainedCargoPayloads == child.payloads)
     #expect(child == retained)
     #expect(try encoder.encode(child) == bytes)
