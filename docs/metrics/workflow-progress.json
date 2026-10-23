@@ -10091,6 +10091,26 @@
       "committed_at_recorded": "2026-10-23T23:21:47.917470+00:00",
       "app_linked": true,
       "redundant_push_cancelled": 40038748856
+    },
+    {
+      "at": "2026-10-23T23:26:08.682325+00:00",
+      "checkpoint_key": "20261024-m01-eb7-11fail-metadata-frame-split-assigned",
+      "event": "Published pod repair;11-method normal failure verified; current prologue supports entire metadata dispatcher frame split",
+      "head": "eb7d147707634110f8faffa51a1dfe9892c3bd1b",
+      "source_head": "4d369066057b42c8cd21bb6ad1a83433aff124c1",
+      "build_seconds": 127.35,
+      "wall_seconds": 139.140399292,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_started": 11,
+      "methods_completed": 0,
+      "capture_seconds": 14.091448625,
+      "saved_slide": "0x113a6c000",
+      "repair_owner": "G1",
+      "reviewer": "MBA",
+      "cancel_requested": 40039445799,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
