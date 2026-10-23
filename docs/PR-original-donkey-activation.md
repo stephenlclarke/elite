@@ -1,0 +1,9 @@
+# feat(fleet): bind original Donkey trader hull
+
+SH018 now resolves to the original Donkey instead of its historical Caiman runtime refit. It uses the authored 56t hold, 20t expansion, speed37.7, acceleration11, 13-LY tank, 9-LY drive, five pylons, four laser facings and 209,000CR base price. Its trader role, technology-five blueprint requirement and existing common natural placement remain intact.
+
+The new physical contract checks the exact original specification/model identities, hashes, source path and declared metres. Every vertex supplies the physical envelope and origin-based clearance; physical/player meshes keep unnormalized geometry and all material/UV assignments. Raw assets and every historical profile field remain unchanged. The shared fitting projection is reused unchanged; no discovery, ownership, blueprint, equipment or passenger berth is granted.
+
+Five new component methods cover authentication/negative cases, original mechanics/history and unchanged hulls, complete physical/player appearance, trader/placement/access and earlier-role policy, plus standard fit and malformed retained input. All376 parent methods remain and five are added, for381. Six Python report fixtures, Swift syntax parsing, strict formatting, Markdown and whitespace checks pass. Actual Swift execution and independent review are pending; syntax checks are not a unit pass.
+
+This packet stacks on Sable b2754f11 with the reviewed current Mac runner configuration. Retarget after the parent merges without rewriting published history. It implements the physical prerequisite and runtime/source portion of [M04.H018](ISSUE-original-donkey-activation.md); M14 safe anchors, actual flight/docking and full hull acceptance remain open. No GUI/performance journey, broad coverage/sanitizer/leak gate or usable release is claimed. Source assets and README media are unchanged.
