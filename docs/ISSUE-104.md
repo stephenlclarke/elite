@@ -31,3 +31,15 @@ The first helper-split head2eb32553 failed compilation in17.028seconds: the
 right-hand autoclosure of `&&` consumed the borrowed state. No tests ran at that
 head. Replace that expression with an explicit capture guard and loss return,
 preserving left-to-right short-circuit behaviour without an autoclosure.
+
+## Reservation-audit reader attribution
+
+The explicit-guard split atd03006c6 compiled in76.94seconds but the normal
+check exited signal10 after91.215seconds, with zero completed methods. Its
+changed-source debugger capture retained UUIDA046A9E9-14F2-3F5E-B66D-A11E788BDD15,
+PID34127/thread21, fault0x16ff1bfb0 and SP0x16ff1bf60 in the actual guard
+0x16ff18000-0x16ff1c000. The caller chain reaches ReservationAuditSave.shapeValid
+through allSatisfy, sourceValid, valid and full event publication during the
+existing stale-input fixture's fresh acceptance. This is a newly attributed
+audit-reader path, not an assumed recurrence in the surveyor helper. Capture
+records remain in `/tmp/elite-104-d030-diagnostic`; debugger exit0 is not a pass.

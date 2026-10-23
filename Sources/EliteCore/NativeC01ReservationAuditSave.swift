@@ -72,18 +72,34 @@ enum NativeC01ReservationAuditSave {
     }
   }
 
-  static func shapeValid(_ state: NativeGlassMeridianState) -> Bool {
-    guard let value = state.reservationCase else { return true }
-    let source = value.source
+  @inline(never)
+  static func shapeValid(_ state: borrowing NativeGlassMeridianState) -> Bool {
+    if case .none = state.reservationCase { return true }
+    let source = state.reservationCase!.source
     let p = state.permission
     guard source.terms.valid, source.terms.mission == p.mission,
       source.terms.permission == p.operation, source.terms.owner == p.owner,
       source.terms.epoch == p.physicalTime,
-      state.readings.allSatisfy({ $0.reading.start >= source.terms.epoch }),
-      state.surveyor.map({ $0.source.physicalTime >= source.terms.epoch }) ?? true
+      state.readings.allSatisfy({ $0.reading.start >= source.terms.epoch })
     else { return false }
-    guard let audit = value.audit else { return value.laterLoss == nil }
-    guard let capture = state.surveyor?.capture,
+    if case .some = state.surveyor {
+      guard state.surveyor!.source.physicalTime >= source.terms.epoch else { return false }
+    }
+    guard let audit = state.reservationCase!.audit else {
+      return state.reservationCase!.laterLoss == nil
+    }
+    guard auditCaptureShapeValid(state, audit: audit) else { return false }
+    return auditLossShapeValid(state, audit: audit)
+  }
+
+  @inline(never)
+  private static func auditCaptureShapeValid(
+    _ state: borrowing NativeGlassMeridianState, audit: NativeC01ReservationAuditReceipt
+  ) -> Bool {
+    let source = state.reservationCase!.source
+    let p = state.permission
+    if case .none = state.surveyor { return false }
+    guard let capture = state.surveyor!.capture,
       audit.operation == NativeC01ReservationAuditReceipt.operation(source: source.terms.source),
       audit.sequence > source.lastSequence, audit.sequence < UInt64(Int64.max),
       audit.physicalTime.isFinite, audit.physicalTime >= capture.physicalTime,
@@ -111,37 +127,67 @@ enum NativeC01ReservationAuditSave {
       pin.dock.station.system == .init(galaxy: 0, system: 0),
       pin.inventoryRevision < UInt64(Int64.max), pin.missionRevision < UInt64(Int64.max) - 1
     else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func auditLossShapeValid(
+    _ state: borrowing NativeGlassMeridianState, audit: NativeC01ReservationAuditReceipt
+  ) -> Bool {
     if let loss = state.surveyor?.loss {
-      guard let observation = value.laterLoss, observation.loss == loss,
+      guard let observation = state.reservationCase!.laterLoss, observation.loss == loss,
         observation.audit == audit.operation, observation.sequence > audit.sequence,
         observation.sequence < UInt64(Int64.max), loss.physicalTime >= audit.physicalTime
       else { return false }
-    } else if value.laterLoss != nil {
+    } else if state.reservationCase!.laterLoss != nil {
       return false
     }
     return true
   }
 
-  static func sourceValid(_ mission: ScriptInstance, commander: borrowing Commander) -> Bool {
-    guard let state = mission.savedGlassMeridian, shapeValid(state),
-      let value = state.reservationCase,
+  @inline(never)
+  static func sourceValid(_ mission: ScriptInstance, commander: borrowing Commander)
+    -> Bool
+  {
+    if case .none = mission.savedGlassMeridian { return false }
+    return sourceStateValid(mission.savedGlassMeridian!, mission: mission, commander: commander)
+  }
+
+  @inline(never)
+  private static func sourceStateValid(
+    _ state: borrowing NativeGlassMeridianState, mission: ScriptInstance,
+    commander: borrowing Commander
+  ) -> Bool {
+    guard shapeValid(state) else { return false }
+    if case .none = state.reservationCase { return false }
+    let source = state.reservationCase!.source
+    guard
       mission.definition == NativeGlassMeridian.stateID,
       mission.digest == NativeGlassMeridian.digest,
       mission.version == NativeGlassMeridian.version,
-      value.source.terms.owner == commander.equipmentOwnerID,
-      value.source.terms.mission == mission.id,
-      value.source.terms.epoch <= commander.flightSimulation.physicalTime,
-      value.source.lastSequence <= commander.scriptState.nextEvent,
-      value.source.events.allSatisfy({ mission.hasAcknowledged($0.sequence) })
+      source.terms.owner == commander.equipmentOwnerID,
+      source.terms.mission == mission.id,
+      source.terms.epoch <= commander.flightSimulation.physicalTime,
+      source.lastSequence <= commander.scriptState.nextEvent,
+      source.events.allSatisfy({ mission.hasAcknowledged($0.sequence) })
     else { return false }
     return true
   }
 
+  @inline(never)
   static func valid(_ mission: ScriptInstance, commander: borrowing Commander) -> Bool {
-    guard let state = mission.savedGlassMeridian else { return true }
-    guard let value = state.reservationCase else { return true }
+    if case .none = mission.savedGlassMeridian { return true }
+    return presentStateValid(mission.savedGlassMeridian!, mission: mission, commander: commander)
+  }
+
+  @inline(never)
+  private static func presentStateValid(
+    _ state: borrowing NativeGlassMeridianState, mission: ScriptInstance,
+    commander: borrowing Commander
+  ) -> Bool {
+    if case .none = state.reservationCase { return true }
     guard sourceValid(mission, commander: commander) else { return false }
-    guard let audit = value.audit else { return true }
+    guard let audit = state.reservationCase!.audit else { return true }
     guard audit.sequence <= commander.scriptState.nextEvent,
       mission.hasAcknowledged(audit.sequence),
       audit.pin.missionRevision < mission.revision,
@@ -153,7 +199,15 @@ enum NativeC01ReservationAuditSave {
       mission.receipts.contains(audit.target),
       mission.receipts.contains(NativeC01ReservationAuditReceipt.localStage)
     else { return false }
-    if let loss = value.laterLoss {
+    return publishedLossValid(state, mission: mission, commander: commander)
+  }
+
+  @inline(never)
+  private static func publishedLossValid(
+    _ state: borrowing NativeGlassMeridianState, mission: ScriptInstance,
+    commander: borrowing Commander
+  ) -> Bool {
+    if let loss = state.reservationCase!.laterLoss {
       guard loss.sequence <= commander.scriptState.nextEvent,
         mission.hasAcknowledged(loss.sequence),
         loss.loss.physicalTime <= commander.flightSimulation.physicalTime
