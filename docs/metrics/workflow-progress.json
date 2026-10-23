@@ -7550,6 +7550,32 @@
       "source_published": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:19:40Z",
+      "checkpoint_key": "20261023-m01-old-quality-matches-corrected-system-projection",
+      "event": "Older quality failure matches already corrected149; current final-head gates continue",
+      "run": 39990605589,
+      "source": "b53a091f7d6b0714b90c717c0ecc9ad2d45cbfea",
+      "tested_merge": "af02450dd14a23244a57459eb3833a5165f18f5f",
+      "status": "failed coverage-check",
+      "make_ci_exit": 2,
+      "process_seconds": 1367.132039,
+      "compile_seconds": 684.3,
+      "ships_passed": 171,
+      "signal": 10,
+      "sanitizers_leaks_reached": false,
+      "binary_uuid": "79C971ED-AD4F-34CA-8FF9-51DF452E7BE9",
+      "binary_sha256": "6a7cd3ea4943d385693bb48a104ba6173b83b585fa9db798073a5ba21b54e4f8",
+      "attribution": "same pre-fix149 readSystem full Commander copy",
+      "new_issue": false,
+      "issue149_reopened": false,
+      "current_head": "854331da5c12c481e1157ebf52ce8dc32eb87ab5",
+      "current_unit_run": 39993726359,
+      "current_required_quality_run": 39993737582,
+      "current_status": "both in_progress; duplicate39993737558 cancelled",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
