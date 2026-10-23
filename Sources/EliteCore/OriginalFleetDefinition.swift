@@ -24,7 +24,19 @@ public struct OriginalFleetDefinition: Sendable {
   public let nativePerformance: ShipPerformance?
   public let approvedMeshAvailable: Bool
   public let integrationBlockers: [String]
-  public var runtimeReady: Bool { false }
+  public var runtimeReady: Bool {
+    OriginalStagLinerActivation.supports(self) || OriginalPantherFamilyActivation.supports(self)
+      || OriginalKiteInterceptorActivation.supports(self)
+      || OriginalSparrowhawkActivation.supports(self)
+      || OriginalIbexActivation.supports(self)
+      || OriginalGazelleExplorerActivation.supports(self)
+      || OriginalDonkeyActivation.supports(self)
+      || OriginalSableLinerActivation.supports(self)
+      || OriginalImpalaVoyagerActivation.supports(self)
+      || OriginalGyrfalconFamilyActivation.supports(self)
+      || OriginalGyrfalconAssaultActivation.supports(self)
+      || OriginalBurroActivation.supports(self) || OriginalHaflingerActivation.supports(self)
+  }
 }
 
 extension OriginalFleetDefinitionData {

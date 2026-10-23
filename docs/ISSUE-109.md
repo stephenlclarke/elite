@@ -23,3 +23,5 @@ The repository variable defaults to the hosted route. There is no game, save, si
 Guest provisioning confirmed macOS 15.7.7, VirtualMac2,1, Swift 6.1.2 and SDK 15.5. The observed Swift driver prefix is now accepted while the exact compiler identity remains required. Nine helper tests pass. Actual job qualification remains pending.
 
 Runner registration and managed restart are verified: GitHub runner `elite-mbp-vm` (ID 21) returned online and idle after a clean guest shutdown and LaunchAgent restart. The guest uses eight virtual CPUs and 10 GB RAM, with host shares, audio, USB accessories and clipboard disabled. No unit-job qualification or measured speedup is claimed yet.
+
+The independent promotion packet now carries only the seven reviewed PR111 runner paths onto the canonical feature base. M01 product qualification is deferred and is not a prerequisite for merging this infrastructure source. Preserve actual job qualification, cache reuse and measured speed as separate unresolved acceptance evidence; do not infer them from nine passing Python helper tests or the earlier online/idle runner observation.

@@ -16,95 +16,109 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
-    "ScriptSettlementProjectionTests": (
-        "ownedSettlementReadsPreserveNilValuesClockAndRetainedBytes",
-        "settlementKeepsPaymentRefusalWritebackAndClockFallback",
+    "OriginalStagLinerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "leisurePolicyKeepsDeclaredNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
-    "NativePeopleCustodyValueTests": (
-        "equalityAndSettersPreserveEveryOriginalField",
-        "nestedAndArrayModifyDetachAllSevenMutableFields",
-        "readsAndUniqueMutationKeepBackingAndLayoutSmall",
-        "originalFlatLegacyBytesAndAllEightFieldCodecRemainExact",
-        "memberEqualityKeepsNaNAndSignedZeroSemantics",
+    "OriginalPantherFamilyUnitTests": (
+        "exactMetreContractsRefuseSwappedModelsWrongRolesAndChangedSources",
+        "originalVariantMechanicsRolesBlueprintsAndHistoricalFieldsRemainDistinct",
+        "everyPhysicalPlayerVertexAndAppearanceAssignmentUsesItsOwnApprovedSource",
+        "eachStandardFitKeepsOwnCargoFuelAndWeaponLimitsAndRejectsMalformedRetainedInput",
     ),
-    "NativePeopleStorageTests": (
-        "populatedNativePeopleCopiesDetachNestedMutationsAndNilTransitions",
-        "nativePeopleCodecRetainsFlatPayloadAndNormalizesAbsentInoutResults",
-        "retainedNativePeopleSnapshotsSurviveRefusedPublicationAndSuccessfulRetry",
+    "OriginalKiteInterceptorUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "militaryPolicyKeepsNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
-    "NativePeopleCargoProjectionTests": (
-        "scalarCargoQueriesPreserveReservationPodsNilAndRetainedState",
+    "OriginalSparrowhawkUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalBountyHunterMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "bountyHunterPolicyKeepsNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
-    "ScriptCargoProjectionTests": (
-        "navigationStageQueryPreservesEveryStageAndRetainedValues",
-        "reservationQueriesPreserveNilReservedAndRetainedValues",
-        "payloadSnapshotPreservesExactValuesAndDetachesLaterMutation",
+    "OriginalIbexUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalTraderMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "traderPolicyKeepsNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
-    "NativeMainStationReceiptProjectionTests": (
-        "ownedReceiptPreservesDockEvidenceGuardsAndRetainedState",
+    "OriginalGazelleExplorerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "leisurePolicyKeepsDeclaredNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
-    "ContractStationProjectionTests": (
-        "ownedStationIdentityPreservesExactCoordinatesAndRetainedState",
+    "OriginalDonkeyUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalTraderMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "traderPolicyKeepsNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
-    "GameCommanderStorageTests": (
-        "gameCopiesDetachNestedCommanderMutationsAndWholeValueReplacement",
-        "actorSnapshotsRemainIndependentThroughActualXYZzyGrantAndCallerMutation",
-        "failedActualLaunchPublicationRollsBackNestedStateAndRetryKeepsOldSnapshots",
-        "borrowedCommanderReadsPreserveDefaultFlightAndOwnedSnapshots",
+    "OriginalSableLinerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "leisurePolicyKeepsDeclaredNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
-    "CommanderEqualityTests": (
-        "equalityDistinguishesChangedResourcesAndPresentDefaultSavedValues",
-        "nestedClockEqualityPreservesNaNAndSignedZeroMemberSemantics",
+    "OriginalImpalaVoyagerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "leisureRoleKeepsPendingAuthoredPlacementAndBlueprintPolicyWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
-    "ScriptEngineEqualityTests": (
-        "equalityPreservesOptionalPresenceInstancesEventsAndEachClock",
-        "clockEqualityPreservesNaNAndSignedZeroMemberSemantics",
+    "OriginalGyrfalconFamilyUnitTests": (
+        "eachApprovedMetreContractRejectsForeignMissingUnitsAndChangedSource",
+        "originalMechanicsAndMilitaryFabricationPolicyPreserveEachLegacyProfile",
+        "completePhysicalPlayerGeometryAndAppearanceUseOnlyThatVariantsApprovedMetres",
+        "standardFitAndInputValidationKeepEachVariantsLimitsWithoutGrantingEquipment",
     ),
-    "GameplayPhysicalAdoptionTests": (
-        "adoptionKeepsMainAnchorAndAllocatesOrdinaryActorsInBodyOrder",
-        "existingOwnershipTagsSkipAdoptionWithoutChangingCursorsOrValues",
-        "systemChangeEntersExactlyOnceEvenWhenNoBodyNeedsAdoption",
-        "failedIdentitySelectionSkipsOnlyThatBodyAndPreservesSpawnCursor",
-        "adoptionSystemReadPreservesExactScalarsAndRetainedCommanderBytes",
+    "OriginalGyrfalconAssaultUnitTests": (
+        "authenticatedAuthoredMetresProvideAllVertexBoundsAndRejectChangedSource",
+        "originalMilitaryMechanicsPreserveLegacyFieldsAndAllUnactivatedHullBindings",
+        "physicalPlayerAndSourceNotesKeepTheCompleteApprovedGeometryAndAppearance",
+        "militaryPolicyRetainsBlueprintTechnologyAndPlacementWithoutGrantingDiscovery",
+        "standardFitKeepsMilitaryCargoAndMountLimitsAndRefusesMalformedRetainedInput",
     ),
-    "NativeStationValidationReadTests": (
-        "fullPolicyPreservesEarlyRefusalAndLazyReaderOrder",
-        "storageHeaderMatchesFullCommanderPolicyAndPreservesRetainedBytes",
+    "OriginalHaflingerActivationUnitTests": (
+        "haflingerUsesOriginalMechanicsAndKeepsEveryLegacyIguanaProfileField",
+        "calibratedPhysicalAndPlayerGeometryNeverChangesTheRawSourceOrItsAppearance",
+        "originalHoldWeaponAndCrewLimitsDriveTheStandardFitWithoutGrantingFittings",
+        "traderFabricationStaysGatedAndInvalidRetainedInputsCannotBeSilentlyActivated",
     ),
-    "NativeStationPopulationLifetimeTests": (
-        "missingWorldReturnsBeforeSceneAndCursorValidation",
-        "emptyCohortKeepsBindingsWithoutAllocatingFromExhaustedCursors",
-        "refusedPopulationPreservesTheWholeCandidateAndErrorPriority",
-        "populationPublishesTheWholeCohortInOriginalSourceAndActorOrder",
+    "OriginalBurroActivationUnitTests": (
+        "originalMechanicsReplaceOnlyTheBurroRuntimeAndKeepHistoricalFields",
+        "playerAndPhysicalMeshesKeepEveryApprovedMetreVertexMaterialAndTexture",
+        "standardFitUsesOriginalLimitsWithoutAddingEquipmentOrWorkTools",
+        "originalTraderPolicyKeepsBlueprintFabricationAndExistingPlacementRequirements",
+        "invalidRetainedInputsCannotBeRepairedSilentlyByTheActivationAdapter",
     ),
-    "ScriptInstanceStorageTests": (
-        "copiesDetachNestedContractsDialogueReceiptsAndEncounterMutation",
-        "originalUnwrappedJSONAndEngineDictionaryRoundTripWithoutStorageKeys",
-        "decodingKeepsOriginalRequiredKeysOptionalOmissionAndMalformedRefusal",
-        "equalityDistinguishesChangedValuesAndAbsentVersusEmptyStoredCollections",
-        "explicitNullOptionalKeysRetainTheOriginalAbsentSchema",
-        "sharedCloneKeepsLargeNativePayloadsWhenTheContractIsModified",
-        "throwingNestedInoutMutationDetachesAndRemainsWritable",
-        "sharedPayloadEqualityPreservesNaNAndSignedZeroMemberSemantics",
-        "suppliedAndActorSnapshotInstancesKeepIndependentNestedValues",
-        "fieldBuffersDetachLargeNestedValuesAndKeepRetainedNilAndCodec",
+    "StationDockLocationTests": (
+        "undockedStatusNeverClaimsAStationFromRetainedDockMetadata",
+        "dockedStatusNamesTheActualMainOrNativeStation",
+        "unknownDockDoesNotInventAMainStationOrClaimTheShipIsInSpace",
     ),
-    "ScriptNavigationAvailabilityTests": (
-        "onlyExistingNavigationClaimsRequireApprovedContent",
-        "approvedNavigationRetainsDefaultExplicitBindingAndRefusalOrder",
-    ),
-    "NativeCrewLogRecorderBoundaryUnitTests": (
-        "unmarkedTargetsRejectWithoutChangingRetainedCustody",
-        "markedRecorderRetainsEveryPresentAuthorityAndExactReturnedBody",
-    ),
-    "FrontVisibilityRenderUnitTests": (
-        "frontRenderOverridePreservesOutputAndCallerState",
+    "StationScreenGuideTests": (
+        "flightGuideKeepsFlightDestinationsRegardlessOfDockServices",
+        "stationGuideNamesTheActualDockAndKeepsEveryDestination",
+        "oneUnavailableServiceDoesNotHideOtherAvailableServices",
     ),
     "NativeStationSnapshotUnitTests": (
-        "originalCoverSourceStillRequiresItsOwnActualActiveHazard",
         "inPlaceStationMeshReadPreservesGeometryAndRejectsMissingOrForeignActors",
         "exactSnapshotRejectsEveryStoredFieldChangeAndDuplicateOrAbsentBodies",
         "authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget",
+        "originalCoverSourceStillRequiresItsOwnActualActiveHazard",
     ),
     "NativeWayfarerInductionAccreditationUnitTests": (
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
@@ -454,7 +468,6 @@ METHODS = {
         "silhouetteClipsNearPlaneAndViewportAndRefusesNonFiniteProjectionInputs",
     ),
     "NativeC01SurveyorUnitTests": (
-        "heldRecorderProjectionKeepsAbsentFalseTrueAndRetainedCodecValuesIndependent",
         "unchangedOriginalContactFrameCompletesWithTheSameClosedC01Geometry",
         "passiveOriginalInertiaMovesOnceInsideManualAndWorkSweeps",
         "harrierKeepsEveryVisualFaceAt65MetresAndUsesClosedConservativeCollision",
@@ -465,6 +478,7 @@ METHODS = {
         "recorderDestructionIsTerminalAndHarrierLossAfterSeparationDoesNotDuplicateRecorder",
         "currentRecorderFormatsRejectEarlierEmbeddedUnknownAndExtraClaims",
         "stageThreeRetainsBothReadingsAndHasNoStageFourRewardClueOrTerminalReceipt",
+        "heldRecorderProjectionKeepsAbsentFalseTrueAndRetainedCodecValuesIndependent",
     ),
     "NativeGlassMeridianUnitTests": (
         "unacceptedOpeningRoutesToTheActualBoardAndRejectsChangedPackPins",
@@ -513,10 +527,6 @@ METHODS = {
         "installedFamilyLimitStoresExcessEvenWhenSlotsRemainSupported",
         "returningToALargerHullDoesNotRefitStoredSparesOrRecreateSoldBoundItems",
         "foreignOwnerUnknownNodeAndExhaustedRevisionRefuseWithoutChangingSource",
-    ),
-    "ContextControlHintUnitTests": (
-        "systemScrollHintsFollowActualViewportAndHelpReturnContext",
-        "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
     ),
     "FlightControlAuthorityUnitTests": (
         "allSharedFlightBindingsRoundTripWithoutFunctionKeys",
@@ -573,6 +583,90 @@ METHODS = {
         "foreignActorInstanceVisitAmbiguityAndUnboundPhasesCannotSupplyRoute",
         "explicitNPCProvenanceAndUnknownCargoRemainIndependentOfTransit",
         "unavailableWorldAndMissingRouteKeepHonestLocalOrUnknownDisclosure",
+    ),
+    "ScriptSettlementProjectionTests": (
+        "ownedSettlementReadsPreserveNilValuesClockAndRetainedBytes",
+        "settlementKeepsPaymentRefusalWritebackAndClockFallback",
+    ),
+    "NativePeopleCustodyValueTests": (
+        "equalityAndSettersPreserveEveryOriginalField",
+        "nestedAndArrayModifyDetachAllSevenMutableFields",
+        "readsAndUniqueMutationKeepBackingAndLayoutSmall",
+        "originalFlatLegacyBytesAndAllEightFieldCodecRemainExact",
+        "memberEqualityKeepsNaNAndSignedZeroSemantics",
+    ),
+    "NativePeopleStorageTests": (
+        "populatedNativePeopleCopiesDetachNestedMutationsAndNilTransitions",
+        "nativePeopleCodecRetainsFlatPayloadAndNormalizesAbsentInoutResults",
+        "retainedNativePeopleSnapshotsSurviveRefusedPublicationAndSuccessfulRetry",
+    ),
+    "NativePeopleCargoProjectionTests": (
+        "scalarCargoQueriesPreserveReservationPodsNilAndRetainedState",
+    ),
+    "ScriptCargoProjectionTests": (
+        "navigationStageQueryPreservesEveryStageAndRetainedValues",
+        "reservationQueriesPreserveNilReservedAndRetainedValues",
+        "payloadSnapshotPreservesExactValuesAndDetachesLaterMutation",
+    ),
+    "NativeMainStationReceiptProjectionTests": (
+        "ownedReceiptPreservesDockEvidenceGuardsAndRetainedState",
+    ),
+    "ContractStationProjectionTests": (
+        "ownedStationIdentityPreservesExactCoordinatesAndRetainedState",
+    ),
+    "GameCommanderStorageTests": (
+        "gameCopiesDetachNestedCommanderMutationsAndWholeValueReplacement",
+        "actorSnapshotsRemainIndependentThroughActualXYZzyGrantAndCallerMutation",
+        "failedActualLaunchPublicationRollsBackNestedStateAndRetryKeepsOldSnapshots",
+        "borrowedCommanderReadsPreserveDefaultFlightAndOwnedSnapshots",
+    ),
+    "CommanderEqualityTests": (
+        "equalityDistinguishesChangedResourcesAndPresentDefaultSavedValues",
+        "nestedClockEqualityPreservesNaNAndSignedZeroMemberSemantics",
+    ),
+    "ScriptEngineEqualityTests": (
+        "equalityPreservesOptionalPresenceInstancesEventsAndEachClock",
+        "clockEqualityPreservesNaNAndSignedZeroMemberSemantics",
+    ),
+    "GameplayPhysicalAdoptionTests": (
+        "adoptionKeepsMainAnchorAndAllocatesOrdinaryActorsInBodyOrder",
+        "existingOwnershipTagsSkipAdoptionWithoutChangingCursorsOrValues",
+        "systemChangeEntersExactlyOnceEvenWhenNoBodyNeedsAdoption",
+        "failedIdentitySelectionSkipsOnlyThatBodyAndPreservesSpawnCursor",
+        "adoptionSystemReadPreservesExactScalarsAndRetainedCommanderBytes",
+    ),
+    "NativeStationValidationReadTests": (
+        "fullPolicyPreservesEarlyRefusalAndLazyReaderOrder",
+        "storageHeaderMatchesFullCommanderPolicyAndPreservesRetainedBytes",
+    ),
+    "NativeStationPopulationLifetimeTests": (
+        "missingWorldReturnsBeforeSceneAndCursorValidation",
+        "emptyCohortKeepsBindingsWithoutAllocatingFromExhaustedCursors",
+        "refusedPopulationPreservesTheWholeCandidateAndErrorPriority",
+        "populationPublishesTheWholeCohortInOriginalSourceAndActorOrder",
+    ),
+    "ScriptInstanceStorageTests": (
+        "copiesDetachNestedContractsDialogueReceiptsAndEncounterMutation",
+        "originalUnwrappedJSONAndEngineDictionaryRoundTripWithoutStorageKeys",
+        "decodingKeepsOriginalRequiredKeysOptionalOmissionAndMalformedRefusal",
+        "equalityDistinguishesChangedValuesAndAbsentVersusEmptyStoredCollections",
+        "explicitNullOptionalKeysRetainTheOriginalAbsentSchema",
+        "sharedCloneKeepsLargeNativePayloadsWhenTheContractIsModified",
+        "throwingNestedInoutMutationDetachesAndRemainsWritable",
+        "sharedPayloadEqualityPreservesNaNAndSignedZeroMemberSemantics",
+        "suppliedAndActorSnapshotInstancesKeepIndependentNestedValues",
+        "fieldBuffersDetachLargeNestedValuesAndKeepRetainedNilAndCodec",
+    ),
+    "ScriptNavigationAvailabilityTests": (
+        "onlyExistingNavigationClaimsRequireApprovedContent",
+        "approvedNavigationRetainsDefaultExplicitBindingAndRefusalOrder",
+    ),
+    "NativeCrewLogRecorderBoundaryUnitTests": (
+        "unmarkedTargetsRejectWithoutChangingRetainedCustody",
+        "markedRecorderRetainsEveryPresentAuthorityAndExactReturnedBody",
+    ),
+    "FrontVisibilityRenderUnitTests": (
+        "frontRenderOverridePreservesOutputAndCallerState",
     ),
 }
 

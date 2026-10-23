@@ -67,7 +67,7 @@ struct HaflingerPhysicalContractUnitTests {
     #expect(physical.context.contains("20 metres per SH061 source unit"))
     let length = try #require(physical.fields.first { $0.key == "original.physical.length" })
     #expect(length.text == "80.00 m" && length.status == "calibration")
-    #expect(definition.runtimeReady == false && definition.nativePerformance?.cargo == 78)
+    #expect(definition.runtimeReady == true && definition.nativePerformance?.cargo == 78)
     #expect(definition.nativePerformance?.fuel == 130 && definition.nativePerformance?.jump == 9)
     #expect(ship.originalDefinition?.sourceSHA256 == definition.sourceSHA256)
     let preview = try #require(ship.physicalSourcePreview)

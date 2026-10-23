@@ -18,7 +18,16 @@ struct OriginalFleetCatalogueUnitTests {
       #expect(
         lookup.playerFlyable == record.playerFlyable
           && lookup.purchasePolicy == record.purchasePolicy)
-      #expect(lookup.integrationBlockers == record.integrationBlockers && !lookup.runtimeReady)
+      #expect(
+        lookup.integrationBlockers == record.integrationBlockers
+          && lookup.runtimeReady
+            == [
+              "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029",
+              "SH030", "SH031", "SH032", "SH033", "SH035", "SH061",
+            ]
+            .contains(
+              record.id)
+      )
     }
     #expect(ShipCatalogue.originalDefinition(for: "SH001")?.name == "Mule")
     #expect(

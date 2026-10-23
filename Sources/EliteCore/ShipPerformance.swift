@@ -65,8 +65,16 @@ extension Commander {
     performance.cargo + (equipment.contains("Large Cargo Bay") ? performance.cargoExpansion : 0)
   }
   public var playerMesh: Mesh {
-    // SH025's original native mesh already carries its explicit metre calibration.
-    if shipID == "SH025", let native = ship.nativeDesign {
+    if shipID == "SH061", let physical = ShipCatalogue.rawMesh(shipID) { return physical }
+    // These activated originals have explicit metre contracts, independent of preview scaling.
+    if [
+      "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH025", "SH027", "SH029",
+      "SH030", "SH031", "SH032", "SH033", "SH035",
+    ]
+    .contains(
+      shipID),
+      let native = ship.nativeDesign
+    {
       return native.rawMesh
     }
     let source = ship.previewMesh!

@@ -1,0 +1,11 @@
+# feat(fleet): bind original Gazelle Explorer leisure hull
+
+SH019 now resolves to the original Gazelle Explorer instead of the historical Caspian Explorer runtime refit. It uses its authored 28t hold, 10t expansion, speed40.7, acceleration12, 16-LY tank, 12-LY drive, five pylons, four laser facings and 212,000CR base price. Leisure classification, technology-eleven blueprint rules and the retained uncommon natural placement in galaxies six through eight remain intact.
+
+The physical contract requires exact specification/model identity, hashes, source path and declared metres. Every vertex supplies the physical envelope and origin-based clearance; physical/player meshes retain unnormalized geometry and complete material/UV assignments. All original assets and historical profile fields remain unchanged. No discovery, ownership, blueprint, equipment or passenger berth is granted.
+
+The owning catalogue join now uses a closed exact-ID switch in OriginalPlayerHullActivation instead of eight nested adapter calls. Each registered ID selects only its existing individually pinned adapter; unknown IDs return unchanged. Existing role/fit projection and adapter authentication are unchanged. Current per-hull load and retained-other-hull tests exercise this dispatch.
+
+Five new component methods cover authentication/negative cases, original mechanics/history and unchanged hulls, complete physical/player appearance, leisure/placement/access and earlier-role policy, plus standard fit and malformed retained input. All381 parent methods remain and five are added, for386. Six Python report fixtures, Swift syntax parsing, strict formatting, Markdown and whitespace checks pass. Actual Swift execution and independent review remain pending; parsing is not a unit pass.
+
+This packet stacks on Donkey f72f2d1c with the reviewed current Mac runner configuration. Retarget after the parent merges without rewriting history. It implements the physical prerequisite and runtime/source portion of [M04.H019](ISSUE-original-gazelle-explorer.md). M14 anchors, actual flight/docking and full hull acceptance remain open. No GUI/performance journey, broad coverage/sanitizer/leak gate or usable release is claimed. Source assets and README media are unchanged.
