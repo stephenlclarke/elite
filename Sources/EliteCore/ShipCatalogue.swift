@@ -198,10 +198,11 @@ public enum ShipCatalogue {
           shipID: ship.id, performance: ship.game, nativeCombat: ship.nativeCombat),
         ship.catalogue.validEffectiveCargo(performance: ship.game, profiles: ship.profiles)
       else { throw ShipFileError.invalid(url.lastPathComponent) }
-      let resolved = try OriginalImpalaVoyagerActivation.resolve(
-        OriginalGyrfalconFamilyActivation.resolve(
-          OriginalGyrfalconAssaultActivation.resolve(
-            OriginalHaflingerActivation.resolve(OriginalBurroActivation.resolve(ship)))))
+      let resolved = try OriginalSableLinerActivation.resolve(
+        OriginalImpalaVoyagerActivation.resolve(
+          OriginalGyrfalconFamilyActivation.resolve(
+            OriginalGyrfalconAssaultActivation.resolve(
+              OriginalHaflingerActivation.resolve(OriginalBurroActivation.resolve(ship))))))
       if let hull = ship.nativeHull, !nativeKinds.insert(hull).inserted {
         throw ShipFileError.invalid("Duplicate native hull: " + hull.rawValue)
       }

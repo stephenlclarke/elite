@@ -67,7 +67,7 @@ extension Commander {
   public var playerMesh: Mesh {
     if shipID == "SH061", let physical = ShipCatalogue.rawMesh(shipID) { return physical }
     // These activated originals have explicit metre contracts, independent of preview scaling.
-    if ["SH002", "SH003", "SH004", "SH007", "SH025", "SH029"].contains(shipID),
+    if ["SH002", "SH003", "SH004", "SH007", "SH012", "SH025", "SH029"].contains(shipID),
       let native = ship.nativeDesign
     {
       return native.rawMesh
