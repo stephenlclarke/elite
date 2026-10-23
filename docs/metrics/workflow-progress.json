@@ -10031,6 +10031,24 @@
       "committed_at_recorded": "2026-10-23T23:12:12.132906+00:00",
       "new_existing_matrix_case": "absent_saved_script_state",
       "exec_session": 6904
+    },
+    {
+      "at": "2026-10-23T23:16:47.868448+00:00",
+      "checkpoint_key": "20261024-m01-12cdc-failed-recovery-pr-closed",
+      "event": "Coherent ownership batch fails; recovery closes draftPR and pauses obsolete broad check; bounded existing-value metadata review assigned",
+      "head": "12cdc2f330672ca3ade01299f2bbe60e2091c2a8",
+      "build_seconds": 231.97,
+      "wall_seconds": 244.020039167,
+      "exit_code": 1,
+      "signal": 10,
+      "methods_completed": 0,
+      "pr25_state": "closed_draft",
+      "cancel_requested": 40037697745,
+      "final_required_gates_preserved": true,
+      "metadata_review_owner": "MBA",
+      "new_target_execution_for_metadata_review": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
