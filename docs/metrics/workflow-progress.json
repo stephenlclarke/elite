@@ -9306,6 +9306,17 @@
       "completed_methods": 0,
       "scope": "full rescue authority preserved; no crew-log recurrence or earlier pass claim",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:21:56.842273+00:00",
+      "checkpoint_key": "20261023-m01-165-rescue-selection-assigned",
+      "event": "Distinct original rescue selection blocker165 logged and assigned",
+      "issue": 165,
+      "developer": "G1",
+      "reviewer": "MBA",
+      "evidence_head": "47700106329865a1a329ead7413ac78d217ea7a0",
+      "scope": "refusal/projection lifetime correction with all rescue authority intact",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
