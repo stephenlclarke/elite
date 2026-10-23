@@ -7461,6 +7461,33 @@
       "source_published": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:10:58Z",
+      "checkpoint_key": "20261023-m01-station-system-projection-guard-assigned",
+      "event": "Current VM failure attributes a new scalar-system projection Commander copy",
+      "issue": 149,
+      "head": "b53a091f7d6b0714b90c717c0ecc9ad2d45cbfea",
+      "run": 39990594695,
+      "status": "failed",
+      "compile_seconds": 235.31,
+      "signal": 10,
+      "completed_methods": 0,
+      "xml_bytes": 52,
+      "swift_backtrace_seconds": 510.17,
+      "binary_uuid": "7ACC41CB-2ACE-31C6-9463-9B31EFDF28BA",
+      "binary_sha256": "931d81a34beebb539d9b57841f6f3a03ea7adf19e46af2a7b4d9ab48710283a8",
+      "fault_address": "0x16d987ff8",
+      "mapped_guard": "0x16d984000-0x16d988000",
+      "stack_pointer": "0x16d988a50",
+      "actual_path": "Game.swift234 readSystem pointer galaxy/system -> full native-station policy -> body-current -> gameplay mesh/collision -> guidance -> original station-defense test",
+      "owner": "G1 implementation and focused units, standing authority",
+      "reviewer": "MBA exact-image/diff/results",
+      "issue144_attribution": "unchanged; distinct matched guard defect",
+      "required_quality_run": 39990605589,
+      "required_quality_status": "still active",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
