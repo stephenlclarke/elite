@@ -9715,6 +9715,19 @@
       "terminal_status": "completed",
       "conclusion": "cancelled",
       "verified_at": "2026-10-23T22:29:54.190443+00:00"
+    },
+    {
+      "at": "2026-10-23T22:32:02.039514+00:00",
+      "checkpoint_key": "20261023-m01-285-push-units-terminal-failure",
+      "event": "Authoritative published-head unit run failed; MBA saved-artifact triage assigned while renderer build runs",
+      "head": "285cfce657b24ea201ff812dfdaa09bd31b473ba",
+      "run_id": 40033448991,
+      "conclusion": "failure",
+      "attribution": "pending_independent_saved_artifact_review",
+      "renderer_compile_observed": true,
+      "renderer_toolchain": "Swift6.4.1",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
