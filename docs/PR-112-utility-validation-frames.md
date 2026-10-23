@@ -12,3 +12,10 @@ no rescue assertion, state, codec or stack limit changes. Strict Swift formattin
 Markdown and whitespace pass. Independent actual patch review and one changed-head
 execution of the original two methods/seven cases remain pending. No broader
 M01 journey, full suite or release pass is claimed.
+
+The next captured parent-receipt closure reserves a large crew-log capture for
+unrelated missions. Keep parent iteration and absence decisions in the common
+reader, then enter a separate non-inlined reader only for an actual parent
+crew-log claim. Preserve exact capture/job equality and rescue-reception joins,
+with the same left-to-right refusal order. No parent claim is ignored or trusted
+without the original complete matching source check.
