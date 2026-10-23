@@ -5912,6 +5912,25 @@
       "merged": false,
       "usable_delivered": false,
       "integration_deferred": true
+    },
+    {
+      "at": "2026-10-23T10:12:58.357533+00:00",
+      "event": "Reviewed local runner promotion author-merged independently of deferred M01",
+      "pr": 118,
+      "head": "76f4ea1bb17f25cc1a3babc710d0de081ab709fd",
+      "merged_at": "2026-10-23T10:11:22Z",
+      "merge_commit": "336ccae8d886d6e6d762296b5ca1bcade11f660e",
+      "run": 39936540682,
+      "runner": "elite-mbp-vm",
+      "swift": "6.1.2",
+      "sdk": "15.5",
+      "selected_methods_passed": 345,
+      "runner_guard_methods_passed": 9,
+      "compile_seconds": 220.68,
+      "unit_seconds": 37.154,
+      "player_feature_throughput": false,
+      "warm_cache_speedup_proven": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
