@@ -9220,6 +9220,17 @@
       "completed_methods": 0,
       "fault_scope": "outlined Game copy from admissions+304; no precise helper call",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:11:57.276108+00:00",
+      "checkpoint_key": "20261023-m01-161-receiver-conventions-reviewed-run",
+      "event": "Seven private receiver conventions corrected; unchanged bodies reviewed; affected execution active",
+      "head": "5105b8bf",
+      "issue": 161,
+      "reviewed_blob": "b6091315d3bf35c23eadd627536ef670b07d302a",
+      "methods": 4,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
