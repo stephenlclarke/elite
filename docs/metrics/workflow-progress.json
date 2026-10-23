@@ -7263,6 +7263,28 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T16:28:40Z",
+      "checkpoint_key": "20261023-m01-equipment-frame-focused-qualified",
+      "event": "Equipment purchase correction passes original focused methods and independent review",
+      "issue": 146,
+      "issue_status": "closed on scoped source/local unit criteria",
+      "head": "f165fef66d4282cca5e53f707a321b60aa266a12",
+      "focused_methods": 5,
+      "authored_cases": 10,
+      "compile_seconds": 232.79,
+      "process_seconds": 247.88836658280343,
+      "exit_code": 0,
+      "report": "/tmp/elite-146-equipment-lifetimes-units-swift-testing.xml",
+      "report_failures": 0,
+      "report_errors": 0,
+      "report_skips": 0,
+      "independent_source_and_result_review": "MBA clear",
+      "publication_status": "G1 next immediate checkpoint",
+      "full_vm_or_quality_qualified": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
