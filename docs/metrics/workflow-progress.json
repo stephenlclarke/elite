@@ -6758,6 +6758,37 @@
       "usable_delivered": false,
       "m01_complete": false,
       "next_action": "G1/MBA direct correction, affected-unit and review loop; developer owns redundant development CI cancellation"
+    },
+    {
+      "at": "2026-10-23T14:42:56Z",
+      "timestamp_scope": "Root recorded terminal evidence",
+      "checkpoint_key": "20261023-m01-finish-preflight-writer-failure",
+      "event": "Finish preflight frame correction compiles; original writer still fails",
+      "issue": 140,
+      "pr": 139,
+      "head": "fcbb794100a5f77a42e476550bf02911aa08b195",
+      "command": [
+        "swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-140-finish-writer-units.xml",
+        "--filter",
+        "(?:^|\\.)NativeOriginalRescueRecordTests/rescueActualActionWriterRefusalPreservesCustodyCabinsCargoCashAndPriorFiles\\("
+      ],
+      "exit_code": 1,
+      "seconds": 95.47564574982971,
+      "compile_seconds": 71.78,
+      "completed_writer_cases": 0,
+      "outcome": "unexpected signal10 before completed method",
+      "independent_source_review": "MBA exactfcbb clear, original predicates/settlement/rollback retained; classifier6a2b pass reusable",
+      "merged": false,
+      "usable_delivered": false,
+      "m01_complete": false,
+      "next_action": "G1 exact-current-image writer attribution/correction; MBA independent review",
+      "duplicate_ci_cancellation_owned_by_developer": 39971707526
     }
   ],
   "two_developer_phase": {
