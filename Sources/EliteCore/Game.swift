@@ -181,7 +181,12 @@ public struct Commander: Sendable, Equatable, Codable {
   fileprivate static func nativeStationStateIsValid(at commander: UnsafePointer<Commander>) -> Bool
   {
     NativeStationStateValidation.check(
-      readWorld: { commander.pointee.nativeStations },
+      readWorld: {
+        guard let world = commander.pointer(to: \.nativeStations) else {
+          preconditionFailure("Native station validation requires addressable stored world.")
+        }
+        return world.pointee
+      },
       readResources: {
         Self.nativeStationReadScriptState(at: commander) { state in
           guard let resources = state.pointer(to: \.savedStationResources) else {

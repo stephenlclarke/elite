@@ -11,7 +11,7 @@
   <a href="https://github.com/stephenlclarke/elite/security"><img alt="GitHub security overview" src="https://img.shields.io/badge/Security-GitHub-blue.svg" /></a>
   <a href="https://github.com/stephenlclarke/elite/releases/latest"><img alt="Latest published release" src="https://img.shields.io/github/v/release/stephenlclarke/elite" /></a>
   <a href="https://github.com/stephenlclarke/homebrew-tap/blob/main/Casks/elite.rb"><img alt="Install from the Homebrew cask" src="https://img.shields.io/badge/Homebrew-install-blue.svg" /></a>
-  <a href="LICENSE"><img alt="Code licence: MIT" src="https://img.shields.io/badge/Code-MIT-blue.svg" /></a>
+  <a href="LICENSE"><img alt="&#9878; License: MIT" src="https://img.shields.io/badge/%E2%9A%96%20License-MIT-blue.svg" /></a>
   <a href="https://sonarcloud.io/summary/new_code?id=stephenlclarke_elite"><img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_elite&amp;metric=alert_status" /></a>
   <a href="https://sonarcloud.io/summary/new_code?id=stephenlclarke_elite"><img alt="Bugs" src="https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_elite&amp;metric=bugs" /></a>
   <a href="https://sonarcloud.io/summary/new_code?id=stephenlclarke_elite"><img alt="Code Smells" src="https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_elite&amp;metric=code_smells" /></a>
