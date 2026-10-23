@@ -1,0 +1,17 @@
+# Bound recovery selection before retained commander facts
+
+## Motivation and evidence
+
+[Issue 163](https://github.com/stephenlclarke/elite/issues/163) records the directly attributed defect. The current be90 two-method release-toolchain run failed rawSIGBUS10/exit1 after96.9157105seconds; compilation84.87seconds. Both original delayed-report and authentic-entry methods only started. Matched normal report PID35263 (launch20:29:43.0041, capture20:29:54.3278UTC) identifies recordRecoveryFacts through work-target selection/cycleAutoTarget/selectCompletionPatrolTarget in the original delayed report. Fault0x16b69bff8 lies inside guard0x16b698000-0x16b69c000; SP0x16b69c860 is above it. Loaded imageF7EA4912-63A1-38CB-BDEB-61834779E2D1 matches collected SHA256b558042848839159e4477d94de2de650276eb28b29a82c8a93671e623add34ac. Host evidence `/tmp/elite-159-credit-focused-crash.ips` and `-image.json` retain exact identity; this is distinct from the earlier combat credit stop.
+
+## Implementation
+
+Keep the full original recordRecoveryAlias and package-index guard in a noninline entry. Only a present alias/index delegates to a noninline helper that owns the unchanged body copy and withReadOnlyCommander closure. The existing complete state/source/mission/carrier/physical/logical/capacity facts helper is unchanged; collision metadata and refusal authority remain intact.
+
+## Validation
+
+Strict Swift formatting and diff hygiene pass. Independent actual-diff review and focused execution are pending. One coherent cached Swift6.1.2/SDK15.5 build will run the original delayed-report, authentic station-entry, board-browsing and targeting price/persistence methods after all three bounded corrections. The three unaffected individual passes at `ec83d6f8` remain separate receipts. No new selector, broader campaign, diagnostic probe or synthetic aggregate result is introduced.
+
+## Compatibility and remaining limits
+
+No save/schema, actor isolation, authority or quality threshold changes. Required final-head coverage, sanitizer, leak and review gates remain; historical144 is not assigned a cause. Original incomplete methods, completed-save/reopen proof and release remain unqualified until actual results establish them.

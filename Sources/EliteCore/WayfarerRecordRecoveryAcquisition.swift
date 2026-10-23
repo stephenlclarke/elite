@@ -156,12 +156,20 @@ extension Game {
     return recordRecoveryCollision(body)?.mesh
   }
 
+  @inline(never)
   func recordRecoveryFacts(_ body: borrowing SpaceBody, context: EncounterContext)
     -> WayfarerRecordRecoverySelectionFacts?
   {
     guard let alias = recordRecoveryAlias(body),
       let index = WayfarerRecordRecovery.aliases.firstIndex(of: alias)
     else { return nil }
+    return presentRecordRecoveryFacts(body, context: context, index: index)
+  }
+
+  @inline(never)
+  private func presentRecordRecoveryFacts(
+    _ body: borrowing SpaceBody, context: EncounterContext, index: Int
+  ) -> WayfarerRecordRecoverySelectionFacts? {
     let currentBody = copy body
     return withReadOnlyCommander { commander in
       recordRecoveryFacts(currentBody, context: context, index: index, commander: commander)
