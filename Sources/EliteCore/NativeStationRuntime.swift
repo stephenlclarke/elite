@@ -172,18 +172,42 @@ extension Commander {
 
   @inline(never)
   fileprivate static func nativeStationStateIsValid(_ commander: borrowing Commander) -> Bool {
-    guard let world = commander.nativeStations else { return true }
-    let resources = commander.withReadOnlyScriptState { $0.stationResources }
-    let currentSystem = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
-    guard world.valid, commander.equipmentOwnerID == world.ledger.world else { return false }
-    let physicalTime = commander.flightSimulation.physicalTime
+    NativeStationStateValidation.check(
+      readWorld: { commander.nativeStations },
+      readResources: { commander.withReadOnlyScriptState { $0.stationResources } },
+      readSystem: { SystemIdentity(galaxy: commander.galaxy, system: commander.system) },
+      readOwner: { commander.equipmentOwnerID },
+      readPhysicalTime: { commander.flightSimulation.physicalTime },
+      readStationPosition: { commander.flightSimulation.anchors?.station.position },
+      readCalendar: { commander.withReadOnlyScriptState { $0.calendarLedger } })
+  }
+}
+
+// One full policy body serves normal Commander validation and private storage projections.
+// Reader closures are synchronous and nonescaping; each is called only at its original read point.
+enum NativeStationStateValidation {
+  @inline(never)
+  static func check(
+    readWorld: () -> NativeStationWorld?,
+    readResources: () -> [String: ScriptStationResource],
+    readSystem: () -> SystemIdentity,
+    readOwner: () -> UUID?,
+    readPhysicalTime: () -> Double,
+    readStationPosition: () -> Vector3?,
+    readCalendar: () -> ScriptCalendarLedger?
+  ) -> Bool {
+    guard let world = readWorld() else { return true }
+    let resources = readResources()
+    let currentSystem = readSystem()
+    guard world.valid, readOwner() == world.ledger.world else { return false }
+    let physicalTime = readPhysicalTime()
     guard world.stationInertia.allSatisfy({ $0.physicalTime <= physicalTime }) else { return false }
     if world.stationInertia.contains(where: { $0.station.system == currentSystem }) {
-      guard commander.flightSimulation.anchors?.station.position == Vector3(0, 0, 0) else {
+      guard readStationPosition() == Vector3(0, 0, 0) else {
         return false
       }
     }
-    guard let calendar = commander.withReadOnlyScriptState({ $0.calendarLedger }), calendar.valid
+    guard let calendar = readCalendar(), calendar.valid
     else {
       return false
     }
@@ -270,9 +294,7 @@ extension Game {
   private mutating func nativeStationPopulationCohort(world: NativeStationWorld) throws -> (
     anchors: SystemAnchors, absent: [NativeStationRecord]
   )? {
-    let header = try withNativeStationReadOnlyCommander {
-      try Self.nativeStationPopulationHeader($0)
-    }
+    let header = try nativeStationPopulationHeader()
     let system = header.system
     let anchors = header.anchors
     guard !docked else { throw NativeStationRuntimeError.invalidState }
@@ -297,20 +319,6 @@ extension Game {
       nextBodyID > 0, nextBodyID < 1_000_000_000 - absent.count
     else { throw NativeStationRuntimeError.capacity }
     return (anchors, absent)
-  }
-
-  // Keep the original Commander-dependent guards inside one synchronous read. The census
-  // receives only these owned header values, without owning whole Commander projections.
-  @inline(never)
-  private static func nativeStationPopulationHeader(_ commander: borrowing Commander) throws -> (
-    system: SystemIdentity, anchors: SystemAnchors
-  ) {
-    let system = SystemIdentity(galaxy: commander.galaxy, system: commander.system)
-    guard Commander.nativeStationStateIsValid(commander),
-      let anchors = commander.flightSimulation.anchors,
-      anchors.system == SystemIdentity(galaxy: commander.galaxy, system: commander.system)
-    else { throw NativeStationRuntimeError.invalidState }
-    return (system, anchors)
   }
 
   @inline(never)
