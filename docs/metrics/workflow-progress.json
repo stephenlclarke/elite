@@ -10096,7 +10096,7 @@
       "at": "2026-10-23T23:26:08.682325+00:00",
       "checkpoint_key": "20261024-m01-eb7-11fail-metadata-frame-split-assigned",
       "event": "Published pod repair;11-method normal failure verified; current prologue supports entire metadata dispatcher frame split",
-      "head": "eb7d147707634110f8faffa51a1dfe9892c3bd1b",
+      "head": "33cb5f2b3e1a5528d98d2559a1e76a39017ca406",
       "source_head": "4d369066057b42c8cd21bb6ad1a83433aff124c1",
       "build_seconds": 127.35,
       "wall_seconds": 139.140399292,
@@ -10121,7 +10121,11 @@
         "WorkTarget": "864370d91ed73cd13e305588ec053ba5018a611b",
         "Practice": "0407191e773d36b7e00f156c6f838095fc1f47a9"
       },
-      "runtime_result": "pending"
+      "runtime_result": "running",
+      "committed_at_recorded": "2026-10-23T23:28:47.705045+00:00",
+      "exec_session": 20686,
+      "unit_methods_selected": 11,
+      "vm_preflight": "clean_and_no_worker_compiler_test_debugger"
     }
   ],
   "two_developer_phase": {
