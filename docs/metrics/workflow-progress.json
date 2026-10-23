@@ -9567,6 +9567,17 @@
       "evidence": "exact9569 diagnostic/offline original board-browsing85",
       "scope": "resolver lifetime reduction; full ordering/terminal semantics preserved",
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:55:14.877132+00:00",
+      "checkpoint_key": "20261023-m01-168-terminal-reviewed-run",
+      "event": "Courier resolver correction committed and independently reviewed; normal affected run active",
+      "head": "47438127",
+      "issue": 168,
+      "reviewed_blob": "e7be8ba3e3e806721edb9a44a1f2746b2e555270",
+      "methods": 4,
+      "result": "pending",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
