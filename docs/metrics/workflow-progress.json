@@ -8288,6 +8288,28 @@
       "runtime_result": "pending",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:42:22Z",
+      "checkpoint_key": "20261023-m01-npc-owner-impact-154-closed",
+      "event": "Original NPC ownership/impact method passes; MBA closes154 and153 becomes active",
+      "issue": 154,
+      "state": "CLOSED",
+      "head": "0f4e1d527a4a4d6105da3cde85948351eadc2ef5",
+      "process_result": "PASS",
+      "seconds": 63.015593,
+      "build_seconds": 49.03,
+      "method_seconds": 8.619379,
+      "selected_methods": 1,
+      "complete_xml_rows": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "independent_review": "MBA exact source and complete receipt clear",
+      "next_active_issue": 153,
+      "mission_replayed": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
