@@ -13,3 +13,5 @@ Formatting, six Python report fixtures, documentation lint and whitespace checks
 Parent: [M02.P05 / F07,F43](COMPLETION-LEDGER.md). The feature PR is the source/review handoff; usable-build and release states remain separate.
 
 The actual canonical-base merge conflict is resolved by retaining both the three StationDockLocation methods and three NativeStationSnapshot methods. The final maintained union is345methods. Status source and its seven authored cases are unchanged; final-head GitHub checks and independent review remain pending.
+
+The subsequent help merge requires the exact help/status/snapshot selector union of348methods. Both feature source/test files remain unchanged; only this shared selection and its count are reconciled. Earlier final-head unit results remain evidence for those unchanged cases; this new composed head awaits required checks.

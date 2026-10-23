@@ -21,6 +21,11 @@ METHODS = {
         "dockedStatusNamesTheActualMainOrNativeStation",
         "unknownDockDoesNotInventAMainStationOrClaimTheShipIsInSpace",
     ),
+    "StationScreenGuideTests": (
+        "flightGuideKeepsFlightDestinationsRegardlessOfDockServices",
+        "stationGuideNamesTheActualDockAndKeepsEveryDestination",
+        "oneUnavailableServiceDoesNotHideOtherAvailableServices",
+    ),
     "NativeStationSnapshotUnitTests": (
         "inPlaceStationMeshReadPreservesGeometryAndRejectsMissingOrForeignActors",
         "exactSnapshotRejectsEveryStoredFieldChangeAndDuplicateOrAbsentBodies",
