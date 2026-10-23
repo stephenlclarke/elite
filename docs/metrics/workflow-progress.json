@@ -7807,6 +7807,36 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:45:07Z",
+      "checkpoint_key": "20261023-m01-admission-fixture-staged-qualification-active",
+      "event": "Partial real-baseline fixture correction committed; preserve live four-case run then two exact follow-ups",
+      "issues": [
+        151,
+        152
+      ],
+      "head": "18fb5976b9b09ecbefa19215b6b487fdf767dd69",
+      "partial_source_review": "MBA threecorrected methods clear;152notcomplete",
+      "active_methods": 4,
+      "active_cases": 4,
+      "process_ids_at_observation": [
+        76648,
+        76650
+      ],
+      "report_prefix": "/tmp/elite-151-152-admission-unresolved-units",
+      "known_remaining_fixture_consumers": [
+        "atomicPackRejectsDuplicateIdentityAndIntersectingMembers",
+        "unsafePlanetSunPlayerAndNonfiniteSpawnsAreRefused"
+      ],
+      "source_proof_for_followups": "nonempty admission adopts real native actors before context/refusal safety checks",
+      "execution_plan": "no liveedit/cancel; atterminal correcttwo; executeonlytwo iffourpass, preserveperheadreceipts",
+      "retained_unaffected_empty_passes": 2,
+      "runtime_result": "pending",
+      "issue152_complete": false,
+      "source_published": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
