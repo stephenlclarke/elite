@@ -9514,6 +9514,20 @@
       "result": "pending",
       "debugger": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:50:44.233945+00:00",
+      "checkpoint_key": "20261023-m01-9569-current-fault-capture-scope",
+      "event": "Current API correction builds; unmatched report failure permits one exact changed-source fault capture",
+      "head": "9569dcb56d45cf2208a900042abac4fc5547765e",
+      "issue": 167,
+      "build_seconds": 29.79,
+      "process_seconds": 41.51199525,
+      "result": "runtime FAILURE signal10/exit1; UNATTRIBUTED",
+      "completed_methods": 0,
+      "matching_reports": 0,
+      "capture_scope": "one exact current image/original selection/default settings/no rebuild",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
