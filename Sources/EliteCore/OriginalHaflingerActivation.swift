@@ -26,7 +26,7 @@ enum OriginalHaflingerActivation {
       physical.metresPerSourceUnit == 20,
       physical.model.coordinateUnits == nil
     else { throw Failure.unsupportedDefinition }
-    return try OriginalTraderActivation.resolve(
+    return try OriginalPlayerHullActivation.resolve(
       retained, definition: definition, physical: physical)
   }
 }

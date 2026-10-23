@@ -29,7 +29,7 @@ struct OriginalHaflingerActivationUnitTests {
             ? "historical-project-refit-v1" : profile.group))
     }
     #expect(ship.profiles.filter { $0.group == "project-refit-v1" }.count == 1)
-    for other in ShipCatalogue.all where !["SH029", "SH061"].contains(other.id) {
+    for other in ShipCatalogue.all where !["SH002", "SH029", "SH061"].contains(other.id) {
       #expect(other == (try retained(other.id)))
     }
   }
@@ -98,7 +98,9 @@ struct OriginalHaflingerActivationUnitTests {
       NativeFleetDiscovery(owner: UUID()).readout(for: ship.id)
         == ["Collection: unknown; no native encounter recorded"])
     #expect(
-      OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == ["SH029", "SH061"])
+      OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id) == [
+        "SH002", "SH029", "SH061",
+      ])
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     defer { try? FileManager.default.removeItem(at: directory) }
@@ -115,7 +117,7 @@ struct OriginalHaflingerActivationUnitTests {
     #expect(try OriginalHaflingerActivation.resolve(foreign) == foreign)
     #expect(!OriginalHaflingerActivation.supports(try #require(foreign.originalDefinition)))
     #expect(throws: (any Error).self) {
-      try OriginalTraderActivation.resolve(
+      try OriginalPlayerHullActivation.resolve(
         foreign, definition: #require(ship.originalDefinition),
         physical: OriginalHullPhysicalContract.haflinger.get())
     }

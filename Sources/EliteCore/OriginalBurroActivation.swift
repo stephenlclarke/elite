@@ -26,7 +26,7 @@ enum OriginalBurroActivation {
       physical.metresPerSourceUnit == 1,
       physical.model.coordinateUnits == "metres"
     else { throw Failure.unsupportedDefinition }
-    return try OriginalTraderActivation.resolve(
+    return try OriginalPlayerHullActivation.resolve(
       retained, definition: definition, physical: physical)
   }
 }

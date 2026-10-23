@@ -1,0 +1,11 @@
+# feat(fleet): bind original Gyrfalcon Assault military hull
+
+SH002 now uses the approved original Gyrfalcon Assault instead of the historical Alliance Challenger runtime refit. Its authored mechanics include 16t cargo, 5t expansion, speed45.9, acceleration15.4, 12-LY fuel, 8-LY drive, seven missile pylons, four laser facings and 259,000CR base price. Its original military role stays military; blueprint fabrication retains technology level eleven and existing placement policy, without granting discovery, equipment or ownership.
+
+The new physical contract checks the exact specification and model hashes, source path, identity and explicit metre declaration. Bounds and clearance derive from every approved vertex. Runtime/player and physical meshes use the unnormalized metre coordinates, including all materials and texture assignments. Original assets and historical profile fields are unchanged. The existing fit projection is renamed OriginalPlayerHullActivation and accepts only explicit trader/military roles, preserving each role in metadata. Prior Burro/Haflinger bindings stay intact.
+
+Five new component methods cover authenticated/rejected sources, original mechanics/history and unchanged other hulls, physical/player geometry and Source notes, military blueprint policy, and standard fit with malformed retained-input refusal. The maintained selection retains all357 parent methods and adds five, for362. Six Python report fixtures, syntax parsing, strict formatting, Markdown and whitespace checks pass. Hosted Swift execution and independent review remain pending; syntax checks do not establish a unit pass.
+
+The PR stacks on Haflingerc771e01e and includes the ordinary canonical336ccae8 merge to inherit the reviewed seven-path Mac runner configuration. Those infrastructure bytes are unchanged; no healthy parent job is restarted. Retarget after the shared parent merges, without rewriting published history.
+
+This implements the physical-source prerequisite and runtime/source portion of [M04.P02.H002/M04.H002](ISSUE-original-gyrfalcon-assault.md). M14 safe anchors and actual flight/docking acceptance remain explicit; no whole-hull completion, GUI/performance journey, broad coverage/sanitizer/leak gate or usable release is claimed. No source assets or README media changed.

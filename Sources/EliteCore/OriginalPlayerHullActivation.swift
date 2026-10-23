@@ -1,7 +1,7 @@
 import Foundation
 
-/// Common fit projection for individually authenticated original trader activations.
-enum OriginalTraderActivation {
+/// Common fit projection for individually authenticated original player-hull activations.
+enum OriginalPlayerHullActivation {
   enum Failure: Error { case missingStandardFit, invalidCatalogue }
 
   static func resolve(
@@ -10,7 +10,8 @@ enum OriginalTraderActivation {
   ) throws -> CatalogueShip {
     guard retained.id == definition.id, physical.id == definition.id,
       physical.specificationSHA256 == definition.sourceSHA256,
-      definition.role == "trader", definition.playerFlyable,
+      let role = ShipCatalogueRole(rawValue: definition.role),
+      [ShipCatalogueRole.trader, .military].contains(role), definition.playerFlyable,
       definition.purchasePolicy == "blueprintFabrication",
       let performance = definition.nativePerformance
     else { throw Failure.invalidCatalogue }
@@ -39,7 +40,8 @@ enum OriginalTraderActivation {
       profiles: historical + [
         standardProfile(from: standard, performance: performance, definition: definition)
       ],
-      game: performance, catalogue: metadata(from: retained.catalogue, definition: definition),
+      game: performance,
+      catalogue: metadata(from: retained.catalogue, definition: definition, role: role),
       design: physical.model.nativeDesign, nativeHull: retained.nativeHull,
       nativeDesign: physical.model.nativeDesign, nativeCombat: retained.nativeCombat)
     guard
@@ -50,12 +52,14 @@ enum OriginalTraderActivation {
   }
 
   private static func metadata(
-    from retained: ShipCatalogueMetadata, definition: OriginalFleetDefinition
+    from retained: ShipCatalogueMetadata, definition: OriginalFleetDefinition,
+    role: ShipCatalogueRole
   ) -> ShipCatalogueMetadata {
     .init(
       schemaVersion: retained.schemaVersion, family: definition.family, aliases: retained.aliases,
-      objectKind: .ship, origin: .human, primaryType: .trader, primaryRole: .trader,
-      roleWeights: [.init(role: .trader, weight: 1)], access: .normal, playerFlyable: true,
+      objectKind: .ship, origin: .human, primaryType: role == .trader ? .trader : .military,
+      primaryRole: role,
+      roleWeights: [.init(role: role, weight: 1)], access: .normal, playerFlyable: true,
       normalPurchaseEligible: true, purchasePolicy: .blueprintFabrication,
       minimumBuildTechLevel: retained.minimumBuildTechLevel, isCapital: false, capitalSubtype: nil,
       collectionMilestone: .blueprintAndFabrication, damagePolicy: .destructible,
@@ -65,7 +69,7 @@ enum OriginalTraderActivation {
       authoredSystems: retained.authoredSystems,
       basis:
         "Original " + definition.id + " " + definition.name
-        + " trader and blueprint-fabrication policy. "
+        + " " + role.rawValue + " and blueprint-fabrication policy. "
         + "Existing project placement, rarity and fabrication technology policy retained; "
         + "catalogue eligibility does not grant discovery, a blueprint or a fabricated hull.")
   }
