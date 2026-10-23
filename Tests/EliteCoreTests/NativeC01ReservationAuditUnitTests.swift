@@ -366,6 +366,7 @@ struct NativeC01ReservationAuditUnitTests {
     let f = try await C01ReservationAuditFixture()
     defer { f.clean() }
     let runtime = try await f.heldAtSorel()
+    try await runtime.save(to: f.save)
     let before = await runtime.snapshot()
     let review = before.glassMeridianReview(.auditReservations)
     let pointer = try Data(contentsOf: f.save)
