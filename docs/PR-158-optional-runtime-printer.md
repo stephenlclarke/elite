@@ -15,3 +15,5 @@ Existing Python tests check disabled effective options, inherited enable=yes ove
 ## Compatibility and remaining limits
 
 This removes an optional printer's measured overhead; it is not a claim to fix the underlying game crash or close historical144. Full final-head VM/quality, completed-save/reopen qualification, signing and release remain separate. Current runs and any verified superseded cancellation retain their actual status.
+
+At exact97ef5fd7f9b8053eb1e9f6355559863059b81ef2, both affected Python suites passed all70 tests: unittest0.158s, total0.313853s, process exit0. Evidence `/tmp/elite-158-runtime-printer-python-result.json` and raw log. Fixtures execute no Swift child/game build or runtime diagnostic. Independent actual-source review cleared the enable-only change and retained authority tests; independent actual-source/result verification closed158 on this affected scope. Future CI must establish its own runtime outcome; no reduced overhead, game-fault resolution or full quality pass is inferred from these Python results.
