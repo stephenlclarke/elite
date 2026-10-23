@@ -157,6 +157,34 @@ public struct Commander: Sendable, Equatable, Codable {
     return FlightSimulationState()
   }
 
+  @inline(never)
+  static func nativeStationStateIsValid(_ commander: borrowing Commander) -> Bool {
+    withUnsafePointer(to: commander) { pointer in
+      Self.nativeStationStateIsValid(at: pointer)
+    }
+  }
+
+  // Capture only this read-only pointer, never the borrowed Commander, in the policy readers.
+  fileprivate static func nativeStationStateIsValid(at commander: UnsafePointer<Commander>) -> Bool
+  {
+    NativeStationStateValidation.check(
+      readWorld: { commander.pointee.nativeStations },
+      readResources: {
+        Self.nativeStationReadScriptState(at: commander) { $0.stationResources }
+      },
+      readSystem: {
+        SystemIdentity(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+      },
+      readOwner: { commander.pointee.savedEquipmentInventory?.owner },
+      readPhysicalTime: { Self.nativeStationReadFlight(at: commander).physicalTime },
+      readStationPosition: {
+        Self.nativeStationReadFlight(at: commander).anchors?.station.position
+      },
+      readCalendar: {
+        Self.nativeStationReadScriptState(at: commander) { $0.calendarLedger }
+      })
+  }
+
   var savedEquipmentInventory: OwnedEquipmentInventory?
   var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
   var savedEMPState: EMPState?
@@ -1042,22 +1070,7 @@ public struct Game: Sendable {
       let system = SystemIdentity(
         galaxy: commander.pointee.galaxy, system: commander.pointee.system)
       guard
-        NativeStationStateValidation.check(
-          readWorld: { commander.pointee.nativeStations },
-          readResources: {
-            Commander.nativeStationReadScriptState(at: commander) { $0.stationResources }
-          },
-          readSystem: {
-            SystemIdentity(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
-          },
-          readOwner: { commander.pointee.savedEquipmentInventory?.owner },
-          readPhysicalTime: { Commander.nativeStationReadFlight(at: commander).physicalTime },
-          readStationPosition: {
-            Commander.nativeStationReadFlight(at: commander).anchors?.station.position
-          },
-          readCalendar: {
-            Commander.nativeStationReadScriptState(at: commander) { $0.calendarLedger }
-          }),
+        Commander.nativeStationStateIsValid(at: commander),
         let anchors = Commander.nativeStationReadFlight(at: commander).anchors,
         anchors.system
           == SystemIdentity(

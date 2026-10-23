@@ -170,17 +170,6 @@ extension Commander {
     Self.nativeStationStateIsValid(self)
   }
 
-  @inline(never)
-  fileprivate static func nativeStationStateIsValid(_ commander: borrowing Commander) -> Bool {
-    NativeStationStateValidation.check(
-      readWorld: { commander.nativeStations },
-      readResources: { commander.withReadOnlyScriptState { $0.stationResources } },
-      readSystem: { SystemIdentity(galaxy: commander.galaxy, system: commander.system) },
-      readOwner: { commander.equipmentOwnerID },
-      readPhysicalTime: { commander.flightSimulation.physicalTime },
-      readStationPosition: { commander.flightSimulation.anchors?.station.position },
-      readCalendar: { commander.withReadOnlyScriptState { $0.calendarLedger } })
-  }
 }
 
 // One full policy body serves normal Commander validation and private storage projections.
