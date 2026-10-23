@@ -141,6 +141,22 @@ public struct Commander: Sendable, Equatable, Codable {
     let empty = ScriptEngineState()
     return try read(empty)
   }
+  // Read only child storage here: no Commander value crosses the pointer boundary.
+  fileprivate static func nativeStationReadScriptState<Result>(
+    at commander: UnsafePointer<Commander>,
+    _ read: (borrowing ScriptEngineState) -> Result
+  ) -> Result {
+    if let stored = commander.pointee.savedScriptState { return stored.withReadOnlyValue(read) }
+    return Self.withDefaultScriptState(read)
+  }
+
+  fileprivate static func nativeStationReadFlight(
+    at commander: UnsafePointer<Commander>
+  ) -> FlightSimulationState {
+    if let flight = commander.pointee.savedFlightSimulation { return flight }
+    return FlightSimulationState()
+  }
+
   var savedEquipmentInventory: OwnedEquipmentInventory?
   var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
   var savedEMPState: EMPState?
@@ -1013,6 +1029,41 @@ public struct Game: Sendable {
     commanderStorage.withUnsafeBufferPointer { storage in
       let commander = storage.baseAddress!
       return .init(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+    }
+  }
+  // Keep the original full policy and lazy read order without passing a whole Commander value
+  // through the generic read callback. Only owned system/anchor values leave this buffer scope.
+  @inline(never)
+  mutating func nativeStationPopulationHeader() throws -> (
+    system: SystemIdentity, anchors: SystemAnchors
+  ) {
+    try commanderStorage.withUnsafeBufferPointer { storage in
+      let commander = storage.baseAddress!
+      let system = SystemIdentity(
+        galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+      guard
+        NativeStationStateValidation.check(
+          readWorld: { commander.pointee.nativeStations },
+          readResources: {
+            Commander.nativeStationReadScriptState(at: commander) { $0.stationResources }
+          },
+          readSystem: {
+            SystemIdentity(galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+          },
+          readOwner: { commander.pointee.savedEquipmentInventory?.owner },
+          readPhysicalTime: { Commander.nativeStationReadFlight(at: commander).physicalTime },
+          readStationPosition: {
+            Commander.nativeStationReadFlight(at: commander).anchors?.station.position
+          },
+          readCalendar: {
+            Commander.nativeStationReadScriptState(at: commander) { $0.calendarLedger }
+          }),
+        let anchors = Commander.nativeStationReadFlight(at: commander).anchors,
+        anchors.system
+          == SystemIdentity(
+            galaxy: commander.pointee.galaxy, system: commander.pointee.system)
+      else { throw NativeStationRuntimeError.invalidState }
+      return (system, anchors)
     }
   }
   /// Synchronous read-only access; the storage borrow and pointer never escape this call.
