@@ -9959,7 +9959,10 @@
       "scope": "Eleven pure applicability predicates borrow pack; preserve exact shortcircuit and full downstream validators",
       "normal_failure_attributed": false,
       "diagnostic_source_path_confirmed": true,
-      "m01_complete": false
+      "m01_complete": false,
+      "source_blob": "cfe946a80abe01b7a1281cfeada02eed05ecfb54",
+      "independent_source_review": "clear",
+      "runtime_result": "pending"
     }
   ],
   "two_developer_phase": {
