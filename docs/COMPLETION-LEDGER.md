@@ -4,6 +4,10 @@ Updated 23 October 2026. This is the current delivery guide, not a content-compl
 
 ## Current execution checkpoint — 22 October, 14:23 UTC
 
+M01 / #112 station-identity scalar projection independently source/lifetime REVIEW-CLEAR at Game.swift SHA b443a3ca2d3ed480344120c21ef425902e979aa00359d40a1e1097f81c67d681. MBA pinned/rechecked the hash and verified exact typed compiler-derived Int offsets, overflow/root bounds/alignment, one-element live-buffer invariant and nonescaping read. Galaxy, system and main-orbital identity values are unchanged. Replacing only this getter restores the entire prior HEAD Game.swift byte for byte (103db3c8); generic readers, COW/storage, schema and actor behavior are untouched.
+
+G1 owns completion of targeted tests, compilation and the mandatory whole-Commander-copy-ABSENT gate. MBA reviews the stable test handoff and actual retained gate/result in parallel. Source/lifetime clearance is not test, compiled-copy or runtime qualification. No runtime run may start unless the actual getter/callback passes the gate; if copying remains, stop/report. Earlier recorder passes stay separately retained; genuine rescue completion and M01 delivery remain incomplete and unreleased.
+
 M01 / #112 station-identity scalar projection is AUTHORED IN THE WORKTREE (27-line Game.swift delta), not yet build/runtime-qualified. It retains the same galaxy/system inputs and main-orbital station class under the already approved compiler-offset scope. G1 owns implementation, tests and compile-first gate; MBA is explicitly assigned immediate read-only source/lifetime review in parallel while G1 finishes the test handoff, pinning and rechecking the source hash so concurrent author changes receive only incremental review. No source edits or execution by MBA.
 
 The exact getter/callback must prove no whole Commander copy before runtime. Existing recorder-query and eight-kilogram passes remain separately evidenced; the three genuine rescue methods / eight cases remain incomplete. No new integration or playable-delivery claim is made. M01 remains unreleased.
