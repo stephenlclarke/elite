@@ -59,13 +59,23 @@ enum NativeC01SurveyorSave {
     }
   }
 
+  @inline(never)
   static func valid(_ mission: ScriptInstance, commander: borrowing Commander) -> Bool {
-    guard let state = mission.savedGlassMeridian, NativeC01Surveyor.shapeValid(state) else {
-      return false
-    }
-    guard let surveyor = state.surveyor else {
+    guard let state = mission.savedGlassMeridian else { return false }
+    // shapeValid is unconditionally true for this absent leaf. Do not enter the
+    // large present-custody frame just to apply its original missing-group refusal.
+    if case .none = state.surveyor {
       return mission.ownedEncounters[NativeC01Surveyor.encounter] == nil
     }
+    return presentSurveyorValid(state, mission: mission, commander: commander)
+  }
+
+  @inline(never)
+  private static func presentSurveyorValid(
+    _ state: borrowing NativeGlassMeridianState, mission: borrowing ScriptInstance,
+    commander: borrowing Commander
+  ) -> Bool {
+    guard NativeC01Surveyor.shapeValid(state), let surveyor = state.surveyor else { return false }
     let source = surveyor.source
     guard source.physicalTime <= commander.flightSimulation.physicalTime,
       source.visit <= commander.flightSimulation.visit,

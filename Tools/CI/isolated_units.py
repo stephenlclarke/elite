@@ -120,6 +120,18 @@ METHODS = {
         "authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget",
         "originalCoverSourceStillRequiresItsOwnActualActiveHazard",
     ),
+    "NativeC01ReservationAuditUnitTests": (
+        "freshNativeCommissionCreatesOneCapacityTwoPaidClaimsBeforeAnyObservation",
+        "originalContentsComputeConcealedOverlapWithoutChangingLedgerOrCreatingASecondUnit",
+        "nativeClockArithmeticKeepsThirtySecondFindingAcrossBinaryExponentBoundaries",
+        "foreignClockRecorderAndAlteredOriginalPaymentsCannotSupplyFindings",
+        "nativeSorelConfirmationRecordsOnlyStageFourAndRetainsTheSameProtectedRecorder",
+        "staleOrUnattainedNativeInputsCannotGrantSorelAudit",
+        "refusedWriterRollsBackAuditAndAcknowledgementThenFreshRetryCommitsOnce",
+        "actualLaterCarrierLossRetainsAuditedHistoryAndPublishesOneOrderedObservation",
+        "newCorpusUsesClosed137And138AndNeverHydratesAnOlderUnboundCommission",
+        "unreadReplacementUsesPreassignedLineageButAliasOrForeignScanCannotReadContents",
+    ),
     "NativeWayfarerInductionAccreditationUnitTests": (
         "owningTerminalRecordsExactly7600OnceChosenCharterAccreditationAndOneUniqueClue",
         "repeatedSennConfirmationCannotPayOrGrantAnotherClueOrDiscardExistingBookings",

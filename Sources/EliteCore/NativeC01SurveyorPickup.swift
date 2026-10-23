@@ -82,7 +82,9 @@ extension Game {
     mission.milestones.insert(2)
     mission.revision += 1
     mission.journal.append(
-      "Recovered the original Glass Meridian flight recorder: 8kg protected custody. Navidor Harrier source retained. Stage four audit, payment and final clue remain unavailable."
+      state.reservationCase == nil
+        ? "Recovered the original Glass Meridian flight recorder: 8kg protected custody. Navidor Harrier source retained. Stage four audit, payment and final clue remain unavailable."
+        : "Recovered the original Glass Meridian flight recorder: 8kg protected custody. Visit Captain Orin Sorel at Enmadan's main orbital to compare the original bookings. No payment or final clue."
     )
     commander.scriptState.instances[mission.id] = mission
     guard let tonnes = commander.checkedCargoTonnes, tonnes <= commander.tradeCargoCapacity else {
@@ -132,11 +134,18 @@ extension Game {
     } else {
       return false
     }
+    guard NativeC01ReservationAuditSave.shapeValid(state) else { throw SaveError.invalidCommander }
     state.surveyor?.loss = loss
     guard NativeC01Surveyor.shapeValid(state) else { throw SaveError.invalidCommander }
+    let lossSequence = try observeC01ReservationLoss(state: &state, mission: &mission)
+    guard NativeC01ReservationAuditSave.shapeValid(state) else { throw SaveError.invalidCommander }
     mission.savedGlassMeridian = state
     mission.journal.append(
-      "Original Glass Meridian recorder lost. This attempt cannot reissue the original.")
+      state.reservationCase?.audit == nil
+        ? "Original Glass Meridian recorder lost. This attempt cannot reissue the original."
+        : "Original Glass Meridian recorder lost after Sorel's recorded audit. The historical findings remain valid; the original cannot be reissued."
+    )
+    if let lossSequence { commander.scriptState.nextEvent = lossSequence }
     commander.scriptState.instances[mission.id] = mission
     nativeC01SurveyorPending = nil
     return true
