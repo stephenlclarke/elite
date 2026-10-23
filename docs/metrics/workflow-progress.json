@@ -8430,6 +8430,23 @@
       "candidate_changed": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:59:30Z",
+      "checkpoint_key": "20261023-m01-d2d0-vm-terminal-failure-triage-assigned",
+      "event": "Current VM job failed; sole saved-artifact attribution assigned MBA",
+      "head": "d2d0cd0cc9122315b0c7dfe4d02b846b81a7f384",
+      "run": 40006985306,
+      "result": "FAILURE",
+      "cause": "not yet attributed",
+      "reviewer_owner": "MBA sole artifact retrieval/triage",
+      "developer_owner": "G1 fixes only concrete current finding",
+      "required_quality_run": 40006996339,
+      "required_quality_status": "in_progress",
+      "prior_scoped_closures_preserved": true,
+      "new_execution_started": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
