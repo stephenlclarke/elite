@@ -256,6 +256,7 @@ extension Game {
     bodyID: Int, state: inout OrdnanceState, context: EncounterContext,
     activeECM: [ECMActivationIdentity] = []
   ) -> OrdnanceUpdate {
+    defer { observeSafeGunneryMissileEnd(state) }
     guard state.valid, context.physicalTime.isFinite,
       context.system == state.origin.owner.system, context.visit == state.origin.owner.visit,
       context.physicalTime >= state.lastUpdatedAt,
@@ -283,7 +284,11 @@ extension Game {
           bodyID: bodyID, state: state, motion: motion, context: context)
         {
           let collision = contact.hit
-          if contact.selectedTargetBody?.scriptNPC != nil {
+          if handleNativePracticeContact(
+            contact, origin: state.origin, kind: state.profile.attackKind, projectile: state)
+          {
+            incident = nil
+          } else if contact.selectedTargetBody?.scriptNPC != nil {
             let policy = ordnanceCollisionPolicy(bodyID: bodyID, state: state, context: context)
             let proof = NativeMissionOrdnanceImpactProof(
               projectileBody: bodies[index], ordnance: try requireStoredOrdnance(bodyID),

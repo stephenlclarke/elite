@@ -515,3 +515,89 @@ extension GameRuntime {
       startPlayer: game.commander.flightSimulation.player)
   }
 }
+
+/// Closed archive and value-storage components; this does not publish a mixed native journey.
+struct NativeTrainingReservationCodecUnitTests {
+  @Test(arguments: [false, true])
+  func reservationAndTrainingArchivesRetainClosedNamespacesAndValueSemantics(alien: Bool)
+    async throws
+  {
+    let fixture = try await C01ReservationAuditFixture()
+    defer { fixture.clean() }
+    _ = try fixture.accept()
+    let reservation = try #require(fixture.game.glassMeridianMission)
+    let defensive = try NativeDefensiveFlightUnitTests().archiveFixture()
+    let gunnery = try NativeSafeGunneryUnitTests().archiveFixture()
+    let reservationSchema = alien ? 138 : 137
+    let trainingSchema = alien ? 136 : 135
+    func archive(_ instances: [ScriptInstance]) throws -> Data {
+      let entries = Dictionary(uniqueKeysWithValues: instances.map { ($0.id.uuidString, $0) })
+      return try JSONEncoder().encode(["instances": entries])
+    }
+    for (instances, expected) in [
+      ([reservation], reservationSchema), ([defensive, gunnery], trainingSchema),
+      ([reservation, defensive, gunnery], reservationSchema),
+    ] {
+      var commander = fixture.game.commander
+      commander.scriptState.instances = Dictionary(
+        uniqueKeysWithValues: instances.map { ($0.id, $0) })
+      #expect(ScriptSaveStore.nativeMissionPublicationVersion(commander, alien: alien) == expected)
+      let bytes = try archive(instances)
+      try NativeDefensiveFlightSave.validateArchiveFields(
+        bytes, part: .missions, schema: expected, alien: alien)
+      let reopened = try JSONDecoder().decode([String: [String: ScriptInstance]].self, from: bytes)
+      #expect(
+        reopened["instances"]
+          == Dictionary(uniqueKeysWithValues: instances.map { ($0.id.uuidString, $0) }))
+    }
+    let mixed = try archive([reservation, defensive, gunnery])
+    for oldSchema in [alien ? 130 : 129, trainingSchema] {
+      #expect(throws: (any Error).self) {
+        try NativeDefensiveFlightSave.validateArchiveFields(
+          mixed, part: .missions, schema: oldSchema, alien: alien)
+      }
+    }
+    var raw = try #require(JSONSerialization.jsonObject(with: mixed) as? [String: Any])
+    var auditEntries = try #require(raw["instances"] as? [String: Any])
+    var auditMission = try #require(auditEntries[reservation.id.uuidString] as? [String: Any])
+    var opening = try #require(auditMission["savedGlassMeridian"] as? [String: Any])
+    var reservationLeaf = try #require(opening["reservationCase"] as? [String: Any])
+    reservationLeaf["inventedCompletion"] = true
+    opening["reservationCase"] = reservationLeaf
+    auditMission["savedGlassMeridian"] = opening
+    auditEntries[reservation.id.uuidString] = auditMission
+    #expect(throws: (any Error).self) {
+      try NativeDefensiveFlightSave.validateArchiveFields(
+        JSONSerialization.data(withJSONObject: ["instances": auditEntries]), part: .missions,
+        schema: reservationSchema, alien: alien)
+    }
+    var entries = try #require(raw["instances"] as? [String: Any])
+    var training = try #require(entries[defensive.id.uuidString] as? [String: Any])
+    var leaf = try #require(training["savedDefensiveFlight"] as? [String: Any])
+    leaf["inventedCompletion"] = true
+    training["savedDefensiveFlight"] = leaf
+    entries[defensive.id.uuidString] = training
+    raw["instances"] = entries
+    #expect(throws: (any Error).self) {
+      try NativeDefensiveFlightSave.validateArchiveFields(
+        JSONSerialization.data(withJSONObject: raw), part: .missions,
+        schema: reservationSchema, alien: alien)
+    }
+    let embedded = try JSONSerialization.data(withJSONObject: [
+      "savedScriptState": try #require(JSONSerialization.jsonObject(with: mixed) as? [String: Any])
+    ])
+    #expect(throws: (any Error).self) {
+      try NativeDefensiveFlightSave.validateArchiveFields(
+        embedded, part: .commander, schema: reservationSchema, alien: alien)
+    }
+    var changed = defensive
+    changed.savedNativePractice = nil
+    #expect(changed != defensive && defensive.savedNativePractice != nil)
+    changed = defensive
+    changed.savedDefensiveFlight = nil
+    #expect(changed != defensive && defensive.savedDefensiveFlight != nil)
+    changed = gunnery
+    changed.savedSafeGunnery = nil
+    #expect(changed != gunnery && gunnery.savedSafeGunnery != nil)
+  }
+}

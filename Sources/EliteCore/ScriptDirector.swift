@@ -179,6 +179,26 @@ extension Game {
     if Self.scriptGlassMeridianApplies(pack) {
       if let reason = scriptGlassMeridianUnavailable(pack) { return reason }
     }
+    if pack.manifest.stateID == NativeDefensiveFlight.stateID {
+      guard pack.digest == NativeDefensiveFlight.digest else {
+        return "Restore approved manual defensive flight content."
+      }
+      if !commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeDefensiveFlight.stateID && $0.digest == pack.digest
+      }) {
+        return "Use Station Contracts at actual Avenor for manual defensive flight consent."
+      }
+    }
+    if pack.manifest.stateID == NativeSafeGunnery.stateID {
+      guard pack.digest == NativeSafeGunnery.digest else {
+        return "Restore approved safe gunnery content."
+      }
+      if !commander.scriptState.instances.values.contains(where: {
+        $0.definition == NativeSafeGunnery.stateID && $0.digest == pack.digest
+      }) {
+        return "Use Station Contracts at actual Avenor for safe gunnery consent."
+      }
+    }
     if Self.scriptFlightReceptionApplies(pack) {
       if let reason = scriptFlightReceptionUnavailable(pack) { return reason }
     }
@@ -622,6 +642,12 @@ extension Game {
     else { throw MissionPackError("Use Senn's actual induction commission review.") }
     guard pack.manifest.glassMeridian == nil, pack.manifest.stateID != NativeGlassMeridian.stateID
     else { throw MissionPackError("Use the actual Venn commission review.") }
+    guard pack.manifest.stateID != NativeDefensiveFlight.stateID else {
+      throw MissionPackError("Use actual Avenor native defensive-flight consent.")
+    }
+    guard pack.manifest.stateID != NativeSafeGunnery.stateID else {
+      throw MissionPackError("Use actual Avenor native safe-gunnery consent.")
+    }
     guard pack.manifest.flightReception == nil,
       pack.manifest.stateID != NativeFlightReception.stateID
     else { throw MissionPackError("Use the actual native training berth practice.") }

@@ -86,7 +86,7 @@ class ScriptInstanceStorageInventoryTests(unittest.TestCase):
         self.fields = inspect_instance_storage(self.source)
         import re
         self.wrapped = set(re.findall(r"^    var (\w+): Field<[^\n]+>\?", self.source, re.M))
-        self.assertEqual(len(self.fields), 51)
+        self.assertEqual(len(self.fields), 54)
 
     def changed(self, before, after):
         self.assertIn(before, self.source)

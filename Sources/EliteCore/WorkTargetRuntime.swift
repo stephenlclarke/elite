@@ -91,6 +91,7 @@ extension Game {
 
   func recoverableMetadata(for body: SpaceBody, context: EncounterContext) -> SalvageTargetMetadata?
   {
+    guard nativePracticeReservation(body) == nil else { return nil }
     guard let physical = body.physical else { return nil }
     if let payload = physical.payload, measuredPayloadIsAllocated(payload),
       commander.miningLedger.boundActor(for: payload) == physical.identity

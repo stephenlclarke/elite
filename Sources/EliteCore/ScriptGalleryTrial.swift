@@ -80,6 +80,8 @@ extension Game {
     else { return false }
     guard pack.manifest.glassMeridian == nil, pack.manifest.stateID != NativeGlassMeridian.stateID
     else { return false }
+    guard pack.manifest.stateID != NativeSafeGunnery.stateID else { return false }
+    guard pack.manifest.stateID != NativeDefensiveFlight.stateID else { return false }
     guard pack.manifest.flightReception == nil,
       pack.manifest.stateID != NativeFlightReception.stateID
     else { return false }

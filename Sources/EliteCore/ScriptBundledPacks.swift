@@ -83,6 +83,13 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-glass-meridian")
   }
+  static var bundledDefensiveFlightDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-defensive-flight")
+  }
+  static var bundledSafeGunneryDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-safe-gunnery")
+  }
   static var bundledFlightReceptionDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-flight-reception")
@@ -275,6 +282,20 @@ extension ScriptPackLibrary {
     } catch {
       library.errors.append("Bundled measured extraction pack: " + error.localizedDescription)
     }
+    do {
+      let practice = try read(bundledDefensiveFlightDirectory)
+      if !library.packs.contains(where: { $0.digest == practice.digest }) {
+        library.packs.append(practice)
+      }
+    } catch {
+      library.errors.append("Bundled defensive flight pack: " + error.localizedDescription)
+    }
+    do {
+      let practice = try read(bundledSafeGunneryDirectory)
+      if !library.packs.contains(where: { $0.digest == practice.digest }) {
+        library.packs.append(practice)
+      }
+    } catch { library.errors.append("Bundled safe gunnery pack: " + error.localizedDescription) }
     do {
       let practice = try read(bundledFlightReceptionDirectory)
       if !library.packs.contains(where: { $0.digest == practice.digest }) {

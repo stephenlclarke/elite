@@ -4,7 +4,8 @@ extension Game {
     guard !docked, commander.equipment.contains("Fuel Scoops") else { return }
     let candidates = bodies.filter { body in
       let scoopable = body.hull == .cargo || (body.hull == .thargon && !body.hostile)
-      return !NativeInductionCrewLogPack.marker(body, commander: commander)
+      return nativePracticeReservation(body) == nil
+        && !NativeInductionCrewLogPack.marker(body, commander: commander)
         && !WayfarerRecordRecovery.marker(body, commander: commander)
         && !NativeIdentifiedSalvage.marker(body, commander: commander)
         && !NativeOriginalRescueJourney.marker(body, commander: commander)

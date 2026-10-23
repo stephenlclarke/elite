@@ -12,6 +12,8 @@ enum OriginalServiceReservationPolicy {
     guard state.outcome == .active else { return false }
     if case .some = state.contract,
       isContractDefinition(state.definition) || state.definition == NativeFlightReception.stateID
+        || state.definition == NativeSafeGunnery.stateID
+        || state.definition == NativeDefensiveFlight.stateID
     {
       return true
     }
