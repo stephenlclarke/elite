@@ -152,7 +152,7 @@ extension Game {
 extension SpaceBody {
   /// Checked payload access follows the existing flight-state read coroutine pattern.
   /// No mutation or suspension can invalidate the presence check before projection.
-  fileprivate var nativeStationPhysicalIdentity: ActorIdentity? {
+  var nativeStationPhysicalIdentity: ActorIdentity? {
     _read {
       if case .some = physical {
         let identity: ActorIdentity? = physical!.identity

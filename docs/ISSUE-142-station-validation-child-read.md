@@ -28,3 +28,9 @@ full policy and lazy reader order (five), and storage/default/retained bytes
 coverage/sanitizer/leak gates, native M01 journey and release remain separate.
 The d04 signed/notarized archive and author-observed fresh docked startup
 remain qualified only on their explicitly recorded scopes.
+
+The first focused invocation at 3b8501fc failed compilation after 7.804100
+seconds, before any test ran: the existing checked physical-identity reader
+was fileprivate to NativeStationRuntime. Its read-only access is now internal
+to the module so the relocated shared storage policy can use the same reader.
+Its implementation, presence guard and all validation behavior are unchanged.
