@@ -134,9 +134,9 @@ extension Game {
 
   /// Metadata needs membership only; ordinary actors never enter the owned payload scan.
   @inline(never)
-  func hasNativePracticeReservation(_ body: SpaceBody) -> Bool {
+  func hasNativePracticeReservation(_ body: borrowing SpaceBody) -> Bool {
     guard let owner = nativePracticeReservationOwner(body) else { return false }
-    return nativePracticeReservationPayloadExists(body, owner: owner)
+    return nativePracticeReservationPayloadExists(copy body, owner: owner)
   }
 
   @inline(never)

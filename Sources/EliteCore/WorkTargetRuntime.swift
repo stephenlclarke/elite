@@ -105,23 +105,41 @@ extension Game {
   func recoverableMetadata(for body: borrowing SpaceBody, context: borrowing EncounterContext)
     -> SalvageTargetMetadata?
   {
-    guard !hasNativePracticeReservation(copy body) else { return nil }
+    guard !hasNativePracticeReservation(body) else { return nil }
     guard let physical = body.physical else { return nil }
-    if let payload = physical.payload, measuredPayloadIsAllocated(payload),
-      commander.miningLedger.boundActor(for: payload) == physical.identity
+    if physical.payload != nil,
+      let measured = recoverableMeasuredPayloadMetadata(for: body, physical: physical)
     {
-      return .init(
-        category: .cargo, ownership: .missionProtected, claimant: nil,
-        wreck: nil, section: nil, lot: nil,
-        bounds: .init(
-          center: .init(0, 0, 0),
-          radius: gameplayMesh(for: copy body).vertices.map(\.length).max() ?? 0),
-        workSurfaces: [])
+      return measured
     }
     if let original = inductionCrewLogMetadata(body) { return original }
     if let original = recordRecoveryMetadata(body, context: copy context) { return original }
     if let original = identifiedSalvageMetadata(body, context: copy context) { return original }
     if let original = originalRescueMetadata(body, context: copy context) { return original }
+    return ordinaryRecoverableMetadata(for: body, context: context, physical: physical)
+  }
+
+  @inline(never)
+  private func recoverableMeasuredPayloadMetadata(
+    for body: borrowing SpaceBody, physical: borrowing PhysicalActorState
+  ) -> SalvageTargetMetadata? {
+    guard let payload = physical.payload, measuredPayloadIsAllocated(payload),
+      commander.miningLedger.boundActor(for: payload) == physical.identity
+    else { return nil }
+    return .init(
+      category: .cargo, ownership: .missionProtected, claimant: nil,
+      wreck: nil, section: nil, lot: nil,
+      bounds: .init(
+        center: .init(0, 0, 0),
+        radius: gameplayMesh(for: copy body).vertices.map(\.length).max() ?? 0),
+      workSurfaces: [])
+  }
+
+  @inline(never)
+  private func ordinaryRecoverableMetadata(
+    for body: borrowing SpaceBody, context: borrowing EncounterContext,
+    physical: borrowing PhysicalActorState
+  ) -> SalvageTargetMetadata? {
     var result: SalvageTargetMetadata?
     if let supplied = physical.salvage {
       result = supplied
@@ -166,11 +184,15 @@ extension Game {
         workSurfaces: [])
     }
     guard let metadata = result else { return nil }
-    let occupiedEMP =
-      isEMPDisabled(copy body)
-      && physical.empSource.flatMap { commander.savedEMPState?.records[$0]?.crewAboard }.map {
-        $0 > 0
-      } == true
+    let occupiedEMP: Bool
+    if isEMPDisabled(copy body) {
+      occupiedEMP =
+        physical.empSource.flatMap { commander.savedEMPState?.records[$0]?.crewAboard }.map {
+          $0 > 0
+        } == true
+    } else {
+      occupiedEMP = false
+    }
     let protected: Bool
     if context.protection.protectedActors.contains(physical.identity) {
       protected = true
