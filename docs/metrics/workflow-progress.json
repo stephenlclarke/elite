@@ -7401,6 +7401,38 @@
       "source_published": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T16:52:19Z",
+      "checkpoint_key": "20261023-m01-preview-and-shop-focused-qualified",
+      "event": "Both release corrections pass original focused units and independent result review",
+      "closed_issues": [
+        147,
+        148
+      ],
+      "head": "9b630d784cca708137cc71bc3ad492726ccc3d76",
+      "focused_methods": 6,
+      "authored_cases": 6,
+      "compile_seconds": 227.02,
+      "process_seconds": 278.95930295810103,
+      "exit_code": 0,
+      "report": "/tmp/elite-147-148-preview-shop-units-swift-testing.xml",
+      "report_failures": 0,
+      "report_errors": 0,
+      "report_skips": 0,
+      "case_seconds": {
+        "original_scroll": 45.846248459,
+        "inventory_fit_store": 8.971404416,
+        "inventory_pure_rows": 9.0058745,
+        "clinic_claim_validation": 9.04262875,
+        "original_plugh_shop": 11.228665042,
+        "genuine_research_purchase": 9.731223458
+      },
+      "independent_source_and_result_review": "MBA clear, worktree clean and exact reviewed blobs matched",
+      "source_published": false,
+      "next_action": "publish corrected packet promptly then exact-head required gates, no extra local replay",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
