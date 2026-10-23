@@ -18,7 +18,9 @@ struct OriginalFleetCatalogueUnitTests {
       #expect(
         lookup.playerFlyable == record.playerFlyable
           && lookup.purchasePolicy == record.purchasePolicy)
-      #expect(lookup.integrationBlockers == record.integrationBlockers && !lookup.runtimeReady)
+      #expect(
+        lookup.integrationBlockers == record.integrationBlockers
+          && lookup.runtimeReady == (record.id == "SH029"))
     }
     #expect(ShipCatalogue.originalDefinition(for: "SH001")?.name == "Mule")
     #expect(
