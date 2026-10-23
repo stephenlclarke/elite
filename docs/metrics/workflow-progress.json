@@ -6818,6 +6818,26 @@
       "usable_delivered": false,
       "m01_complete": false,
       "next_action": "G1 requested final review disposition and normal merge; broader final qualification separate"
+    },
+    {
+      "at": "2026-10-23T14:52:53Z",
+      "checkpoint_key": "20261023-m01-rescue-repair-integrated-release-candidate-assigned",
+      "event": "Qualified rescue writer and settlement repair integrated; coherent release candidate assigned",
+      "pr": 139,
+      "authored_head": "fa516a6430786d72d1b9e5353ebeac280b1b1e73",
+      "merge_commit": "c40b027eb3f7f6a6580d5ff24ffec78729c442cb",
+      "merge_tree": "88b3278813a09240c95b0605124578ada38a12d3",
+      "merged_tree_matches_authored_head": true,
+      "closed_issues": [
+        140
+      ],
+      "source_and_focused_results": "MBA clear: source1d7cfec2 writer6 +sameheadsettlement8 PASS; separateclassifier6a2b1case retained",
+      "merged": true,
+      "usable_delivered": false,
+      "candidate_updated": false,
+      "m01_complete": false,
+      "next_deliverable": "G1 coherent committed release composition, required final-head review/checks and updated signed/notarized local candidate; MBA reviews in parallel",
+      "scope_limits": "no new nonM01 feature, held-source import or broad native test campaign; nativejourney/release/Homebrew not proved"
     }
   ],
   "two_developer_phase": {
