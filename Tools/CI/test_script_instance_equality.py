@@ -2,7 +2,7 @@
 
 import unittest
 
-from script_instance_equality import COMMANDER_SOURCE, SOURCE, inspect_equality
+from script_instance_equality import COMMANDER_SOURCE, SOURCE, inspect_equality, inspect_instance_storage
 
 
 class ScriptInstanceEqualityTests(unittest.TestCase):
@@ -16,14 +16,14 @@ class ScriptInstanceEqualityTests(unittest.TestCase):
 
     def test_new_stored_field_cannot_be_silently_omitted(self):
         changed = self.source.replace(
-            "  let id: UUID\n", "  let addedForFixture: String\n  let id: UUID\n", 1
+            "    let id: UUID\n", "    let addedForFixture: String\n    let id: UUID\n", 1
         )
         with self.assertRaisesRegex(ValueError, "every stored field"):
             inspect_equality(changed)
 
     def test_missing_duplicate_or_reordered_comparisons_are_rejected(self):
-        first = "    guard equalId(lhs, rhs) else { return false }\n"
-        second = "    guard equalDefinition(lhs, rhs) else { return false }\n"
+        first = "    guard equalId(lhs.payload, rhs.payload) else { return false }\n"
+        second = "    guard equalDefinition(lhs.payload, rhs.payload) else { return false }\n"
         for changed in [
             self.source.replace(first, "", 1),
             self.source.replace(first, first + first, 1),
@@ -40,44 +40,106 @@ class ScriptInstanceEqualityTests(unittest.TestCase):
 
     def test_computed_and_static_properties_are_not_stored_equality_fields(self):
         changed = self.source.replace(
-            "  let id: UUID\n",
-            "  static let fixture: Int = 1\n  var computed: Int { 1 }\n  let id: UUID\n",
+            "    let id: UUID\n",
+            "    static let fixture: Int = 1\n    var computed: Int { 1 }\n    let id: UUID\n",
             1,
         )
         self.assertEqual(inspect_equality(changed), inspect_equality(self.source))
 
     def test_early_success_cannot_bypass_the_comparisons(self):
         changed = self.source.replace(
-            "    guard equalId(lhs, rhs)", "    return true\n    guard equalId(lhs, rhs)", 1
+            "    guard equalId(lhs.payload, rhs.payload)", "    return true\n    guard equalId(lhs.payload, rhs.payload)", 1
         )
         with self.assertRaisesRegex(ValueError, "short circuit"):
             inspect_equality(changed)
 
     def test_observed_stored_properties_cannot_evade_the_inventory(self):
         for declaration in [
-            "  var added: Int { didSet {} }\n",
-            "  var added: Int {\n    willSet {}\n  }\n",
-            "  var added: Int = 0 { didSet {} }\n",
+            "    var added: Int { didSet {} }\n",
+            "    var added: Int {\n      willSet {}\n    }\n",
+            "    var added: Int = 0 { didSet {} }\n",
         ]:
             with self.subTest(declaration=declaration):
-                changed = self.source.replace("  let id: UUID\n", declaration + "  let id: UUID\n", 1)
+                changed = self.source.replace("    let id: UUID\n", declaration + "    let id: UUID\n", 1)
                 with self.assertRaisesRegex(ValueError, "Observed stored"):
                     inspect_equality(changed)
 
     def test_multiple_bindings_cannot_hide_the_second_stored_field(self):
         for declaration in [
-            "  let added: Int, omitted: Int\n",
-            "  var added: Int = 1, omitted: Int = 2\n",
+            "    let added: Int, omitted: Int\n",
+            "    var added: Int = 1, omitted: Int = 2\n",
         ]:
             with self.subTest(declaration=declaration):
-                changed = self.source.replace("  let id: UUID\n", declaration + "  let id: UUID\n", 1)
+                changed = self.source.replace("    let id: UUID\n", declaration + "    let id: UUID\n", 1)
                 with self.assertRaisesRegex(ValueError, "Multiple bindings"):
                     inspect_equality(changed)
 
     def test_inferred_type_cannot_evade_the_inventory(self):
-        changed = self.source.replace("  let id: UUID\n", "  let fixture = 1\n  let id: UUID\n", 1)
+        changed = self.source.replace("    let id: UUID\n", "    let fixture = 1\n    let id: UUID\n", 1)
         with self.assertRaisesRegex(ValueError, "explicit type"):
             inspect_equality(changed)
+
+
+class ScriptInstanceStorageInventoryTests(unittest.TestCase):
+    def setUp(self):
+        self.source = SOURCE.read_text()
+        self.fields = inspect_instance_storage(self.source)
+        self.assertEqual(len(self.fields), 51)
+
+    def changed(self, before, after):
+        self.assertIn(before, self.source)
+        return self.source.replace(before, after, 1)
+
+    def test_added_payload_or_facade_field_fails_closed(self):
+        for before, after in [
+            ("    let id: UUID", "    var omitted: Int = 0\n    let id: UUID"),
+            ("  private var payload: Storage", "  var omitted: Int = 0\n  private var payload: Storage"),
+        ]:
+            with self.subTest(before=before), self.assertRaises(ValueError):
+                inspect_instance_storage(self.changed(before, after))
+
+    def test_every_mutable_projection_requires_both_detaches(self):
+        for field in self.fields[4:]:
+            for projection in [
+                f"      ensureUniqueStorage()\n      payload.{field} = newValue",
+                f"      ensureUniqueStorage()\n      yield &payload.{field}",
+            ]:
+                with self.subTest(field=field, projection=projection):
+                    with self.assertRaisesRegex(ValueError, "detach before"):
+                        inspect_instance_storage(self.changed(
+                            projection, projection.replace("      ensureUniqueStorage()\n", "")))
+
+    def test_shared_clone_and_each_field_copy_are_required(self):
+        with self.assertRaisesRegex(ValueError, "clone shared"):
+            inspect_instance_storage(self.changed(
+                "payload = Storage(copying: payload)", "payload = payload"))
+        for field in self.fields[4:]:
+            helper = "copy" + field[0].upper() + field[1:]
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, "allocate first"):
+                inspect_instance_storage(self.changed(f"      {helper}(from: source)\n", ""))
+        with self.assertRaisesRegex(ValueError, "same logical member"):
+            inspect_instance_storage(self.changed("revision = source.revision", "revision = source.randomState"))
+
+    def test_copy_helpers_cannot_be_inlined_into_an_aggregate_frame(self):
+        with self.assertRaisesRegex(ValueError, "separate frames"):
+            inspect_instance_storage(self.changed(
+                "    @inline(never)\n    private func copyData", "    private func copyData"))
+
+    def test_every_codec_key_and_encoder_call_is_required(self):
+        for field in self.fields:
+            helper = "encode" + field[0].upper() + field[1:]
+            for before in [f"    case {field}\n", f"      try {helper}(to: &values)\n"]:
+                with self.subTest(field=field, before=before), self.assertRaisesRegex(ValueError, "Codec"):
+                    inspect_instance_storage(self.changed(before, ""))
+
+    def test_required_decode_and_optional_omission_cannot_be_defaulted(self):
+        for before, after in [
+            ("values.decode(UInt64.self, forKey: .revision)", "values.decodeIfPresent(UInt64.self, forKey: .revision) ?? 0"),
+            ("values.decodeIfPresent(String.self, forKey: .suspension)", "values.decode(String.self, forKey: .suspension)"),
+            ("values.encodeIfPresent(suspension, forKey: .suspension)", "values.encode(suspension, forKey: .suspension)"),
+        ]:
+            with self.subTest(before=before), self.assertRaisesRegex(ValueError, "Codec"):
+                inspect_instance_storage(self.changed(before, after))
 
 
 class ScriptEngineEqualityInventoryTests(unittest.TestCase):
