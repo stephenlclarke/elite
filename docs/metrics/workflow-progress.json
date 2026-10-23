@@ -9709,9 +9709,12 @@
       "duplicate_run": 40033454844,
       "retained_authoritative_run": 40033448991,
       "cancellation_requested": true,
-      "cancellation_terminal_verified": false,
+      "cancellation_terminal_verified": true,
       "count_as_pass": false,
-      "m01_complete": false
+      "m01_complete": false,
+      "terminal_status": "completed",
+      "conclusion": "cancelled",
+      "verified_at": "2026-10-23T22:29:54.190443+00:00"
     }
   ],
   "two_developer_phase": {
