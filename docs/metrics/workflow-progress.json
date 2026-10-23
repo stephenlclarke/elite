@@ -6214,6 +6214,24 @@
       "actual_donkey_methods_passed": 5,
       "new_execution": false,
       "usable_delivered": false
+    },
+    {
+      "at": "2026-10-23T11:51:59.187046+00:00",
+      "event": "M01 retained repairs consolidated and published; incremental review clear",
+      "checkpoint_key": "20261023-m01-published-e59266cc",
+      "pr": 107,
+      "head": "e59266ccc86868d3dc6bf73f862ff3f5d5983ed1",
+      "consolidated_head": "2948a61e7adf0a32e4767caef6528eaf2892ab5d",
+      "retained_commits_consolidated": 35,
+      "selected_methods": 462,
+      "source_review": "MBA clear; five resolved blobs match, later Swift delta whitespace-only",
+      "unit_run": 39948240459,
+      "unit_run_head": "2948a61e7adf0a32e4767caef6528eaf2892ab5d",
+      "unit_status": "in progress, not passed",
+      "style_only_duplicate_run_cancelled": 39948688656,
+      "merged": false,
+      "usable_delivered": false,
+      "new_manual_or_full_integration_execution": false
     }
   ],
   "two_developer_phase": {
