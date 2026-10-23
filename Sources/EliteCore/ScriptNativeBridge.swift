@@ -73,32 +73,55 @@ extension Game {
       missionActorID: body.missionActorID, missionInstanceID: body.missionInstanceID, body: body)
   }
 
+  @inline(never)
   private static func missionActorFitMatches(
-    _ body: SpaceBody, retained: ScriptOwnedActor, declared: ScriptActorDefinition,
-    pack: ScriptPack, instance: ScriptInstance,
-    geometry: [String: ShipDesign]
+    _ body: borrowing SpaceBody, retained: borrowing ScriptOwnedActor,
+    declared: borrowing ScriptActorDefinition, pack: borrowing ScriptPack,
+    instance: borrowing ScriptInstance, geometry: borrowing [String: ShipDesign]
   ) -> Bool {
     guard let npcID = declared.npc else {
       return declared.hull == body.hull && body.scriptNPC == nil && retained.body.scriptNPC == nil
     }
     guard let npc = body.scriptNPC, npc.valid,
       npc.fit == retained.body.scriptNPC?.fit,
-      npc.components.allSatisfy({ alias, component in
-        retained.body.scriptNPC?.components[alias]?.identity == component.identity
-      }),
-      let definition = NativeC01Surveyor.profiles(pack: pack, state: instance).first(where: {
-        $0.id == npcID
-      }),
+      missionActorComponentsMatch(npc.components, retained: retained),
+      let definition = NativeC01Surveyor.profiles(pack: copy pack, state: copy instance).first(
+        where: {
+          $0.id == npcID
+        }),
       npc.fit.definition == definition
     else { return false }
     // Compare existing immutable designs directly. No geometry encoding, hash construction or
     // cache mutation belongs on this live source-resolution path.
-    return npc.fit.models.allSatisfy { reference, digest in
-      guard let installed = NativeC01Surveyor.designs(pack: pack, state: instance)[reference],
+    return missionActorModelsMatch(
+      npc.fit.models, pack: pack, instance: instance, geometry: geometry)
+  }
+
+  @inline(never)
+  private static func missionActorComponentsMatch(
+    _ components: borrowing [String: ScriptNPCComponentState], retained: borrowing ScriptOwnedActor
+  ) -> Bool {
+    for (alias, component) in components {
+      guard retained.body.scriptNPC?.components[alias]?.identity == component.identity else {
+        return false
+      }
+    }
+    return true
+  }
+
+  @inline(never)
+  private static func missionActorModelsMatch(
+    _ models: borrowing [String: String], pack: borrowing ScriptPack,
+    instance: borrowing ScriptInstance, geometry: borrowing [String: ShipDesign]
+  ) -> Bool {
+    for (reference, digest) in models {
+      guard
+        let installed = NativeC01Surveyor.designs(pack: copy pack, state: copy instance)[reference],
         let retained = geometry[digest]
       else { return false }
-      return installed == retained
+      guard installed == retained else { return false }
     }
+    return true
   }
 
   /// The simulation supplies its actual transformed aim; this joins the authored weapon and muzzle.
