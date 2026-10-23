@@ -51,7 +51,7 @@ struct OriginalHullPhysicalContractUnitTests {
     #expect(throws: (any Error).self) {
       try OriginalHullPhysicalContract(definition: other, model: model)
     }
-    let untouched = try #require(ShipCatalogue.ship("SH030"))
+    let untouched = try #require(ShipCatalogue.ship("SH001"))
     #expect(untouched.sourceProfilesIncludingPhysical == untouched.sourceProfilesIncludingOriginal)
     #expect(untouched.physicalSourcePreview == nil)
   }

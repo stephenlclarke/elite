@@ -63,7 +63,8 @@ struct OriginalGyrfalconAssaultUnitTests {
     }
     for other in ShipCatalogue.all
     where ![
-      "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH061",
+      "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
+      "SH061",
     ]
     .contains(
       other.id)
@@ -118,7 +119,8 @@ struct OriginalGyrfalconAssaultUnitTests {
     #expect(
       OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id)
         == [
-          "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH061",
+          "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
+          "SH061",
         ])
   }
 
