@@ -8310,6 +8310,24 @@
       "mission_replayed": false,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:43:34Z",
+      "checkpoint_key": "20261023-m01-workshop-empty-instance-correction-source-clear",
+      "event": "Remaining workshop browsing correction source-reviewed; focused cases active",
+      "issue": 153,
+      "reviewed_blob": "e23b0630042adcd4487a5ac385a50a189a5cee90",
+      "source_review": "MBA CLEAR: only actual empty dictionary shortcut, exact original policy for all nonempty stores",
+      "selected_methods": 4,
+      "authored_cases": 4,
+      "runtime_result": "pending",
+      "retained_closed_issues": [
+        151,
+        154
+      ],
+      "next_action": "coherent reviewed source publication after153 qualification",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
