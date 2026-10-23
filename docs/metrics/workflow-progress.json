@@ -7321,6 +7321,22 @@
       "reviewer": "MBA matched-image issue/source/result review",
       "separate_plugh_assertions": "MBA bounded classification pending, no speculative implementation",
       "m01_complete": false,
+      "usable_feature_delivery_claim": false,
+      "issue": 147,
+      "matched_issue": "https://github.com/stephenlclarke/elite/issues/147"
+    },
+    {
+      "at": "2026-10-23T16:36:23Z",
+      "checkpoint_key": "20261023-m01-plugh-research-fixture-assigned",
+      "event": "Demonstrated shop test prerequisite correction assigned with existing validation packet",
+      "issue": 148,
+      "owner": "G1",
+      "reviewer": "MBA",
+      "scope": "original Plugh shop test only; preserve legitimate alien-missile research and production availability",
+      "source_evidence": "older f6 quality log Alien Seeker Missile NOT AVAILABLE; correct production research gate, missing test prerequisite",
+      "batch_with_issue": 147,
+      "status": "assigned",
+      "m01_complete": false,
       "usable_feature_delivery_claim": false
     }
   ],
