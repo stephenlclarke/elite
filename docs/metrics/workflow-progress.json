@@ -8013,6 +8013,25 @@
       "required_quality_result": "FAILURE",
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T18:03:24Z",
+      "checkpoint_key": "20261023-m01-flight-projection-partial-pass-mission-still-faults",
+      "event": "Current projection units pass individually; original mission remains incomplete",
+      "issue": 151,
+      "head": "49e3e4f2800bb5565406d95d14148c593a0a852b",
+      "process_result": "FAILURE",
+      "exit_code": 1,
+      "seconds": 200.040007,
+      "build_seconds": 185.59,
+      "selected_methods": 3,
+      "authored_cases": 7,
+      "completed_pass_methods": 2,
+      "completed_pass_cases": 6,
+      "original_mission": "STARTED, no PASS, helper SIGBUS10",
+      "next_action": "G1 current evidence attribution and minimal correction; MBA saved evidence review",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
