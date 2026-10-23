@@ -2,6 +2,10 @@
 
 Updated 23 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
 
+## Current scope: M01 and existing defect remediation
+
+The developer keeps one ordered queue. M01 is the only new feature work; actionable MBA findings may be fixed in any existing component. No new non-M01 feature starts. MBA may triage and review any issue that appears. At each coherent packet boundary, take urgent demonstrated defects first, then the active M01 work. Keep ready fixes separate from corrected code awaiting review or a specific unit result; waiting for verification is not another implementation task. Each finding needs an owner, one next action and explicit closure evidence. Preserve held features, reuse unaffected validation and do not start full integration testing.
+
 ## Current direction: finish code and unit tests first
 
 Stephen reaffirmed this priority on 23 October. This section overrides older M01-only execution holds, debugger-first flight protocols and routine qualification handoffs. Implement ledger features in priority order, with meaningful component unit tests. Full integration testing comes later. Do not make a cross-system flight, native player journey, GUI run, debugger session, emitted-assembly survey, performance run, packaging or release acceptance a prerequisite for starting the next feature. Preserve existing failures honestly as deferred integration work; do not mark the playable milestone complete from component passes.
