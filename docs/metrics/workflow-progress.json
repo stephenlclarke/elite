@@ -7700,6 +7700,32 @@
       "source_published": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T17:38:19Z",
+      "checkpoint_key": "20261023-m01-admission-missile-lifetime-assigned",
+      "event": "Older quality evidence identifies current encounter-admission correction",
+      "issue": 151,
+      "run": 39993737582,
+      "source": "854331da5c12c481e1157ebf52ce8dc32eb87ab5",
+      "tested_merge": "b2c8a3a8dcc35901ba9ed3607e2755e795dba883",
+      "status": "failed coverage-check",
+      "make_ci_exit": 2,
+      "process_seconds": 1055.774082,
+      "compile_seconds": 706.75,
+      "ships_passed": 171,
+      "signal": 4,
+      "sanitizers_leaks_reached": false,
+      "binary_uuid": "27D06C5D-61A3-391C-99C4-971F71DC44CC",
+      "binary_sha256": "6cdd74b60faa21b2ba5b0eefc0723d8b9afa98d6152df771724a8e414894ad71",
+      "actual_stopped_path": "Sequence.contains -> admitEncounterPlan empty guard -> auto missile -> original authored-board delivery/repeat test",
+      "normal_ips_or_guard_mapping": false,
+      "production_unchanged_by150": true,
+      "owner": "G1 minimal unchanged-policy frame correction and original affected units",
+      "reviewer": "MBA source/result review",
+      "current_head": "ec333d904d8a607aed8a6f06883b464d341bc113",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
