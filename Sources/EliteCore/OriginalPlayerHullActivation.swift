@@ -14,6 +14,7 @@ enum OriginalPlayerHullActivation {
     case "SH018": return try OriginalDonkeyActivation.resolve(retained)
     case "SH019": return try OriginalGazelleExplorerActivation.resolve(retained)
     case "SH027": return try OriginalIbexActivation.resolve(retained)
+    case "SH030": return try OriginalSparrowhawkActivation.resolve(retained)
     case "SH029": return try OriginalBurroActivation.resolve(retained)
     case "SH061": return try OriginalHaflingerActivation.resolve(retained)
     default: return retained
@@ -27,7 +28,7 @@ enum OriginalPlayerHullActivation {
     guard retained.id == definition.id, physical.id == definition.id,
       physical.specificationSHA256 == definition.sourceSHA256,
       let role = ShipCatalogueRole(rawValue: definition.role),
-      [ShipCatalogueRole.trader, .military, .leisure].contains(role),
+      [ShipCatalogueRole.trader, .military, .leisure, .bountyHunter].contains(role),
       let type = ShipCatalogueType(rawValue: definition.role), definition.playerFlyable,
       definition.purchasePolicy == "blueprintFabrication",
       let performance = definition.nativePerformance
