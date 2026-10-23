@@ -176,8 +176,16 @@ extension Game {
     return nil
   }
 
+  @inline(never)
   private mutating func batchRefusal(_ requests: [SpawnRequest]) -> AdmissionRefusal? {
     guard let context = gameplayContext() else { return .staleContext }
+    return preparedBatchRefusal(requests, context: context)
+  }
+
+  @inline(never)
+  private mutating func preparedBatchRefusal(
+    _ requests: [SpawnRequest], context: EncounterContext
+  ) -> AdmissionRefusal? {
     let fresh = requests.filter { request in
       !bodies.contains { $0.physical?.spawnIdentity == request.identity }
     }
