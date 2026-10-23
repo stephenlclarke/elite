@@ -9685,6 +9685,21 @@
       "unit_batch_passed": false,
       "usable_delivery": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T22:26:33.048442+00:00",
+      "checkpoint_key": "20261023-m01-285-quality-ships-stale",
+      "event": "Published combined checkpoint required quality fails at stale renderer media gate",
+      "published_head": "285cfce657b24ea201ff812dfdaa09bd31b473ba",
+      "run_id": 40033454776,
+      "conclusion": "failure",
+      "failed_gate": "ships-check",
+      "stale_ship_gifs": 171,
+      "python_tests_passed": 115,
+      "swift_coverage_started": false,
+      "sanitizers_started": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
