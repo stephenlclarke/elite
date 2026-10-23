@@ -7164,6 +7164,25 @@
       "m01_complete": false,
       "usable_feature_delivery_claim": false,
       "next_action": "G1 bounded current-image diagnosis, MBA independent evidence review; preserve unaffected passes"
+    },
+    {
+      "at": "2026-10-23T16:03:49Z",
+      "checkpoint_key": "20261023-m01-retained-vm-bounded-context-diagnosis",
+      "event": "Retained current-image diagnostics do not reproduce SIGILL",
+      "source": "e2f0498c558d28503c4f3d486a91a2efda830277",
+      "single_method_seconds": 18.482,
+      "paired_kite_seconds": 18.73,
+      "paired_audit_seconds": 10.86,
+      "paired_helper_exit": 1,
+      "paired_failure": "original unpatched audit Cocoa260; normal test failure, no SIGILL",
+      "diagnostic_wrapper_exit": 0,
+      "diagnostic_wrapper_not_test_pass": true,
+      "source_change": false,
+      "full_batch_qualified": false,
+      "issue144_cause": "unproved",
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false,
+      "next_action": "publish reviewed145 correction; required corrected-head gates; no more unchanged diagnostics"
     }
   ],
   "two_developer_phase": {
