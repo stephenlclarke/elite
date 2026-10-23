@@ -10077,7 +10077,7 @@
         "WorkTarget": "a08f67f1465738af7d73122c43f38fdb688e276e"
       },
       "review": "clear",
-      "runtime_result": "pending",
+      "runtime_result": "running",
       "obsolete_quality_cancelled": 40037697745,
       "m01_complete": false,
       "usable_delivery": false,
@@ -10086,7 +10086,11 @@
       "added_existing_methods": {
         "NativePodProtectionTests": 3,
         "NativeCrewCaptureTests": 2
-      }
+      },
+      "head": "4d369066057b42c8cd21bb6ad1a83433aff124c1",
+      "committed_at_recorded": "2026-10-23T23:21:47.917470+00:00",
+      "app_linked": true,
+      "redundant_push_cancelled": 40038748856
     }
   ],
   "two_developer_phase": {
