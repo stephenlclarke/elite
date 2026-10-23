@@ -6296,6 +6296,32 @@
       "next_deliverable": "one corrected-source local M01 candidate build",
       "duplicate_push_run_cancelled": 39951274595,
       "duplicate_merge_run_cancellation_requested": 39952212663
+    },
+    {
+      "at": "2026-10-23",
+      "event": "Corrected M01 local candidate packaged and independently reviewed for static distribution evidence",
+      "checkpoint_key": "20261023-m01-af706-candidate-static-clear",
+      "source": "af706a13b723d06db97c260b9b4639bb82ca0da8",
+      "version": "1.4.1",
+      "qualification": "LOCAL CANDIDATE - GAMEPLAY UNVERIFIED",
+      "app": "/Users/sclarke/Downloads/Elite-M01-af706a13-candidate/Elite.app",
+      "build_seconds": 282.4788521248847,
+      "architectures": [
+        "arm64",
+        "x86_64"
+      ],
+      "minimum_macos": "14.0 both",
+      "signature": "Developer ID strict PASS",
+      "notarization": "Apple Accepted, staple PASS",
+      "gatekeeper": "PASS recorded",
+      "independent_static_review": "MBA clear, actual bundle/archive/hash/source/version/Mach-O checked",
+      "archive_sha256": "32e9f612819c4b73da5cfc049fffbc70251437c2a4857ba16129d1c2dae33499",
+      "game_executed": false,
+      "usable_delivered": false,
+      "public_release": false,
+      "homebrew_updated": false,
+      "m01_complete": false,
+      "next_deliverable": "qualify existing corrected M01 issue cases through bounded selector batch"
     }
   ],
   "two_developer_phase": {
