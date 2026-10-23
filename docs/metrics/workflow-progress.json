@@ -8594,6 +8594,20 @@
       "prior_focused_qualifications_preserved": true,
       "m01_complete": false,
       "usable_feature_delivery_claim": false
+    },
+    {
+      "at": "2026-10-23T19:37:12Z",
+      "checkpoint_key": "20261023-m01-a49f-quality-failed-triage-assigned",
+      "event": "Current required quality job fails; exact saved evidence triage assigned MBA",
+      "head": "a49f5d836a8bce64b0e56d91fdfcb14740d529ac",
+      "run": 40008995873,
+      "result": "FAILURE",
+      "cause": "not yet attributed",
+      "reviewer": "MBA sole retrieval/stage/assertion/fault classification plus actual completed-save method outcomes",
+      "developer": "G1 only concrete directly attributed release blocker correction",
+      "new_execution_started": false,
+      "m01_complete": false,
+      "usable_feature_delivery_claim": false
     }
   ],
   "two_developer_phase": {
