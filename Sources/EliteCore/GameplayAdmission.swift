@@ -48,68 +48,74 @@ extension Game {
           receipts.append(.init(request: request.identity, actor: nil, refusal: .reservedCapacity))
           continue
         }
-        let pose = commander.flightSimulation.pose
-        let nativeOreMotion: Bool
-        if request.identity.producer == .mining, request.population == .cargo,
-          request.hull == .cargo, request.npc == nil, request.rock == nil,
-          request.catalogueShipID == nil, case .ore? = request.payload
-        {
-          nativeOreMotion = true
-        } else {
-          nativeOreMotion = false
-        }
-        var body = SpaceBody(
-          id: nextBodyID, hull: request.hull, position: pose.shipPoint(request.position))
-        nextBodyID += 1
-        body.orientation.x = pose.shipVector(request.orientation.x)
-        body.orientation.y = pose.shipVector(request.orientation.y)
-        body.orientation.z = pose.shipVector(request.orientation.z)
-        body.rotationRate = request.npc == nil ? 0.5 : 0
-        // Native ore declares physical angular motion; do not add legacy display spin.
-        if nativeOreMotion { body.rotationRate = 0 }
-        if request.identity.producer == .derelicts {
-          body.rotationRate = 0
-          body.missiles = 0
-          body.ecmEnabled = false
-        }
-        body.hostile = request.npc?.intention == .engage(context.player.identity)
-        if let rock = miningFields.flatMap(\.rocks).first(where: { $0.identity == request.rock }) {
-          body.energy = commander.miningLedger.remainingEnergy(for: rock)
-        }
-        var npc = request.npc
-        if npc != nil, npc?.resources == nil, request.priority != .mission,
-          let performance = request.catalogueShipID.flatMap({ ShipCatalogue.ship($0)?.game })
-            ?? ShipCatalogue.nativeShip(request.hull)?.game
-        {
-          npc?.resources = NPCResources.stock(performance)
-        }
-        if let resources = npc?.resources {
-          body.energy = request.energy ?? resources.energyCapacity
-        } else if let energy = request.energy {
-          body.energy = energy
-        }
-        body.physical = .init(
-          identity: actor, population: request.population, npc: npc,
-          velocity: request.velocity, rock: request.rock, payload: request.payload,
-          spawnIdentity: request.identity, catalogueShipID: request.catalogueShipID,
-          angularVelocity: request.angularVelocity, salvage: request.salvage)
-        if request.identity.producer == .derelicts || nativeOreMotion {
-          body.physical?.canonicalSpin = true
-        }
-        if request.identity.producer != .persistence && request.identity.producer != .emp,
-          let snapshot = NPCPersistenceSnapshot.capture(
-            body: body, pose: pose, physicalTime: context.physicalTime,
-            protection: context.protection),
-          case .refused = commander.npcPersistence.capture(snapshot, protection: context.protection)
-        {
-          receipts.append(.init(request: request.identity, actor: nil, refusal: .reservedCapacity))
-          continue
-        }
-        bodies.append(body)
-        receipts.append(.init(request: request.identity, actor: actor, refusal: nil))
+        receipts.append(constructAdmittedEncounterBody(request, actor: actor, context: context))
       }
     }
     return receipts
+  }
+
+  @inline(never)
+  private mutating func constructAdmittedEncounterBody(
+    _ request: SpawnRequest, actor: ActorIdentity, context: EncounterContext
+  ) -> SpawnReceipt {
+    let pose = commander.flightSimulation.pose
+    let nativeOreMotion: Bool
+    if request.identity.producer == .mining, request.population == .cargo,
+      request.hull == .cargo, request.npc == nil, request.rock == nil,
+      request.catalogueShipID == nil, case .ore? = request.payload
+    {
+      nativeOreMotion = true
+    } else {
+      nativeOreMotion = false
+    }
+    var body = SpaceBody(
+      id: nextBodyID, hull: request.hull, position: pose.shipPoint(request.position))
+    nextBodyID += 1
+    body.orientation.x = pose.shipVector(request.orientation.x)
+    body.orientation.y = pose.shipVector(request.orientation.y)
+    body.orientation.z = pose.shipVector(request.orientation.z)
+    body.rotationRate = request.npc == nil ? 0.5 : 0
+    // Native ore declares physical angular motion; do not add legacy display spin.
+    if nativeOreMotion { body.rotationRate = 0 }
+    if request.identity.producer == .derelicts {
+      body.rotationRate = 0
+      body.missiles = 0
+      body.ecmEnabled = false
+    }
+    body.hostile = request.npc?.intention == .engage(context.player.identity)
+    if let rock = miningFields.flatMap(\.rocks).first(where: { $0.identity == request.rock }) {
+      body.energy = commander.miningLedger.remainingEnergy(for: rock)
+    }
+    var npc = request.npc
+    if npc != nil, npc?.resources == nil, request.priority != .mission,
+      let performance = request.catalogueShipID.flatMap({ ShipCatalogue.ship($0)?.game })
+        ?? ShipCatalogue.nativeShip(request.hull)?.game
+    {
+      npc?.resources = NPCResources.stock(performance)
+    }
+    if let resources = npc?.resources {
+      body.energy = request.energy ?? resources.energyCapacity
+    } else if let energy = request.energy {
+      body.energy = energy
+    }
+    body.physical = .init(
+      identity: actor, population: request.population, npc: npc,
+      velocity: request.velocity, rock: request.rock, payload: request.payload,
+      spawnIdentity: request.identity, catalogueShipID: request.catalogueShipID,
+      angularVelocity: request.angularVelocity, salvage: request.salvage)
+    if request.identity.producer == .derelicts || nativeOreMotion {
+      body.physical?.canonicalSpin = true
+    }
+    if request.identity.producer != .persistence && request.identity.producer != .emp,
+      let snapshot = NPCPersistenceSnapshot.capture(
+        body: body, pose: pose, physicalTime: context.physicalTime,
+        protection: context.protection),
+      case .refused = commander.npcPersistence.capture(snapshot, protection: context.protection)
+    {
+      return .init(request: request.identity, actor: nil, refusal: .reservedCapacity)
+    }
+    bodies.append(body)
+    return .init(request: request.identity, actor: actor, refusal: nil)
   }
 
   /// Practice uses the native reserve and measured geometry policy for the whole volume.
