@@ -9426,6 +9426,19 @@
       "normal_failed_run_attributed": false,
       "unit_pass_claim": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-23T21:40:25.198282+00:00",
+      "checkpoint_key": "20261023-m01-current-fit-combat-path-scoped",
+      "event": "Offline current capture symbols confirm combat fit-authority path; bounded input lifetime correction assigned",
+      "head": "62315676",
+      "pid": 36284,
+      "fault": "missionActorFitMatches via combat entitlement",
+      "guard_mapping_available": false,
+      "normal_run_attributed": false,
+      "developer": "G1",
+      "reviewer": "MBA",
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
