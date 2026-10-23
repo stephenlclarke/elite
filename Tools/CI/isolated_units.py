@@ -16,6 +16,21 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativePeopleCustodyValueTests": (
+        "equalityAndSettersPreserveEveryOriginalField",
+        "nestedAndArrayModifyDetachAllSevenMutableFields",
+        "readsAndUniqueMutationKeepBackingAndLayoutSmall",
+        "originalFlatLegacyBytesAndAllEightFieldCodecRemainExact",
+        "memberEqualityKeepsNaNAndSignedZeroSemantics",
+    ),
+    "NativePeopleStorageTests": (
+        "populatedNativePeopleCopiesDetachNestedMutationsAndNilTransitions",
+        "nativePeopleCodecRetainsFlatPayloadAndNormalizesAbsentInoutResults",
+        "retainedNativePeopleSnapshotsSurviveRefusedPublicationAndSuccessfulRetry",
+    ),
+    "NativePeopleCargoProjectionTests": (
+        "scalarCargoQueriesPreserveReservationPodsNilAndRetainedState",
+    ),
     "ScriptCargoProjectionTests": (
         "navigationStageQueryPreservesEveryStageAndRetainedValues",
         "reservationQueriesPreserveNilReservedAndRetainedValues",
