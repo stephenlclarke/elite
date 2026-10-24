@@ -11838,6 +11838,26 @@
       "compile_correction_source_review": "clear",
       "compile_correction_patch_sha256": "3bbb5dd81c4bb556a1a1bafc892b6423215d638e02fa2ab06590eae278e6808b",
       "same_two_method_resumption": "authorized_not_yet_verified"
+    },
+    {
+      "at": "2026-10-24T09:04:43.481460+00:00",
+      "checkpoint_key": "20261024-m01-907b-terminal-one-save-scalar-review",
+      "event": "Native interception passes;one save method remains with exact scalar correction under review",
+      "source_commit": "907b3cf495fc74171b577ae6700da50c76281e29",
+      "wall_seconds": 125.20885766670108,
+      "build_seconds": 43.46,
+      "runtime_seconds": 78.251,
+      "exit_code": 1,
+      "methods": 2,
+      "passed_methods": 1,
+      "failed_methods": 1,
+      "failure_records": 3,
+      "next_patch_sha256": "d611539acbdca990e7044faf5bdf65bf24a9fa6a87f981a31f3f199768b77c19",
+      "next_selected_methods": 1,
+      "production_changed": false,
+      "mba_terminal_verification": "assigned",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
