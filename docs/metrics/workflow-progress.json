@@ -11035,9 +11035,48 @@
       "reviewed_file_hash_verified": true,
       "expected_methods": 1,
       "host_pid": 35208,
-      "status": "running",
+      "status": "completed_pass",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "exit_code": 0,
+      "total_seconds": 107.167881458,
+      "build_seconds": 44.85,
+      "reported_method_seconds": 61.044,
+      "reported_summary_seconds": 61.045,
+      "passed": 1,
+      "failed": 0,
+      "xml_available": false,
+      "independent_verification": "complete",
+      "verification_receipt": "/tmp/elite-mba-c708-manual-admission-verification.json"
+    },
+    {
+      "at": "2026-10-24T04:20:09.959508+00:00",
+      "checkpoint_key": "20261024-m01-all-followup-methods-individually-passed",
+      "event": "All failed affected-selection methods now have individual pass evidence; coherent publication next",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "accepted_scopes": [
+        {
+          "head": "9146909960b97dca6fa03135125d256bb08aec6c",
+          "passes": 24,
+          "failed_aggregate_retained": true
+        },
+        {
+          "head": "b58f3b83595392bd4f0a415bd9265ae5a9fe1a93",
+          "passes": 1,
+          "failed_aggregate_retained": true
+        },
+        {
+          "head": "c708eeab9cab632242b321e2699af914542f4996",
+          "passes": 1,
+          "independent_verification": "complete"
+        }
+      ],
+      "fresh_26_pass_claim": false,
+      "publication": "pending",
+      "m01_complete": false,
+      "usable_delivery": false,
+      "independent_verification": "complete"
     }
   ],
   "two_developer_phase": {
