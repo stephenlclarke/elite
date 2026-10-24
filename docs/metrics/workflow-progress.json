@@ -12104,6 +12104,22 @@
       "shared_selector": "Additive unique entries only; all retained methods preserved",
       "review_branch_policy": "Stacked narrow diff; no merge into frozen M01; retarget main after release checkpoint",
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T09:43:41.182553+00:00",
+      "checkpoint_key": "20261024-human-m02-m03-upstream-sync-cadence",
+      "event": "Stephen requires M02/M03 upstream fetch/rebase every30-45min",
+      "owners": [
+        "G3",
+        "G4"
+      ],
+      "target_minutes": 30,
+      "maximum_minutes": 45,
+      "upstream_before_m01_merge": "origin/feature/canonical-mission-composition",
+      "upstream_after_m01_merge": "origin/main",
+      "automation": "keep-m02-and-m03-current-with-m01",
+      "preserve_dirty_work": true,
+      "unchanged_upstream_action": "no-op; no rebase/commit churn"
     }
   ],
   "two_developer_phase": {

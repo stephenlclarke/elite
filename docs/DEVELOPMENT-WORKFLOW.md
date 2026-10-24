@@ -1,5 +1,7 @@
 # Developer and reviewer workflow
 
+**M02/M03 upstream sync — Stephen, 24 October:** G3 and G4 fetch the latest published M01 workstream every 30 minutes, with 45 minutes the maximum active gap. At a clean checkpoint, each owner rebases their isolated branch onto origin/feature/canonical-mission-composition; after M01 merges, use origin/main. Incorporate new upstream commits, including documentation. Preserve unfinished edits in an owned checkpoint first; never discard edits, replace shared files or rewrite main/shared M01. If the upstream head is unchanged, record a no-op and continue without rebase/commit churn. Owners report sync time, upstream SHA and outcome with handoffs; Root records meaningful ledger changes and routes semantic conflicts. Retain unaffected review/unit evidence and rerun only affected cases. Active 30-minute follow-up `keep-m02-and-m03-current-with-m01` checks adherence quietly and stops when both streams are finished or explicitly stopped.
+
 **Current review priority — 24 October 2026:** Stephen directs MBA to handle actionable M01 release work before M02 or M03. Review M02/M03 only when no M01 correction or result disposition is ready. If M01 arrives, preserve lower-priority work and switch after the safe current tool operation. Developers continue independently; do not interrupt CI or repeat tests.
 
 Updated 23 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
