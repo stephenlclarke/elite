@@ -12004,6 +12004,20 @@
       "quality_state": "queued",
       "usable_build_delivered": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-24T09:31:03.556948+00:00",
+      "checkpoint_key": "20261024-m01-real-runner-setup-and-authorization-pass",
+      "commit": "62b3374bbc5198e8a0124caac32abb98ee64bc63",
+      "quality_run": 40082188418,
+      "quality_job": 120837843771,
+      "real_runner_setup": "success",
+      "host_authorization": "success",
+      "checkout": "in_progress",
+      "publication_review": "VERIFIED",
+      "full_quality_passed": false,
+      "usable_build_delivered": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
