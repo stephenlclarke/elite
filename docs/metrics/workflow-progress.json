@@ -12750,6 +12750,51 @@
       "merge_and_release_gates_unchanged": true,
       "new_tests_required": false,
       "actual_closure_count": "pending GitHub confirmation"
+    },
+    {
+      "checkpoint_key": "20261024-fixture-issues-closed-and-review-capacity",
+      "timestamp": "2026-10-24T13:27:47.869523+00:00",
+      "closed_issues": [
+        193,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213
+      ],
+      "closed_count": 21,
+      "open_issue_count": 10,
+      "open_issues": [
+        221,
+        220,
+        219,
+        218,
+        185,
+        144,
+        109,
+        95,
+        18,
+        15
+      ],
+      "g3_assignment": "Independent c314 chart-help delta review",
+      "g4_assignment": "Independent PR216/217 test-only source reviews",
+      "new_test_execution": false,
+      "merged_or_usable_delivery_claim": false
     }
   ],
   "two_developer_phase": {
