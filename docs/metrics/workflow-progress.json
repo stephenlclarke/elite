@@ -11991,6 +11991,19 @@
       "game_source_change": false,
       "game_tests_rerun_assigned": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-24T09:30:23.743183+00:00",
+      "checkpoint_key": "20261024-m01-safe-runner-work-root-published",
+      "commit": "62b3374bbc5198e8a0124caac32abb98ee64bc63",
+      "patch_sha256": "3fc6e53739201e0c76e482fd549fbeabbfbc3d95d817c4e4e059b48f0d62bb03",
+      "focused_fake_tests_passed": 15,
+      "suite_seconds": 0.872,
+      "wall_seconds": 0.917262792121619,
+      "independent_result_review": "verified",
+      "quality_state": "queued",
+      "usable_build_delivered": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
