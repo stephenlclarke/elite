@@ -158,7 +158,7 @@
   "persistencePolicy": "Save current clue receipts, decoder and ordered trail evidence, encounter identity, player kill record and fabrication entitlement in the current format. Restore normal play from those records; duplicate events cannot grant repeated rewards. Every new commander starts with no mystery progress or Medusa entitlement.",
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
     "briefing": {
       "id": "unwritten-route",
       "file": "../../assets/missions/illustrations/unwritten-route.png",

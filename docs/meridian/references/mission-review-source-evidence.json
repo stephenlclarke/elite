@@ -1,0 +1,151 @@
+{
+  "reviewScope": "intended mission coherence, no runtime execution",
+  "evidence": [
+    {
+      "subject": "G11 finite stock",
+      "authoringRelativePath": "gameplay-design/G11-P02-PARENT-ACCEPTANCE-AND-PROGRAMMER-CONTRACT-20261022.md",
+      "sha256": "6f4888ce0a4811896bb154daa043dcb7e8d39663f50a54fb1017e104840c5b04",
+      "excerpts": [
+        {
+          "line": 63,
+          "text": "**Known initial-stock limit:** P01 supplies one pair and PR73's lifetime original guard remains true after return/loss. This packet therefore cannot promise a second accepted attempt after terminal failure or completion. Keep the family and honest loss/return explanation discoverable. The broader shared requirement for availability after a failed job needs an actual newly funded source/original recovery policy before repeatability can be claimed; do not satisfy it by clearing history, changing parent UUID or cloning stock. That remains an explicit G11 limit, not a replacement-stock feature silently added here."
+        }
+      ]
+    },
+    {
+      "subject": "Still Current conservation",
+      "authoringRelativePath": "original-missions/STILL-CURRENT-CONTRACT.md",
+      "sha256": "ed92e61707ffdecd3f64d085621b6b9bd1c9cf2f6a8f493f243652d8b69d0b41",
+      "excerpts": [
+        {
+          "line": 7,
+          "text": "The three real meters establish conductive dust bridges and an obsolete commissioning instruction. They do not impose a commander-specific curse. The reservoir begins with 900 normalised charge units. These are authored energy-accounting units, not a claim that electric charge and energy are physically identical. Runtime physics must choose and document a consistent energy scale."
+        },
+        {
+          "line": 9,
+          "text": "After isolation there is no external input. Every accepted transfer subtracts from the actual reservoir and credits exactly one verified receiving endpoint, discharge sink or recovery store. Preserve the invariant: remaining + delivered + safely discharged + recovered = 900. Require nonnegative quantities and unique transfer receipts. A baffle movement, scene respawn or replayed event supplies no new energy. Each controlled discharge operation permits at most 90 units."
+        },
+        {
+          "line": 11,
+          "text": "Community-buffer completion needs 300 units delivered to the local utility and 600 held in its tested bounded buffer. Its plan permits only those transfers, preventing optional discharge from making its promised allocation impossible. Material-recovery completion needs the emptied reservoir accounted for by verified storage and controlled discharge, plus actual collector-material reception. Deleting scenery cannot create either receipt."
+        },
+        {
+          "line": 19,
+          "text": "## Branches, custody and settlement"
+        },
+        {
+          "line": 21,
+          "text": "Store community-buffer or material-recovery once. Both later operation stages must use that same choice and their distinct required targets. Reject mixed branches, wrong worlds, missing programmer custody and unrelated combat kills. The old reclamation work authority must be revoked in either branch. Station shields remain governed by the normal station policy."
+        },
+        {
+          "line": 23,
+          "text": "The one-tonne charge cell is exchanged atomically for the one-tonne programmer. Return the programmer at Valrator before the terminal audit. Commit 8,400 CR and The resting arc clue once, together with successful completion. Current saves preserve physical balances, meter identities, placements, rescue outcome, branch proofs and receipts without resetting them."
+        }
+      ]
+    },
+    {
+      "subject": "C01 physical recorder",
+      "authoringRelativePath": "gameplay-design/C01-P02-B-ENMADAN-RESERVATION-AUDIT-20261022.md",
+      "sha256": "8ced99c893c676463409b12dd9c4e404566406809191a9d11ee740d6e2ce8764",
+      "excerpts": [
+        {
+          "line": 11,
+          "text": "The story requires two paid reservations using one certificate, overlapping true passage times and deliberately shifted clock evidence. Current native Renas readings prove real scans. PR79 proves the actual original recorder's capture, protected **8 kg** custody, geometry and genuine loss. Neither currently supplies a booking/certificate payload or an actual Enmadan convoy ledger. `OriginalServiceReservationPolicy` limits player contracts; the C08 `NativeInductionCapacityState` is a charter-specific finite-unit ledger with other owners. Neither is this source, and C01 must not depend on C08 being played."
+        },
+        {
+          "line": 37,
+          "text": "This is an additive commission/source-content binding. Preserve PR79's exact Harrier visual/closed collision envelope, 65 m calibration, 18000 kg mass, Navidor 164 placement, detached 8 kg recorder, scoop/pickup/cargo accounting, reward suppression and loss rules. Do not replace its capture receipt, require a recapture, move the objects or create a second recorder. The new decoder can read factory-bound contents from the original captured object; a matching label, ordinary recorder or claim of \u201cstage 3 done\u201d is not enough."
+        },
+        {
+          "line": 39,
+          "text": "Stage 4 **does not consume, hand over or convert** the physical recorder: `itemEffects=[]` remains literal. It stays protected 8 kg cargo, counted under the existing mass-before-tonne-rounding rule. The verified audit copy is zero-mass journal evidence; do not add a commodity/payload tonne or silently free the recorder's mass. Before audit, any actual recorder loss refuses comparison. A later genuine loss must not erase an already published audit receipt; retain its historical facts and the existing loss/attempt policy without resurrection or an invented replacement. Stage 4 does not decide the future campaign's recovery policy."
+        },
+        {
+          "line": 49,
+          "text": "On **Record findings**, obtain two private native inputs: (1) a current Enmadan-authorized read of the original booking source/event projection; (2) a current held-original recorder read bound to its actual capture plus both authenticated clock readings. The native comparator checks customer/claim/certificate and payment relationships, the single actual capacity allocation, half-open interval overlap, offset-normalized windows and counter difference. It computes the anomaly; it cannot accept caller-supplied `auditComplete`, counts or findings. Corruption, unpaid/substituted claims, inconsistent calibration or missing originals refuse rather than falling back to the expected story text."
+        },
+        {
+          "line": 51,
+          "text": "Only that successful comparison can seal **`NativeC01ReservationAuditReceipt`**: actual native audit operation and acknowledged sequence; mission/permission/world owner; Sorel/ledger source identity and revision/hash; the exact Enmadan dock; original recorder/capture/content and scan references; the two actual payment/claim operations; computed certificate/overlap/offset/counter findings; and current physical time/carrier context. Its constructor belongs to this real read/comparison boundary, not Lua or a general Codable initializer. Use bounded native source facts, not circular `Commander.valid` -> audit -> whole-parent validation."
+        },
+        {
+          "line": 63,
+          "text": "Future focused units: native source commits one allocation/two actual conserved payments without double capacity; duplicate/reopened source cannot mint funds or claims; original actor/capture/scan/content joins reject substituted data; authentic Enmadan consent/read compares two paid claims, 30-second overlap, 60-second correction and one counter difference; wrong port/stale dock/no original/unpaid/altered certificate or source refuses; Back is read-only; successful commit advances exactly stage 4, keeps 8 kg custody and pays/clues nothing; writer rollback/replay and later real loss preserve genuine history; strict codec rejects erased, foreign, reordered or future proofs. These are proposed bounded units, not permission for native journeys, broad CI, a review campaign or interruption of G1's active packet."
+        }
+      ]
+    },
+    {
+      "subject": "C08 quality",
+      "authoringRelativePath": "original-missions/wayfarer-exchange.toml",
+      "sha256": "f4ba400702ed2e0cd2fd265f23980e8781f356ab2af7b7d2cc63901fa520823c",
+      "excerpts": [
+        {
+          "line": 16,
+          "text": "interactionNotes = [\"The Exchange uses the existing station contract board, arrows, contextual Confirm and Esc. Display destination, reward, hold/crew requirements, any actual deadline, perishability, risk and accepting consequences together. No extra function key, hidden rare offer or special campaign control.\", \"The four induction items are serial one-tonne reservations. Confirm their whole custody transaction atomically. Cold-chain delivery and survivor reception need the relevant quality or live-crew receipts in addition to the named mission target.\", \"The clinic cold crate has an independent sealed cooling unit. Its advertised integrity budget is consumed only during armed flight time after confirmed pickup; normal pause stops it and current-format save/load preserves the remaining value. A spoiled delivery is recorded honestly and can be replaced from actual clinic stock; it is never counted as successful.\", \"The seed ark and rescue tender carry their own real cargo or crews. They are identified actors with receiving manifests. Do not require player passenger cabins for these induction escorts, copy dead personnel, create a delivery from culling or treat a generic same-type freighter as the consignment.\", \"The board can run at most three accepted service contracts per commander. It reserves real unique consignments and the required player capacity across all active work. Closing/reopening the board or loading cannot reroll a quote, create stock, reset a deadline or duplicate an offer.\", \"Service history shows completed, late and failed deliveries directly. Equipment and capacity gates are explained in the quote. No hidden combat quota or unexplained reputation decay gates routine work.\", \"Signed Passage, ordinary sealed dispatch and completed Exchange induction are distinct clue sources. Each Exchange service family grants its own clue at first verified reception; subsequent jobs retain that clue and grant only their own payment and service record.\", \"Any recovery or combat uses actual attributed events. Single-ship fire cannot destroy station hulls; utility handoffs are named external service modules. The Exchange never asks the commander to destroy a station.\"]"
+        },
+        {
+          "line": 63,
+          "text": "dialog = \"The clinic records the crate, its working cooling unit and its declared flight-time integrity budget. Confirm the receiving destination before committing the pickup.\""
+        }
+      ]
+    },
+    {
+      "subject": "G04 route",
+      "authoringRelativePath": "gameplay-design/G04-STATION-PASSENGER-JOURNEY-APPROVED-HANDOFF-20261020.md",
+      "sha256": "378ad6b2231b3ebfa2f97953c114261346fb75085fcc30a8455b96cef4b44ecb",
+      "excerpts": [
+        {
+          "line": 29,
+          "text": "  at actual Avenor, galaxy 0/system 7."
+        },
+        {
+          "line": 30,
+          "text": "- Their agreed destination and actual receiver are Renas, galaxy 0/system 185."
+        },
+        {
+          "line": 31,
+          "text": "- Native route L=1, ordinary declared H=0. Frozen payment **610CR / 6100"
+        },
+        {
+          "line": 32,
+          "text": "  native**, from authored `510 + 100*L + 80*H` CR."
+        },
+        {
+          "line": 71,
+          "text": "that full G04 terminal commits 610CR and its one source clue; acceptance,"
+        },
+        {
+          "line": 108,
+          "text": "   commit610CR/clue once. Wrong/early/partial/dead/replayed arrivals cannot"
+        }
+      ]
+    },
+    {
+      "subject": "G05 route",
+      "authoringRelativePath": "gameplay-design/G05-ORBITAL-OUTLOOK-COMPLETE-JOURNEY-HANDOFF-20261020.md",
+      "sha256": "492bae53c032206d9b2abff11253095eb6041fe445e66b2b22f43c0a6cdec62b",
+      "excerpts": [
+        {
+          "line": 31,
+          "text": "- New finite G05 batch of two genuine named station people: **Avenor7 \u2192 Renas185"
+        },
+        {
+          "line": 32,
+          "text": "  \u2192 Avenor7**, L2/H0, **870CR** only after actual return reception. Their native"
+        },
+        {
+          "line": 45,
+          "text": "- Recommend **12 qualified native-flight seconds per view**, surface range"
+        },
+        {
+          "line": 87,
+          "text": "release those berths, then commit 870CR and its clue once. Keep G04/G05 care"
+        },
+        {
+          "line": 167,
+          "text": "   three views in order, actual Avenor return, exact-party reception, 870CR and"
+        }
+      ]
+    }
+  ]
+}

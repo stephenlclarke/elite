@@ -4655,12 +4655,12 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Special authored access boundary:** this original record has no granted player fabrication recipe and is not player-flyable in its authored definition. `pendingFabrication` is a reserved design authority, not a permanent never-fabricate rule, a free blueprint, or permission to erase the record from the fleet collection. Its encounter/fabrication-specific mechanics must be explicitly authored before an entitlement is granted; historical same-ID values supply none. Keep its reference/discovery identity distinct from any currently authorised player-acquisition set.
 
-**Object rule:** station, installation or environmental catalogue object; no invented player drive, cargo, missile or accommodation statistics. Native personnel and population are mission/site resources, not zero human inhabitants.
+**Pending-design rule:** Lammergeier is an original pirate hull with reserved fabrication design, not a station or environmental object. Its definition currently supplies no gameplay statistics and grants no player flight or purchase access. Do not invent performance or accommodation, infer zero inhabitants, or convert pending access into permanent exclusion.
 
 **Geometry reference:** source envelope 2.017 x 0.724 x 4.300; units: authored model units; no physical scale inferred. Normalised illustrations do not set docking clearance or a physical metre conversion.
 
 - **Display / Purchasable:** no
-- **Display / Specification:** Structural object; no fictional flight-performance values assigned
+- **Display / Specification:** Structural object; no fictional flight-performance values assigned (source placeholder only; it does not reclassify the pirate hull)
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 

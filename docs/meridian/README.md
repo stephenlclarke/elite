@@ -11,6 +11,7 @@ Start with [the gameplay review](GAMEPLAY.md). [The complete single-file oracle]
 - [Portable complete mission, fleet and world definitions](definitions/)
 - [Exact asset provenance and geometry-image hashes](ASSET-PROVENANCE.json)
 - [Coverage counts](COVERAGE.json)
+- [Mission coherence and gameplay progression review](MISSION-COHERENCE-REVIEW.md)
 
 ## Complete original campaigns
 

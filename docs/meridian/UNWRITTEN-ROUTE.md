@@ -60,7 +60,7 @@ The final mystery connects the whole career. All 39 campaigns, 15 general contra
 
 - **Id:** wake-the-listener
 - **Kind:** scan
-- **Galaxy:** 4
+- **Galaxy index (0-based):** 4
 - **System:** 83
 - **Targets:** corur-dormant-listener
 - **Instruction:** At Corur, scan the dormant listener above the planet's dark hemisphere.
@@ -78,7 +78,7 @@ The final mystery connects the whole career. All 39 campaigns, 15 general contra
 
 - **Id:** read-the-ring
 - **Kind:** scan
-- **Galaxy:** 4
+- **Galaxy index (0-based):** 4
 - **System:** 250
 - **Targets:** berilir-inner-echo; berilir-middle-echo; berilir-outer-echo
 - **Instruction:** At Berilir, scan three marked echoes along the asteroid ring to complete the listener's pattern.
@@ -96,7 +96,7 @@ The final mystery connects the whole career. All 39 campaigns, 15 general contra
 
 - **Id:** align-the-lanterns
 - **Kind:** mission-action
-- **Galaxy:** 4
+- **Galaxy index (0-based):** 4
 - **System:** 115
 - **Targets:** ranenor-lantern-port; ranenor-lantern-starboard
 - **Instruction:** At Ranenor, align the two orbital lanterns from the marked observation waypoint. Confirm each alignment when its reflected trace meets the inward mark.
@@ -114,7 +114,7 @@ The final mystery connects the whole career. All 39 campaigns, 15 general contra
 
 - **Id:** open-the-cradle
 - **Kind:** mission-action
-- **Galaxy:** 4
+- **Galaxy index (0-based):** 4
 - **System:** 84
 - **Targets:** ashor-outer-cradle
 - **Instruction:** Reach the marked outer-cradle waypoint at Ashor and transmit the complete decoded pattern.
@@ -132,7 +132,7 @@ The final mystery connects the whole career. All 39 campaigns, 15 general contra
 
 - **Id:** destroy-medusa
 - **Kind:** player-credited-ship-destruction
-- **Galaxy:** 4
+- **Galaxy index (0-based):** 4
 - **System:** 84
 - **Targets:** unwritten-route-medusa
 - **Instruction:** Destroy the revealed Medusa. Your combat record must credit the destruction of this specific vessel.

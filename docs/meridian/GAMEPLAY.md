@@ -56,6 +56,24 @@ The four tutorials teach flight and receiving, safe gunnery, defensive flight, a
 
 Tutorials share the normal board, confirmation, input and receiving language. A failed or cancelled attempt can be retried through its stated recovery policy. Each first legitimate success grants its own clue, while replaying practice does not replace a missing campaign clue.
 
+### Recommended learning and capability progression
+
+Campaign numbers identify stories; milestone numbers describe finished-product capabilities. Neither is a compulsory order for the commander. An offer's explicit eligibility, real fitting, available stock and reachable route control acceptance. The guidance below recommends increasing complexity without inventing campaign-completion gates.
+
+| Career phase | Suitable work and preparation | Transition to harder work |
+| --- | --- | --- |
+| Learn safely | T01 reception, T03 non-firing defensive flight, T02 inert-target gunnery and T04 actual small trade; lessons keep their own stated prerequisites. | Demonstrate the actual control, receiving and travel skills; tutorials grant no free combat rank or profitable fictitious trade. |
+| Build a working reserve | Ordinary legal trading and G01 sealed dispatch; read fuel, cargo, fitting and cash before accepting. | Earn fuel and tools through genuine work. C01's physical recovery needs fitted Scoops; its offer is not proof that the starter already owns them. |
+| Investigate and cooperate | C01, C03, C04, C08 and the regional evidence/infrastructure stories, whenever their own offer conditions qualify. C02 follows legitimate Larvaal identification. | Keep serial tools, actual witnesses and evidence; C08 accreditation opens its advanced service variants without requiring other campaigns. |
+| Specialise | Passenger/care work uses purchased compatible places after crew and existing reservations; mining/salvage use actual fitted tools. G06/G07/G15 use attributed combat against the designated hostiles. | Spare hold alone grants no passenger place. Mission escorts carrying their own people do not require the player's cabins. Develop the needed funds, hardware and skills before accepting hazards. |
+| Manage consequential operations | C05 debris disaster, C06 resource conflict and C07 charged lattice combine earlier skills. C06's permanent commission marking is disclosed before acceptance. | Confirm readiness only after reviewing real rescue/aid, finite stock, energy and heat. Story numbers do not make C05 a mandatory early combat lesson. |
+| Explore the complete career | Use actual intergalactic travel and refuelling to visit all eight galaxies and complete all 64 distinct clue sources. | Trade, repeat services and fabrication remain available alongside stories. A collected source clue survives later failed jobs and hull changes. |
+| Resolve the mystery | With all 64 clues, decode at PLUGH, complete the four flight objectives in order, defeat the unique Medusa, then obtain the later AI reconstruction. | Fabrication access precedes a separate paid shipyard purchase; neither the defeat nor reconstruction grants a free hull. |
+
+The full 64-clue finale includes passenger, financial, mining/salvage, tutorial and designated hostile-combat work; the present base set does not define a wholly pacifist shortcut. No single hull is prescribed for the whole career. Affordable basic work must remain available before specialist purchases, and genuine failures must have an honest route to future eligible work; unresolved source-stock details are identified in the [mission coherence review](MISSION-COHERENCE-REVIEW.md), rather than assumed into existence.
+
+Structured galaxy integers use zero-based identities (0-7); player labels and `G01`-`G08` location keys are one-based. System identities stay 0-255, with PLUGH separately at 256. For example, finale `galaxy: 4` means displayed Galaxy 5. A mission's original source ID, such as `l337.courier` for Signed Passage, is stable identity rather than another mission or an extra clue.
+
 ## Flight, cockpit and station interaction
 
 The player controls pitch, roll, yaw, thrust and view, with keyboard, pointer and trackpad actions agreeing with contextual help. Multi-contact spin is a deliberate flight mode, with its recognition threshold, direction, speed and cancellation reflected by the same controls. Changing a contact mode cannot leave an unintended manoeuvre latched. Manual steering overrides automatic work guidance; it does not forge a completed approach.
@@ -253,7 +271,7 @@ The player can explicitly choose and install a validated mission-pack folder wit
 
 The optional XYZZY toolkit offers maximum compatible hardware, explicit ship/refit choices, automatic-trade and targeting/ECM preferences, and separate fuel/cargo/ammunition conveniences. It preserves the commander's campaign and property records; a refit is not a repeat cash payout. Its explicit Clean action does not erase mission progress. The ordinary economy and finite fitting rules remain the normal career. Even in this toolkit, a hidden finale is not earned by manufacturing clues, a Medusa blueprint, a substitute kill or a false receiving record.
 
-Financial work has real deposits, escrow, liabilities, finite stock, releases and receiver payments. Mission items remain protected from ordinary selling/duplicate issue. Loan tools must return to their actual issuer where required. Accepted mission timers run on physical simulation time; normal pause, title, help, chart review and gallery preserve the documented freeze policy. Save/load retains the same progress, randomness, depleted resources, quoted obligations and history without duplicating payments or replenishing a wreck.
+Financial work has real deposits, escrow, liabilities, finite stock, releases and receiver payments. Mission items remain protected from ordinary selling/duplicate issue. Loan tools must return to their actual issuer where required. Each accepted mission advertises its clock domain. Explicit simulation pause freezes simulation clocks; opening a help, chart, gallery or contact screen is not itself a universal pause. Shattered Wake's armed passage continues through active docking, radio dialogs and interstellar departure, while its documented background/sleep pause freezes it. A flight-only integrity budget advances only during its declared armed flight time. Screen and save/load handling preserve that mission-specific policy. Save/load retains the same progress, randomness, depleted resources, quoted obligations and history without duplicating payments or replenishing a wreck.
 
 ### Connections that define the campaigns
 
@@ -293,42 +311,42 @@ The following is a spoiler-complete review. A ship listed for a mission is a sto
 
 | Campaign | Story hulls | Gameplay connections | Stages | Fee CR |
 | --- | --- | --- | ---: | ---: |
-| C01 The Glass Meridian | SH026 Harrier | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 4,800 |
-| C02 A Choir Beneath the Static | SH124 Larvaal Warship, SH125 Larvaal Drone, SH162 Larvaal Probe | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 6,400 |
-| C03 The Hollow Manifest | No named story hull | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 10 | 5,600 |
-| C04 The Borrowed Voice | SH026 Harrier, SH049 Hyena | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 10 | 7,200 |
-| C05 The Shattered Wake | SH061 Haflinger | scanning, escort/arrival, protected cargo, passenger/life support, crew/custody, attributed combat, choices/evidence | 11 | 1,800 |
-| C06 The Tithe of Worlds | SH001 Mule, SH004 Gyrfalcon Patrol, SH005 Bison | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 14 | 9,600 |
-| C07 The Still Current | SH001 Mule, SH049 Hyena, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, physical component work, energy/heat, attributed combat, choices/evidence | 12 | 8,400 |
-| C08 Wayfarer Exchange | SH001 Mule, SH005 Bison, SH061 Haflinger | scanning, escort/arrival, protected cargo, passenger/life support, crew/custody, attributed combat, choices/evidence | 14 | 7,600 |
-| C09 The Quiet Nursery | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 4,600 |
-| C10 Borrowed Dawn | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 6,800 |
-| C11 The Open Shadow | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 7,400 |
-| C12 Harbour Without Orders | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 7,600 |
-| C13 False Colours | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 6,200 |
-| C14 The Rubble Covenant | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 6,600 |
-| C15 A Garden in Transit | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 6,100 |
-| C16 The Warrant Ledger | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 8,200 |
-| C17 The Measure of Care | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 5,900 |
-| C18 The Long Return | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, passenger/life support, crew/custody, attributed combat, choices/evidence | 9 | 7,800 |
-| C19 The Unfinished Map | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, passenger/life support, attributed combat, choices/evidence | 9 | 6,900 |
-| C20 The Blue Reservoir | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 7,300 |
-| C21 Mutual Shelter | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 7,100 |
-| C22 The Listening Frontier | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 9,100 |
-| C23 An Assembly of Orbits | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 7,700 |
-| C24 Under Tow | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 8,300 |
-| C25 The Memory Atlas | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 7,200 |
-| C26 A Fleet of Neighbours | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 9,400 |
-| C27 Uncounted Names | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 6,500 |
-| C28 The Honest Circuit | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 7,000 |
-| C29 Small Lights | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 6,400 |
-| C30 The Passenger's Horizon | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 7,500 |
-| C31 The Kind Distance | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 5,600 |
-| C32 Cold Reserve | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, passenger/life support, attributed combat, choices/evidence | 9 | 8,800 |
-| C33 The Magnetic Orchard | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 9,200 |
-| C34 Open Measure | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 7,900 |
-| C35 The Shared Pulse | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 8,600 |
-| C36 The Witness Window | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 8,100 |
-| C37 Public Record | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, passenger/life support, attributed combat, choices/evidence | 9 | 6,300 |
-| C38 Signed Passage | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, attributed combat, choices/evidence | 9 | 4,300 |
-| C39 The Guiding Light | SH001 Mule, SH061 Haflinger | scanning, escort/arrival, protected cargo, crew/custody, attributed combat, choices/evidence | 9 | 5,700 |
+| C01 The Glass Meridian | SH026 Harrier | beacon observation; physical recorder and timing-standard custody; relay calibration; clinic escort; evidence disposition | 9 | 4,800 |
+| C02 A Choir Beneath the Static | SH124 Larvaal Warship, SH125 Larvaal Drone, SH162 Larvaal Probe | signal observation; collector/culture exchange; consensual probe repair; counterfeit-emitter shutdown; signal accord | 9 | 6,400 |
+| C03 The Hollow Manifest | No named story hull | consented seal/wake scans; inspection-kit loan; data custody; crew-launch escort; fraud remedy | 10 | 5,600 |
+| C04 The Borrowed Voice | SH026 Harrier, SH049 Hyena | distress verification; verifier loan; witness extraction; revocation or empty decoy; beacon rekeying | 10 | 7,200 |
+| C05 The Shattered Wake | SH061 Haflinger | physical debris/fragmentation; optional finite aid; timed station defence; actual evacuation; outcome inquiry | 11 | 1,800 |
+| C06 The Tithe of Worlds | SH001 Mule, SH004 Gyrfalcon Patrol, SH005 Bison | permanent commission consent; finite resource control and reserves; supply escort; charter or severance | 14 | 9,600 |
+| C07 The Still Current | SH001 Mule, SH049 Hyena, SH061 Haflinger | finite energy and heat; serial tool exchange; technician escort; isolation; conserved settlement | 12 | 8,400 |
+| C08 Wayfarer Exchange | SH001 Mule, SH005 Bison, SH061 Haflinger | serial consignments; cold-chain integrity; seed and rescue escorts; utility restoration; service accreditation | 14 | 7,600 |
+| C09 The Quiet Nursery | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 4,600 |
+| C10 Borrowed Dawn | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 6,800 |
+| C11 The Open Shadow | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,400 |
+| C12 Harbour Without Orders | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,600 |
+| C13 False Colours | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 6,200 |
+| C14 The Rubble Covenant | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 6,600 |
+| C15 A Garden in Transit | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 6,100 |
+| C16 The Warrant Ledger | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 8,200 |
+| C17 The Measure of Care | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 5,900 |
+| C18 The Long Return | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,800 |
+| C19 The Unfinished Map | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 6,900 |
+| C20 The Blue Reservoir | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,300 |
+| C21 Mutual Shelter | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,100 |
+| C22 The Listening Frontier | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 9,100 |
+| C23 An Assembly of Orbits | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,700 |
+| C24 Under Tow | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 8,300 |
+| C25 The Memory Atlas | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,200 |
+| C26 A Fleet of Neighbours | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 9,400 |
+| C27 Uncounted Names | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 6,500 |
+| C28 The Honest Circuit | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,000 |
+| C29 Small Lights | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 6,400 |
+| C30 The Passenger's Horizon | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,500 |
+| C31 The Kind Distance | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 5,600 |
+| C32 Cold Reserve | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 8,800 |
+| C33 The Magnetic Orchard | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 9,200 |
+| C34 Open Measure | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 7,900 |
+| C35 The Shared Pulse | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 8,600 |
+| C36 The Witness Window | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 8,100 |
+| C37 Public Record | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 6,300 |
+| C38 Signed Passage | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 4,300 |
+| C39 The Guiding Light | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 5,700 |
