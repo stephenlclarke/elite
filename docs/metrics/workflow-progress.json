@@ -10708,12 +10708,27 @@
         "AsteroidFragmentationTests"
       ],
       "selection_manifest": "/tmp/elite-m01-affine-followup-selection.json",
-      "normal_result": "pending",
+      "normal_result": "completed_pass_independently_verified",
       "unaffected_131_passes_retained": true,
       "remote_pushed": false,
       "diagnostic185_retention_task": "bounded observer-only existing collector configuration/correction before next full required CI; no target probe",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "exit_code": 0,
+      "xml_methods": 40,
+      "xml_passed": 40,
+      "xml_failures": 0,
+      "xml_errors": 0,
+      "xml_skips": 0,
+      "all_four_prior_failed_methods_passed": true,
+      "reviewed_code_hashes_matched": 5,
+      "build_seconds": 63.57,
+      "test_suite_seconds": 16.846795458,
+      "wall_seconds": 81.655184917,
+      "independent_review_receipt": "/tmp/elite-mba-affine-result-verification.json",
+      "source_owner_qualification": "complete_for_scoped_corrections",
+      "canonical_publication": "pending",
+      "crash185_source_cause_proven": false
     }
   ],
   "two_developer_phase": {
