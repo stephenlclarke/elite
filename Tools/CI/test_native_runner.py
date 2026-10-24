@@ -198,7 +198,7 @@ class ImmutablePreparationTests(unittest.TestCase):
         stack = ExitStack()
         temporary = stack.enter_context(tempfile.TemporaryDirectory())
         fixture = Path(temporary)
-        home = fixture / "Application Support/EliteCI"
+        home = fixture / "EliteNativeCI"
         authorization = fixture / "NativeAuthorization"
         repo = fixture / "repo"
         guard = repo / "Tools/CI/native_runner.py"
@@ -304,15 +304,20 @@ class ImmutablePreparationTests(unittest.TestCase):
 
 class HookDispatchTests(unittest.TestCase):
     with_fixture = ImmutablePreparationTests.with_fixture
-    def test_spaced_installation_dispatches_an_owned_whitespace_free_hook(self):
+    def test_unsafe_installation_is_refused_and_owned_scripts_dispatch_safely(self):
         from pathlib import Path
         import subprocess
         from unittest.mock import patch
         from prepare_native_runner import prepare
         stack, home, archive, digest = self.with_fixture()
         with stack:
+            spaced = home.parent / "Application Support/native-runner"
+            with patch("prepare_native_runner.RUNNER", spaced), self.assertRaises(ValueError):
+                prepare(SHA, archive, digest)
+            self.assertFalse(home.exists())
+            self.assertFalse(spaced.exists())
             policy = prepare(SHA, archive, digest)
-            self.assertIn(" ", str(home))
+            self.assertFalse(any(character.isspace() for character in str(home)))
             assignment = (home / "native-runner/.env").read_text().splitlines()[0]
             hook = Path(assignment.split("=", 1)[1])
             self.assertFalse(any(character.isspace() for character in str(hook)))
@@ -321,6 +326,13 @@ class HookDispatchTests(unittest.TestCase):
             # Match Actions' outer unquoted shell dispatch. The fixture guard is a no-op.
             result = subprocess.run(
                 ["/bin/bash", "--noprofile", "--norc", "-c", str(hook)],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            script = home / "native-runner/_work/_temp/step.sh"
+            script.parent.mkdir(parents=True)
+            script.write_text("#!/bin/bash\nexit 0\n")
+            result = subprocess.run(
+                ["/bin/bash", "-c", "/bin/bash -e " + str(script)],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             with patch("prepare_native_runner.AUTHORIZATION_ROOT", home / "unsafe authorization"):

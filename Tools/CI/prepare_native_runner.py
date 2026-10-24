@@ -11,7 +11,7 @@ import subprocess
 import tarfile
 
 ROOT = Path(__file__).resolve().parents[2]
-HOME_ROOT = Path.home() / "Library/Application Support/EliteCI"
+HOME_ROOT = Path.home() / "Library/EliteNativeCI"
 RUNNER = HOME_ROOT / "native-runner"
 AUTHORIZATION_ROOT = Path.home() / "Library/EliteNativeAuthorization"
 DEVELOPER = "/Applications/Xcode.app/Contents/Developer"
@@ -53,6 +53,8 @@ def prepare(approved: str, archive: Path, archive_hash: str) -> Path:
     authorization = AUTHORIZATION_ROOT / approved
     if any(character.isspace() for character in str(authorization)):
         raise ValueError("The runner dispatches its hook through a shell; its path must not contain whitespace.")
+    if any(character.isspace() for character in str(RUNNER)):
+        raise ValueError("The runner dispatches temporary scripts through a shell; its root must not contain whitespace.")
     guard_copy = authorization / "guard.py"
     policy = authorization / "policy.json"
     hook = authorization / "job-started.sh"
