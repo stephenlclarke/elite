@@ -11387,6 +11387,21 @@
       "source_publication": "pending_review_and_qualification",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:55:23.510464+00:00",
+      "checkpoint_key": "20261024-m01-combined-review-makefile-finding-assigned",
+      "event": "Independent combined review found unit-ci recipe loss; exact correction assigned while remaining review continues",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "reviewed_baseline_patch_sha256": "6015ed48d60c73bd3f02cb4f609914b63ce6cf04c5077ae52321736f34ea7298",
+      "priority": "P1",
+      "path": "Makefile",
+      "finding": "unit_ci_lost_recipe_and_could_false_green_without_isolated_units",
+      "authorized_delta": "restore_exact_unit_ci_target_recipe_and_intended_ci_prerequisites",
+      "unaffected_review_retained": true,
+      "execution_authorized": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
