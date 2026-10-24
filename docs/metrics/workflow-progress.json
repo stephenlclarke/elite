@@ -10403,6 +10403,25 @@
       "required_quality_pending": 40043514103,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T01:31:58.088504+00:00",
+      "checkpoint_key": "20261024-m01-current-quality-partial41-failures",
+      "event": "Existing full-quality log exposes 41 assertion-bearing methods; bounded same-packet issue triage/remediation assigned",
+      "head": "ae97d337cb9cf25b58322a21946e9ece297dd60a",
+      "run": 40043514103,
+      "run_status": "in_progress",
+      "distinct_assertion_methods": 41,
+      "assertion_records": 75,
+      "initial_five_terminal_failure_count_incomplete": true,
+      "inventory": "/tmp/elite-mba-ae97-partial-failures.json",
+      "reviewer": "MBA",
+      "repair_owner": "G1",
+      "full_build_seconds": 783.64,
+      "terminal_aggregate_available": false,
+      "earlier_524_and_19_scoped_passes_retained": true,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
