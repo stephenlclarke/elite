@@ -21,3 +21,9 @@ One combined batch will retain the original eleven affected methods and add thre
 ## Compatibility and remaining limits
 
 No game feature, ship data, actor scheduling, authority predicate, field/default semantics, save/schema, hash policy, runtime stack limit or quality threshold changes. The correction targets demonstrated outer-value copy cost; it does not promise that independent child/body temporaries disappear or establish a performance result. PR25 remains closed during recovery. Original method completion, coverage, thread/address sanitizers, leaks, final-head review and all required release/signing gates remain unqualified.
+
+## First combined compilation
+
+The first combined19-method command at `e1516c6830fdcc914504c2e5645d810c61f1bcc1` exited1 after229.258909167seconds during test compilation. EliteCore and the app compiled/linked, but test module emission reported exactly two unique exclusivity errors in FlightWorkGuidanceRuntimeTests at the original309/523 lines. Each combined an optional guidance write with a body velocity read from the same projected Game. The error inventory is retained in `/tmp/elite-m01-outer-game-compile-errors.json`; log/start/result are retained under `/tmp/elite-m01-outer-game`. No method ran, no new crash or sizeof result exists, and no runtime success is claimed.
+
+Stage those two unchanged body velocities in local constants before assigning the optional guidance property. The fixture bodies/indices already exist at those points; all original guidance, collection, geometry, custody and once-only assertions remain unchanged. This resolves the compiler's overlapping projected access without changing production state or weakening test coverage. The same19-method affected command will run after combined delta review; no diagnostic replay or separate size probe is added.

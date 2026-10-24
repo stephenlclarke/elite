@@ -306,7 +306,8 @@ struct FlightWorkGuidanceRuntimeTests {
     let actualNormal = game.commander.flightSimulation.pose.shipVector(
       game.modelPose(of: game.bodies[0]).orientation.apply(state.surface.normal))
     #expect((actualNormal - Vector3(0, 0, -1)).length < 1e-8)
-    game.workGuidance?.velocity = game.bodies[0].physical?.velocity ?? .init(0, 0, 0)
+    let guidanceVelocity = game.bodies[0].physical?.velocity ?? .init(0, 0, 0)
+    game.workGuidance?.velocity = guidanceVelocity
     if let payload = game.bodies[0].physical?.payload, case .salvage(let lot) = payload {
       game.commander.salvageLedger.updateLot(
         lot,
@@ -520,7 +521,8 @@ struct FlightWorkGuidanceRuntimeTests {
     let largeAxis = try #require(
       game.collectibleHalfExtents(game.bodies[index], context: context))
     #expect(max(largeAxis.x, max(largeAxis.y, largeAxis.z)) > 16)
-    game.workGuidance?.velocity = game.bodies[index].physical?.velocity ?? .init(0, 0, 0)
+    let guidanceVelocity = game.bodies[index].physical?.velocity ?? .init(0, 0, 0)
+    game.workGuidance?.velocity = guidanceVelocity
     let before = game.commander.cargo[0]
     game.scoopCargo()
     #expect(game.commander.cargo[0] == before + 1)
