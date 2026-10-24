@@ -12050,6 +12050,17 @@
       "reviewer": "MBA",
       "resource_limit": "No competing local compiler/native jobs during M01 quality",
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T09:33:42.449129+00:00",
+      "checkpoint_key": "20261024-human-mba-m01-first-review-priority",
+      "event": "Stephen explicitly prioritised M01 reviewer work over M02/M03",
+      "reviewer": "MBA",
+      "priority": [
+        "M01 actionable release blockers/corrections/results",
+        "M02/M03 ready packets only with no actionable M01 review"
+      ],
+      "developers_continue_independently": true
     }
   ],
   "two_developer_phase": {

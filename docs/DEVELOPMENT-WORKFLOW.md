@@ -1,5 +1,7 @@
 # Developer and reviewer workflow
 
+**Current review priority — 24 October 2026:** Stephen directs MBA to handle actionable M01 release work before M02 or M03. Review M02/M03 only when no M01 correction or result disposition is ready. If M01 arrives, preserve lower-priority work and switch after the safe current tool operation. Developers continue independently; do not interrupt CI or repeat tests.
+
 Updated 23 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
 
 ## Current scope: M01 and existing defect remediation
