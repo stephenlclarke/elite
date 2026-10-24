@@ -58,15 +58,24 @@ struct ScriptFreightFixture {
     try #require(pack.manifest.trial?.galaxy == game.commander.galaxy)
     try #require(pack.manifest.trial?.system == game.commander.system)
     game.scriptPacks = [pack]
+    if escapeReady {
+      // Optional test accessory funding is separate from the unchanged 100000 G03 budget.
+      let pod = try #require(Equipment.all.first { $0.name == "Escape Pod" })
+      let accessory = try game.quoteEquipmentPurchase(pod)
+      try #require(accessory.purchase.requiredDebit == 36000)
+      game.commander.credits += accessory.purchase.requiredDebit
+    }
     let cargo = game.commander.cargo
     try game.prepareG03FlightEquipment()
     if escapeReady {
       let item = try #require(Equipment.all.first { $0.name == "Escape Pod" })
       let quote = try game.quoteEquipmentPurchase(item)
       let debit = quote.purchase.requiredDebit
-      try #require(debit == 10000)
+      try #require(debit == 36000)
+      let cash = game.commander.credits
       let fitted = try game.applyEquipmentPurchase(quote)
-      try #require(fitted)
+      try #require(fitted && game.commander.credits == cash - debit)
+      try #require(game.commander.equipmentPurchaseHistory?.paid.last?.price == debit)
     }
     try ScriptProcurementFixture.requirePaidG03Preparation(game, escapeReady: escapeReady)
     try #require(game.commander.cargo == cargo)
