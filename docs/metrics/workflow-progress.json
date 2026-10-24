@@ -11319,6 +11319,24 @@
       "new_execution_authorized": false,
       "reviewer_fixes_authorized": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:43:04.838507+00:00",
+      "checkpoint_key": "20261024-m01-206-source-review-complete",
+      "event": "Cold-load source review completed; precise asteroid expected projection and bounded EMP failure facts assigned",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issue": 206,
+      "review_comment": 6381581871,
+      "asteroid_counter_cause": "one_independently_derived_retained_RRS_station_rebind",
+      "asteroid_expected_projection_authorized": true,
+      "emp_exact_delta_proven": false,
+      "emp_bodies_comparison": "not_evaluated_in_recorded_failure",
+      "full_oracles_preserved": true,
+      "production_normalization_authorized": false,
+      "separate_execution_authorized": false,
+      "reviewer_execution": "none",
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
