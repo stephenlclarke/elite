@@ -12862,6 +12862,20 @@
       "pr216_changed_runtime_qualified": false,
       "affected_execution_owner": "G1 after M01 CPU lease",
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-pr217-isolated-qualified-sync-timestamps",
+      "timestamp": "2026-10-24T13:41:20.001161+00:00",
+      "pr": 217,
+      "head": "3129537d5fc1a8d5aa7e708ba30651974a0c939b",
+      "unit_run": 40097658949,
+      "verified_isolated_methods": 529,
+      "affected_runtime_consumers_pending": 13,
+      "measured_speedup": null,
+      "m02_actual_last_sync": "2026-10-24T13:18:31Z",
+      "m03_actual_last_sync": "2026-10-24T13:21:48Z",
+      "extra_sync_started": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
