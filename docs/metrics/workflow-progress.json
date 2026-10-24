@@ -11980,6 +11980,17 @@
       "independent_reviewer": "MBA",
       "usable_build_delivered": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-24T09:26:59.299676+00:00",
+      "checkpoint_key": "20261024-m01-runner-whitespace-root-correction-assigned",
+      "cause": "Unquoted temporary script placeholder under spaced runner installation",
+      "scope_decision": "Owned whitespace-free Library/EliteNativeCI runner/work root; reject unsafe paths; preserve old installation and all authorization controls",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "game_source_change": false,
+      "game_tests_rerun_assigned": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
