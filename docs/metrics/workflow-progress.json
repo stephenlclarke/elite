@@ -12898,6 +12898,16 @@
       "native_execution_authorized": false,
       "counts_as_gameplay_delivery": false,
       "m01_candidate_preserved": true
+    },
+    {
+      "checkpoint_key": "20261024-intended-reference-precedence-decision",
+      "timestamp": "2026-10-24T14:10:18.176700+00:00",
+      "scope": "Intended-final-game reference documentation only",
+      "game_code_change_assigned": false,
+      "u03_implementation_ready": false,
+      "exact_cited_table_pending": true,
+      "original_hull_identity_required": true,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
