@@ -10868,6 +10868,26 @@
       "new_execution_assigned": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T03:35:05.691621+00:00",
+      "checkpoint_key": "20261024-m01-51fb-stackguard-owningtest-attributed",
+      "event": "Terminal artifact proves stack-guard fault and owning evacuation test; bounded source correction assigned",
+      "published_head": "51fbcee474854c190fb748e101f3b8c27d84718a",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "run": 40054216562,
+      "actual_failing_stage": "coverage-check normal Swift Testing helper",
+      "signal": 10,
+      "make_ci_seconds": 3893.588927708,
+      "build_seconds": 545.39,
+      "fault_and_sp_in_unmapped_guard": true,
+      "owning_test": "NativeOriginalEvacuationSaveTests.evacuationGenuine47And48IndependentlyComposeG02G04G05G08",
+      "assertion_records_pending_grouping": 20,
+      "source_input_equivalence": "pending",
+      "new_target_execution_assigned": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
