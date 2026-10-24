@@ -11656,6 +11656,22 @@
       "gpu_passes_in_retained54": 2,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T08:33:40.490207+00:00",
+      "checkpoint_key": "20261024-m01-combined-followup-source-clear-15-authorized",
+      "event": "One combined follow-up source clear;15method execution authorized",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "patch_sha256": "2c776c0e67aa773c7405e62ad5ccd30696ad04268330cf6d92d2814bf86f05ec",
+      "review_sha256": "e6882515356447f87bd51c669d52589d9910099b0f3c503a43cf506e79cabb5f",
+      "reviewed_file_count": 10,
+      "selected_methods": 15,
+      "failed_methods": 13,
+      "shared_helper_consumers": 2,
+      "actual_execution": "not_yet_verified",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
