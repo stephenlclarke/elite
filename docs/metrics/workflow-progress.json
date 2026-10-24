@@ -11917,11 +11917,13 @@
       "quality_run": 40081071122,
       "retry_job": 120835012587,
       "failure_stage": "administrator_hook_before_checkout",
-      "cause": "unquoted_Application_Support_path",
+      "cause": "Actions_outer_hook_filename_invocation_unquoted_inner_guard_already_quoted",
       "game_tests_executed_in_retry": 0,
       "new_game_source_changes_assigned": false,
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "correction_scope": "separate_no_whitespace_authorization_root_preserve_runner_location_and_security",
+      "unit_duplicate_cancellation": "G1_requested_optional_PR40081071124_keep_VM_push40081066612"
     }
   ],
   "two_developer_phase": {
