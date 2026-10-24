@@ -12908,6 +12908,21 @@
       "exact_cited_table_pending": true,
       "original_hull_identity_required": true,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-m02-paths-m03-price-packets-assigned",
+      "timestamp": "2026-10-24T14:18:52.034045+00:00",
+      "g4_assignment": "M02 default application-data path naming",
+      "g4_owned_paths": [
+        "CommanderSaveSession.swift path/policy",
+        "MissionPack.swift default path/policy",
+        "ScriptBundledPacks.swift default path/policy"
+      ],
+      "g3_assignment": "M03.P03/U03 original14base price authority alignment",
+      "g3_values_pending_cited_table": true,
+      "m01_candidate_preserved": true,
+      "mbp_native_jobs_authorized": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
