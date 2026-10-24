@@ -11795,10 +11795,13 @@
         203,
         205
       ],
-      "mba_terminal_verification": "assigned",
+      "mba_terminal_verification": "complete_committed_hashes_filter_selection_xml",
       "source_cause_203": "fixture_legacy_unspawned_path_not_new_native_guard",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "mba_receipt": "/tmp/elite-mba-a1bf-terminal-verification.json",
+      "g1_assignment": "genuine_native_encounter_fixture_203",
+      "mba_assignment": "205_exact_integer_and_witness_serialization_boundary"
     }
   ],
   "two_developer_phase": {
