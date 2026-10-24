@@ -12076,6 +12076,23 @@
       "review_priority": "M01 before M02/M03",
       "resource_limit": "Coordinate push-triggered main-host VM jobs during M01 quality",
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T09:37:42.274382+00:00",
+      "checkpoint_key": "20261024-hosted-push-unit-capacity-unblocks-parallel-developers",
+      "event": "G1 temporarily selected existing hosted push-unit fallback to protect M01 native CPU",
+      "variable": "ELITE_LOCAL_RUNNER_ENABLED",
+      "prior_value": "true",
+      "applied_value": "false",
+      "verified_by_owner": true,
+      "restoration_owner": "G1 after M01 native CPU lease clears",
+      "record": "/tmp/elite-m01-hosted-unit-routing-lease.json",
+      "developers_unblocked": [
+        "G3 M03",
+        "G4 M02"
+      ],
+      "checks_or_protection_weakened": false,
+      "speedup_measured": false
     }
   ],
   "two_developer_phase": {
