@@ -11690,10 +11690,21 @@
       "root_xml_passed_methods": 8,
       "root_xml_failed_methods": 7,
       "failure_elements": 10,
-      "mba_verification": "assigned",
+      "mba_verification": "complete_committed_hashes_selection_commands_xml",
       "police_refusal_source_cause": "fixture_clearance_atomic_pair",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "mba_receipt": "/tmp/elite-mba-5944-terminal-verification.json",
+      "actual_xml_bytes": 4207,
+      "actual_xml_sha256": "d313581ba54890f1c0c0222b1e919abe00c9fd2b69aa89a5107d35d84ff5f0a2",
+      "remaining_issue_groups": [
+        196,
+        200,
+        203,
+        205,
+        208,
+        213
+      ]
     }
   ],
   "two_developer_phase": {
