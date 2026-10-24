@@ -11174,11 +11174,16 @@
       "observer_interruption": false,
       "crash_report_present": false,
       "earlier_sigbus_recurrence": false,
-      "distinct_failed_methods": "pending_independent_inventory",
-      "retained_source_comparison": "pending_independent_verification",
+      "distinct_failed_methods": 55,
+      "retained_source_comparison": "all_1879_retained_inputs_match_a890",
       "later_sanitizer_and_leak_stages": "not_qualified",
       "terminal_artifact_download_owner": "MBA",
-      "terminal_artifact_download_count": 1
+      "terminal_artifact_download_count": 1,
+      "retained_source_input_count": 1879,
+      "grouped_causes_and_issue_dispositions": "MBA_in_progress",
+      "correction_plan_owner": "G1",
+      "correction_plan_scope": "readonly_exact_55_method_inventory_same_packet",
+      "candidate_source_unchanged": true
     }
   ],
   "two_developer_phase": {
