@@ -12491,6 +12491,24 @@
       "new_tests": 0,
       "new_head": false,
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T10:38:45.232612+00:00",
+      "checkpoint_key": "20261024-m01-6552-524-isolated-units-verified",
+      "head": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+      "run": 40085261372,
+      "selected": 524,
+      "unique_pass": 524,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "missing": 0,
+      "extra": 0,
+      "duplicates": 0,
+      "reviewer_reruns": 0,
+      "receipt": "/tmp/elite-mba-6552-unit-verification.json",
+      "full_quality": "in_progress",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
