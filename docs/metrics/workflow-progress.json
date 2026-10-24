@@ -12418,6 +12418,26 @@
       "monitor": "keep-m02-and-m03-current-with-m01",
       "usable_build_delivered": false,
       "rebase_receipt": "/tmp/elite-mba-m03-2623-rebase-verification.json"
+    },
+    {
+      "at": "2026-10-24T10:21:59.560241+00:00",
+      "checkpoint_key": "20261024-m02-clean-local-rebase-author-publication-rule",
+      "m02_local_head": "3e79d1270c06d82e99eb93b601e88ebb2e23d068",
+      "m02_remote_head": "29df8a0c7662b2b84a5dfeeb96314f4f56923bfb",
+      "sync_utc": "2026-10-24T10:17:31Z",
+      "upstream": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+      "conflicts": false,
+      "owner_reported_unchanged_owned_patches": 4,
+      "owner_reported_unchanged_python_hashes": 8,
+      "review": "VERIFIED",
+      "publication_rule": "Author can publish after currentrunterminal withoutRootgate; failurefirstattributed",
+      "m01_quality": "unfilteredtests running; no complete outcome",
+      "usable_build_delivered": false,
+      "review_receipt": "/tmp/elite-mba-m02-3e79-local-rebase-verification.json",
+      "unchanged_owned_patches_verified": 4,
+      "unchanged_python_hashes_verified": 8,
+      "exclusive_paths_verified": 33,
+      "m01_repair_preserved": true
     }
   ],
   "two_developer_phase": {
