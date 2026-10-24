@@ -1,5 +1,9 @@
 # Developer and reviewer workflow
 
+## Stop after M01 delivery
+
+Stephen directs that once M01 is actually complete and delivered, all project work stops except Mission Researcher session01a13206-3a94-7181-8828-cfebae681e11. Preserve unfinished source and owned branches/PRs. Do not start the next milestone, continue development/review/testing/hygiene or perform post-M01 branch sync. G1 reports verified delivery; Orchestrator stops other workers and disables project follow-ups, then remains idle. Mission Researcher alone continues its existing authorised scope. This overrides older keep-busy and automatic continuation rules below. It does not stop the checks and release work still required to finish M01.
+
 ## Branch and commit naming
 
 Stephen's standard from24October2026: all new branches use a Conventional Commit type followed by a slash and a short lowercase kebab-case description: `feat/`, `fix/`, `perf/`, `refactor/`, `test/`, `docs/`, `build/`, `ci/`, `chore/`, `style/` or `revert/`. Use `feat/` for new features; do not create new `feature/` branches or ad hoc prefixes such as `infra/` or `diagnostic/`. For example, `feat/passenger-cabins`, `fix/chart-help`, `perf/test-observations` and `chore/retained-diagnostics`.
