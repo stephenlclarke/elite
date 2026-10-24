@@ -10578,17 +10578,20 @@
       "event": "Coherent 31-file correction patch independently cleared; one debris assertion source diagnosis and separate crash cause remain",
       "owner": "G1",
       "reviewer": "MBA",
-      "source_review": "clear_for_exact_31_file_patch",
+      "source_review": "clear_for_final_32_code_file_patch",
       "patch_sha256": "65db93b19413b4320721aa9505dee953a1df9b7b892e505c68bcd45498a1a90c",
       "draft_findings_corrected_and_rereviewed": 2,
       "assertion_methods_mapped": 62,
       "assertion_records": 107,
       "unassigned_assertion_causes": 1,
       "crash_issue": 185,
-      "additional_debug_hunk_review": "pending",
+      "additional_debug_hunk_review": "clear_explicit_numeric_final_hunk",
       "normal_affected_unit_batch": "not_run",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "final_code_file_count": 32,
+      "final_patch_sha256": "96062b679f2a33ee05f4e84258a3744ddd70ab91f8b5d49a00fdff854d63706a",
+      "prior31_file_hashes_unchanged": true
     }
   ],
   "two_developer_phase": {
