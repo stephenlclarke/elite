@@ -10320,10 +10320,14 @@
       "game_size": 8,
       "game_stride": 8,
       "game_alignment": 8,
-      "independent_evidence_review": "pending",
+      "independent_evidence_review": "clear",
       "pr_reopen_condition_met": true,
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "xml_methods": 19,
+      "xml_failures": 0,
+      "xml_errors": 0,
+      "xml_skips": 0
     }
   ],
   "two_developer_phase": {
