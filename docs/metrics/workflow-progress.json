@@ -12205,6 +12205,24 @@
       "execution_assigned": "One owning/directconsumer focused batch after source review",
       "m01_complete": false,
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T09:54:08.972814+00:00",
+      "checkpoint_key": "20261024-m01-repair-frozen-m02-packet-published",
+      "m01_owner": "G1",
+      "m01_patch_sha256": "23798dd3d806910444469ffef2235e6f0a94cca7bb689a19a54d1c9a0068be61",
+      "m01_changed_files": 1,
+      "m01_review": "MBA first, assigned",
+      "m01_focused_methods_authorized": 6,
+      "m01_toolchain": "actual failing Swift6.4.1/SDK27",
+      "m02_pr": 215,
+      "m02_head": "1e939e3044d569ccefe223ccec31fb26f719d849",
+      "m02_new_methods_authored": 3,
+      "m02_retained_selector": 524,
+      "m02_hosted_unit_run": 40083595406,
+      "m02_last_upstream_sync": "2026-10-24T09:48:00Z",
+      "usable_build_delivered": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
