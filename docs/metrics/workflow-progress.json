@@ -13054,6 +13054,27 @@
       "new_execution": false,
       "limits": "Freight replay refusal asserted before final reload; these methods do not explicitly test post-reopen replay",
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-pr224-failed-parent-causes-qualified",
+      "timestamp": "2026-10-24T14:57:13.369698+00:00",
+      "pr": 224,
+      "head": "f16737cb41f61ea84328a48bc4d5fe9a373811b9",
+      "unit_run": 40103335910,
+      "completed_methods": 540,
+      "failed_methods": 12,
+      "clean_methods": 528,
+      "new_technology_methods_passed": 3,
+      "new_failure_causes": 0,
+      "existing_issue_numbers": [
+        225,
+        226,
+        227
+      ],
+      "build_seconds": 715.84,
+      "test_seconds": 223.004,
+      "reviewer_execution": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
