@@ -11720,7 +11720,10 @@
       "no_tolerance_schema_hash_authority_waiver": true,
       "execution": "not_started",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "chosen_205_implementation": "smaller_test_rehash_serializer_only_production_validator_unchanged",
+      "mba_parallel_assignment": "source_math_viable_G0S7_courier_row",
+      "no_new_execution": true
     }
   ],
   "two_developer_phase": {
