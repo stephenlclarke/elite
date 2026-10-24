@@ -12324,6 +12324,23 @@
       "m02_current_unit_run_retained": 40084290033,
       "m01_complete": false,
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T10:09:43.418536+00:00",
+      "checkpoint_key": "20261024-m01-combined-parent-review-clear-and-m02-duplicate-cancelled",
+      "m01_patch_sha256": "999d7121f81a6766b74ef0ee1763dbf67d556524a2a618a5d8280842b2ada609",
+      "source_review": "CLEAR",
+      "receipt": "/tmp/elite-mba-7b51-parent-lifetimes-review.json",
+      "original_validation_calls_verified": 27,
+      "ordered_bundle_entries_verified": 31,
+      "focused_methods_authorized": 6,
+      "m02_superseded_run": 40083595406,
+      "m02_superseded_conclusion": "cancelled",
+      "m02_current_run": 40084290033,
+      "m02_current_state": "in_progress",
+      "runtime_savings_measured": false,
+      "m01_complete": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
