@@ -83,6 +83,8 @@ struct NativeViewTests {
     }
     var commander = Commander()
     commander.shipID = "SH013"
+    commander.fuel = commander.fuelCapacity
+    commander.missiles = min(3, commander.missileCapacity)
     commander.xyzzyActive = true
     commander.autoTrade = false
     commander.credits = 12345
@@ -252,7 +254,7 @@ struct NativeViewTests {
       #expect(!view.held.contains(expected))
     }
     view.game.launch()
-    view.held = ["x", ",", " ", "a"]
+    view.held = ["x", ",", " ", FlightControlInput.token(for: .fire)]
     #expect(
       view.controls.pitch == 1 && view.controls.roll == 1 && view.controls.throttle == 1
         && view.controls.fire)

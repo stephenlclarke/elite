@@ -138,8 +138,12 @@ struct EMPPersistenceAndEquipmentTests {
   @Test func realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting() async throws {
     var game = Game(executive: false)
     game.screen = .equipment
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
     game.commander.credits = 100_000
-    game.commander.system = try #require(game.systems.first { $0.technology >= 8 }?.id)
+    game.commander.system = try #require(game.systems.first { $0.technology >= 9 }?.id)
+    game.selectedSystem = game.commander.system
+    game.market = MarketItem.at(game.currentSystem)
     try game.commander.prepareEquipment(legacy: false)
     game.selection = try #require(
       Equipment.all.firstIndex { $0.name == Equipment.empPirateBlaster })

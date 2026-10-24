@@ -53,6 +53,17 @@ struct GameplayOrdnanceRuntimeTests {
     #expect(launched)
     let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
     game.tick(delta: 0.02)
+    if game.bodies.contains(where: { $0.id == missile.id }),
+      let victim = game.bodies.first(where: { $0.id == 70 })
+    {
+      let contact = try? game.nearestMissionCollision(
+        from: victim.position, direction: victim.orientation.z.unit, range: 1500,
+        radius: 0, excludingBodyIDs: [victim.id], includePlayer: true)
+      FileHandle.standardError.write(
+        Data(
+          "Missile interception source=\(victim.id) position=\(victim.position) forward=\(victim.orientation.z) role=\(String(describing: victim.physical?.npc?.role)) intent=\(String(describing: victim.physical?.npc?.intention)) cooldown=\(victim.physical?.laserCooldown ?? -1) contact=\(String(describing: contact?.hit.target)) stations=\(game.bodies.filter { $0.hull == .station }.count) missile=\(missile.id)\n"
+            .utf8))
+    }
     #expect(!game.bodies.contains { $0.id == missile.id })
     #expect(game.bodies.first { $0.id == 70 }?.energy == 100)
     #expect(game.commander.kills == 0 && game.commander.legal == 8)
@@ -118,13 +129,15 @@ struct GameplayOrdnanceRuntimeTests {
     let launched = game.fireMissile()
     #expect(launched)
     let original = try #require(game.bodies[0].physical?.identity)
+    let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
     game.bodies.removeFirst()
     game.bodies.append(.init(id: 70, hull: .cobra, position: .init(0, 0, 1000)))
     game.ensurePhysicalActors()
     #expect(game.bodies.last?.physical?.identity != original)
     missileRuntimeAdvance(&game, delta: 2)
-    #expect(game.bodies.last?.energy == 100 && game.commander.kills == 0)
-    #expect(game.bodies.first?.physical?.ordnance?.termination == .targetLost)
+    #expect(game.bodies.first { $0.id == 70 }?.energy == 100 && game.commander.kills == 0)
+    #expect(
+      game.bodies.first { $0.id == missile.id }?.physical?.ordnance?.termination == .targetLost)
   }
 
   @Test func realNPCLauncherDoesNotLoseItsMissileOwnerWhenTheCraftIsRemoved() throws {

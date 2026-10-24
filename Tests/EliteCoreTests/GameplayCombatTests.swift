@@ -9,6 +9,13 @@ private func combatRequire<T>(_ value: T?) throws -> T {
 
 private func combatGame(position: Vector3 = .init(0, 0, -3000)) -> Game {
   var game = Game(executive: false)
+  // These law/resource cases use the original Cobra and an explicit cash baseline.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.credits = 1000
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.docked = false
   game.screen = .front
   game.speed = 0

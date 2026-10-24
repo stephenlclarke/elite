@@ -88,6 +88,8 @@ struct StartupSaveTests {
     defer { try? FileManager.default.removeItem(at: url) }
     var commander = Commander()
     commander.shipID = "SH013"
+    commander.fuel = commander.fuelCapacity
+    commander.missiles = min(3, commander.missileCapacity)
     commander.credits = 100000
     commander.legal = 75
     let original = try JSONEncoder().encode(commander)

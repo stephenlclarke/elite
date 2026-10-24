@@ -12,12 +12,28 @@ concurrency:
   cancel-in-progress: false
 jobs:
   quality:
-    runs-on: macos-15
+    # Untrusted events stay hosted and fail closed before any checkout. The physical
+    # runner also has a host-owned, exact-head pre-job hook outside this repository.
+    runs-on: ${{ github.repository == 'stephenlclarke/elite' && github.actor_id == '22142777' && vars.ELITE_NATIVE_RUNNER_ENABLED == 'true' && (github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.id == 22142777 || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "macOS", "ARM64", "elite-native"]') || 'macos-15' }}
+    env:
+      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
     steps:
+      - name: Require host authorization before checkout
+        run: |
+          python3 - <<'PYTHON'
+          import os, re
+          if os.environ.get('RUNNER_ENVIRONMENT') != 'self-hosted':
+              raise SystemExit('Required native quality needs an authorized physical runner; no checkout performed.')
+          if not re.fullmatch(r'[0-9a-f]{40}', os.environ.get('ELITE_NATIVE_APPROVED_HEAD', '')):
+              raise SystemExit('The host-owned exact-head authorization hook did not run.')
+          PYTHON
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
+          clean: false
+      - name: Verify physical source, toolchain and owned build cache
+        run: python3 Tools/CI/native_runner.py --checkout
       - name: Coverage, thread sanitizer, address sanitizer, and leak probe
         run: python3 Tools/CI/capture-quality.py
       - name: Install SonarScanner

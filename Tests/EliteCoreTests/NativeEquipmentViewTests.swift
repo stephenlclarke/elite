@@ -8,6 +8,7 @@ private func nativeEquipmentCommander(heldGrants: Int = 0) throws -> Commander {
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
   game.commander.credits = 1_000_000
   game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
   try game.commander.prepareEquipment(legacy: false)
@@ -75,6 +76,8 @@ private struct NativeEquipmentFixture {
       bootstrap.frontShield = commander.shieldCapacity
       bootstrap.rearShield = commander.rearShieldCapacity
       var expected = commander
+      // Setting bootstrap.market publishes authenticated mutable stock into its Commander.
+      expected.originalMarkets = bootstrap.commander.originalMarkets
       try expected.prepareEquipment()
       expected.mirrorFittedEquipment()
       expected.miningLedger = commander.miningLedger
@@ -145,7 +148,10 @@ private struct NativeEquipmentFixture {
         originalFiles: originalFiles, originalMenu: originalMenu)
       try await fixture.press(20, text: "3", expected: "3")
       #expect(view.game.screen == .equipment && view.isFlipped)
-      #expect(view.bounds.width == Double(width) && view.bounds.height == Double(height))
+      #expect(
+        view.bounds.width == Double(width) && view.bounds.height == Double(height),
+        "Equipment requested=\(width)x\(height) actual=\(view.bounds) content=\(window.contentLayoutRect) screen=\(String(describing: window.screen?.visibleFrame))"
+      )
       let paintedFiles = try recoveredSaveFiles(directory)
       #expect(paintedFiles == originalFiles)
       return fixture

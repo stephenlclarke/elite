@@ -125,6 +125,28 @@ struct NativeImportedEMPCompatibilityTests {
     let bytes = try Data(contentsOf: file)
     try await runtime.load(from: file, persistMigrations: false)
     let loaded = await runtime.snapshot()
+    if loaded.commander != saved.commander || loaded.bodies != saved.bodies {
+      func stationRows(_ value: Game) -> String {
+        value.bodies.filter { $0.nativeStationIdentity != nil }.prefix(3).map { body in
+          let binding = value.commander.nativeStations?.ledger.records.first {
+            $0.identity == body.nativeStationIdentity
+          }?.binding
+          return
+            "id=\(body.id),actor=\(body.physical?.identity.entity ?? 0),spawn=\(body.physical?.spawnIdentity?.sequence ?? 0),ledgerBody=\(binding?.bodyID ?? -1),ledgerActor=\(binding?.actor.entity ?? 0)"
+        }.joined(separator: ";")
+      }
+      let nonRRSBefore = saved.bodies.filter { $0.nativeStationIdentity == nil }
+      let nonRRSAfter = loaded.bodies.filter { $0.nativeStationIdentity == nil }
+      let ids = Set(saved.bodies.map(\.id)).union(loaded.bodies.map(\.id)).sorted().filter { id in
+        saved.bodies.first { $0.id == id } != loaded.bodies.first { $0.id == id }
+      }.prefix(3)
+      let beforeRRS = saved.bodies.filter { $0.nativeStationIdentity != nil }.count
+      let afterRRS = loaded.bodies.filter { $0.nativeStationIdentity != nil }.count
+      FileHandle.standardError.write(
+        Data(
+          "EMP reload RRS=\(beforeRRS)/\(afterRRS) actor=\(saved.commander.flightSimulation.nextActor)/\(loaded.commander.flightSimulation.nextActor) spawn=\(saved.commander.flightSimulation.nextSpawn)/\(loaded.commander.flightSimulation.nextSpawn) bodyCursor=\(saved.nextBodyID)/\(loaded.nextBodyID) sameEMP=\(saved.commander.savedEMPState == loaded.commander.savedEMPState) sameSalvage=\(saved.commander.alienStorageState?.current.salvage == loaded.commander.alienStorageState?.current.salvage) sameNPC=\(saved.commander.npcPersistence == loaded.commander.npcPersistence) sameWanted=\(saved.commander.wantedCareers == loaded.commander.wantedCareers) sameMarkets=\(saved.commander.originalMarkets == loaded.commander.originalMarkets) sameEquipment=\(saved.commander.equipmentInventory == loaded.commander.equipmentInventory) sameNonRRS=\(nonRRSBefore == nonRRSAfter) differingIDs=\(Array(ids)) before[\(stationRows(saved))] after[\(stationRows(loaded))]\n"
+            .utf8))
+    }
     #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
     #expect(nativeEMPHulls(loaded, source: source).count == 1)
     let observedFileBytes = try Data(contentsOf: file)

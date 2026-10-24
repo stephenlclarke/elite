@@ -10,6 +10,11 @@ struct AutoTargetCruiseTests {
   ) async throws {
     var game = Game(executive: false)
     game.commander.shipID = shipID
+    game.commander.fuel = game.commander.fuelCapacity
+    // Authenticated G01-S000 has a government-seven neighbour within the stock seven-LY reach.
+    game.commander.system = 0
+    game.selectedSystem = 0
+    game.market = MarketItem.at(game.currentSystem)
     let startingRounds = min(3, game.commander.nativePerformance.missiles)
     game.commander.missiles = startingRounds
     game.commander.installTargetingComputer(.docking)

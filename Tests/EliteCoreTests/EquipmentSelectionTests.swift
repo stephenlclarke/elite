@@ -6,6 +6,8 @@ struct EquipmentSelectionTests {
   @Test(arguments: [512.0, 1280.0])
   func pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell(width: Double) throws {
     var game = Game(executive: false)
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
     game.screen = .equipment
     game.viewportWidth = width
     game.viewportHeight = width == 512 ? 518 : 900
@@ -23,6 +25,8 @@ struct EquipmentSelectionTests {
 
   @Test func existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool() throws {
     var game = Game(executive: false)
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
     game.screen = .equipment
     game.commander.credits = 100_000
     game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)

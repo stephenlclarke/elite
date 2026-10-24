@@ -254,6 +254,16 @@ extension NativeMeasuredExtractionAcquisitionTests {
     await runtime.setControls(Controls())
     let game = await runtime.snapshot()
     let state = try #require(game.measuredExtractionState)
+    if game.commander.scriptState.instances[state.permission.mission]?.outcome != .failed {
+      let body = game.bodies.first { $0.physical?.rock == NativeMeasuredExtraction.root }
+      let contact = try? game.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
+        includePlayer: false)
+      FileHandle.standardError.write(
+        Data(
+          "G12 no-permission reason=\(reason) tool=\(game.selectedFlightTool) rootEnergy=\(body?.energy ?? -1) depleted=\(game.commander.miningLedger.isDepleted(NativeMeasuredExtraction.root)) losses=\(state.losses.count) held=\(game.flightTrigger.held) suspended=\(game.workFireSuspended) discharges=\(game.dischargeAudio.events.count) contact=\(String(describing: contact?.hit.target)) selectedRock=\(String(describing: game.informationTargetBody?.physical?.rock)) clock=\(game.commander.flightSimulation.physicalTime)\n"
+            .utf8))
+    }
     #expect(state.extraction == nil && state.captures.isEmpty && state.processing == nil)
     #expect(game.commander.scriptState.instances[state.permission.mission]?.outcome == .failed)
     #expect(

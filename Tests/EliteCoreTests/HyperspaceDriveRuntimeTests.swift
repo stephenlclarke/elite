@@ -7,7 +7,9 @@ private func modularDriveShop() throws -> Game {
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.credits = 1_000_000
-  game.commander.system = try #require(game.systems.first { $0.technology >= 12 }?.id)
+  game.commander.system = try #require(game.systems.first { $0.technology >= 13 }?.id)
+  game.selectedSystem = game.commander.system
+  game.market = MarketItem.at(game.currentSystem)
   try game.commander.prepareEquipment(legacy: false)
   return game
 }

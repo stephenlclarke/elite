@@ -596,7 +596,8 @@ import Testing
   #expect(abs(final.time - 2) < 0.00001)
   await restored.key("0")
   await restored.setControls(Controls())
-  await restored.selectSystem(x: 20, y: 173)
+  let target = try #require(await restored.snapshot().systems.first { $0.id == 7 })
+  await restored.selectSystem(x: Double(target.x), y: Double(target.y))
   #expect(await restored.snapshot().selectedSystem == 7)
   var invalid = Commander()
   invalid.system = -1

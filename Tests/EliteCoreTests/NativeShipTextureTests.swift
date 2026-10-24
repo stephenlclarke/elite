@@ -72,11 +72,25 @@ struct NativeShipTextureTests {
   }
 
   @MainActor @Test func bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes() throws {
-    var game = Game(executive: false)
-    game.screen = .showroom
-    game.commander.shipDisplayStyle = .shadedPanels
     for id in ["SH169", "SH170"] {
+      var game = Game(executive: false)
+      game.commander.shipID = id
+      game.commander.fuel = game.commander.fuelCapacity
+      game.commander.missiles = min(3, game.commander.missileCapacity)
+      try game.commander.prepareEquipment(legacy: false)
+      try #require(game.commander.valid)
+      game.screen = .showroom
+      game.commander.shipDisplayStyle = .shadedPanels
       game.showroom.selection = id
+      game.showroom.compare = false
+      let selected = try #require(game.showroomShip)
+      #expect(
+        FleetCataloguePreview.mode(
+          ship: selected, owner: game.commander.equipmentOwnerID, ownedShip: game.commander.shipID,
+          discovery: game.commander.scriptState.savedFleetDiscovery) == .shaded)
+      #expect(
+        FleetCataloguePreview.mode(
+          ship: selected, owner: nil, ownedShip: "", discovery: nil) == .silhouette)
       for (width, height) in [(512, 518), (1512, 982)] {
         let frame = Display.presentation(game, width: Double(width), height: Double(height))
         let triangles = (frame.worldGraphics + frame.graphics).compactMap {
@@ -84,7 +98,10 @@ struct NativeShipTextureTests {
           if case .textured(let triangle) = graphic { return triangle }
           return nil
         }
-        #expect(!triangles.isEmpty)
+        #expect(
+          !triangles.isEmpty,
+          "Texture ship=\(id) viewport=\(width)x\(height) detail=\(game.showroom.detail) model=\(ShowroomLayout(width: Double(width), height: Double(height), detail: game.showroom.detail).model) selected=\(game.showroomShip?.id ?? "none")"
+        )
         #expect(
           triangles.allSatisfy {
             $0.vertices.allSatisfy { $0.point.x.isFinite && $0.point.y.isFinite }

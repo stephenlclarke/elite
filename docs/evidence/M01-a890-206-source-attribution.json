@@ -1,0 +1,49 @@
+{
+  "issue": 206,
+  "head": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+  "provenAsteroidDelta": {
+    "nextActor": [
+      5,
+      6
+    ],
+    "nextSpawn": [
+      2,
+      3
+    ],
+    "remainingPrintedFlightFields": "identical"
+  },
+  "loadPath": [
+    "Game.swift4325 restoreScriptWorld",
+    "4329 restoreSavedNPCSceneBindings",
+    "4330 rebindNativeStationsAfterLoad"
+  ],
+  "rrsRebind": {
+    "source": "NativeStationRuntime.swift505\u2013562",
+    "allocates": "one spawn for nonempty retained RRS cohort; one actor per retained station",
+    "effects": "new body displayID, physical actor identity and mission spawn; corresponding station ledger binding, flight cursors,nextBodyID; other copied station physical state retained",
+    "noTimeAdvance": true
+  },
+  "boundedSourceMath": {
+    "G0S4": {
+      "government": 6,
+      "LCGsigned": -421125727,
+      "chance": 0.4019490259233862,
+      "waystation": true,
+      "headquarters": false
+    },
+    "G0S7": {
+      "government": 7,
+      "LCGsigned": -1244006822,
+      "chance": 0.21035709092393517,
+      "waystation": true,
+      "headquarters": false
+    }
+  },
+  "npcRestoration": "NPCPersistenceLedger.restoreSceneBindings240\u2013279 restores bindings without actor/spawn allocation; ordinaryNPCrestore excludes EMP hull/pods",
+  "asteroidConfidence": "high:exactoneRRSrebindmatchesbothobserved+1cursors; requirepre-savecohort1andfreshactor/spawnmappingbeforeexpectedcomparison",
+  "empEvidence": "onlycommanderfalse; bodiesnotEvaluated by&&shortcircuit; no snapshots retained",
+  "empConfidence": "conditionalsourcepredictiononly: retainedRRSrows mustrebind, but exactsavedcohortcount/additionalcommanderdeltaunknown",
+  "minimumOracleChange": "derivepre-saveRRScohort and pre-savecursorbase; prove eachnewidentity/displayID/spawn andledgerjoin at knownoldcursor addresses; preservefullflight andfullcommander/bodiescomparisonafteronlythatindependentlyspecifiedprojection. No calling productionrebind onexpected, broadcopyfromactual, clearingbindingsordroppingoracles. No EMP normalization without provingexactdifferences.",
+  "boundedFailureFacts": "onlyonfailedcomparison:before/afterRRScohortcount, nextActor/nextSpawn/nextBodyID, atmost3stationold/newbodyID+actor+spawn+bindingrows; fullEMPstate/alienNativeSalvage/NPCledger/wanted/market/equipment equalitybits, nonRRBodyArrayEquality, first3nonRRSbodydifferenceIDs. Keeporiginalassertionandthrow. Sameplannedcombinedbatchonly.",
+  "execution": "none"
+}

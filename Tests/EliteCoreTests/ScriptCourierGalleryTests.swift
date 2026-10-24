@@ -94,6 +94,11 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
     view = GameView(frame: NSRect(x: 0, y: 0, width: 512, height: 518))
     originalMenu = NSApp?.mainMenu
     var initial = fixture.game(system: origin)
+    initial.commander.shipID = "SH023"
+    initial.commander.fuel = initial.commander.fuelCapacity
+    initial.energy = initial.commander.performance.energy
+    initial.frontShield = initial.commander.shieldCapacity
+    initial.rearShield = initial.commander.rearShieldCapacity
     if physicalDocking { initial.commander.installTargetingComputer(.docking) }
     initial.ensureScriptCalendar(origin: .newCommander)
     initial.viewportWidth = 512

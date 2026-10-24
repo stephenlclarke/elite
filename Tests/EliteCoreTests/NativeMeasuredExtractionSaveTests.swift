@@ -108,98 +108,122 @@ struct NativeMeasuredExtractionSaveTests {
   func normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance(phase: String)
     async throws
   {
-    let f = try NativeMeasuredExtractionFixture()
-    defer { f.files.clean() }
-    let runtime = try await f.runtime()
-    try await f.accept(runtime)
-    if phase != "allocated" {
-      try await f.extract(runtime)
-      try await f.collect(runtime)
-    }
-    if ["processed", "received"].contains(phase) {
-      try await f.renas(runtime)
-      try await f.confirm(runtime, .process)
-    }
-    if phase == "received" { try await f.confirm(runtime, .receive) }
-    let state = try await f.state(runtime)
-    try await runtime.save(to: f.save)
-    let bytes = try Data(contentsOf: f.save)
-    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    let (pristine, _) = try ScriptSaveStore.read(bytes, from: f.save)
-    let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: f.save)
-    let file = directory.appendingPathComponent("missions.json")
-    let original = try Data(contentsOf: file)
-    defer { try? original.write(to: file) }
-    let object = try #require(JSONSerialization.jsonObject(with: original) as? [String: Any])
-    #expect(
-      try measuredReadRehash(
-        object, pointer: pointer, file: file, save: f.save, geometry: pristine.scriptState.geometry)
-        == pristine)
-    var modes = [
-      "source", "leaf", "slots", "owner", "original", "unknown", "older-normal", "older-alien",
-    ]
-    if phase != "allocated" { modes += ["witness", "capture", "fragment", "copied"] }
-    if ["processed", "received"].contains(phase) { modes += ["mass", "input", "product"] }
-    if phase == "received" { modes += ["receiver", "raw-delivery"] }
-    for mode in modes {
-      var root = object
-      var pairs = try #require(root["instances"] as? [Any])
-      let index = try #require(
-        stride(from: 1, to: pairs.count, by: 2).first {
-          (pairs[$0] as? [String: Any])?["id"] as? String == state.permission.mission.uuidString
-        })
-      var instance = try #require(pairs[index] as? [String: Any])
-      var leaf = try #require(instance["savedMeasuredExtraction"] as? [String: Any])
-      var source = try #require(root["savedMeasuredExtractionSource"] as? [String: Any])
-      if mode == "source" { root.removeValue(forKey: "savedMeasuredExtractionSource") }
-      if mode == "leaf" { instance.removeValue(forKey: "savedMeasuredExtraction") }
-      if mode == "slots" { instance["payloads"] = ["input-0": 24] }
-      if mode == "owner" { source["id"] = UUID().uuidString }
-      if mode == "original" {
-        var originals = try #require(source["originals"] as? [[String: Any]])
-        originals[0]["id"] = UUID().uuidString
-        source["originals"] = originals
+    var stage = "fixture"
+    do {
+      let f = try NativeMeasuredExtractionFixture()
+      defer { f.files.clean() }
+      stage = "runtime"
+      let runtime = try await f.runtime()
+      stage = "accept"
+      try await f.accept(runtime)
+      if phase != "allocated" {
+        stage = "extract"
+        try await f.extract(runtime)
+        stage = "collect"
+        try await f.collect(runtime)
       }
-      if mode == "unknown" { leaf["refined"] = true }
-      if mode == "witness" { leaf.removeValue(forKey: "extraction") }
-      if mode == "capture" { leaf["captures"] = [] }
-      if mode == "fragment" || mode == "copied" {
-        var captures = try #require(leaf["captures"] as? [[String: Any]])
-        if mode == "fragment" {
-          captures[0]["original"] = UUID().uuidString
-        } else {
-          captures[0]["permission"] = NativeIdentifiedSalvage.stateID
-        }
-        leaf["captures"] = captures
+      if ["processed", "received"].contains(phase) {
+        stage = "travel"
+        try await f.renas(runtime)
+        stage = "process"
+        try await f.confirm(runtime, .process)
       }
-      if ["mass", "input", "product"].contains(mode) {
-        var processing = try #require(leaf["processing"] as? [String: Any])
-        var products = try #require(processing["products"] as? [[String: Any]])
-        if mode == "mass" { products[0]["massKg"] = 2000 }
-        if mode == "input" { products[0]["input"] = UUID().uuidString }
-        if mode == "product" { products[0]["id"] = products[1]["id"] }
-        processing["products"] = products
-        leaf["processing"] = processing
+      if phase == "received" {
+        stage = "receive"
+        try await f.confirm(runtime, .receive)
       }
-      if mode == "receiver" || mode == "raw-delivery" {
-        var receipt = try #require(leaf["reception"] as? [String: Any])
-        if mode == "receiver" {
-          let permission = try #require(leaf["permission"] as? [String: Any])
-          receipt["dock"] = permission["dock"]
-        } else {
-          receipt["products"] = []
-        }
-        leaf["reception"] = receipt
-      }
-      if mode != "source" { root["savedMeasuredExtractionSource"] = source }
-      if mode != "leaf" { instance["savedMeasuredExtraction"] = leaf }
-      pairs[index] = instance
-      root["instances"] = pairs
-      #expect(throws: (any Error).self) {
+      let state = try await f.state(runtime)
+      stage = "save"
+      try await runtime.save(to: f.save)
+      let bytes = try Data(contentsOf: f.save)
+      let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+      stage = "pristine-read"
+      let (pristine, _) = try ScriptSaveStore.read(bytes, from: f.save)
+      let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: f.save)
+      let file = directory.appendingPathComponent("missions.json")
+      let original = try Data(contentsOf: file)
+      defer { try? original.write(to: file) }
+      let object = try #require(JSONSerialization.jsonObject(with: original) as? [String: Any])
+      stage = "positive-rehash"
+      #expect(
         try measuredReadRehash(
-          root, pointer: pointer, file: file, save: f.save, geometry: pristine.scriptState.geometry,
-          schema: mode == "older-normal" ? 53 : mode == "older-alien" ? 54 : 55)
+          object, pointer: pointer, file: file, save: f.save,
+          geometry: pristine.scriptState.geometry, diagnostic: pristine)
+          == pristine)
+      var modes = [
+        "source", "leaf", "slots", "owner", "original", "unknown", "older-normal", "older-alien",
+      ]
+      if phase != "allocated" { modes += ["witness", "capture", "fragment", "copied"] }
+      if ["processed", "received"].contains(phase) { modes += ["mass", "input", "product"] }
+      if phase == "received" { modes += ["receiver", "raw-delivery"] }
+      for mode in modes {
+        stage = "forgery-" + mode
+        var root = object
+        var pairs = try #require(root["instances"] as? [Any])
+        let index = try #require(
+          stride(from: 1, to: pairs.count, by: 2).first {
+            (pairs[$0] as? [String: Any])?["id"] as? String == state.permission.mission.uuidString
+          })
+        var instance = try #require(pairs[index] as? [String: Any])
+        var leaf = try #require(instance["savedMeasuredExtraction"] as? [String: Any])
+        var source = try #require(root["savedMeasuredExtractionSource"] as? [String: Any])
+        if mode == "source" { root.removeValue(forKey: "savedMeasuredExtractionSource") }
+        if mode == "leaf" { instance.removeValue(forKey: "savedMeasuredExtraction") }
+        if mode == "slots" { instance["payloads"] = ["input-0": 24] }
+        if mode == "owner" { source["id"] = UUID().uuidString }
+        if mode == "original" {
+          var originals = try #require(source["originals"] as? [[String: Any]])
+          originals[0]["id"] = UUID().uuidString
+          source["originals"] = originals
+        }
+        if mode == "unknown" { leaf["refined"] = true }
+        if mode == "witness" { leaf.removeValue(forKey: "extraction") }
+        if mode == "capture" { leaf["captures"] = [] }
+        if mode == "fragment" || mode == "copied" {
+          var captures = try #require(leaf["captures"] as? [[String: Any]])
+          if mode == "fragment" {
+            captures[0]["original"] = UUID().uuidString
+          } else {
+            captures[0]["permission"] = NativeIdentifiedSalvage.stateID
+          }
+          leaf["captures"] = captures
+        }
+        if ["mass", "input", "product"].contains(mode) {
+          var processing = try #require(leaf["processing"] as? [String: Any])
+          var products = try #require(processing["products"] as? [[String: Any]])
+          if mode == "mass" { products[0]["massKg"] = 2000 }
+          if mode == "input" { products[0]["input"] = UUID().uuidString }
+          if mode == "product" { products[0]["id"] = products[1]["id"] }
+          processing["products"] = products
+          leaf["processing"] = processing
+        }
+        if mode == "receiver" || mode == "raw-delivery" {
+          var receipt = try #require(leaf["reception"] as? [String: Any])
+          if mode == "receiver" {
+            let permission = try #require(leaf["permission"] as? [String: Any])
+            receipt["dock"] = permission["dock"]
+          } else {
+            receipt["products"] = []
+          }
+          leaf["reception"] = receipt
+        }
+        if mode != "source" { root["savedMeasuredExtractionSource"] = source }
+        if mode != "leaf" { instance["savedMeasuredExtraction"] = leaf }
+        pairs[index] = instance
+        root["instances"] = pairs
+        #expect(throws: (any Error).self) {
+          try measuredReadRehash(
+            root, pointer: pointer, file: file, save: f.save,
+            geometry: pristine.scriptState.geometry,
+            schema: mode == "older-normal" ? 53 : mode == "older-alien" ? 54 : 55)
+        }
       }
+    } catch {
+      FileHandle.standardError.write(
+        Data(
+          "G12 positive phase=\(phase) stage=\(stage) error=\(String(reflecting: type(of: error)))\n"
+            .utf8))
+      throw error
     }
   }
 }
@@ -214,7 +238,7 @@ private func measuredAlien(_ game: inout Game) throws {
 
 private func measuredReadRehash(
   _ object: [String: Any], pointer: ScriptSavePointer, file: URL,
-  save: URL, geometry: [String: ShipDesign], schema: Int? = nil
+  save: URL, geometry: [String: ShipDesign], schema: Int? = nil, diagnostic: Commander? = nil
 ) throws -> Commander {
   var root = object
   let hadGeometry = root.removeValue(forKey: "savedGeometry") != nil
@@ -233,7 +257,40 @@ private func measuredReadRehash(
     format: pointer.format, schemaVersion: schema ?? pointer.schemaVersion,
     generation: pointer.generation, hashes: hashes, scope: pointer.scope,
     valueCodec: pointer.valueCodec)
-  return try ScriptSaveStore.read(JSONEncoder().encode(changed), from: save).0
+  do {
+    return try ScriptSaveStore.read(JSONEncoder().encode(changed), from: save).0
+  } catch {
+    if let diagnostic { measuredPositiveFailure(bytes, pointer: changed, original: diagnostic) }
+    throw error
+  }
+}
+
+private func measuredPositiveFailure(_ bytes: Data, pointer: ScriptSavePointer, original: Commander)
+{
+  let rawFieldsPass: Bool
+  do {
+    try NativeMeasuredExtractionSave.validateFields(
+      bytes, part: .missions, schema: pointer.schemaVersion)
+    rawFieldsPass = true
+  } catch { rawFieldsPass = false }
+  let decoder = ScriptValueStorage.decoder(typed: pointer.valueCodec == ScriptValueStorage.codec)
+  decoder.userInfo[LegacyMissionEncounterProvenance.storageKey] = true
+  let decoded = try? decoder.decode(ScriptEngineState.self, from: bytes)
+  var facts = "rawFieldsPass=\(rawFieldsPass) typedDecodePass=\(decoded != nil)"
+  if let decoded {
+    let leaf = decoded.instances.values.compactMap(\.savedMeasuredExtraction).first
+    let witnessMatches = leaf?.extraction.map {
+      (try? NativeMeasuredExtraction.extractionAuthority($0)) == $0.authority
+    }
+    let firstBadIntake = leaf?.captures.firstIndex {
+      (try? NativeMeasuredExtraction.intakeAuthority($0)) != $0.authority
+    }
+    var candidate = original
+    candidate.scriptState = decoded
+    facts +=
+      " sourceStateEqual=\(decoded.savedMeasuredExtractionSource == original.scriptState.savedMeasuredExtractionSource) witnessAuthorityMatch=\(String(describing: witnessMatches)) firstBadIntakeAuthorityIndex=\(String(describing: firstBadIntake)) measuredClaimsPass=\(NativeMeasuredExtractionSave.validateClaims(candidate, requireRecordedLoss: true))"
+  }
+  FileHandle.standardError.write(Data("G12 positive-rehash \(facts)\n".utf8))
 }
 
 extension NativeMeasuredExtractionSaveTests {

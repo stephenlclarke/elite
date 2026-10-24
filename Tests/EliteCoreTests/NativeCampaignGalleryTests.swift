@@ -151,6 +151,7 @@ private final class CampaignGalleryInputHarness {
     view = GameView(frame: NSRect(x: 0, y: 0, width: 512, height: 518))
     originalMenu = NSApp?.mainMenu
     var game = fixture.game()
+    if retryFault { game.commander.credits = 0 }
     if contractRoot {
       let campaign = try fixture.startContractCampaign(&game)
       first = (campaign.root, campaign.child)

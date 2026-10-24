@@ -27,7 +27,10 @@ private func nativeEMPBytes(_ image: CGImage) throws -> Data {
 
 @MainActor
 private func captureNativeEMPView(_ view: GameView) throws -> (image: CGImage, seconds: Double) {
-  try #require(view.bounds.width == 768 && view.bounds.height == 768)
+  try #require(
+    view.bounds.width == 768 && view.bounds.height == 768,
+    "EMP content bounds=\(view.bounds) windowContent=\(String(describing: view.window?.contentLayoutRect)) screen=\(String(describing: view.window?.screen?.visibleFrame))"
+  )
   let context = try #require(
     CGContext(
       data: nil, width: 768, height: 768, bitsPerComponent: 8, bytesPerRow: 768 * 4,

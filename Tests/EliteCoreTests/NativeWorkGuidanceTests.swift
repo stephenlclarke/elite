@@ -18,6 +18,7 @@ extension GameRuntime {
 private func nativeWorkScene(mining: Bool = true) throws -> Game {
   var game = Game(executive: false)
   game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
   try game.commander.prepareEquipment(legacy: false)
   for (name, slot) in [
     ("Targeting: Military", ComponentFittingSlot.targetingCore),

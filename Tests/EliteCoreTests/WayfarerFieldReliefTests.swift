@@ -173,8 +173,8 @@ struct WayfarerFieldReliefTests {
   @Test func currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf() async throws {
     #expect(WayfarerFieldReliefSave.version == 57 && WayfarerFieldReliefSave.alienVersion == 58)
     #expect(!WayfarerFieldReliefSave.contains(55) && !WayfarerFieldReliefSave.contains(56))
-    #expect(WayfarerFieldReliefSave.lowerSchema(57) == 53)
-    #expect(WayfarerFieldReliefSave.lowerSchema(58) == 54)
+    #expect(WayfarerFieldReliefSave.lowerSchema(57) == 55)
+    #expect(WayfarerFieldReliefSave.lowerSchema(58) == 56)
     let f = try WayfarerFieldReliefFixture()
     defer { f.native.files.clean() }
     let runtime = try await f.runtime()

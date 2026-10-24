@@ -81,6 +81,23 @@ struct AsteroidPresenceRuntimeTests {
     game.ensureScriptCalendar(origin: .inactiveLegacyMigration)
     game.rebuildMiningFields()
     let original = game.commander
+    let retainedStations = game.bodies.filter { $0.nativeStationIdentity != nil }
+    try #require(retainedStations.count == 1)
+    let retainedStation = try #require(retainedStations.first?.nativeStationIdentity)
+    let expectedBodyID = game.nextBodyID
+    let expectedActor = ActorIdentity(
+      system: game.systemIdentity, visit: original.flightSimulation.visit,
+      entity: original.flightSimulation.nextActor)
+    let expectedSpawn = SpawnIdentity(
+      system: game.systemIdentity, visit: original.flightSimulation.visit,
+      sequence: original.flightSimulation.nextSpawn, member: 0, producer: .mission)
+    var expectedFlight = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(original.flightSimulation))
+        as? [String: Any])
+    expectedFlight["nextActor"] = original.flightSimulation.nextActor + 1
+    expectedFlight["nextSpawn"] = original.flightSimulation.nextSpawn + 1
+    let reboundFlight = try JSONDecoder().decode(
+      FlightSimulationState.self, from: JSONSerialization.data(withJSONObject: expectedFlight))
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
     let file = directory.appendingPathComponent("commander.json")
@@ -95,7 +112,15 @@ struct AsteroidPresenceRuntimeTests {
     #expect(migrated.requiredPresencePinSystems == ledger.requiredPresencePinSystems)
     #expect(migrated.remainingEnergy(for: rock) == ledger.remainingEnergy(for: rock))
     #expect(!migrated.ringPresence(system: game.currentSystem, galaxy: 0))
-    #expect(restored.commander.flightSimulation == original.flightSimulation)
+    #expect(restored.commander.flightSimulation == reboundFlight)
+    let rebound = try #require(
+      restored.bodies.first { $0.nativeStationIdentity == retainedStation })
+    #expect(rebound.id == expectedBodyID && rebound.physical?.identity == expectedActor)
+    #expect(rebound.physical?.spawnIdentity == expectedSpawn)
+    #expect(
+      restored.commander.nativeStations?.ledger.records.first {
+        $0.identity == retainedStation
+      }?.binding == .init(actor: expectedActor, bodyID: expectedBodyID))
     #expect(restored.commander.cargo == original.cargo && restored.commander.fuel == original.fuel)
     #expect(restored.miningFields.allSatisfy { $0.rocks.allSatisfy { $0.identity.field < 4 } })
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: file))

@@ -6,20 +6,24 @@ import Testing
 struct NativeStationIntegrationTests {
   @Test func compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters() throws
   {
-    let expected = [47, 47, 48, 32, 48, 47, 49, 46]
-    #expect(NativeStationSource.bindings.count == 372)
+    // Independently expanded from authenticated original-world government IDs and RRS LCG.
+    let expected = [45, 49, 51, 44, 46, 52, 42, 45]
+    let headquartersAlsoHaveWaystation = [false, false, false, true, false, false, false, false]
+    #expect(NativeStationSource.bindings.count == 382)
     for galaxy in 0..<8 {
       let bindings = NativeStationSource.bindings.filter { $0.system.galaxy == galaxy }
       #expect(bindings.filter { $0.kind == .waystation }.count == expected[galaxy])
       let hq = try #require(bindings.first { $0.kind == .headquarters })
       #expect(hq.system.system == [237, 98, 5, 149, 35, 213, 66, 7][galaxy])
-      let waystation = try #require(
-        bindings.first { $0.system == hq.system && $0.kind == .waystation })
-      #expect(waystation.key != hq.key)
-      #expect(waystation.descriptor.boardOrigin == .source)
+      let waystation = bindings.first { $0.system == hq.system && $0.kind == .waystation }
+      #expect((waystation != nil) == headquartersAlsoHaveWaystation[galaxy])
+      if let waystation { #expect(waystation.key != hq.key) }
       #expect(hq.descriptor.boardOrigin == .projectExtension)
-      #expect(waystation.rotationRate == 0.02 && hq.rotationRate == 0)
-      #expect(waystation.technology == 7 && hq.technology == 0)
+      #expect(hq.rotationRate == 0 && hq.technology == 0)
+      #expect(
+        bindings.filter { $0.kind == .waystation }.allSatisfy {
+          $0.descriptor.boardOrigin == .source && $0.rotationRate == 0.02 && $0.technology == 7
+        })
       #expect(!bindings.contains { $0.system.system == Plugh.systemID })
     }
   }
@@ -27,7 +31,7 @@ struct NativeStationIntegrationTests {
   @Test func nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority() throws {
     let owner = UUID()
     let world = try NativeStationWorld(owner: owner)
-    #expect(world.valid && world.ledger.world == owner && world.ledger.records.count == 372)
+    #expect(world.valid && world.ledger.world == owner && world.ledger.records.count == 382)
     #expect(world.ledger.currentDock == nil && world.ledger.nextDockSequence == 1)
     #expect(world.ledger.records.allSatisfy { $0.binding == nil && $0.tombstone == nil })
     let bytes = try JSONEncoder().encode(world)
@@ -369,6 +373,11 @@ private func verifyNativeStationRecharge(_ game: inout Game, guided: Bool) throw
   game.fireLaser()
   #expect(game.bodies.first { $0.id == hq.id }?.energy == hq.energy - LaserKind.naval.damage)
   if guided {
+    // This controller/recharge case uses the genuine legacy cluster policy; its HQ world
+    // need not have a newly generated ring in the authenticated original catalogue.
+    game.commander.miningLedger = .legacyUnworked()
+    try game.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+    game.rebuildMiningFields()
     let rock = try #require(game.miningFields.first?.rocks.first)
     var pose = ShipPose()
     pose.position = rock.position - Vector3(0, 0, 500)
@@ -558,7 +567,7 @@ private func verifyOriginalMainArrival(
   #expect(
     receipt.station.resource == Game.worldResourceIdentity("main-station-v1:main-orbital:3:149"))
   #expect(game.commander.nativeStations?.ledger.currentDock == nil)
-  #expect(game.commander.nativeStations?.ledger.records.count == 372)
+  #expect(game.commander.nativeStations?.ledger.records.count == 382)
   #expect(game.nativeMainStationDockEvidenceIsCurrent)
   let context = try #require(game.nativeMainStationArrivalContext(for: receipt.station))
   #expect(game.acceptsNativeMainStationArrivalContext(context))

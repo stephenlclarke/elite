@@ -297,8 +297,10 @@ extension StationSecurityTests {
 extension StationSecurityTests {
   @Test func actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource() throws {
     var game = Game(executive: false)
-    game.commander.system = 27
-    game.selectedSystem = 27
+    let anarchy = try #require(game.systems.first { $0.government == 0 })
+    game.commander.system = anarchy.id
+    game.selectedSystem = anarchy.id
+    game.market = MarketItem.at(game.currentSystem)
     game.screen = .status
     try #require(game.currentSystem.government == 0 && game.commander.legal == 0)
     game.launch()

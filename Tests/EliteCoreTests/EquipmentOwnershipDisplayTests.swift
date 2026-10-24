@@ -14,7 +14,9 @@ private func ownershipDisplayGame(shipID: String = "SH023") throws -> Game {
   try #require((0...game.commander.fuelCapacity).contains(game.commander.fuel))
   try #require((0...game.commander.missileCapacity).contains(game.commander.missiles))
   game.commander.credits = 1_000_000
-  game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
+  game.commander.system = try #require(game.systems.first { $0.technology >= 11 }?.id)
+  game.selectedSystem = game.commander.system
+  game.market = MarketItem.at(game.currentSystem)
   var serial = 100
   try game.commander.initializeEquipment(
     owner: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
