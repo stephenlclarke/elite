@@ -13026,6 +13026,34 @@
       "source_reviewer": "G4",
       "unit_qualification": "pending",
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-pr222-unit-qualified",
+      "timestamp": "2026-10-24T14:49:46.947246+00:00",
+      "pr": 222,
+      "head": "627756db2bd283d99abaf03752dbec98a11441d0",
+      "reviewer": "MBA",
+      "source_result": "CLEAR",
+      "unit_run": 40102187272,
+      "unit_qualification": "531 unique methods PASS;529 retained plus2 new; zero failures/errors/skips/missing/extra/duplicates",
+      "receipt": "/tmp/elite-mba-pr222-6277-unit-verification.json",
+      "build_seconds": 755.53,
+      "test_seconds": 166.072,
+      "merged": false,
+      "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-m01-completed-save-reopen-qualified",
+      "timestamp": "2026-10-24T14:49:46.947246+00:00",
+      "milestone": "M01",
+      "head": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+      "reviewer": "MBA",
+      "criterion": "Completed courier and freight saves reopen with rewarded terminal state retained",
+      "receipt": "/tmp/elite-mba-m01-completed-save-reopen-6552-verification.json",
+      "existing_execution_reused": true,
+      "new_execution": false,
+      "limits": "Freight replay refusal asserted before final reload; these methods do not explicitly test post-reopen replay",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
