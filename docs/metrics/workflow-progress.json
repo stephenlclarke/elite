@@ -10457,7 +10457,7 @@
       "event": "Terminal quality artifact establishes coverage-test SIGBUS, incomplete suite and 62 assertion-bearing methods",
       "pr_head": "ae97d337cb9cf25b58322a21946e9ece297dd60a",
       "synthetic_checkout_prefix": "2ed76d96",
-      "source_input_equivalence": "pending",
+      "source_input_equivalence": "verified_zero_hash_mismatches",
       "run": 40043514103,
       "make_ci_exit_code": 2,
       "make_ci_wall_seconds": 4856.494,
@@ -10475,6 +10475,25 @@
       "sanitizer_and_leak_qualification": false,
       "reviewer": "MBA",
       "repair_owner": "G1",
+      "m01_complete": false,
+      "usable_delivery": false,
+      "source_comparison_basis": "retained source-before.json actual tracked source input hashes",
+      "completed_contract_reopen_individual_passes_source_qualified": true
+    },
+    {
+      "at": "2026-10-24T01:40:51.233145+00:00",
+      "checkpoint_key": "20261024-m01-grouped-failure-assignments177179",
+      "event": "Three additional source-backed release failure groups assigned in the same packet",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issues": {
+        "177": "fixture fuel and authenticated market validity",
+        "178": "compatible recovered-fit and navigation hulls",
+        "179": "WantedCareer binding in saved Commander comparisons"
+      },
+      "status": "assigned_and_preparing",
+      "unit_result": "pending",
+      "terminal_62_method_inventory_retained": true,
       "m01_complete": false,
       "usable_delivery": false
     }
