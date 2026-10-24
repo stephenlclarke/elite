@@ -11231,6 +11231,23 @@
       "terminal_review": "complete",
       "terminal_review_pr_comment": 6381457095,
       "issue185_disposition_comment": 6381457367
+    },
+    {
+      "at": "2026-10-24T07:32:19.993251+00:00",
+      "checkpoint_key": "20261024-m01-native-metal-execution-scope-approved",
+      "event": "Separate trusted physical native execution arrangement approved for mandatory GPU quality evidence",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issue": 211,
+      "work_packet": "single_M01_193_213_correction",
+      "proposed_runner_label": "elite-native",
+      "existing_vm_runner_unchanged": true,
+      "registration_and_jobs": "pending_actual_patch_review",
+      "capability_proof": "existing_hard_GPU_methods_in_combined_affected_batch",
+      "new_probes_authorized": false,
+      "required_quality_weakened": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
