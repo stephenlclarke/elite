@@ -11475,6 +11475,23 @@
       ],
       "both_actual_instance_equality_recipe_gates_retained": true,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T08:00:50.711320+00:00",
+      "checkpoint_key": "20261024-m01-registrar-same-hunk-followups-assigned",
+      "event": "Registrar corrected-hunk review identified immutable marker, absent-root and authorization-directory permission follow-ups",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "same_prior_finding": "registrar_lifecycle_and_provenance",
+      "authorized_corrections": [
+        "validate_reuse_readonly_marker_without_rewrite_and_reject_symlink",
+        "create_owned_physical_home_root_before_runner",
+        "reject_group_world_writable_authorization_directory"
+      ],
+      "fake_regressions_assigned": true,
+      "new_work_packet": false,
+      "actual_registration_or_execution_authorized": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
