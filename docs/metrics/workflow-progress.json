@@ -12557,6 +12557,18 @@
       "commits": 0,
       "reruns": 0,
       "m01_merge_hold": true
+    },
+    {
+      "at": "2026-10-24T11:17:34.946145+00:00",
+      "checkpoint_key": "20261024-parallel-sync-noop-1116-1117",
+      "upstream": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+      "m02_sync": "2026-10-24T11:16:19Z",
+      "m03_sync": "2026-10-24T11:17:21Z",
+      "conflicts": false,
+      "rebases": 0,
+      "commits": 0,
+      "reruns": 0,
+      "m01_merge_hold": true
     }
   ],
   "two_developer_phase": {
