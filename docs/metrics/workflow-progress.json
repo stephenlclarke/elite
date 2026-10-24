@@ -11441,6 +11441,26 @@
       "usable_delivery": false,
       "makefile_source_correction_review": "clear",
       "make_graph_regression_followup": "wrong_expected_module_token_assigned_for_source_correction"
+    },
+    {
+      "at": "2026-10-24T07:59:04.279989+00:00",
+      "checkpoint_key": "20261024-m01-original-combined-review-complete-corrections-pending",
+      "event": "Original combined source review completed; only reported corrective hunks pending",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "reviewed_patch_sha256": "6015ed48d60c73bd3f02cb4f609914b63ce6cf04c5077ae52321736f34ea7298",
+      "swift_fixture_hunks_reviewed": 24,
+      "additional_findings_beyond_reported": 0,
+      "pending_corrections": [
+        "make_graph_expected_token",
+        "registrar_immutable_prepare_register_retry",
+        "reused_installation_archive_provenance"
+      ],
+      "makefile_wiring_correction_source_review": "clear",
+      "unaffected_review_retained": true,
+      "final_composed_review": "pending_corrected_hunks_and_manifest",
+      "unit_execution": "none",
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
