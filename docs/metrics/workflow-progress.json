@@ -11402,6 +11402,25 @@
       "unaffected_review_retained": true,
       "execution_authorized": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:56:05.550301+00:00",
+      "checkpoint_key": "20261024-m01-makefile-review-fix-applied",
+      "event": "Unit target review correction and make-graph regression applied; exact two-file delta routed for review",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "changed_paths": [
+        "Makefile",
+        "Tools/CI/test_native_runner.py"
+      ],
+      "current_hashes": {
+        "Makefile": "257e01aa412eaf573be5e5ed799690d9631d88ae7a6f4bb84975b1e491e2c326",
+        "Tools/CI/test_native_runner.py": "19972e4c1d69d008c6eeec6c00de944f62d71a8469d3b0988967653c46ffe131"
+      },
+      "other_original_manifest_files_unchanged": true,
+      "actual_review": "pending_updated_hunks",
+      "unit_execution": "none",
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
