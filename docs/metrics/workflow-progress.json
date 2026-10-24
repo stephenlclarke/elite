@@ -12888,6 +12888,16 @@
       "new_commits": 0,
       "tests_rerun": 0,
       "merge_hold": true
+    },
+    {
+      "checkpoint_key": "20261024-researcher-final-game-reference-assignment",
+      "timestamp": "2026-10-24T14:03:22.136105+00:00",
+      "owner": "Mission Researcher",
+      "task": "Separate intended-final-game reference and existing art, new folder, eventual reviewed main publication",
+      "implementation_authorized": false,
+      "native_execution_authorized": false,
+      "counts_as_gameplay_delivery": false,
+      "m01_candidate_preserved": true
     }
   ],
   "two_developer_phase": {
