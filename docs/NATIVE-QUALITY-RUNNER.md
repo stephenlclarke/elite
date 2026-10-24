@@ -8,6 +8,8 @@ The physical runner uses the separate `elite-native` label and dedicated `~/Libr
 
 Workflow routing is not the security boundary. Before registration, `Tools/CI/prepare_native_runner.py` copies the reviewed guard outside both the runner application and checkout, and writes an owned read-only policy pinning the exact approved head and compiler/SDK identities. The runner's own `.env` installs its pre-job hook. The hook validates immutable event metadata before any workflow step or checkout and publishes an exact-head attestation. A rejected hook fails the job; `continue-on-error` cannot override it. [GitHub's pre-job hook contract](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/run-scripts) describes this ordering and failure behavior.
 
+The hook and its immutable authorization files live under `~/Library/EliteNativeAuthorization/<head>`, outside the runner and checkout. Actions dispatches the hook through a shell, so preparation refuses whitespace in that hook path. The runner installation can retain its existing `Application Support` location; arguments inside the generated hook remain shell-quoted.
+
 The workflow also routes untrusted events to a hosted runner and fails before checkout. Such failures or missing physical capacity remain failed or pending quality checks; they never count as a qualified pass. Checkout has read-only repository permissions and does not persist credentials. A second check validates the actual assigned checkout and confines the incremental cache to the dedicated owned workspace. The original required check name, coverage threshold, unfiltered tests, sanitizers, leak check and committed-main-only SonarQube analysis remain intact.
 
 ## Preparing one approved job

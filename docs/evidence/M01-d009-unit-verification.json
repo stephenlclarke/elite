@@ -1,0 +1,42 @@
+{
+  "run": 40081066612,
+  "sourceCommit": "d0099a77199bf5586062f0a22a7ef44439e3d8de",
+  "sourceMatchesRunAndResult": true,
+  "maintainedSelectorMethods": 524,
+  "reportedCases": 524,
+  "uniqueCases": 524,
+  "missing": [],
+  "extra": [],
+  "duplicates": [],
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "suiteCounters": [
+    {
+      "name": "TestResults",
+      "errors": "0",
+      "tests": "524",
+      "failures": "0",
+      "skipped": "0",
+      "time": "73.717205333"
+    }
+  ],
+  "commandMatchesMaintainedSelector": true,
+  "resultStatus": "passed",
+  "exitCode": 0,
+  "buildSeconds": 81.23,
+  "suiteSeconds": 73.717,
+  "hashes": {
+    "/tmp/elite-mba-d009-unit40081066612/result.json": "e20575e5ad43fead50318b98e524dad9672b4d646ec4045522d269ccd9dc08b0",
+    "/tmp/elite-mba-d009-unit40081066612/tests-swift-testing.xml": "c5ca800e85e9bc4807cbc489bbbabd1d00852ffd580c1dcf583d0e567b1f6887",
+    "/tmp/elite-mba-d009-unit40081066612/output.log": "5301af9b8e2ef0c69268dd4da98cf981ee8c40b124dd6cc1d1694a2217e3ee0b"
+  },
+  "artifact": {
+    "id": 12555735469,
+    "bytes": 74612,
+    "digest": "sha256:d78fd79110a28902b9dede6a31e4b2fcd6015c1af7fa8f8572d2098c32a5af1f",
+    "soleDownload": true,
+    "localPath": "/tmp/elite-mba-d009-unit40081066612"
+  },
+  "limitation": "Artifact identifies published d009 commit and exact maintained524 selection; no independent complete build-input hashmanifest. Published source composition verified separately. IsolatedunitPASS is not fullquality/M01/releasePASS. No rerun/execution by reviewer."
+}

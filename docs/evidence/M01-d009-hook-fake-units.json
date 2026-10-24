@@ -1,0 +1,26 @@
+{
+  "base": "d0099a77199bf5586062f0a22a7ef44439e3d8de",
+  "patch_sha256": "85e9d04dfa24a5f74680bff452562af1ef273d020277b230dd82cc5136229dcf",
+  "files": {
+    "Tools/CI/prepare_native_runner.py": "770927a3735d6cdbc67ea434077bc9921b7453b59b51deb7887002e62d931bbc",
+    "Tools/CI/test_native_runner.py": "76bdee7e337d794d2eed3b8cf35bdc1a049e7499cebeb43ce32fc092985fe243",
+    "docs/ISSUE-211-a890-quality.md": "0d7f7786da33ea3af3d29f1f8f770a8856dc63d08532e0c7fc4b0f49dea4e6fb",
+    "docs/NATIVE-QUALITY-RUNNER.md": "195adc1a9ff4006c2e5d0c71471a31a5ff36b7fb5d75cfce5df37a1896c3405f",
+    "docs/PR-211-a890-quality.md": "128f155655380280a035ade5fb6a515996cb6a800ace3c2eb0728d9ec62e94e2"
+  },
+  "command": [
+    "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "Tools/CI",
+    "-p",
+    "test_native_runner.py"
+  ],
+  "python": "3.12.14 (main, Aug 12 2026, 13:57:54) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "exit_code": 0,
+  "wall_seconds": 0.6261749579571187,
+  "log_sha256": "9c9b35703dbf8014175712f47b61c3061c7ce7d7dfc2be16a42985fd648525eb",
+  "scope": "Fake authorization/provisioning only; generated hook executes a no-op fixture guard; no real registration or game target."
+}

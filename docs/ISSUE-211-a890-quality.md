@@ -6,7 +6,7 @@ Required quality run [40062040085](https://github.com/stephenlclarke/elite/actio
 
 ## Bounded correction and preserved behavior
 
-The hard Metal tests pass on the physical Mac. The reviewed ephemeral native-runner arrangement keeps the exact-head host-owned pre-job hook, trusted repository/actor checks, safe immutable installation reuse and all required quality gates. Fourteen fake authorization/provisioning tests pass. Preparation uses Python 3.12 or later; Apple Python 3.9 cannot run the safe extraction API. No runner registration, full quality pass or release acceptance is implied by the focused GPU evidence.
+The hard Metal tests pass on the physical Mac. The reviewed ephemeral native-runner arrangement keeps the exact-head host-owned pre-job hook, trusted repository/actor checks, safe immutable installation reuse and all required quality gates. Fifteen fake authorization/provisioning tests pass, including the spaced-installation hook-dispatch regression. Preparation uses Python 3.12 or later; Apple Python 3.9 cannot run the safe extraction API. No runner registration, full quality pass or release acceptance is implied by the focused GPU evidence.
 
 This is one cause group in the single M01 correction packet, not a separate execution or review gate. Confirmed fixture changes explicitly establish their intended hull stock, cash, shop eligibility, authored world or codec envelope. The corrections retain their original behavioral assertions and bounded failure-only facts; the retained receipts establish their actual causes and scoped results. The physical runner arrangement retains the hard GPU assertions and every required quality command; [its authorization design](NATIVE-QUALITY-RUNNER.md) keeps untrusted events and unapproved heads out of native execution.
 
@@ -18,6 +18,10 @@ Affected methods:
 ## Validation and compatibility
 
 The combined correction packet has independent source reviews and scoped executed results. Every original failing method (55 unique methods from 99 issue records) now has an individual passing result, with 12 additional direct consumers retained across the bounded follow-ups. This is a reconciled set of scoped passes, not a fresh aggregate full-suite run. The 14 native-runner fake units and both hard GPU methods also pass. The [combined focused receipt](evidence/M01-bb85-focused-qualification.json), [independent retained inventory](evidence/M01-bb85-retained-qualification-inventory.json) and [last four-phase save result](evidence/M01-bb85-terminal-verification.json) preserve source identity and limits. Final published-head checks, full `make ci`, committed-main SonarQube and release acceptance remain required. No issue closure or full quality/release pass is claimed.
+
+## Published native-runner setup correction
+
+Published quality attempt 1 failed closed on the hosted runner before checkout. Attempt 2 reached the physical runner but Actions split the outer hook-file path at `Application Support`, also before checkout or tests. The generator now uses an owned whitespace-free authorization root, keeps inner argument quoting and refuses an unsafe hook path. The fake lifecycle fixture uses a spaced installation root and exercises the same outer shell dispatch; it never starts the game or registers a real runner. All 15 fake methods pass (0.570 seconds; 0.626 seconds wall time). The [focused receipt](evidence/M01-d009-hook-fake-units.json) identifies the exact reviewed patch and fake-only scope. The published d009 maintained selection also has an [independently verified 524-method pass](evidence/M01-d009-unit-verification.json). Required full quality remains pending.
 
 ## Links and remaining risks
 

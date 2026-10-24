@@ -198,7 +198,8 @@ class ImmutablePreparationTests(unittest.TestCase):
         stack = ExitStack()
         temporary = stack.enter_context(tempfile.TemporaryDirectory())
         fixture = Path(temporary)
-        home = fixture / "EliteCI"
+        home = fixture / "Application Support/EliteCI"
+        authorization = fixture / "NativeAuthorization"
         repo = fixture / "repo"
         guard = repo / "Tools/CI/native_runner.py"
         guard.parent.mkdir(parents=True)
@@ -218,6 +219,7 @@ class ImmutablePreparationTests(unittest.TestCase):
             return "fixture SDK" if args[0] == "xcrun" else "fixture Swift"
         stack.enter_context(patch("prepare_native_runner.ROOT", repo))
         stack.enter_context(patch("prepare_native_runner.HOME_ROOT", home))
+        stack.enter_context(patch("prepare_native_runner.AUTHORIZATION_ROOT", authorization))
         stack.enter_context(patch("prepare_native_runner.RUNNER", home / "native-runner"))
         stack.enter_context(patch("prepare_native_runner.output", side_effect=fingerprint))
         return stack, home, archive, hashlib.sha256(archive.read_bytes()).hexdigest()
@@ -296,5 +298,31 @@ class ImmutablePreparationTests(unittest.TestCase):
                     path.chmod(0o600)
                     path.write_text("modified")
                     path.chmod(0o400 if fault == "policy" else 0o500)
+                with self.assertRaises(ValueError):
+                    prepare(SHA, archive, digest)
+
+
+class HookDispatchTests(unittest.TestCase):
+    with_fixture = ImmutablePreparationTests.with_fixture
+    def test_spaced_installation_dispatches_an_owned_whitespace_free_hook(self):
+        from pathlib import Path
+        import subprocess
+        from unittest.mock import patch
+        from prepare_native_runner import prepare
+        stack, home, archive, digest = self.with_fixture()
+        with stack:
+            policy = prepare(SHA, archive, digest)
+            self.assertIn(" ", str(home))
+            assignment = (home / "native-runner/.env").read_text().splitlines()[0]
+            hook = Path(assignment.split("=", 1)[1])
+            self.assertFalse(any(character.isspace() for character in str(hook)))
+            self.assertEqual(hook.parent, policy.parent)
+            self.assertFalse(hook.is_symlink())
+            # Match Actions' outer unquoted shell dispatch. The fixture guard is a no-op.
+            result = subprocess.run(
+                ["/bin/bash", "--noprofile", "--norc", "-c", str(hook)],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            with patch("prepare_native_runner.AUTHORIZATION_ROOT", home / "unsafe authorization"):
                 with self.assertRaises(ValueError):
                     prepare(SHA, archive, digest)
