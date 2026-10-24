@@ -11024,6 +11024,20 @@
       "m01_complete": false,
       "usable_delivery": false,
       "verification_receipt": "/tmp/elite-mba-b58f-two-followup-verification.json"
+    },
+    {
+      "at": "2026-10-24T04:17:11.822620+00:00",
+      "checkpoint_key": "20261024-m01-c708-single-manual-capture-running",
+      "event": "Reviewed timing-only correction frozen; only remaining failed method running",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "head": "c708eeab9cab632242b321e2699af914542f4996",
+      "reviewed_file_hash_verified": true,
+      "expected_methods": 1,
+      "host_pid": 35208,
+      "status": "running",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
