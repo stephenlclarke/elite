@@ -11766,9 +11766,14 @@
       "reviewed_files": 7,
       "unchanged_review_retained_files": 6,
       "selected_methods": 10,
-      "actual_execution": "not_yet_verified",
+      "actual_execution": "terminal_compile_failure_zero_tests",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "source_commit": "4abd02c2843c95d633c4e5a9a3df2f03272aa7a8",
+      "wall_seconds": 4.757654041051865,
+      "exit_code": 1,
+      "swift_testing_xml_present": false,
+      "next_correction": "stage_small_context_fields_before_short_circuit_autoclosure"
     }
   ],
   "two_developer_phase": {
