@@ -31,8 +31,9 @@ struct NPCResourceTests {
     // The fixed forward emitter needs a closed player hull on its centre ray.
     game.commander.shipID = "SH023"
     game.commander.fuel = game.commander.fuelCapacity
-    game.bodies[0].physical?.npc?.resources = NPCResources.stock(game.commander.performance)
-    game.bodies[0].energy = game.commander.performance.energy
+    let performance = game.commander.performance
+    game.bodies[0].physical?.npc?.resources = NPCResources.stock(performance)
+    game.bodies[0].energy = performance.energy
     game.commander.cargo[0] = 1
     game.energy = 100000
     game.frontShield = 100000
