@@ -11604,7 +11604,7 @@
       "root_counted_pass_summaries": 54,
       "root_counted_failed_method_summaries": 13,
       "issue_records": 26,
-      "mba_terminal_verification": "assigned",
+      "mba_terminal_verification": "complete_source_selection_command_and_xml",
       "m01_complete": false,
       "usable_delivery": false,
       "requested_legacy_xml_present": false,
@@ -11614,7 +11614,19 @@
       "swift_testing_xml_failure_elements": 26,
       "swift_testing_xml_errors": 0,
       "swift_testing_xml_skips": 0,
-      "mba_exact_xml_selection_verification": "67_unique_no_missing_extra_duplicate"
+      "mba_exact_xml_selection_verification": "67_unique_no_missing_extra_duplicate",
+      "mba_receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json",
+      "remaining_existing_issues": [
+        195,
+        196,
+        200,
+        203,
+        204,
+        205,
+        206,
+        208,
+        213
+      ]
     }
   ],
   "two_developer_phase": {
