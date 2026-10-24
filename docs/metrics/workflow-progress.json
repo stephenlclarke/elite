@@ -11604,10 +11604,17 @@
       "root_counted_pass_summaries": 54,
       "root_counted_failed_method_summaries": 13,
       "issue_records": 26,
-      "xml_present": false,
       "mba_terminal_verification": "assigned",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "requested_legacy_xml_present": false,
+      "swift_testing_xml_present": true,
+      "swift_testing_xml_bytes": 14144,
+      "swift_testing_xml_cases": 67,
+      "swift_testing_xml_failure_elements": 26,
+      "swift_testing_xml_errors": 0,
+      "swift_testing_xml_skips": 0,
+      "mba_exact_xml_selection_verification": "67_unique_no_missing_extra_duplicate"
     }
   ],
   "two_developer_phase": {
