@@ -12638,6 +12638,18 @@
       "m01_quality_status": "in_progress",
       "native_cpu_lease": "G1 exclusive",
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-g3-test-speed-packet-assigned",
+      "timestamp": "2026-10-24T13:13:23.713750+00:00",
+      "owner": "G3",
+      "scope": "NativeMultiBatchRuntimeTests.swift test-only setup/loop overhead",
+      "baseline_test_seconds": 2426.7,
+      "baseline_includes_possible_contention": true,
+      "production_changes_authorized": false,
+      "mbp_execution_authorized": false,
+      "measured_speedup": null,
+      "m01_priority_preserved": true
     }
   ],
   "two_developer_phase": {
