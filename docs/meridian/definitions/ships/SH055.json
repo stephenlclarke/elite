@@ -1,0 +1,35 @@
+{
+  "id": "SH055",
+  "name": "Condor",
+  "family": "condor",
+  "role": "pirate",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 28,
+    "speed": 46.9,
+    "acceleration": 13.8,
+    "energy": 220,
+    "recharge": 3.1,
+    "roll": 1.39,
+    "pitch": 1.22,
+    "yaw": 1.14,
+    "shield": 170,
+    "shieldRecharge": 1.6,
+    "fuel": 120,
+    "jump": 8,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 208000
+  }
+}

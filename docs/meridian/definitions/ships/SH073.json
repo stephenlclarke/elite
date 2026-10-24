@@ -1,0 +1,35 @@
+{
+  "id": "SH073",
+  "name": "Griffon Spectre",
+  "family": "griffon",
+  "role": "pirate",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 22,
+    "speed": 47.4,
+    "acceleration": 14.1,
+    "energy": 240,
+    "recharge": 3.22,
+    "roll": 1.35,
+    "pitch": 1.19,
+    "yaw": 1.11,
+    "shield": 190,
+    "shieldRecharge": 1.6,
+    "fuel": 120,
+    "jump": 8,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 216000
+  }
+}

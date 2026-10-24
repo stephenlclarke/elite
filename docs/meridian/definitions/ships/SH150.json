@@ -1,0 +1,35 @@
+{
+  "id": "SH150",
+  "name": "Reindeer Freighter",
+  "family": "reindeer",
+  "role": "transporter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 3,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 528,
+    "speed": 20.8,
+    "acceleration": 5.2,
+    "energy": 740,
+    "recharge": 5.23,
+    "roll": 0.41,
+    "pitch": 0.36,
+    "yaw": 0.34,
+    "shield": 480,
+    "shieldRecharge": 1.7,
+    "fuel": 130,
+    "jump": 8,
+    "spool": 14,
+    "missiles": 6,
+    "facings": 15,
+    "cargoExpansion": 210,
+    "price": 456000
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "SH162",
+  "name": "Larvaal Probe",
+  "family": "larvaal-probe",
+  "role": "other",
+  "license": "MIT",
+  "playerFlyable": false,
+  "purchasePolicy": "never",
+  "display": {
+    "purchasable": false,
+    "specification": "Structural object; no fictional flight-performance values assigned"
+  }
+}

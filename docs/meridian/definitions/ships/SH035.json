@@ -1,0 +1,35 @@
+{
+  "id": "SH035",
+  "name": "Stag Liner",
+  "family": "stag",
+  "role": "leisure",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 26,
+    "speed": 44.9,
+    "acceleration": 12.7,
+    "energy": 230,
+    "recharge": 3.4,
+    "roll": 1.1,
+    "pitch": 0.97,
+    "yaw": 0.9,
+    "shield": 220,
+    "shieldRecharge": 1.7,
+    "fuel": 140,
+    "jump": 10,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 217000
+  }
+}

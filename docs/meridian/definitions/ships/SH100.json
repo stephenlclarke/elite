@@ -1,0 +1,35 @@
+{
+  "id": "SH100",
+  "name": "Ox Mk II",
+  "family": "ox",
+  "role": "transporter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 3,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 484,
+    "speed": 22.2,
+    "acceleration": 5.5,
+    "energy": 800,
+    "recharge": 5.65,
+    "roll": 0.41,
+    "pitch": 0.36,
+    "yaw": 0.34,
+    "shield": 510,
+    "shieldRecharge": 1.78,
+    "fuel": 130,
+    "jump": 8,
+    "spool": 14,
+    "missiles": 7,
+    "facings": 15,
+    "cargoExpansion": 195,
+    "price": 472000
+  }
+}

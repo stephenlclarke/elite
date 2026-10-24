@@ -1,0 +1,727 @@
+{
+  "id": "l337.wayfarer-exchange",
+  "missionID": "wayfarer-exchange",
+  "originKind": "new-original",
+  "title": "Wayfarer Exchange",
+  "subtitle": "A route is only useful when someone at the other end receives what was promised.",
+  "contacts": [
+    "Dispatcher Evi Senn",
+    "Custodian Tomas Veil"
+  ],
+  "ships": [
+    "SH001",
+    "SH005",
+    "SH061"
+  ],
+  "offer": "At Avenor in Galaxy 1, the Wayfarer Union offers an openly advertised network-induction commission after one ordinary delivery or commodity sale. One tonne of free hold is sufficient for the serial loaned equipment. No combat-rank requirement or random rare-offer gate.",
+  "story": "Independent clinics, repair workshops, seed custodians and remote utility crews have reliable local suppliers but no shared way to reserve scarce transport capacity. The Wayfarer Union asks the commander to demonstrate a receiving-based dispatch service across the Avenor cluster. A refrigerated clinic delivery, a closed repair exchange, an agricultural seed transfer and a real crew recovery establish the service records. Restoring an external utility handoff makes the final route viable. The participating operators then choose either pooled route windows or protected local reservations. The commander validates the published charter and earns accreditation. Afterwards, the Exchange continues as a visible board of six original service templates, with actual consignments, declared requirements and transparent quotes.",
+  "playerBriefing": "SENN: We are building a service record, not a club for people with enough kills. Deliver the clinic sample, bring the repaired cassette home and show every receiving operator what you actually handed over.",
+  "rewardCR": 7600,
+  "completionBenefit": "Accreditation opens advanced variants on the visible Wayfarer Exchange board. Six repeatable service templates remain available with separate quotes and receipts. Accreditation grants no free cargo, personal ship or unrelated legal-status reset. A permanent clue for The Unwritten Route: The unbooked window.",
+  "branchPolicy": "Choose pooled-windows or protected-reservations once at choose-charter. Obtain the corresponding three service signatures at commit-charter. Both successful charters pay 7,600 CR and grant one permanent clue. Repeat contracts never award this campaign clue or its induction payment again.",
+  "items": [
+    {
+      "id": "clinic-cold-crate",
+      "massTonnes": 1,
+      "acquireStage": "collect-coldcrate",
+      "consumeStage": "deliver-coldchain"
+    },
+    {
+      "id": "return-cassette",
+      "massTonnes": 1,
+      "acquireStage": "recover-cassette",
+      "consumeStage": "close-repair-loop"
+    },
+    {
+      "id": "seed-vault-key",
+      "massTonnes": 1,
+      "acquireStage": "survey-seed-vault",
+      "consumeStage": "escort-seed-ark"
+    },
+    {
+      "id": "crew-custody-recorder",
+      "massTonnes": 1,
+      "acquireStage": "recover-crew-log",
+      "consumeStage": "return-survivors"
+    }
+  ],
+  "interactionNotes": [
+    "The Exchange uses the existing station contract board, arrows, contextual Confirm and Esc. Display destination, reward, hold/crew requirements, any actual deadline, perishability, risk and accepting consequences together. No extra function key, hidden rare offer or special campaign control.",
+    "The four induction items are serial one-tonne reservations. Confirm their whole custody transaction atomically. Cold-chain delivery and survivor reception need the relevant quality or live-crew receipts in addition to the named mission target.",
+    "The clinic cold crate has an independent sealed cooling unit. Its advertised integrity budget is consumed only during armed flight time after confirmed pickup; normal pause stops it and current-format save/load preserves the remaining value. A spoiled delivery is recorded honestly and can be replaced from actual clinic stock; it is never counted as successful.",
+    "The seed ark and rescue tender carry their own real cargo or crews. They are identified actors with receiving manifests. Do not require player passenger cabins for these induction escorts, copy dead personnel, create a delivery from culling or treat a generic same-type freighter as the consignment.",
+    "The board can run at most three accepted service contracts per commander. It reserves real unique consignments and the required player capacity across all active work. Closing/reopening the board or loading cannot reroll a quote, create stock, reset a deadline or duplicate an offer.",
+    "Service history shows completed, late and failed deliveries directly. Equipment and capacity gates are explained in the quote. No hidden combat quota or unexplained reputation decay gates routine work.",
+    "Signed Passage, ordinary sealed dispatch and completed Exchange induction are distinct clue sources. Each Exchange service family grants its own clue at first verified reception; subsequent jobs retain that clue and grant only their own payment and service record.",
+    "Any recovery or combat uses actual attributed events. Single-ship fire cannot destroy station hulls; utility handoffs are named external service modules. The Exchange never asks the commander to destroy a station."
+  ],
+  "servicePolicy": {
+    "board": "Existing station contract board at discovered Wayfarer service hubs",
+    "maximumActive": 3,
+    "offerGeneration": "A seeded current quote epoch selects only actual available consignments and reachable current-world destinations. Preserve offered quote identities until withdrawn or consumed by a real stock event.",
+    "capacity": "Preview and reserve aggregate actual hold, tool slots and any passenger requirements for every accepted instance; decline or cancellation reserves nothing.",
+    "certification": "Induction and visible equipment/route requirements unlock complex services. Routine work remains available without combat rank, a secret counter or a random company invitation.",
+    "receipts": "Each current service instance owns offer, pickup, objective and receiving/payment receipts. Persist custody, passengers, quality, simulation time, target identity, quote and paid state; no imported campaign progress.",
+    "payment": "Advertise a complete price in credits before acceptance. Pay once after actual qualifying receipt, using source/recipient identities and the exact consignment. A late/spoiled result follows its shown policy and never earns the induction clue.",
+    "world": "Use only the independently authored worlds, commodities, actor fleets and current save format. Do not install external parcel-company branding, five original mission groups, source text or old mission-variable names."
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.wayfarer-exchange/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "exchange-unbooked-window",
+    "label": "The unbooked window",
+    "journalText": "The first signed route ledger reserves a window with no carrier, cargo or destination. Its curved boundary points inward and matches a bearing outside the published service network.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/exchange-unbooked-window",
+    "awardWithSuccessfulTerminal": true
+  },
+  "repeatableServices": {
+    "id": "l337.wayfarer-services",
+    "templates": 6,
+    "stages": 18,
+    "maximumActive": 3,
+    "file": "authoring-source:original-missions/wayfarer-services.toml",
+    "sha256": "86ff03ba806da0cb453ab2a57d6ae9be4c38310511af7e7f3bf8e65e8b653f5b",
+    "generator": "authoring-source:original-missions/generate-services.py",
+    "generatorSHA256": "06bd83a41d8feb519806df6bab144f421531a9e9131d77bcabaea0afddb7b37b",
+    "artworkManifest": "../../assets/missions/manifest.json",
+    "artworkSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "sourcePackagesIncluded": false
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "briefing": {
+      "id": "wayfarer-exchange",
+      "file": "../../assets/missions/illustrations/wayfarer-exchange.png",
+      "sha256": "81f7d04ffd22660b94a2d59c68de6fc9d32e3ef5af60a5f34376ff5d94bde557",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Dispatcher Evi Senn",
+        "portrait": {
+          "id": "evi-senn",
+          "file": "../../assets/missions/portraits/evi-senn.png",
+          "sha256": "af7604ee750727f21ddd5f3017ac5f5d330ee1376c77fbcc712011671216486d",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Custodian Tomas Veil",
+        "portrait": {
+          "id": "tomas-veil",
+          "file": "../../assets/missions/portraits/tomas-veil.png",
+          "sha256": "6b7cf1e00fffd87e436d0b3c3f0ccd935f7f85194c7f176e39dfd82f560ef182",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH005",
+        "asset": {
+          "id": "SH005",
+          "file": "../../assets/missions/ships/SH005.png",
+          "sha256": "d3023f6ab41ea58114100619061fb6236823d4c3fc0b66886a2131e2bdcb30d3",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "clinic-cold-crate",
+        "asset": {
+          "id": "clinic-cold-crate",
+          "file": "../../assets/missions/props/clinic-cold-crate.png",
+          "sha256": "e64b6eac89b153137186e5ceb11861c870227f9ee9f66d8213960bb920306e91",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "id": "return-cassette",
+        "asset": {
+          "id": "return-cassette",
+          "file": "../../assets/missions/props/return-cassette.png",
+          "sha256": "6f77c51e2d5416f9448375dd18b6ca08459eee03e80110d40acde1acd4b2cad6",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "id": "seed-vault-key",
+        "asset": {
+          "id": "seed-vault-key",
+          "file": "../../assets/missions/props/seed-vault-key.png",
+          "sha256": "a1c0312f630f4c540113b9366d735dcb6df6178ed63f5b2b7ac84d9dae4dcb61",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "id": "crew-custody-recorder",
+        "asset": {
+          "id": "crew-custody-recorder",
+          "file": "../../assets/missions/props/crew-custody-recorder.png",
+          "sha256": "287232aa500aab8600db249ef9e16a9f216b91194c77564f4d30ef3f3a82fa3e",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "wayfarer-exchange/choose-charter/pooled-windows",
+        "file": "../../assets/missions/outcomes/wayfarer-exchange-choose-charter-pooled-windows.png",
+        "sha256": "012a8f548a3b3453e069b13ca7ccbfd50b30252c951afdd7012b1100fe8c36f0",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "wayfarer-exchange/choose-charter/protected-reservations",
+        "file": "../../assets/missions/outcomes/wayfarer-exchange-choose-charter-protected-reservations.png",
+        "sha256": "6b382489746ca69dfb88f9baccde8d5c4e8bdc5e93c8ca75ef51eacf0cbd1b1c",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Accept the Wayfarer network-induction commission at Avenor.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "senn-network-commission"
+      ],
+      "dialog": "SENN: These routes belong to the clinics, workshops and crews using them. You can review every job before accepting it. The service board will explain what your ship can carry.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S007",
+      "locationName": "Avenor",
+      "next": "collect-coldcrate",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/accept",
+        "file": "../../assets/missions/stages/wayfarer-exchange/accept.png",
+        "sha256": "ea09ecd9d1e7b8d70fdbc65a58b28dfadbfdfcf7b45af608022176d83a310631",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-coldcrate",
+      "galaxy": 0,
+      "system": 185,
+      "objective": "Collect the one-tonne sealed clinic sample at Renas.",
+      "event": "mission_item_recovered",
+      "requiredTargets": [
+        "renas-clinic-coldcrate"
+      ],
+      "dialog": "The clinic records the crate, its working cooling unit and its declared flight-time integrity budget. Confirm the receiving destination before committing the pickup.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G01-S185",
+      "locationName": "Renas",
+      "next": "deliver-coldchain",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/collect-coldcrate",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "clinic-cold-crate",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/collect-coldcrate",
+        "file": "../../assets/missions/stages/wayfarer-exchange/collect-coldcrate.png",
+        "sha256": "33ce9b11058a0cb7029c027275499e8e7b99d9b79881f71d09087ca4159cba42",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "deliver-coldchain",
+      "galaxy": 0,
+      "system": 164,
+      "objective": "Deliver the intact cold crate to Navidor's registered clinic berth.",
+      "event": "mission_item_delivered",
+      "requiredTargets": [
+        "navidor-clinic-quality-receipt"
+      ],
+      "dialog": "The receiving clinic verifies the seal and usable sample. A landing without this exact crate and its quality record is not a delivery. A spoiled consignment can be replaced from actual stock.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S164",
+      "locationName": "Navidor",
+      "next": "recover-cassette",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/deliver-coldchain",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "clinic-cold-crate",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/deliver-coldchain",
+        "file": "../../assets/missions/stages/wayfarer-exchange/deliver-coldchain.png",
+        "sha256": "2256406b9e1deb6f3cffe5c9c3d40f66e7b57debc01f0037bd3d84194477454a",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "recover-cassette",
+      "galaxy": 0,
+      "system": 0,
+      "objective": "Collect Enmadan's one-tonne failed workshop cassette for a closed repair exchange.",
+      "event": "mission_item_recovered",
+      "requiredTargets": [
+        "enmadan-return-cassette"
+      ],
+      "dialog": "VEIL: The cassette is owned by this workshop. Return the repaired unit to its registered receiver; selling a similar commodity will not settle the exchange.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G01-S000",
+      "locationName": "Enmadan",
+      "next": "close-repair-loop",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/recover-cassette",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "return-cassette",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/recover-cassette",
+        "file": "../../assets/missions/stages/wayfarer-exchange/recover-cassette.png",
+        "sha256": "633bf5598516e92b650f1ee2ef9b7480aa1d2dd8ac5fd2abb41b582035883f99",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-repair-loop",
+      "galaxy": 0,
+      "system": 185,
+      "objective": "Return the cassette through the Renas repair desk and confirm its receiving record.",
+      "event": "mission_item_delivered",
+      "requiredTargets": [
+        "renas-cassette-loop-closed"
+      ],
+      "dialog": "The repair desk records the original serial identity, the completed service and the owner's receipt. The transport loop is closed without manufacturing a second unit.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S185",
+      "locationName": "Renas",
+      "next": "survey-seed-vault",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/close-repair-loop",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "return-cassette",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/close-repair-loop",
+        "file": "../../assets/missions/stages/wayfarer-exchange/close-repair-loop.png",
+        "sha256": "88c446c031c24f04333d80bbab2d8f3dc3783db0b4fb678b9bf1ede3ed768779",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey-seed-vault",
+      "galaxy": 0,
+      "system": 162,
+      "objective": "Review Enlirin's seed-transfer consent and loan the one-tonne vault key.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "enlirin-seed-consent"
+      ],
+      "dialog": "VEIL: This transfer keeps two seed holdings viable. The key opens only the receiving cradle. The seed itself travels aboard the registered ark.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G01-S162",
+      "locationName": "Enlirin",
+      "next": "escort-seed-ark",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/survey-seed-vault",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "seed-vault-key",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/survey-seed-vault",
+        "file": "../../assets/missions/stages/wayfarer-exchange/survey-seed-vault.png",
+        "sha256": "edccdfb2ae89b483b2f6c78eb66d67d643a287ecbd38bd5bb0b9dc523a4eeb21",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "escort-seed-ark",
+      "galaxy": 0,
+      "system": 91,
+      "objective": "Escort the registered seed ark to Lareria's receiving cradle and return the vault key.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "lareria-seed-ark-received"
+      ],
+      "dialog": "The cradle accepts the ark's real consignment and reclaims its key. The seed custodians retain ownership and record the receiving conditions.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S091",
+      "locationName": "Lareria",
+      "next": "recover-crew-log",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/escort-seed-ark",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "seed-vault-key",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/escort-seed-ark",
+        "file": "../../assets/missions/stages/wayfarer-exchange/escort-seed-ark.png",
+        "sha256": "3c9a04c15056734885aac7f2db32c2e0cc94f1eaeabd47d3bb251e19b9115483",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "recover-crew-log",
+      "galaxy": 0,
+      "system": 211,
+      "objective": "Recover the one-tonne custody recorder beside Cevilis's disabled service tender.",
+      "event": "mission_item_recovered",
+      "requiredTargets": [
+        "cevilis-crew-recorder"
+      ],
+      "dialog": "The tender's crew are alive in its marked rescue launch. The recorder identifies them and their receiving shelter. It is evidence, not an excuse to count a missing ship as rescued.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G01-S211",
+      "locationName": "Cevilis",
+      "next": "return-survivors",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/recover-crew-log",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "crew-custody-recorder",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/recover-crew-log",
+        "file": "../../assets/missions/stages/wayfarer-exchange/recover-crew-log.png",
+        "sha256": "a896b9b12538fb2b0f6e143f58db39116cb44a782c85fb705a761c06a22edc76",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-survivors",
+      "galaxy": 0,
+      "system": 0,
+      "objective": "Escort the identified rescue launch to Enmadan reception and return its custody recorder.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "enmadan-live-crew-received"
+      ],
+      "dialog": "Reception confirms the actual surviving crew and stores the returned recorder. Their arrival completes this service; an absent actor or an empty launch cannot substitute.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S000",
+      "locationName": "Enmadan",
+      "next": "reopen-utility-route",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/return-survivors",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "crew-custody-recorder",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/return-survivors",
+        "file": "../../assets/missions/stages/wayfarer-exchange/return-survivors.png",
+        "sha256": "92009f7324054f3d572d1eab822c9892fd2cdfb80b71d51d98b036c6a111aec2",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "reopen-utility-route",
+      "galaxy": 0,
+      "system": 190,
+      "objective": "Restore three named external service handoffs at Enron.",
+      "event": "resource_node_secured",
+      "requiredTargets": [
+        "utility-handoff-inlet",
+        "utility-handoff-buffer",
+        "utility-handoff-return"
+      ],
+      "dialog": "The local utility crew retains operational control. Register the physically working inlet, buffer and return. Shooting the nearby station or unrelated ships changes none of these proofs.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S190",
+      "locationName": "Enron",
+      "next": "choose-charter",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/reopen-utility-route",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/reopen-utility-route",
+        "file": "../../assets/missions/stages/wayfarer-exchange/reopen-utility-route.png",
+        "sha256": "50252734044b28a07055866d7aad2957d974ad0675cf05d22d7bde5710aa5292",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-charter",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Choose the Exchange's published route-allocation charter at Avenor.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "exchange-charter-choice"
+      ],
+      "dialog": "SENN: Pool unused windows across the cluster, or protect a minimum set for each settlement. Both charters publish their limits. Choose how the service will reserve its actual capacity.",
+      "interactionItemMassTonnes": 0,
+      "choices": [
+        "Pool unused route windows with a published local minimum",
+        "Protect local reservations and share only released capacity"
+      ],
+      "choiceIDs": [
+        "pooled-windows",
+        "protected-reservations"
+      ],
+      "locationKey": "G01-S007",
+      "locationName": "Avenor",
+      "next": "commit-charter",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/choose-charter",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/choose-charter",
+        "file": "../../assets/missions/stages/wayfarer-exchange/choose-charter.png",
+        "sha256": "e5ef58c8c262779be40db5633fcc8aca08abbe1cb398001c8a7e953530136423",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "commit-charter",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Obtain three verified operator signatures for the chosen charter.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "exchange-charter-proof"
+      ],
+      "dialog": "The clinic, workshop and seed custodians each sign the exact chosen capacity policy. A displayed selection alone is not their consent.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "branchStage": "choose-charter",
+      "branchVariants": [
+        {
+          "choiceID": "pooled-windows",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "clinic-pooled-signature",
+            "workshop-pooled-signature",
+            "seed-pooled-signature"
+          ],
+          "objective": "Confirm all three signed pooling limits and test that the protected local minimum cannot be consumed.",
+          "dialog": "The route pool rejects a booking that would take a settlement below its published minimum.",
+          "gossip": "Wayfarer Exchange shares spare windows while protecting each settlement's minimum."
+        },
+        {
+          "choiceID": "protected-reservations",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "clinic-reserved-signature",
+            "workshop-reserved-signature",
+            "seed-reserved-signature"
+          ],
+          "objective": "Confirm all three local reservations and test that only explicitly released capacity can enter the shared pool.",
+          "dialog": "The board rejects an attempt to use an unreleased reservation. Its owner retains the capacity until it chooses to release it.",
+          "gossip": "Wayfarer Exchange protects local reservations and shares only explicitly released windows."
+        }
+      ],
+      "completionRule": "All signatures must belong to the current instance, correct world and persisted chosen branch. Verify the capacity test against the actual reservation ledger.",
+      "locationKey": "G01-S007",
+      "locationName": "Avenor",
+      "next": "certify-network",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/commit-charter",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/commit-charter",
+        "file": "../../assets/missions/stages/wayfarer-exchange/commit-charter.png",
+        "sha256": "48ea98c01b03201c2d8cf0cd1ca65c6dd916d04d6ea2734dfb995544d0ca4661",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "certify-network",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Verify all induction receiving records and the working utility route with Veil.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "veil-network-certification"
+      ],
+      "dialog": "VEIL: The clinic sample remained usable, the cassette returned, the seed ark arrived and the surviving crew reached shelter. The utility route works and the charter signatures agree. Accreditation records those results.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S007",
+      "locationName": "Avenor",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/certify-network",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/certify-network",
+        "file": "../../assets/missions/stages/wayfarer-exchange/certify-network.png",
+        "sha256": "c46efb9f8a1b56f523b5b5f26dca2e8ff9816c5586230d2d925882a6b747a863",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Confirm accreditation, collect the induction fee and open the advanced service board.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "senn-final-accreditation"
+      ],
+      "dialog": "SENN: Your induction fee is 7,600 CR. The service board will continue offering real work under the charter you verified. No repeated delivery can earn this induction fee or its journal clue twice.\n\nVEIL: Every real consignment is accounted for. This older reservation names no shipment at all. Keep its curved signature in your journal; the AI at PLUGH may be able to explain the unused window.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "dialogByChoice": [
+        {
+          "choiceID": "pooled-windows",
+          "text": "SENN: The shared pool is open, and the local minima are protected. Every reserved consignment still has one owner and one receiver."
+        },
+        {
+          "choiceID": "protected-reservations",
+          "text": "VEIL: Each settlement keeps its reserved capacity. Only a signed release lets another service use it."
+        }
+      ],
+      "locationKey": "G01-S007",
+      "locationName": "Avenor",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.wayfarer-exchange/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "wayfarer-exchange/close-case",
+        "file": "../../assets/missions/stages/wayfarer-exchange/close-case.png",
+        "sha256": "218ce7f79269fe99e9d93e74acd0b7984926ad91c6e35d7185467bbcb71be6a7",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ]
+}

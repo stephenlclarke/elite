@@ -1,0 +1,35 @@
+{
+  "id": "SH043",
+  "name": "Eagle Cruiser",
+  "family": "eagle",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "never",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 5,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 172,
+    "speed": 22.8,
+    "acceleration": 5.2,
+    "energy": 1490,
+    "recharge": 9.72,
+    "roll": 0.42,
+    "pitch": 0.37,
+    "yaw": 0.34,
+    "shield": 600,
+    "shieldRecharge": 2.0,
+    "fuel": 140,
+    "jump": 7,
+    "spool": 18,
+    "missiles": 10,
+    "facings": 15,
+    "cargoExpansion": 70,
+    "price": 0
+  }
+}

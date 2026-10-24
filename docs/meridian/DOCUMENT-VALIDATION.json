@@ -1,0 +1,12 @@
+{
+  "allLocalMarkdownLinksResolve": true,
+  "all758MissionGraphicsMatchSourceHashes": true,
+  "all171NewShipImagesAndDefinitionsMatch": true,
+  "allImagesParse": true,
+  "campaigns": 39,
+  "campaignStages": 368,
+  "shipsAtEnd": true,
+  "legacyShipNamesInOracle": 0,
+  "readingViews": 43,
+  "gameBuildOrRuntimeExecuted": false
+}

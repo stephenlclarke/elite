@@ -1,0 +1,35 @@
+{
+  "id": "SH123",
+  "name": "Larvaal Sovereign",
+  "family": "larvaal-sovereign",
+  "role": "alien",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "never",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 5,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 180,
+    "speed": 27.7,
+    "acceleration": 7.2,
+    "energy": 1660,
+    "recharge": 9.52,
+    "roll": 0.52,
+    "pitch": 0.46,
+    "yaw": 0.43,
+    "shield": 620,
+    "shieldRecharge": 2.1,
+    "fuel": 150,
+    "jump": 8,
+    "spool": 18,
+    "missiles": 8,
+    "facings": 15,
+    "cargoExpansion": 70,
+    "price": 0
+  }
+}

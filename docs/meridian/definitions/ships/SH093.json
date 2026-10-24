@@ -1,0 +1,35 @@
+{
+  "id": "SH093",
+  "name": "Giraffe Liner",
+  "family": "giraffe",
+  "role": "leisure",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 30,
+    "speed": 39.1,
+    "acceleration": 11.3,
+    "energy": 250,
+    "recharge": 3.54,
+    "roll": 0.98,
+    "pitch": 0.86,
+    "yaw": 0.8,
+    "shield": 250,
+    "shieldRecharge": 1.7,
+    "fuel": 140,
+    "jump": 10,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 218000
+  }
+}

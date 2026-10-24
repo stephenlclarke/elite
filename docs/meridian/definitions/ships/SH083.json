@@ -1,0 +1,35 @@
+{
+  "id": "SH083",
+  "name": "Hare Explorer",
+  "family": "hare",
+  "role": "leisure",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 32,
+    "speed": 39.5,
+    "acceleration": 11.5,
+    "energy": 230,
+    "recharge": 4.01,
+    "roll": 1.03,
+    "pitch": 0.91,
+    "yaw": 0.84,
+    "shield": 230,
+    "shieldRecharge": 1.7,
+    "fuel": 140,
+    "jump": 10,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 15,
+    "price": 211000
+  }
+}

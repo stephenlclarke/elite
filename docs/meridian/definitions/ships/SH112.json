@@ -1,0 +1,35 @@
+{
+  "id": "SH112",
+  "name": "Larvaal Warden",
+  "family": "larvaal-warden",
+  "role": "alien",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 28,
+    "speed": 47.0,
+    "acceleration": 17.0,
+    "energy": 390,
+    "recharge": 4.7,
+    "roll": 1.3,
+    "pitch": 1.14,
+    "yaw": 1.07,
+    "shield": 310,
+    "shieldRecharge": 2.1,
+    "fuel": 130,
+    "jump": 9,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 280000
+  }
+}

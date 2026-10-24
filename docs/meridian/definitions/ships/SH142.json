@@ -1,0 +1,35 @@
+{
+  "id": "SH142",
+  "name": "Buzzard Mk II",
+  "family": "buzzard",
+  "role": "bountyHunter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 24,
+    "speed": 48.9,
+    "acceleration": 15.0,
+    "energy": 330,
+    "recharge": 5.23,
+    "roll": 1.28,
+    "pitch": 1.13,
+    "yaw": 1.05,
+    "shield": 270,
+    "shieldRecharge": 1.99,
+    "fuel": 130,
+    "jump": 9,
+    "spool": 12,
+    "missiles": 6,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 263000
+  }
+}

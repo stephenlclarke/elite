@@ -1,0 +1,35 @@
+{
+  "id": "SH065",
+  "name": "Vulture Raider",
+  "family": "vulture",
+  "role": "pirate",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 1,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 14,
+    "speed": 58.3,
+    "acceleration": 19.1,
+    "energy": 140,
+    "recharge": 2.7,
+    "roll": 2.03,
+    "pitch": 1.79,
+    "yaw": 1.66,
+    "shield": 140,
+    "shieldRecharge": 1.6,
+    "fuel": 110,
+    "jump": 8,
+    "spool": 10,
+    "missiles": 4,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 213000
+  }
+}

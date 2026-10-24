@@ -1,0 +1,35 @@
+{
+  "id": "SH039",
+  "name": "Vulture Mk III",
+  "family": "vulture",
+  "role": "pirate",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 1,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 16,
+    "speed": 56.2,
+    "acceleration": 18.2,
+    "energy": 180,
+    "recharge": 3.13,
+    "roll": 1.9,
+    "pitch": 1.67,
+    "yaw": 1.56,
+    "shield": 160,
+    "shieldRecharge": 1.76,
+    "fuel": 110,
+    "jump": 8,
+    "spool": 11,
+    "missiles": 6,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 228000
+  }
+}

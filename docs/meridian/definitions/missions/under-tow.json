@@ -1,0 +1,464 @@
+{
+  "id": "l337.under-tow",
+  "missionID": "under-tow",
+  "title": "Under Tow",
+  "originKind": "new-original",
+  "subtitle": "PENN: Matching form numbers do not make these collars fit.",
+  "contacts": [
+    "Tug Lead Mira Penn",
+    "Coordinator Sera Dain"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Luera in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.",
+  "story": "An emergency transport network has standardised its forms but not the physical coupling limits of its vessels. A stranded work tender cannot accept the rescue tug sent for it. The commander measures real hull interfaces, recovers an independent coupler and verifies either interoperable local rescue pairs or a shared specialist tender. Crew identity, actual docking and return custody determine success.",
+  "playerBriefing": "PENN: Matching form numbers do not make these collars fit.",
+  "rewardCR": 8300,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The coupling without a vessel.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "under-tow-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "under-tow-reference",
+    "propForm": "coupler",
+    "palette": "slate-orange",
+    "stageObjects": [
+      "under-tow-reference",
+      "under-tow-reference",
+      "under-tow-reference",
+      "under-tow-reference",
+      "SH061",
+      "under-tow-reference",
+      "under-tow-reference",
+      "under-tow-reference",
+      "under-tow-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.under-tow/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "under-tow-trace",
+    "label": "The coupling without a vessel",
+    "journalText": "An old interface calibration defines a curved inward contact surface with no compatible hull in its register.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/under-tow-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "briefing": {
+      "id": "under-tow",
+      "file": "../../assets/missions/illustrations/under-tow.png",
+      "sha256": "33fd39b56a8ddd92ac12d228435826a21d94c66698dcaaaeb8cb1049ef8c3480",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Tug Lead Mira Penn",
+        "portrait": {
+          "id": "mira-penn",
+          "file": "../../assets/missions/portraits/mira-penn.png",
+          "sha256": "d11e20312cab31ab3769db7d9ff646078d254da2272d49395d6c4519774e94b7",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Coordinator Sera Dain",
+        "portrait": {
+          "id": "sera-dain",
+          "file": "../../assets/missions/portraits/sera-dain.png",
+          "sha256": "00fbf43416f761618a897264b8fd4e30df7f7ff47736f27c1c4d66fedfdcb787",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "under-tow-reference",
+        "asset": {
+          "id": "under-tow-reference",
+          "file": "../../assets/missions/props/under-tow-reference.png",
+          "sha256": "307cb44de84aefad0bfe9288fdd25062c087ea314a681047d4e6c2bbb015e0c2",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "under-tow/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/under-tow-choose-settlement-plan-a.png",
+        "sha256": "5c37305b7ff80d69f3ff60245b923b19bdea66b1a943b8ec4c0bce0a78b79459",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "under-tow/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/under-tow-choose-settlement-plan-b.png",
+        "sha256": "bb01ed5c37bdd134c587ad18b862102f6ed4c8b5dc06ade136fd37c990daaaf4",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 7,
+      "system": 45,
+      "objective": "Accept Under Tow at Luera.",
+      "dialog": "Tug Lead Mira Penn: An emergency transport network has standardised its forms but not the physical coupling limits of its vessels. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S045",
+      "locationName": "Luera",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/accept",
+        "file": "../../assets/missions/stages/under-tow/accept.png",
+        "sha256": "705fb51692163ad41d35ebc1636c4de884134cb992a916f62c70faee4f86b661",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 7,
+      "system": 123,
+      "objective": "Scan three rescue-interface collars and their independent load limits.",
+      "dialog": "PENN: Matching form numbers do not make these collars fit.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "under-tow-survey-1",
+        "under-tow-survey-2",
+        "under-tow-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S123",
+      "locationName": "Allion",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/survey",
+        "file": "../../assets/missions/stages/under-tow/survey.png",
+        "sha256": "8da6103ea22b353a6ffe1473dc9694517f199a57e053c2383a021ca439f72eb1",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 7,
+      "system": 45,
+      "objective": "Collect the identified one-tonne reference instrument from Tug Lead Mira Penn.",
+      "dialog": "Tug Lead Mira Penn: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S045",
+      "locationName": "Luera",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "under-tow-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/collect-reference",
+        "file": "../../assets/missions/stages/under-tow/collect-reference.png",
+        "sha256": "07a929640a8e150944e01d30602615afb200ee96147980a384b3acd34190c8be",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 7,
+      "system": 220,
+      "objective": "Test two compatible couplings with the loaned service reference.",
+      "dialog": "DAIN: Test against empty cradles first. People are not calibration weights.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "under-tow-work-port",
+        "under-tow-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S220",
+      "locationName": "Ealaera",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/field-work",
+        "file": "../../assets/missions/stages/under-tow/field-work.png",
+        "sha256": "2cecee8614d7478864bd0b17ff43068c2bb0dc8bc5d0be0d23a3d75de84b77a5",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 7,
+      "system": 255,
+      "objective": "Escort the identified rescued work tender to an actually compatible berth.",
+      "dialog": "PENN: It stays a real vessel with a living crew until reception records the handoff.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "under-tow-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S255",
+      "locationName": "Rivain",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/independent-witness",
+        "file": "../../assets/missions/stages/under-tow/independent-witness.png",
+        "sha256": "ff3e53ed24f7ff709d9462f1066fb159326fc2e47a61b267d43576f8fc9f2d62",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 7,
+      "system": 45,
+      "objective": "Choose the verified settlement with the consenting operators.",
+      "dialog": "Tug Lead Mira Penn: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "under-tow-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Accredit interoperable local rescue pairs",
+        "Establish a shared specialist rescue tender"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G08-S045",
+      "locationName": "Luera",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/choose-settlement",
+        "file": "../../assets/missions/stages/under-tow/choose-settlement.png",
+        "sha256": "989ad8e9cfc0899691a783192bd8cf7af3abc20618f32d0869e3d87352f53f05",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 7,
+      "system": 220,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Tug Lead Mira Penn: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "under-tow-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "under-tow-plan-a-physical-proof",
+            "under-tow-plan-a-receiving-proof"
+          ],
+          "objective": "Verify two tested coupling pairs and their crew reception drill.",
+          "dialog": "PENN: A local promise must identify the tug that can keep it.",
+          "gossip": "Under Tow: Accredit interoperable local rescue pairs."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "under-tow-plan-b-physical-proof",
+            "under-tow-plan-b-receiving-proof"
+          ],
+          "objective": "Verify specialist dispatch limits and the receiving-station agreement.",
+          "dialog": "DAIN: Shared rescue capacity cannot be sold twice.",
+          "gossip": "Under Tow: Establish a shared specialist rescue tender."
+        }
+      ],
+      "locationKey": "G08-S220",
+      "locationName": "Ealaera",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/apply-settlement",
+        "file": "../../assets/missions/stages/under-tow/apply-settlement.png",
+        "sha256": "0c39b48c1b2fd8519c1f4e3d718e995c1da5272457dc9e29706908a46b628432",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 7,
+      "system": 45,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Tug Lead Mira Penn: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S045",
+      "locationName": "Luera",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "under-tow-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/return-and-audit",
+        "file": "../../assets/missions/stages/under-tow/return-and-audit.png",
+        "sha256": "f60ff2220c02e2ffe01a5aa289c5427cba85d1ec4249ffca1bfdf3ef0b56d893",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 7,
+      "system": 45,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Tug Lead Mira Penn: The independent audit is complete. Your fee is 8300 CR. The operators retain the chosen settlement and their original records.\n\nTug Lead Mira Penn: The audit has left one anomaly that belongs to neither side. An old interface calibration defines a curved inward contact surface with no compatible hull in its register. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S045",
+      "locationName": "Luera",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.under-tow/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "under-tow/close-case",
+        "file": "../../assets/missions/stages/under-tow/close-case.png",
+        "sha256": "fc6b064d9f49b7db5b88acd2bd717f4c7b8954c2be7133958aef1ab7dce9a514",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ]
+}

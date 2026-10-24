@@ -1,0 +1,35 @@
+{
+  "id": "SH138",
+  "name": "Falcon Mk III",
+  "family": "falcon",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 1,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 12,
+    "speed": 52.0,
+    "acceleration": 16.4,
+    "energy": 340,
+    "recharge": 4.85,
+    "roll": 1.38,
+    "pitch": 1.21,
+    "yaw": 1.13,
+    "shield": 290,
+    "shieldRecharge": 2.2,
+    "fuel": 110,
+    "jump": 8,
+    "spool": 11,
+    "missiles": 8,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 281000
+  }
+}

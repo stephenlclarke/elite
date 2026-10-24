@@ -1,0 +1,35 @@
+{
+  "id": "SH139",
+  "name": "Falcon Mk IV",
+  "family": "falcon",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 1,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 12,
+    "speed": 51.0,
+    "acceleration": 16.0,
+    "energy": 380,
+    "recharge": 5.19,
+    "roll": 1.33,
+    "pitch": 1.17,
+    "yaw": 1.09,
+    "shield": 310,
+    "shieldRecharge": 2.3,
+    "fuel": 110,
+    "jump": 8,
+    "spool": 12,
+    "missiles": 9,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 295000
+  }
+}

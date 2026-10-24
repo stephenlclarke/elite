@@ -1,0 +1,35 @@
+{
+  "id": "SH041",
+  "name": "Serval Fighter",
+  "family": "serval",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 18,
+    "speed": 42.3,
+    "acceleration": 13.4,
+    "energy": 360,
+    "recharge": 5.66,
+    "roll": 1.13,
+    "pitch": 0.99,
+    "yaw": 0.93,
+    "shield": 300,
+    "shieldRecharge": 2.0,
+    "fuel": 120,
+    "jump": 8,
+    "spool": 12,
+    "missiles": 7,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 262000
+  }
+}

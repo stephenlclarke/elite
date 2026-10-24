@@ -1,0 +1,35 @@
+{
+  "id": "SH066",
+  "name": "Rabbit Explorer",
+  "family": "rabbit",
+  "role": "leisure",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 28,
+    "speed": 46.2,
+    "acceleration": 12.5,
+    "energy": 190,
+    "recharge": 3.4,
+    "roll": 1.07,
+    "pitch": 0.94,
+    "yaw": 0.88,
+    "shield": 200,
+    "shieldRecharge": 1.7,
+    "fuel": 140,
+    "jump": 10,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 205000
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "SH141",
+  "name": "Salamander Station",
+  "family": "salamander-station",
+  "role": "station",
+  "license": "MIT",
+  "playerFlyable": false,
+  "purchasePolicy": "never",
+  "display": {
+    "purchasable": false,
+    "specification": "Structural object; no fictional flight-performance values assigned"
+  }
+}

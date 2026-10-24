@@ -1,0 +1,464 @@
+{
+  "id": "l337.unfinished-map",
+  "missionID": "unfinished-map",
+  "title": "The Unfinished Map",
+  "originKind": "new-original",
+  "subtitle": "ORR: An honest blank is safer than an invented coordinate.",
+  "contacts": [
+    "Agent Mara Vale",
+    "Geologist Jalen Orr"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Sareith in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.",
+  "story": "A dead surveyor's archive is being sold as a complete safe-navigation map, although its final measurements were never made. The commander recovers authorised copies from ordinary visible receivers, measures the disputed gaps and obtains either a clearly bounded public atlas or a witnessed research-only archive.",
+  "playerBriefing": "ORR: An honest blank is safer than an invented coordinate.",
+  "rewardCR": 6900,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The margin beyond the map.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "unfinished-map-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "unfinished-map-reference",
+    "propForm": "register",
+    "palette": "navy-copper",
+    "stageObjects": [
+      "unfinished-map-reference",
+      "unfinished-map-reference",
+      "unfinished-map-reference",
+      "unfinished-map-reference",
+      "SH061",
+      "unfinished-map-reference",
+      "unfinished-map-reference",
+      "unfinished-map-reference",
+      "unfinished-map-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.unfinished-map/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "unfinished-map-trace",
+    "label": "The margin beyond the map",
+    "journalText": "The archive's untouched margin carries an inward arc outside every surveyed coordinate frame.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/unfinished-map-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "briefing": {
+      "id": "unfinished-map",
+      "file": "../../assets/missions/illustrations/unfinished-map.png",
+      "sha256": "97048c0075ee0570ed9939008d32098a43a6d05c0b39da01c45f6df6defd241a",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Agent Mara Vale",
+        "portrait": {
+          "id": "mara-vale",
+          "file": "../../assets/missions/portraits/mara-vale.png",
+          "sha256": "9fa767db25af0ec5a531e6761fe58e4419801e9e090ba905fa51118f5e514c13",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Geologist Jalen Orr",
+        "portrait": {
+          "id": "jalen-orr",
+          "file": "../../assets/missions/portraits/jalen-orr.png",
+          "sha256": "cd92cd7cdf2eb08a4421268cb6ea74e888b733dc89fad944f2753954fc95f4a1",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "unfinished-map-reference",
+        "asset": {
+          "id": "unfinished-map-reference",
+          "file": "../../assets/missions/props/unfinished-map-reference.png",
+          "sha256": "44f9e861cf8d0dbab9cec0fccc1eab78bb5b245629bf55d205750b249f4e6964",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "unfinished-map/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/unfinished-map-choose-settlement-plan-a.png",
+        "sha256": "872412ed835f01770b8fc76853e5b55e1e217a9f94d434e1b93fa3ac84e2633a",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "unfinished-map/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/unfinished-map-choose-settlement-plan-b.png",
+        "sha256": "b3ac3b1bc30a8e81a6496b54e351ba9d8f0c9deab7d570bd9c1ce6964c968953",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 2,
+      "system": 114,
+      "objective": "Accept The Unfinished Map at Sareith.",
+      "dialog": "Agent Mara Vale: A dead surveyor's archive is being sold as a complete safe-navigation map, although its final measurements were never made. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G03-S114",
+      "locationName": "Sareith",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/accept",
+        "file": "../../assets/missions/stages/unfinished-map/accept.png",
+        "sha256": "2aeecf7965380f4745b267e5b87f94da01e580d72deb16523c3c025074fab64a",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 2,
+      "system": 179,
+      "objective": "Compare three independently dated boundary records at the survey relays.",
+      "dialog": "ORR: An honest blank is safer than an invented coordinate.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "unfinished-map-survey-1",
+        "unfinished-map-survey-2",
+        "unfinished-map-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G03-S179",
+      "locationName": "Iosaira",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/survey",
+        "file": "../../assets/missions/stages/unfinished-map/survey.png",
+        "sha256": "1c58a3c1206a3afee7072c7e94c6bc5a0f2142180f9260042c636ccd840d5abc",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 2,
+      "system": 114,
+      "objective": "Collect the identified one-tonne reference instrument from Agent Mara Vale.",
+      "dialog": "Agent Mara Vale: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G03-S114",
+      "locationName": "Sareith",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "unfinished-map-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/collect-reference",
+        "file": "../../assets/missions/stages/unfinished-map/collect-reference.png",
+        "sha256": "86dcb2e6a3b56c661f70b77324975885976d2a690e9118d22f7fa98b85d99071",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 2,
+      "system": 164,
+      "objective": "Measure two uncharted orbital boundary points using the loaned survey register.",
+      "dialog": "VALE: Record uncertainty with the reading. Do not turn an estimate into a historical fact.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "unfinished-map-work-port",
+        "unfinished-map-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G03-S164",
+      "locationName": "Sanaena",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/field-work",
+        "file": "../../assets/missions/stages/unfinished-map/field-work.png",
+        "sha256": "2f24cff1931e19e6e53644760d299703969829002facd033a5efc195bd09b253",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 2,
+      "system": 77,
+      "objective": "Escort the consenting archive custodian to the publication berth.",
+      "dialog": "VALE: The custodian brings the original rights register. A stolen copy cannot grant consent.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "unfinished-map-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G03-S077",
+      "locationName": "Naleara",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/independent-witness",
+        "file": "../../assets/missions/stages/unfinished-map/independent-witness.png",
+        "sha256": "87817320f85f15e24a975b5943277126b2b4db73166812474d88f2b04135b153",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 2,
+      "system": 114,
+      "objective": "Choose the verified settlement with the consenting operators.",
+      "dialog": "Agent Mara Vale: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "unfinished-map-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Publish a bounded atlas with explicit gaps",
+        "Preserve a witnessed research archive"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G03-S114",
+      "locationName": "Sareith",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/choose-settlement",
+        "file": "../../assets/missions/stages/unfinished-map/choose-settlement.png",
+        "sha256": "7970433df047d9ab8ae0911222b21982489fb20e49a5acf0a6619cfad8bc84c3",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 2,
+      "system": 164,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Agent Mara Vale: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "unfinished-map-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "unfinished-map-plan-a-physical-proof",
+            "unfinished-map-plan-a-receiving-proof"
+          ],
+          "objective": "Verify the uncertainty layer and public-use consent record.",
+          "dialog": "ORR: The blank areas must survive publication.",
+          "gossip": "The Unfinished Map: Publish a bounded atlas with explicit gaps."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "unfinished-map-plan-b-physical-proof",
+            "unfinished-map-plan-b-receiving-proof"
+          ],
+          "objective": "Verify the restricted archive receipt and a public hazard notice.",
+          "dialog": "VALE: Restricted research cannot keep a known flight hazard secret.",
+          "gossip": "The Unfinished Map: Preserve a witnessed research archive."
+        }
+      ],
+      "locationKey": "G03-S164",
+      "locationName": "Sanaena",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/apply-settlement",
+        "file": "../../assets/missions/stages/unfinished-map/apply-settlement.png",
+        "sha256": "f69b1cda9ed798efad5e0f6f3e01f465bdd7ae8718f97ff326794814207d5121",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 2,
+      "system": 114,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Agent Mara Vale: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G03-S114",
+      "locationName": "Sareith",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "unfinished-map-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/return-and-audit",
+        "file": "../../assets/missions/stages/unfinished-map/return-and-audit.png",
+        "sha256": "a96636d9adf3d800be9bb9f2daa8d7f07f72f609b85e8477a8e15fa133f7f6f3",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 2,
+      "system": 114,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Agent Mara Vale: The independent audit is complete. Your fee is 6900 CR. The operators retain the chosen settlement and their original records.\n\nAgent Mara Vale: The audit has left one anomaly that belongs to neither side. The archive's untouched margin carries an inward arc outside every surveyed coordinate frame. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G03-S114",
+      "locationName": "Sareith",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.unfinished-map/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "unfinished-map/close-case",
+        "file": "../../assets/missions/stages/unfinished-map/close-case.png",
+        "sha256": "6192b1e8ff29cf79477c1260ba193f5ea910211b75ae00c439bc0a36bd80f0d9",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ]
+}

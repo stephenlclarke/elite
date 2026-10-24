@@ -1,0 +1,35 @@
+{
+  "id": "SH132",
+  "name": "Warthog 7",
+  "family": "warthog-10-guard",
+  "role": "transporter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 3,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 440,
+    "speed": 21.3,
+    "acceleration": 5.4,
+    "energy": 730,
+    "recharge": 6.17,
+    "roll": 0.42,
+    "pitch": 0.37,
+    "yaw": 0.34,
+    "shield": 500,
+    "shieldRecharge": 1.7,
+    "fuel": 130,
+    "jump": 8,
+    "spool": 14,
+    "missiles": 6,
+    "facings": 15,
+    "cargoExpansion": 175,
+    "price": 440000
+  }
+}

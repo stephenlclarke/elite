@@ -1,0 +1,13 @@
+{
+  "id": "SH164",
+  "name": "Toad Drug Factory",
+  "family": "toad-drug-factory",
+  "role": "station",
+  "license": "MIT",
+  "playerFlyable": false,
+  "purchasePolicy": "never",
+  "display": {
+    "purchasable": false,
+    "specification": "Structural object; no fictional flight-performance values assigned"
+  }
+}

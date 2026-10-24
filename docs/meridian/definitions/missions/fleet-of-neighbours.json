@@ -1,0 +1,464 @@
+{
+  "id": "l337.fleet-of-neighbours",
+  "missionID": "fleet-of-neighbours",
+  "title": "A Fleet of Neighbours",
+  "originKind": "new-original",
+  "subtitle": "ARLEN: A promised hull cannot protect a corridor it has not reached.",
+  "contacts": [
+    "Marshal Nera Voss",
+    "Captain Suri Arlen"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Morvasen in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.",
+  "story": "Three settlements offer civilian protection ships after pirates close a relief corridor. Their hulls and fuel are finite, and every commander wants the same escort window. The player audits actual commitments, repairs a relief lane and escorts a dispatch tender before choosing a rotating protection rota or locally retained reserve pairs. Aid comes from the ships that actually arrive.",
+  "playerBriefing": "ARLEN: A promised hull cannot protect a corridor it has not reached.",
+  "rewardCR": 9400,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The formation with no centre.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "fleet-of-neighbours-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "fleet-of-neighbours-reference",
+    "propForm": "beacon",
+    "palette": "slate-orange",
+    "stageObjects": [
+      "fleet-of-neighbours-reference",
+      "fleet-of-neighbours-reference",
+      "fleet-of-neighbours-reference",
+      "fleet-of-neighbours-reference",
+      "SH061",
+      "fleet-of-neighbours-reference",
+      "fleet-of-neighbours-reference",
+      "fleet-of-neighbours-reference",
+      "fleet-of-neighbours-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.fleet-of-neighbours/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "fleet-of-neighbours-trace",
+    "label": "The formation with no centre",
+    "journalText": "An early dispatch diagram curves around an empty central formation slot with no assigned vessel.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/fleet-of-neighbours-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "briefing": {
+      "id": "fleet-of-neighbours",
+      "file": "../../assets/missions/illustrations/fleet-of-neighbours.png",
+      "sha256": "47bac3dfc2aa83a3f692a96f7caa12ce1004a523a81ce16c09ee23e52ff979b7",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Marshal Nera Voss",
+        "portrait": {
+          "id": "nera-voss",
+          "file": "../../assets/missions/portraits/nera-voss.png",
+          "sha256": "ef89437d6acf73621448ed87545203708666b3f84902e5f1457a6f467fdd2232",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Captain Suri Arlen",
+        "portrait": {
+          "id": "suri-arlen",
+          "file": "../../assets/missions/portraits/suri-arlen.png",
+          "sha256": "24ed55a2d4d49f9d99f5c385972060c2d7564ff42f40d43690cc802ebe25894c",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "fleet-of-neighbours-reference",
+        "asset": {
+          "id": "fleet-of-neighbours-reference",
+          "file": "../../assets/missions/props/fleet-of-neighbours-reference.png",
+          "sha256": "a52680c38b7490088b8438b9c9c864903bcfb2a684988209bc0f8c2e8a5c63b4",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "fleet-of-neighbours/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/fleet-of-neighbours-choose-settlement-plan-a.png",
+        "sha256": "39077b89b7fa9404d8eb84a24f191219565b6cd8b21d8b607dc7b4262bf9b0e8",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "fleet-of-neighbours/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/fleet-of-neighbours-choose-settlement-plan-b.png",
+        "sha256": "2fe6c476f6ccabfe7fd717eac3a2064ccf5f25a80ee7968b4d33227aadc7e4a5",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 1,
+      "system": 117,
+      "objective": "Accept A Fleet of Neighbours at Morvasen.",
+      "dialog": "Marshal Nera Voss: Three settlements offer civilian protection ships after pirates close a relief corridor. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S117",
+      "locationName": "Morvasen",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/accept",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/accept.png",
+        "sha256": "23614548e90e71f9e49c3379bab3b9e5f54d236457ee37549faba286b279eef5",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 1,
+      "system": 111,
+      "objective": "Verify three real relief-escort manifests and their available fuel.",
+      "dialog": "ARLEN: A promised hull cannot protect a corridor it has not reached.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "fleet-of-neighbours-survey-1",
+        "fleet-of-neighbours-survey-2",
+        "fleet-of-neighbours-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S111",
+      "locationName": "Vornetor",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/survey",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/survey.png",
+        "sha256": "847947a12303cb4749a66df6bf3351dc88e4214775acfd399e7a1807fce19eb2",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 1,
+      "system": 117,
+      "objective": "Collect the identified one-tonne reference instrument from Marshal Nera Voss.",
+      "dialog": "Marshal Nera Voss: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S117",
+      "locationName": "Morvasen",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "fleet-of-neighbours-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/collect-reference",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/collect-reference.png",
+        "sha256": "c55bb6c915add3b7d2b1d8f4ec99bdf945b975b208646350b6b9a64df9e5687d",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 1,
+      "system": 227,
+      "objective": "Repair two external relief-lane relays with the loaned dispatch beacon.",
+      "dialog": "VOSS: Keep the repair separate from the defence. A pirate kill cannot calibrate a relay.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "fleet-of-neighbours-work-port",
+        "fleet-of-neighbours-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S227",
+      "locationName": "Talnevan",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/field-work",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/field-work.png",
+        "sha256": "4551b037b6c01945409dd4f159bf79340fdd5d84d0be94724b95480c16dc4863",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 1,
+      "system": 73,
+      "objective": "Escort the registered civilian dispatch tender to relief reception.",
+      "dialog": "ARLEN: Record arrivals and losses honestly. Do not recreate a destroyed helper from its promise.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "fleet-of-neighbours-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S073",
+      "locationName": "Arvek",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/independent-witness",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/independent-witness.png",
+        "sha256": "cf544333985ec9213c65fc0b77aa5b66b071747fd74b543626e9d15787bd2af1",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 1,
+      "system": 117,
+      "objective": "Choose the verified settlement with the consenting operators.",
+      "dialog": "Marshal Nera Voss: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "fleet-of-neighbours-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Rotate arrived protection ships across settlements",
+        "Retain local reserve pairs with mutual callouts"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G02-S117",
+      "locationName": "Morvasen",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/choose-settlement",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/choose-settlement.png",
+        "sha256": "05d65ea39b048099f846133f52c4421b8993a88cd1f2f202ac7b992892179e18",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 1,
+      "system": 227,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Marshal Nera Voss: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "fleet-of-neighbours-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "fleet-of-neighbours-plan-a-physical-proof",
+            "fleet-of-neighbours-plan-a-receiving-proof"
+          ],
+          "objective": "Verify the arrived-hull rota and each crew's consented duty limit.",
+          "dialog": "VOSS: Duty changes only when the actual replacement arrives.",
+          "gossip": "A Fleet of Neighbours: Rotate arrived protection ships across settlements."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "fleet-of-neighbours-plan-b-physical-proof",
+            "fleet-of-neighbours-plan-b-receiving-proof"
+          ],
+          "objective": "Verify both local reserves and a real cross-settlement callout.",
+          "dialog": "ARLEN: A reserve is a living ship, not an accounting entry.",
+          "gossip": "A Fleet of Neighbours: Retain local reserve pairs with mutual callouts."
+        }
+      ],
+      "locationKey": "G02-S227",
+      "locationName": "Talnevan",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/apply-settlement",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/apply-settlement.png",
+        "sha256": "3828d04574204a4a776d38f8cc7574e08afbc5c494feabff75b997e432babe8e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 1,
+      "system": 117,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Marshal Nera Voss: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S117",
+      "locationName": "Morvasen",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "fleet-of-neighbours-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/return-and-audit",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/return-and-audit.png",
+        "sha256": "f72e2d79d5420def100b9a11a0d2c82c2279422378dba48497c4d72da85fd27c",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 1,
+      "system": 117,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Marshal Nera Voss: The independent audit is complete. Your fee is 9400 CR. The operators retain the chosen settlement and their original records.\n\nMarshal Nera Voss: The audit has left one anomaly that belongs to neither side. An early dispatch diagram curves around an empty central formation slot with no assigned vessel. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S117",
+      "locationName": "Morvasen",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.fleet-of-neighbours/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "fleet-of-neighbours/close-case",
+        "file": "../../assets/missions/stages/fleet-of-neighbours/close-case.png",
+        "sha256": "ad016afa381715f06a0fb0d39c400bc19d5996d1b62c736282d65033c623cb44",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ]
+}

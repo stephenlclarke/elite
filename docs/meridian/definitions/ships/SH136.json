@@ -1,0 +1,35 @@
+{
+  "id": "SH136",
+  "name": "Falcon Mk I",
+  "family": "falcon",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 1,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 10,
+    "speed": 53.9,
+    "acceleration": 17.2,
+    "energy": 280,
+    "recharge": 4.18,
+    "roll": 1.47,
+    "pitch": 1.29,
+    "yaw": 1.21,
+    "shield": 250,
+    "shieldRecharge": 2.0,
+    "fuel": 110,
+    "jump": 8,
+    "spool": 10,
+    "missiles": 6,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 255000
+  }
+}

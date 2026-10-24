@@ -1,0 +1,35 @@
+{
+  "id": "SH170",
+  "name": "Caracara Mk II",
+  "family": "caracara",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 16,
+    "speed": 45.1,
+    "acceleration": 15.0,
+    "energy": 350,
+    "recharge": 5.18,
+    "roll": 1.28,
+    "pitch": 1.13,
+    "yaw": 1.05,
+    "shield": 300,
+    "shieldRecharge": 2.1,
+    "fuel": 120,
+    "jump": 8,
+    "spool": 12,
+    "missiles": 8,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 272000
+  }
+}

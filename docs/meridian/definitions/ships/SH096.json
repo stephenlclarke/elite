@@ -1,0 +1,35 @@
+{
+  "id": "SH096",
+  "name": "Wisent",
+  "family": "wisent",
+  "role": "transporter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 188,
+    "speed": 26.5,
+    "acceleration": 7.7,
+    "energy": 410,
+    "recharge": 4.2,
+    "roll": 0.63,
+    "pitch": 0.55,
+    "yaw": 0.52,
+    "shield": 360,
+    "shieldRecharge": 1.7,
+    "fuel": 120,
+    "jump": 8,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 75,
+    "price": 286000
+  }
+}

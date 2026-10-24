@@ -1,0 +1,35 @@
+{
+  "id": "SH020",
+  "name": "Crow Prototype",
+  "family": "crow",
+  "role": "pirate",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 22,
+    "speed": 49.5,
+    "acceleration": 15.0,
+    "energy": 210,
+    "recharge": 3.1,
+    "roll": 1.45,
+    "pitch": 1.28,
+    "yaw": 1.19,
+    "shield": 170,
+    "shieldRecharge": 1.6,
+    "fuel": 140,
+    "jump": 10,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 216000
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "SH013",
+  "name": "Buffalo",
+  "family": "buffalo",
+  "role": "transporter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 3,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 396,
+    "speed": 21.9,
+    "acceleration": 5.6,
+    "energy": 710,
+    "recharge": 5.23,
+    "roll": 0.43,
+    "pitch": 0.38,
+    "yaw": 0.35,
+    "shield": 470,
+    "shieldRecharge": 1.7,
+    "fuel": 150,
+    "jump": 10,
+    "spool": 14,
+    "missiles": 6,
+    "facings": 15,
+    "cargoExpansion": 160,
+    "price": 424000
+  }
+}

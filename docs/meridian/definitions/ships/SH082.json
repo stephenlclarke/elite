@@ -1,0 +1,35 @@
+{
+  "id": "SH082",
+  "name": "Cheetah",
+  "family": "cheetah",
+  "role": "bountyHunter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 1,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 14,
+    "speed": 55.2,
+    "acceleration": 17.4,
+    "energy": 250,
+    "recharge": 3.72,
+    "roll": 1.53,
+    "pitch": 1.35,
+    "yaw": 1.25,
+    "shield": 240,
+    "shieldRecharge": 1.9,
+    "fuel": 120,
+    "jump": 9,
+    "spool": 10,
+    "missiles": 4,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 246000
+  }
+}

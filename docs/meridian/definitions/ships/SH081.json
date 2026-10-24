@@ -1,0 +1,35 @@
+{
+  "id": "SH081",
+  "name": "Jaguar",
+  "family": "jaguar",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "never",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 5,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 144,
+    "speed": 23.3,
+    "acceleration": 5.4,
+    "energy": 1480,
+    "recharge": 11.47,
+    "roll": 0.43,
+    "pitch": 0.38,
+    "yaw": 0.35,
+    "shield": 620,
+    "shieldRecharge": 2.0,
+    "fuel": 140,
+    "jump": 7,
+    "spool": 18,
+    "missiles": 10,
+    "facings": 15,
+    "cargoExpansion": 60,
+    "price": 0
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "SH006",
+  "name": "Bison Mk II",
+  "family": "bison",
+  "role": "transporter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 4,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 1220,
+    "speed": 17.4,
+    "acceleration": 3.9,
+    "energy": 1260,
+    "recharge": 6.95,
+    "roll": 0.3,
+    "pitch": 0.26,
+    "yaw": 0.25,
+    "shield": 640,
+    "shieldRecharge": 1.78,
+    "fuel": 130,
+    "jump": 7,
+    "spool": 16,
+    "missiles": 8,
+    "facings": 15,
+    "cargoExpansion": 490,
+    "price": 761000
+  }
+}

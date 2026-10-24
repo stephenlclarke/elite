@@ -1,0 +1,35 @@
+{
+  "id": "SH090",
+  "name": "Elephant",
+  "family": "elephant",
+  "role": "trader",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 52,
+    "speed": 39.6,
+    "acceleration": 10.6,
+    "energy": 270,
+    "recharge": 3.2,
+    "roll": 0.95,
+    "pitch": 0.84,
+    "yaw": 0.78,
+    "shield": 230,
+    "shieldRecharge": 1.5,
+    "fuel": 130,
+    "jump": 9,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 20,
+    "price": 220000
+  }
+}

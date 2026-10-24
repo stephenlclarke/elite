@@ -1,0 +1,13 @@
+{
+  "id": "SH034",
+  "name": "Frog Station",
+  "family": "frog",
+  "role": "station",
+  "license": "MIT",
+  "playerFlyable": false,
+  "purchasePolicy": "never",
+  "display": {
+    "purchasable": false,
+    "specification": "Structural object; no fictional flight-performance values assigned"
+  }
+}

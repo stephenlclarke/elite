@@ -1,0 +1,464 @@
+{
+  "id": "l337.long-return",
+  "missionID": "long-return",
+  "title": "The Long Return",
+  "originKind": "new-original",
+  "subtitle": "SOREL: Each crew remembers a different clock. Ask who actually received people, not who filed first.",
+  "contacts": [
+    "Coordinator Sera Dain",
+    "Captain Orin Sorel"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Zankakor in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.",
+  "story": "A dispersed maintenance crew can return home only if three competing carriers honour the same transfer agreement. Each carrier has a plausible but incomplete account of an earlier missed rendezvous. The commander reconstructs the physical custody chain, escorts a voluntary reunion tender and negotiates a shared handoff or direct return.",
+  "playerBriefing": "SOREL: Each crew remembers a different clock. Ask who actually received people, not who filed first.",
+  "rewardCR": 7800,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The passenger never booked.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "long-return-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "long-return-reference",
+    "propForm": "recorder",
+    "palette": "cream-maroon",
+    "stageObjects": [
+      "long-return-reference",
+      "long-return-reference",
+      "long-return-reference",
+      "long-return-reference",
+      "SH061",
+      "long-return-reference",
+      "long-return-reference",
+      "long-return-reference",
+      "long-return-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.long-return/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "long-return-trace",
+    "label": "The passenger never booked",
+    "journalText": "The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/long-return-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "briefing": {
+      "id": "long-return",
+      "file": "../../assets/missions/illustrations/long-return.png",
+      "sha256": "c72e2bf5ee293a04ddfb13348e94d889011ae261408bb3b251b1f1871f333b6f",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Coordinator Sera Dain",
+        "portrait": {
+          "id": "sera-dain",
+          "file": "../../assets/missions/portraits/sera-dain.png",
+          "sha256": "00fbf43416f761618a897264b8fd4e30df7f7ff47736f27c1c4d66fedfdcb787",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Captain Orin Sorel",
+        "portrait": {
+          "id": "orin-sorel",
+          "file": "../../assets/missions/portraits/orin-sorel.png",
+          "sha256": "67833085681d17e9b8f7ec910ca3672b4f5fa4b22d9b535ee29def33c82a122a",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "long-return-reference",
+        "asset": {
+          "id": "long-return-reference",
+          "file": "../../assets/missions/props/long-return-reference.png",
+          "sha256": "ddf873ec12d4e3e64c00fed20e532791a7adde631bfcac6093e7f304636684a5",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "long-return/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/long-return-choose-settlement-plan-a.png",
+        "sha256": "b6fac93eb0c9790442f0f1af6b97ec3254ea60d4964abe6241839bf0592ede6c",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "long-return/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/long-return-choose-settlement-plan-b.png",
+        "sha256": "6fe274d1b282df410ac4d58516d4260c248a8d6d684406e4c08b80748f21e374",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 1,
+      "system": 80,
+      "objective": "Accept The Long Return at Zankakor.",
+      "dialog": "Coordinator Sera Dain: A dispersed maintenance crew can return home only if three competing carriers honour the same transfer agreement. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S080",
+      "locationName": "Zankakor",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/accept",
+        "file": "../../assets/missions/stages/long-return/accept.png",
+        "sha256": "46fd5fe8f2d8380d09bc69a2e6b6f0a8606bb947c45332f17bf6ad96edf3cd26",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 1,
+      "system": 127,
+      "objective": "Record three carrier rendezvous receipts from consenting relay crews.",
+      "dialog": "SOREL: Each crew remembers a different clock. Ask who actually received people, not who filed first.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "long-return-survey-1",
+        "long-return-survey-2",
+        "long-return-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S127",
+      "locationName": "Darvan",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/survey",
+        "file": "../../assets/missions/stages/long-return/survey.png",
+        "sha256": "03976ee7a5bad367f59cb56070a879eace08730507c543be4d7253e09054330a",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 1,
+      "system": 80,
+      "objective": "Collect the identified one-tonne reference instrument from Coordinator Sera Dain.",
+      "dialog": "Coordinator Sera Dain: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S080",
+      "locationName": "Zankakor",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "long-return-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/collect-reference",
+        "file": "../../assets/missions/stages/long-return/collect-reference.png",
+        "sha256": "daad95354e566dc440527552be4f1a44ec0968900960480b67e01ccc9e2f306e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 1,
+      "system": 1,
+      "objective": "Test two neutral custody handoffs using the loaned receiver witness.",
+      "dialog": "DAIN: These tests contain no passengers. Never make a real crew the bait for a missed rendezvous.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "long-return-work-port",
+        "long-return-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S001",
+      "locationName": "Halridor",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/field-work",
+        "file": "../../assets/missions/stages/long-return/field-work.png",
+        "sha256": "b1e4544b9f9dec3ce51f658ac5ba2c83ebd41872ba6eb1ce4900898deb44603c",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 1,
+      "system": 118,
+      "objective": "Escort the named reunion tender to its consented receiving berth.",
+      "dialog": "SOREL: Keep the surviving crew list honest. A substitute hull does not restore someone lost.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "long-return-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S118",
+      "locationName": "Elaris",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/independent-witness",
+        "file": "../../assets/missions/stages/long-return/independent-witness.png",
+        "sha256": "b3fcc5940e80b4cbe349e0362f3ba39600406ac51359c2f2cc4220f5f4f8d4f7",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 1,
+      "system": 80,
+      "objective": "Choose the verified settlement with the consenting operators.",
+      "dialog": "Coordinator Sera Dain: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "long-return-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Use a witnessed shared return handoff",
+        "Give the reunion tender a direct return corridor"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G02-S080",
+      "locationName": "Zankakor",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/choose-settlement",
+        "file": "../../assets/missions/stages/long-return/choose-settlement.png",
+        "sha256": "7866a76b566b434c9276ca1681f5cb877e8bda4caa720784f472d0af8afd84a6",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 1,
+      "system": 1,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Coordinator Sera Dain: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "long-return-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "long-return-plan-a-physical-proof",
+            "long-return-plan-a-receiving-proof"
+          ],
+          "objective": "Verify both carrier signatures and the live crew reception.",
+          "dialog": "DAIN: Shared responsibility must still identify who received each person.",
+          "gossip": "The Long Return: Use a witnessed shared return handoff."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "long-return-plan-b-physical-proof",
+            "long-return-plan-b-receiving-proof"
+          ],
+          "objective": "Verify the corridor reservation and home-berth arrival authority.",
+          "dialog": "SOREL: A direct journey is safe only if its last berth is real.",
+          "gossip": "The Long Return: Give the reunion tender a direct return corridor."
+        }
+      ],
+      "locationKey": "G02-S001",
+      "locationName": "Halridor",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/apply-settlement",
+        "file": "../../assets/missions/stages/long-return/apply-settlement.png",
+        "sha256": "b6bba19b3daa180551b366d002e320dcc8b5641b313f8c6502146b6927c97428",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 1,
+      "system": 80,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Coordinator Sera Dain: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S080",
+      "locationName": "Zankakor",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "long-return-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/return-and-audit",
+        "file": "../../assets/missions/stages/long-return/return-and-audit.png",
+        "sha256": "0b77e12e940c1ced4d1be854a63f32fadb2b314cbb4ce65466b63caf6f8376f0",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 1,
+      "system": 80,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Coordinator Sera Dain: The independent audit is complete. Your fee is 7800 CR. The operators retain the chosen settlement and their original records.\n\nCoordinator Sera Dain: The audit has left one anomaly that belongs to neither side. The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S080",
+      "locationName": "Zankakor",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.long-return/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "long-return/close-case",
+        "file": "../../assets/missions/stages/long-return/close-case.png",
+        "sha256": "a35512f8d8b695827ef439bc085a6a1c27fce90caddf940ff26cdb33c9d3b7fc",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ]
+}

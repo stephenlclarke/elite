@@ -1,0 +1,13 @@
+{
+  "id": "SH156",
+  "name": "Lion Bastion",
+  "family": "lion-bastion",
+  "role": "platform",
+  "license": "MIT",
+  "playerFlyable": false,
+  "purchasePolicy": "never",
+  "display": {
+    "purchasable": false,
+    "specification": "Structural object; no fictional flight-performance values assigned"
+  }
+}

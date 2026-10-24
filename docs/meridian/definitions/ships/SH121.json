@@ -1,0 +1,35 @@
+{
+  "id": "SH121",
+  "name": "Larvaal Mender",
+  "family": "larvaal-mender",
+  "role": "alien",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 26,
+    "speed": 43.7,
+    "acceleration": 16.0,
+    "energy": 450,
+    "recharge": 4.89,
+    "roll": 1.21,
+    "pitch": 1.06,
+    "yaw": 0.99,
+    "shield": 350,
+    "shieldRecharge": 2.1,
+    "fuel": 130,
+    "jump": 9,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 295000
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "SH161",
+  "name": "Wolf Citadel",
+  "family": "wolf",
+  "role": "station",
+  "license": "MIT",
+  "playerFlyable": false,
+  "purchasePolicy": "never",
+  "display": {
+    "purchasable": false,
+    "specification": "Structural object; no fictional flight-performance values assigned"
+  }
+}

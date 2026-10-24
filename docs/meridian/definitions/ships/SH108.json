@@ -1,0 +1,35 @@
+{
+  "id": "SH108",
+  "name": "Besra",
+  "family": "besra",
+  "role": "bountyHunter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 20,
+    "speed": 49.3,
+    "acceleration": 15.0,
+    "energy": 330,
+    "recharge": 4.26,
+    "roll": 1.26,
+    "pitch": 1.11,
+    "yaw": 1.03,
+    "shield": 270,
+    "shieldRecharge": 1.9,
+    "fuel": 130,
+    "jump": 9,
+    "spool": 12,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 258000
+  }
+}

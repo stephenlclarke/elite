@@ -1,0 +1,464 @@
+{
+  "id": "l337.open-measure",
+  "missionID": "open-measure",
+  "title": "Open Measure",
+  "originKind": "new-original",
+  "subtitle": "LERR: A certificate should describe a fit, not manufacture a monopoly.",
+  "contacts": [
+    "Engineer Cato Lerr",
+    "Physicist Anja Kest"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Valtor in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.",
+  "story": "Three independent workshops cannot exchange replacement parts because their calibration certificates use incompatible reference loads. A supplier profits by treating each disagreement as a new proprietary component. The commander measures actual tolerances, tests shared reference fittings and escorts a neutral technician before choosing public measurement standards or a witnessed interoperable service.",
+  "playerBriefing": "LERR: A certificate should describe a fit, not manufacture a monopoly.",
+  "rewardCR": 7900,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The reference without a load.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "open-measure-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "open-measure-reference",
+    "propForm": "programmer",
+    "palette": "cobalt-cream",
+    "stageObjects": [
+      "open-measure-reference",
+      "open-measure-reference",
+      "open-measure-reference",
+      "open-measure-reference",
+      "SH061",
+      "open-measure-reference",
+      "open-measure-reference",
+      "open-measure-reference",
+      "open-measure-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.open-measure/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "open-measure-trace",
+    "label": "The reference without a load",
+    "journalText": "A reference instrument preserves an inward-curved response while its test cradle is verifiably empty.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/open-measure-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "briefing": {
+      "id": "open-measure",
+      "file": "../../assets/missions/illustrations/open-measure.png",
+      "sha256": "114c424090e56c06a6f2425efedc26778b8a0fffdf6aca8308a81f9320a46726",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Engineer Cato Lerr",
+        "portrait": {
+          "id": "cato-lerr",
+          "file": "../../assets/missions/portraits/cato-lerr.png",
+          "sha256": "0f3b7b44d62b83e4e22052ddc765217c3961426533e147608bb20d5216588418",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Physicist Anja Kest",
+        "portrait": {
+          "id": "anja-kest",
+          "file": "../../assets/missions/portraits/anja-kest.png",
+          "sha256": "4932e9fa711c3655952a7940674a69162c8fa5c39606ba2dca7912ab10804153",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "open-measure-reference",
+        "asset": {
+          "id": "open-measure-reference",
+          "file": "../../assets/missions/props/open-measure-reference.png",
+          "sha256": "fc4dcd6420c7a6de1fa3dd054ab720328dcb7c5766b7cc9dec2fd361ce769db2",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "open-measure/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/open-measure-choose-settlement-plan-a.png",
+        "sha256": "fb97a4c185a571ea3750a6e4ceae745adc3641ba4d690c667a755d4e8f9755ca",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "open-measure/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/open-measure-choose-settlement-plan-b.png",
+        "sha256": "c2bbaa7ab559ffae99c8015a99983efe1c01139aef96f4d75c9f8148b3bc798b",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 1,
+      "system": 157,
+      "objective": "Accept Open Measure at Valtor.",
+      "dialog": "Engineer Cato Lerr: Three independent workshops cannot exchange replacement parts because their calibration certificates use incompatible reference loads. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S157",
+      "locationName": "Valtor",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/accept",
+        "file": "../../assets/missions/stages/open-measure/accept.png",
+        "sha256": "b7d7b75c9481c826715b78d9b4b8a61cf3a6f92b769e93451c0d9a0503373fdd",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 1,
+      "system": 225,
+      "objective": "Compare three workshop reference loads against the actual external test fittings.",
+      "dialog": "LERR: A certificate should describe a fit, not manufacture a monopoly.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "open-measure-survey-1",
+        "open-measure-survey-2",
+        "open-measure-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S225",
+      "locationName": "Vorvakar",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/survey",
+        "file": "../../assets/missions/stages/open-measure/survey.png",
+        "sha256": "27eaf4532e5585d69a3470b61a4c39bfea84aae3d44cc3617cee6716d8b9ea69",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 1,
+      "system": 157,
+      "objective": "Collect the identified one-tonne reference instrument from Engineer Cato Lerr.",
+      "dialog": "Engineer Cato Lerr: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S157",
+      "locationName": "Valtor",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "open-measure-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/collect-reference",
+        "file": "../../assets/missions/stages/open-measure/collect-reference.png",
+        "sha256": "6ec84c23f983ffe71b98627afec936eca5023b1f17f774c19dff508337d9ac8e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 1,
+      "system": 41,
+      "objective": "Test two independently made parts with the loaned tolerance programmer.",
+      "dialog": "KEST: Record the physical tolerances before looking at the supplier's label.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "open-measure-work-port",
+        "open-measure-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S041",
+      "locationName": "Voransen",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/field-work",
+        "file": "../../assets/missions/stages/open-measure/field-work.png",
+        "sha256": "760e27440f38ff9a57e3e884e5ba9b6cf8984ea097786e0f82917bcc19aaed73",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 1,
+      "system": 77,
+      "objective": "Escort the independent calibration tender to the common test berth.",
+      "dialog": "LERR: Its technician brings a separate instrument and a separate signing key.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "open-measure-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S077",
+      "locationName": "Morkador",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/independent-witness",
+        "file": "../../assets/missions/stages/open-measure/independent-witness.png",
+        "sha256": "eac07c0f5165ac5b4798a23303828b7569382a50817f841d9c3d217ae7a6f8b5",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 1,
+      "system": 157,
+      "objective": "Choose the verified settlement with the consenting operators.",
+      "dialog": "Engineer Cato Lerr: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "open-measure-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Publish an open physical measurement standard",
+        "Establish a witnessed interoperable calibration service"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G02-S157",
+      "locationName": "Valtor",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/choose-settlement",
+        "file": "../../assets/missions/stages/open-measure/choose-settlement.png",
+        "sha256": "40316e50c3afe859d840679b0f04cf4a0446cce15692b2c143d58cd4b93aee60",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 1,
+      "system": 41,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Engineer Cato Lerr: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "open-measure-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "open-measure-plan-a-physical-proof",
+            "open-measure-plan-a-receiving-proof"
+          ],
+          "objective": "Verify the public reference and an independently manufactured fit.",
+          "dialog": "KEST: A standard works when someone else can reproduce it.",
+          "gossip": "Open Measure: Publish an open physical measurement standard."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "open-measure-plan-b-physical-proof",
+            "open-measure-plan-b-receiving-proof"
+          ],
+          "objective": "Verify reciprocal service limits and independent rejection rights.",
+          "dialog": "LERR: Every workshop must be able to refuse an unsafe result.",
+          "gossip": "Open Measure: Establish a witnessed interoperable calibration service."
+        }
+      ],
+      "locationKey": "G02-S041",
+      "locationName": "Voransen",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/apply-settlement",
+        "file": "../../assets/missions/stages/open-measure/apply-settlement.png",
+        "sha256": "c0cbb977146fc3462fc96d3c8a9ab35b2745ec14077a6807601210b9cb1f7a61",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 1,
+      "system": 157,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Engineer Cato Lerr: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S157",
+      "locationName": "Valtor",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "open-measure-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/return-and-audit",
+        "file": "../../assets/missions/stages/open-measure/return-and-audit.png",
+        "sha256": "621c452ff72bec305d19684e92805679dca1bbe5060dac2b83ce2afecf1e0a8a",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 1,
+      "system": 157,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Engineer Cato Lerr: The independent audit is complete. Your fee is 7900 CR. The operators retain the chosen settlement and their original records.\n\nEngineer Cato Lerr: The audit has left one anomaly that belongs to neither side. A reference instrument preserves an inward-curved response while its test cradle is verifiably empty. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S157",
+      "locationName": "Valtor",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.open-measure/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "open-measure/close-case",
+        "file": "../../assets/missions/stages/open-measure/close-case.png",
+        "sha256": "d11e0a494cb01af9ef728100c216755c9d85f326c6adad33132523780e79bd8e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ]
+}

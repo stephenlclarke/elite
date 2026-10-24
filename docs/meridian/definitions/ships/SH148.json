@@ -1,0 +1,35 @@
+{
+  "id": "SH148",
+  "name": "Morepork",
+  "family": "morepork",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 16,
+    "speed": 45.9,
+    "acceleration": 15.4,
+    "energy": 320,
+    "recharge": 4.8,
+    "roll": 1.32,
+    "pitch": 1.16,
+    "yaw": 1.08,
+    "shield": 280,
+    "shieldRecharge": 2.0,
+    "fuel": 120,
+    "jump": 8,
+    "spool": 12,
+    "missiles": 7,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 259000
+  }
+}

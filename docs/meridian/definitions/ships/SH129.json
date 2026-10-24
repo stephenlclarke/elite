@@ -1,0 +1,35 @@
+{
+  "id": "SH129",
+  "name": "Warthog 10 Guard",
+  "family": "warthog-10-guard",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 3,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 36,
+    "speed": 36.8,
+    "acceleration": 10.8,
+    "energy": 560,
+    "recharge": 7.05,
+    "roll": 0.88,
+    "pitch": 0.77,
+    "yaw": 0.72,
+    "shield": 380,
+    "shieldRecharge": 2.0,
+    "fuel": 130,
+    "jump": 8,
+    "spool": 14,
+    "missiles": 8,
+    "facings": 15,
+    "cargoExpansion": 15,
+    "price": 320000
+  }
+}

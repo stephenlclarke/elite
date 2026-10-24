@@ -1,0 +1,35 @@
+{
+  "id": "SH024",
+  "name": "Peregrine Mk IV",
+  "family": "peregrine",
+  "role": "trader",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 84,
+    "speed": 35.0,
+    "acceleration": 9.3,
+    "energy": 350,
+    "recharge": 3.97,
+    "roll": 0.81,
+    "pitch": 0.71,
+    "yaw": 0.66,
+    "shield": 290,
+    "shieldRecharge": 1.72,
+    "fuel": 130,
+    "jump": 9,
+    "spool": 14,
+    "missiles": 8,
+    "facings": 15,
+    "cargoExpansion": 35,
+    "price": 261000
+  }
+}

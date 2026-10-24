@@ -1,0 +1,1591 @@
+{
+  "id": "l337.unwritten-route",
+  "title": "The Unwritten Route",
+  "version": "1.0.0",
+  "requiredClueSet": "l337.base-missions",
+  "requiredSources": [
+    "l337.glass-meridian",
+    "l337.quiet-choir",
+    "l337.hollow-manifest",
+    "l337.guiding-light",
+    "l337.courier",
+    "l337.borrowed-voice",
+    "l337.shattered-wake",
+    "l337.tithe-of-worlds",
+    "l337.still-current",
+    "l337.wayfarer-exchange",
+    "l337.quiet-nursery",
+    "l337.borrowed-dawn",
+    "l337.open-shadow",
+    "l337.harbour-without-orders",
+    "l337.false-colours",
+    "l337.rubble-covenant",
+    "l337.garden-in-transit",
+    "l337.warrant-ledger",
+    "l337.measure-of-care",
+    "l337.long-return",
+    "l337.unfinished-map",
+    "l337.blue-reservoir",
+    "l337.mutual-shelter",
+    "l337.listening-frontier",
+    "l337.assembly-of-orbits",
+    "l337.under-tow",
+    "l337.memory-atlas",
+    "l337.fleet-of-neighbours",
+    "l337.uncounted-names",
+    "l337.honest-circuit",
+    "l337.small-lights",
+    "l337.passengers-horizon",
+    "l337.kind-distance",
+    "l337.cold-reserve",
+    "l337.magnetic-orchard",
+    "l337.open-measure",
+    "l337.shared-pulse",
+    "l337.witness-window",
+    "l337.public-record",
+    "l337.contract/sealed-dispatch",
+    "l337.contract/consented-freight",
+    "l337.contract/bonded-freight",
+    "l337.contract/cabin-journey",
+    "l337.contract/orbital-outlook",
+    "l337.contract/verified-warrant",
+    "l337.contract/corridor-defence",
+    "l337.contract/custody-rescue",
+    "l337.contract/identified-salvage",
+    "l337.contract/consented-survey",
+    "l337.contract/isolation-work",
+    "l337.contract/measured-extraction",
+    "l337.contract/mutual-contribution",
+    "l337.contract/orbital-evacuation",
+    "l337.contract/hostile-larvaal-defence",
+    "l337.training/flight-reception",
+    "l337.training/safe-gunnery",
+    "l337.training/defensive-flight",
+    "l337.training/navigation-trade",
+    "l337.wayfarer-service/cold-chain",
+    "l337.wayfarer-service/repair-loop",
+    "l337.wayfarer-service/seed-transfer",
+    "l337.wayfarer-service/field-relief",
+    "l337.wayfarer-service/record-recovery",
+    "l337.wayfarer-service/convoy-watch"
+  ],
+  "completionEvidence": {
+    "id": "convergent-heart",
+    "label": "The convergent heart",
+    "source": "l337.unwritten-route",
+    "awardStage": "fabricate-at-plugh",
+    "massTonnes": 0,
+    "requiredForOwnUnlock": false,
+    "text": "The completed PLUGH reconstruction resolves the collected inward traces into Medusa's living convergent structure. This is the mystery's epilogue evidence, not a prerequisite for itself."
+  },
+  "schema": "l337-meta-quest-design/1",
+  "license": "MIT",
+  "requiredClueIDs": [
+    "meridian-offset",
+    "choir-silent-voice",
+    "manifest-hidden-imprint",
+    "lantern-extra-echo",
+    "courier-empty-destination",
+    "voice-unclaimed-channel",
+    "wake-before-impact",
+    "tithe-unclaimed-reserve",
+    "current-resting-arc",
+    "exchange-unbooked-window",
+    "quiet-nursery-trace",
+    "borrowed-dawn-trace",
+    "open-shadow-trace",
+    "harbour-without-orders-trace",
+    "false-colours-trace",
+    "rubble-covenant-trace",
+    "garden-in-transit-trace",
+    "warrant-ledger-trace",
+    "measure-of-care-trace",
+    "long-return-trace",
+    "unfinished-map-trace",
+    "blue-reservoir-trace",
+    "mutual-shelter-trace",
+    "listening-frontier-trace",
+    "assembly-of-orbits-trace",
+    "under-tow-trace",
+    "memory-atlas-trace",
+    "fleet-of-neighbours-trace",
+    "uncounted-names-trace",
+    "honest-circuit-trace",
+    "small-lights-trace",
+    "passengers-horizon-trace",
+    "kind-distance-trace",
+    "cold-reserve-trace",
+    "magnetic-orchard-trace",
+    "open-measure-trace",
+    "shared-pulse-trace",
+    "witness-window-trace",
+    "public-record-trace",
+    "sealed-dispatch-family-trace",
+    "consented-freight-family-trace",
+    "bonded-freight-family-trace",
+    "cabin-journey-family-trace",
+    "orbital-outlook-family-trace",
+    "verified-warrant-family-trace",
+    "corridor-defence-family-trace",
+    "custody-rescue-family-trace",
+    "identified-salvage-family-trace",
+    "consented-survey-family-trace",
+    "isolation-work-family-trace",
+    "measured-extraction-family-trace",
+    "mutual-contribution-family-trace",
+    "orbital-evacuation-family-trace",
+    "hostile-larvaal-defence-family-trace",
+    "flight-reception-family-trace",
+    "safe-gunnery-family-trace",
+    "defensive-flight-family-trace",
+    "navigation-trade-family-trace",
+    "exchange-service-cold-chain",
+    "exchange-service-repair-loop",
+    "exchange-service-seed-transfer",
+    "exchange-service-field-relief",
+    "exchange-service-record-recovery",
+    "exchange-service-convoy-watch"
+  ],
+  "shipID": "SH171",
+  "clueStorage": "Permanent commander journal records; zero cargo mass, retained after escape, ship trade, load and pack upgrade.",
+  "setPolicy": "All commanders use the same current 64-clue base set. Every original campaign, repeatable family and tutorial contributes at its verified successful terminal, once per source. Future optional paid packs may add collectible evidence without becoming prerequisites for this base-game mystery.",
+  "plughAccess": "The final required clue provides a normal navigation beacon for the local PLUGH station. Use existing PLUGH knowledge if already discovered. This reveals no Medusa location and does not enable XYZZY. Persist the revealed PLUGH entry position so it does not move on reload.",
+  "discoveryPolicy": "No SH171 random, faction, wanted-list, ambient, scripted, misjump or XYZZY encounter before every required clue is decoded and all four trail objectives are completed in order. The only normal spawn is this quest's unique Medusa at the Ashor outer cradle. Redact its catalogue identity and design until the legitimate encounter.",
+  "destructionPolicy": "Require actual destruction of the quest-instance Medusa credited to the player by the authoritative combat system, including the player's weapons. Targeting, culling, escape, NPC kills and generic SH171 kills do not grant the record. An uncredited loss permits a replacement encounter at the same unlocked checkpoint.",
+  "blueprintPolicy": "Automatically preserve a zero-mass reconstruction record on the valid kill. Full rendering becomes visible, but every purchase/fabrication path remains locked until a later PLUGH AI confirmation.",
+  "fabricationPolicy": "After reconstruction at any PLUGH station, permit ordinary paid Medusa purchase at PLUGH stations only. Retain the independent hull price and standard trade-in, capacity, fitting, confirmation and save rules. The quest grants fabrication access, not a free ship.",
+  "xyzzyPolicy": "XYZZY convenience settings do not bypass this quest's discovery or fabrication gates. Isolated developer test fixtures may arrange state explicitly without changing a real commander's progress.",
+  "persistencePolicy": "Save current clue receipts, decoder and ordered trail evidence, encounter identity, player kill record and fabrication entitlement in the current format. Restore normal play from those records; duplicate events cannot grant repeated rewards. Every new commander starts with no mystery progress or Medusa entitlement.",
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "briefing": {
+      "id": "unwritten-route",
+      "file": "../../assets/missions/illustrations/unwritten-route.png",
+      "sha256": "2279ec2602258e11798e469c6b8ce78e8cfd6c4aacdb00320670068f05600c23",
+      "visibility": "Unlocked quest stage"
+    },
+    "ship": {
+      "id": "SH171",
+      "file": "../../assets/missions/ships/SH171.png",
+      "sha256": "0e6fd0bd9a5afbc15fcf54c62787b8f41e094c7ed3f1b1a61b384df0fbfb9ed6",
+      "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+    },
+    "visibilityPolicy": "Do not preload or reveal future quest stage cards, clue glyphs, names or Medusa hull thumbnails through player-facing galleries before their authoritative visibility receipt. Authoring gallery is spoiler-marked."
+  },
+  "spawnRule": {
+    "requiresDecodedClues": true,
+    "requiredTrailReceipts": [
+      "l337.unwritten-route/step/wake-the-listener",
+      "l337.unwritten-route/step/read-the-ring",
+      "l337.unwritten-route/step/align-the-lanterns",
+      "l337.unwritten-route/step/open-the-cradle"
+    ],
+    "galaxy": 4,
+    "system": 84,
+    "site": "ashor-outer-cradle",
+    "uniquePerCommander": true
+  },
+  "fabricationRule": {
+    "requiresAllClues": true,
+    "requiresFullTrail": true,
+    "requiresPlayerKillRecord": true,
+    "requiresSubsequentPlughAIConfirmation": true,
+    "stationKind": "plugh",
+    "systemID": 256,
+    "shipID": "SH171",
+    "purchasePolicy": "plughQuestFabrication",
+    "freeShip": false
+  },
+  "clues": [
+    {
+      "id": "meridian-offset",
+      "source": "l337.glass-meridian",
+      "missionTitle": "The Glass Meridian",
+      "label": "The missing instant",
+      "text": "The recovered timing standard contains an interval that none of the lane clocks measured. Inside that interval, a curved trace repeats eight times.",
+      "awardDialog": "VENN: There is one detail the inquiry could not explain: a curved trace in the timing standard, written between the clock ticks. I have copied it to your journal. PLUGH's AI may be able to read it.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/meridian-offset",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "meridian-offset",
+        "file": "../../assets/missions/clues/meridian-offset.svg",
+        "sha256": "bf13fc57a374b35eb980b5329b6db19888befad8102797d85ff91f80d322918a",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "id": "choir-silent-voice",
+      "source": "l337.quiet-choir",
+      "missionTitle": "A Choir Beneath the Static",
+      "label": "The silent voice",
+      "text": "The restored Larvaal call contains a reply from beyond the gathering. Its pauses describe a curve, but no Larvaal vessel claims the voice.",
+      "awardDialog": "VALE: One voice answered from outside the gathering. The Larvaal listeners do not recognise it. Its pauses form a pattern like a map. I have preserved the reply in your journal.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/choir-silent-voice",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "choir-silent-voice",
+        "file": "../../assets/missions/clues/choir-silent-voice.svg",
+        "sha256": "c46103913e66ff8c8df419db8507b84d0591cd6765247b669fbe78f47e8d8840",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "id": "manifest-hidden-imprint",
+      "source": "l337.hollow-manifest",
+      "missionTitle": "The Hollow Manifest",
+      "label": "The inward mark",
+      "text": "Beneath the recalled seal's ordinary signature is a second imprint: loops around an empty centre, with each loop pointing inward.",
+      "awardDialog": "TOREN: The master seal carried an older imprint beneath its serial number. It was never part of the freight register. Keep the image; the loops seem to point towards something missing from the middle.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/manifest-hidden-imprint",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "manifest-hidden-imprint",
+        "file": "../../assets/missions/clues/manifest-hidden-imprint.svg",
+        "sha256": "ad7a2a89249b9b5051012f3f639b2489e59c1ea7ba1b6da1ce03043e81d3da70",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.guiding-light",
+      "missionTitle": "The Guiding Light",
+      "id": "lantern-extra-echo",
+      "label": "The extra lantern",
+      "text": "The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array.",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/lantern-extra-echo",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "lantern-extra-echo",
+        "file": "../../assets/missions/clues/lantern-extra-echo.svg",
+        "sha256": "524bb9d9a079ea0e5f99f7a5f3b52d839fa76d56d2aa45c3e392dd7d7db95ce5",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.courier",
+      "missionTitle": "Signed Passage",
+      "id": "courier-empty-destination",
+      "label": "The empty destination",
+      "text": "An early receiving receipt has an inward-curved watermark for a destination absent from all freight charts.",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. An early receiving receipt has an inward-curved watermark for a destination absent from all freight charts. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/courier-empty-destination",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "courier-empty-destination",
+        "file": "../../assets/missions/clues/courier-empty-destination.svg",
+        "sha256": "6f5856d05912ffbe31d0d31d9eff3aaa8a26f4dbc2cce1070c2aed0e64633d66",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "id": "voice-unclaimed-channel",
+      "source": "l337.borrowed-voice",
+      "missionTitle": "The Borrowed Voice",
+      "label": "The unclaimed channel",
+      "text": "The independent verifier recorded a reply before its verification challenge could have transmitted. Its curved phase trace folds around a quiet centre, as though the receiver were inside a larger listening ring.",
+      "awardDialog": "RENN: One reply is not in either operator's access record. Its phase curls around an empty centre, and its timestamp precedes the challenge. It is not evidence against Sol or the observer. I have copied the anomaly to your journal; PLUGH's AI may recognise its shape.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/voice-unclaimed-channel",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "voice-unclaimed-channel",
+        "file": "../../assets/missions/clues/voice-unclaimed-channel.svg",
+        "sha256": "269148778c56da4bdccd71e6b37f437739989f2815bf3f6b29bff73753a2e352",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "id": "wake-before-impact",
+      "source": "l337.shattered-wake",
+      "missionTitle": "The Shattered Wake",
+      "label": "The curve before the fall",
+      "text": "Before the mass driver restarted, the orbital recorder traced a loop of inward-facing points around a quiet centre. The curve passes through the same absence described by the other collected traces.",
+      "awardDialog": "ORR: This curved trace predates the debris. It is not evidence that anyone deliberately caused the disaster. I have copied it to your journal; PLUGH's AI may be able to place it beside your other traces.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/wake-before-impact",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "wake-before-impact",
+        "file": "../../assets/missions/clues/wake-before-impact.svg",
+        "sha256": "ac312c6e8c91864f62b9c3811697c38998c59fa16835b3a24d2b134d0fd44830",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "id": "tithe-unclaimed-reserve",
+      "source": "l337.tithe-of-worlds",
+      "missionTitle": "The Tithe of Worlds",
+      "label": "The unclaimed reserve",
+      "text": "The acquisition ledger contains a reserve entry with no owner, quantity or destination. Its inward-curving phase marks form a ring around an unallocated centre; the signature predates Tithe's creation.",
+      "awardDialog": "LERR: This reserve is not part of Tithe's acquisitions. The entry predates its first instruction and names no material at all. I have copied the curved signature to your journal. PLUGH's AI may recognise what the ledger could not allocate.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/tithe-unclaimed-reserve",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "tithe-unclaimed-reserve",
+        "file": "../../assets/missions/clues/tithe-unclaimed-reserve.svg",
+        "sha256": "f82ad6a7202a6dcb5d0d2a50eafb039687fbc6881f96f18fffd11932e85672fa",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "id": "current-resting-arc",
+      "source": "l337.still-current",
+      "missionTitle": "The Still Current",
+      "label": "The resting arc",
+      "text": "The lattice's oldest meter records an inward arc before any collector was built. The measured charge is zero, but the phase signature still encloses a quiet centre.",
+      "awardDialog": "KEST: This arc predates the lattice. It cannot be part of the dust bridge or its work order. I have copied the zero-charge phase record to your journal; PLUGH's AI may recognise it.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/current-resting-arc",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "current-resting-arc",
+        "file": "../../assets/missions/clues/current-resting-arc.svg",
+        "sha256": "57a22f812b24407f48f64e761d8e2f4770d742ea841817109fb47e0b62cb8f2e",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "id": "exchange-unbooked-window",
+      "source": "l337.wayfarer-exchange",
+      "missionTitle": "Wayfarer Exchange",
+      "label": "The unbooked window",
+      "text": "The first signed route ledger reserves a window with no carrier, cargo or destination. Its curved boundary points inward and matches a bearing outside the published service network.",
+      "awardDialog": "VEIL: Every real consignment is accounted for. This older reservation names no shipment at all. Keep its curved signature in your journal; the AI at PLUGH may be able to explain the unused window.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/exchange-unbooked-window",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "exchange-unbooked-window",
+        "file": "../../assets/missions/clues/exchange-unbooked-window.svg",
+        "sha256": "dee699cbebadcda06b6548aed7453f0b3e20f091f0c68b96a0d77418d437506a",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.quiet-nursery",
+      "missionTitle": "The Quiet Nursery",
+      "id": "quiet-nursery-trace",
+      "label": "The breath between readings",
+      "text": "The unaveraged pressure trace includes a quiet inward curl that no nursery valve produces.",
+      "awardDialog": "Physicist Anja Kest: The audit has left one anomaly that belongs to neither side. The unaveraged pressure trace includes a quiet inward curl that no nursery valve produces. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/quiet-nursery-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "quiet-nursery-trace",
+        "file": "../../assets/missions/clues/quiet-nursery-trace.svg",
+        "sha256": "f3facbef06e58a3081dc8219853b0df0b9f34938de25025d752f26493f7c2f4f",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.borrowed-dawn",
+      "missionTitle": "Borrowed Dawn",
+      "id": "borrowed-dawn-trace",
+      "label": "The unlit interval",
+      "text": "A photometer records a curved shadow during an interval when no physical reflector crosses its view.",
+      "awardDialog": "Controller Edda Rell: The audit has left one anomaly that belongs to neither side. A photometer records a curved shadow during an interval when no physical reflector crosses its view. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/borrowed-dawn-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "borrowed-dawn-trace",
+        "file": "../../assets/missions/clues/borrowed-dawn-trace.svg",
+        "sha256": "d38f8e93f92b70b1e01fb6453765ce149b48b508c5905221d38ac45fab97bdba",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.open-shadow",
+      "missionTitle": "The Open Shadow",
+      "id": "open-shadow-trace",
+      "label": "The shadow with no hull",
+      "text": "The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/open-shadow-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "open-shadow-trace",
+        "file": "../../assets/missions/clues/open-shadow-trace.svg",
+        "sha256": "ebbbe6115500236fb789b4b5bc27060422170dcd63fb10e5d6b059e1da871fd4",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.harbour-without-orders",
+      "missionTitle": "Harbour Without Orders",
+      "id": "harbour-without-orders-trace",
+      "label": "The unsigned berth",
+      "text": "The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary.",
+      "awardDialog": "Controller Edda Rell: The audit has left one anomaly that belongs to neither side. The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/harbour-without-orders-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "harbour-without-orders-trace",
+        "file": "../../assets/missions/clues/harbour-without-orders-trace.svg",
+        "sha256": "95d1e0e2b79a9c263bd7d9e34127fa7de0fc1d43c70b2cf41affbde85396bf6c",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.false-colours",
+      "missionTitle": "False Colours",
+      "id": "false-colours-trace",
+      "label": "The seal before the key",
+      "text": "An older layer in the physical seal contains a curved signature absent from every transponder issue record.",
+      "awardDialog": "Nia Toren: The audit has left one anomaly that belongs to neither side. An older layer in the physical seal contains a curved signature absent from every transponder issue record. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/false-colours-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "false-colours-trace",
+        "file": "../../assets/missions/clues/false-colours-trace.svg",
+        "sha256": "64ff05a6c51f60778c9752f8b146a4e727645f524f3ec94a295b024ac4418284",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.rubble-covenant",
+      "missionTitle": "The Rubble Covenant",
+      "id": "rubble-covenant-trace",
+      "label": "The hollow mass",
+      "text": "One old trajectory record curves around an empty centre as though the missing mass had a boundary of its own.",
+      "awardDialog": "Geologist Jalen Orr: The audit has left one anomaly that belongs to neither side. One old trajectory record curves around an empty centre as though the missing mass had a boundary of its own. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/rubble-covenant-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "rubble-covenant-trace",
+        "file": "../../assets/missions/clues/rubble-covenant-trace.svg",
+        "sha256": "942de3437096003b03ed49215f70b07d567500b2ac18d9477b24df41d092ae04",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.garden-in-transit",
+      "missionTitle": "A Garden in Transit",
+      "id": "garden-in-transit-trace",
+      "label": "The dormant season",
+      "text": "The archive contains a circular season boundary that encloses no named climate or world.",
+      "awardDialog": "Custodian Tomas Veil: The audit has left one anomaly that belongs to neither side. The archive contains a circular season boundary that encloses no named climate or world. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/garden-in-transit-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "garden-in-transit-trace",
+        "file": "../../assets/missions/clues/garden-in-transit-trace.svg",
+        "sha256": "9c465eb8cb8a8e59ed43663c21f08df77fe397d7f7241fa2df8404c03feee186",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.warrant-ledger",
+      "missionTitle": "The Warrant Ledger",
+      "id": "warrant-ledger-trace",
+      "label": "The unwritten warrant",
+      "text": "Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world.",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/warrant-ledger-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "warrant-ledger-trace",
+        "file": "../../assets/missions/clues/warrant-ledger-trace.svg",
+        "sha256": "238918975ffabcd633fbdca347ce40495a1d98988f73ea159a240c5ddda93281",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.measure-of-care",
+      "missionTitle": "The Measure of Care",
+      "id": "measure-of-care-trace",
+      "label": "The temperature of silence",
+      "text": "A reference recorder shows a stable curved boundary during a period with no recorded thermal source.",
+      "awardDialog": "Physicist Anja Kest: The audit has left one anomaly that belongs to neither side. A reference recorder shows a stable curved boundary during a period with no recorded thermal source. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/measure-of-care-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "measure-of-care-trace",
+        "file": "../../assets/missions/clues/measure-of-care-trace.svg",
+        "sha256": "99185ff6f8712832494020354a406fdcfa7d8fd39039174e62f0c0cac589bb7e",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.long-return",
+      "missionTitle": "The Long Return",
+      "id": "long-return-trace",
+      "label": "The passenger never booked",
+      "text": "The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination.",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/long-return-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "long-return-trace",
+        "file": "../../assets/missions/clues/long-return-trace.svg",
+        "sha256": "920b4291ef25a15b851bda19a6b870c7614d81516bd001a32befa1a778cf8896",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.unfinished-map",
+      "missionTitle": "The Unfinished Map",
+      "id": "unfinished-map-trace",
+      "label": "The margin beyond the map",
+      "text": "The archive's untouched margin carries an inward arc outside every surveyed coordinate frame.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The archive's untouched margin carries an inward arc outside every surveyed coordinate frame. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/unfinished-map-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "unfinished-map-trace",
+        "file": "../../assets/missions/clues/unfinished-map-trace.svg",
+        "sha256": "0caee503a577c45f1d1e77f8f55a17e1288a6761a449b679a575f7e1e2bd9aa0",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.blue-reservoir",
+      "missionTitle": "The Blue Reservoir",
+      "id": "blue-reservoir-trace",
+      "label": "The dry current",
+      "text": "The oldest flow recorder traces an inward curve through a channel that contains no water.",
+      "awardDialog": "Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side. The oldest flow recorder traces an inward curve through a channel that contains no water. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/blue-reservoir-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "blue-reservoir-trace",
+        "file": "../../assets/missions/clues/blue-reservoir-trace.svg",
+        "sha256": "2ae139e023bade32475729277d121ea48c9e30d234ff4680ea7445f0b43e8f34",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.mutual-shelter",
+      "missionTitle": "Mutual Shelter",
+      "id": "mutual-shelter-trace",
+      "label": "The ownerless reserve",
+      "text": "An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor.",
+      "awardDialog": "Nia Toren: The audit has left one anomaly that belongs to neither side. An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/mutual-shelter-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "mutual-shelter-trace",
+        "file": "../../assets/missions/clues/mutual-shelter-trace.svg",
+        "sha256": "e4bcdd85ad39f27ef30453ab6ab00c09f076e3ff02eec434ddd764be3e067b96",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.listening-frontier",
+      "missionTitle": "The Listening Frontier",
+      "id": "listening-frontier-trace",
+      "label": "The voice outside the channel",
+      "text": "A quiet-window listener receives an inward-curved phase trace from outside both recognised transmission bands.",
+      "awardDialog": "Captain Tamsin Holt: The audit has left one anomaly that belongs to neither side. A quiet-window listener receives an inward-curved phase trace from outside both recognised transmission bands. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/listening-frontier-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "listening-frontier-trace",
+        "file": "../../assets/missions/clues/listening-frontier-trace.svg",
+        "sha256": "37a7aadfab0ac7f01c80ddea00c2ac4165092740dd0dad50bb41b93e5d2b4a16",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.assembly-of-orbits",
+      "missionTitle": "An Assembly of Orbits",
+      "id": "assembly-of-orbits-trace",
+      "label": "The absent seat",
+      "text": "The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists.",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/assembly-of-orbits-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "assembly-of-orbits-trace",
+        "file": "../../assets/missions/clues/assembly-of-orbits-trace.svg",
+        "sha256": "ecf32785aba982c04b85ad0d0947c354bbbe8b2311d938fbb58eba0dd7ddb3f9",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.under-tow",
+      "missionTitle": "Under Tow",
+      "id": "under-tow-trace",
+      "label": "The coupling without a vessel",
+      "text": "An old interface calibration defines a curved inward contact surface with no compatible hull in its register.",
+      "awardDialog": "Tug Lead Mira Penn: The audit has left one anomaly that belongs to neither side. An old interface calibration defines a curved inward contact surface with no compatible hull in its register. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/under-tow-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "under-tow-trace",
+        "file": "../../assets/missions/clues/under-tow-trace.svg",
+        "sha256": "f352a6a2df87d168a7b22b7b2b15ef7563b884b1f4db1847ed28e6da1cc75997",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.memory-atlas",
+      "missionTitle": "The Memory Atlas",
+      "id": "memory-atlas-trace",
+      "label": "The place nobody remembers",
+      "text": "Three unrelated diaries contain the same inward curve around a place none of their authors visited.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Three unrelated diaries contain the same inward curve around a place none of their authors visited. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/memory-atlas-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "memory-atlas-trace",
+        "file": "../../assets/missions/clues/memory-atlas-trace.svg",
+        "sha256": "16475bfa5a8d5b7dfdc30e0eb874e3f1d735099479e480d2e05556c3d1ce4e0d",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.fleet-of-neighbours",
+      "missionTitle": "A Fleet of Neighbours",
+      "id": "fleet-of-neighbours-trace",
+      "label": "The formation with no centre",
+      "text": "An early dispatch diagram curves around an empty central formation slot with no assigned vessel.",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. An early dispatch diagram curves around an empty central formation slot with no assigned vessel. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/fleet-of-neighbours-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "fleet-of-neighbours-trace",
+        "file": "../../assets/missions/clues/fleet-of-neighbours-trace.svg",
+        "sha256": "698cf67371369eeee845854e86320c123516bc14a7017f76672d5fe184cd0507",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.uncounted-names",
+      "missionTitle": "Uncounted Names",
+      "id": "uncounted-names-trace",
+      "label": "The unnamed entry",
+      "text": "The oldest register has an inward-curved entry naming no person, cargo or owner.",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. The oldest register has an inward-curved entry naming no person, cargo or owner. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/uncounted-names-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "uncounted-names-trace",
+        "file": "../../assets/missions/clues/uncounted-names-trace.svg",
+        "sha256": "32a20f0796318aa5e4a2b64a9efad7dbe81cc0fa9e5bdd52f31f4c84ce5bca1f",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.honest-circuit",
+      "missionTitle": "The Honest Circuit",
+      "id": "honest-circuit-trace",
+      "label": "The tick outside the circuit",
+      "text": "A reference timebase records a curved phase mark between two valid circuit ticks.",
+      "awardDialog": "Captain Elara Venn: The audit has left one anomaly that belongs to neither side. A reference timebase records a curved phase mark between two valid circuit ticks. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/honest-circuit-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "honest-circuit-trace",
+        "file": "../../assets/missions/clues/honest-circuit-trace.svg",
+        "sha256": "f7eef997409df05c76f230d287e52f7a15256bd1c342e67f98b96e500a07a202",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.small-lights",
+      "missionTitle": "Small Lights",
+      "id": "small-lights-trace",
+      "label": "The light before the fault",
+      "text": "An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed.",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/small-lights-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "small-lights-trace",
+        "file": "../../assets/missions/clues/small-lights-trace.svg",
+        "sha256": "d12852f00e0eab32919f741f35eae6535d6a82cf42190620abcd3fd6a079a736",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.passengers-horizon",
+      "missionTitle": "The Passenger's Horizon",
+      "id": "passengers-horizon-trace",
+      "label": "The horizon without a world",
+      "text": "A viewing reference encloses an inward-curved horizon that belongs to none of the surveyed planets.",
+      "awardDialog": "Captain Orin Sorel: The audit has left one anomaly that belongs to neither side. A viewing reference encloses an inward-curved horizon that belongs to none of the surveyed planets. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/passengers-horizon-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "passengers-horizon-trace",
+        "file": "../../assets/missions/clues/passengers-horizon-trace.svg",
+        "sha256": "c45cd2259a40db037defe2aa03d411674bb183c0f20161c42704b010f872e386",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.kind-distance",
+      "missionTitle": "The Kind Distance",
+      "id": "kind-distance-trace",
+      "label": "The reply with no sender",
+      "text": "A dormant relay preserves an inward-curved reply predating every registered household key.",
+      "awardDialog": "Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither side. A dormant relay preserves an inward-curved reply predating every registered household key. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/kind-distance-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "kind-distance-trace",
+        "file": "../../assets/missions/clues/kind-distance-trace.svg",
+        "sha256": "3233d5431cf508057c78ddb1d1dd1b68058b9ea2581668ffe91e6d610fe65169",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.cold-reserve",
+      "missionTitle": "Cold Reserve",
+      "id": "cold-reserve-trace",
+      "label": "The unused order",
+      "text": "An expired dispatch order defines an inward route to a receiving volume that has never existed in the reserve.",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. An expired dispatch order defines an inward route to a receiving volume that has never existed in the reserve. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/cold-reserve-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "cold-reserve-trace",
+        "file": "../../assets/missions/clues/cold-reserve-trace.svg",
+        "sha256": "615e9863ba4335f225a814c7cf866f94905d7a03bec0e6d1b7ec892f40ea5b8d",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.magnetic-orchard",
+      "missionTitle": "The Magnetic Orchard",
+      "id": "magnetic-orchard-trace",
+      "label": "The root without a stem",
+      "text": "The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/magnetic-orchard-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "magnetic-orchard-trace",
+        "file": "../../assets/missions/clues/magnetic-orchard-trace.svg",
+        "sha256": "1e1619ae9ef145b6f86d68dc29bf17e3be45ae425f9255145f0895ed4f947e7c",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.open-measure",
+      "missionTitle": "Open Measure",
+      "id": "open-measure-trace",
+      "label": "The reference without a load",
+      "text": "A reference instrument preserves an inward-curved response while its test cradle is verifiably empty.",
+      "awardDialog": "Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side. A reference instrument preserves an inward-curved response while its test cradle is verifiably empty. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/open-measure-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "open-measure-trace",
+        "file": "../../assets/missions/clues/open-measure-trace.svg",
+        "sha256": "f51990c8beff49c0599f4b55d2d8ebc0769541facc576bcfbc04138b509e866e",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.shared-pulse",
+      "missionTitle": "The Shared Pulse",
+      "id": "shared-pulse-trace",
+      "label": "The pulse before the reply",
+      "text": "A passive trace shows an inward curve before either known participant transmits.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. A passive trace shows an inward curve before either known participant transmits. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/shared-pulse-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "shared-pulse-trace",
+        "file": "../../assets/missions/clues/shared-pulse-trace.svg",
+        "sha256": "ae4a9a8f57bf6564ee9804fc457e20c0cb354e6f2d4646f8224af45e7b9c4e02",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.witness-window",
+      "missionTitle": "The Witness Window",
+      "id": "witness-window-trace",
+      "label": "The frame nobody recorded",
+      "text": "Between two authentic recording frames is an inward-shaped phase imprint with no camera source.",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. Between two authentic recording frames is an inward-shaped phase imprint with no camera source. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/witness-window-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "witness-window-trace",
+        "file": "../../assets/missions/clues/witness-window-trace.svg",
+        "sha256": "145b49a4c4b4aa28218892334883e378b0b8d7862f2c6fc84186444ac55b24c1",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.public-record",
+      "missionTitle": "Public Record",
+      "id": "public-record-trace",
+      "label": "The unreported frequency",
+      "text": "The independent recorder captures a curved phase boundary outside the cargo controllers' published operating bands.",
+      "awardDialog": "Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither side. The independent recorder captures a curved phase boundary outside the cargo controllers' published operating bands. It is preserved in your journal for the AI at PLUGH.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/public-record-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "public-record-trace",
+        "file": "../../assets/missions/clues/public-record-trace.svg",
+        "sha256": "07b1e95e9081f4767cef2d02530a8cbc7b520a124c3a66fd3e6fe58400ced8b3",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/sealed-dispatch",
+      "missionTitle": "Sealed dispatch",
+      "id": "sealed-dispatch-family-trace",
+      "label": "The sealed dispatch trace",
+      "text": "The first verified sealed dispatch record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/sealed-dispatch-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "sealed-dispatch-family-trace",
+        "file": "../../assets/missions/clues/sealed-dispatch-family-trace.svg",
+        "sha256": "cc22771b466ec0ca7966a5090e8a0629e1f08258e7504489d96b8c18b31b19c9",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/consented-freight",
+      "missionTitle": "Consented freight supply",
+      "id": "consented-freight-family-trace",
+      "label": "The consented freight trace",
+      "text": "The first verified consented freight supply record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/consented-freight-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "consented-freight-family-trace",
+        "file": "../../assets/missions/clues/consented-freight-family-trace.svg",
+        "sha256": "ea59ea433ba16b7c892f2e1e4888d05e0666b366adf20251c39e18be034340bb",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/bonded-freight",
+      "missionTitle": "Bonded freight passage",
+      "id": "bonded-freight-family-trace",
+      "label": "The bonded freight trace",
+      "text": "The first verified bonded freight passage record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/bonded-freight-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "bonded-freight-family-trace",
+        "file": "../../assets/missions/clues/bonded-freight-family-trace.svg",
+        "sha256": "93d933a4c4caf855c563fb4b1dc8bcacc96fbf65bf4b0847313068fc72255947",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/cabin-journey",
+      "missionTitle": "Consented cabin journey",
+      "id": "cabin-journey-family-trace",
+      "label": "The cabin journey trace",
+      "text": "The first verified consented cabin journey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/cabin-journey-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "cabin-journey-family-trace",
+        "file": "../../assets/missions/clues/cabin-journey-family-trace.svg",
+        "sha256": "3be2989c096018b6fa813c8199071c6ed2a1aac89ae9a5002bc506cb22c15a65",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/orbital-outlook",
+      "missionTitle": "Orbital outlook journey",
+      "id": "orbital-outlook-family-trace",
+      "label": "The orbital outlook trace",
+      "text": "The first verified orbital outlook journey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/orbital-outlook-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "orbital-outlook-family-trace",
+        "file": "../../assets/missions/clues/orbital-outlook-family-trace.svg",
+        "sha256": "7eff9a6293f2c83d96109c0a47e42febe93ed07126bb126cd1518d61c2f2576a",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/verified-warrant",
+      "missionTitle": "Verified hostile warrant",
+      "id": "verified-warrant-family-trace",
+      "label": "The verified warrant trace",
+      "text": "The first verified verified hostile warrant record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/verified-warrant-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "verified-warrant-family-trace",
+        "file": "../../assets/missions/clues/verified-warrant-family-trace.svg",
+        "sha256": "10bcca8e32f8f9c5dd71c51749d67393e5ed14aff89a2a5e624b565cf8be96c3",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/corridor-defence",
+      "missionTitle": "Registered corridor defence",
+      "id": "corridor-defence-family-trace",
+      "label": "The corridor defence trace",
+      "text": "The first verified registered corridor defence record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/corridor-defence-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "corridor-defence-family-trace",
+        "file": "../../assets/missions/clues/corridor-defence-family-trace.svg",
+        "sha256": "b34fbe58b748d209f8703f42b790b02b7966c26d0d40e0ce0ccba056668b61d8",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/custody-rescue",
+      "missionTitle": "Consented custody rescue",
+      "id": "custody-rescue-family-trace",
+      "label": "The custody rescue trace",
+      "text": "The first verified consented custody rescue record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/custody-rescue-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "custody-rescue-family-trace",
+        "file": "../../assets/missions/clues/custody-rescue-family-trace.svg",
+        "sha256": "43eeb7d6bb9cf3b0e0b6226e62dd74da3398a4bfc37b3f821dee21c151469679",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/identified-salvage",
+      "missionTitle": "Identified salvage return",
+      "id": "identified-salvage-family-trace",
+      "label": "The identified salvage trace",
+      "text": "The first verified identified salvage return record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/identified-salvage-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "identified-salvage-family-trace",
+        "file": "../../assets/missions/clues/identified-salvage-family-trace.svg",
+        "sha256": "7ff4eada9960a69e5c343c44f5a3cf4a5d5fc51cc70333cc6b97c809cd346c4e",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/consented-survey",
+      "missionTitle": "Consented orbital survey",
+      "id": "consented-survey-family-trace",
+      "label": "The consented survey trace",
+      "text": "The first verified consented orbital survey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/consented-survey-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "consented-survey-family-trace",
+        "file": "../../assets/missions/clues/consented-survey-family-trace.svg",
+        "sha256": "359b1a2b7b66ee9aca34411c0bddf4eab669c7e5b28d297b37b5a656ba9b79b6",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/isolation-work",
+      "missionTitle": "External isolation work",
+      "id": "isolation-work-family-trace",
+      "label": "The isolation work trace",
+      "text": "The first verified external isolation work record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/isolation-work-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "isolation-work-family-trace",
+        "file": "../../assets/missions/clues/isolation-work-family-trace.svg",
+        "sha256": "0739cb36c7c342897e4519cd999d94b4b6f030491dfc0705d6955381058353b5",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/measured-extraction",
+      "missionTitle": "Measured asteroid extraction",
+      "id": "measured-extraction-family-trace",
+      "label": "The measured extraction trace",
+      "text": "The first verified measured asteroid extraction record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/measured-extraction-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "measured-extraction-family-trace",
+        "file": "../../assets/missions/clues/measured-extraction-family-trace.svg",
+        "sha256": "304a570849e6233ded29d137e0c85bcc85e7ea555a2a1a828aa3bff013f3cf43",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/mutual-contribution",
+      "missionTitle": "Mutual relief contribution",
+      "id": "mutual-contribution-family-trace",
+      "label": "The mutual contribution trace",
+      "text": "The first verified mutual relief contribution record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/mutual-contribution-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "mutual-contribution-family-trace",
+        "file": "../../assets/missions/clues/mutual-contribution-family-trace.svg",
+        "sha256": "4f8eccc61b02ca3ffbb9ee4ef0ebd468f0327a93f4261206f928f68eb2610ed0",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/orbital-evacuation",
+      "missionTitle": "Registered orbital evacuation",
+      "id": "orbital-evacuation-family-trace",
+      "label": "The orbital evacuation trace",
+      "text": "The first verified registered orbital evacuation record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/orbital-evacuation-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "orbital-evacuation-family-trace",
+        "file": "../../assets/missions/clues/orbital-evacuation-family-trace.svg",
+        "sha256": "494321cc3db720c060565342469498ac4398c80b5e176f4604b068bee918bcf4",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.contract/hostile-larvaal-defence",
+      "missionTitle": "Designated hostile Larvaal defence",
+      "id": "hostile-larvaal-defence-family-trace",
+      "label": "The hostile larvaal defence trace",
+      "text": "The first verified designated hostile larvaal defence record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/hostile-larvaal-defence-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "hostile-larvaal-defence-family-trace",
+        "file": "../../assets/missions/clues/hostile-larvaal-defence-family-trace.svg",
+        "sha256": "7d344fe2ea59eb09b52ec8f49d981d6353a7a8e18673f51f1bb3287834f7fb96",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.training/flight-reception",
+      "missionTitle": "Flight and reception practice",
+      "id": "flight-reception-family-trace",
+      "label": "The flight reception trace",
+      "text": "The first verified flight and reception practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/flight-reception-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "flight-reception-family-trace",
+        "file": "../../assets/missions/clues/flight-reception-family-trace.svg",
+        "sha256": "5e86c2d704d845d088eb9d6c01b15ce460d23487f5a60877cfdecd3d08e578ea",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.training/safe-gunnery",
+      "missionTitle": "Safe gunnery practice",
+      "id": "safe-gunnery-family-trace",
+      "label": "The safe gunnery trace",
+      "text": "The first verified safe gunnery practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/safe-gunnery-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "safe-gunnery-family-trace",
+        "file": "../../assets/missions/clues/safe-gunnery-family-trace.svg",
+        "sha256": "400e4dc49dc73ff8025f01618ed7d54e51665976c1ec7e7e09197efe36b2d4a6",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.training/defensive-flight",
+      "missionTitle": "Defensive flight practice",
+      "id": "defensive-flight-family-trace",
+      "label": "The defensive flight trace",
+      "text": "The first verified defensive flight practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/defensive-flight-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "defensive-flight-family-trace",
+        "file": "../../assets/missions/clues/defensive-flight-family-trace.svg",
+        "sha256": "3c90f5ac982c5be26bf7c47c19a370dfebe9c979535fde453a77c8b2d569d81c",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.training/navigation-trade",
+      "missionTitle": "Navigation and trade practice",
+      "id": "navigation-trade-family-trace",
+      "label": "The navigation trade trace",
+      "text": "The first verified navigation and trade practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/navigation-trade-family-trace",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "navigation-trade-family-trace",
+        "file": "../../assets/missions/clues/navigation-trade-family-trace.svg",
+        "sha256": "91cc37a5cb87ea26f6cbab93720e40e07ff22eb563252b48e1256331250903c3",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.wayfarer-service/cold-chain",
+      "missionTitle": "Cold-chain clinic service",
+      "id": "exchange-service-cold-chain",
+      "label": "The cold chain trace",
+      "text": "The first verified cold-chain clinic service receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/exchange-service-cold-chain",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "exchange-service-cold-chain",
+        "file": "../../assets/missions/clues/exchange-service-cold-chain.svg",
+        "sha256": "9625ad0dfda283b927bcb5c406e99b05c458bcf2b3495cb752372ec1ae1d3769",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.wayfarer-service/repair-loop",
+      "missionTitle": "Closed repair exchange",
+      "id": "exchange-service-repair-loop",
+      "label": "The repair loop trace",
+      "text": "The first verified closed repair exchange receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/exchange-service-repair-loop",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "exchange-service-repair-loop",
+        "file": "../../assets/missions/clues/exchange-service-repair-loop.svg",
+        "sha256": "0a45933b18524a7495f9ecddabeb0fa589636d0037d8914ed07349e71f6b422e",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.wayfarer-service/seed-transfer",
+      "missionTitle": "Seed-bank transfer",
+      "id": "exchange-service-seed-transfer",
+      "label": "The seed transfer trace",
+      "text": "The first verified seed-bank transfer receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/exchange-service-seed-transfer",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "exchange-service-seed-transfer",
+        "file": "../../assets/missions/clues/exchange-service-seed-transfer.svg",
+        "sha256": "b0cf69a956ed6002bd75cdf93a6814344ec7d47146c341cde943e3a6b9778d84",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.wayfarer-service/field-relief",
+      "missionTitle": "Remote utility relief",
+      "id": "exchange-service-field-relief",
+      "label": "The field relief trace",
+      "text": "The first verified remote utility relief receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/exchange-service-field-relief",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "exchange-service-field-relief",
+        "file": "../../assets/missions/clues/exchange-service-field-relief.svg",
+        "sha256": "e318a20e9eb12d934ccba8f2af053a2365cb77af3ccde12a9603b1cba596e982",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.wayfarer-service/record-recovery",
+      "missionTitle": "Crew record recovery",
+      "id": "exchange-service-record-recovery",
+      "label": "The record recovery trace",
+      "text": "The first verified crew record recovery receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/exchange-service-record-recovery",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "exchange-service-record-recovery",
+        "file": "../../assets/missions/clues/exchange-service-record-recovery.svg",
+        "sha256": "f608fa2dfeef79e701a381cc1455cd65c071dbcbf50afaeca18ebd4861b99f1b",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    },
+    {
+      "source": "l337.wayfarer-service/convoy-watch",
+      "missionTitle": "Registered convoy watch",
+      "id": "exchange-service-convoy-watch",
+      "label": "The convoy watch trace",
+      "text": "The first verified registered convoy watch receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "massTonnes": 0,
+      "awardEvent": "successful-mission-completion-committed",
+      "receipt": "l337.unwritten-route/clue/exchange-service-convoy-watch",
+      "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+      "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+      "artwork": {
+        "id": "exchange-service-convoy-watch",
+        "file": "../../assets/missions/clues/exchange-service-convoy-watch.svg",
+        "sha256": "087a644c943c1ac401cadd326bbef404632353798e525b013b29bfa15c6e0d67",
+        "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+      }
+    }
+  ],
+  "trail": [
+    {
+      "id": "decode-at-plugh",
+      "kind": "plugh-ai-confirmation",
+      "location": "any-plugh",
+      "instruction": "Take the complete clue collection to the AI at any PLUGH station and choose Decode the collected traces.",
+      "dialog": "PLUGH AI: These traces are different views of the same route. Together they describe a moving lens. Begin at Corur in Amber Divide, Galaxy 5. A dormant listener waits above the dark hemisphere. Scan it and bring the missing instant into phase.",
+      "order": 0,
+      "receipt": "l337.unwritten-route/step/decode-at-plugh",
+      "visibility": "Show only this unlocked instruction and completed history in the player journal; keep later instructions hidden.",
+      "next": "wake-the-listener",
+      "artwork": {
+        "id": "unwritten-route/decode-at-plugh",
+        "file": "../../assets/missions/stages/unwritten-route/decode-at-plugh.png",
+        "sha256": "7b91cfb6df0af0acb87913a2d4c3c6e2dc1412f18bc9447dac00e28b25c06114",
+        "visibility": "Only when this stage is unlocked; Medusa identity and full geometry remain hidden until its legitimate encounter"
+      }
+    },
+    {
+      "id": "wake-the-listener",
+      "kind": "scan",
+      "galaxy": 4,
+      "system": 83,
+      "targets": [
+        "corur-dormant-listener"
+      ],
+      "instruction": "At Corur, scan the dormant listener above the planet's dark hemisphere.",
+      "dialog": "The listener unfolds a narrow arc of green points. Its timing matches the missing instant. The arc bends towards the ringed industrial world of Berilir.",
+      "order": 1,
+      "receipt": "l337.unwritten-route/step/wake-the-listener",
+      "visibility": "Show only this unlocked instruction and completed history in the player journal; keep later instructions hidden.",
+      "locationKey": "G05-S083",
+      "locationName": "Corur",
+      "next": "read-the-ring",
+      "artwork": {
+        "id": "unwritten-route/wake-the-listener",
+        "file": "../../assets/missions/stages/unwritten-route/wake-the-listener.png",
+        "sha256": "51a3d740114ca74aee96bd98319f62b2ea20b2394ab7a2f142cea92164b52de5",
+        "visibility": "Only when this stage is unlocked; Medusa identity and full geometry remain hidden until its legitimate encounter"
+      }
+    },
+    {
+      "id": "read-the-ring",
+      "kind": "scan",
+      "galaxy": 4,
+      "system": 250,
+      "targets": [
+        "berilir-inner-echo",
+        "berilir-middle-echo",
+        "berilir-outer-echo"
+      ],
+      "instruction": "At Berilir, scan three marked echoes along the asteroid ring to complete the listener's pattern.",
+      "dialog": "Each echo answers one part of the silent voice. Together they trace an inward curve. The next bearing crosses the green world of Ranenor, where the extra lantern is reflected after local nightfall.",
+      "order": 2,
+      "receipt": "l337.unwritten-route/step/read-the-ring",
+      "visibility": "Show only this unlocked instruction and completed history in the player journal; keep later instructions hidden.",
+      "locationKey": "G05-S250",
+      "locationName": "Berilir",
+      "next": "align-the-lanterns",
+      "artwork": {
+        "id": "unwritten-route/read-the-ring",
+        "file": "../../assets/missions/stages/unwritten-route/read-the-ring.png",
+        "sha256": "ee00d3805e15cbaa7211a72f22718e2cae1db21a9ef3c343be6d8326f0ccff4f",
+        "visibility": "Only when this stage is unlocked; Medusa identity and full geometry remain hidden until its legitimate encounter"
+      }
+    },
+    {
+      "id": "align-the-lanterns",
+      "kind": "mission-action",
+      "galaxy": 4,
+      "system": 115,
+      "targets": [
+        "ranenor-lantern-port",
+        "ranenor-lantern-starboard"
+      ],
+      "instruction": "At Ranenor, align the two orbital lanterns from the marked observation waypoint. Confirm each alignment when its reflected trace meets the inward mark.",
+      "dialog": "The two traces meet around an empty centre. The watermark now reads as a direction: the uncharted outer cradle at Ashor. Its entrance will answer only the complete pattern.",
+      "order": 3,
+      "receipt": "l337.unwritten-route/step/align-the-lanterns",
+      "visibility": "Show only this unlocked instruction and completed history in the player journal; keep later instructions hidden.",
+      "locationKey": "G05-S115",
+      "locationName": "Ranenor",
+      "next": "open-the-cradle",
+      "artwork": {
+        "id": "unwritten-route/align-the-lanterns",
+        "file": "../../assets/missions/stages/unwritten-route/align-the-lanterns.png",
+        "sha256": "9170c83b5b66b7916a6dfd8ef20dad9375306f5265072862d05d28e0c7e9718b",
+        "visibility": "Only when this stage is unlocked; Medusa identity and full geometry remain hidden until its legitimate encounter"
+      }
+    },
+    {
+      "id": "open-the-cradle",
+      "kind": "mission-action",
+      "galaxy": 4,
+      "system": 84,
+      "targets": [
+        "ashor-outer-cradle"
+      ],
+      "instruction": "Reach the marked outer-cradle waypoint at Ashor and transmit the complete decoded pattern.",
+      "dialog": "The cradle's green traces converge. Something has been following the same route from the other side. The AI identifies its returning signature: MEDUSA. Its propulsion organs open and turn towards your ship.",
+      "order": 4,
+      "receipt": "l337.unwritten-route/step/open-the-cradle",
+      "visibility": "Show only this unlocked instruction and completed history in the player journal; keep later instructions hidden.",
+      "locationKey": "G05-S084",
+      "locationName": "Ashor",
+      "next": "destroy-medusa",
+      "artwork": {
+        "id": "unwritten-route/open-the-cradle",
+        "file": "../../assets/missions/stages/unwritten-route/open-the-cradle.png",
+        "sha256": "2a2a3fbdbdc6e5d16698b20c2c8d29857c3c103fec868cb5ca01168883dbb066",
+        "visibility": "Only when this stage is unlocked; Medusa identity and full geometry remain hidden until its legitimate encounter"
+      }
+    },
+    {
+      "id": "destroy-medusa",
+      "kind": "player-credited-ship-destruction",
+      "galaxy": 4,
+      "system": 84,
+      "targets": [
+        "unwritten-route-medusa"
+      ],
+      "instruction": "Destroy the revealed Medusa. Your combat record must credit the destruction of this specific vessel.",
+      "dialog": "MEDUSA DESTROYED. Its final emission completes the missing structure in the inward mark. The reconstruction record is secure in your journal. Return to a PLUGH station so its AI can decode the fabrication pattern.",
+      "order": 5,
+      "receipt": "l337.unwritten-route/step/destroy-medusa",
+      "visibility": "Show only this unlocked instruction and completed history in the player journal; keep later instructions hidden.",
+      "locationKey": "G05-S084",
+      "locationName": "Ashor",
+      "next": "fabricate-at-plugh",
+      "artwork": {
+        "id": "unwritten-route/destroy-medusa",
+        "file": "../../assets/missions/stages/unwritten-route/destroy-medusa.png",
+        "sha256": "e179702c3fba19bd02c64317b95611c289109bca21748080ebba3773a8bc01a0",
+        "visibility": "Only when this stage is unlocked; Medusa identity and full geometry remain hidden until its legitimate encounter"
+      }
+    },
+    {
+      "id": "fabricate-at-plugh",
+      "kind": "plugh-ai-confirmation",
+      "location": "any-plugh",
+      "instruction": "Return to any PLUGH station and ask its AI to reconstruct the Medusa from the destruction record.",
+      "dialog": "PLUGH AI: The final emission completes the design. I can now grow the Medusa's hull and reproduce its systems. Fabrication access is available at PLUGH stations. Select Medusa in the shipyard to review the price and trade-in quote.",
+      "order": 6,
+      "receipt": "l337.unwritten-route/step/fabricate-at-plugh",
+      "visibility": "Show only this unlocked instruction and completed history in the player journal; keep later instructions hidden.",
+      "next": "complete",
+      "artwork": {
+        "id": "unwritten-route/fabricate-at-plugh",
+        "file": "../../assets/missions/stages/unwritten-route/fabricate-at-plugh.png",
+        "sha256": "fb32ce9eebe64e7efbb851e6624e1c9f073e6fa9b5fe78e82fef3fe89b77133d",
+        "visibility": "Only when this stage is unlocked; Medusa identity and full geometry remain hidden until its legitimate encounter"
+      }
+    }
+  ]
+}

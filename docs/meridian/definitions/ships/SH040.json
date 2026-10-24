@@ -1,0 +1,35 @@
+{
+  "id": "SH040",
+  "name": "Newt Escape Pod",
+  "family": "newt-escape-pod",
+  "role": "capsule",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "never",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 0,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 0,
+    "speed": 18,
+    "acceleration": 3,
+    "energy": 70,
+    "recharge": 0.6,
+    "roll": 0.55,
+    "pitch": 0.48,
+    "yaw": 0.45,
+    "shield": 30,
+    "shieldRecharge": 0.4,
+    "fuel": 0,
+    "jump": 0,
+    "spool": 0,
+    "missiles": 0,
+    "facings": 0,
+    "cargoExpansion": 0,
+    "price": 0
+  }
+}

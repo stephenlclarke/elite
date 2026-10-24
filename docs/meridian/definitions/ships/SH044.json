@@ -1,0 +1,35 @@
+{
+  "id": "SH044",
+  "name": "Harpy Assault",
+  "family": "harpy",
+  "role": "military",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 16,
+    "speed": 43.6,
+    "acceleration": 14.0,
+    "energy": 350,
+    "recharge": 4.8,
+    "roll": 1.15,
+    "pitch": 1.01,
+    "yaw": 0.94,
+    "shield": 290,
+    "shieldRecharge": 2.0,
+    "fuel": 140,
+    "jump": 10,
+    "spool": 12,
+    "missiles": 7,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 265000
+  }
+}

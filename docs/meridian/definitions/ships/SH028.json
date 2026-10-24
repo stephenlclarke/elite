@@ -1,0 +1,13 @@
+{
+  "id": "SH028",
+  "name": "Lion Citadel",
+  "family": "lion-citadel",
+  "role": "station",
+  "license": "MIT",
+  "playerFlyable": false,
+  "purchasePolicy": "never",
+  "display": {
+    "purchasable": false,
+    "specification": "Structural object; no fictional flight-performance values assigned"
+  }
+}

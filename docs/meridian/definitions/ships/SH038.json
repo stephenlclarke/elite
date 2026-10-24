@@ -1,0 +1,35 @@
+{
+  "id": "SH038",
+  "name": "Vulture Mk II",
+  "family": "vulture",
+  "role": "pirate",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 1,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 14,
+    "speed": 57.2,
+    "acceleration": 18.7,
+    "energy": 160,
+    "recharge": 2.92,
+    "roll": 1.97,
+    "pitch": 1.73,
+    "yaw": 1.62,
+    "shield": 150,
+    "shieldRecharge": 1.68,
+    "fuel": 110,
+    "jump": 8,
+    "spool": 10,
+    "missiles": 5,
+    "facings": 15,
+    "cargoExpansion": 5,
+    "price": 220000
+  }
+}

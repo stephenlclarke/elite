@@ -1,0 +1,35 @@
+{
+  "id": "SH106",
+  "name": "Tapir Mk II",
+  "family": "tapir",
+  "role": "transporter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 3,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 484,
+    "speed": 20.9,
+    "acceleration": 5.2,
+    "energy": 820,
+    "recharge": 6.66,
+    "roll": 0.41,
+    "pitch": 0.36,
+    "yaw": 0.34,
+    "shield": 540,
+    "shieldRecharge": 1.78,
+    "fuel": 130,
+    "jump": 8,
+    "spool": 14,
+    "missiles": 7,
+    "facings": 15,
+    "cargoExpansion": 195,
+    "price": 482000
+  }
+}

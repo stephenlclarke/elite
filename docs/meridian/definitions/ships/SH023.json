@@ -1,0 +1,35 @@
+{
+  "id": "SH023",
+  "name": "Peregrine Mk III",
+  "family": "peregrine",
+  "role": "trader",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 78,
+    "speed": 35.7,
+    "acceleration": 9.5,
+    "energy": 320,
+    "recharge": 3.71,
+    "roll": 0.84,
+    "pitch": 0.74,
+    "yaw": 0.69,
+    "shield": 270,
+    "shieldRecharge": 1.65,
+    "fuel": 130,
+    "jump": 9,
+    "spool": 13,
+    "missiles": 7,
+    "facings": 15,
+    "cargoExpansion": 30,
+    "price": 246000
+  }
+}

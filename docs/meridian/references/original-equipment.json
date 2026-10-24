@@ -1,0 +1,108 @@
+{
+  "version": "l337-world-1",
+  "equipment": [
+    {
+      "id": "fuel",
+      "name": "Fuel",
+      "priceCR": 1.8,
+      "technology": 1
+    },
+    {
+      "id": "missile",
+      "name": "Missile",
+      "priceCR": 180.0,
+      "technology": 2,
+      "damage": 160.0
+    },
+    {
+      "id": "cargo-bay",
+      "name": "Large Cargo Bay",
+      "priceCR": 2800.0,
+      "technology": 4
+    },
+    {
+      "id": "ecm",
+      "name": "E.C.M. System",
+      "priceCR": 2100.0,
+      "technology": 5,
+      "energyCost": 22.0
+    },
+    {
+      "id": "pulse-laser",
+      "name": "Pulse Laser",
+      "priceCR": 1450.0,
+      "technology": 3,
+      "damagePerSecond": 38.0,
+      "energyPerSecond": 9.0,
+      "heatPerSecond": 12.0
+    },
+    {
+      "id": "beam-laser",
+      "name": "Beam Laser",
+      "priceCR": 4700.0,
+      "technology": 7,
+      "damagePerSecond": 62.0,
+      "energyPerSecond": 19.0,
+      "heatPerSecond": 24.0
+    },
+    {
+      "id": "fuel-scoops",
+      "name": "Fuel Scoops",
+      "priceCR": 1900.0,
+      "technology": 4
+    },
+    {
+      "id": "escape-pod",
+      "name": "Escape Pod",
+      "priceCR": 3600.0,
+      "technology": 6
+    },
+    {
+      "id": "energy-bomb",
+      "name": "Energy Bomb",
+      "priceCR": 12800.0,
+      "technology": 13,
+      "energyCost": 180.0
+    },
+    {
+      "id": "extra-energy-unit",
+      "name": "Extra Energy Unit",
+      "priceCR": 7200.0,
+      "technology": 9,
+      "rechargeMultiplier": 1.65,
+      "exclusiveGroup": "energy-unit"
+    },
+    {
+      "id": "galactic-drive",
+      "name": "Galactic Hyperdrive",
+      "priceCR": 28500.0,
+      "technology": 15
+    },
+    {
+      "id": "mining-laser",
+      "name": "Mining Laser",
+      "priceCR": 3300.0,
+      "technology": 6,
+      "damagePerSecond": 22.0,
+      "energyPerSecond": 13.0,
+      "heatPerSecond": 10.0
+    },
+    {
+      "id": "military-laser",
+      "name": "Military Laser",
+      "priceCR": 16400.0,
+      "technology": 14,
+      "damagePerSecond": 91.0,
+      "energyPerSecond": 34.0,
+      "heatPerSecond": 39.0
+    },
+    {
+      "id": "naval-energy-unit",
+      "name": "Naval Energy Unit",
+      "priceCR": 19600.0,
+      "technology": 17,
+      "rechargeMultiplier": 2.35,
+      "exclusiveGroup": "energy-unit"
+    }
+  ]
+}

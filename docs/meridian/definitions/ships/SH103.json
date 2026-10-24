@@ -1,0 +1,35 @@
+{
+  "id": "SH103",
+  "name": "Redtail Mk III",
+  "family": "redtail",
+  "role": "bountyHunter",
+  "license": "MIT",
+  "playerFlyable": true,
+  "purchasePolicy": "blueprintFabrication",
+  "balance": {
+    "method": "Original role budget / independent size tiers / family mark progression",
+    "version": 1,
+    "sizeTier": 2,
+    "similarityPolicy": "Broad role tradeoffs only; no exact source ratios or uniform scaling of imported tables",
+    "sourceProfilesIncluded": false
+  },
+  "game": {
+    "cargo": 22,
+    "speed": 54.7,
+    "acceleration": 16.2,
+    "energy": 370,
+    "recharge": 4.76,
+    "roll": 1.32,
+    "pitch": 1.16,
+    "yaw": 1.08,
+    "shield": 270,
+    "shieldRecharge": 2.09,
+    "fuel": 130,
+    "jump": 9,
+    "spool": 13,
+    "missiles": 7,
+    "facings": 15,
+    "cargoExpansion": 10,
+    "price": 287000
+  }
+}

@@ -1,0 +1,1933 @@
+{
+  "schema": "l337.original-families-design/1",
+  "license": "MIT",
+  "id": "l337.original-families",
+  "maximumActive": 3,
+  "historicalIDsAreExclusionMetadataOnly": true,
+  "artworkManifest": "../../assets/missions/manifest.json",
+  "artworkManifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+  "templates": [
+    {
+      "id": "l337.contract/sealed-dispatch",
+      "title": "Sealed dispatch",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 1,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 320,
+        "perRouteLegCR": 90,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Carry the unique sealed record from its actual sender to its named receiver.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Carry the unique sealed record from its actual sender to its named receiver.",
+          "dialog": "SENN: Keep its identity through the whole transfer; a lookalike crate is not delivery.",
+          "primaryArt": "courier-crate",
+          "artwork": {
+            "id": "l337.contract/sealed-dispatch/accept",
+            "file": "../../assets/missions/services/sealed-dispatch-accept.png",
+            "sha256": "c303d03c09004c67f91911eb6416fe787ec587d507e319c3b209509c072a7abc",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Complete the exact consignment's physical receiving handoff.",
+          "dialog": "SENN: Keep its identity through the whole transfer; a lookalike crate is not delivery. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "courier-crate",
+          "artwork": {
+            "id": "l337.contract/sealed-dispatch/perform",
+            "file": "../../assets/missions/services/sealed-dispatch-perform.png",
+            "sha256": "ae58a6f2657cbf72c5e314dd3324261925baf4f5456f7a4c33bc3ca50b752a14",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "courier-crate",
+          "artwork": {
+            "id": "l337.contract/sealed-dispatch/receive",
+            "file": "../../assets/missions/services/sealed-dispatch-receive.png",
+            "sha256": "3ad988abd8a5bb37e36f6484d93caf6a3dce5cd18e7718490015a889070406a5",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/sealed-dispatch",
+        "missionTitle": "Sealed dispatch",
+        "id": "sealed-dispatch-family-trace",
+        "label": "The sealed dispatch trace",
+        "text": "The first verified sealed dispatch record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/sealed-dispatch-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "sealed-dispatch-family-trace",
+          "file": "../../assets/missions/clues/sealed-dispatch-family-trace.svg",
+          "sha256": "cc22771b466ec0ca7966a5090e8a0629e1f08258e7504489d96b8c18b31b19c9",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/consented-freight",
+      "title": "Consented freight supply",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 8,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 620,
+        "perRouteLegCR": 110,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Reserve eight tonnes of identified utility parts from actual supplier stock.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Reserve eight tonnes of identified utility parts from actual supplier stock.",
+          "dialog": "ARLEN: Reserve what exists. Neither a quote nor a lost crate creates replacement stock.",
+          "primaryArt": "utility-service-pallet",
+          "artwork": {
+            "id": "l337.contract/consented-freight/accept",
+            "file": "../../assets/missions/services/consented-freight-accept.png",
+            "sha256": "3d7c6d3dbf953ac987ea87113b25080ee3d739b779416e92cc53c5413be7655a",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Deliver the same eight tonnes to the consenting utility receiving crew.",
+          "dialog": "ARLEN: Reserve what exists. Neither a quote nor a lost crate creates replacement stock. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "utility-service-pallet",
+          "artwork": {
+            "id": "l337.contract/consented-freight/perform",
+            "file": "../../assets/missions/services/consented-freight-perform.png",
+            "sha256": "8c147b699c09773f666abb9560e2c2d60b5974740f3471bf83d00263efb5cdd6",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "utility-service-pallet",
+          "artwork": {
+            "id": "l337.contract/consented-freight/receive",
+            "file": "../../assets/missions/services/consented-freight-receive.png",
+            "sha256": "7097a19bf660399a557e2617dd0a2ef9d5000d2f50d89a0aed60b28a73293968",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/consented-freight",
+        "missionTitle": "Consented freight supply",
+        "id": "consented-freight-family-trace",
+        "label": "The consented freight trace",
+        "text": "The first verified consented freight supply record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/consented-freight-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "consented-freight-family-trace",
+          "file": "../../assets/missions/clues/consented-freight-family-trace.svg",
+          "sha256": "ea59ea433ba16b7c892f2e1e4888d05e0666b366adf20251c39e18be034340bb",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/bonded-freight",
+      "title": "Bonded freight passage",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 3,
+      "requiredBerths": 0,
+      "depositCR": 75,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 480,
+        "perRouteLegCR": 95,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Accept a published three-tonne machinery custody bond with a 75 CR refundable deposit.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Accept a published three-tonne machinery custody bond with a 75 CR refundable deposit.",
+          "dialog": "TOREN: The 75 CR bond is returned with successful custody, not silently halved by intermediate docking.",
+          "primaryArt": "return-cassette",
+          "artwork": {
+            "id": "l337.contract/bonded-freight/accept",
+            "file": "../../assets/missions/services/bonded-freight-accept.png",
+            "sha256": "b84c59f2392463e651c64f2363cd21d3d346fdcd5e7b49c57b69333cb118ed42",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Return custody to the named workshop, with the complete physical three-tonne manifest.",
+          "dialog": "TOREN: The 75 CR bond is returned with successful custody, not silently halved by intermediate docking. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "return-cassette",
+          "artwork": {
+            "id": "l337.contract/bonded-freight/perform",
+            "file": "../../assets/missions/services/bonded-freight-perform.png",
+            "sha256": "ed1fe0b29f0895bf0418477ff806fad8a677cbad22d4fdbb3b7604756c12c04d",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "return-cassette",
+          "artwork": {
+            "id": "l337.contract/bonded-freight/receive",
+            "file": "../../assets/missions/services/bonded-freight-receive.png",
+            "sha256": "960fad12dda4ecfb733c984839837d6f0215a1cb029f2adcb81dd42b19d127d5",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/bonded-freight",
+        "missionTitle": "Bonded freight passage",
+        "id": "bonded-freight-family-trace",
+        "label": "The bonded freight trace",
+        "text": "The first verified bonded freight passage record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/bonded-freight-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "bonded-freight-family-trace",
+          "file": "../../assets/missions/clues/bonded-freight-family-trace.svg",
+          "sha256": "93d933a4c4caf855c563fb4b1dc8bcacc96fbf65bf4b0847313068fc72255947",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/cabin-journey",
+      "title": "Consented cabin journey",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 2,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 510,
+        "perRouteLegCR": 100,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Board two consenting named passengers into real compatible fitted berths.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Board two consenting named passengers into real compatible fitted berths.",
+          "dialog": "DAIN: Count real fitted berths and real people; a cargo pod is not a passenger cabin.",
+          "primaryArt": "custody-register",
+          "artwork": {
+            "id": "l337.contract/cabin-journey/accept",
+            "file": "../../assets/missions/services/cabin-journey-accept.png",
+            "sha256": "be6fcdeb6698517e8c43b49375796e18969e73a3e113946d6b83fdc93f1a722e",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Receive the same living passengers at their agreed orbital destination.",
+          "dialog": "DAIN: Count real fitted berths and real people; a cargo pod is not a passenger cabin. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "custody-register",
+          "artwork": {
+            "id": "l337.contract/cabin-journey/perform",
+            "file": "../../assets/missions/services/cabin-journey-perform.png",
+            "sha256": "d69378adda828d4911ef963e95af126d8fc239c7aa823873d461f7f309b772b7",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "custody-register",
+          "artwork": {
+            "id": "l337.contract/cabin-journey/receive",
+            "file": "../../assets/missions/services/cabin-journey-receive.png",
+            "sha256": "c80d29fb394bc634a2b6b149428a769d6f614b8a9ea0c2e17077147309e12404",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/cabin-journey",
+        "missionTitle": "Consented cabin journey",
+        "id": "cabin-journey-family-trace",
+        "label": "The cabin journey trace",
+        "text": "The first verified consented cabin journey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/cabin-journey-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "cabin-journey-family-trace",
+          "file": "../../assets/missions/clues/cabin-journey-family-trace.svg",
+          "sha256": "3be2989c096018b6fa813c8199071c6ed2a1aac89ae9a5002bc506cb22c15a65",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/orbital-outlook",
+      "title": "Orbital outlook journey",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 2,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 650,
+        "perRouteLegCR": 110,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Board a consented two-passenger itinerary containing three ordered orbital viewing points.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Board a consented two-passenger itinerary containing three ordered orbital viewing points.",
+          "dialog": "SOREL: The travellers see the same itinerary you do. A duplicate scan cannot replace a missed view.",
+          "primaryArt": "outer-watcher",
+          "artwork": {
+            "id": "l337.contract/orbital-outlook/accept",
+            "file": "../../assets/missions/services/orbital-outlook-accept.png",
+            "sha256": "92f8a82822d1601c3d9ebc7a0c943f172746ca0adf216a365164641868962807",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Verify all three target scans in order and the actual living passenger return.",
+          "dialog": "SOREL: The travellers see the same itinerary you do. A duplicate scan cannot replace a missed view. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "outer-watcher",
+          "artwork": {
+            "id": "l337.contract/orbital-outlook/perform",
+            "file": "../../assets/missions/services/orbital-outlook-perform.png",
+            "sha256": "f8041e04c623cf229ddeaf788c788fa0e2bd3eb43c78e3054f57a441ea8e6da6",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "outer-watcher",
+          "artwork": {
+            "id": "l337.contract/orbital-outlook/receive",
+            "file": "../../assets/missions/services/orbital-outlook-receive.png",
+            "sha256": "bfceade0449c59d9a5030fc74f815296636c32cb2b722d97e2f7e4397fe2ce99",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/orbital-outlook",
+        "missionTitle": "Orbital outlook journey",
+        "id": "orbital-outlook-family-trace",
+        "label": "The orbital outlook trace",
+        "text": "The first verified orbital outlook journey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/orbital-outlook-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "orbital-outlook-family-trace",
+          "file": "../../assets/missions/clues/orbital-outlook-family-trace.svg",
+          "sha256": "7eff9a6293f2c83d96109c0a47e42febe93ed07126bb126cd1518d61c2f2576a",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/verified-warrant",
+      "title": "Verified hostile warrant",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 860,
+        "perRouteLegCR": 130,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Accept one currently verified warrant on a specifically identified armed aggressor.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Accept one currently verified warrant on a specifically identified armed aggressor.",
+          "dialog": "VOSS: The warrant names an actor, not a hull class. Innocents and unrelated kills never count.",
+          "primaryArt": "custody-register",
+          "artwork": {
+            "id": "l337.contract/verified-warrant/accept",
+            "file": "../../assets/missions/services/verified-warrant-accept.png",
+            "sha256": "b50688ab3fed14cb3b29165cd0be6f5b36bfdc16ac8eb10e86d3c03c9ce290e0",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Obtain the actual player-attributed destruction receipt for that target and report it.",
+          "dialog": "VOSS: The warrant names an actor, not a hull class. Innocents and unrelated kills never count. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "custody-register",
+          "artwork": {
+            "id": "l337.contract/verified-warrant/perform",
+            "file": "../../assets/missions/services/verified-warrant-perform.png",
+            "sha256": "e674dc32515f7cf89ae1a0461e39a86e799d18a910015dcad53f604ff2d4ff1b",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "custody-register",
+          "artwork": {
+            "id": "l337.contract/verified-warrant/receive",
+            "file": "../../assets/missions/services/verified-warrant-receive.png",
+            "sha256": "67a0c5f696be3a2e8039c72d31d2d07c1a9e73f2d89f8d4476e69961ba254a01",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/verified-warrant",
+        "missionTitle": "Verified hostile warrant",
+        "id": "verified-warrant-family-trace",
+        "label": "The verified warrant trace",
+        "text": "The first verified verified hostile warrant record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/verified-warrant-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "verified-warrant-family-trace",
+          "file": "../../assets/missions/clues/verified-warrant-family-trace.svg",
+          "sha256": "10bcca8e32f8f9c5dd71c51749d67393e5ed14aff89a2a5e624b565cf8be96c3",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/corridor-defence",
+      "title": "Registered corridor defence",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 1120,
+        "perRouteLegCR": 140,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Protect a declared corridor against three specifically registered hostile raiders.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Protect a declared corridor against three specifically registered hostile raiders.",
+          "dialog": "VOSS: Count each registered aggressor once. Culling, ordinary traffic and shared names are not kills.",
+          "primaryArt": "convoy-receipt-beacon",
+          "artwork": {
+            "id": "l337.contract/corridor-defence/accept",
+            "file": "../../assets/missions/services/corridor-defence-accept.png",
+            "sha256": "ce1559ea4144ca333ecd8dca6bcc54d304d1b8c46ea894b20185dc46d839979f",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "hostile-raider-a",
+            "hostile-raider-b",
+            "hostile-raider-c"
+          ],
+          "objective": "Record three distinct actual player-attributed hostile neutralisations and verify corridor reception.",
+          "dialog": "VOSS: Count each registered aggressor once. Culling, ordinary traffic and shared names are not kills. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "convoy-receipt-beacon",
+          "artwork": {
+            "id": "l337.contract/corridor-defence/perform",
+            "file": "../../assets/missions/services/corridor-defence-perform.png",
+            "sha256": "edb5d1a58b31bd19d0ecde64070cf3775055ce164dd9d16b2cb387b56b530b07",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "convoy-receipt-beacon",
+          "artwork": {
+            "id": "l337.contract/corridor-defence/receive",
+            "file": "../../assets/missions/services/corridor-defence-receive.png",
+            "sha256": "597e53ddc8aea4139e67d57c6c5fb9628e5d71e45aab68fdba8d66a5e930e96b",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/corridor-defence",
+        "missionTitle": "Registered corridor defence",
+        "id": "corridor-defence-family-trace",
+        "label": "The corridor defence trace",
+        "text": "The first verified registered corridor defence record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/corridor-defence-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "corridor-defence-family-trace",
+          "file": "../../assets/missions/clues/corridor-defence-family-trace.svg",
+          "sha256": "b34fbe58b748d209f8703f42b790b02b7966c26d0d40e0ce0ccba056668b61d8",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/custody-rescue",
+      "title": "Consented custody rescue",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 1,
+      "requiredBerths": 2,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 900,
+        "perRouteLegCR": 120,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Reserve two fitted berths for registered living evacuees and one tonne for their unique emergency record.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Reserve two fitted berths for registered living evacuees and one tonne for their unique emergency record.",
+          "dialog": "DAIN: People keep their consent after rescue. Destroyed capsules and empty pods cannot become survivors.",
+          "primaryArt": "rescue-launch",
+          "artwork": {
+            "id": "l337.contract/custody-rescue/accept",
+            "file": "../../assets/missions/services/custody-rescue-accept.png",
+            "sha256": "60c14b87e5bf538ec14a8181c5cc00e89204d613100afde116ea6afad5e4f4b9",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Recover the identified living capsules safely, obtain voluntary boarding and complete their real reception.",
+          "dialog": "DAIN: People keep their consent after rescue. Destroyed capsules and empty pods cannot become survivors. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "rescue-launch",
+          "artwork": {
+            "id": "l337.contract/custody-rescue/perform",
+            "file": "../../assets/missions/services/custody-rescue-perform.png",
+            "sha256": "34913fe2fdeff47f2b128d7b5f21acd96bed8b4b62a50ef7aeb5eadc13a981b0",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "rescue-launch",
+          "artwork": {
+            "id": "l337.contract/custody-rescue/receive",
+            "file": "../../assets/missions/services/custody-rescue-receive.png",
+            "sha256": "82324daf6166cdb054fd25200f46faf0ec110830ccc34df336a7757a0beaf332",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/custody-rescue",
+        "missionTitle": "Consented custody rescue",
+        "id": "custody-rescue-family-trace",
+        "label": "The custody rescue trace",
+        "text": "The first verified consented custody rescue record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/custody-rescue-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "custody-rescue-family-trace",
+          "file": "../../assets/missions/clues/custody-rescue-family-trace.svg",
+          "sha256": "43eeb7d6bb9cf3b0e0b6226e62dd74da3398a4bfc37b3f821dee21c151469679",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/identified-salvage",
+      "title": "Identified salvage return",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 2,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 650,
+        "perRouteLegCR": 115,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Locate two tonnes of uniquely registered recoverable equipment in an orbital wreck cradle.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Locate two tonnes of uniquely registered recoverable equipment in an orbital wreck cradle.",
+          "dialog": "PELL: A matching commodity name does not prove wreck provenance.",
+          "primaryArt": "crew-custody-recorder",
+          "artwork": {
+            "id": "l337.contract/identified-salvage/accept",
+            "file": "../../assets/missions/services/identified-salvage-accept.png",
+            "sha256": "bcf6b0ad0527ca94c31d7ecb4ca32d74a5c497ed89c812eb9c27acc0071536ba",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Recover those exact physical items and hand them to their consenting owner.",
+          "dialog": "PELL: A matching commodity name does not prove wreck provenance. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "crew-custody-recorder",
+          "artwork": {
+            "id": "l337.contract/identified-salvage/perform",
+            "file": "../../assets/missions/services/identified-salvage-perform.png",
+            "sha256": "39c7b758c861de8d2d47aaca86feabff9fff4bf1b4794ae11d0742805691aefd",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "crew-custody-recorder",
+          "artwork": {
+            "id": "l337.contract/identified-salvage/receive",
+            "file": "../../assets/missions/services/identified-salvage-receive.png",
+            "sha256": "99c37960ede6d6505c5ade345f113fc682ae748f7d5beccb3c9d198fa4a1c2e3",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/identified-salvage",
+        "missionTitle": "Identified salvage return",
+        "id": "identified-salvage-family-trace",
+        "label": "The identified salvage trace",
+        "text": "The first verified identified salvage return record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/identified-salvage-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "identified-salvage-family-trace",
+          "file": "../../assets/missions/clues/identified-salvage-family-trace.svg",
+          "sha256": "7ff4eada9960a69e5c343c44f5a3cf4a5d5fc51cc70333cc6b97c809cd346c4e",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/consented-survey",
+      "title": "Consented orbital survey",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 540,
+        "perRouteLegCR": 95,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 12,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Survey three registered ship-accessible calibration points at their advertised safe ranges.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Survey three registered ship-accessible calibration points at their advertised safe ranges.",
+          "dialog": "KEST: An interrupted scan keeps only confirmed data. The same point cannot stand in for another.",
+          "primaryArt": "lattice-meter",
+          "artwork": {
+            "id": "l337.contract/consented-survey/accept",
+            "file": "../../assets/missions/services/consented-survey-accept.png",
+            "sha256": "89a2894ed00c10e29caf990517e94e61915405580feda415177283b6007b81c1",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Complete three distinct 12-second scans and return the signed measurements.",
+          "dialog": "KEST: An interrupted scan keeps only confirmed data. The same point cannot stand in for another. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "lattice-meter",
+          "artwork": {
+            "id": "l337.contract/consented-survey/perform",
+            "file": "../../assets/missions/services/consented-survey-perform.png",
+            "sha256": "76cc66ef3c061c4be66150d4dac63d4c2ad00cbdbd254f7d5cf7f99104b25a58",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "lattice-meter",
+          "artwork": {
+            "id": "l337.contract/consented-survey/receive",
+            "file": "../../assets/missions/services/consented-survey-receive.png",
+            "sha256": "0353d4df5eb42eb1e4b828e5f337dbbae19d6878e45a980997dab7e427353695",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/consented-survey",
+        "missionTitle": "Consented orbital survey",
+        "id": "consented-survey-family-trace",
+        "label": "The consented survey trace",
+        "text": "The first verified consented orbital survey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/consented-survey-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "consented-survey-family-trace",
+          "file": "../../assets/missions/clues/consented-survey-family-trace.svg",
+          "sha256": "359b1a2b7b66ee9aca34411c0bddf4eab669c7e5b28d297b37b5a656ba9b79b6",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/isolation-work",
+      "title": "External isolation work",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 1,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 760,
+        "perRouteLegCR": 105,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Take a one-tonne uniquely loaned programmer to two named unmanned external control modules.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Take a one-tonne uniquely loaned programmer to two named unmanned external control modules.",
+          "dialog": "LERR: The modules are distinct from station hulls. A station attack is never an accepted repair.",
+          "primaryArt": "isolation-programmer",
+          "artwork": {
+            "id": "l337.contract/isolation-work/accept",
+            "file": "../../assets/missions/services/isolation-work-accept.png",
+            "sha256": "02b088397e0aacfeda9e15d10348919d3fad89b7321862ef719ccec3cd626361",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Verify both physical isolation states and return the same programmer to its issuer.",
+          "dialog": "LERR: The modules are distinct from station hulls. A station attack is never an accepted repair. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "isolation-programmer",
+          "artwork": {
+            "id": "l337.contract/isolation-work/perform",
+            "file": "../../assets/missions/services/isolation-work-perform.png",
+            "sha256": "34759e428c167263ae1c77100d9014ee40d41a52b3ac5ed270d4bf63e0ceba40",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "isolation-programmer",
+          "artwork": {
+            "id": "l337.contract/isolation-work/receive",
+            "file": "../../assets/missions/services/isolation-work-receive.png",
+            "sha256": "473bfc4d0112cdce1a887ecd25ceef48f6fbe40fdaba30c3a1e537f42c64dcef",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/isolation-work",
+        "missionTitle": "External isolation work",
+        "id": "isolation-work-family-trace",
+        "label": "The isolation work trace",
+        "text": "The first verified external isolation work record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/isolation-work-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "isolation-work-family-trace",
+          "file": "../../assets/missions/clues/isolation-work-family-trace.svg",
+          "sha256": "0739cb36c7c342897e4519cd999d94b4b6f030491dfc0705d6955381058353b5",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/measured-extraction",
+      "title": "Measured asteroid extraction",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 12,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 780,
+        "perRouteLegCR": 110,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Reserve twelve tonnes of hold and identify a consented orbital extraction body.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Reserve twelve tonnes of hold and identify a consented orbital extraction body.",
+          "dialog": "ORR: Bought ore can fill your hold, but cannot prove the extraction this receiver requested.",
+          "primaryArt": "ore-junction",
+          "artwork": {
+            "id": "l337.contract/measured-extraction/accept",
+            "file": "../../assets/missions/services/measured-extraction-accept.png",
+            "sha256": "11b67284dde7890903cc3108ce3b97f69519ac69031911c3a536ebe6afab721c",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Mine and refine twelve tonnes with this job's verified extraction provenance, then deliver them.",
+          "dialog": "ORR: Bought ore can fill your hold, but cannot prove the extraction this receiver requested. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "ore-junction",
+          "artwork": {
+            "id": "l337.contract/measured-extraction/perform",
+            "file": "../../assets/missions/services/measured-extraction-perform.png",
+            "sha256": "db574068a831698b75700963306ff4d646c0b34589bba5efbca2267a307caaaf",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "ore-junction",
+          "artwork": {
+            "id": "l337.contract/measured-extraction/receive",
+            "file": "../../assets/missions/services/measured-extraction-receive.png",
+            "sha256": "69713d04575b6d878e4af2b8edb511187646177f3d26a614795bc1807c91903a",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/measured-extraction",
+        "missionTitle": "Measured asteroid extraction",
+        "id": "measured-extraction-family-trace",
+        "label": "The measured extraction trace",
+        "text": "The first verified measured asteroid extraction record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/measured-extraction-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "measured-extraction-family-trace",
+          "file": "../../assets/missions/clues/measured-extraction-family-trace.svg",
+          "sha256": "304a570849e6233ded29d137e0c85bcc85e7ea555a2a1a828aa3bff013f3cf43",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/mutual-contribution",
+      "title": "Mutual relief contribution",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 500,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 0,
+        "perRouteLegCR": 0,
+        "hazardPremiumCR": 0,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Review a voluntary 500 CR contribution to a named orbital relief reserve.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Review a voluntary 500 CR contribution to a named orbital relief reserve.",
+          "dialog": "SENN: The contribution earns no fictional cash profit. Confirm the named recipient before transferring.",
+          "primaryArt": "exchange-dispatch-console",
+          "artwork": {
+            "id": "l337.contract/mutual-contribution/accept",
+            "file": "../../assets/missions/services/mutual-contribution-accept.png",
+            "sha256": "305b05305b66f21a0a7c98965fcca32c4e30d620600e6319c1b097ea0b882b78",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Commit exactly 500 CR to its real recipient and receive the verified fund acknowledgement.",
+          "dialog": "SENN: The contribution earns no fictional cash profit. Confirm the named recipient before transferring. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "exchange-dispatch-console",
+          "artwork": {
+            "id": "l337.contract/mutual-contribution/perform",
+            "file": "../../assets/missions/services/mutual-contribution-perform.png",
+            "sha256": "aa090ffc8c3bf6232fe061d5a64c3e2bb25bd91e08967a61bd8e247b165c2bda",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "SENN: The relief reserve received exactly 500 CR. There is no cash reward for a donation. Its independent acknowledgement is preserved.",
+          "primaryArt": "exchange-dispatch-console",
+          "artwork": {
+            "id": "l337.contract/mutual-contribution/receive",
+            "file": "../../assets/missions/services/mutual-contribution-receive.png",
+            "sha256": "afd4c3d1081cab1edbda7d2861f8a0337b71d01be2e3bec74185bee4c91e6688",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/mutual-contribution",
+        "missionTitle": "Mutual relief contribution",
+        "id": "mutual-contribution-family-trace",
+        "label": "The mutual contribution trace",
+        "text": "The first verified mutual relief contribution record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/mutual-contribution-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "mutual-contribution-family-trace",
+          "file": "../../assets/missions/clues/mutual-contribution-family-trace.svg",
+          "sha256": "4f8eccc61b02ca3ffbb9ee4ef0ebd468f0327a93f4261206f928f68eb2610ed0",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/orbital-evacuation",
+      "title": "Registered orbital evacuation",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 4,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 940,
+        "perRouteLegCR": 125,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Reserve four fitted berths for a registered living orbital evacuation group.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Reserve four fitted berths for a registered living orbital evacuation group.",
+          "dialog": "DAIN: An arrival manifest must match the people actually aboard.",
+          "primaryArt": "rescue-launch",
+          "artwork": {
+            "id": "l337.contract/orbital-evacuation/accept",
+            "file": "../../assets/missions/services/orbital-evacuation-accept.png",
+            "sha256": "a840f3659217b53c1e469c67a31ce97a5d2bec80641fc8d8aa2fa780112019f3",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Bring the same consenting survivors to the verified receiving berth; preserve real losses.",
+          "dialog": "DAIN: An arrival manifest must match the people actually aboard. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "rescue-launch",
+          "artwork": {
+            "id": "l337.contract/orbital-evacuation/perform",
+            "file": "../../assets/missions/services/orbital-evacuation-perform.png",
+            "sha256": "fcf1d636b295acccb8dc514bd147faeb248619a53608053ca71e45b14dac6eec",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "rescue-launch",
+          "artwork": {
+            "id": "l337.contract/orbital-evacuation/receive",
+            "file": "../../assets/missions/services/orbital-evacuation-receive.png",
+            "sha256": "4dc35ed115d4c70298f2955d616940c9892d0c1b5abcc50b151f553034465e07",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/orbital-evacuation",
+        "missionTitle": "Registered orbital evacuation",
+        "id": "orbital-evacuation-family-trace",
+        "label": "The orbital evacuation trace",
+        "text": "The first verified registered orbital evacuation record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/orbital-evacuation-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "orbital-evacuation-family-trace",
+          "file": "../../assets/missions/clues/orbital-evacuation-family-trace.svg",
+          "sha256": "494321cc3db720c060565342469498ac4398c80b5e176f4604b068bee918bcf4",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.contract/hostile-larvaal-defence",
+      "title": "Designated hostile Larvaal defence",
+      "kind": "repeatable",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 1250,
+        "perRouteLegCR": 150,
+        "hazardPremiumCR": 80,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Accept a verified corridor threat involving two registered armed hostile Larvaal actors.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Accept a verified corridor threat involving two registered armed hostile Larvaal actors.",
+          "dialog": "HOLT: Species alone does not make a target hostile. Neutral and consenting Larvaal vessels never count.",
+          "primaryArt": "passive-receiver",
+          "artwork": {
+            "id": "l337.contract/hostile-larvaal-defence/accept",
+            "file": "../../assets/missions/services/hostile-larvaal-defence-accept.png",
+            "sha256": "3b2a39c326dc99ab1cb084c26a8016a95d31cc0836725bfce61e4a7586581453",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "hostile-larvaal-a",
+            "hostile-larvaal-b",
+            "civilian-arrival"
+          ],
+          "objective": "Obtain two distinct player-attributed neutralisation receipts and the actual civilian safe-arrival record.",
+          "dialog": "HOLT: Species alone does not make a target hostile. Neutral and consenting Larvaal vessels never count. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "passive-receiver",
+          "artwork": {
+            "id": "l337.contract/hostile-larvaal-defence/perform",
+            "file": "../../assets/missions/services/hostile-larvaal-defence-perform.png",
+            "sha256": "c80de11aba32893aeadd1657ce5e046978578cb4eaebe7d8b0e708b89ed3f6ec",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the exact receiver, actual returned custody and the advertised settlement.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "passive-receiver",
+          "artwork": {
+            "id": "l337.contract/hostile-larvaal-defence/receive",
+            "file": "../../assets/missions/services/hostile-larvaal-defence-receive.png",
+            "sha256": "5dcf982e5e04520d2e4a7139515c32b8fc292719ec4a7c2d50a3184bd963d1fe",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.contract/hostile-larvaal-defence",
+        "missionTitle": "Designated hostile Larvaal defence",
+        "id": "hostile-larvaal-defence-family-trace",
+        "label": "The hostile larvaal defence trace",
+        "text": "The first verified designated hostile larvaal defence record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/hostile-larvaal-defence-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "hostile-larvaal-defence-family-trace",
+          "file": "../../assets/missions/clues/hostile-larvaal-defence-family-trace.svg",
+          "sha256": "7d344fe2ea59eb09b52ec8f49d981d6353a7a8e18673f51f1bb3287834f7fb96",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.training/flight-reception",
+      "title": "Flight and reception practice",
+      "kind": "training",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 0,
+        "perRouteLegCR": 0,
+        "hazardPremiumCR": 0,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Choose a safe orbital training berth; review throttle, roll, pitch and the shared view controls.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Choose a safe orbital training berth; review throttle, roll, pitch and the shared view controls.",
+          "dialog": "VENN: Learn with your current commander. Canceling a practice never wipes a save.",
+          "primaryArt": "navigation-beacon",
+          "artwork": {
+            "id": "l337.training/flight-reception/accept",
+            "file": "../../assets/missions/services/flight-reception-accept.png",
+            "sha256": "6a675b58853e0389a335e88641d7e1c76554edc2fdbb5f1484843635255eae96",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Complete a bounded flight alignment, safe approach and actual training-berth reception.",
+          "dialog": "VENN: Learn with your current commander. Canceling a practice never wipes a save. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "navigation-beacon",
+          "artwork": {
+            "id": "l337.training/flight-reception/perform",
+            "file": "../../assets/missions/services/flight-reception-perform.png",
+            "sha256": "d4a9e3f99cf559bfebaa394b13ca5b19858a19ada60730482226ca13bd1649d0",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the actual completed practice or trade evidence with the training berth.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "navigation-beacon",
+          "artwork": {
+            "id": "l337.training/flight-reception/receive",
+            "file": "../../assets/missions/services/flight-reception-receive.png",
+            "sha256": "1020db45ed34b76b5162f5dbaea6bb071e73d5c2646bbb2c92e2a8129dc98cfb",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.training/flight-reception",
+        "missionTitle": "Flight and reception practice",
+        "id": "flight-reception-family-trace",
+        "label": "The flight reception trace",
+        "text": "The first verified flight and reception practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/flight-reception-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "flight-reception-family-trace",
+          "file": "../../assets/missions/clues/flight-reception-family-trace.svg",
+          "sha256": "5e86c2d704d845d088eb9d6c01b15ce460d23487f5a60877cfdecd3d08e578ea",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.training/safe-gunnery",
+      "title": "Safe gunnery practice",
+      "kind": "training",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 0,
+        "perRouteLegCR": 0,
+        "hazardPremiumCR": 0,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Review three clearly marked uncrewed simulated gunnery targets in an isolated orbital practice volume.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Review three clearly marked uncrewed simulated gunnery targets in an isolated orbital practice volume.",
+          "dialog": "HOLT: Practice targets award no real kill count, bounty or legal offence.",
+          "primaryArt": "outer-watcher",
+          "artwork": {
+            "id": "l337.training/safe-gunnery/accept",
+            "file": "../../assets/missions/services/safe-gunnery-accept.png",
+            "sha256": "72ecd4f52415f1da21603e270508df30664dc53212d62d042c2fc6da9773a765",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Verify three distinct practice hits and a safe cease-fire receipt.",
+          "dialog": "HOLT: Practice targets award no real kill count, bounty or legal offence. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "outer-watcher",
+          "artwork": {
+            "id": "l337.training/safe-gunnery/perform",
+            "file": "../../assets/missions/services/safe-gunnery-perform.png",
+            "sha256": "eac0196aed87cae62321b33d70ed751f69f1e13fd4d6038421f27e6cc613ec11",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the actual completed practice or trade evidence with the training berth.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "outer-watcher",
+          "artwork": {
+            "id": "l337.training/safe-gunnery/receive",
+            "file": "../../assets/missions/services/safe-gunnery-receive.png",
+            "sha256": "6155c3d8839cd8fbda4c1a6f206fb2aa57d3cd36743513bf7be69e695f1c975b",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.training/safe-gunnery",
+        "missionTitle": "Safe gunnery practice",
+        "id": "safe-gunnery-family-trace",
+        "label": "The safe gunnery trace",
+        "text": "The first verified safe gunnery practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/safe-gunnery-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "safe-gunnery-family-trace",
+          "file": "../../assets/missions/clues/safe-gunnery-family-trace.svg",
+          "sha256": "400e4dc49dc73ff8025f01618ed7d54e51665976c1ec7e7e09197efe36b2d4a6",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    },
+    {
+      "id": "l337.training/defensive-flight",
+      "title": "Defensive flight practice",
+      "kind": "training",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 0,
+        "perRouteLegCR": 0,
+        "hazardPremiumCR": 0,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Review an uncrewed consenting training actor and the published break-off envelope.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Review an uncrewed consenting training actor and the published break-off envelope.",
+          "dialog": "HOLT: This is a bounded training exercise. Esc leaves the practice; it does not abandon real missions.",
+          "primaryArt": "resonance-filter",
+          "artwork": {
+            "id": "l337.training/defensive-flight/accept",
+            "file": "../../assets/missions/services/defensive-flight-accept.png",
+            "sha256": "6b2c69f4eedb46299826dbcee8740edfe4054edf27dadbf4a7500360772a8879",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Demonstrate target acquisition, controlled evasion and safe disengagement without harming ordinary traffic.",
+          "dialog": "HOLT: This is a bounded training exercise. Esc leaves the practice; it does not abandon real missions. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "resonance-filter",
+          "artwork": {
+            "id": "l337.training/defensive-flight/perform",
+            "file": "../../assets/missions/services/defensive-flight-perform.png",
+            "sha256": "06a8c75d259c27bcc64a64c02ff67dacf4a590735af72c7e05aec511aca9646a",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the actual completed practice or trade evidence with the training berth.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "resonance-filter",
+          "artwork": {
+            "id": "l337.training/defensive-flight/receive",
+            "file": "../../assets/missions/services/defensive-flight-receive.png",
+            "sha256": "0928f49a3ceb3f27f94296cee8c124768635fbee0476b5ef002317723a00a78d",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.training/defensive-flight",
+        "missionTitle": "Defensive flight practice",
+        "id": "defensive-flight-family-trace",
+        "label": "The defensive flight trace",
+        "text": "The first verified defensive flight practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/defensive-flight-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "defensive-flight-family-trace",
+          "file": "../../assets/missions/clues/defensive-flight-family-trace.svg",
+          "sha256": "3c90f5ac982c5be26bf7c47c19a370dfebe9c979535fde453a77c8b2d569d81c",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo.",
+      "oracleNativeCourse": "Manual observation of the attempt's native centre beacon ordinal 1, not ordinary Tab/AUTO or a hardware grant. Acquire nearest unobstructed centre sight within 5 degrees for 2 continuous seconds in the approach zone. Fly ordered virtual gates (+180,0,-450)m then (-180,0,-450)m relative to centre, radius 40m, holding each 0.5s at actual speed 5-30m/s and requested signed lateral motion >=3m/s. Withdraw with nose >=150 degrees off the beacon and separation >=5m/s for 3s beyond 1100m in the cleared exit corridor. Use the three original inert uncrewed practice bodies and actual hull clearance; no AI attack or fabricated damage. Discharge or ordinary harm fails the non-firing attempt, preserving ordinary consequences. Intrusion pauses/resets the continuous window. Accept and later explicitly receive at Avenor; zero fee/deposit/reward, its own first-success clue, no T02 prerequisite."
+    },
+    {
+      "id": "l337.training/navigation-trade",
+      "title": "Navigation and trade practice",
+      "kind": "training",
+      "requiredCargoTonnes": 1,
+      "requiredBerths": 0,
+      "depositCR": 0,
+      "donationCR": 0,
+      "qualification": "Visible actual fitting, consent and reachable space-station endpoints; no external pack progress, hidden rank counter or imported score gate.",
+      "quote": {
+        "baseCR": 0,
+        "perRouteLegCR": 0,
+        "hazardPremiumCR": 0,
+        "source": "Independent authored service budget, not source arithmetic or converted tables."
+      },
+      "clock": {
+        "deadlineSeconds": 0,
+        "scanSeconds": 0,
+        "policy": "No undisclosed deadline. An explicitly quoted variant freezes its remaining flight-simulation budget on pause and preserves it on current-format load."
+      },
+      "encounterPolicy": "Use unique registered actors and items. Preserve real casualties, attributed kills, consent, full cargo provenance and named reception; culling supplies no evidence.",
+      "offerDialog": "Reserve one tonne of a real legal commodity and preview a reachable original-world route.",
+      "stages": [
+        {
+          "id": "accept",
+          "event": "original_family_accepted",
+          "targetRole": "registered-issuer",
+          "requiredProofs": [
+            "offer-confirmed",
+            "actual-fit-reserved"
+          ],
+          "objective": "Reserve one tonne of a real legal commodity and preview a reachable original-world route.",
+          "dialog": "SENN: Record the credits actually spent and received. The tutorial invents no profitable sale.",
+          "primaryArt": "courier-crate",
+          "artwork": {
+            "id": "l337.training/navigation-trade/accept",
+            "file": "../../assets/missions/services/navigation-trade-accept.png",
+            "sha256": "44964bd804d0df642ecdd72d59749ce66f862181fd1669d88c9afa1676ad4cd0",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "perform",
+          "event": "original_family_objective_verified",
+          "targetRole": "registered-objective",
+          "requiredProofs": [
+            "exact-identity-proof",
+            "physical-operation-proof"
+          ],
+          "objective": "Complete the selected journey and an actual sale, accounting for fuel and the real buy/sell difference.",
+          "dialog": "SENN: Record the credits actually spent and received. The tutorial invents no profitable sale. Keep the full instance-scoped evidence and its current receiving endpoint.",
+          "primaryArt": "courier-crate",
+          "artwork": {
+            "id": "l337.training/navigation-trade/perform",
+            "file": "../../assets/missions/services/navigation-trade-perform.png",
+            "sha256": "5a2c42099fa3319ac4784e6e171785c96e0bd0ac3d116fe8c88d1863771ad430",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        },
+        {
+          "id": "receive",
+          "event": "original_family_terminal_committed",
+          "targetRole": "registered-receiver",
+          "requiredProofs": [
+            "real-reception",
+            "settlement-committed"
+          ],
+          "objective": "Confirm the actual completed practice or trade evidence with the training berth.",
+          "dialog": "RECEPTION: The recorded work and its actual receiving evidence agree. The published settlement and this family's first-completion clue are committed together; later jobs cannot replace another family's clue.",
+          "primaryArt": "courier-crate",
+          "artwork": {
+            "id": "l337.training/navigation-trade/receive",
+            "file": "../../assets/missions/services/navigation-trade-receive.png",
+            "sha256": "0cd3eb84c89c86eba083da479c42950032c1244d17722d773d2e0c7e879fcbb2",
+            "visibility": "Only current family offer, practice or accepted instance; clue requires successful terminal"
+          }
+        }
+      ],
+      "completionClue": {
+        "source": "l337.training/navigation-trade",
+        "missionTitle": "Navigation and trade practice",
+        "id": "navigation-trade-family-trace",
+        "label": "The navigation trade trace",
+        "text": "The first verified navigation and trade practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+        "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+        "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/navigation-trade-family-trace",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "navigation-trade-family-trace",
+          "file": "../../assets/missions/clues/navigation-trade-family-trace.svg",
+          "sha256": "91cc37a5cb87ea26f6cbab93720e40e07ff22eb563252b48e1256331250903c3",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      },
+      "cluePolicy": "Grant this family's one distinct permanent zero-mass clue at its first verified successful terminal. Later legitimate jobs retain it and cannot substitute for missing sources.",
+      "failurePolicy": "Preserve losses and incomplete evidence; no payment or clue on failure. A retry requires actual new available stock/actors and a new instance. Never restore destroyed people or clone lost cargo."
+    }
+  ]
+}

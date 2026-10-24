@@ -1,0 +1,13 @@
+{
+  "id": "SH163",
+  "name": "Lammergeier",
+  "family": "lammergeier",
+  "role": "pirate",
+  "license": "MIT",
+  "playerFlyable": false,
+  "purchasePolicy": "pendingFabrication",
+  "display": {
+    "purchasable": false,
+    "specification": "Structural object; no fictional flight-performance values assigned"
+  }
+}
