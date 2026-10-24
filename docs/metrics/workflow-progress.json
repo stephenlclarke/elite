@@ -11741,6 +11741,19 @@
       "executed": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T08:45:24.545772+00:00",
+      "checkpoint_key": "20261024-m01-interception-resource-oracle-review-finding",
+      "event": "Combined review catches stale beam energy oracle before execution; bounded correction assigned",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issue": 203,
+      "reviewed_patch_sha256": "fb7ee5798fcf3d2b76121f22c683c94be8c937c80927b9bb69050076ff8ccbcd",
+      "unchanged_source_review_retained": true,
+      "executed": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
