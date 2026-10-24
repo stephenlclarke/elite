@@ -10429,6 +10429,27 @@
       "composite_exit_code": 2,
       "diagnostic_artifact_upload": "success",
       "terminal_artifact_review": "pending"
+    },
+    {
+      "at": "2026-10-24T01:34:38.924076+00:00",
+      "checkpoint_key": "20261024-m01-first-six-grouped-failure-assignments",
+      "event": "First six source-verified failure groups assigned in the same M01 blocker packet",
+      "head": "ae97d337cb9cf25b58322a21946e9ece297dd60a",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issues": {
+        "171": "showroom physical profiles and broad source search",
+        "172": "help pagination and flight-control footer",
+        "173": "archival texture fixture dialect",
+        "174": "authored market display order",
+        "175": "actual hold capacity and hull compatibility",
+        "176": "owned cabin-module identity"
+      },
+      "status": "assigned_and_preparing",
+      "unit_result": "pending",
+      "remaining_failure_inventory_retained": true,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
