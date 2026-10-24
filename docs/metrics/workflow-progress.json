@@ -11352,6 +11352,22 @@
       "reviewer_fixes_authorized": false,
       "new_feature_authorized": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:52:31.252812+00:00",
+      "checkpoint_key": "20261024-m01-210-source-review-complete-fixture-applied",
+      "event": "Showroom texture fixture-policy cause proven and minimal correction applied before combined review",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issue": 210,
+      "source_review_comment": 6381659627,
+      "source_cause": "selected_undiscovered_unowned_silhouette_and_baseline_framewide_false_positive",
+      "fixture_correction": "explicit_valid_owned_selected_hull_and_compare_false_with_policy_checks",
+      "both_ships_and_sizes_retained": true,
+      "product_policy_changed": false,
+      "actual_combined_patch_review": "pending_final_manifest",
+      "unit_execution": "none",
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
