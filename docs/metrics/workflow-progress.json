@@ -11828,9 +11828,13 @@
       "review_receipt": "/tmp/elite-mba-a1bf-followup-source-review.json",
       "selected_methods": 2,
       "other_helper_consumers": 0,
-      "actual_execution": "not_yet_verified",
+      "actual_execution": "terminal_compile_only_zero_tests",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "source_commit": "d326c68c144d0469537287a7d946e74f8ba83d8b",
+      "wall_seconds": 8.18679791688919,
+      "exit_code": 1,
+      "next_correction": "stage_actual_allocateSpawn_result_before_require_macro"
     }
   ],
   "two_developer_phase": {
