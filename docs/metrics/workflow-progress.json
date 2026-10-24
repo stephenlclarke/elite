@@ -11777,6 +11777,28 @@
       "compile_correction_review": "source_clear",
       "compile_correction_patch_sha256": "b4139c97de553d52735ae4fbda25c9afb32a70007098082667cfeacdaf7f9e75",
       "same_ten_method_resumption": "authorized_not_yet_verified"
+    },
+    {
+      "at": "2026-10-24T08:53:17.247369+00:00",
+      "checkpoint_key": "20261024-m01-a1bf-terminal-two-remaining",
+      "event": "Resumed focused batch terminal; only interception and positive rehash remain",
+      "source_commit": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "wall_seconds": 149.56651720777154,
+      "build_seconds": 56.72,
+      "runtime_seconds": 89.034,
+      "exit_code": 1,
+      "root_xml_methods": 10,
+      "root_xml_passes": 8,
+      "root_xml_failed_methods": 2,
+      "issue_records": 8,
+      "remaining_issues": [
+        203,
+        205
+      ],
+      "mba_terminal_verification": "assigned",
+      "source_cause_203": "fixture_legacy_unspawned_path_not_new_native_guard",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
