@@ -11492,6 +11492,31 @@
       "new_work_packet": false,
       "actual_registration_or_execution_authorized": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T08:05:33.855085+00:00",
+      "checkpoint_key": "20261024-m01-final-four-path-review-assigned",
+      "event": "Corrected composition mechanically verified; final four-path source review assigned retaining other review",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "base": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+      "patch_sha256": "b626bed3b0ede6f999e2b85fc67e0007b1020a9e5b1f85c5642fd22de4e4e88b",
+      "correction_patch_sha256": "fc17f423315297a483cdc6c2e970f83b4aebd0a52c0e29b84b998807e68786c0",
+      "manifest_files": 78,
+      "all_current_manifest_hashes_match": true,
+      "unchanged_reviewed_paths": 74,
+      "corrected_paths": [
+        "Makefile",
+        "Tools/CI/prepare_native_runner.py",
+        "Tools/CI/test_native_runner.py",
+        "docs/NATIVE-QUALITY-RUNNER.md"
+      ],
+      "review_status": "assigned_actual_corrected_hunks",
+      "candidate_frozen": true,
+      "new_unit_execution": "none",
+      "native_runner_registration": "none",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
