@@ -11773,7 +11773,10 @@
       "wall_seconds": 4.757654041051865,
       "exit_code": 1,
       "swift_testing_xml_present": false,
-      "next_correction": "stage_small_context_fields_before_short_circuit_autoclosure"
+      "next_correction": "stage_small_context_fields_before_short_circuit_autoclosure",
+      "compile_correction_review": "source_clear",
+      "compile_correction_patch_sha256": "b4139c97de553d52735ae4fbda25c9afb32a70007098082667cfeacdaf7f9e75",
+      "same_ten_method_resumption": "authorized_not_yet_verified"
     }
   ],
   "two_developer_phase": {
