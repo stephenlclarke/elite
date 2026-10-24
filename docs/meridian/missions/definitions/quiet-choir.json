@@ -1,0 +1,466 @@
+{
+  "id": "l337.quiet-choir",
+  "missionID": "quiet-choir",
+  "title": "A Choir Beneath the Static",
+  "subtitle": "A signal mistaken for a weapon may be a request for help.",
+  "contacts": [
+    "Captain Tamsin Holt",
+    "Agent Mara Vale"
+  ],
+  "ships": [
+    "SH124",
+    "SH125",
+    "SH162"
+  ],
+  "offer": "After identifying a Larvaal vessel and visiting four systems, speak to Holt at Omdogan in Galaxy 4. This campaign is independent of The Glass Meridian.",
+  "story": "Mining navigation receivers in Quiet Current are being drowned by repeating Larvaal phase pulses. The pulses contain synchronized gaps, not firing orders. A damaged Larvaal Probe has been trying to locate its dispersed companions while human smugglers imitate the signal to conceal their own traffic. The commander reconstructs the pulses, repairs the probe, exposes the imitation and negotiates a narrow-band rendezvous that lets both fleets navigate safely.",
+  "playerBriefing": "Captain Tamsin Holt: No one has proved these pulses are an attack. Calibrate your receiver at Lobagom before approaching the source. Agent Mara Vale will compare what you find with the mining relays.",
+  "rewardCR": 6400,
+  "completionBenefit": "A resonance-filter fitting, improving identification of this campaign's Larvaal signals. It grants no extra energy capacity, general faction immunity or free ship fabrication. A permanent clue for The Unwritten Route: The silent voice.",
+  "items": [
+    {
+      "id": "phase-collector",
+      "massTonnes": 1,
+      "acquireStage": "recover-collector",
+      "consumeStage": "interpret"
+    },
+    {
+      "id": "repair-culture",
+      "massTonnes": 1,
+      "acquireStage": "interpret",
+      "consumeStage": "repair-probe"
+    }
+  ],
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.quiet-choir/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "branchPolicy": "Record the selected evidence/protocol outcome in pack state and gossip. Branches reconverge at the next stage and share the advertised base payment.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "choir-silent-voice",
+    "label": "The silent voice",
+    "journalText": "The restored Larvaal call contains a reply from beyond the gathering. Its pauses describe a curve, but no Larvaal vessel claims the voice.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/choir-silent-voice",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "briefing": {
+      "id": "quiet-choir",
+      "file": "../../assets/missions/illustrations/quiet-choir.png",
+      "sha256": "236de413ec5051d497ae82295ff42387a5c6f543feba327d9f7b28e1105ec451",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Captain Tamsin Holt",
+        "portrait": {
+          "id": "tamsin-holt",
+          "file": "../../assets/missions/portraits/tamsin-holt.png",
+          "sha256": "6e170811586bcc614212d090ae1a4360fe76691e1afad086468613b9cf62fbd4",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Agent Mara Vale",
+        "portrait": {
+          "id": "mara-vale",
+          "file": "../../assets/missions/portraits/mara-vale.png",
+          "sha256": "9fa767db25af0ec5a531e6761fe58e4419801e9e090ba905fa51118f5e514c13",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH124",
+        "asset": {
+          "id": "SH124",
+          "file": "../../assets/missions/ships/SH124.png",
+          "sha256": "b67ea759cf3562a1beb44debaa0e89b9b61cd02e492c754e8c8d8df429cfa2c3",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH125",
+        "asset": {
+          "id": "SH125",
+          "file": "../../assets/missions/ships/SH125.png",
+          "sha256": "4a65a003c275e2291868e3061eb30f3345298b76f88314e31072676bda4fa6a6",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH162",
+        "asset": {
+          "id": "SH162",
+          "file": "../../assets/missions/ships/SH162.png",
+          "sha256": "0f43d0341b84190ee2972dc2ffae8d46045602925eff340ae17b6c1659789a09",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "phase-collector",
+        "asset": {
+          "id": "phase-collector",
+          "file": "../../assets/missions/props/phase-collector.png",
+          "sha256": "23feca6dd9dd45faa95b72d1ac0b21d4c9f64211fb1b7075019f8fe9f8a1cadf",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "id": "repair-culture",
+        "asset": {
+          "id": "repair-culture",
+          "file": "../../assets/missions/props/repair-culture.png",
+          "sha256": "60db78b1b06bb47f6541cb0c3efc54c02ad9b4b626d6a4b571e5b35f8f2ae2a4",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "quiet-choir/expose-imitation/choice-1",
+        "file": "../../assets/missions/outcomes/quiet-choir-expose-imitation-choice-1.png",
+        "sha256": "529a37104a809d93f7979418aa9bb2bd8ea5394667b6984e050d7ada96fa1e2b",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "quiet-choir/expose-imitation/choice-2",
+        "file": "../../assets/missions/outcomes/quiet-choir-expose-imitation-choice-2.png",
+        "sha256": "c7384ab9d9992741240d341adac0f400ac27a4c847f34d9bea891f074a4410b3",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "quiet-choir/rendezvous/choice-1",
+        "file": "../../assets/missions/outcomes/quiet-choir-rendezvous-choice-1.png",
+        "sha256": "b864319d145e6411cb5c63a51f054ba05d7ab68e403535ee8af70cb48ed2413e",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "quiet-choir/rendezvous/choice-2",
+        "file": "../../assets/missions/outcomes/quiet-choir-rendezvous-choice-2.png",
+        "sha256": "3e51fb95701381dceef7b1c28fbc8d12ba9cae802e201d1336afdef474d688b4",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 3,
+      "system": 40,
+      "objective": "Accept Holt's signal investigation at Omdogan.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "holt-commission"
+      ],
+      "dialog": "HOLT: Our miners are losing their bearings. I will not order an attack on the basis of interference. Find out whether someone is calling, warning or hiding.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S040",
+      "locationName": "Omdogan",
+      "next": "calibrate",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/accept",
+        "file": "../../assets/missions/stages/quiet-choir/accept.png",
+        "sha256": "373354c7ff4c9af73dc1a5f5a336e4d64757ae8877f93489364d2ee4f3300fd4",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "calibrate",
+      "galaxy": 3,
+      "system": 249,
+      "objective": "Scan three reference emitters at Lobagom to separate receiver drift from outside interference.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "reference-low",
+        "reference-mid",
+        "reference-high"
+      ],
+      "dialog": "The receiver is stable. The interference contains a deliberate pause after every third pulse, repeated across all three bands.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S249",
+      "locationName": "Lobagom",
+      "next": "recover-collector",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/calibrate",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/calibrate",
+        "file": "../../assets/missions/stages/quiet-choir/calibrate.png",
+        "sha256": "97034666a0c94c643375d284d3bb36f252547912e3b1bd7f0fd676970750f9ff",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "recover-collector",
+      "galaxy": 3,
+      "system": 78,
+      "objective": "Recover a one-tonne phase collector from the damaged mining relay at Lodogom.",
+      "event": "mission_item_recovered",
+      "requiredTargets": [
+        "phase-collector"
+      ],
+      "dialog": "A passive collector has recorded the missing phase information. The relay is dead, but its sealed recorder can be recovered without disabling any ship.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G04-S078",
+      "locationName": "Lodogom",
+      "next": "interpret",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/recover-collector",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "phase-collector",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/recover-collector",
+        "file": "../../assets/missions/stages/quiet-choir/recover-collector.png",
+        "sha256": "39b9ed332c4c446c8e8232cc4f4dd0709244c74672207284e1d09f2487fe1a25",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "interpret",
+      "galaxy": 3,
+      "system": 109,
+      "objective": "Dock at Balmabol and let Mara Vale reconstruct the signal.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "vale-analysis"
+      ],
+      "dialog": "VALE: This is a gathering call. Each pause leaves room for a reply from a missing companion. Someone has copied the loud part and omitted the listening interval.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S109",
+      "locationName": "Balmabol",
+      "next": "repair-probe",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/interpret",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "phase-collector",
+          "massTonnes": 1
+        },
+        {
+          "kind": "add",
+          "item": "repair-culture",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/interpret",
+        "file": "../../assets/missions/stages/quiet-choir/interpret.png",
+        "sha256": "60ed8efd1cd66f46e228b69ccdc01f805b77f4685764e5eb4eb5c2f694b98d43",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "repair-probe",
+      "galaxy": 3,
+      "system": 184,
+      "objective": "Deliver the loaned repair culture to the stranded Larvaal Probe at Balgodan.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "probe-culture-transfer"
+      ],
+      "dialog": "The jade shell opens around the damaged resonator. The repair culture bridges a broken fold; the probe answers with a short gold pulse.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G04-S184",
+      "locationName": "Balgodan",
+      "next": "listen",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/repair-probe",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "repair-culture",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/repair-probe",
+        "file": "../../assets/missions/stages/quiet-choir/repair-probe.png",
+        "sha256": "b1ec34a94bd900763467a0858ff21ed8738eefb08d1f2df5de150735e955a43d",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "listen",
+      "galaxy": 3,
+      "system": 127,
+      "objective": "Listen at three safe positions around the Larvaal gathering at Dalonom.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "choir-near",
+        "choir-above",
+        "choir-aft"
+      ],
+      "dialog": "Three listening positions reveal an empty place in the call. The missing voice should be near Fobolan, where the repeated signal never pauses.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S127",
+      "locationName": "Dalonom",
+      "next": "expose-imitation",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/listen",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/listen",
+        "file": "../../assets/missions/stages/quiet-choir/listen.png",
+        "sha256": "d519b02d297f116ea82742e11553fa5f45c3f8f9a097a2311d581598c9a9dd6b",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "expose-imitation",
+      "galaxy": 3,
+      "system": 132,
+      "objective": "Locate and silence the counterfeit emitter at Fobolan.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "counterfeit-emitter-disabled"
+      ],
+      "dialog": "Human freight seals surround the emitter. Present its copied certificate to make the smugglers abandon it, or disable the exposed transmitter. Destroying unrelated ships proves nothing.",
+      "interactionItemMassTonnes": 0,
+      "choices": [
+        "Broadcast the forged certificate and demand shutdown",
+        "Disable the unmanned transmitter"
+      ],
+      "locationKey": "G04-S132",
+      "locationName": "Fobolan",
+      "next": "rendezvous",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/expose-imitation",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/expose-imitation",
+        "file": "../../assets/missions/stages/quiet-choir/expose-imitation.png",
+        "sha256": "764afffa58fcd12a527f4235aadc5747924b8bd23b491b6bdb4bf92d59351c73",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "rendezvous",
+      "galaxy": 3,
+      "system": 40,
+      "objective": "Transmit the corrected reply at Omdogan and choose a rendezvous protocol.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "choir-protocol"
+      ],
+      "dialog": "VALE: We can publish the narrow-band greeting for civilian receivers, or establish a supervised relay while both sides learn its limits.",
+      "interactionItemMassTonnes": 0,
+      "choices": [
+        "Publish the civilian greeting",
+        "Establish a supervised listening relay"
+      ],
+      "locationKey": "G04-S040",
+      "locationName": "Omdogan",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/rendezvous",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/rendezvous",
+        "file": "../../assets/missions/stages/quiet-choir/rendezvous.png",
+        "sha256": "c9d7dd40caec2a52b8f4519c2bed14180d53c80366bc89ced08194a56bc4c413",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 3,
+      "system": 40,
+      "objective": "Dock at Omdogan and confirm the completed signal accord.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "choir-payment"
+      ],
+      "dialog": "HOLT: The miners have clean guidance channels. The Larvaal vessels have a safe gathering frequency. Your fee is 6,400 CR; the passive resonance filter is ready for fitting.\n\nVALE: One voice answered from outside the gathering. The Larvaal listeners do not recognise it. Its pauses form a pattern like a map. I have preserved the reply in your journal.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S040",
+      "locationName": "Omdogan",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.quiet-choir/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "quiet-choir/close-case",
+        "file": "../../assets/missions/stages/quiet-choir/close-case.png",
+        "sha256": "e6167505e7ea840dfaf5889d81b27e1a71761a43f9c7e226f673c1adf3108bc2",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ],
+  "recoveryPolicyRef": "../gameplay/recovery-policy.json",
+  "mainQuestContinuity": "Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "l337.wayfarer-services",
+  "templates": 6,
+  "stages": 18,
+  "maximumActive": 3,
+  "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services.toml",
+  "sha256": "86ff03ba806da0cb453ab2a57d6ae9be4c38310511af7e7f3bf8e65e8b653f5b",
+  "sourceFile": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services.authoring.json",
+  "sourceSHA256": "704db61bd7a008804db5d964caa6169d06e4a8f6148de93a91a39c931ba50c81",
+  "generator": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/generate-services.py",
+  "generatorSHA256": "06bd83a41d8feb519806df6bab144f421531a9e9131d77bcabaea0afddb7b37b",
+  "artworkManifest": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json",
+  "artworkSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+  "status": "Private original service designs; not installed or runnable in the current app",
+  "sourcePackagesIncluded": false
+}

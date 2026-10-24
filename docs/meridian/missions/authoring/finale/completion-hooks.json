@@ -1,0 +1,455 @@
+{
+  "status": "Private completion-hook design; current packs are not edited",
+  "questID": "l337.unwritten-route",
+  "completionTransaction": "Commit the mission terminal outcome, payment entitlement and clue receipt atomically. A delayed equipment fitting does not delay the clue. Retrying confirmation can deliver a missing receipt but cannot repay the mission.",
+  "hooks": [
+    {
+      "source": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "clueReceipt": "l337.unwritten-route/clue/meridian-offset",
+      "awardDialog": "VENN: There is one detail the inquiry could not explain: a curved trace in the timing standard, written between the clock ticks. I have copied it to your journal. PLUGH's AI may be able to read it.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "clueReceipt": "l337.unwritten-route/clue/choir-silent-voice",
+      "awardDialog": "VALE: One voice answered from outside the gathering. The Larvaal listeners do not recognise it. Its pauses form a pattern like a map. I have preserved the reply in your journal.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "clueReceipt": "l337.unwritten-route/clue/manifest-hidden-imprint",
+      "awardDialog": "TOREN: The master seal carried an older imprint beneath its serial number. It was never part of the freight register. Keep the image; the loops seem to point towards something missing from the middle.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "clueReceipt": "l337.unwritten-route/clue/lantern-extra-echo",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "clueReceipt": "l337.unwritten-route/clue/courier-empty-destination",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. An early receiving receipt has an inward-curved watermark for a destination absent from all freight charts. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "clueReceipt": "l337.unwritten-route/clue/voice-unclaimed-channel",
+      "awardDialog": "RENN: One reply is not in either operator's access record. Its phase curls around an empty centre, and its timestamp precedes the challenge. It is not evidence against Sol or the observer. I have copied the anomaly to your journal; PLUGH's AI may recognise its shape.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "clueReceipt": "l337.unwritten-route/clue/wake-before-impact",
+      "awardDialog": "ORR: This curved trace predates the debris. It is not evidence that anyone deliberately caused the disaster. I have copied it to your journal; PLUGH's AI may be able to place it beside your other traces.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "clueReceipt": "l337.unwritten-route/clue/tithe-unclaimed-reserve",
+      "awardDialog": "LERR: This reserve is not part of Tithe's acquisitions. The entry predates its first instruction and names no material at all. I have copied the curved signature to your journal. PLUGH's AI may recognise what the ledger could not allocate.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "clueReceipt": "l337.unwritten-route/clue/current-resting-arc",
+      "awardDialog": "KEST: This arc predates the lattice. It cannot be part of the dust bridge or its work order. I have copied the zero-charge phase record to your journal; PLUGH's AI may recognise it.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "clueReceipt": "l337.unwritten-route/clue/exchange-unbooked-window",
+      "awardDialog": "VEIL: Every real consignment is accounted for. This older reservation names no shipment at all. Keep its curved signature in your journal; the AI at PLUGH may be able to explain the unused window.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "clueReceipt": "l337.unwritten-route/clue/quiet-nursery-trace",
+      "awardDialog": "Physicist Anja Kest: The audit has left one anomaly that belongs to neither side. The unaveraged pressure trace includes a quiet inward curl that no nursery valve produces. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "clueReceipt": "l337.unwritten-route/clue/borrowed-dawn-trace",
+      "awardDialog": "Controller Edda Rell: The audit has left one anomaly that belongs to neither side. A photometer records a curved shadow during an interval when no physical reflector crosses its view. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "clueReceipt": "l337.unwritten-route/clue/open-shadow-trace",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "clueReceipt": "l337.unwritten-route/clue/harbour-without-orders-trace",
+      "awardDialog": "Controller Edda Rell: The audit has left one anomaly that belongs to neither side. The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "clueReceipt": "l337.unwritten-route/clue/false-colours-trace",
+      "awardDialog": "Nia Toren: The audit has left one anomaly that belongs to neither side. An older layer in the physical seal contains a curved signature absent from every transponder issue record. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "clueReceipt": "l337.unwritten-route/clue/rubble-covenant-trace",
+      "awardDialog": "Geologist Jalen Orr: The audit has left one anomaly that belongs to neither side. One old trajectory record curves around an empty centre as though the missing mass had a boundary of its own. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "clueReceipt": "l337.unwritten-route/clue/garden-in-transit-trace",
+      "awardDialog": "Custodian Tomas Veil: The audit has left one anomaly that belongs to neither side. The archive contains a circular season boundary that encloses no named climate or world. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "clueReceipt": "l337.unwritten-route/clue/warrant-ledger-trace",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "clueReceipt": "l337.unwritten-route/clue/measure-of-care-trace",
+      "awardDialog": "Physicist Anja Kest: The audit has left one anomaly that belongs to neither side. A reference recorder shows a stable curved boundary during a period with no recorded thermal source. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.long-return",
+      "clueID": "long-return-trace",
+      "clueReceipt": "l337.unwritten-route/clue/long-return-trace",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "clueReceipt": "l337.unwritten-route/clue/unfinished-map-trace",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The archive's untouched margin carries an inward arc outside every surveyed coordinate frame. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "clueReceipt": "l337.unwritten-route/clue/blue-reservoir-trace",
+      "awardDialog": "Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side. The oldest flow recorder traces an inward curve through a channel that contains no water. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "clueReceipt": "l337.unwritten-route/clue/mutual-shelter-trace",
+      "awardDialog": "Nia Toren: The audit has left one anomaly that belongs to neither side. An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "clueReceipt": "l337.unwritten-route/clue/listening-frontier-trace",
+      "awardDialog": "Captain Tamsin Holt: The audit has left one anomaly that belongs to neither side. A quiet-window listener receives an inward-curved phase trace from outside both recognised transmission bands. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "clueReceipt": "l337.unwritten-route/clue/assembly-of-orbits-trace",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "clueReceipt": "l337.unwritten-route/clue/under-tow-trace",
+      "awardDialog": "Tug Lead Mira Penn: The audit has left one anomaly that belongs to neither side. An old interface calibration defines a curved inward contact surface with no compatible hull in its register. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "clueReceipt": "l337.unwritten-route/clue/memory-atlas-trace",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Three unrelated diaries contain the same inward curve around a place none of their authors visited. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "clueReceipt": "l337.unwritten-route/clue/fleet-of-neighbours-trace",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. An early dispatch diagram curves around an empty central formation slot with no assigned vessel. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "clueReceipt": "l337.unwritten-route/clue/uncounted-names-trace",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. The oldest register has an inward-curved entry naming no person, cargo or owner. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "clueReceipt": "l337.unwritten-route/clue/honest-circuit-trace",
+      "awardDialog": "Captain Elara Venn: The audit has left one anomaly that belongs to neither side. A reference timebase records a curved phase mark between two valid circuit ticks. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "clueReceipt": "l337.unwritten-route/clue/small-lights-trace",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "clueReceipt": "l337.unwritten-route/clue/passengers-horizon-trace",
+      "awardDialog": "Captain Orin Sorel: The audit has left one anomaly that belongs to neither side. A viewing reference encloses an inward-curved horizon that belongs to none of the surveyed planets. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "clueReceipt": "l337.unwritten-route/clue/kind-distance-trace",
+      "awardDialog": "Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither side. A dormant relay preserves an inward-curved reply predating every registered household key. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "clueReceipt": "l337.unwritten-route/clue/cold-reserve-trace",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. An expired dispatch order defines an inward route to a receiving volume that has never existed in the reserve. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "clueReceipt": "l337.unwritten-route/clue/magnetic-orchard-trace",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "clueReceipt": "l337.unwritten-route/clue/open-measure-trace",
+      "awardDialog": "Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side. A reference instrument preserves an inward-curved response while its test cradle is verifiably empty. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "clueReceipt": "l337.unwritten-route/clue/shared-pulse-trace",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. A passive trace shows an inward curve before either known participant transmits. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "clueReceipt": "l337.unwritten-route/clue/witness-window-trace",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. Between two authentic recording frames is an inward-shaped phase imprint with no camera source. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.public-record",
+      "clueID": "public-record-trace",
+      "clueReceipt": "l337.unwritten-route/clue/public-record-trace",
+      "awardDialog": "Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither side. The independent recorder captures a curved phase boundary outside the cargo controllers' published operating bands. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/sealed-dispatch-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/consented-freight-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/bonded-freight-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/cabin-journey-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/orbital-outlook-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/verified-warrant-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/corridor-defence-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/custody-rescue-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/identified-salvage-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/consented-survey-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/isolation-work-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/measured-extraction-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/mutual-contribution-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/orbital-evacuation-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/hostile-larvaal-defence-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/flight-reception-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/safe-gunnery-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/defensive-flight-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "clueReceipt": "l337.unwritten-route/clue/navigation-trade-family-trace",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "clueReceipt": "l337.unwritten-route/clue/exchange-service-cold-chain",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "clueReceipt": "l337.unwritten-route/clue/exchange-service-repair-loop",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "clueReceipt": "l337.unwritten-route/clue/exchange-service-seed-transfer",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "clueReceipt": "l337.unwritten-route/clue/exchange-service-field-relief",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "clueReceipt": "l337.unwritten-route/clue/exchange-service-record-recovery",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    },
+    {
+      "source": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "clueReceipt": "l337.unwritten-route/clue/exchange-service-convoy-watch",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+      "successRule": "Confirmed verified successful terminal of this exact current source; never acceptance, incidental payment, failure, cancellation or another source."
+    }
+  ]
+}

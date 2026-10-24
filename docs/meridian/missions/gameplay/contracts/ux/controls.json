@@ -1,0 +1,124 @@
+{
+  "schema": "l337.flight-controls/1",
+  "status": "Private proposal controls and help copy; game implementation and handoff are not authorised.",
+  "scope": "Flight controls. Every help screen includes this same clearly labelled Flight controls block. Menu and mission-dialog confirmation remains a separate context; Return in a menu confirms its focused choice and never fires a weapon.",
+  "bindings": [
+    {
+      "id": "change_weapon",
+      "key": "W",
+      "action": "Change weapon",
+      "detail": "Cycle equipped Main Laser, Mining Laser, Salvage Cutter and EMP Blaster. Update the persistent weapon indicator immediately; retain the current hold."
+    },
+    {
+      "id": "fire",
+      "key": "Return",
+      "action": "Fire",
+      "detail": "Hold Return to operate the selected weapon: fire the Main Laser, mine with the Mining Laser, cut with the Salvage Cutter, or charge/fire EMP. Release to stop the held action. Require a fresh press after a weapon change, readiness transition or interruption. Releasing Return retains the hold."
+    },
+    {
+      "id": "ecm",
+      "key": "E",
+      "action": "ECM",
+      "detail": "Activate fitted ECM directly, subject to actual energy and cooldown requirements. ECM stays separate from weapon selection."
+    },
+    {
+      "id": "release_hold",
+      "key": "Q",
+      "action": "Release hold",
+      "detail": "End automatic hold/guidance and stop the active tool. Return control to the player while preserving momentum."
+    }
+  ],
+  "footer": "W: CHANGE WEAPON | RETURN: FIRE | E: ECM | Q: RELEASE HOLD",
+  "weaponNames": [
+    "Main Laser",
+    "Mining Laser",
+    "Salvage Cutter",
+    "EMP Blaster"
+  ],
+  "automaticSelection": "Targeting any disabled ship for salvage selects fitted Salvage Cutter immediately. Targeting an asteroid selects fitted Mining Laser immediately. Selection never fires. W overrides the default for the current target without releasing hold.",
+  "helpPolicy": [
+    "Generate README controls, help-screen flight blocks, contextual footers and the salvage guide labels from these four bindings. No help topic may assign another key to these actions.",
+    "Keep the primary Return action label Fire for every weapon. Mining, cutting and EMP charging are explained beneath it and in the actual weapon/activity indicator, not by changing the binding label.",
+    "All flight views and help topics use Change weapon rather than alternating between Change tool and Change weapon; Q is Release hold rather than Off, Back or Cancel.",
+    "Equipment prerequisites and temporarily blocked states are explained alongside the binding without remapping its key. Menu navigation and confirmation are clearly distinguished from Flight controls.",
+    "The game implementation must consume the shared control authority for every help topic and visible action hint, with regression coverage that enumerates all actual help screens. Generated proposal previews are design copy, not a claim that game UI has been updated."
+  ],
+  "helpTopics": [
+    {
+      "id": "flight",
+      "title": "Flight",
+      "detail": "Read the persistent WEAPON indicator before firing. W and Return never release an established hold."
+    },
+    {
+      "id": "combat",
+      "title": "Combat",
+      "detail": "W selects the equipped Main Laser; hold Return to fire it. E activates ECM separately."
+    },
+    {
+      "id": "targeting",
+      "title": "Targeting and automatic hold",
+      "detail": "Targeting establishes supported guidance. Q releases the hold; changing or firing the selected weapon retains it."
+    },
+    {
+      "id": "mining",
+      "title": "Asteroid mining",
+      "detail": "Asteroid targeting establishes a safe target-relative hold and selects the fitted Mining Laser. W can select Main Laser instead; held Return then breaks the rock into much smaller chunks, leaving strictly less than 5% of its original mass recoverable. Most rock disintegrates permanently. Collect surviving chunks with fitted scoops; changing weapon or firing does not release the hold before the parent breaks apart."
+    },
+    {
+      "id": "salvage",
+      "title": "Disabled ships and salvage",
+      "detail": "Acquiring a disabled salvage ship selects the fitted Salvage Cutter. Hold Return to cut eligible material; W can select another fitted weapon while retaining hold."
+    },
+    {
+      "id": "emp",
+      "title": "EMP",
+      "detail": "W selects fitted EMP Blaster; hold Return to charge/fire it. The weapon indicator reports actual charge and readiness."
+    },
+    {
+      "id": "ecm",
+      "title": "ECM",
+      "detail": "E activates fitted ECM. ECM has its own actual energy/cooldown checks and does not replace the selected weapon."
+    },
+    {
+      "id": "navigation",
+      "title": "Navigation",
+      "detail": "These are flight bindings. Q releases automatic hold/guidance while in flight; station and chart navigation keep their own clearly labelled Back action."
+    },
+    {
+      "id": "equipment",
+      "title": "Equipment and fitting",
+      "detail": "Fitted weapons participate in the W cycle. Menu Return confirms the selected fitting action; flight Return fires the selected weapon."
+    },
+    {
+      "id": "shipyard",
+      "title": "Shipyard and ship gallery",
+      "detail": "These are flight bindings after launch. Ship selection and purchase use their explicit menu confirmation controls."
+    },
+    {
+      "id": "inventory",
+      "title": "Inventory and recovered equipment",
+      "detail": "Held cargo is not fitted equipment. Fit a recovered compatible weapon before it is available in the W cycle."
+    },
+    {
+      "id": "market",
+      "title": "Market and cargo",
+      "detail": "These are flight bindings. Cargo trading retains its explicit menu actions and never fires a weapon."
+    },
+    {
+      "id": "missions",
+      "title": "Mission contacts and dialogs",
+      "detail": "Mission dialogs use their labelled Confirm/Back actions. In flight, all mission weapons and salvage use these same shared bindings."
+    },
+    {
+      "id": "status",
+      "title": "Commander status",
+      "detail": "Status describes fitted equipment; the persistent flight WEAPON indicator shows what Return will operate."
+    },
+    {
+      "id": "settings",
+      "title": "Settings and general help",
+      "detail": "Every help topic includes the same Flight controls block. Context-specific menu instructions remain visibly separate."
+    }
+  ],
+  "asteroidDestruction": "Asteroid targeting establishes a safe target-relative hold and selects the fitted Mining Laser. W can select Main Laser instead; held Return then breaks the rock into much smaller chunks, leaving strictly less than 5% of its original mass recoverable. Most rock disintegrates permanently. Collect surviving chunks with fitted scoops; changing weapon or firing does not release the hold before the parent breaks apart."
+}

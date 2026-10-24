@@ -1,0 +1,13 @@
+{
+  "capturedAtUTC": "2026-10-24T16:05:13.423571+00:00",
+  "sourceSHA256": "7b7c20118a8c55c16289842313fc9229abb3a5699696ac29b8a66f9fd482d4d0",
+  "snapshotSHA256": "7b7c20118a8c55c16289842313fc9229abb3a5699696ac29b8a66f9fd482d4d0",
+  "sourceBytes": 1936949,
+  "sourcePath": "docs/COMPLETION-LEDGER.md",
+  "canonicalLiveLedger": "https://github.com/stephenlclarke/elite/blob/docs/developer-reviewer-workflow/docs/COMPLETION-LEDGER.md",
+  "snapshotIsEditableWorkQueue": false,
+  "warning": "Local live ledger can be newer than published main. Read the current canonical ledger before taking work; this copy does not authorise or dispatch work.",
+  "sourceCommit": "e6c95b40a5ca7e5e33c7689b041c8ef3b72e2a29",
+  "sourceBranch": "refs/heads/docs/developer-reviewer-workflow",
+  "immutableSourceURL": "https://github.com/stephenlclarke/elite/blob/e6c95b40a5ca7e5e33c7689b041c8ef3b72e2a29/docs/COMPLETION-LEDGER.md"
+}

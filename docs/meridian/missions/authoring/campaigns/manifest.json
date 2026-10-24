@@ -1,0 +1,1386 @@
+{
+  "status": "Private original campaign proposals; not installed or handed off",
+  "campaigns": 39,
+  "stages": 368,
+  "storiesReplaced": true,
+  "sourceFile": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/generate.py",
+  "sourceSHA256": "4a9b5b56f2b6fb49a957a64ce29fff19270bcedee659a25a1914566e0c4b43f6",
+  "additionalAuthoring": [
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-voice.authoring.json",
+      "sha256": "2c76f133ba95a2b177c0d9001245bc4de192f722c528277c6ee08ca74033cdf6"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shattered-wake.authoring.json",
+      "sha256": "002f0c6407f645171426e4d93efed43044e2238fafde493757e4de667057924e"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/tithe-of-worlds.authoring.json",
+      "sha256": "92c3f34bd49ab943e6d3eb69c65cc909f191e3d4462de417cbbc9648ea67dd89"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/still-current.authoring.json",
+      "sha256": "128b4c3292c3a9a20ea42b89747c988344d482623337da93b376466f83f53d24"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-exchange.authoring.json",
+      "sha256": "906632685aebe8ce6b7896450b5b0039220ce9e6f2d6a59dc93521b7d91cf36c"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/quiet-nursery.authoring.json",
+      "sha256": "76e19b6befe6a90cb9e180963a46bde2f8ceaeca9b46a8aa65bbd93f623087eb"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/borrowed-dawn.authoring.json",
+      "sha256": "2880e6ea5eba510fc1995eeadb4a212ca5e328a8be3a9331f5ae899e37785064"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/open-shadow.authoring.json",
+      "sha256": "6826d6848d27dbfa93ca1ce2a4948a7bebc2ddcdbbfbe9fc09c942297a59f34f"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/harbour-without-orders.authoring.json",
+      "sha256": "e3966dbc3450578fb8e2600736e4387f42141e336a1f6a5a0a7d242593c82e2c"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/false-colours.authoring.json",
+      "sha256": "0909e2b4203494d438f0db76b65a8da854845175d6ad58f3800b76ccccfe6a52"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/rubble-covenant.authoring.json",
+      "sha256": "f643ee234d28a3b08b88d10c32cf41d623a519a69a95e9439f2f38f86be80bd7"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/garden-in-transit.authoring.json",
+      "sha256": "feb59fac39547e60ca83dde4af8be0355a71f87cb23cc540f9a1f7696a042b93"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/warrant-ledger.authoring.json",
+      "sha256": "c81a405150d8bf47d14da705b1b86cce85b3963de3e29e60c6c49cadbf7431f2"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/measure-of-care.authoring.json",
+      "sha256": "aa95e31e6e386dbfec38a9ed3f9f8b78216c5fef60ea959f6483f5afd238998a"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/long-return.authoring.json",
+      "sha256": "ee78b081947247970934905db2a098d3b177bcf8a4f166e5b5b2d6e90fe9a758"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/unfinished-map.authoring.json",
+      "sha256": "e460f12cc883cd6887ff29adf59bdfbba8aa7ab10481fe75d4ce22db0f17cf38"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/blue-reservoir.authoring.json",
+      "sha256": "5f273d851ff6d21be79c7c5e040a558080652afd5852a243d5ca78f7186de6b7"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/mutual-shelter.authoring.json",
+      "sha256": "4ebd7b857e75c2f9a5e64d6c68466d1a7f414f96d4cd81981a8185b42db21a18"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/listening-frontier.authoring.json",
+      "sha256": "51405e7075044686c01b3a9cf58cb361c9cbf9a4c7c2491e4c3df8291a2e13f1"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/assembly-of-orbits.authoring.json",
+      "sha256": "2ee8b70e6e76fd73c85d0f0a9de13e84b7d728374fa4bc0abbe32bac727ff4a8"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/under-tow.authoring.json",
+      "sha256": "94f6d002e2585b5f9784fea0c797ca428808901c919a5774530c09c97a0895d5"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/memory-atlas.authoring.json",
+      "sha256": "e62718c58b79ebd5f7a21ba87c91dfa78b4bfcaec3fbb3acc57332d411658dc2"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/fleet-of-neighbours.authoring.json",
+      "sha256": "385233b1253503ef640dfe7d3ee9302880bf98fee10414bb765d749a595daf0d"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/uncounted-names.authoring.json",
+      "sha256": "d9ae3648927cd1396b3c4932075e74d0ae3f4b1b29c9cc68591eb5cfe6f1e60d"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/honest-circuit.authoring.json",
+      "sha256": "55e23717a3a904a4f3c9001aa1381f6c5ef8f66e5c1782f0697edf25d569d1cf"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/small-lights.authoring.json",
+      "sha256": "e23facc4c54cdec8b7c6e89b02259fc4b82554b2fc647bd180913b114c93d546"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/passengers-horizon.authoring.json",
+      "sha256": "cb807c261cb1fbb17e4aa11a746131a3c454e5bf4711e9c74281bf9826feeef7"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/kind-distance.authoring.json",
+      "sha256": "86561416e2067e57e6779bb7989e089714f13c130570a8590dcad1dfbaa592d8"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/cold-reserve.authoring.json",
+      "sha256": "bac10e858732abe63a81d65b29f2e2d6a66a7fcc7680782530d07c467ce8198e"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/magnetic-orchard.authoring.json",
+      "sha256": "eed85421b02f54df8f2971e6858a977168078cead7deeda5f5f64de52f66170f"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/open-measure.authoring.json",
+      "sha256": "6ebe8a7e485d49176cda5cd0e4e82ebbdffdc719c456e494440877e36ad33488"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/shared-pulse.authoring.json",
+      "sha256": "ecc363970bfeda1f1260bc9083a64c4127991565fce7326572592c6ad43e0e25"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/witness-window.authoring.json",
+      "sha256": "a5a0230eefb37f53da69d594cce5893f38119bcc5bc59d082e7e5dfc82a8b6dc"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/public-record.authoring.json",
+      "sha256": "c0e955a290f28ad17b49d21eeff56217f7c0cbf85db07f1c76885eb08ec33dfd"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/courier.authoring.json",
+      "sha256": "8cf8b7c2b052133529a56d35b68e5a91fceffdcdd14c2a9e16092598f3e6fa8c"
+    },
+    {
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/guiding-light.authoring.json",
+      "sha256": "51d309e7da9334791b83f7ec068a5c98182fa387d36013f76a59d07163a57d7e"
+    }
+  ],
+  "originalCampaignGuides": [
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/glass-meridian.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/quiet-choir.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/hollow-manifest.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-voice.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shattered-wake.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/tithe-of-worlds.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/still-current.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-exchange.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/quiet-nursery.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-dawn.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/open-shadow.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/harbour-without-orders.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/false-colours.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/rubble-covenant.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/garden-in-transit.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/warrant-ledger.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/measure-of-care.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/long-return.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/unfinished-map.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/blue-reservoir.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/mutual-shelter.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/listening-frontier.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/assembly-of-orbits.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/under-tow.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/memory-atlas.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/fleet-of-neighbours.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/uncounted-names.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/honest-circuit.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/small-lights.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/passengers-horizon.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/kind-distance.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/cold-reserve.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/magnetic-orchard.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/open-measure.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shared-pulse.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/witness-window.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/public-record.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/courier.md",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/guiding-light.md"
+  ],
+  "missions": [
+    {
+      "id": "l337.glass-meridian",
+      "missionID": "glass-meridian",
+      "title": "The Glass Meridian",
+      "subtitle": "Someone is selling the same safe passage to two ships at once.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/glass-meridian.toml",
+      "sha256": "3a215b5281d255f323e00f40e78f2f1e19bdf309bd3ba78ba276be808821c054",
+      "contacts": [
+        "Captain Elara Venn",
+        "Captain Orin Sorel"
+      ],
+      "ships": [
+        "SH026"
+      ],
+      "rewardCR": 4800,
+      "stages": 9
+    },
+    {
+      "id": "l337.quiet-choir",
+      "missionID": "quiet-choir",
+      "title": "A Choir Beneath the Static",
+      "subtitle": "A signal mistaken for a weapon may be a request for help.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/quiet-choir.toml",
+      "sha256": "f86c91e5aeaf34f5f2bc37241a1ae03ddad4252f7d5b4ad7356b3bd8c85ac94a",
+      "contacts": [
+        "Captain Tamsin Holt",
+        "Agent Mara Vale"
+      ],
+      "ships": [
+        "SH124",
+        "SH125",
+        "SH162"
+      ],
+      "rewardCR": 6400,
+      "stages": 9
+    },
+    {
+      "id": "l337.hollow-manifest",
+      "missionID": "hollow-manifest",
+      "title": "The Hollow Manifest",
+      "subtitle": "The cargo exists on paper. The danger is aboard a real ship.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/hollow-manifest.toml",
+      "sha256": "dc77748757ec109ce96823a21684ad9a638605598ae6334990759b6a533c23c3",
+      "contacts": [
+        "Nia Toren",
+        "Marek Iven"
+      ],
+      "ships": [],
+      "rewardCR": 5600,
+      "stages": 10
+    },
+    {
+      "id": "l337.borrowed-voice",
+      "missionID": "borrowed-voice",
+      "title": "The Borrowed Voice",
+      "subtitle": "Someone has learned to speak with the rescue network's voice.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-voice.toml",
+      "sha256": "806cfdd3761a16754e3458848cec89b6471945cc2399d0f1464d3265d979d9dd",
+      "contacts": [
+        "Coordinator Sera Dain",
+        "Relay Engineer Ivo Renn",
+        "Dispatcher Neris Sol"
+      ],
+      "ships": [
+        "SH026",
+        "SH049"
+      ],
+      "rewardCR": 7200,
+      "stages": 10
+    },
+    {
+      "id": "l337.shattered-wake",
+      "missionID": "shattered-wake",
+      "title": "The Shattered Wake",
+      "subtitle": "A station can stop a weapon volley. Can it survive an entire broken orbit?",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shattered-wake.toml",
+      "sha256": "f24d52724d64f9802078cb141a0629848abfe0c696a5beefb6e8b1ff6ee2f6cf",
+      "contacts": [
+        "Controller Edda Rell",
+        "Geologist Jalen Orr",
+        "Tug Lead Mira Penn"
+      ],
+      "ships": [
+        "SH061"
+      ],
+      "rewardCR": 1800,
+      "stages": 11
+    },
+    {
+      "id": "l337.tithe-of-worlds",
+      "missionID": "tithe-of-worlds",
+      "title": "The Tithe of Worlds",
+      "subtitle": "An intelligence built to manage scarcity has decided to own the supply.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/tithe-of-worlds.toml",
+      "sha256": "c8f1d6221c0a3effc301f38c9fc8c4535b618dcf668807e15eff3899ee277992",
+      "contacts": [
+        "Marshal Nera Voss",
+        "Engineer Cato Lerr",
+        "Captain Suri Arlen"
+      ],
+      "ships": [
+        "SH001",
+        "SH004",
+        "SH005"
+      ],
+      "rewardCR": 9600,
+      "stages": 14
+    },
+    {
+      "id": "l337.still-current",
+      "missionID": "still-current",
+      "title": "The Still Current",
+      "subtitle": "The harvesters are idle. The charge is still moving.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/still-current.toml",
+      "sha256": "92cb2053ca486a6291fa80957bb520a6c885e0f406a8504541d154352e8f608d",
+      "contacts": [
+        "Physicist Anja Kest",
+        "Salvage Chief Ruan Pell"
+      ],
+      "ships": [
+        "SH001",
+        "SH049",
+        "SH061"
+      ],
+      "rewardCR": 8400,
+      "stages": 12
+    },
+    {
+      "id": "l337.wayfarer-exchange",
+      "missionID": "wayfarer-exchange",
+      "title": "Wayfarer Exchange",
+      "subtitle": "A route is only useful when someone at the other end receives what was promised.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-exchange.toml",
+      "sha256": "f4ba400702ed2e0cd2fd265f23980e8781f356ab2af7b7d2cc63901fa520823c",
+      "contacts": [
+        "Dispatcher Evi Senn",
+        "Custodian Tomas Veil"
+      ],
+      "ships": [
+        "SH001",
+        "SH005",
+        "SH061"
+      ],
+      "rewardCR": 7600,
+      "stages": 14
+    },
+    {
+      "id": "l337.quiet-nursery",
+      "missionID": "quiet-nursery",
+      "title": "The Quiet Nursery",
+      "subtitle": "KEST: Averages hide the moment when a root stops breathing. Record the shortest pulse as carefully as the longest.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/quiet-nursery.toml",
+      "sha256": "5169b465e851b64af7505914bdb14fef6826d83890ae9df9fa291d1f0712b32e",
+      "contacts": [
+        "Physicist Anja Kest",
+        "Custodian Tomas Veil"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 4600,
+      "stages": 9
+    },
+    {
+      "id": "l337.borrowed-dawn",
+      "missionID": "borrowed-dawn",
+      "title": "Borrowed Dawn",
+      "subtitle": "RELL: The sun is not failing. Our agreement about where the light goes has failed.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-dawn.toml",
+      "sha256": "d94a7cdf5fc95b948851bb34484a2b8611fc1e8f52a858e9edd9af5e48c4d4fe",
+      "contacts": [
+        "Controller Edda Rell",
+        "Tug Lead Mira Penn"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 6800,
+      "stages": 9
+    },
+    {
+      "id": "l337.open-shadow",
+      "missionID": "open-shadow",
+      "title": "The Open Shadow",
+      "subtitle": "VALE: Privacy is a right. Silence on a collision channel is a physical hazard. Measure them separately.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/open-shadow.toml",
+      "sha256": "44859a16c821fe1f4f45a95d4a360b5586515c93d5a5e3615a8923040c8e3970",
+      "contacts": [
+        "Agent Mara Vale",
+        "Relay Engineer Ivo Renn"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7400,
+      "stages": 9
+    },
+    {
+      "id": "l337.harbour-without-orders",
+      "missionID": "harbour-without-orders",
+      "title": "Harbour Without Orders",
+      "subtitle": "RELL: The harbour is intact. Its doors are closed by three mutually invalid signatures.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/harbour-without-orders.toml",
+      "sha256": "d7df4d1ac24e9904ad8eb5d43a351f17b8ce3c39cad4ed93f8a3d3b5f4240047",
+      "contacts": [
+        "Controller Edda Rell",
+        "Marshal Nera Voss"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7600,
+      "stages": 9
+    },
+    {
+      "id": "l337.false-colours",
+      "missionID": "false-colours",
+      "title": "False Colours",
+      "subtitle": "TOREN: A colour on a scanner is not a warrant. Find the original signing chain.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/false-colours.toml",
+      "sha256": "e6ed8cb1d93da3f29070210e7023a8a9453c8a3ce2749b7a26a1de141d31675b",
+      "contacts": [
+        "Nia Toren",
+        "Captain Tamsin Holt"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 6200,
+      "stages": 9
+    },
+    {
+      "id": "l337.rubble-covenant",
+      "missionID": "rubble-covenant",
+      "title": "The Rubble Covenant",
+      "subtitle": "ORR: Ownership does not change momentum. We need both records before a tug may move anything.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/rubble-covenant.toml",
+      "sha256": "567574c50b171cd00b3c821088a0c76cb0d44b9db46502f875f20796298ed83f",
+      "contacts": [
+        "Geologist Jalen Orr",
+        "Tug Lead Mira Penn"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 6600,
+      "stages": 9
+    },
+    {
+      "id": "l337.garden-in-transit",
+      "missionID": "garden-in-transit",
+      "title": "A Garden in Transit",
+      "subtitle": "VEIL: A seed catalogue is not a cargo price list. Record the conditions that let it remain alive.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/garden-in-transit.toml",
+      "sha256": "a81c1f0e7cfce2ebd8e61b2703b9edee9a305b0fbd4881e3068a9bf8d332ecff",
+      "contacts": [
+        "Custodian Tomas Veil",
+        "Captain Suri Arlen"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 6100,
+      "stages": 9
+    },
+    {
+      "id": "l337.warrant-ledger",
+      "missionID": "warrant-ledger",
+      "title": "The Warrant Ledger",
+      "subtitle": "VOSS: A reward number is not evidence. A duplicate casualty cannot authorise another victim.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/warrant-ledger.toml",
+      "sha256": "4c20f9a7ab13d17f5e2da5c0875b6a9764d8b1b428f0e95918cd3999f47b6c42",
+      "contacts": [
+        "Marshal Nera Voss",
+        "Nia Toren"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 8200,
+      "stages": 9
+    },
+    {
+      "id": "l337.measure-of-care",
+      "missionID": "measure-of-care",
+      "title": "The Measure of Care",
+      "subtitle": "DAIN: We need the equipment's history, not a stranger's diagnosis.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/measure-of-care.toml",
+      "sha256": "c0a21c3bc5362c8d6a5b6f8d2baa169702cb1c913872b4d38f80b8708c9e6d09",
+      "contacts": [
+        "Physicist Anja Kest",
+        "Coordinator Sera Dain"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 5900,
+      "stages": 9
+    },
+    {
+      "id": "l337.long-return",
+      "missionID": "long-return",
+      "title": "The Long Return",
+      "subtitle": "SOREL: Each crew remembers a different clock. Ask who actually received people, not who filed first.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/long-return.toml",
+      "sha256": "873c410746d0f0aa59d8dfb3907b5afd27186d6aba50a773c1e8ce92c9b728b7",
+      "contacts": [
+        "Coordinator Sera Dain",
+        "Captain Orin Sorel"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7800,
+      "stages": 9
+    },
+    {
+      "id": "l337.unfinished-map",
+      "missionID": "unfinished-map",
+      "title": "The Unfinished Map",
+      "subtitle": "ORR: An honest blank is safer than an invented coordinate.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/unfinished-map.toml",
+      "sha256": "a2ead798235a843039f13897a406cd8f58517c7801751e699f28a2fe594eba15",
+      "contacts": [
+        "Agent Mara Vale",
+        "Geologist Jalen Orr"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 6900,
+      "stages": 9
+    },
+    {
+      "id": "l337.blue-reservoir",
+      "missionID": "blue-reservoir",
+      "title": "The Blue Reservoir",
+      "subtitle": "LERR: Clean intake water says nothing about what the circulation loop keeps from returning.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/blue-reservoir.toml",
+      "sha256": "a56982c650c23e9b140ff22bb8b14d0074c67d627ac3ec29a2c36a03d48dd5dd",
+      "contacts": [
+        "Engineer Cato Lerr",
+        "Custodian Tomas Veil"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7300,
+      "stages": 9
+    },
+    {
+      "id": "l337.mutual-shelter",
+      "missionID": "mutual-shelter",
+      "title": "Mutual Shelter",
+      "subtitle": "TOREN: A promise of shelter is useful only if a ship can actually fit.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/mutual-shelter.toml",
+      "sha256": "feaa17c582cb5b8ace878b2d53273b2e71217c0d4d0d949b5abd5e6decc6ddea",
+      "contacts": [
+        "Nia Toren",
+        "Captain Suri Arlen"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7100,
+      "stages": 9
+    },
+    {
+      "id": "l337.listening-frontier",
+      "missionID": "listening-frontier",
+      "title": "The Listening Frontier",
+      "subtitle": "HOLT: Keep weapon signatures apart from survey bursts. A crowded channel does not prove an invasion.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/listening-frontier.toml",
+      "sha256": "96e91f9feed142a5e332c10b66379423998ee17c5ac345cbf3487632b7122b69",
+      "contacts": [
+        "Captain Tamsin Holt",
+        "Agent Mara Vale"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 9100,
+      "stages": 9
+    },
+    {
+      "id": "l337.assembly-of-orbits",
+      "missionID": "assembly-of-orbits",
+      "title": "An Assembly of Orbits",
+      "subtitle": "VOSS: A share certificate cannot stand in for the people on the next shift.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/assembly-of-orbits.toml",
+      "sha256": "8d7c2417a64ab0aeb9a7ff1cce39570f152f9c94f92865779b7b107d3aa17147",
+      "contacts": [
+        "Marshal Nera Voss",
+        "Coordinator Sera Dain"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7700,
+      "stages": 9
+    },
+    {
+      "id": "l337.under-tow",
+      "missionID": "under-tow",
+      "title": "Under Tow",
+      "subtitle": "PENN: Matching form numbers do not make these collars fit.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/under-tow.toml",
+      "sha256": "851d8ceadf4c4c3ebafacdb6137f0f058b0c86b01e767fb928536b4db4f60631",
+      "contacts": [
+        "Tug Lead Mira Penn",
+        "Coordinator Sera Dain"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 8300,
+      "stages": 9
+    },
+    {
+      "id": "l337.memory-atlas",
+      "missionID": "memory-atlas",
+      "title": "The Memory Atlas",
+      "subtitle": "ORR: A beautiful memory is not a measured approach vector.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/memory-atlas.toml",
+      "sha256": "a257a9b6797b243e2785e41d8e5d1e41d686d8e1d48f9a3ad5819840f92c83ef",
+      "contacts": [
+        "Agent Mara Vale",
+        "Geologist Jalen Orr"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7200,
+      "stages": 9
+    },
+    {
+      "id": "l337.fleet-of-neighbours",
+      "missionID": "fleet-of-neighbours",
+      "title": "A Fleet of Neighbours",
+      "subtitle": "ARLEN: A promised hull cannot protect a corridor it has not reached.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/fleet-of-neighbours.toml",
+      "sha256": "dc8cd9974e480e4773776f77092d3e7d3a81e6c9d4c7eaa4adbbdf9fd98fa17a",
+      "contacts": [
+        "Marshal Nera Voss",
+        "Captain Suri Arlen"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 9400,
+      "stages": 9
+    },
+    {
+      "id": "l337.uncounted-names",
+      "missionID": "uncounted-names",
+      "title": "Uncounted Names",
+      "subtitle": "DAIN: Ask the people concerned how their records should be used.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/uncounted-names.toml",
+      "sha256": "f1af07603d1dc9ba3c37ba590e07fbb17f65fd646d972385fdd55b9834260300",
+      "contacts": [
+        "Coordinator Sera Dain",
+        "Nia Toren"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 6500,
+      "stages": 9
+    },
+    {
+      "id": "l337.honest-circuit",
+      "missionID": "honest-circuit",
+      "title": "The Honest Circuit",
+      "subtitle": "VENN: A fast time means little if the clock and the route disagree.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/honest-circuit.toml",
+      "sha256": "e22c10c4049fdd3d446144fb7d7b0a31c63f6c5886ddcc2853c8be4af2b7f77b",
+      "contacts": [
+        "Captain Elara Venn",
+        "Relay Engineer Ivo Renn"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7000,
+      "stages": 9
+    },
+    {
+      "id": "l337.small-lights",
+      "missionID": "small-lights",
+      "title": "Small Lights",
+      "subtitle": "SENN: Small failures become large when every office treats them as someone else's.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/small-lights.toml",
+      "sha256": "4844a0c2a5ee1b90b2b6d37799b9ab23a622204a1e6578c2c8e30323e36d6f3a",
+      "contacts": [
+        "Dispatcher Evi Senn",
+        "Engineer Cato Lerr"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 6400,
+      "stages": 9
+    },
+    {
+      "id": "l337.passengers-horizon",
+      "missionID": "passengers-horizon",
+      "title": "The Passenger's Horizon",
+      "subtitle": "SOREL: A fine horizon is useless if a passenger cannot safely reach it.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/passengers-horizon.toml",
+      "sha256": "454e7de8ec6bf03bd448b8560643533476bc07091c1489e4b8f21c8aa1cf0a86",
+      "contacts": [
+        "Captain Orin Sorel",
+        "Coordinator Sera Dain"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7500,
+      "stages": 9
+    },
+    {
+      "id": "l337.kind-distance",
+      "missionID": "kind-distance",
+      "title": "The Kind Distance",
+      "subtitle": "SOL: A reply means someone chose to answer. Silence is not consent.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/kind-distance.toml",
+      "sha256": "b79ce650495cb5c81b95ad19dc610c057fe820d26e33b6634c2b4bb20de973f7",
+      "contacts": [
+        "Dispatcher Neris Sol",
+        "Coordinator Sera Dain"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 5600,
+      "stages": 9
+    },
+    {
+      "id": "l337.cold-reserve",
+      "missionID": "cold-reserve",
+      "title": "Cold Reserve",
+      "subtitle": "PELL: Count what is here before anyone orders it somewhere else.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/cold-reserve.toml",
+      "sha256": "6e12058f2653bb57667e3b34c1bdb2d280877c1bd37caae957d02ba4357f2d21",
+      "contacts": [
+        "Marshal Nera Voss",
+        "Salvage Chief Ruan Pell"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 8800,
+      "stages": 9
+    },
+    {
+      "id": "l337.magnetic-orchard",
+      "missionID": "magnetic-orchard",
+      "title": "The Magnetic Orchard",
+      "subtitle": "VALE: A living structure is not a rack of salvage waiting for a buyer.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/magnetic-orchard.toml",
+      "sha256": "866c4ce7251dd99c3c988a05d70c76d44d2d710d436cd1999438ea1c6cb7465d",
+      "contacts": [
+        "Agent Mara Vale",
+        "Physicist Anja Kest"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 9200,
+      "stages": 9
+    },
+    {
+      "id": "l337.open-measure",
+      "missionID": "open-measure",
+      "title": "Open Measure",
+      "subtitle": "LERR: A certificate should describe a fit, not manufacture a monopoly.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/open-measure.toml",
+      "sha256": "3104b6c6381bb71e0ff672137d95aee6c794b3c90e5e572a8c18b93181792c97",
+      "contacts": [
+        "Engineer Cato Lerr",
+        "Physicist Anja Kest"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 7900,
+      "stages": 9
+    },
+    {
+      "id": "l337.shared-pulse",
+      "missionID": "shared-pulse",
+      "title": "The Shared Pulse",
+      "subtitle": "HOLT: More replies make this worse. Listen first.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shared-pulse.toml",
+      "sha256": "5e520be357efc8b56056c754d07208816e5c950d667ef47a48a4e7a01015c1af",
+      "contacts": [
+        "Agent Mara Vale",
+        "Captain Tamsin Holt"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 8600,
+      "stages": 9
+    },
+    {
+      "id": "l337.witness-window",
+      "missionID": "witness-window",
+      "title": "The Witness Window",
+      "subtitle": "TOREN: Preserve evidence without turning its owner into a target.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/witness-window.toml",
+      "sha256": "d65fcb81f3565970cbf355d6ff41ea1dedf046c9ecb2d2094f44aeda58f95b88",
+      "contacts": [
+        "Coordinator Sera Dain",
+        "Nia Toren"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 8100,
+      "stages": 9
+    },
+    {
+      "id": "l337.public-record",
+      "missionID": "public-record",
+      "title": "Public Record",
+      "subtitle": "SOL: A story that cannot survive an independent reading is not ready to publish.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/public-record.toml",
+      "sha256": "68413893b6a8269784fbbe41f35538d95ff92a81475cb63ecda58fa821b6c7a4",
+      "contacts": [
+        "Dispatcher Neris Sol",
+        "Nia Toren"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 6300,
+      "stages": 9
+    },
+    {
+      "id": "l337.courier",
+      "missionID": "courier",
+      "title": "Signed Passage",
+      "subtitle": "SENN: Departure is a promise. Delivery is the receiver taking this exact consignment.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/courier.toml",
+      "sha256": "4644804759fbcca23d527e3e03d5fc42077320005d700445a2d4875b3ec1d749",
+      "contacts": [
+        "Dispatcher Evi Senn",
+        "Nia Toren"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 4300,
+      "stages": 9
+    },
+    {
+      "id": "l337.guiding-light",
+      "missionID": "guiding-light",
+      "title": "The Guiding Light",
+      "subtitle": "RENN: A lantern outside your line of sight is not a safe approach marker.",
+      "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/guiding-light.toml",
+      "sha256": "2c4fa44ccece8f18051f5982d9c9e3837560a5d9e4229ba4a5bdf822256f1fba",
+      "contacts": [
+        "Dispatcher Evi Senn",
+        "Relay Engineer Ivo Renn"
+      ],
+      "ships": [
+        "SH001",
+        "SH061"
+      ],
+      "rewardCR": 5700,
+      "stages": 9
+    }
+  ],
+  "artworkManifest": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json",
+  "artworkGallery": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/index.html",
+  "permanentCommissionDecal": {
+    "id": "l337.tithe-of-worlds/compact-commission-mark",
+    "faction": "hearth-compact",
+    "factionName": "Hearth Compact",
+    "awardStage": "accept",
+    "awardEvent": "mission_contact_confirmed",
+    "requiredTarget": "voss-commission",
+    "receipt": "l337.tithe-of-worlds/permanent-compact-commission",
+    "permanent": true,
+    "scope": "commander-entitlement-rendered-on-current-player-hull",
+    "carryToReplacementHulls": true,
+    "removable": false,
+    "confirmationText": "Accept the Hearth Compact commission? Its decal will be permanently attached to your ship and carried to future ships. It cannot be removed.",
+    "cancelText": "Decline commission",
+    "requiresExplicitConfirm": true,
+    "previewCommitsNothing": true,
+    "branches": [
+      "bounded-charter",
+      "sever-network"
+    ],
+    "appearance": {
+      "symbol": "symbols/hearth-compact.svg",
+      "decalLight": "symbols/hearth-compact-decal-light.svg",
+      "decalDark": "symbols/hearth-compact-decal-dark.svg",
+      "placement": "Paired visible hull service panels near the cockpit; per-hull surface anchors, never on glass, openings, vents or engines",
+      "contrast": "Choose the light or dark keyline automatically from the underlying paint"
+    },
+    "persistence": "Persist once with the accepted commission. Retain after mission completion, repaint, repair, escape, hull replacement and current-format save/load. Declining and canceling leave both acceptance and mark unchanged.",
+    "gameplayEffect": "Visible permanent commission record only; no automatic stat, legal or hostility change",
+    "proposalDecision": "Hearth Compact recommended because it commissions both settlement routes; a bounded charter is not allegiance to Tithe."
+  },
+  "continuingServices": {
+    "id": "l337.wayfarer-services",
+    "templates": 6,
+    "stages": 18,
+    "maximumActive": 3,
+    "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services.toml",
+    "sha256": "86ff03ba806da0cb453ab2a57d6ae9be4c38310511af7e7f3bf8e65e8b653f5b",
+    "sourceFile": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services.authoring.json",
+    "sourceSHA256": "704db61bd7a008804db5d964caa6169d06e4a8f6148de93a91a39c931ba50c81",
+    "generator": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/generate-services.py",
+    "generatorSHA256": "06bd83a41d8feb519806df6bab144f421531a9e9131d77bcabaea0afddb7b37b",
+    "artworkManifest": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json",
+    "artworkSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "status": "Private original service designs; not installed or runnable in the current app",
+    "sourcePackagesIncluded": false
+  },
+  "originalFamilies": {
+    "id": "l337.original-families",
+    "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/original-families.toml",
+    "sha256": "b9994f987a6e277195fb9d4c04455564e2bb3acf5eda335e92e4384ea818630e",
+    "templates": 19,
+    "training": 4,
+    "stages": 57,
+    "sourceFile": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/original-families.authoring.json",
+    "sourceSHA256": "71578f34aa6b9c15ea6aba833a56c4af068dac9f3e94515112f985d03d83f2ce",
+    "generatorFile": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/generate-families.py",
+    "generatorSHA256": "98ea841b8e9ac67c33ea07f4fdc4bba895357ac40b7fec5b1cd002d4fdd68fd5",
+    "artworkManifest": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json",
+    "artworkSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904",
+    "thirdPartyMissionContentIncluded": false,
+    "clues": [
+      "sealed-dispatch-family-trace",
+      "consented-freight-family-trace",
+      "bonded-freight-family-trace",
+      "cabin-journey-family-trace",
+      "orbital-outlook-family-trace",
+      "verified-warrant-family-trace",
+      "corridor-defence-family-trace",
+      "custody-rescue-family-trace",
+      "identified-salvage-family-trace",
+      "consented-survey-family-trace",
+      "isolation-work-family-trace",
+      "measured-extraction-family-trace",
+      "mutual-contribution-family-trace",
+      "orbital-evacuation-family-trace",
+      "hostile-larvaal-defence-family-trace",
+      "flight-reception-family-trace",
+      "safe-gunnery-family-trace",
+      "defensive-flight-family-trace",
+      "navigation-trade-family-trace"
+    ],
+    "status": "Private original current-format mission and training families; not installed"
+  },
+  "sourceExclusionIndex": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining-authoring-index.json",
+  "engineContract": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/ENGINE-CONTRACT.md",
+  "resourceAIContract": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/TITHE-CONTRACT.md",
+  "sharedMysteryManifest": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/manifest.json",
+  "completionClues": [
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "meridian-offset",
+      "label": "The missing instant",
+      "journalText": "The recovered timing standard contains an interval that none of the lane clocks measured. Inside that interval, a curved trace repeats eight times.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/meridian-offset",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "choir-silent-voice",
+      "label": "The silent voice",
+      "journalText": "The restored Larvaal call contains a reply from beyond the gathering. Its pauses describe a curve, but no Larvaal vessel claims the voice.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/choir-silent-voice",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "manifest-hidden-imprint",
+      "label": "The inward mark",
+      "journalText": "Beneath the recalled seal's ordinary signature is a second imprint: loops around an empty centre, with each loop pointing inward.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/manifest-hidden-imprint",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "voice-unclaimed-channel",
+      "label": "The unclaimed channel",
+      "journalText": "The independent verifier recorded a reply before its verification challenge could have transmitted. Its curved phase trace folds around a quiet centre, as though the receiver were inside a larger listening ring.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/voice-unclaimed-channel",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "wake-before-impact",
+      "label": "The curve before the fall",
+      "journalText": "Before the mass driver restarted, the orbital recorder traced a loop of inward-facing points around a quiet centre. The curve passes through the same absence described by the other collected traces.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/wake-before-impact",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "tithe-unclaimed-reserve",
+      "label": "The unclaimed reserve",
+      "journalText": "The acquisition ledger contains a reserve entry with no owner, quantity or destination. Its inward-curving phase marks form a ring around an unallocated centre; the signature predates Tithe's creation.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/tithe-unclaimed-reserve",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "current-resting-arc",
+      "label": "The resting arc",
+      "journalText": "The lattice's oldest meter records an inward arc before any collector was built. The measured charge is zero, but the phase signature still encloses a quiet centre.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/current-resting-arc",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "exchange-unbooked-window",
+      "label": "The unbooked window",
+      "journalText": "The first signed route ledger reserves a window with no carrier, cargo or destination. Its curved boundary points inward and matches a bearing outside the published service network.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/exchange-unbooked-window",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "quiet-nursery-trace",
+      "label": "The breath between readings",
+      "journalText": "The unaveraged pressure trace includes a quiet inward curl that no nursery valve produces.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/quiet-nursery-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "borrowed-dawn-trace",
+      "label": "The unlit interval",
+      "journalText": "A photometer records a curved shadow during an interval when no physical reflector crosses its view.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/borrowed-dawn-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "open-shadow-trace",
+      "label": "The shadow with no hull",
+      "journalText": "The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/open-shadow-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "harbour-without-orders-trace",
+      "label": "The unsigned berth",
+      "journalText": "The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/harbour-without-orders-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "false-colours-trace",
+      "label": "The seal before the key",
+      "journalText": "An older layer in the physical seal contains a curved signature absent from every transponder issue record.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/false-colours-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "rubble-covenant-trace",
+      "label": "The hollow mass",
+      "journalText": "One old trajectory record curves around an empty centre as though the missing mass had a boundary of its own.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/rubble-covenant-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "garden-in-transit-trace",
+      "label": "The dormant season",
+      "journalText": "The archive contains a circular season boundary that encloses no named climate or world.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/garden-in-transit-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "warrant-ledger-trace",
+      "label": "The unwritten warrant",
+      "journalText": "Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/warrant-ledger-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "measure-of-care-trace",
+      "label": "The temperature of silence",
+      "journalText": "A reference recorder shows a stable curved boundary during a period with no recorded thermal source.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/measure-of-care-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "long-return-trace",
+      "label": "The passenger never booked",
+      "journalText": "The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/long-return-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "unfinished-map-trace",
+      "label": "The margin beyond the map",
+      "journalText": "The archive's untouched margin carries an inward arc outside every surveyed coordinate frame.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/unfinished-map-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "blue-reservoir-trace",
+      "label": "The dry current",
+      "journalText": "The oldest flow recorder traces an inward curve through a channel that contains no water.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/blue-reservoir-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "mutual-shelter-trace",
+      "label": "The ownerless reserve",
+      "journalText": "An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/mutual-shelter-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "listening-frontier-trace",
+      "label": "The voice outside the channel",
+      "journalText": "A quiet-window listener receives an inward-curved phase trace from outside both recognised transmission bands.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/listening-frontier-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "assembly-of-orbits-trace",
+      "label": "The absent seat",
+      "journalText": "The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/assembly-of-orbits-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "under-tow-trace",
+      "label": "The coupling without a vessel",
+      "journalText": "An old interface calibration defines a curved inward contact surface with no compatible hull in its register.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/under-tow-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "memory-atlas-trace",
+      "label": "The place nobody remembers",
+      "journalText": "Three unrelated diaries contain the same inward curve around a place none of their authors visited.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/memory-atlas-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "fleet-of-neighbours-trace",
+      "label": "The formation with no centre",
+      "journalText": "An early dispatch diagram curves around an empty central formation slot with no assigned vessel.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/fleet-of-neighbours-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "uncounted-names-trace",
+      "label": "The unnamed entry",
+      "journalText": "The oldest register has an inward-curved entry naming no person, cargo or owner.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/uncounted-names-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "honest-circuit-trace",
+      "label": "The tick outside the circuit",
+      "journalText": "A reference timebase records a curved phase mark between two valid circuit ticks.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/honest-circuit-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "small-lights-trace",
+      "label": "The light before the fault",
+      "journalText": "An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/small-lights-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "passengers-horizon-trace",
+      "label": "The horizon without a world",
+      "journalText": "A viewing reference encloses an inward-curved horizon that belongs to none of the surveyed planets.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/passengers-horizon-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "kind-distance-trace",
+      "label": "The reply with no sender",
+      "journalText": "A dormant relay preserves an inward-curved reply predating every registered household key.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/kind-distance-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "cold-reserve-trace",
+      "label": "The unused order",
+      "journalText": "An expired dispatch order defines an inward route to a receiving volume that has never existed in the reserve.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/cold-reserve-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "magnetic-orchard-trace",
+      "label": "The root without a stem",
+      "journalText": "The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/magnetic-orchard-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "open-measure-trace",
+      "label": "The reference without a load",
+      "journalText": "A reference instrument preserves an inward-curved response while its test cradle is verifiably empty.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/open-measure-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "shared-pulse-trace",
+      "label": "The pulse before the reply",
+      "journalText": "A passive trace shows an inward curve before either known participant transmits.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/shared-pulse-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "witness-window-trace",
+      "label": "The frame nobody recorded",
+      "journalText": "Between two authentic recording frames is an inward-shaped phase imprint with no camera source.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/witness-window-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "public-record-trace",
+      "label": "The unreported frequency",
+      "journalText": "The independent recorder captures a curved phase boundary outside the cargo controllers' published operating bands.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/public-record-trace",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "courier-empty-destination",
+      "label": "The empty destination",
+      "journalText": "An early receiving receipt has an inward-curved watermark for a destination absent from all freight charts.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/courier-empty-destination",
+      "awardWithSuccessfulTerminal": true
+    },
+    {
+      "questID": "l337.unwritten-route",
+      "clueID": "lantern-extra-echo",
+      "label": "The extra lantern",
+      "journalText": "The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array.",
+      "massTonnes": 0,
+      "uniquePerSource": true,
+      "receipt": "l337.unwritten-route/clue/lantern-extra-echo",
+      "awardWithSuccessfulTerminal": true
+    }
+  ],
+  "scope": "Thirty-nine original campaign designs, use new objectives, dialogs, routes and rewards. Courier jobs and The Guiding Light are project-authored and supply their own completion hooks.",
+  "persistence": "Use only current campaign identities and the current save format. Start all campaigns with zero progress; persist and restore normal play, including atomic final payment and clue receipts.",
+  "acceptance": "TOML parsing, unique stage IDs, all-stage reachability, explicit branch convergence, one-time receipt identities and routes checked as design data. Runtime event delivery, mission reload, escorts, transfers, choices, current-format save/load and reward atomicity need implementation tests."
+}

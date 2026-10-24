@@ -1,0 +1,22 @@
+{
+  "requiredClues": 64,
+  "distinctSourceGate": true,
+  "noRepeatJobShortcut": true,
+  "failedMissionsDoNotGrantClues": true,
+  "anyPlughDecode": true,
+  "orderedTrailRequired": true,
+  "prematureSpawnsBlocked": true,
+  "uniqueEncounterAndCheckpointRetry": true,
+  "playerKillRequired": true,
+  "cullingAndNPCKillsRejected": true,
+  "reconstructionBeforePurchase": true,
+  "plughOnlyFabrication": true,
+  "xyzzyCannotBypass": true,
+  "saveRoundTripsAtEveryTrailCheckpoint": true,
+  "oneCompleteCurrentClueSet": true,
+  "currentSaveFormatOnly": true,
+  "unsupportedSaveFormatsRejected": true,
+  "modelOnly": true,
+  "runtimeGameplayTested": false,
+  "gameRepositoryModified": false
+}

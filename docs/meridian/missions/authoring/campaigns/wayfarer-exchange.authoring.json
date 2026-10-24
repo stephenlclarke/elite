@@ -1,0 +1,299 @@
+{
+  "id": "l337.wayfarer-exchange",
+  "missionID": "wayfarer-exchange",
+  "originKind": "new-original",
+  "title": "Wayfarer Exchange",
+  "subtitle": "A route is only useful when someone at the other end receives what was promised.",
+  "contacts": [
+    "Dispatcher Evi Senn",
+    "Custodian Tomas Veil"
+  ],
+  "ships": [
+    "SH001",
+    "SH005",
+    "SH061"
+  ],
+  "offer": "At Avenor in Galaxy 1, the Wayfarer Union offers an openly advertised network-induction commission after one ordinary delivery or commodity sale. One tonne of free hold is sufficient for the serial loaned equipment. No combat-rank requirement or random rare-offer gate.",
+  "story": "Independent clinics, repair workshops, seed custodians and remote utility crews have reliable local suppliers but no shared way to reserve scarce transport capacity. The Wayfarer Union asks the commander to demonstrate a receiving-based dispatch service across the Avenor cluster. A refrigerated clinic delivery, a closed repair exchange, an agricultural seed transfer and a real crew recovery establish the service records. Restoring an external utility handoff makes the final route viable. The participating operators then choose either pooled route windows or protected local reservations. The commander validates the published charter and earns accreditation. Afterwards, the Exchange continues as a visible board of six original service templates, with actual consignments, declared requirements and transparent quotes.",
+  "playerBriefing": "SENN: We are building a service record, not a club for people with enough kills. Deliver the clinic sample, bring the repaired cassette home and show every receiving operator what you actually handed over.",
+  "rewardCR": 7600,
+  "completionBenefit": "Accreditation opens advanced variants on the visible Wayfarer Exchange board. Six repeatable service templates remain available with separate quotes and receipts. Accreditation grants no free cargo, personal ship or unrelated legal-status reset.",
+  "branchPolicy": "Choose pooled-windows or protected-reservations once at choose-charter. Obtain the corresponding three service signatures at commit-charter. Both successful charters pay 7,600 CR and grant one permanent clue. Repeat contracts never award this campaign clue or its induction payment again.",
+  "items": [
+    {
+      "id": "clinic-cold-crate",
+      "massTonnes": 1,
+      "acquireStage": "collect-coldcrate",
+      "consumeStage": "deliver-coldchain"
+    },
+    {
+      "id": "return-cassette",
+      "massTonnes": 1,
+      "acquireStage": "recover-cassette",
+      "consumeStage": "close-repair-loop"
+    },
+    {
+      "id": "seed-vault-key",
+      "massTonnes": 1,
+      "acquireStage": "survey-seed-vault",
+      "consumeStage": "escort-seed-ark"
+    },
+    {
+      "id": "crew-custody-recorder",
+      "massTonnes": 1,
+      "acquireStage": "recover-crew-log",
+      "consumeStage": "return-survivors"
+    }
+  ],
+  "interactionNotes": [
+    "The Exchange uses the existing station contract board, arrows, contextual Confirm and Esc. Display destination, reward, hold/crew requirements, any actual deadline, perishability, risk and accepting consequences together. No extra function key, hidden rare offer or special campaign control.",
+    "The four induction items are serial one-tonne reservations. Confirm their whole custody transaction atomically. Cold-chain delivery and survivor reception need the relevant quality or live-crew receipts in addition to the named mission target.",
+    "The clinic cold crate has an independent sealed cooling unit. Its advertised integrity budget is consumed only during armed flight time after confirmed pickup; normal pause stops it and current-format save/load preserves the remaining value. A spoiled delivery is recorded honestly and can be replaced from actual clinic stock; it is never counted as successful.",
+    "The seed ark and rescue tender carry their own real cargo or crews. They are identified actors with receiving manifests. Do not require player passenger cabins for these induction escorts, copy dead personnel, create a delivery from culling or treat a generic same-type freighter as the consignment.",
+    "The board can run at most three accepted service contracts per commander. It reserves real unique consignments and the required player capacity across all active work. Closing/reopening the board or loading cannot reroll a quote, create stock, reset a deadline or duplicate an offer.",
+    "Service history shows completed, late and failed deliveries directly. Equipment and capacity gates are explained in the quote. No hidden combat quota or unexplained reputation decay gates routine work.",
+    "Signed Passage, ordinary sealed dispatch and completed Exchange induction are distinct clue sources. Each Exchange service family grants its own clue at first verified reception; subsequent jobs retain that clue and grant only their own payment and service record.",
+    "Any recovery or combat uses actual attributed events. Single-ship fire cannot destroy station hulls; utility handoffs are named external service modules. The Exchange never asks the commander to destroy a station."
+  ],
+  "servicePolicy": {
+    "board": "Existing station contract board at discovered Wayfarer service hubs",
+    "maximumActive": 3,
+    "offerGeneration": "A seeded current quote epoch selects only actual available consignments and reachable current-world destinations. Preserve offered quote identities until withdrawn or consumed by a real stock event.",
+    "capacity": "Preview and reserve aggregate actual hold, tool slots and any passenger requirements for every accepted instance; decline or cancellation reserves nothing.",
+    "certification": "Induction and visible equipment/route requirements unlock complex services. Routine work remains available without combat rank, a secret counter or a random company invitation.",
+    "receipts": "Each current service instance owns offer, pickup, objective and receiving/payment receipts. Persist custody, passengers, quality, simulation time, target identity, quote and paid state; no imported campaign progress.",
+    "payment": "Advertise a complete price in credits before acceptance. Pay once after actual qualifying receipt, using source/recipient identities and the exact consignment. A late/spoiled result follows its shown policy and never earns the induction clue.",
+    "world": "Use only the independently authored worlds, commodities, actor fleets and current save format. Do not install external parcel-company branding, five original mission groups, source text or old mission-variable names."
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Accept the Wayfarer network-induction commission at Avenor.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "senn-network-commission"
+      ],
+      "dialog": "SENN: These routes belong to the clinics, workshops and crews using them. You can review every job before accepting it. The service board will explain what your ship can carry.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "collect-coldcrate",
+      "galaxy": 0,
+      "system": 185,
+      "objective": "Collect the one-tonne sealed clinic sample at Renas.",
+      "event": "mission_item_recovered",
+      "requiredTargets": [
+        "renas-clinic-coldcrate"
+      ],
+      "dialog": "The clinic records the crate, its working cooling unit and its declared flight-time integrity budget. Confirm the receiving destination before committing the pickup.",
+      "interactionItemMassTonnes": 1,
+      "choices": []
+    },
+    {
+      "id": "deliver-coldchain",
+      "galaxy": 0,
+      "system": 164,
+      "objective": "Deliver the intact cold crate to Navidor's registered clinic berth.",
+      "event": "mission_item_delivered",
+      "requiredTargets": [
+        "navidor-clinic-quality-receipt"
+      ],
+      "dialog": "The receiving clinic verifies the seal and usable sample. A landing without this exact crate and its quality record is not a delivery. A spoiled consignment can be replaced from actual stock.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "recover-cassette",
+      "galaxy": 0,
+      "system": 0,
+      "objective": "Collect Enmadan's one-tonne failed workshop cassette for a closed repair exchange.",
+      "event": "mission_item_recovered",
+      "requiredTargets": [
+        "enmadan-return-cassette"
+      ],
+      "dialog": "VEIL: The cassette is owned by this workshop. Return the repaired unit to its registered receiver; selling a similar commodity will not settle the exchange.",
+      "interactionItemMassTonnes": 1,
+      "choices": []
+    },
+    {
+      "id": "close-repair-loop",
+      "galaxy": 0,
+      "system": 185,
+      "objective": "Return the cassette through the Renas repair desk and confirm its receiving record.",
+      "event": "mission_item_delivered",
+      "requiredTargets": [
+        "renas-cassette-loop-closed"
+      ],
+      "dialog": "The repair desk records the original serial identity, the completed service and the owner's receipt. The transport loop is closed without manufacturing a second unit.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "survey-seed-vault",
+      "galaxy": 0,
+      "system": 162,
+      "objective": "Review Enlirin's seed-transfer consent and loan the one-tonne vault key.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "enlirin-seed-consent"
+      ],
+      "dialog": "VEIL: This transfer keeps two seed holdings viable. The key opens only the receiving cradle. The seed itself travels aboard the registered ark.",
+      "interactionItemMassTonnes": 1,
+      "choices": []
+    },
+    {
+      "id": "escort-seed-ark",
+      "galaxy": 0,
+      "system": 91,
+      "objective": "Escort the registered seed ark to Lareria's receiving cradle and return the vault key.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "lareria-seed-ark-received"
+      ],
+      "dialog": "The cradle accepts the ark's real consignment and reclaims its key. The seed custodians retain ownership and record the receiving conditions.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "recover-crew-log",
+      "galaxy": 0,
+      "system": 211,
+      "objective": "Recover the one-tonne custody recorder beside Cevilis's disabled service tender.",
+      "event": "mission_item_recovered",
+      "requiredTargets": [
+        "cevilis-crew-recorder"
+      ],
+      "dialog": "The tender's crew are alive in its marked rescue launch. The recorder identifies them and their receiving shelter. It is evidence, not an excuse to count a missing ship as rescued.",
+      "interactionItemMassTonnes": 1,
+      "choices": []
+    },
+    {
+      "id": "return-survivors",
+      "galaxy": 0,
+      "system": 0,
+      "objective": "Escort the identified rescue launch to Enmadan reception and return its custody recorder.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "enmadan-live-crew-received"
+      ],
+      "dialog": "Reception confirms the actual surviving crew and stores the returned recorder. Their arrival completes this service; an absent actor or an empty launch cannot substitute.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "reopen-utility-route",
+      "galaxy": 0,
+      "system": 190,
+      "objective": "Restore three named external service handoffs at Enron.",
+      "event": "resource_node_secured",
+      "requiredTargets": [
+        "utility-handoff-inlet",
+        "utility-handoff-buffer",
+        "utility-handoff-return"
+      ],
+      "dialog": "The local utility crew retains operational control. Register the physically working inlet, buffer and return. Shooting the nearby station or unrelated ships changes none of these proofs.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "choose-charter",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Choose the Exchange's published route-allocation charter at Avenor.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "exchange-charter-choice"
+      ],
+      "dialog": "SENN: Pool unused windows across the cluster, or protect a minimum set for each settlement. Both charters publish their limits. Choose how the service will reserve its actual capacity.",
+      "interactionItemMassTonnes": 0,
+      "choices": [
+        "Pool unused route windows with a published local minimum",
+        "Protect local reservations and share only released capacity"
+      ],
+      "choiceIDs": [
+        "pooled-windows",
+        "protected-reservations"
+      ]
+    },
+    {
+      "id": "commit-charter",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Obtain three verified operator signatures for the chosen charter.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "exchange-charter-proof"
+      ],
+      "dialog": "The clinic, workshop and seed custodians each sign the exact chosen capacity policy. A displayed selection alone is not their consent.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "branchStage": "choose-charter",
+      "branchVariants": [
+        {
+          "choiceID": "pooled-windows",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "clinic-pooled-signature",
+            "workshop-pooled-signature",
+            "seed-pooled-signature"
+          ],
+          "objective": "Confirm all three signed pooling limits and test that the protected local minimum cannot be consumed.",
+          "dialog": "The route pool rejects a booking that would take a settlement below its published minimum.",
+          "gossip": "Wayfarer Exchange shares spare windows while protecting each settlement's minimum."
+        },
+        {
+          "choiceID": "protected-reservations",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "clinic-reserved-signature",
+            "workshop-reserved-signature",
+            "seed-reserved-signature"
+          ],
+          "objective": "Confirm all three local reservations and test that only explicitly released capacity can enter the shared pool.",
+          "dialog": "The board rejects an attempt to use an unreleased reservation. Its owner retains the capacity until it chooses to release it.",
+          "gossip": "Wayfarer Exchange protects local reservations and shares only explicitly released windows."
+        }
+      ],
+      "completionRule": "All signatures must belong to the current instance, correct world and persisted chosen branch. Verify the capacity test against the actual reservation ledger."
+    },
+    {
+      "id": "certify-network",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Verify all induction receiving records and the working utility route with Veil.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "veil-network-certification"
+      ],
+      "dialog": "VEIL: The clinic sample remained usable, the cassette returned, the seed ark arrived and the surviving crew reached shelter. The utility route works and the charter signatures agree. Accreditation records those results.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "close-case",
+      "galaxy": 0,
+      "system": 7,
+      "objective": "Confirm accreditation, collect the induction fee and open the advanced service board.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "senn-final-accreditation"
+      ],
+      "dialog": "SENN: Your induction fee is 7,600 CR. The service board will continue offering real work under the charter you verified. No repeated delivery can earn this induction fee or its journal clue twice.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "dialogByChoice": [
+        {
+          "choiceID": "pooled-windows",
+          "text": "SENN: The shared pool is open, and the local minima are protected. Every reserved consignment still has one owner and one receiver."
+        },
+        {
+          "choiceID": "protected-reservations",
+          "text": "VEIL: Each settlement keeps its reserved capacity. Only a signed release lets another service use it."
+        }
+      ]
+    }
+  ]
+}

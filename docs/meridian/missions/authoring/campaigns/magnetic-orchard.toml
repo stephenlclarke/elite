@@ -1,0 +1,240 @@
+# Private campaign design schema; not installed in the game.
+id = "l337.magnetic-orchard"
+missionID = "magnetic-orchard"
+title = "The Magnetic Orchard"
+originKind = "new-original"
+subtitle = "VALE: A living structure is not a rack of salvage waiting for a buyer."
+contacts = ["Agent Mara Vale", "Physicist Anja Kest"]
+ships = ["SH001", "SH061"]
+offer = "At Laris in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold."
+story = "A slowly growing Larvaal structure bends charged dust into living magnetic fronds. Human survey tethers disturb its growth, while some operators mistake the fronds for collectible weapons. The commander measures the field without taking living parts, removes two consented tethers and chooses protected independent boundaries or a jointly observed growth reserve."
+playerBriefing = "VALE: A living structure is not a rack of salvage waiting for a buyer."
+rewardCR = 9200
+completionBenefit = "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The root without a stem."
+branchPolicy = "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue."
+items = [{ id = "magnetic-orchard-reference", massTonnes = 1, acquireStage = "collect-reference", consumeStage = "return-and-audit" }]
+interactionNotes = ["Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.", "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.", "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.", "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."]
+authoringArt = { propID = "magnetic-orchard-reference", propForm = "outer-cradle", palette = "jade", stageObjects = ["magnetic-orchard-reference", "magnetic-orchard-reference", "magnetic-orchard-reference", "magnetic-orchard-reference", "SH061", "magnetic-orchard-reference", "magnetic-orchard-reference", "magnetic-orchard-reference", "magnetic-orchard-reference"] }
+schema = "l337-mission-design/1"
+version = "1.0.0"
+license = "MIT"
+status = "Private original story and stage design; not a runnable pack for the current engine"
+authoredSource = "Original L337 narrative, objectives, dialogs, locations and rewards"
+terminalStage = "complete"
+rewardReceipt = "l337.magnetic-orchard/final-payment"
+rewardPolicy = "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue."
+identityPolicy = "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type."
+persistencePolicy = "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported."
+engineWork = "Implement/verify the event contracts in ENGINE-CONTRACT.md before declaring this pack playable. Current native special-case bindings are superseded by mission-scoped events in the proposed version."
+completionClue = { questID = "l337.unwritten-route", clueID = "magnetic-orchard-trace", label = "The root without a stem", journalText = "The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure.", massTonnes = 0, uniquePerSource = true, receipt = "l337.unwritten-route/clue/magnetic-orchard-trace", awardWithSuccessfulTerminal = true }
+artwork = { manifest = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json", manifestSHA256 = "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904", briefing = { id = "magnetic-orchard", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/illustrations/magnetic-orchard.png", sha256 = "d3d51bce7605cb250350770af3f0208dd8b97bca5445441642257eea81a8f673", visibility = "Current mission briefing" }, contacts = [{ name = "Agent Mara Vale", portrait = { id = "mara-vale", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/mara-vale.png", sha256 = "9fa767db25af0ec5a531e6761fe58e4419801e9e090ba905fa51118f5e514c13", visibility = "Current mission briefing" } }, { name = "Physicist Anja Kest", portrait = { id = "anja-kest", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/anja-kest.png", sha256 = "4932e9fa711c3655952a7940674a69162c8fa5c39606ba2dca7912ab10804153", visibility = "Current mission briefing" } }], ships = [{ id = "SH001", asset = { id = "SH001", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH001.png", sha256 = "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }, { id = "SH061", asset = { id = "SH061", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH061.png", sha256 = "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }], items = [{ id = "magnetic-orchard-reference", asset = { id = "magnetic-orchard-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/props/magnetic-orchard-reference.png", sha256 = "f686334fdc55fb12501c7fd152240761ffce87d00024558f9c85b4505f427e5e", visibility = "Current mission briefing" } }], outcomes = [{ id = "magnetic-orchard/choose-settlement/plan-a", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/magnetic-orchard-choose-settlement-plan-a.png", sha256 = "aadb46e5402409153e719097f626c3045a05690cdc3d2727081debed02ed4c35", visibility = "Only the actual committed branch" }, { id = "magnetic-orchard/choose-settlement/plan-b", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/magnetic-orchard-choose-settlement-plan-b.png", sha256 = "b2eb6044c85c329048c3fa1c2bd6a66667676033277394ac2a2b4c6342b76e87", visibility = "Only the actual committed branch" }] }
+
+[[stages]]
+id = "accept"
+galaxy = 0
+system = 120
+objective = "Accept The Magnetic Orchard at Laris."
+dialog = "Agent Mara Vale: A slowly growing Larvaal structure bends charged dust into living magnetic fronds. Review the complete survey, loan and receiving requirements before confirming."
+event = "mission_contact_confirmed"
+requiredTargets = ["accept-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G01-S120"
+locationName = "Laris"
+next = "survey"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/accept"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/accept", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/accept.png", sha256 = "a5f8d177ccdd24ac6092f71bff789f43ecc8ca6c60222bc32cd1ce743234c093", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "survey"
+galaxy = 0
+system = 115
+objective = "Observe three safe magnetic field boundaries without extracting living material."
+dialog = "VALE: A living structure is not a rack of salvage waiting for a buyer."
+event = "entity_scan_completed"
+requiredTargets = ["magnetic-orchard-survey-1", "magnetic-orchard-survey-2", "magnetic-orchard-survey-3"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G01-S115"
+locationName = "Nevedor"
+next = "collect-reference"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/survey"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/survey", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/survey.png", sha256 = "8cbe49a5be668e2c838ba751c51c0ee6d40f4df86ce31c56f908a28ac2cea448", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "collect-reference"
+galaxy = 0
+system = 120
+objective = "Collect the identified one-tonne reference instrument from Agent Mara Vale."
+dialog = "Agent Mara Vale: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity."
+event = "mission_contact_confirmed"
+requiredTargets = ["collect-reference-verified"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G01-S120"
+locationName = "Laris"
+next = "field-work"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/collect-reference"
+itemEffects = [{ kind = "add", item = "magnetic-orchard-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/collect-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/collect-reference.png", sha256 = "cd4e4b50c15fa58e0e1647a09afabb7e4b0d96a665b243b720f2fc8deaf13f98", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "field-work"
+galaxy = 0
+system = 161
+objective = "Release two identified human tethers using the isolated field reference."
+dialog = "KEST: Keep the removed tether mass in custody. Cutting a frond is not removing our equipment."
+event = "mission_action_confirmed"
+requiredTargets = ["magnetic-orchard-work-port", "magnetic-orchard-work-starboard"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G01-S161"
+locationName = "Nesel"
+next = "independent-witness"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/field-work"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/field-work", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/field-work.png", sha256 = "b92b764e4297e0fd295a0b2b91437cd0efc70b4e16a5ec71feefda68a7d4686f", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "independent-witness"
+galaxy = 0
+system = 89
+objective = "Escort the neutral observation tender to the protected receiving cradle."
+dialog = "VALE: Bring the observers through the measured gap rather than forcing a new one."
+event = "escort_arrived"
+requiredTargets = ["magnetic-orchard-witness-received"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G01-S089"
+locationName = "Erron"
+next = "choose-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/independent-witness"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/independent-witness", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/independent-witness.png", sha256 = "11be1437dba6625752c64ec5287faef95bfb48a7724710edf9b0df6311f40c68", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "choose-settlement"
+galaxy = 0
+system = 120
+objective = "Choose the verified settlement with the consenting operators."
+dialog = "Agent Mara Vale: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither."
+event = "mission_choice_confirmed"
+requiredTargets = ["magnetic-orchard-settlement-choice"]
+interactionItemMassTonnes = 1
+choices = ["Protect independent human and Larvaal growth boundaries", "Establish a jointly observed growth reserve"]
+choiceIDs = ["plan-a", "plan-b"]
+locationKey = "G01-S120"
+locationName = "Laris"
+next = "apply-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/choose-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/choose-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/choose-settlement.png", sha256 = "318fd95fc718c85e733a6c93a351d4d05d70f5c046bb0cfb855ad566bbf9489a", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "apply-settlement"
+galaxy = 0
+system = 161
+objective = "Verify both independent proofs for the selected settlement."
+dialog = "Agent Mara Vale: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof."
+event = "mission_action_confirmed"
+requiredTargets = ["magnetic-orchard-settlement-summary"]
+interactionItemMassTonnes = 1
+choices = []
+branchStage = "choose-settlement"
+branchVariants = [{ choiceID = "plan-a", event = "mission_action_confirmed", requiredTargets = ["magnetic-orchard-plan-a-physical-proof", "magnetic-orchard-plan-a-receiving-proof"], objective = "Verify both exclusion envelopes and their reply receipts.", dialog = "KEST: Each boundary needs room to change without touching the other.", gossip = "The Magnetic Orchard: Protect independent human and Larvaal growth boundaries." }, { choiceID = "plan-b", event = "mission_action_confirmed", requiredTargets = ["magnetic-orchard-plan-b-physical-proof", "magnetic-orchard-plan-b-receiving-proof"], objective = "Verify the consented reserve and independent monitoring limits.", dialog = "VALE: Observation does not grant ownership.", gossip = "The Magnetic Orchard: Establish a jointly observed growth reserve." }]
+locationKey = "G01-S161"
+locationName = "Nesel"
+next = "return-and-audit"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/apply-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/apply-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/apply-settlement.png", sha256 = "ee86889111d63c10911155fe7412e136c03fc620d2186f5551514e31753689bd", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "return-and-audit"
+galaxy = 0
+system = 120
+objective = "Return the reference instrument and confirm all physical receiving and settlement receipts."
+dialog = "Agent Mara Vale: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case."
+event = "mission_contact_confirmed"
+requiredTargets = ["return-and-audit-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G01-S120"
+locationName = "Laris"
+next = "close-case"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/return-and-audit"
+itemEffects = [{ kind = "remove", item = "magnetic-orchard-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/return-and-audit", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/return-and-audit.png", sha256 = "583aa2231d298acb95ebe4a6514f1ca20dcc0aceaf0d1cb76d142791ce58ffca", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "close-case"
+galaxy = 0
+system = 120
+objective = "Confirm successful completion, the recorded settlement and the once-only fee."
+dialog = "Agent Mara Vale: The independent audit is complete. Your fee is 9200 CR. The operators retain the chosen settlement and their original records.\n\nAgent Mara Vale: The audit has left one anomaly that belongs to neither side. The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure. It is preserved in your journal for the AI at PLUGH."
+event = "mission_contact_confirmed"
+requiredTargets = ["close-case-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G01-S120"
+locationName = "Laris"
+next = "complete"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.magnetic-orchard/close-case"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "magnetic-orchard/close-case", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/magnetic-orchard/close-case.png", sha256 = "8e539ab231c6a9699e84e592d468c5a3cb15ca90547bde89625cb2e674e06b70", visibility = "Mission stage briefing and completed history" }

@@ -1,0 +1,240 @@
+# Private campaign design schema; not installed in the game.
+id = "l337.open-shadow"
+missionID = "open-shadow"
+title = "The Open Shadow"
+originKind = "new-original"
+subtitle = "VALE: Privacy is a right. Silence on a collision channel is a physical hazard. Measure them separately."
+contacts = ["Agent Mara Vale", "Relay Engineer Ivo Renn"]
+ships = ["SH001", "SH061"]
+offer = "At Oralaora in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold."
+story = "A civilian rescue service uses a privacy filter that hides passenger identities but should never hide collision warnings. An update has coupled the two channels. The commander compares cooperative test vessels, installs an independently measured reference and negotiates either public collision telemetry or a witnessed privacy escrow."
+playerBriefing = "VALE: Privacy is a right. Silence on a collision channel is a physical hazard. Measure them separately."
+rewardCR = 7400
+completionBenefit = "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The shadow with no hull."
+branchPolicy = "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue."
+items = [{ id = "open-shadow-reference", massTonnes = 1, acquireStage = "collect-reference", consumeStage = "return-and-audit" }]
+interactionNotes = ["Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.", "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.", "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.", "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."]
+authoringArt = { propID = "open-shadow-reference", propForm = "receiver", palette = "ice-blue", stageObjects = ["open-shadow-reference", "open-shadow-reference", "open-shadow-reference", "open-shadow-reference", "SH061", "open-shadow-reference", "open-shadow-reference", "open-shadow-reference", "open-shadow-reference"] }
+schema = "l337-mission-design/1"
+version = "1.0.0"
+license = "MIT"
+status = "Private original story and stage design; not a runnable pack for the current engine"
+authoredSource = "Original L337 narrative, objectives, dialogs, locations and rewards"
+terminalStage = "complete"
+rewardReceipt = "l337.open-shadow/final-payment"
+rewardPolicy = "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue."
+identityPolicy = "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type."
+persistencePolicy = "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported."
+engineWork = "Implement/verify the event contracts in ENGINE-CONTRACT.md before declaring this pack playable. Current native special-case bindings are superseded by mission-scoped events in the proposed version."
+completionClue = { questID = "l337.unwritten-route", clueID = "open-shadow-trace", label = "The shadow with no hull", journalText = "The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record.", massTonnes = 0, uniquePerSource = true, receipt = "l337.unwritten-route/clue/open-shadow-trace", awardWithSuccessfulTerminal = true }
+artwork = { manifest = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json", manifestSHA256 = "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904", briefing = { id = "open-shadow", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/illustrations/open-shadow.png", sha256 = "f2e384047622bad9c78f4382ae3d15ed305bbb78afec830f5dce7fae43e5fea8", visibility = "Current mission briefing" }, contacts = [{ name = "Agent Mara Vale", portrait = { id = "mara-vale", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/mara-vale.png", sha256 = "9fa767db25af0ec5a531e6761fe58e4419801e9e090ba905fa51118f5e514c13", visibility = "Current mission briefing" } }, { name = "Relay Engineer Ivo Renn", portrait = { id = "ivo-renn", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/ivo-renn.png", sha256 = "221034ba281a63e3d3dbd4f56eafedd9e76d553560a3d284e296c126aa9aaff0", visibility = "Current mission briefing" } }], ships = [{ id = "SH001", asset = { id = "SH001", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH001.png", sha256 = "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }, { id = "SH061", asset = { id = "SH061", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH061.png", sha256 = "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }], items = [{ id = "open-shadow-reference", asset = { id = "open-shadow-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/props/open-shadow-reference.png", sha256 = "547c95d2fa8244a20b4470985b422a6b2190637414df340ce0328479a1ec3f52", visibility = "Current mission briefing" } }], outcomes = [{ id = "open-shadow/choose-settlement/plan-a", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/open-shadow-choose-settlement-plan-a.png", sha256 = "b141b78ecc3101af30e930f76844defabe89b511185d310cb5d8911b3fb97975", visibility = "Only the actual committed branch" }, { id = "open-shadow/choose-settlement/plan-b", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/open-shadow-choose-settlement-plan-b.png", sha256 = "72ea162c04640a0eeb0d41f2138ffc835a9e4cbf0697cd8e81eb216574b639e4", visibility = "Only the actual committed branch" }] }
+
+[[stages]]
+id = "accept"
+galaxy = 2
+system = 74
+objective = "Accept The Open Shadow at Oralaora."
+dialog = "Agent Mara Vale: A civilian rescue service uses a privacy filter that hides passenger identities but should never hide collision warnings. Review the complete survey, loan and receiving requirements before confirming."
+event = "mission_contact_confirmed"
+requiredTargets = ["accept-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G03-S074"
+locationName = "Oralaora"
+next = "survey"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/accept"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/accept", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/accept.png", sha256 = "aafd71fed3a4838d804112adc727e0a79738ad51fa80dbc7923be97edd9a0efa", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "survey"
+galaxy = 2
+system = 173
+objective = "Compare identity and collision channels on three consenting calibration beacons."
+dialog = "VALE: Privacy is a right. Silence on a collision channel is a physical hazard. Measure them separately."
+event = "entity_scan_completed"
+requiredTargets = ["open-shadow-survey-1", "open-shadow-survey-2", "open-shadow-survey-3"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G03-S173"
+locationName = "Elavaeth"
+next = "collect-reference"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/survey"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/survey", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/survey.png", sha256 = "ffe3e0990d04c228094b7f26257a5850b7fef2d92b16207e5f55db5d81022d71", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "collect-reference"
+galaxy = 2
+system = 74
+objective = "Collect the identified one-tonne reference instrument from Agent Mara Vale."
+dialog = "Agent Mara Vale: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity."
+event = "mission_contact_confirmed"
+requiredTargets = ["collect-reference-verified"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G03-S074"
+locationName = "Oralaora"
+next = "field-work"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/collect-reference"
+itemEffects = [{ kind = "add", item = "open-shadow-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/collect-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/collect-reference.png", sha256 = "f0b7747ad6b028fe1d47d4b423d0e6648bf8a10767724fcf33853bc61d6665ba", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "field-work"
+galaxy = 2
+system = 52
+objective = "Attach the reference receiver to two external test couplers."
+dialog = "RENN: The reference listens without recording a passenger's identity. Keep the two receipts distinct."
+event = "mission_action_confirmed"
+requiredTargets = ["open-shadow-work-port", "open-shadow-work-starboard"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G03-S052"
+locationName = "Oravaessa"
+next = "independent-witness"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/field-work"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/field-work", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/field-work.png", sha256 = "3bf5f24d26ed05e88ce9345d82f49ab6a2bec1a96fcd5d90cbc71891f2df1847", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "independent-witness"
+galaxy = 2
+system = 44
+objective = "Guide the volunteer test tender through the measured crossing corridor."
+dialog = "VALE: Its pilot knows the test. Do not use an uninformed traveller as bait."
+event = "escort_arrived"
+requiredTargets = ["open-shadow-witness-received"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G03-S044"
+locationName = "Maidea"
+next = "choose-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/independent-witness"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/independent-witness", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/independent-witness.png", sha256 = "beced43df04098faf94d64fe8342157e5d6ee3a1c10736ef5ba6f489aecb0a61", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "choose-settlement"
+galaxy = 2
+system = 74
+objective = "Choose the verified settlement with the consenting operators."
+dialog = "Agent Mara Vale: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither."
+event = "mission_choice_confirmed"
+requiredTargets = ["open-shadow-settlement-choice"]
+interactionItemMassTonnes = 1
+choices = ["Publish anonymous collision telemetry", "Use a witnessed identity escrow with a safety channel"]
+choiceIDs = ["plan-a", "plan-b"]
+locationKey = "G03-S074"
+locationName = "Oralaora"
+next = "apply-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/choose-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/choose-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/choose-settlement.png", sha256 = "301238a3b8542768d72c3fa7e35386493c206a2bdf951f485afe90c45e4bda30", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "apply-settlement"
+galaxy = 2
+system = 52
+objective = "Verify both independent proofs for the selected settlement."
+dialog = "Agent Mara Vale: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof."
+event = "mission_action_confirmed"
+requiredTargets = ["open-shadow-settlement-summary"]
+interactionItemMassTonnes = 1
+choices = []
+branchStage = "choose-settlement"
+branchVariants = [{ choiceID = "plan-a", event = "mission_action_confirmed", requiredTargets = ["open-shadow-plan-a-physical-proof", "open-shadow-plan-a-receiving-proof"], objective = "Verify the anonymous broadcast and independent close-pass warning.", dialog = "VALE: Publish movement, not names.", gossip = "The Open Shadow: Publish anonymous collision telemetry." }, { choiceID = "plan-b", event = "mission_action_confirmed", requiredTargets = ["open-shadow-plan-b-physical-proof", "open-shadow-plan-b-receiving-proof"], objective = "Verify the escrow witness and continuously open collision channel.", dialog = "RENN: Closing the archive must never close the warning.", gossip = "The Open Shadow: Use a witnessed identity escrow with a safety channel." }]
+locationKey = "G03-S052"
+locationName = "Oravaessa"
+next = "return-and-audit"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/apply-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/apply-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/apply-settlement.png", sha256 = "51f06afe314f0eb4d670e1aab4ddaa9369619460615db066a146d3c82601127a", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "return-and-audit"
+galaxy = 2
+system = 74
+objective = "Return the reference instrument and confirm all physical receiving and settlement receipts."
+dialog = "Agent Mara Vale: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case."
+event = "mission_contact_confirmed"
+requiredTargets = ["return-and-audit-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G03-S074"
+locationName = "Oralaora"
+next = "close-case"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/return-and-audit"
+itemEffects = [{ kind = "remove", item = "open-shadow-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/return-and-audit", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/return-and-audit.png", sha256 = "b5a71d10e5b4b73973a97656cc56bec17a3fb07b3dc4fbbbf7658f2280e11987", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "close-case"
+galaxy = 2
+system = 74
+objective = "Confirm successful completion, the recorded settlement and the once-only fee."
+dialog = "Agent Mara Vale: The independent audit is complete. Your fee is 7400 CR. The operators retain the chosen settlement and their original records.\n\nAgent Mara Vale: The audit has left one anomaly that belongs to neither side. The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record. It is preserved in your journal for the AI at PLUGH."
+event = "mission_contact_confirmed"
+requiredTargets = ["close-case-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G03-S074"
+locationName = "Oralaora"
+next = "complete"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.open-shadow/close-case"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "open-shadow/close-case", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/open-shadow/close-case.png", sha256 = "17d6e7a84450d9c2495cbb7f259574605dfcc63f67a2b9be150e011487b9bbf2", visibility = "Mission stage briefing and completed history" }

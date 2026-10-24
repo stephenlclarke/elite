@@ -1,8 +1,12 @@
 # Game mechanics support audit
 
-**Result: the current game does not yet support every intended mission or game objective.** The candidate has substantial reusable mechanics and many wired service journeys. The missing work includes original mission bindings, several specialised physical operations, the complete finale and parts of the catalogue/gallery experience.
+**Result: the audited candidate does not yet support every intended mission or game objective.** The candidate has substantial reusable mechanics and many wired service journeys. The missing work includes original mission bindings, several specialised physical operations, the complete finale and parts of the catalogue/gallery experience.
 
 This is a read-only source audit. It compares the Meridian definitions with published `main` at `bba862c558530ea2d40d634f84fbd490d9cc3401` and the latest frozen mission candidate at `6552b68f7a146ceb79b4376d33cc8afd3f987399`. The candidate is separate from main; source wiring, passing units, playable journeys, merge and release acceptance are different claims. No game, compiler, native test, CI workflow or renderer was run for this audit. Later price/technology branches are not substituted for the mission baseline. Implementation priorities remain in the main project ledger.
+
+## Later design resolutions, not runtime delivery
+
+The user-supplied review is now resolved in the canonical design: all64 sources have a guaranteed independent continuity inquiry, C01 has exact8kg/final-archive accounting, C36 has a pre-offer preservation hold, and C09-C39 have31 distinct physical/interaction profiles with revised pacing. These rules live under [missions/gameplay/](missions/gameplay/GAMEPLAY-SPECIFICATION.md). None was implemented or natively tested by this documentation change. The frozen candidate counts below remain historical source evidence; the640 additional alternative recovery objective rows have zero qualified native coverage in this audit. A new implementation must explicitly bind and authorise these paths, including the continuity-service exception to finite lifetime source guards.
 
 ## Coverage and interpretation
 

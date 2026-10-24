@@ -1,0 +1,318 @@
+{
+  "id": "l337.shattered-wake",
+  "missionID": "shattered-wake",
+  "originKind": "new-original",
+  "title": "The Shattered Wake",
+  "subtitle": "A station can stop a weapon volley. Can it survive an entire broken orbit?",
+  "contacts": [
+    "Controller Edda Rell",
+    "Geologist Jalen Orr",
+    "Tug Lead Mira Penn"
+  ],
+  "ships": [
+    "SH061"
+  ],
+  "offer": "At Loalaila in Galaxy 6, after visiting three systems, speak to Controller Edda Rell. No kill-count gate or prior campaign. The loaned coupler needs one tonne of hold; standard flight, targeting and weapons are sufficient.",
+  "story": "An abandoned orbital mass driver above Aermiori has restarted during an automated survey. Its spoil stream intersects a fractured moonlet, sending a long train of large bodies and dense gravel towards Spindle Anchorage. The station can discharge the firepower of an ordinary ship, but successive heavy impacts can exhaust its shields before they recover. The commander measures the approaching train, shuts down the driver and helps build either a tug-deflection array or a fragment-catching screen. The commander can visit neighbouring systems with a verified warning and recruit their available tugs, interception patrols and evacuation craft. During the passage, the commander redirects marked threats and clears a route for rescue craft. Afterwards, survivors and the flight records are taken to Loalaila, where an inquiry determines what happened and how to protect the next orbital settlement.",
+  "playerBriefing": "RELL: Spindle Anchorage can absorb a ship's weapons all day. These are moving mountains and a wake of gravel. We need to change their paths before they share the same few seconds against the shields. Survey the outer watchers at Aermiori. We have time to prepare; I will not arm the operation until you confirm readiness.",
+  "rewardCR": 1800,
+  "completionBenefit": "The completed relief and inquiry earns the base 1,800 CR. Add 6,000 CR if Spindle Anchorage survives, or 3,000 CR if the station is lost but all registered evacuees reach Shelter Dock; no bonus for other station-loss outcomes. All outcomes require the later relief and inquiry, not merely waiting for an explosion.",
+  "completionBonusesCR": {
+    "station-saved": 6000,
+    "station-evacuated": 3000,
+    "station-lost": 0
+  },
+  "items": [
+    {
+      "id": "impulse-coupler",
+      "massTonnes": 1,
+      "acquireStage": "collect-coupler",
+      "consumeStage": "deploy-defence"
+    }
+  ],
+  "branchPolicy": "Choose tug-deflection or fragment-screen once. The selected deploy-defence variant changes the mitigation available during the same debris passage. Afterwards, all station outcomes continue through rescue, relief and inquiry. The choice alone never guarantees survival.",
+  "rewardPolicy": "At the confirmed inquiry terminal, pay the 1,800 CR base plus exactly one bonus from completionBonusesCR, using the persisted authoritative hazard outcome. Commit that sum, completion and clue atomically under one final-payment receipt. No payment or clue is earned solely by a station loss, an NPC interception or leaving the system. Do not clear legal status or grant combat kills for rocks or environmental station loss.",
+  "interactionNotes": [
+    "Use normal targeting and scans, contextual Confirm actions and the shared help controls. Esc cancels a dialog without choosing an operation or arming the timer.",
+    "The impulse coupler uses one tonne between collection and completed defence deployment. It is loaned without a fee and installed into the final node in one atomic transfer. No salvage, record or clue requires spare hold.",
+    "After the watcher survey, optional contacts at Iraeth, Reilieli and Siamaeth can dispatch available tugs, patrol ships and rescue haulers. The mission log shows routes, warning receipts, offers, departures and arrival estimates. Warn any subset before arming; late visits remain possible but do not pause an active passage.",
+    "Preparation has no deadline. Before arming, display the operation, all targets, 15-minute passage clock, shield reserve, impact load, structural integrity, rescue manifest and safe breakup range. Confirm at the final deployment starts the advertised clock; cancelling does not.",
+    "After arming, the active simulation clock continues during docking, radio dialogs and interstellar departure. Explicit game pause, automatic background pause and system sleep freeze it. Save/load resumes the same elapsed passage, impact queue and rescue manifest; it does not replay impacts or reset the station.",
+    "The station can be genuinely destroyed by the accumulated asteroid impacts. Rescue and the inquiry use Shelter Dock and Loalaila, so loss of Spindle Anchorage cannot remove the remaining objectives.",
+    "A lost rescue tender can be replaced by a new crew and hull. Persist survivors already safe at Shelter Dock. Do not recreate dead evacuees, clone a tender's passenger manifest or award an arrival for a culled ship."
+  ],
+  "stationPolicy": {
+    "singleShipWeapons": "Ordinary single-ship weapon fire cannot penetrate the station shields or reduce structural integrity. Ship fire never counts as an asteroid impact.",
+    "kineticDamage": "Authoritative collisions by physical asteroids and fragments draw from a recharging shield reserve. Unabsorbed load damages structural integrity. Repeated impacts can destroy a station.",
+    "shieldReserve": 100.0,
+    "structuralIntegrity": 100.0,
+    "shieldRechargePerSecond": 1.0,
+    "units": "Independent normalised gameplay loads; physical impact-energy conversion and station-size budgets require runtime balancing.",
+    "duplicatePolicy": "A collision receipt combines encounter and collider identity; process it once. Splitting conserves the parent's mass, momentum and total kinetic-energy budget. Invalidate the parent and give children new identities; never count the parent and its children as separate intact masses."
+  },
+  "hazardRules": {
+    "armStage": "deploy-defence",
+    "resolveStage": "hold-the-approach",
+    "durationSeconds": 900,
+    "safeBreakupRangeKM": 35,
+    "impactWorld": "G06-S059",
+    "stationID": "spindle-anchorage",
+    "reliefStationID": "aermiori-shelter-dock",
+    "refugeWorld": "G06-S020",
+    "populations": "A primary body, six secondary bodies and eighty individually tracked or deterministically clustered fragments. Broad bands arrive over the passage; the exact source-free trajectory recipe is fixed and saved at arming.",
+    "mitigation": "Tug-deflection pushes marked large bodies onto predicted miss paths but leaves most gravel. Fragment-screen catches a finite share of the gravel while leaving large bodies for the player and tugs. Both are viable with normal controls; tune difficulty through original trials.",
+    "breakup": "Weapon damage to a rock may break it up without removing its momentum or danger. Show predicted fragment trajectories and a warning inside 35 km. Outside that range a verified interception can spread fragments onto miss paths; distance alone is not a successful interception.",
+    "evacuation": "At arming, register the full station population eligible for evacuation, including people not yet aboard a launch. At a warned shield threshold, launch available craft before collapse. Track each registered person as aboard, in an escape capsule, rescued, safe at Shelter Dock or lost. Reinforcement haulers add real transport capacity, never new passengers or an automatic success.",
+    "loss": "Persist real station loss, disable docking and services there, show wreckage and update charts and gossip. Finish the relief operation at other registered stations. No automatic resurrection or restored stock after loading.",
+    "outcome": "station-saved if the passage ends with positive station integrity; station-evacuated if it was destroyed and every registered evacuee is safely accounted for at Shelter Dock; otherwise station-lost. Classify the bonus after relief accounting, not at the instant of collapse.",
+    "timerResolution": "Off-screen simulation uses the same fixed trajectories, confirmed mitigations and collision ledger. NPC interception can help the station, but player completion still requires the subsequent relief and inquiry. Leaving applies no invented bounty or cash fine."
+  },
+  "assetManifest": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shattered-wake-assets/manifest.json",
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 5,
+      "system": 20,
+      "objective": "Accept the orbital emergency commission at Loalaila.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "rell-commission"
+      ],
+      "dialog": "RELL: The shelter crews are already standing by. We need a reliable picture of the whole debris train, not a heroic shot at the biggest rock. Take the survey first; the station's outer orbit is still clear.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "survey-train",
+      "galaxy": 5,
+      "system": 59,
+      "objective": "Scan three outer watchers and compare the projected impact bands at Aermiori.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "outer-watcher-one",
+        "outer-watcher-two",
+        "outer-watcher-three"
+      ],
+      "dialog": "ORR: The lead body is not the whole threat. Behind it are several heavy pieces and a narrow gravel stream. Their paths meet the anchorage while the shields would still be recovering from the first impacts. These signed scans also let you warn Iraeth, Reilieli and Siamaeth; their emergency contacts may release additional ships before you arm the defence.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "collect-coupler",
+      "galaxy": 5,
+      "system": 59,
+      "objective": "Dock at Spindle Anchorage and collect a one-tonne impulse coupler.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "anchorage-coupler-transfer"
+      ],
+      "dialog": "PENN: One coupler will link either our tug anchors or the fragment screen. The hold needs one free tonne. We will keep it safely here until you can take it. The deployment hardware itself is already in orbit.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "stationRef": "spindle-anchorage"
+    },
+    {
+      "id": "silence-driver",
+      "galaxy": 5,
+      "system": 59,
+      "objective": "Shut down the abandoned mass driver and record the moonlet fracture boundary.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "mass-driver-isolated",
+        "fracture-boundary-recorded"
+      ],
+      "dialog": "ORR: The driver was following an obsolete survey test embedded in its local controller. Its feed is now isolated. The material already in flight cannot be recalled; the fracture record tells us which surfaces will split under fire.",
+      "interactionItemMassTonnes": 1,
+      "choices": []
+    },
+    {
+      "id": "choose-defence",
+      "galaxy": 5,
+      "system": 59,
+      "objective": "Choose tug deflection or a fragment-catching screen through the emergency radio contact.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "defence-operation-choice"
+      ],
+      "dialog": "PENN: Tug deflection shifts the heavy bodies, leaving the gravel for interception. The screen catches gravel, leaving the heavy bodies for us. Neither handles everything. Choose the work your ship can support; we will show the remaining threats before you arm the passage.",
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Deflect the heavy bodies with tug anchors",
+        "Catch the gravel with a fragment screen"
+      ],
+      "choiceIDs": [
+        "tug-deflection",
+        "fragment-screen"
+      ],
+      "contactContext": "confirmed emergency radio"
+    },
+    {
+      "id": "deploy-defence",
+      "galaxy": 5,
+      "system": 59,
+      "objective": "Install the selected three-node defence and confirm readiness to begin the passage.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "defence-armed"
+      ],
+      "dialog": "RELL: The survey, shelter craft and defence nodes are ready. Confirm starts the fifteen-minute passage. The clock keeps running while the game is active, even if you dock or leave; Pause stops it. You can still cancel before arming.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-defence",
+      "completionRule": "Require all selected branch targets, current custody of the impulse coupler and explicit final readiness confirmation. Installing the last node, consuming the coupler and arming the clock are one atomic transaction.",
+      "branchVariants": [
+        {
+          "choiceID": "tug-deflection",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "deflection-anchor-inner",
+            "deflection-anchor-middle",
+            "deflection-anchor-outer"
+          ],
+          "objective": "Synchronise the three tug anchors, then install the coupler and confirm readiness.",
+          "dialog": "PENN: The tug anchors can move the marked heavy bodies sideways. Watch the gravel bands that remain on course.",
+          "gossip": "The emergency crews used a coordinated tug-deflection array."
+        },
+        {
+          "choiceID": "fragment-screen",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "catcher-node-inner",
+            "catcher-node-middle",
+            "catcher-node-outer"
+          ],
+          "objective": "Align the three fragment catchers, then install the coupler and confirm readiness.",
+          "dialog": "PENN: The screen can catch the marked gravel bands. Its capacity is finite; the heavy bodies remain your priority.",
+          "gossip": "The emergency crews deployed a fragment-catching screen."
+        }
+      ]
+    },
+    {
+      "id": "hold-the-approach",
+      "galaxy": 5,
+      "system": 59,
+      "objective": "Help redirect the marked threats until the debris passage resolves; keep the evacuation corridor clear.",
+      "event": "hazard_encounter_resolved",
+      "requiredTargets": [
+        "shattered-wake-passage-resolved"
+      ],
+      "dialog": "RELL: The passage is active. The HUD shows time to impact, combined load, shield reserve and station integrity. Fire that shatters a body near the station can leave every fragment on course. Help the marked tugs or clear threats whose projected paths you can actually change.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "declinePolicy": "The armed hazard runs on active simulation time. Closing dialogs or leaving does not reset it. Pause stops the clock. Departure adds no invented offence or cash penalty; rescue and inquiry remain available afterwards.",
+      "recovery": "Restore the same elapsed clock, collision receipts, live bodies, fragment parentage and station integrity. Recreate only logically live entities. A destroyed station remains destroyed. A missing scene object is not an intercepted rock."
+    },
+    {
+      "id": "escort-rescue",
+      "galaxy": 5,
+      "system": 59,
+      "objective": "Escort the registered relief tender to Shelter Dock with the survivors and incident records it recovered.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "relief-tender-shelter-arrival"
+      ],
+      "dialog": "PENN: Our relief tender is sweeping the shelter corridor. It carries the people we actually recovered and the anchored event recorder. Bring it into Shelter Dock. If no one survived a section, the records still matter; the missing people are not replaced by new names.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "stationRef": "aermiori-shelter-dock",
+      "recovery": "Persist passenger identities and persons already safe at Shelter Dock. If a relief hull is lost, arrange a new tender with a new crew to recover remaining reachable capsules and records. Mark genuine casualties; never reset the station, clone survivors or replay a completed arrival."
+    },
+    {
+      "id": "deliver-relief-record",
+      "galaxy": 5,
+      "system": 20,
+      "objective": "Dock at Loalaila and submit the relief manifest and recovered event record.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "relief-manifest-accepted"
+      ],
+      "dialog": "RELL: We will account for everyone by the rescue manifest, not by the number of launches on a scanner. The surviving station needs repairs; a lost station needs a permanent exclusion marker and support for its displaced crews.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "complete-inquiry",
+      "galaxy": 5,
+      "system": 20,
+      "objective": "Compare the saved trajectory record, driver shutdown and defence telemetry with Jalen Orr.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "shattered-wake-inquiry"
+      ],
+      "dialog": "ORR: The debris kept the momentum it had before we arrived. The useful actions changed where it would strike. I have separated those records from a second curved trace that was present before the driver restarted. It does not belong to the spoil stream.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "close-case",
+      "galaxy": 5,
+      "system": 20,
+      "objective": "Confirm completion of the relief operation and inquiry; collect the base fee and the recorded outcome bonus.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "rell-emergency-payment"
+      ],
+      "dialog": "RELL: The relief record and inquiry are complete. Your base fee is 1,800 CR. The audited station and evacuation outcome determines the additional payment. The real station status and casualties remain on the regional record.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "dialogByOutcome": [
+        {
+          "outcome": "station-saved",
+          "text": "RELL: Spindle Anchorage survived the passage. The 6,000 CR protection bonus brings your total to 7,800 CR. Its crews still have a home and a berth."
+        },
+        {
+          "outcome": "station-evacuated",
+          "text": "RELL: The anchorage is gone, but every registered evacuee is safe at Shelter Dock. The 3,000 CR evacuation bonus brings your total to 4,800 CR. Its wreck will remain on the chart."
+        },
+        {
+          "outcome": "station-lost",
+          "text": "RELL: The anchorage was lost and the manifest records casualties. Your completed recovery and inquiry earns the 1,800 CR base fee. There is no protection or full-evacuation bonus. The inquiry will protect future settlements."
+        }
+      ]
+    }
+  ],
+  "warningTour": {
+    "optional": true,
+    "availableAfterStage": "survey-train",
+    "expiresWhen": "hazard-encounter-resolved",
+    "evidence": "The three outer-watcher scans produce one zero-mass signed warning packet with trajectories, predicted impact bands and the refuge port. A rumour or repeated visit is not a second warning.",
+    "navigation": "Show an optional Warn neighbouring systems objective with three labelled destinations, current offers and plotted routes. Any order is allowed; the player may warn some, all or none. Return-to-Aermiori is always visible. Use current normal navigation and contact controls.",
+    "responses": "Require confirmation at the registered local main-station emergency contact. Reserve each system's available response once, persist its decision and dispatch receipt, and show the actual offer before confirmation. A busy reserve may offer fewer ships or decline; revisiting or reloading cannot reroll availability or create another group.",
+    "arrival": "Create the actual offered NPC ships under one dispatch identity. They depart from their home system, traverse their plotted route and assemble at Aermiori's outer watch with their remaining arrival estimate shown. They cannot affect the incident before arrival. Persist travel, arrival, loss and replacement-free group membership.",
+    "contribution": "Tugs physically deflect eligible heavy bodies; fighters intercept eligible fragments; rescue haulers carry real registered evacuees to Shelter Dock. They use the same collision, fragmentation and passenger rules. Helpful fire cannot simply remove rock mass or damage the station.",
+    "timing": "The tour fits the untimed preparation phase before the player confirms final readiness. After arming, a late warning trip uses the same active passage clock; display the estimated help arrival against remaining time and warn that it may be too late. An offer or departure is not an arrival.",
+    "reward": "Warnings improve the actual defence and evacuation, not the kill count or legal status. There is no separate repeatable cash or clue for asking each system.",
+    "destinations": [
+      {
+        "id": "iraeth-warning",
+        "galaxy": 5,
+        "system": 163,
+        "contact": "Iraeth Mining Cooperative",
+        "aidRole": "tug",
+        "maximumShips": 2,
+        "target": "iraeth-emergency-briefed",
+        "dialog": "MINING COOPERATIVE: Your watcher record confirms the strike corridor. We will check our active tow crews. The response screen shows the tugs we can release and their travel time; confirm to send the warning and reserve those crews."
+      },
+      {
+        "id": "reilieli-warning",
+        "galaxy": 5,
+        "system": 103,
+        "contact": "Reilieli Orbital Patrol",
+        "aidRole": "interceptor",
+        "maximumShips": 3,
+        "target": "reilieli-emergency-briefed",
+        "dialog": "ORBITAL PATROL: A verified fragment train is an emergency across this cluster. We can divert the available patrol shown here to the outer watch. They will intercept small threats once they arrive, rather than firing at the station."
+      },
+      {
+        "id": "siamaeth-warning",
+        "galaxy": 5,
+        "system": 207,
+        "contact": "Siamaeth Civil Relief",
+        "aidRole": "evacuation-hauler",
+        "maximumShips": 2,
+        "target": "siamaeth-emergency-briefed",
+        "dialog": "CIVIL RELIEF: Our haulers can help with people and supplies, not the heavy rocks. Confirm the offered ships to send them to Shelter Dock. Every passenger they carry will appear on the same rescue manifest."
+      }
+    ]
+  }
+}

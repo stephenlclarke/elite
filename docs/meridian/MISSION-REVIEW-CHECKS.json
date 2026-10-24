@@ -1,5 +1,5 @@
 {
-  "scope": "Static intended-design checks only; unresolved physical/source gaps remain in MISSION-COHERENCE-REVIEW.md",
+  "scope": "Static finished-game design/graph/custody checks after explicit review resolution; native integration and balancing remain unqualified.",
   "campaigns": 39,
   "campaignStages": 368,
   "explicitBranchVariants": 78,
@@ -16,295 +16,303 @@
   "clueSources": 64,
   "distinctClues": 64,
   "finaleSteps": 7,
-  "resolvableStructuredAssetReferences": 910,
+  "resolvableStructuredAssetReferences": 867,
   "portableManifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
   "declaredItemEffectAccountingPass": true,
   "physicalItemCompletenessCertified": false,
   "runtimeExecuted": false,
-  "openDesignFindings": [
-    "F01",
-    "F03",
-    "F05",
-    "F06",
-    "F07"
-  ],
+  "openDesignFindings": [],
   "campaignChecks": [
     {
       "id": "l337.assembly-of-orbits",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "502207cb497aeb317636bfb3fd7a50ddd72d071ee1dd3f5a32e70966e0ab81fb"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "16cab56b9c799b70f27d393ffdca67cbe755c849ab997b0b1535c9f8403be45f"
     },
     {
       "id": "l337.blue-reservoir",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "78e027861b45970c5e7a92ab09722cd786441958aa1940f6ef3e2eb93d614f6c"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "fd2536ce19d7c1db5019fb809c07e57559fa4016eae1f7b1095c7427d1af2c95"
     },
     {
       "id": "l337.borrowed-dawn",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "5e37031cbd5d243290d6490381cb779ba9f873930382f8da3a2fe05566c4f6e1"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "579aefdcf89fe82167b336b45ecfa1c4897889a70b1054126a16d624aa13f787"
     },
     {
       "id": "l337.borrowed-voice",
       "stages": 10,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "02ab787b6bac447cb3b6b1c6a14551de07b15ca31fdb3385de41bfbe6895963b"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "ac32637095e747fb6e1161110b7824212b3a43fd11caec57aa5052becaee33b4"
     },
     {
       "id": "l337.cold-reserve",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "73c8296534221a667991d98b60240aec07b90c53665a970aeaf67ea3d8a00928"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "bbcec8c67d53fb1b507cc19739143ec726b3c49488dfedd4aa3c1fb7fd4c6441"
     },
     {
       "id": "l337.courier",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "fc34030892d614ce29d6dee7215052a8cc23aeaada2803907add1d54c7548412"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "8d4363644e5b1f26561e68a23a30df421cce38173eea28e7d3cde560d75605f6"
     },
     {
       "id": "l337.false-colours",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "d76f001d3efea147c22ae55e408dde04a5949d3d27639607ff9fee5e3b159c33"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "969daa4fa8d32c016b395440ab5a75b1f27c9d0dcf5fd27a70266788a938abec"
     },
     {
       "id": "l337.fleet-of-neighbours",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "a894ac1e218598a3d45c26b6cb55a59534d012c0ffa2739d8ee39c8af80b7403"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "3d320a12de9686d1ea2173ed9f09e777e0e300815754883a27cd0f88e82b6f3e"
     },
     {
       "id": "l337.garden-in-transit",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "2bcd9b934fd5c720da86e1c2fdea43e311aff696f1d24e61aa110e562498a536"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "aec6ce5025f22b79081fed93e247a89f61537382bb4e1e507816589034643d2c"
     },
     {
       "id": "l337.glass-meridian",
       "stages": 9,
       "branchVariants": 0,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "716393a92e33dd3145f7d691cbd8afac2285c8c32824daaae36179c6d5f58191"
+      "peakDeclaredLoanMassTonnes": 1.008,
+      "definitionSHA256": "b52bb155353db9b8232565bf281cf7d533b763a90aa531fba77e197999ca4885"
     },
     {
       "id": "l337.guiding-light",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "a0b2d17c80863de0e1b54bd4f27eb55860304d9ad05df7e201b3b2bc7a40ef5a"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "e42e871bd5916cd22b673d8423d21bd584556d95cdfcfd8ff5b161d951a11187"
     },
     {
       "id": "l337.harbour-without-orders",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "c692d572415234b67075fef13565c19f32fb88adf1a986d1864bce041502d1de"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "51c63fc3968b18129181deb092d98cca66e1926f8435435b9362a5068df910e5"
     },
     {
       "id": "l337.hollow-manifest",
       "stages": 10,
       "branchVariants": 0,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "13c2b2246439ed9cf998e315a777bd6c434fd35c11b0b7a20d8abb10a84634af"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "b7a0801b93b926843c14c486e7ac4646c0f5a0a29971b6b35390abf0240520d2"
     },
     {
       "id": "l337.honest-circuit",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "ca01cfbe66f39150f8eeefc8d1acc019d279cebdfbedf7ba1f6a14489afe4236"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "c6dceee908098a84d8ff13bb08a63c2ac1a459e1c7c0e9f9446f6352b62c707a"
     },
     {
       "id": "l337.kind-distance",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "e239821f4f6f02320bb968217077c4bb4ce2a38d767cf8f3d4af2563e27ee31e"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "ac04f4bcdc4bb5ac3a39f0437a104e6cffb84c0ad3f669f32940edbd9dc654ed"
     },
     {
       "id": "l337.listening-frontier",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "3558cd624068d373e48c9e06f3a87bb0d2f88c28340ff6022e6208484c953cb0"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "038bb32b17ca4ac8fe9b6a80be2219fa96588acbeac92b58d53a3fff6ee68208"
     },
     {
       "id": "l337.long-return",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "619518978ce4b48e336f221365f2b0d4de00cbf1c67929958ffb96b178599943"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "bd5df1a851c8c21a5c6569d50fe3ccb9ede91a18307dc80f9a49ce48d4681ca7"
     },
     {
       "id": "l337.magnetic-orchard",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "b22425e8fdcc7f8f5abad86b25755b685fe0f11afc2a27f9a8923230870c8c53"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "8979fd4455efac0a35040e6b7aaf567d7e191c33d2941a3ce13509151cc1db2a"
     },
     {
       "id": "l337.measure-of-care",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "f8293c8a58045dfa51667ca0a55aa2374309048d0356f74abb67aad663f3dca5"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "956fc79bbd823ee06fc3505dc25d79099b399f14d38c8d6d46784a4abc0f9db2"
     },
     {
       "id": "l337.memory-atlas",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "77412c06627aa765cb607349878648a846253f508c01c2f537d7f2aa7bb58f79"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "c27119d67870fc50fe5d1d49a935960d5451d61dde9c0e4385bec804967c0762"
     },
     {
       "id": "l337.mutual-shelter",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "8a497ce69aab8b01bedeb1a34519af795606076c5d3581b5a218f10decebc6f5"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "e1d8f0df1bf8154b713b56159d36dd3c419ef3a25a378ce4faaefeefc9e67ccc"
     },
     {
       "id": "l337.open-measure",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "1bf763457d198e37777073befb13f7d13d434217469c8823b1c74c3d8619057d"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "81812feeb354708b65d6e6aa2102272a2dabfc3adbf0089872d02bb8fc4ad6f3"
     },
     {
       "id": "l337.open-shadow",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "6149910524b2f6ed9fa0e22fde2c3d12b47f74564d598cc8fcd5c8298cce62fd"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "f0ae454280998987f3c841fdc15a14b4d5ee4d66b1580cd1b29f0eb23d47e558"
     },
     {
       "id": "l337.passengers-horizon",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "274501f596a13371ea87323b9cc05f38044a6c9c4c9ccfddc11d847de6f3d17f"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "2c3b79aefb3907040e30a7527b9257c728a7a3776ed69e8699c39194ae49a102"
     },
     {
       "id": "l337.public-record",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "5f45f138332717378b4f59c1a97cb789b7f03bd3ce54fb681f8a904af211db02"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "10b0b61af36433c5a2fc9149ed92e9f2dfc7f6c96aad84b71ae727070c0241fb"
     },
     {
       "id": "l337.quiet-choir",
       "stages": 9,
       "branchVariants": 0,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "959ef3374e4d9da4c6c486c6198a9b8e116d9444392ebe6857207eeb45a94e70"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "b2c9b8ac388cbd251d29d27675c1863fef0aeacc864d4dd368c1ff14376ec461"
     },
     {
       "id": "l337.quiet-nursery",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "721122a74f18fb0ec0e8c886c4b37c452fbf550e7f40af0d5906e567b70b8b21"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "a79531d2acbc8d0aa5e0e5732c8e634eb3cfdc9f9bae77d0caf129b6c0914a7d"
     },
     {
       "id": "l337.rubble-covenant",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "c68b1bbbc9e84da350cfaa849503e3407d672289bb18b13866519ea8da1749bb"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "aafe7728b95ae5f461a3fe2a4d8d71d7a997c6dfc5500d17418deea0b9a2de7d"
     },
     {
       "id": "l337.shared-pulse",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "7992bdd231d2824274727501db3a66e4e0cfbccef2434308dcafeefe5ebbce98"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "2778d23266cafdf6190ef3760298cd64cfa31a43d2e9c1fe7918212ed3f3bb58"
     },
     {
       "id": "l337.shattered-wake",
       "stages": 11,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "352a0e46a197ded76581f8cf712201b3fc85f10cb28a8a2d64776f81d4c12304"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "7d9119802cc2d93e2c0486bfebd37e742dcccb7a9563ef6a43bb2cf8c10562d4"
     },
     {
       "id": "l337.small-lights",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "62681e41d429e9b0a69c56fbe37823cab0dbb1e5b7f94484857fe4e80468a8d8"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "dfee93680dc7158b2f8fad86d2cee8dd34edac62ea5909e386fe9e4b7281a1f3"
     },
     {
       "id": "l337.still-current",
       "stages": 12,
       "branchVariants": 4,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "a258bb5518ec94feead3e14c3dbede7cfa4a9a0cf314b41f65ae388bd413c78e"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "62f58dbb951f302e980559716c4ab1f8acbe3450fb21d81a71069ca9d0786fe9"
     },
     {
       "id": "l337.tithe-of-worlds",
       "stages": 14,
       "branchVariants": 6,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "3a502c87e0f72cd585cb6317544f462510169501261b555f135514eebf608816"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "1bd52c46100fed0f8dab338bbe45170b1c09728fdce2f8446f45f5c6073093f1"
     },
     {
       "id": "l337.uncounted-names",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "ef7c4b42ed6a5e52ca7702b8ab15e5aaa6d5bff98509ea969476bd4719ea0b2c"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "2e0292a6ae3ca08f67f70f0fbfc9a37ab7241221039c92cbb783c5692b39c382"
     },
     {
       "id": "l337.under-tow",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "bb1bbce178619002c96d7822bfe08aed60bf0f3af7beac5b4bd8dab3de97d0b1"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "f8703e17fda29b01b1b26e6bbeb432c3caccb8750f789a5782574a30b2c58910"
     },
     {
       "id": "l337.unfinished-map",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "3ce01a1255abbb5fb6d3eca9b4c4c57b5caeeaddc80fa3ae6b6f77ddee0a483e"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "db0e27e3441177d5c4f056e2bee629ef096919f61126f48c7d7bcfa03b453ad3"
     },
     {
       "id": "l337.warrant-ledger",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "e7804a032e595324aeb1ac477ddb4b323de0890702c3bd6a62ea0d0042f10665"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "8af2a5c4b14476a4ee1a2d2646beea7128b69be9b0aa4ac6104f6c2804fa19f3"
     },
     {
       "id": "l337.wayfarer-exchange",
       "stages": 14,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "f2dc336ff52eaaa1b4f61a913d17841d4f5016edf552a2a1d902891a3e04e554"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "69aea9bf209dc97e269c1bd8a88466add0ff740f8e4b4d0c97bebabe2308175b"
     },
     {
       "id": "l337.witness-window",
       "stages": 9,
       "branchVariants": 2,
-      "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "c11bac6ccdc20d02e46cf74100e0a4719781769b90464916e776fe8ae553da19"
+      "peakDeclaredLoanMassTonnes": 1.0,
+      "definitionSHA256": "07e180d89936720093b53f3a2294daefc3a4ac2bd60df4b5f5c2618773397f17"
     }
   ],
   "resolvedPortableOmissions": [
     "F02",
     "F04"
-  ]
+  ],
+  "resolvedDesignFindings": [
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07"
+  ],
+  "physicalItemCompletenessNote": "All declared effects balance, including C01 original8kg/final archive; this does not certify every live physical provider.",
+  "additionalRecoveryObjectiveRows": 640,
+  "guaranteedContinuityProfiles": 64,
+  "distinctPhysicalProfiles": 31,
+  "structuredReferenceCountScope": "file fields under assets in42 canonical campaign/family/finale JSON definitions; includes repeated references, not unique asset count"
 }

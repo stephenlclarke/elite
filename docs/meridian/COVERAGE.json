@@ -10,5 +10,11 @@
   "flyableDefinitions": 162,
   "missionGraphics": 758,
   "newShipReferenceImages": 171,
-  "oracleBytes": 1556516
+  "oracleBytes": 1842355,
+  "distinctPhysicalProfiles": 31,
+  "guaranteedClueContinuityProfiles": 64,
+  "recoveryAlternativesPerSource": 2,
+  "additionalRecoveryDesignObjectives": 640,
+  "canonicalMissionAndGameplayRoot": "missions/",
+  "ledgerSnapshotReceipt": "implementation/LEDGER-SNAPSHOT.json"
 }

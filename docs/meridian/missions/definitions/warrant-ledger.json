@@ -1,0 +1,469 @@
+{
+  "id": "l337.warrant-ledger",
+  "missionID": "warrant-ledger",
+  "title": "The Warrant Ledger",
+  "originKind": "new-original",
+  "subtitle": "VOSS: A reward number is not evidence. A duplicate casualty cannot authorise another victim.",
+  "contacts": [
+    "Marshal Nera Voss",
+    "Nia Toren"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Iaririn in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.",
+  "story": "Several bounty issuers have reused the same casualty evidence to obtain incompatible warrants. One convoy carries a real armed suspect and two wrongly listed witnesses. The commander audits the evidence chain, protects a neutral hearing and chooses simultaneous public correction or a protected restitution process.",
+  "playerBriefing": "VOSS: A reward number is not evidence. A duplicate casualty cannot authorise another victim.",
+  "rewardCR": 8200,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The unwritten warrant.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "warrant-ledger-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "warrant-ledger-reference",
+    "propForm": "ledger",
+    "palette": "slate-orange",
+    "stageObjects": [
+      "warrant-ledger-reference",
+      "warrant-ledger-reference",
+      "warrant-ledger-reference",
+      "warrant-ledger-reference",
+      "SH061",
+      "warrant-ledger-reference",
+      "warrant-ledger-reference",
+      "warrant-ledger-reference",
+      "warrant-ledger-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.warrant-ledger/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "warrant-ledger-trace",
+    "label": "The unwritten warrant",
+    "journalText": "Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/warrant-ledger-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "briefing": {
+      "id": "warrant-ledger",
+      "file": "../../assets/missions/illustrations/warrant-ledger.png",
+      "sha256": "61040a85464dd4ca59dd316ebc8a4a170097707c1fb6326cc7988b36ffb60c33",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Marshal Nera Voss",
+        "portrait": {
+          "id": "nera-voss",
+          "file": "../../assets/missions/portraits/nera-voss.png",
+          "sha256": "ef89437d6acf73621448ed87545203708666b3f84902e5f1457a6f467fdd2232",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Nia Toren",
+        "portrait": {
+          "id": "nia-toren",
+          "file": "../../assets/missions/portraits/nia-toren.png",
+          "sha256": "edd32ff6ae3bab7d344bf4a65ea90cc375ee3f3de728f20c8309e5da4a9dc842",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "warrant-ledger-reference",
+        "asset": {
+          "id": "warrant-ledger-reference",
+          "file": "../../assets/missions/props/warrant-ledger-reference.png",
+          "sha256": "c1bb4183dfada678ee6492fc4f17064ce56800a651a34689aa39c2d3697c3afb",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "warrant-ledger/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/warrant-ledger-choose-settlement-plan-a.png",
+        "sha256": "cf4dc611ee140fbdb302a0e13a193bafa8337a52e67862f46575eff03a2134e0",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "warrant-ledger/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/warrant-ledger-choose-settlement-plan-b.png",
+        "sha256": "9c6fc2c33f60baced89d2ec2dad14d470f5d9447ed6de75be8201c59f26194cd",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 7,
+      "system": 3,
+      "objective": "Accept The Warrant Ledger at Iaririn.",
+      "dialog": "Marshal Nera Voss: Several bounty issuers have reused the same casualty evidence to obtain incompatible warrants. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S003",
+      "locationName": "Iaririn",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/accept",
+        "file": "../../assets/missions/stages/warrant-ledger/accept.png",
+        "sha256": "6001e7c39d0c292493d961c8ba1fa5046dcfb6c148cc5f7c77473f8b6b9aa169",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 7,
+      "system": 3,
+      "objective": "Collect the identified one-tonne reference instrument from Marshal Nera Voss.",
+      "dialog": "Marshal Nera Voss: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S003",
+      "locationName": "Iaririn",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "warrant-ledger-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/collect-reference",
+        "file": "../../assets/missions/stages/warrant-ledger/collect-reference.png",
+        "sha256": "fdab719629807be551c869df84736b3bffa07ebefb8c0c20f901ddb7362b74e0",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 7,
+      "system": 148,
+      "objective": "Read three actual issuer-signed warrant records; compare their distinct evidence references.",
+      "dialog": "VOSS: A reward number is not evidence. A duplicate casualty cannot authorise another victim.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "warrant-ledger-survey-1",
+        "warrant-ledger-survey-2",
+        "warrant-ledger-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S148",
+      "locationName": "Faera",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/survey",
+        "file": "../../assets/missions/stages/warrant-ledger/survey.png",
+        "sha256": "6fa3204374cc3631d71513e6360c264bb767d5eddabf704b5f6aaf7b1ed1f447",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 7,
+      "system": 187,
+      "objective": "Compare both victim records against the original independent incident seal and retain both conflicting claims.",
+      "dialog": "TOREN: The dates prove reuse. Keep the original statements and their consent restrictions intact.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "warrant-ledger-work-port",
+        "warrant-ledger-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S187",
+      "locationName": "Neraen",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/field-work",
+        "file": "../../assets/missions/stages/warrant-ledger/field-work.png",
+        "sha256": "a6693f668a42801110f1fd0d24a3c4753af073c34d260de7d36547e4d152d358",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 7,
+      "system": 137,
+      "objective": "Verify actual safe transit and living reception of the consenting witness tender to the protected hearing berth.",
+      "dialog": "VOSS: A living received witness is our objective. Unrelated wanted kills do not advance it.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "warrant-ledger-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S137",
+      "locationName": "Lorion",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/independent-witness",
+        "file": "../../assets/missions/stages/warrant-ledger/independent-witness.png",
+        "sha256": "4e2fe88de5238d1dc9d3209598d528c7883ab40a8047e0530ff503e8069e8ce8",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 7,
+      "system": 137,
+      "objective": "At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.",
+      "dialog": "Marshal Nera Voss: Your conflicting-evidence adjudication evidence is ready. Our arrived delegates have the signed mandate to choose here. Either publish corrected warrants simultaneously or use protected restitution hearings. Compare the actual tests and consequences before confirming; closing this view chooses neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "warrant-ledger-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Publish corrected warrants simultaneously",
+        "Use protected restitution hearings"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G08-S137",
+      "locationName": "Lorion",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/choose-settlement",
+        "file": "../../assets/missions/stages/warrant-ledger/choose-settlement.png",
+        "sha256": "1df24fe2298386eb0dfcba31fcf077b4e3358f4ae14d1fb8a70440d0dd6e5fb8",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 7,
+      "system": 187,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Marshal Nera Voss: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "warrant-ledger-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "warrant-ledger-plan-a-physical-proof",
+            "warrant-ledger-plan-a-receiving-proof"
+          ],
+          "objective": "Verify issuer revocations and the witness safe-conduct register.",
+          "dialog": "VOSS: No issuer may keep the false warrant active during publication.",
+          "gossip": "The Warrant Ledger: Publish corrected warrants simultaneously."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "warrant-ledger-plan-b-physical-proof",
+            "warrant-ledger-plan-b-receiving-proof"
+          ],
+          "objective": "Verify the sealed hearing record and compensated witness custody.",
+          "dialog": "TOREN: Protected testimony still needs an independent auditable receipt.",
+          "gossip": "The Warrant Ledger: Use protected restitution hearings."
+        }
+      ],
+      "locationKey": "G08-S187",
+      "locationName": "Neraen",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/apply-settlement",
+        "file": "../../assets/missions/stages/warrant-ledger/apply-settlement.png",
+        "sha256": "22059f3f8057254ef7ccf3469b9d9f8ff603eb24dbfdcbcc2f44fe2964cfb303",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 7,
+      "system": 3,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Marshal Nera Voss: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S003",
+      "locationName": "Iaririn",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "warrant-ledger-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/return-and-audit",
+        "file": "../../assets/missions/stages/warrant-ledger/return-and-audit.png",
+        "sha256": "4648d975f6abe3730f0716ebcbd0157906c85ef9a029b889dc80794feddff7ce",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 7,
+      "system": 3,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Marshal Nera Voss: The independent audit is complete. Your fee is 8200 CR. The operators retain the chosen settlement and their original records.\n\nMarshal Nera Voss: The audit has left one anomaly that belongs to neither side. Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S003",
+      "locationName": "Iaririn",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.warrant-ledger/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "warrant-ledger/close-case",
+        "file": "../../assets/missions/stages/warrant-ledger/close-case.png",
+        "sha256": "4f17cbbce36a736068be7d211506b66b0c3f617e61e93848f2a2bb2d58426db1",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ],
+  "gameplayProfileRef": "../gameplay/campaign-profiles.json#/profiles/warrant-ledger",
+  "oracleDesignRevision": "review-resolution-2026-10-24-v2",
+  "delegationPolicy": "Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.",
+  "recoveryPolicyRef": "../gameplay/recovery-policy.json",
+  "mainQuestContinuity": "Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival."
+}

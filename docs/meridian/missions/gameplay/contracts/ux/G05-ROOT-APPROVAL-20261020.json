@@ -1,0 +1,41 @@
+{
+  "status": "ROOT_APPROVED_FOR_ISOLATED_IMPLEMENTATION",
+  "ledgerItem": "G05 / M09 / F33 / F35 / K08 / K11",
+  "definition": "l337.contract/orbital-outlook",
+  "draft": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G05-ORBITAL-OUTLOOK-COMPLETE-JOURNEY-HANDOFF-20261020.md",
+  "draftSHA256": "492bae53c032206d9b2abff11253095eb6041fe445e66b2b22f43c0a6cdec62b",
+  "authoredRequirements": "Two distinct genuine consenting native people, two real cabins, three ordered actual views, same living people returned, zero cargo/deposit, untimed, reward650+110L+80H and once-only clue.",
+  "approvedNewDefaults": {
+    "route": "Avenor7 -> Renas185 -> Avenor7; L2 H0;870CR on actual return reception",
+    "batch": "New finite two-person G05 batch. Author freezes original names, batch and exact actor declarations before tests; G04 people cannot substitute.",
+    "views": "Three distinct collision-clear stationary noncombat native mission markers at Renas using an existing supported template; no new renderer/hull framework. Author freezes exact identities and poses before tests.",
+    "interaction": "Automatic observation of the NEXT marker through existing fitted targeting computer in forward view; existing controls unchanged.",
+    "dwellSeconds": 12,
+    "surfaceRangeNativeUnits": [
+      250,
+      1500
+    ],
+    "maximumBoresightDegrees": 2,
+    "visibility": "Exact marker must be nearest actual GameplayRaycast hit.",
+    "interval": "Only contiguous actual native post-motion intervals >0 and <=0.1 seconds. No supplied elapsed time, render/Lua/read progress or backfill.",
+    "pauseAndLoad": "Pause freezes; geometry/target/visit/equipment discontinuity resets unfinished view. Completed views persist; cold load resets only unfinished dwell.",
+    "publication": "Existing actor publisher; completed native receipt/progress atomic; writer refusal cannot roll back physics, invent unobserved time or duplicate rewards.",
+    "saveVersions": {
+      "normal": 43,
+      "alien": 44,
+      "policy": "Closed independent G05-only and composed G02/G04/G05 claims; lower versions remain strict; no fake predecessor claims."
+    }
+  },
+  "ownership": {
+    "author": "G3 / MBA, one isolated owner for the entire complete journey including the six listed frame/save/loader/pin hunks",
+    "integrator": "G1 only",
+    "provisionalPaths": 25,
+    "policy": "Exact25 listed in draft approved in isolated checkout based on integrated G04. No active canonical edits. Preserve G04 closed policy. Report any demonstrated extra path before editing; routine names/template/pose choices are author decisions within existing machinery, not extra approval loops."
+  },
+  "handoff": "Meaningful focused unit tests and native pack CLI, one independent full-boundary review, exact source freeze and whole-process closure. Reuse unchanged G04 proof; no broad integration/performance sweep or scan-only substitute.",
+  "queuedSuccessors": [
+    "G08 real non-EMP capsules",
+    "G14 registered evacuation/survivor producer"
+  ],
+  "priority": "M01 remains primary on main Mac; this is the isolated MBA stream."
+}

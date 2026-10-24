@@ -1,0 +1,240 @@
+# Private campaign design schema; not installed in the game.
+id = "l337.witness-window"
+missionID = "witness-window"
+title = "The Witness Window"
+originKind = "new-original"
+subtitle = "TOREN: Preserve evidence without turning its owner into a target."
+contacts = ["Coordinator Sera Dain", "Nia Toren"]
+ships = ["SH001", "SH061"]
+offer = "At Fonogom in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold."
+story = "A shift worker witnessed an avoidable docking injury, but an arbitration system will erase the recording when its routine privacy window expires. The worker wants protection without surrendering control of testimony. The commander verifies consented copies, establishes a safe hearing and chooses an independently witnessed sealed archive or a public anonymised finding."
+playerBriefing = "TOREN: Preserve evidence without turning its owner into a target."
+rewardCR = 8100
+completionBenefit = "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The frame nobody recorded."
+branchPolicy = "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue."
+items = [{ id = "witness-window-reference", massTonnes = 1, acquireStage = "collect-reference", consumeStage = "return-and-audit" }]
+interactionNotes = ["Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.", "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.", "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.", "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."]
+authoringArt = { propID = "witness-window-reference", propForm = "verifier", palette = "ice-blue", stageObjects = ["witness-window-reference", "witness-window-reference", "witness-window-reference", "witness-window-reference", "SH061", "witness-window-reference", "witness-window-reference", "witness-window-reference", "witness-window-reference"] }
+schema = "l337-mission-design/1"
+version = "1.0.0"
+license = "MIT"
+status = "Private original story and stage design; not a runnable pack for the current engine"
+authoredSource = "Original L337 narrative, objectives, dialogs, locations and rewards"
+terminalStage = "complete"
+rewardReceipt = "l337.witness-window/final-payment"
+rewardPolicy = "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue."
+identityPolicy = "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type."
+persistencePolicy = "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported."
+engineWork = "Implement/verify the event contracts in ENGINE-CONTRACT.md before declaring this pack playable. Current native special-case bindings are superseded by mission-scoped events in the proposed version."
+completionClue = { questID = "l337.unwritten-route", clueID = "witness-window-trace", label = "The frame nobody recorded", journalText = "Between two authentic recording frames is an inward-shaped phase imprint with no camera source.", massTonnes = 0, uniquePerSource = true, receipt = "l337.unwritten-route/clue/witness-window-trace", awardWithSuccessfulTerminal = true }
+artwork = { manifest = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json", manifestSHA256 = "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904", briefing = { id = "witness-window", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/illustrations/witness-window.png", sha256 = "41fb6a369adfdca836fe51ba4c4e354f715b667c951c5ff6ad31524ec616a14f", visibility = "Current mission briefing" }, contacts = [{ name = "Coordinator Sera Dain", portrait = { id = "sera-dain", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/sera-dain.png", sha256 = "00fbf43416f761618a897264b8fd4e30df7f7ff47736f27c1c4d66fedfdcb787", visibility = "Current mission briefing" } }, { name = "Nia Toren", portrait = { id = "nia-toren", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/nia-toren.png", sha256 = "edd32ff6ae3bab7d344bf4a65ea90cc375ee3f3de728f20c8309e5da4a9dc842", visibility = "Current mission briefing" } }], ships = [{ id = "SH001", asset = { id = "SH001", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH001.png", sha256 = "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }, { id = "SH061", asset = { id = "SH061", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH061.png", sha256 = "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }], items = [{ id = "witness-window-reference", asset = { id = "witness-window-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/props/witness-window-reference.png", sha256 = "403b2b686a3259db2487688fd03076459d27616ed4137bc54b17020016c963d8", visibility = "Current mission briefing" } }], outcomes = [{ id = "witness-window/choose-settlement/plan-a", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/witness-window-choose-settlement-plan-a.png", sha256 = "1ed9c55ff9f18fb1c45156be6205d531e6d1e71346967c849129b90bfcd4bf9a", visibility = "Only the actual committed branch" }, { id = "witness-window/choose-settlement/plan-b", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/witness-window-choose-settlement-plan-b.png", sha256 = "1508965d95947c87f4f014ea62a0c7fdc8ec20a5e13dedeaed926fe9299d1def", visibility = "Only the actual committed branch" }] }
+
+[[stages]]
+id = "accept"
+galaxy = 3
+system = 234
+objective = "Accept The Witness Window at Fonogom."
+dialog = "Coordinator Sera Dain: A shift worker witnessed an avoidable docking injury, but an arbitration system will erase the recording when its routine privacy window expires. Review the complete survey, loan and receiving requirements before confirming."
+event = "mission_contact_confirmed"
+requiredTargets = ["accept-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G04-S234"
+locationName = "Fonogom"
+next = "survey"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/accept"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/accept", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/accept.png", sha256 = "bba512036f26513089a94d60a92c6d30945cdc83fbd44642b38544bfd65f6854", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "survey"
+galaxy = 3
+system = 181
+objective = "Compare three authorised recording receipts without revealing the witness's private location."
+dialog = "TOREN: Preserve evidence without turning its owner into a target."
+event = "entity_scan_completed"
+requiredTargets = ["witness-window-survey-1", "witness-window-survey-2", "witness-window-survey-3"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G04-S181"
+locationName = "Anlanom"
+next = "collect-reference"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/survey"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/survey", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/survey.png", sha256 = "1095c34f27d174bd490e44692e4e449a99f076b26e3b798f3212b48f471c4aa9", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "collect-reference"
+galaxy = 3
+system = 234
+objective = "Collect the identified one-tonne reference instrument from Coordinator Sera Dain."
+dialog = "Coordinator Sera Dain: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity."
+event = "mission_contact_confirmed"
+requiredTargets = ["collect-reference-verified"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G04-S234"
+locationName = "Fonogom"
+next = "field-work"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/collect-reference"
+itemEffects = [{ kind = "add", item = "witness-window-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/collect-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/collect-reference.png", sha256 = "51cab44bf36570554e1112b3c37d556d7b93937c08067857a00d7cc2ce5ba330", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "field-work"
+galaxy = 3
+system = 41
+objective = "Verify two independent custody keys with the loaned witness verifier."
+dialog = "DAIN: Neither key alone may reveal testimony or erase it."
+event = "mission_action_confirmed"
+requiredTargets = ["witness-window-work-port", "witness-window-work-starboard"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G04-S041"
+locationName = "Borbovar"
+next = "independent-witness"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/field-work"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/field-work", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/field-work.png", sha256 = "d7324e23b13eee821044850ddd662198e40b959fe811e6dbf88e4a1c66d66564", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "independent-witness"
+galaxy = 3
+system = 205
+objective = "Escort the consenting witness tender to the protected hearing berth."
+dialog = "DAIN: Actual safe reception matters more than a reassuring status word."
+event = "escort_arrived"
+requiredTargets = ["witness-window-witness-received"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G04-S205"
+locationName = "Bogolan"
+next = "choose-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/independent-witness"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/independent-witness", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/independent-witness.png", sha256 = "8c43a528a82b4f4ad43688f97e67bcfbb9a3947f268c18b2a98538525b6b143d", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "choose-settlement"
+galaxy = 3
+system = 234
+objective = "Choose the verified settlement with the consenting operators."
+dialog = "Coordinator Sera Dain: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither."
+event = "mission_choice_confirmed"
+requiredTargets = ["witness-window-settlement-choice"]
+interactionItemMassTonnes = 1
+choices = ["Keep testimony in an independently witnessed sealed archive", "Publish an anonymised safety finding"]
+choiceIDs = ["plan-a", "plan-b"]
+locationKey = "G04-S234"
+locationName = "Fonogom"
+next = "apply-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/choose-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/choose-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/choose-settlement.png", sha256 = "ce4ad33bec5c41b2c8b39ea38d9035af5fa531e48e2be0c8f4cb016149f73ab3", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "apply-settlement"
+galaxy = 3
+system = 41
+objective = "Verify both independent proofs for the selected settlement."
+dialog = "Coordinator Sera Dain: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof."
+event = "mission_action_confirmed"
+requiredTargets = ["witness-window-settlement-summary"]
+interactionItemMassTonnes = 1
+choices = []
+branchStage = "choose-settlement"
+branchVariants = [{ choiceID = "plan-a", event = "mission_action_confirmed", requiredTargets = ["witness-window-plan-a-physical-proof", "witness-window-plan-a-receiving-proof"], objective = "Verify both custody signatures and the witness's revocation control.", dialog = "TOREN: Protection is not a transfer of ownership.", gossip = "The Witness Window: Keep testimony in an independently witnessed sealed archive." }, { choiceID = "plan-b", event = "mission_action_confirmed", requiredTargets = ["witness-window-plan-b-physical-proof", "witness-window-plan-b-receiving-proof"], objective = "Verify the anonymisation audit and corrected docking procedure.", dialog = "DAIN: Warn the next crew without exposing this one.", gossip = "The Witness Window: Publish an anonymised safety finding." }]
+locationKey = "G04-S041"
+locationName = "Borbovar"
+next = "return-and-audit"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/apply-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/apply-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/apply-settlement.png", sha256 = "83817db38fcf3feff5213f377bdb28c24ff9df90d5cdd27eb7b130b034bbdd29", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "return-and-audit"
+galaxy = 3
+system = 234
+objective = "Return the reference instrument and confirm all physical receiving and settlement receipts."
+dialog = "Coordinator Sera Dain: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case."
+event = "mission_contact_confirmed"
+requiredTargets = ["return-and-audit-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G04-S234"
+locationName = "Fonogom"
+next = "close-case"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/return-and-audit"
+itemEffects = [{ kind = "remove", item = "witness-window-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/return-and-audit", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/return-and-audit.png", sha256 = "53ba32e376826fa1020ac05d2d2b820de709f6e25e41611313830cae0d524702", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "close-case"
+galaxy = 3
+system = 234
+objective = "Confirm successful completion, the recorded settlement and the once-only fee."
+dialog = "Coordinator Sera Dain: The independent audit is complete. Your fee is 8100 CR. The operators retain the chosen settlement and their original records.\n\nCoordinator Sera Dain: The audit has left one anomaly that belongs to neither side. Between two authentic recording frames is an inward-shaped phase imprint with no camera source. It is preserved in your journal for the AI at PLUGH."
+event = "mission_contact_confirmed"
+requiredTargets = ["close-case-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G04-S234"
+locationName = "Fonogom"
+next = "complete"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.witness-window/close-case"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "witness-window/close-case", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/witness-window/close-case.png", sha256 = "76d3d87f59838892e3f8bc2b748bfcc50c03f9517cbd49b2786e354ae6436d7c", visibility = "Mission stage briefing and completed history" }

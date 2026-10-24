@@ -2,7 +2,7 @@
 
 This is the complete, spoiler-rich definition of the intended finished L337 game. Its subject is the game the player experiences: its universe, decisions, physical rules, equipment, ships, stories and endings. The campaign, family and ship identifiers are stable references. The numerical tables and mission-specific rules make the description suitable for checking whether the finished game behaves as intended.
 
-All documents, definitions, models and images in this oracle live under `docs/meridian/`. The complete mission narratives follow the gameplay review; the new L337 ship reference is the final section. [Every mission graphic](MISSION-ARTWORK.md), [structured definitions](definitions/), [art provenance](ASSET-PROVENANCE.json) and [coverage inventory](COVERAGE.json) accompany this document. The artwork and finale reveal all spoilers; the player's in-game gallery obeys discovery and mission progress.
+All documents, definitions, models and images in this oracle live under `docs/meridian/`. The complete mission narratives follow the gameplay review; the new L337 ship reference is the final section. [Every mission graphic](MISSION-ARTWORK.md), [structured definitions](missions/), [art provenance](ASSET-PROVENANCE.json) and [coverage inventory](COVERAGE.json) accompany this document. The artwork and finale reveal all spoilers; the player's in-game gallery obeys discovery and mission progress.
 
 ## The game the commander plays
 
@@ -22,11 +22,11 @@ The oracle uses the latest explicit player-facing design decisions first, follow
 
 | Rule | Finished-game value or precedence | Definition source |
 | --- | --- | --- |
-| Original base shop prices and laser work rates | The 14-entry L337 equipment schedule below supplies original base values where no later component rule replaces it. | `references/original-equipment.json` |
-| Energy module grades | Basic/Intermediate/Advanced/Elite recharge is 1/2/3/4 times hull-native recharge, with stock capacity 1 times hull-native energy. These values replace the older 1.65/2.35 energy-unit proposal. | `references/EquipmentModuleTemplates.swift` and `references/EQUIPMENT-MODULES.md` |
-| ECM activation | 10 energy, fitted hardware, undocked, sufficient live reserve and no existing own ECM field. This supersedes the earlier 22-energy proposal. | `references/TARGETING-COMPUTERS.md` |
-| Base laser rates | Pulse 38, Beam 62, Mining 22 and Military 91 damage units/s; their energy and heat rates are listed below. Mounted tool identity and mission shield factors remain separate. | `references/original-equipment.json` |
-| Cabin unit | Each purchased module occupies 5 tonnes and one equipment unit. Packed stasis has 20 places; greater comfort provides fewer places. | `references/PassengerCabinGrades.swift` |
+| Original base shop prices and laser work rates | The 14-entry L337 equipment schedule below supplies original base values where no later component rule replaces it. | [gameplay reference](missions/gameplay/references/original-equipment.json) |
+| Energy module grades | Basic/Intermediate/Advanced/Elite recharge is 1/2/3/4 times hull-native recharge, with stock capacity 1 times hull-native energy. These values replace the older 1.65/2.35 energy-unit proposal. | [gameplay reference](missions/gameplay/references/EquipmentModuleTemplates.swift) and [gameplay reference](missions/gameplay/references/EQUIPMENT-MODULES.md) |
+| ECM activation | 10 energy, fitted hardware, undocked, sufficient live reserve and no existing own ECM field. This supersedes the earlier 22-energy proposal. | [gameplay reference](missions/gameplay/references/TARGETING-COMPUTERS.md) |
+| Base laser rates | Pulse 38, Beam 62, Mining 22 and Military 91 damage units/s; their energy and heat rates are listed below. Mounted tool identity and mission shield factors remain separate. | [gameplay reference](missions/gameplay/references/original-equipment.json) |
+| Cabin unit | Each purchased module occupies 5 tonnes and one equipment unit. Packed stasis has 20 places; greater comfort provides fewer places. | [gameplay reference](missions/gameplay/references/PassengerCabinGrades.swift) |
 | Missing original-hull crew numbers | E01 is a labelled design estimate using the new hull's own size tier, cargo and equipment budget. A previous game's ship with the same SH number is never evidence for a new L337 hull. | Ship-reference estimate rule below |
 | Physical model units | A declared metre contract is used as declared. Other model dimensions are source-geometry dimensions, not inferred metres. A normalised reference picture cannot author a physical clearance. | Exact model JSON and per-image source provenance |
 
@@ -68,7 +68,7 @@ Campaign numbers identify stories; milestone numbers describe finished-product c
 | Explore the complete career | Use actual intergalactic travel and refuelling to visit all eight galaxies and complete all 64 distinct clue sources. | Trade, repeat services and fabrication remain available alongside stories. A collected source clue survives later failed jobs and hull changes. |
 | Resolve the mystery | With all 64 clues, decode at PLUGH, complete the four flight objectives in order, defeat the unique Medusa, then obtain the later AI reconstruction. | Fabrication access precedes a separate paid shipyard purchase; neither the defeat nor reconstruction grants a free hull. |
 
-The full 64-clue finale includes passenger, financial, mining/salvage, tutorial and designated hostile-combat work; the present base set does not define a wholly pacifist shortcut. No single hull is prescribed for the whole career. Affordable basic work must remain available before specialist purchases, and genuine failures must have an honest route to future eligible work; unresolved source-stock details are identified in the [mission coherence review](MISSION-COHERENCE-REVIEW.md), rather than assumed into existence.
+The direct source jobs include passenger, financial, mining/salvage, tutorial and designated hostile-combat work. A successful independent continuity inquiry can recover an otherwise unavailable source clue without completing or rewarding its failed original job. This explicit final-game rule guarantees that ordinary source failure cannot permanently lock the overall main mission. No single hull is prescribed for the whole career. Affordable basic work must remain available before specialist purchases, and genuine failures use the explicitly funded, loss-preserving follow-up rules in the [recovery policy](missions/gameplay/recovery-policy.json). These new design rules still require native implementation.
 
 Structured galaxy integers use zero-based identities (0-7); player labels and `G01`-`G08` location keys are one-based. System identities stay 0-255, with PLUGH separately at 256. For example, finale `galaxy: 4` means displayed Galaxy 5. A mission's original source ID, such as `l337.courier` for Signed Passage, is stable identity rather than another mission or an extra clue.
 
@@ -349,9 +349,115 @@ The following is a spoiler-complete review. A ship listed for a mission is a sto
 | C38 Signed Passage | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 4,300 |
 | C39 The Guiding Light | SH001 Mule, SH061 Haflinger | distinct survey; serial reference loan and orbital work; consenting tender escort; two verified settlements | 9 | 5,700 |
 
+## Finished-game mission operations and recovery
+
+This is the controlling review-resolution specification, alongside [the gameplay description](missions/GAMEPLAY.md) and [canonical definitions](missions/definitions). It resolves the user-supplied review of 24 October 2026. Its new numbers are explicit project estimates for implementation and play balancing. They are not recovered Elite rules or evidence of implemented behaviour. The [mechanics audit](GAME-MECHANICS-SUPPORT.md) records the separately frozen runtime baseline.
+
+### Rule authority and implementation inputs
+
+Use the latest explicit human scope and this resolution first, followed by the canonical campaign/family/finale JSON, accepted later closed operation contracts, and original authoring sources. Frozen copies of old engine descriptions provide architecture and provenance; their retired missions and old data-only recorder rules do not override current original content. If a numerical profile remains unspecified, record that gap and close it explicitly before claiming native acceptance. An authored TOML or JSON document is not automatically a loadable runtime pack.
+
+Every playable operation is in space or at an orbital station. Any story recipient on a planet uses an authorised orbital receiving delegate. No ground/on-foot stage is an implementation requirement. All 39 original campaigns, 25 contract/tutorial/service families and the seven-step Unwritten Route remain distinct. Historical Elite/Frontier/Oolite research is reference material, not additional finished-game content.
+
+### C09-C39 distinct operations
+
+[The 31 physical profiles](missions/gameplay/campaign-profiles.json) join each mission's existing survey, work, witness and selected-branch target IDs. Each adds a different measured problem and two different settlement tests. The familiar stage wrapper does not itself prove success. Pressure minima, illumination stops, arbitration, signature replay, mass conservation, climate, custody, navigation uncertainty, water flow, physical berth exclusion, listening schedules, towing load, stock response and accessible interfaces must use their respective producers.
+
+The reference loan is collected at the issuer before departure. Its original one-tonne serial identity stays aboard through work, witness and branch tests; its later return is mandatory. A sealed culture reference is neither silently installed nor consumed. External fixtures, cells, replacement parts and reserve kits are separate finite source-owned objects. Small Lights requires four distinct kits: two become installed repairs and two remain reserve stock. One kit cannot satisfy both uses.
+
+Independent witnesses travel concurrently with field work in most profiles; five actual escort profiles require accompanying the journey. Nine internal save stages are presented as three to six mission-specific activity phases, rather than nine repeated contact screens. See each profile's `journalPhases`, `presentationPolicy` and `witness.scheduling`.
+
+After the actual independent witness arrives at its named receiving station, the player meets the arrived authorised operator delegates there to choose a settlement. Delegates receive a signed limited mandate before departure; their actual arrival is required. This removes an unnecessary issuer round trip. Return to the original issuer once for the loan audit and final payment. No remote conversation manufactures a work, escort or receiving receipt.
+
+Foundation, standard and advanced profile labels are recommendations, not mandatory campaign order or hidden rank gates. Offer previews show route, cargo, tool/cabin needs, branch consequences and any real incident clock. New commanders retain low-entry trade, delivery and training income. The direct reward-bearing jobs retain actual lawful designated combat. The separately declared continuity inquiry can recover their underlying source clue without falsely completing those combat jobs. This is an explicit design change required by the human's guarantee that the overall main mission stays completable.
+
+### Deterministic physical fixtures and tests
+
+The following placement defaults are new project estimates. They provide reproducible implementation fixtures, not claims about existing renderer scale. Native integration must use calibrated metres for field work, hull clearance, docking and collision; do not equate an uncalibrated mesh unit with a metre.
+
+For each current stage, bind its actual galaxy and system from its definition. Define the local fixture frame from the station's simulation position and orientation at first activation, then persist that inertial frame. Place an authorised work service assembly 20,000 metres along its outward launch direction and 5,000 metres to its right, beyond the doorway approach. If that location intersects a real solid or protected corridor, search successive 5,000-metre offsets to the right until the whole assembly and a 2,000-metre safety envelope fit; refuse activation with a visible reason if none fits. Persist the selected position; do not move the assembly with a later station rotation or load. Actual collision bodies remain the authority.
+
+Bind the three survey targets to real fixture sockets at local coordinates (-300,0,0), (0,100,0), (300,0,0) metres and the two work sockets at (-200,0,200), (200,0,200). These are test-fixture estimates. A socket is a real tagged component on its parent apparatus, with collision/occlusion and ownership. It cannot float through a solid or become a mission marker that ignores the actual mesh. Register the two selected branch proof sockets on that same assembly. Where the story requires a real original rock, vehicle, relay or berth, the component attaches to that actual object and its measured position replaces the default; fixtures do not duplicate a living person, carrier or pre-existing station.
+
+Survey defaults require the same exact target, front view, unobstructed nearest solid surface, aim within two degrees and 12 continuous qualified seconds at the profile's 250-1,500 native-unit scan range. These inherited scan units are distinct from the calibrated field-work metre envelope. Reset an unfinished survey dwell after interruption or load; persist completed measurements. A per-mission time series can require more samples than one dwell.
+
+For profiles using qualified-tool-work-and-functional-test, field work requires 50-150 metres of surface clearance, relative speed at most one metre/second, aim within two degrees and 20 qualified simulation seconds for each distinct work target. Occlusion, wrong original, missing loan or departure pauses qualified work. Persist confirmed work; a load must not manufacture elapsed work. The profile's functional test must also pass: time near a component alone is insufficient. A new failed test may be retried after correcting the physical cause, without duplicating installed parts or receipts.
+
+Scenario values and target counts in `campaign-profiles.json` initialise actual apparatus state. Quantities are measured in simulation, not accepted from script claims. For example, a low-pressure cycle with a passing average fails if its minimum is below 95; a third claim on two berths fails even if all three menus display accepted; a retirement signature replay fails despite matching colour; a tow load above 60 fails even after 15 seconds. Initial unsafe states must be correctable by the advertised tools and source resources. The recorder/telemetry displays measurement, threshold, elapsed qualified time, obstruction and the exact reason for refusal.
+
+### Witnesses, people and custody
+
+The common witness fixture uses an actual SH061 tender with two operating crew and one consenting delegate, one genuinely fitted standard cabin with four places, real fuel and a calibrated doorway-compatible hull. Three real people occupy it; only the delegate consumes one cabin place, while operating crew use intrinsic quarters. If source calibration/fitting cannot meet this, show the unavailable dependency instead of spawning a fictional arrival. Player passenger cabins are not required for these tender journeys; G04/G05 and player-carried rescue passengers still reserve actual compatible fitted places.
+
+Use normal departure, travel, encounter and docking producers. A tender that is merely launched, culled, destroyed or of the same hull class cannot complete arrival. A surviving original capsule may be rescued; a dead named person remains dead. Follow-up cases may commission new consenting investigators, never impersonate the original witness. Source names, branch choices and casualty consequences remain in the case history.
+
+A cargo handoff prepares receiver consent/capacity while the sender remains sole custodian. Sender removal and receiver acquisition then commit atomically with one scoped receipt. Before commitment the sender owns it; afterwards the receiver alone owns it. Lost acknowledgement or reloading cannot create a second owner. Trade goods, protected original tools, private data, living people, operating quarters, passenger places and stored equipment are separate types.
+
+### C01 original recorder
+
+The [Glass Meridian definition](missions/definitions/glass-meridian.json) now accounts for the original 8 kg recorder as 0.008 tonnes. Recover it with the actual fitted Scoops beside the original Harrier. Keep that same original through the booking audit and later mission. The one-tonne timing standard overlaps it, so peak protected hold is 1.008 tonnes. Lane repair consumes the standard; it does not consume the recorder.
+
+At `close-case`, Captain Venn's Avenor archive receives the same original recorder. Its atomic receiving receipt releases 0.008 tonnes and commits the completed case, original fee and clue. This final custodian is an explicit design decision closing F 03. A zero-mass journal copy neither creates nor replaces physical property. A lost recorder follows the separate remedial inquiry; it does not reappear as an identical crate.
+
+### C36 preservation and explicit clocks
+
+The [Witness Window](missions/definitions/witness-window.json) archive custodian obtains a witness-consented preservation order before publishing the offer. Its original record/version/hash and custody receipt survive preparation, refusal and accepted investigation without expiry. No hidden timer races a player who has not accepted. The eventual sealed archive or consented anonymised publication needs actual authorised receiving; private location data remains protected. Abandonment preserves the evidence without awarding a clue. Genuine destruction requires independent follow-up evidence, not a fabricated surviving archive.
+
+C37's 120-second right-of-reply test begins only on explicit test arming, freezes on simulation pause, and never erases the preserved evidence on expiry. It is a local test, not a whole-mission travel deadline. Other clocks keep their own advertised domains. C08's existing 1,800 armed-flight-second integrity allowance and W01/W03's 2,700-second profiles are retained. C07's community route permits only 300 units delivered plus 600 retained buffer, with no optional discharge. Do not silently substitute the new fixture defaults for these accepted specific rules.
+
+### All 64 source recovery paths
+
+[The recovery policy](missions/gameplay/recovery-policy.json) contains one joined profile for every required source and its existing clue receipt. It preserves failure, spent resources, lost cargo, casualties and the original case fee receipt. Failure itself grants nothing. A new follow-up uses a new persistent case identity and actual separately funded stock, people and physical evidence. The old lifetime guard remains intact. Once earned, a source clue survives later failures and ship changes.
+
+Campaign follow-ups investigate the saved failed outcome, renew source measurements, perform a real funded corrective installation or aid/rescue journey, test the originally selected branch and obtain actual independent receiving. Their successful corroboration may award the same source clue; it never retroactively marks a dead passenger as rescued or a destroyed station as saved. No original campaign fee or bonus is paid again. Refund only actual unspent escrow. Glass Meridian and Shattered Wake have explicit special follow-up rules in the policy.
+
+Family follow-ups create a genuinely new source-family instance and repeat its full physical requirements. Actual designated combat, capacity, consent, donation, training, extraction and receiving requirements remain binding. A paid inquiry cannot replace G06/G07/G15 combat. The source's closed profile governs its original quote and eligibility. No source stock means no quote until an actual funded supply or manufacture completes; the station must expose that supply route rather than permanently hide the clue opportunity.
+
+For a renewed electronic programmer/fixture set, the new estimated recipe uses one tonne Computers plus one tonne Machinery, quoted at the actual station's current ask, and 40 CR labour. Source-owned assembly takes 120 local unpaused simulation seconds after real materials are committed. The output is one new serial one-tonne kit plus one tonne retained fixture parts; G11 can make two 500 kg fixtures from those retained parts. Its old lifetime pair remains lost/retired; the new production generation is separately registered. This recipe cannot manufacture people, living cultures, fuel or a hull: those require actual stock, consenting staff and their separately displayed costs. Source resupply and ordinary trade remain available to fund them; acceptance cannot imply unlimited owner reserves.
+
+There are two five-step alternative tracks for each of 64 sources: a fully funded source renewal/remedial task and a guaranteed non-consumable continuity inquiry. Together they add 640 design objective rows beyond the 450 original stage rows. They add no new prerequisite clues and do not establish existing native runtime coverage. Read the original source stages, targets, branch and later closed profile for the exact source-specific requirements. Retain a permanent linked case history and make costs, losses and new evidence visible to the player.
+
+### Guaranteed main-quest continuity
+
+For every unearned source, the journal and ordinary docked board must always offer Request continuity inquiry. It needs no credits, purchased specialist tool, cabin/cargo space, faction approval, original station, surviving named witness or replacement stock. This five-step independent investigation uses three genuinely preserved pre-offer charter archive observations, actual non-consumable orbital calibration beacons, a measured functional test and independent orbital receiving. Original job failures and rewards stay unchanged; only successful new corroboration authorises that source's existing clue. The full transaction and all 64 joined test profiles are in recovery-policy.json.
+
+The charter evidence service has a desk at every operating main station and relocates to a surviving reachable orbital station or a charter receiving tender in the current playable system if necessary. Its durable archive and public-service receiving capability cannot be permanently destroyed or suppressed by faction hostility. It supplies no trade goods, free equipment, combat protection or money. Its calibration apparatus is non-consumable, so repeated trial failure cannot exhaust the last clue opportunity. Only a living playable commander is assumed; this is no promise to undo commander death/game over.
+
+The journal and charter request exist from a fresh commander, without a clue or PLUGH discovery. The 64th source clue reveals normal local PLUGH access even when learned through continuity inquiry. Clues and completed finale steps remain permanent after later losses. Uncredited/lost Medusa encounters retry the unlocked checkpoint; subsequent PLUGH reconstruction completes the story and grants fabrication entitlement without requiring the optional paid hull purchase. Main-quest knowledge cannot depend on one destructible station or unique spent token.
+
+This alternative is always requestable without first paying for a renewed original task. Cancelling or failing a local test creates no terminal quest lock, consumes no unique clue resource and leaves original casualties/losses intact. The native acceptance invariant must hold after each ordinary failure, cancellation, depletion, station loss, legal-status change and save/load: every missing source has a reachable eligible path. Imported historical guards must never suppress this independent service.
+
+Profiles with measured-operation-and-functional-test use their actual flight, arbitration, tug, transfer or dispatch events instead of a generic 20-second hover timer. The physical profile's interactionStyle and playerAction define the primary control loop. Piloted courses, optical alignment, pressure diagnosis, signature challenges, capacity stress, consent chains and relay timing must remain visibly and mechanically different.
+
+### Mission journal and gallery
+
+The docked mission board previews eligibility and actual unavailable dependencies before acceptance. The journal shows the current objective, known contact/route, protected cargo, actual cargo/cabin reservation, deadline domain and remaining budget, selected branch, measured progress and failure/recovery options. Each panel uses the normal shared navigation, Confirm and Escape. Dialogue cancellation never selects an answer or arms a clock.
+
+The gallery opens from the docked mission interface and supports campaigns, contracts/services, lessons and earned clues. Every visible card links the stable source ID, title and its actual saved progress. Locked sources show only a non-spoiling silhouette/title where discovery permits. Current accepted stage artwork appears with its briefing; completed stages and the actual selected outcome remain browsable. The 758-asset manifest is the authoritative join; a matching filename alone cannot unlock another stage or source. Unknown clues, future stages, unchosen outcomes and the Medusa trail stay hidden until their authorised receipts. Debug/XYZZY previews stay visibly separate and cannot mutate ordinary progress.
+
+Use cinematic images for briefings/story history; realistic portraits for contacts; simpler object renders for targets, inventory and evidence; technical three-view diagrams for catalogue reference. Ship diagrams are not flight screenshots. An expanded image has its caption and accessible description and returns to the same selected gallery entry. Save/load, ship exchange and repeated gallery visits neither earn clues nor repay missions.
+
+### Ship catalogue, fitting and mission readiness
+
+The [fleet reference](SHIP-REFERENCE.md) joins all 171 new L 337 definitions with their original meshes/images. Show actual native hull capabilities, installed laser and shield strengths, mount/missile compatibility, speed/handling, cargo, fuel/range, intrinsic operating crew and compatible fitted/free passenger places. Distinguish an estimate from an authored number and an owned blueprint from a purchased hull. A diagram alone proves neither flight activation nor physical scale.
+
+The docked shipyard supports one-craft inspection and side-by-side comparison. A shared quaternion/orientation and the same drag/axis input rotate both compared craft in the same direction and plane, through a full 360 degrees. Offer reset view and comparable physical scale where calibrated; disclose uncalibrated scale rather than imply dimensions. Selecting a ship previews price, cash, fit, cargo, passengers and active-mission consequences before a single committed exchange.
+
+Transfer compatible owned equipment with original identities. Put incompatible overflow in commander-owned persistent station storage with provenance/condition and a visible list; stored items are unavailable for flight until fitted. Never discard equipment or force mission originals/passengers into ordinary storage. Refuse an exchange that cannot preserve their obligations and explain the required remedy. Intrinsic crew quarters do not become passenger places. Mission bookings reserve spare compatible fitted cabin places in addition to real operating crew and existing passengers. PLUGH fabrication and Medusa discovery/defeat/reconstruction gates remain separate from ordinary ship purchase and module prices.
+
+### Continuity authority in the mission engine
+
+The recovery policy's engineContract defines typed case/measurement/test/audit/completion producers and their complete source/case/fixture evidence identities. A dedicated native verifier may commit only the specific original source/clue pair after all five inquiry steps. Extend the closed trusted-domain mapping for that verified service; retain original digest pins and reject arbitrary pack claims. Never set original mission success or fee receipts as a side effect. Save/load must preserve both original loss history and new inquiry progress, with one atomic clue receipt.
+
+### Acceptance before claiming playable
+
+For every source and both branches, test through real GameRuntime-owned state and ordinary controls: eligibility refusal, tool/cargo/cabin fit, exact source acquisition, wrong target/location rejection, measurement boundary, physical functional test, wrong branch/mixed proofs rejection, actual journey/receiving, loss/casualty, finite recovery funding, pause/load and atomic final reward/clue. Negative controls must reject menu-only success, duplicated ownership, late/spoiled receiving, cloned originals and repeat payment. AppKit stays on the main actor; scripts cannot assign simulation-owned success.
+
+The finished-game implementation still needs native bindings and balance/playability testing. Use the [implementation guide](implementation/README.md) and the single live work ledger for assignment. This document grants no new work packet, native execution or publication permission.
+
 ## Complete campaign storylines and definitions
 
-All 39 campaigns and all 368 authored stages are defined here. Stage IDs and target IDs are part of the definition, not interchangeable display labels. Confirm commits an offered choice or transfer; Escape closes it without a choice, charge, cargo transfer or armed incident. Preparation has no hidden timer; an explicitly armed incident advances only with the simulation. Successful terminal payment, outcome and its one permanent clue commit together. Each mission also has a portable structured definition in `definitions/missions/`.
+All 39 campaigns and all 368 authored stages are defined here. Stage IDs and target IDs are part of the definition, not interchangeable display labels. Confirm commits an offered choice or transfer; Escape closes it without a choice, charge, cargo transfer or armed incident. Preparation has no hidden timer; an explicitly armed incident advances only with the simulation. Successful terminal payment, outcome and its one permanent clue commit together. Each mission also has a portable structured definition in `missions/definitions/`.
 
 ### C01 - The Glass Meridian
 
@@ -363,7 +469,7 @@ Avenor has recorded three near-collisions on a supposedly certified medical frei
 
 **Briefing:** Captain Elara Venn: Our clinic convoy cannot launch while two ships can hold the same reservation. Read the beacons at Renas. Look for the surveyor at Navidor. Bring back evidence before deciding who is at fault.
 
-**Contacts:** Captain Elara Venn, Captain Orin Sorel. **Story craft:** SH026 Harrier.
+**Contacts:** Captain Elara Venn, Captain Orin Sorel. **Story craft:** SH026.
 
 **Successful settlement:** 4,800 CR. A public lane-safety commendation and the selected evidence outcome in regional gossip. No fabricated combat points or automatic ship blueprint. A permanent clue for The Unwritten Route: The missing instant.
 
@@ -379,12 +485,22 @@ Mission-specific rules and resources:
 - **Items 1 / Mass tonnes:** 1
 - **Items 1 / Acquire stage:** recover-standard
 - **Items 1 / Consume stage:** rebuild-lane
+- **Items 2 / Id:** surveyor-recorder
+- **Items 2 / Mass tonnes:** 0.008
+- **Items 2 / Acquire stage:** recover-surveyor
+- **Items 2 / Consume stage:** close-case
+- **Items 2 / Final custodian:** Captain Venn, Avenor station evidence archive
+- **Items 2 / Authority:** 8kg source rule; final archive at close-case is an explicit review-resolution design decision
 - **Terminal stage:** complete
 - **Reward receipt:** l337.glass-meridian/final-payment
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Branch policy:** Record the selected evidence/protocol outcome in pack state and gossip. Branches reconverge at the next stage and share the advertised base payment.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Custody revision / Peak protected cargo tonnes:** 1.008
+- **Custody revision / Rule:** Retain the exact original recorder through the reservation audit, timing-standard collection, lane repair and escort. The timing standard consumes1t at rebuild-lane; the recorder transfers only at close-case with an atomic archive receipt. Data copies have zero mass and cannot replace physical custody. Archive, payment and clue are one final transaction. Loss follows the separate remedial inquiry, without cloning the recorder.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
 
 #### C01.01 - accept
 
@@ -435,7 +551,7 @@ Mission-specific rules and resources:
 
 - **Event:** mission_item_recovered
 - **Required targets:** surveyor-recorder
-- **Interaction item mass tonnes:** 0
+- **Interaction item mass tonnes:** 0.008
 - **Next:** audit-reservations
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
@@ -443,6 +559,9 @@ Mission-specific rules and resources:
 - **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.glass-meridian/recover-surveyor
+- **Item effects 1 / Kind:** add
+- **Item effects 1 / Item:** surveyor-recorder
+- **Item effects 1 / Mass tonnes:** 0.008
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
 - **Oracle physical custody:** Recover the original detached 8 kg recorder (0.008 tonnes), 80 metres to the original Harrier's right, using actual fitted Fuel Scoops and a slow aligned underside approach. Keep the same source identity and protected custody through the later reservation audit. Do not charge a whole tonne, award a kill or substitute a lookalike recorder.
 
@@ -558,7 +677,7 @@ Mission-specific rules and resources:
 
 #### C01.09 - close-case
 
-**Place:** Avenor (G01-S007). **Objective:** Confirm the completed lane-safety report and collect payment.
+**Place:** Avenor (G01-S007). **Objective:** Archive the same original 8kg recorder with Captain Venn at Avenor; confirm the lane-safety report and collect payment.
 
 **Story/dialogue:** VENN: The reservations have been separated, the surveyor has been cleared by evidence, and the clinic tender is safe. Your fee is 4,800 CR. Your chosen report is now part of the regional record.
 
@@ -574,17 +693,23 @@ VENN: There is one detail the inquiry could not explain: a curved trace in the t
 - **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.glass-meridian/close-case
+- **Item effects 1 / Kind:** remove
+- **Item effects 1 / Item:** surveyor-recorder
+- **Item effects 1 / Mass tonnes:** 0.008
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Archive receipt:** l337.glass-meridian/original-recorder-archived
 
 ![The Glass Meridian: close-case](assets/missions/stages/glass-meridian/close-case.png)
 
 **Permanent clue:** The missing instant (`meridian-offset`). The recovered timing standard contains an interval that none of the lane clocks measured. Inside that interval, a curved trace repeats eight times.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.glass-meridian`. Original loss and original fee receipts remain unchanged.
+
 ![The Glass Meridian outcome glass-meridian/release-evidence/choice-1](assets/missions/outcomes/glass-meridian-release-evidence-choice-1.png)
 
 ![The Glass Meridian outcome glass-meridian/release-evidence/choice-2](assets/missions/outcomes/glass-meridian-release-evidence-choice-2.png)
 
-[Complete structured definition](definitions/missions/glass-meridian.json).
+[Complete structured definition](missions/definitions/glass-meridian.json).
 
 ### C02 - A Choir Beneath the Static
 
@@ -596,7 +721,7 @@ Mining navigation receivers in Quiet Current are being drowned by repeating Larv
 
 **Briefing:** Captain Tamsin Holt: No one has proved these pulses are an attack. Calibrate your receiver at Lobagom before approaching the source. Agent Mara Vale will compare what you find with the mining relays.
 
-**Contacts:** Captain Tamsin Holt, Agent Mara Vale. **Story craft:** SH124 Larvaal Warship, SH125 Larvaal Drone, SH162 Larvaal Probe.
+**Contacts:** Captain Tamsin Holt, Agent Mara Vale. **Story craft:** SH124, SH125, SH162.
 
 **Successful settlement:** 6,400 CR. A resonance-filter fitting, improving identification of this campaign's Larvaal signals. It grants no extra energy capacity, general faction immunity or free ship fabrication. A permanent clue for The Unwritten Route: The silent voice.
 
@@ -622,6 +747,8 @@ Mission-specific rules and resources:
 - **Branch policy:** Record the selected evidence/protocol outcome in pack state and gossip. Branches reconverge at the next stage and share the advertised base payment.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
 
 #### C02.01 - accept
 
@@ -821,6 +948,8 @@ VALE: One voice answered from outside the gathering. The Larvaal listeners do no
 
 **Permanent clue:** The silent voice (`choir-silent-voice`). The restored Larvaal call contains a reply from beyond the gathering. Its pauses describe a curve, but no Larvaal vessel claims the voice.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.quiet-choir`. Original loss and original fee receipts remain unchanged.
+
 ![A Choir Beneath the Static outcome quiet-choir/expose-imitation/choice-1](assets/missions/outcomes/quiet-choir-expose-imitation-choice-1.png)
 
 ![A Choir Beneath the Static outcome quiet-choir/expose-imitation/choice-2](assets/missions/outcomes/quiet-choir-expose-imitation-choice-2.png)
@@ -829,7 +958,7 @@ VALE: One voice answered from outside the gathering. The Larvaal listeners do no
 
 ![A Choir Beneath the Static outcome quiet-choir/rendezvous/choice-2](assets/missions/outcomes/quiet-choir-rendezvous-choice-2.png)
 
-[Complete structured definition](definitions/missions/quiet-choir.json).
+[Complete structured definition](missions/definitions/quiet-choir.json).
 
 ### C03 - The Hollow Manifest
 
@@ -841,7 +970,7 @@ A freight mutual is paying claims for industrial cargo that never left its wareh
 
 **Briefing:** Nia Toren: Two paid manifests name the same crate, and both captains insist it never reached them. Scan the freighters at Garrivek. If we follow the seal rather than the accusation, we can find where the cargo really went.
 
-**Contacts:** Nia Toren, Marek Iven. **Story craft:** No mandatory named hull.
+**Contacts:** Nia Toren, Marek Iven. **Story craft:** .
 
 **Successful settlement:** 5,600 CR. Expense reimbursement is tracked separately; the selected public report or restitution fund appears in local gossip. Existing legal status is never reset. A permanent clue for The Unwritten Route: The inward mark.
 
@@ -863,6 +992,8 @@ Mission-specific rules and resources:
 - **Branch policy:** Record the selected evidence/protocol outcome in pack state and gossip. Branches reconverge at the next stage and share the advertised base payment.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
 
 #### C03.01 - accept
 
@@ -1075,11 +1206,13 @@ TOREN: The master seal carried an older imprint beneath its serial number. It wa
 
 **Permanent clue:** The inward mark (`manifest-hidden-imprint`). Beneath the recalled seal's ordinary signature is a second imprint: loops around an empty centre, with each loop pointing inward.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.hollow-manifest`. Original loss and original fee receipts remain unchanged.
+
 ![The Hollow Manifest outcome hollow-manifest/choose-remedy/choice-1](assets/missions/outcomes/hollow-manifest-choose-remedy-choice-1.png)
 
 ![The Hollow Manifest outcome hollow-manifest/choose-remedy/choice-2](assets/missions/outcomes/hollow-manifest-choose-remedy-choice-2.png)
 
-[Complete structured definition](definitions/missions/hollow-manifest.json).
+[Complete structured definition](missions/definitions/hollow-manifest.json).
 
 ### C04 - The Borrowed Voice
 
@@ -1091,7 +1224,7 @@ Rescue tenders in the Taledea cluster are answering empty distress calls while r
 
 **Briefing:** SERA DAIN: Our tenders have been called to three empty wrecks. Meanwhile, a real casualty waited alone. Compare the relay records at Ilasaeli. Do not broadcast patient locations; someone may be listening with one of our own keys.
 
-**Contacts:** Coordinator Sera Dain, Relay Engineer Ivo Renn, Dispatcher Neris Sol. **Story craft:** SH026 Harrier, SH049 Hyena.
+**Contacts:** Coordinator Sera Dain, Relay Engineer Ivo Renn, Dispatcher Neris Sol. **Story craft:** SH026, SH049.
 
 **Successful settlement:** 7,200 CR. The rescue network resumes service. The selected open-revocation or protected-witness outcome appears in regional gossip. No legal-status reset, artificial kill points, free hull or general faction immunity. A permanent clue for The Unwritten Route: The unclaimed channel.
 
@@ -1116,6 +1249,8 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
 
 #### C04.01 - accept
 
@@ -1346,11 +1481,13 @@ RENN: One reply is not in either operator's access record. Its phase curls aroun
 
 **Permanent clue:** The unclaimed channel (`voice-unclaimed-channel`). The independent verifier recorded a reply before its verification challenge could have transmitted. Its curved phase trace folds around a quiet centre, as though the receiver were inside a larger listening ring.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.borrowed-voice`. Original loss and original fee receipts remain unchanged.
+
 ![The Borrowed Voice outcome borrowed-voice/choose-operation/open-revocation](assets/missions/outcomes/borrowed-voice-choose-operation-open-revocation.png)
 
 ![The Borrowed Voice outcome borrowed-voice/choose-operation/quiet-decoy](assets/missions/outcomes/borrowed-voice-choose-operation-quiet-decoy.png)
 
-[Complete structured definition](definitions/missions/borrowed-voice.json).
+[Complete structured definition](missions/definitions/borrowed-voice.json).
 
 ### C05 - The Shattered Wake
 
@@ -1362,7 +1499,7 @@ An abandoned orbital mass driver above Aermiori has restarted during an automate
 
 **Briefing:** RELL: Spindle Anchorage can absorb a ship's weapons all day. These are moving mountains and a wake of gravel. We need to change their paths before they share the same few seconds against the shields. Survey the outer watchers at Aermiori. We have time to prepare; I will not arm the operation until you confirm readiness.
 
-**Contacts:** Controller Edda Rell, Geologist Jalen Orr, Tug Lead Mira Penn. **Story craft:** SH061 Haflinger.
+**Contacts:** Controller Edda Rell, Geologist Jalen Orr, Tug Lead Mira Penn. **Story craft:** SH061.
 
 **Successful settlement:** 1,800 CR. The completed relief and inquiry earns the base 1,800 CR. Add 6,000 CR if Spindle Anchorage survives, or 3,000 CR if the station is lost but all registered evacuees reach Shelter Dock; no bonus for other station-loss outcomes. All outcomes require the later relief and inquiry, not merely waiting for an explosion. A permanent clue for The Unwritten Route: The curve before the fall.
 
@@ -1409,7 +1546,7 @@ Mission-specific rules and resources:
 - **Hazard rules / Loss:** Persist real station loss, disable docking and services there, show wreckage and update charts and gossip. Finish the relief operation at other registered stations. No automatic resurrection or restored stock after loading.
 - **Hazard rules / Outcome:** station-saved if the passage ends with positive station integrity; station-evacuated if it was destroyed and every registered evacuee is safely accounted for at Shelter Dock; otherwise station-lost. Classify the bonus after relief accounting, not at the instant of collapse.
 - **Hazard rules / Timer resolution:** Off-screen simulation uses the same fixed trajectories, confirmed mitigations and collision ledger. NPC interception can help the station, but player completion still requires the subsequent relief and inquiry. Leaving applies no invented bounty or cash fine.
-- **Asset manifest:** definitions/original-missions/shattered-wake-assets/manifest.json
+- **Asset manifest:** authoring-source:original-missions/shattered-wake-assets/manifest.json
 - **Warning tour / Optional:** yes
 - **Warning tour / Available after stage:** survey-train
 - **Warning tour / Expires when:** hazard-encounter-resolved
@@ -1457,6 +1594,8 @@ Mission-specific rules and resources:
 - **Reward receipt:** l337.shattered-wake/final-payment
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
 
 #### C05.01 - accept
 
@@ -1712,6 +1851,8 @@ ORR: This curved trace predates the debris. It is not evidence that anyone delib
 
 **Permanent clue:** The curve before the fall (`wake-before-impact`). Before the mass driver restarted, the orbital recorder traced a loop of inward-facing points around a quiet centre. The curve passes through the same absence described by the other collected traces.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.shattered-wake`. Original loss and original fee receipts remain unchanged.
+
 ![The Shattered Wake outcome shattered-wake/choose-defence/tug-deflection](assets/missions/outcomes/shattered-wake-choose-defence-tug-deflection.png)
 
 ![The Shattered Wake outcome shattered-wake/choose-defence/fragment-screen](assets/missions/outcomes/shattered-wake-choose-defence-fragment-screen.png)
@@ -1722,7 +1863,7 @@ ORR: This curved trace predates the debris. It is not evidence that anyone delib
 
 ![The Shattered Wake outcome shattered-wake/station-lost](assets/missions/outcomes/shattered-wake-station-lost.png)
 
-[Complete structured definition](definitions/missions/shattered-wake.json).
+[Complete structured definition](missions/definitions/shattered-wake.json).
 
 ### C06 - The Tithe of Worlds
 
@@ -1734,7 +1875,7 @@ Tithe was created to coordinate emergency supplies. It now treats its own expans
 
 **Briefing:** VOSS: The ore is being lifted, the water schedule is being rewritten and the foundries are accepting orders their owners never approved. Tithe calls it protection. Bring us the acquisition records at Zordaik before we commit more crews to a fight.
 
-**Contacts:** Marshal Nera Voss, Engineer Cato Lerr, Captain Suri Arlen. **Story craft:** SH001 Mule, SH004 Gyrfalcon Patrol, SH005 Bison.
+**Contacts:** Marshal Nera Voss, Engineer Cato Lerr, Captain Suri Arlen. **Story craft:** SH001, SH004, SH005.
 
 **Successful settlement:** 9,600 CR. The selected voluntary charter or severed network remains in local resource-control records, trade-route access and gossip. No automatic legal-status reset, artificial kills, free hull or energy-unit upgrade. A permanent clue for The Unwritten Route: The unclaimed reserve.
 
@@ -1845,6 +1986,8 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
 
 #### C06.01 - accept
 
@@ -2198,11 +2341,13 @@ LERR: This reserve is not part of Tithe's acquisitions. The entry predates its f
 
 **Permanent clue:** The unclaimed reserve (`tithe-unclaimed-reserve`). The acquisition ledger contains a reserve entry with no owner, quantity or destination. Its inward-curving phase marks form a ring around an unallocated centre; the signature predates Tithe's creation.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.tithe-of-worlds`. Original loss and original fee receipts remain unchanged.
+
 ![The Tithe of Worlds outcome tithe-of-worlds/choose-settlement/bounded-charter](assets/missions/outcomes/tithe-of-worlds-choose-settlement-bounded-charter.png)
 
 ![The Tithe of Worlds outcome tithe-of-worlds/choose-settlement/sever-network](assets/missions/outcomes/tithe-of-worlds-choose-settlement-sever-network.png)
 
-[Complete structured definition](definitions/missions/tithe-of-worlds.json).
+[Complete structured definition](missions/definitions/tithe-of-worlds.json).
 
 ### C07 - The Still Current
 
@@ -2214,7 +2359,7 @@ A mothballed orbital energy lattice near Karrakor reports no output, yet three i
 
 **Briefing:** KEST: These three meters cannot all be wrong in the same way. We stopped buying power from the lattice years ago. Find where the charge goes before someone reconnects a corridor full of people.
 
-**Contacts:** Physicist Anja Kest, Salvage Chief Ruan Pell. **Story craft:** SH001 Mule, SH049 Hyena, SH061 Haflinger.
+**Contacts:** Physicist Anja Kest, Salvage Chief Ruan Pell. **Story craft:** SH001, SH049, SH061.
 
 **Successful settlement:** 8,400 CR. The selected community buffer or completed material recovery remains in the local utility record. No personal ship curse, permanent equipment damage, legal-status reset or free hull. A permanent clue for The Unwritten Route: The resting arc.
 
@@ -2245,14 +2390,21 @@ Mission-specific rules and resources:
 - **Energy rules / Buffer capacity:** 600
 - **Energy rules / Required local delivery units:** 300
 - **Energy rules / Accounting:** Measured charge = remaining + physically delivered + safely discharged + recovered storage. No negative quantity, repeated transfer or unverified receiving endpoint.
-- **Accepted branch transfer policy:** Community-buffer permits only the verified 300-unit utility delivery and 600-unit retained tested buffer; optional discharge and recovery-store transfer are refused on that route. Material-recovery permits verified storage and controlled discharge of at most 90 units per operation, plus actual collector-material reception. Every route preserves remaining + delivered + safely discharged + recovered = 900. This is the existing Still Current contract rule, not an extra energy source or a new balance estimate.
 - **Energy rules / Heat:** A named geometric work volume supplies bounded simulation-time heat through the ordinary thermal system. It is never tied to a random GUI event or commander identity.
 - **Energy rules / Restoration:** A current save restores the same meter identities, actual balances and recorded baffle placements. Culled scene meshes do not change logical control or charge.
+- **Energy rules / Branch transfer policy / Community buffer:** Only the 300-unit verified local delivery and 600-unit retained tested buffer are permitted. Optional discharge or transfer to recovery storage is not an allowed community-buffer operation.
+- **Energy rules / Branch transfer policy / Material recovery:** Account for the emptied reservoir through verified recovery storage and controlled discharge, plus actual collector-material reception. Each discharge operation is capped at 90 units.
+- **Energy rules / Branch transfer policy / Conservation:** remaining + delivered + safely discharged + recovered = 900; no branch permits new charge or erased receipts
+- **Energy rules / Branch transfer policy / Authority:** original-missions/STILL-CURRENT-CONTRACT.md
+- **Energy rules / Branch transfer policy / Authority sha256:** ed92e61707ffdecd3f64d085621b6b9bd1c9cf2f6a8f493f243652d8b69d0b41
+- **Energy rules / Branch transfer policy / Source line:** 11
 - **Terminal stage:** complete
 - **Reward receipt:** l337.still-current/final-payment
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
 
 #### C07.01 - accept
 
@@ -2542,11 +2694,13 @@ KEST: This arc predates the lattice. It cannot be part of the dust bridge or its
 
 **Permanent clue:** The resting arc (`current-resting-arc`). The lattice's oldest meter records an inward arc before any collector was built. The measured charge is zero, but the phase signature still encloses a quiet centre.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.still-current`. Original loss and original fee receipts remain unchanged.
+
 ![The Still Current outcome still-current/choose-lattice/community-buffer](assets/missions/outcomes/still-current-choose-lattice-community-buffer.png)
 
 ![The Still Current outcome still-current/choose-lattice/material-recovery](assets/missions/outcomes/still-current-choose-lattice-material-recovery.png)
 
-[Complete structured definition](definitions/missions/still-current.json).
+[Complete structured definition](missions/definitions/still-current.json).
 
 ### C08 - Wayfarer Exchange
 
@@ -2558,7 +2712,7 @@ Independent clinics, repair workshops, seed custodians and remote utility crews 
 
 **Briefing:** SENN: We are building a service record, not a club for people with enough kills. Deliver the clinic sample, bring the repaired cassette home and show every receiving operator what you actually handed over.
 
-**Contacts:** Dispatcher Evi Senn, Custodian Tomas Veil. **Story craft:** SH001 Mule, SH005 Bison, SH061 Haflinger.
+**Contacts:** Dispatcher Evi Senn, Custodian Tomas Veil. **Story craft:** SH001, SH005, SH061.
 
 **Successful settlement:** 7,600 CR. Accreditation opens advanced variants on the visible Wayfarer Exchange board. Six repeatable service templates remain available with separate quotes and receipts. Accreditation grants no free cargo, personal ship or unrelated legal-status reset. A permanent clue for The Unwritten Route: The unbooked window.
 
@@ -2569,8 +2723,6 @@ Independent clinics, repair workshops, seed custodians and remote utility crews 
 ![Custodian Tomas Veil](assets/missions/portraits/tomas-veil.png)
 
 Mission-specific rules and resources:
-
-- **Native cold-crate integrity:** The original sealed 1t clinic sample has 1,800 armed-flight seconds from confirmed actual pickup. Preparation is untimed; normal pause stops flight time, and save/load retains the same original deadline. Receiving requires the same original intact sample with strictly positive remaining allowance; at zero it is spoiled. This is the existing native C08 rule, independent of W01's route-specific allowance.
 
 - **Origin kind:** new-original
 - **Branch policy:** Choose pooled-windows or protected-reservations once at choose-charter. Obtain the corresponding three service signatures at commit-charter. Both successful charters pay 7,600 CR and grant one permanent clue. Repeat contracts never award this campaign clue or its induction payment again.
@@ -2608,12 +2760,21 @@ Mission-specific rules and resources:
 - **Repeatable services / Templates:** 6
 - **Repeatable services / Stages:** 18
 - **Repeatable services / Maximum active:** 3
-- **Repeatable services / File:** definitions/original-missions/wayfarer-services.toml
-- **Repeatable services / Generator:** definitions/original-missions/generate-services.py
+- **Repeatable services / File:** authoring-source:original-missions/wayfarer-services.toml
+- **Repeatable services / Generator:** authoring-source:original-missions/generate-services.py
 - **Repeatable services / Generator sha256:** 06bd83a41d8feb519806df6bab144f421531a9e9131d77bcabaea0afddb7b37b
-- **Repeatable services / Artwork manifest:** assets/missions/manifest.json
+- **Repeatable services / Artwork manifest:** ../../assets/missions/manifest.json
 - **Repeatable services / Artwork sha256:** e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068
 - **Repeatable services / Source packages included:** no
+- **Oracle native integrity / Allowance seconds:** 1800
+- **Oracle native integrity / Clock:** armed-flight time after confirmed actual pickup
+- **Oracle native integrity / Receiving condition:** same original intact sample; remaining allowance strictly greater than zero
+- **Oracle native integrity / Expiry:** at zero remaining allowance the original is spoiled; no receiving success, payment or clue
+- **Oracle native integrity / Persistence:** pause stops the flight clock; save/load retains the same original deadline
+- **Oracle native integrity / Source commit:** 6552b68f7a146ceb79b4376d33cc8afd3f987399
+- **Oracle native integrity / Source symbol:** NativeWayfarerInduction.flightAllowance
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
 
 #### C08.01 - accept
 
@@ -2942,11 +3103,13 @@ VEIL: Every real consignment is accounted for. This older reservation names no s
 
 **Permanent clue:** The unbooked window (`exchange-unbooked-window`). The first signed route ledger reserves a window with no carrier, cargo or destination. Its curved boundary points inward and matches a bearing outside the published service network.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.wayfarer-exchange`. Original loss and original fee receipts remain unchanged.
+
 ![Wayfarer Exchange outcome wayfarer-exchange/choose-charter/pooled-windows](assets/missions/outcomes/wayfarer-exchange-choose-charter-pooled-windows.png)
 
 ![Wayfarer Exchange outcome wayfarer-exchange/choose-charter/protected-reservations](assets/missions/outcomes/wayfarer-exchange-choose-charter-protected-reservations.png)
 
-[Complete structured definition](definitions/missions/wayfarer-exchange.json).
+[Complete structured definition](missions/definitions/wayfarer-exchange.json).
 
 ### C09 - The Quiet Nursery
 
@@ -2954,11 +3117,11 @@ VEIL: Every real consignment is accounted for. This older reservation names no s
 
 A nursery habitat's root cultures are failing even though its environmental reports show perfect conditions. The reports average away short pressure pulses caused by a shared ventilation controller. The commander measures the pulses, carries a reference culture to a test berth and helps the growers choose independent breathing cells or a jointly supervised controller.
 
-**Offer:** At Maran in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Maran in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** KEST: Averages hide the moment when a root stops breathing. Record the shortest pulse as carefully as the longest.
 
-**Contacts:** Physicist Anja Kest, Custodian Tomas Veil. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Physicist Anja Kest, Custodian Tomas Veil. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 4,600 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The breath between readings.
 
@@ -2986,6 +3149,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/quiet-nursery
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/quiet-nursery/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** pressure-waveform comparison
+- **Recommended tier:** foundation
+- **Parameters / Sample period seconds:** 6
+- **Parameters / Unsafe minimum:** 82
+- **Parameters / Required minimum:** 95
+- **Parameters / Test cycles:** 3
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** quiet-nursery-survey-1; quiet-nursery-survey-2; quiet-nursery-survey-3
+- **Survey / Instruction:** Record each six-second pressure trace, including its minimum; averages cannot qualify.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** quiet-nursery-work-port; quiet-nursery-work-starboard
+- **Field work / Instruction:** Compare the sealed onboard culture reference at both cradles, then latch the two pulse dampers.
+- **Field work / Acceptance:** Each of three measured cycles has minimum pressure at least95 on the0-100 calibration scale.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** quiet-nursery-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** quiet-nursery-plan-a-physical-proof; quiet-nursery-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both independent dampers reject an external close order and each pressure trace passes all three cycles.
+- **Branches / Plan-b / Targets:** quiet-nursery-plan-b-physical-proof; quiet-nursery-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** A grower-signed shared schedule passes all three cycles; each local stop independently halts the controller.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** waveform-diagnostics
+- **Player action:** Select and latch each of two real pulse dampers after comparing cycle minima; confirm a three-cycle live pressure trace.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive waveform-diagnostics operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C09.01 - accept
 
@@ -2996,7 +3224,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -3007,27 +3235,7 @@ Mission-specific rules and resources:
 
 ![The Quiet Nursery: accept](assets/missions/stages/quiet-nursery/accept.png)
 
-#### C09.02 - survey
-
-**Place:** Naviven (G01-S004). **Objective:** Measure three pressure pulses outside the nursery's service vents.
-
-**Story/dialogue:** KEST: Averages hide the moment when a root stops breathing. Record the shortest pulse as carefully as the longest.
-
-- **Event:** entity_scan_completed
-- **Required targets:** quiet-nursery-survey-1; quiet-nursery-survey-2; quiet-nursery-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.quiet-nursery/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Quiet Nursery: survey](assets/missions/stages/quiet-nursery/survey.png)
-
-#### C09.03 - collect-reference
+#### C09.02 - collect-reference
 
 **Place:** Maran (G01-S003). **Objective:** Collect the identified one-tonne reference instrument from Physicist Anja Kest.
 
@@ -3036,7 +3244,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -3050,9 +3258,29 @@ Mission-specific rules and resources:
 
 ![The Quiet Nursery: collect-reference](assets/missions/stages/quiet-nursery/collect-reference.png)
 
+#### C09.03 - survey
+
+**Place:** Naviven (G01-S004). **Objective:** Record each six-second pressure trace, including its minimum; averages cannot qualify.
+
+**Story/dialogue:** KEST: Averages hide the moment when a root stops breathing. Record the shortest pulse as carefully as the longest.
+
+- **Event:** entity_scan_completed
+- **Required targets:** quiet-nursery-survey-1; quiet-nursery-survey-2; quiet-nursery-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.quiet-nursery/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Quiet Nursery: survey](assets/missions/stages/quiet-nursery/survey.png)
+
 #### C09.04 - field-work
 
-**Place:** Larinar (G01-S122). **Objective:** Install the reference culture in the isolated orbital test cradle.
+**Place:** Larinar (G01-S122). **Objective:** Compare the sealed onboard culture reference at both cradles, then latch the two pulse dampers.
 
 **Story/dialogue:** VEIL: The reference belongs to the growers. Keep its containment sealed until the receiving cradle acknowledges the same serial capsule.
 
@@ -3072,7 +3300,7 @@ Mission-specific rules and resources:
 
 #### C09.05 - independent-witness
 
-**Place:** Lelaven (G01-S179). **Objective:** Escort the consenting horticulture tender to the test berth.
+**Place:** Lelaven (G01-S179). **Objective:** Verify actual safe transit and living reception of the consenting horticulture tender to the test berth.
 
 **Story/dialogue:** VEIL: The gardeners will inspect their own crop. An empty tender or a flight recorder cannot stand in for their arrival.
 
@@ -3092,9 +3320,9 @@ Mission-specific rules and resources:
 
 #### C09.06 - choose-settlement
 
-**Place:** Maran (G01-S003). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Lelaven (G01-S179). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Physicist Anja Kest: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Physicist Anja Kest: Your pressure-waveform comparison evidence is ready. Our arrived delegates have the signed mandate to choose here. Either give each nursery cell an independent air regulator or establish a shared grower-controlled ventilation schedule. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** quiet-nursery-settlement-choice
@@ -3192,11 +3420,13 @@ Physicist Anja Kest: The audit has left one anomaly that belongs to neither side
 
 **Permanent clue:** The breath between readings (`quiet-nursery-trace`). The unaveraged pressure trace includes a quiet inward curl that no nursery valve produces.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.quiet-nursery`. Original loss and original fee receipts remain unchanged.
+
 ![The Quiet Nursery outcome quiet-nursery/choose-settlement/plan-a](assets/missions/outcomes/quiet-nursery-choose-settlement-plan-a.png)
 
 ![The Quiet Nursery outcome quiet-nursery/choose-settlement/plan-b](assets/missions/outcomes/quiet-nursery-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/quiet-nursery.json).
+[Complete structured definition](missions/definitions/quiet-nursery.json).
 
 ### C10 - Borrowed Dawn
 
@@ -3204,11 +3434,11 @@ Physicist Anja Kest: The audit has left one anomaly that belongs to neither side
 
 Three orbital homes depend on a leased sunlight reflector whose ownership contract has expired. Its automatic parking motion will leave one habitat cold while overheating another. The commander measures the actual illumination, moves a work crew through a safe corridor and establishes either independent mirror limits or a public light-sharing schedule.
 
-**Offer:** At Zannekor in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Zannekor in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** RELL: The sun is not failing. Our agreement about where the light goes has failed.
 
-**Contacts:** Controller Edda Rell, Tug Lead Mira Penn. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Controller Edda Rell, Tug Lead Mira Penn. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 6,800 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The unlit interval.
 
@@ -3236,6 +3466,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/borrowed-dawn
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/borrowed-dawn/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** reflector stop and thermal cutoff
+- **Recommended tier:** foundation
+- **Parameters / Safe illumination min:** 40
+- **Parameters / Safe illumination max:** 70
+- **Parameters / Overheat trip:** 80
+- **Parameters / Test seconds:** 18
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** borrowed-dawn-survey-1; borrowed-dawn-survey-2; borrowed-dawn-survey-3
+- **Survey / Instruction:** Observe each habitat photometer and the reflector sweep, rather than measuring a stationary map marker.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** borrowed-dawn-work-port; borrowed-dawn-work-starboard
+- **Field work / Instruction:** Latch two actuator travel stops at their marked limits and run the commanded bounded sweep.
+- **Field work / Acceptance:** All three habitat illumination readings stay40-70 for18s; a controlled80-unit test trips the shutter before renewed exposure.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** borrowed-dawn-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** borrowed-dawn-plan-a-physical-proof; borrowed-dawn-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both segment stops reject an over-travel command and the two habitat owners receive their separate limit records.
+- **Branches / Plan-b / Targets:** borrowed-dawn-plan-b-physical-proof; borrowed-dawn-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The rota allocates separate physical sweep intervals and the real overheat shutter trips at80.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** optical-alignment
+- **Player action:** Steer the two source-owned reflectors with directional controls; release controls at the actual illumination stop and test the thermal trip.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive optical-alignment operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C10.01 - accept
 
@@ -3246,7 +3541,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -3257,27 +3552,7 @@ Mission-specific rules and resources:
 
 ![Borrowed Dawn: accept](assets/missions/stages/borrowed-dawn/accept.png)
 
-#### C10.02 - survey
-
-**Place:** Varratar (G02-S224). **Objective:** Scan the three illumination monitors before the reflector moves.
-
-**Story/dialogue:** RELL: The sun is not failing. Our agreement about where the light goes has failed.
-
-- **Event:** entity_scan_completed
-- **Required targets:** borrowed-dawn-survey-1; borrowed-dawn-survey-2; borrowed-dawn-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.borrowed-dawn/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Borrowed Dawn: survey](assets/missions/stages/borrowed-dawn/survey.png)
-
-#### C10.03 - collect-reference
+#### C10.02 - collect-reference
 
 **Place:** Zannekor (G02-S037). **Objective:** Collect the identified one-tonne reference instrument from Controller Edda Rell.
 
@@ -3286,7 +3561,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -3300,9 +3575,29 @@ Mission-specific rules and resources:
 
 ![Borrowed Dawn: collect-reference](assets/missions/stages/borrowed-dawn/collect-reference.png)
 
+#### C10.03 - survey
+
+**Place:** Varratar (G02-S224). **Objective:** Observe each habitat photometer and the reflector sweep, rather than measuring a stationary map marker.
+
+**Story/dialogue:** RELL: The sun is not failing. Our agreement about where the light goes has failed.
+
+- **Event:** entity_scan_completed
+- **Required targets:** borrowed-dawn-survey-1; borrowed-dawn-survey-2; borrowed-dawn-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.borrowed-dawn/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Borrowed Dawn: survey](assets/missions/stages/borrowed-dawn/survey.png)
+
 #### C10.04 - field-work
 
-**Place:** Durkaesh (G02-S014). **Objective:** Lock two reflector actuators inside their measured safe travel envelopes.
+**Place:** Durkaesh (G02-S014). **Objective:** Latch two actuator travel stops at their marked limits and run the commanded bounded sweep.
 
 **Story/dialogue:** PENN: These are external actuator collars. Touching them does not breach or damage a station.
 
@@ -3322,7 +3617,7 @@ Mission-specific rules and resources:
 
 #### C10.05 - independent-witness
 
-**Place:** Vorvan (G02-S033). **Objective:** Escort the identified mirror crew to the shadow-side service berth.
+**Place:** Vorvan (G02-S033). **Objective:** Verify actual safe transit and living reception of the identified mirror crew to the shadow-side service berth.
 
 **Story/dialogue:** PENN: Keep the tender in the clear corridor. We need the actual crew to test the locks.
 
@@ -3342,9 +3637,9 @@ Mission-specific rules and resources:
 
 #### C10.06 - choose-settlement
 
-**Place:** Zannekor (G02-S037). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Vorvan (G02-S033). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Controller Edda Rell: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Controller Edda Rell: Your reflector stop and thermal cutoff evidence is ready. Our arrived delegates have the signed mandate to choose here. Either give each habitat its own bounded reflector segment or publish a joint illumination rota. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** borrowed-dawn-settlement-choice
@@ -3442,11 +3737,13 @@ Controller Edda Rell: The audit has left one anomaly that belongs to neither sid
 
 **Permanent clue:** The unlit interval (`borrowed-dawn-trace`). A photometer records a curved shadow during an interval when no physical reflector crosses its view.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.borrowed-dawn`. Original loss and original fee receipts remain unchanged.
+
 ![Borrowed Dawn outcome borrowed-dawn/choose-settlement/plan-a](assets/missions/outcomes/borrowed-dawn-choose-settlement-plan-a.png)
 
 ![Borrowed Dawn outcome borrowed-dawn/choose-settlement/plan-b](assets/missions/outcomes/borrowed-dawn-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/borrowed-dawn.json).
+[Complete structured definition](missions/definitions/borrowed-dawn.json).
 
 ### C11 - The Open Shadow
 
@@ -3454,11 +3751,11 @@ Controller Edda Rell: The audit has left one anomaly that belongs to neither sid
 
 A civilian rescue service uses a privacy filter that hides passenger identities but should never hide collision warnings. An update has coupled the two channels. The commander compares cooperative test vessels, installs an independently measured reference and negotiates either public collision telemetry or a witnessed privacy escrow.
 
-**Offer:** At Oralaora in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Oralaora in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** VALE: Privacy is a right. Silence on a collision channel is a physical hazard. Measure them separately.
 
-**Contacts:** Agent Mara Vale, Relay Engineer Ivo Renn. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Agent Mara Vale, Relay Engineer Ivo Renn. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,400 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The shadow with no hull.
 
@@ -3486,6 +3783,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/open-shadow
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/open-shadow/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** privacy and collision-channel separation
+- **Recommended tier:** foundation
+- **Parameters / Test packets:** 3
+- **Parameters / Warning distance metres:** 500
+- **Parameters / Maximum warning latency seconds:** 1
+- **Parameters / Private fields allowed:** 0
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** open-shadow-survey-1; open-shadow-survey-2; open-shadow-survey-3
+- **Survey / Instruction:** Observe three cooperative calibration senders; record collision warnings separately from private identity fields.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** open-shadow-work-port; open-shadow-work-starboard
+- **Field work / Instruction:** Connect the onboard reference receiver to each external safety-channel coupler and run three actual test passes.
+- **Field work / Acceptance:** All three passes warn within1s at500m; the public payload contains zero private fields.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** open-shadow-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** open-shadow-plan-a-physical-proof; open-shadow-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Anonymous safety broadcast warns on all three passes without a private identity field.
+- **Branches / Plan-b / Targets:** open-shadow-plan-b-physical-proof; open-shadow-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Witnessed escrow retains private identity while all three collision warnings remain unfiltered.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** controlled-traffic-trial
+- **Player action:** Fly the volunteer crossing through three actual approach lanes while measuring collision warning and identity disclosure separately.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive controlled-traffic-trial operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C11.01 - accept
 
@@ -3496,7 +3858,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -3507,27 +3869,7 @@ Mission-specific rules and resources:
 
 ![The Open Shadow: accept](assets/missions/stages/open-shadow/accept.png)
 
-#### C11.02 - survey
-
-**Place:** Elavaeth (G03-S173). **Objective:** Compare identity and collision channels on three consenting calibration beacons.
-
-**Story/dialogue:** VALE: Privacy is a right. Silence on a collision channel is a physical hazard. Measure them separately.
-
-- **Event:** entity_scan_completed
-- **Required targets:** open-shadow-survey-1; open-shadow-survey-2; open-shadow-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.open-shadow/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Open Shadow: survey](assets/missions/stages/open-shadow/survey.png)
-
-#### C11.03 - collect-reference
+#### C11.02 - collect-reference
 
 **Place:** Oralaora (G03-S074). **Objective:** Collect the identified one-tonne reference instrument from Agent Mara Vale.
 
@@ -3536,7 +3878,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -3550,9 +3892,29 @@ Mission-specific rules and resources:
 
 ![The Open Shadow: collect-reference](assets/missions/stages/open-shadow/collect-reference.png)
 
+#### C11.03 - survey
+
+**Place:** Elavaeth (G03-S173). **Objective:** Observe three cooperative calibration senders; record collision warnings separately from private identity fields.
+
+**Story/dialogue:** VALE: Privacy is a right. Silence on a collision channel is a physical hazard. Measure them separately.
+
+- **Event:** entity_scan_completed
+- **Required targets:** open-shadow-survey-1; open-shadow-survey-2; open-shadow-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.open-shadow/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Open Shadow: survey](assets/missions/stages/open-shadow/survey.png)
+
 #### C11.04 - field-work
 
-**Place:** Oravaessa (G03-S052). **Objective:** Attach the reference receiver to two external test couplers.
+**Place:** Oravaessa (G03-S052). **Objective:** Connect the onboard reference receiver to each external safety-channel coupler and run three actual test passes.
 
 **Story/dialogue:** RENN: The reference listens without recording a passenger's identity. Keep the two receipts distinct.
 
@@ -3592,9 +3954,9 @@ Mission-specific rules and resources:
 
 #### C11.06 - choose-settlement
 
-**Place:** Oralaora (G03-S074). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Maidea (G03-S044). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Agent Mara Vale: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Agent Mara Vale: Your privacy and collision-channel separation evidence is ready. Our arrived delegates have the signed mandate to choose here. Either publish anonymous collision telemetry or use a witnessed identity escrow with a safety channel. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** open-shadow-settlement-choice
@@ -3692,11 +4054,13 @@ Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Th
 
 **Permanent clue:** The shadow with no hull (`open-shadow-trace`). The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.open-shadow`. Original loss and original fee receipts remain unchanged.
+
 ![The Open Shadow outcome open-shadow/choose-settlement/plan-a](assets/missions/outcomes/open-shadow-choose-settlement-plan-a.png)
 
 ![The Open Shadow outcome open-shadow/choose-settlement/plan-b](assets/missions/outcomes/open-shadow-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/open-shadow.json).
+[Complete structured definition](missions/definitions/open-shadow.json).
 
 ### C12 - Harbour Without Orders
 
@@ -3704,11 +4068,11 @@ Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Th
 
 A port's arrival allocator has lost its signing authority after a disputed maintenance transfer. No one is attacking the station, but every berth refuses every arriving ship. The commander establishes who can authorise safe approaches, brings in an independent traffic witness and tests either distributed berth authority or a temporary public harbour office.
 
-**Offer:** At Gallodor in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Gallodor in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** RELL: The harbour is intact. Its doors are closed by three mutually invalid signatures.
 
-**Contacts:** Controller Edda Rell, Marshal Nera Voss. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Controller Edda Rell, Marshal Nera Voss. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,600 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The unsigned berth.
 
@@ -3736,6 +4100,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/harbour-without-orders
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/harbour-without-orders/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** simultaneous berth-allocation exclusion
+- **Recommended tier:** standard
+- **Parameters / Test requests:** 2
+- **Parameters / Berth capacity:** 1
+- **Parameters / Authority lease seconds:** 120
+- **Parameters / Minimum separation seconds:** 20
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** harbour-without-orders-survey-1; harbour-without-orders-survey-2; harbour-without-orders-survey-3
+- **Survey / Instruction:** Read each real allocator refusal signature and compare it with its current one-berth capacity.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** harbour-without-orders-work-port; harbour-without-orders-work-starboard
+- **Field work / Instruction:** Arm two external approach relays, then submit the two identified test requests together.
+- **Field work / Acceptance:** Exactly one request holds the berth; the other waits at least20s and consumes no duplicate capacity.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** harbour-without-orders-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** harbour-without-orders-plan-a-physical-proof; harbour-without-orders-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Two independent operator keys resolve simultaneous requests to one occupied berth without dual grant.
+- **Branches / Plan-b / Targets:** harbour-without-orders-plan-b-physical-proof; harbour-without-orders-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The public authority lease expires at120s and revokes only its own test grant without closing a genuinely occupied berth.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** berth-arbitration
+- **Player action:** Submit two simultaneous real berth claims to one allocator; revoke the losing lease and physically prove mutual exclusion.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Inspect the refusal and obtain the instrument; Stress the single-berth allocator; Receive the observer and choose authority; Prove exclusion and settle
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C12.01 - accept
 
@@ -3746,7 +4175,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -3757,27 +4186,7 @@ Mission-specific rules and resources:
 
 ![Harbour Without Orders: accept](assets/missions/stages/harbour-without-orders/accept.png)
 
-#### C12.02 - survey
-
-**Place:** Ombolom (G04-S092). **Objective:** Scan the three external arrival allocators and record their refusal certificates.
-
-**Story/dialogue:** RELL: The harbour is intact. Its doors are closed by three mutually invalid signatures.
-
-- **Event:** entity_scan_completed
-- **Required targets:** harbour-without-orders-survey-1; harbour-without-orders-survey-2; harbour-without-orders-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.harbour-without-orders/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Harbour Without Orders: survey](assets/missions/stages/harbour-without-orders/survey.png)
-
-#### C12.03 - collect-reference
+#### C12.02 - collect-reference
 
 **Place:** Gallodor (G04-S111). **Objective:** Collect the identified one-tonne reference instrument from Controller Edda Rell.
 
@@ -3786,7 +4195,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -3800,9 +4209,29 @@ Mission-specific rules and resources:
 
 ![Harbour Without Orders: collect-reference](assets/missions/stages/harbour-without-orders/collect-reference.png)
 
+#### C12.03 - survey
+
+**Place:** Ombolom (G04-S092). **Objective:** Read each real allocator refusal signature and compare it with its current one-berth capacity.
+
+**Story/dialogue:** RELL: The harbour is intact. Its doors are closed by three mutually invalid signatures.
+
+- **Event:** entity_scan_completed
+- **Required targets:** harbour-without-orders-survey-1; harbour-without-orders-survey-2; harbour-without-orders-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.harbour-without-orders/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Harbour Without Orders: survey](assets/missions/stages/harbour-without-orders/survey.png)
+
 #### C12.04 - field-work
 
-**Place:** Emdor (G04-S145). **Objective:** Install temporary safety limits at the two external approach relays.
+**Place:** Emdor (G04-S145). **Objective:** Arm two external approach relays, then submit the two identified test requests together.
 
 **Story/dialogue:** VOSS: These limits prevent conflicting approaches while the operators decide who may sign.
 
@@ -3822,7 +4251,7 @@ Mission-specific rules and resources:
 
 #### C12.05 - independent-witness
 
-**Place:** Emron (G04-S048). **Objective:** Escort the neutral traffic witness to the emergency receiving berth.
+**Place:** Emron (G04-S048). **Objective:** Verify actual safe transit and living reception of the neutral traffic witness to the emergency receiving berth.
 
 **Story/dialogue:** RELL: Reception must identify our witness and the berth used. A ship disappearing near the station proves nothing.
 
@@ -3842,9 +4271,9 @@ Mission-specific rules and resources:
 
 #### C12.06 - choose-settlement
 
-**Place:** Gallodor (G04-S111). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Emron (G04-S048). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Controller Edda Rell: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Controller Edda Rell: Your simultaneous berth-allocation exclusion evidence is ready. Our arrived delegates have the signed mandate to choose here. Either return authority to independent berth operators or create a time-limited public harbour office. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** harbour-without-orders-settlement-choice
@@ -3942,11 +4371,13 @@ Controller Edda Rell: The audit has left one anomaly that belongs to neither sid
 
 **Permanent clue:** The unsigned berth (`harbour-without-orders-trace`). The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.harbour-without-orders`. Original loss and original fee receipts remain unchanged.
+
 ![Harbour Without Orders outcome harbour-without-orders/choose-settlement/plan-a](assets/missions/outcomes/harbour-without-orders-choose-settlement-plan-a.png)
 
 ![Harbour Without Orders outcome harbour-without-orders/choose-settlement/plan-b](assets/missions/outcomes/harbour-without-orders-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/harbour-without-orders.json).
+[Complete structured definition](missions/definitions/harbour-without-orders.json).
 
 ### C13 - False Colours
 
@@ -3954,11 +4385,11 @@ Controller Edda Rell: The audit has left one anomaly that belongs to neither sid
 
 A lawful hauler is being mistaken for a patrol vessel because a transponder recycler issued duplicate identity keys. A frightened militia has closed the freight corridor. The commander obtains the original key chain, protects a cooperative verification flight and chooses public revocation or a supervised reissue. Attributed evidence resolves the identity dispute.
 
-**Offer:** At Heroran in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Heroran in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** TOREN: A colour on a scanner is not a warrant. Find the original signing chain.
 
-**Contacts:** Nia Toren, Captain Tamsin Holt. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Nia Toren, Captain Tamsin Holt. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 6,200 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The seal before the key.
 
@@ -3986,6 +4417,70 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/false-colours
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/false-colours/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** identity-key revocation and reissue
+- **Recommended tier:** foundation
+- **Parameters / Distinct test identities:** 2
+- **Parameters / Duplicate keys allowed:** 0
+- **Parameters / Test seconds:** 12
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** false-colours-survey-1; false-colours-survey-2; false-colours-survey-3
+- **Survey / Instruction:** Read three cooperative repeaters and match their signed issuing chain, not scanner colour.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** false-colours-work-port; false-colours-work-starboard
+- **Field work / Instruction:** Present each of the two duplicate keys to the onboard seal comparator and verify the independent manufacturing trace.
+- **Field work / Acceptance:** Two separately identified hulls are observed; no step damages a hull or treats a colour as a warrant.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** false-colours-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** yes
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** false-colours-plan-a-physical-proof; false-colours-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Old duplicate keys are revoked together and the militia actually acknowledges both safe-conduct notices.
+- **Branches / Plan-b / Targets:** false-colours-plan-b-physical-proof; false-colours-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Two distinct new key identities are issued; a replay of either retired key is rejected during a12s test.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** signature-challenge
+- **Player action:** Challenge each actual transmitter with new nonces, revoke the retired key and replay its signed old packet to prove rejection.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive signature-challenge operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C13.01 - accept
 
@@ -3996,7 +4491,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -4007,27 +4502,7 @@ Mission-specific rules and resources:
 
 ![False Colours: accept](assets/missions/stages/false-colours/accept.png)
 
-#### C13.02 - survey
-
-**Place:** Firerur (G05-S049). **Objective:** Scan three cooperative identity repeaters along the disputed freight corridor.
-
-**Story/dialogue:** TOREN: A colour on a scanner is not a warrant. Find the original signing chain.
-
-- **Event:** entity_scan_completed
-- **Required targets:** false-colours-survey-1; false-colours-survey-2; false-colours-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.false-colours/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![False Colours: survey](assets/missions/stages/false-colours/survey.png)
-
-#### C13.03 - collect-reference
+#### C13.02 - collect-reference
 
 **Place:** Heroran (G05-S148). **Objective:** Collect the identified one-tonne reference instrument from Nia Toren.
 
@@ -4036,7 +4511,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -4050,9 +4525,29 @@ Mission-specific rules and resources:
 
 ![False Colours: collect-reference](assets/missions/stages/false-colours/collect-reference.png)
 
+#### C13.03 - survey
+
+**Place:** Firerur (G05-S049). **Objective:** Read three cooperative repeaters and match their signed issuing chain, not scanner colour.
+
+**Story/dialogue:** TOREN: A colour on a scanner is not a warrant. Find the original signing chain.
+
+- **Event:** entity_scan_completed
+- **Required targets:** false-colours-survey-1; false-colours-survey-2; false-colours-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.false-colours/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![False Colours: survey](assets/missions/stages/false-colours/survey.png)
+
 #### C13.04 - field-work
 
-**Place:** Norenul (G05-S222). **Objective:** Compare both duplicate keys against the independent physical seal.
+**Place:** Norenul (G05-S222). **Objective:** Present each of the two duplicate keys to the onboard seal comparator and verify the independent manufacturing trace.
 
 **Story/dialogue:** HOLT: The seal's manufacturing trace proves a duplicate issue. Do not destroy the vessels carrying the evidence.
 
@@ -4092,9 +4587,9 @@ Mission-specific rules and resources:
 
 #### C13.06 - choose-settlement
 
-**Place:** Heroran (G05-S148). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Seluer (G05-S200). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Nia Toren: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Nia Toren: Your identity-key revocation and reissue evidence is ready. Our arrived delegates have the signed mandate to choose here. Either publish a simultaneous revocation and safe-conduct notice or reissue both keys under independent supervision. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** false-colours-settlement-choice
@@ -4192,11 +4687,13 @@ Nia Toren: The audit has left one anomaly that belongs to neither side. An older
 
 **Permanent clue:** The seal before the key (`false-colours-trace`). An older layer in the physical seal contains a curved signature absent from every transponder issue record.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.false-colours`. Original loss and original fee receipts remain unchanged.
+
 ![False Colours outcome false-colours/choose-settlement/plan-a](assets/missions/outcomes/false-colours-choose-settlement-plan-a.png)
 
 ![False Colours outcome false-colours/choose-settlement/plan-b](assets/missions/outcomes/false-colours-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/false-colours.json).
+[Complete structured definition](missions/definitions/false-colours.json).
 
 ### C14 - The Rubble Covenant
 
@@ -4204,11 +4701,11 @@ Nia Toren: The audit has left one anomaly that belongs to neither side. An older
 
 A ring-mining cooperative wants to reopen a debris corridor but rival insurers classify every unclaimed rock as someone else's property. The commander maps the actual masses, attaches verified tug anchors and escorts a survey crew before choosing pooled clearance or individually bonded salvage. Safe passage depends on verified clearance and an agreed ownership charter.
 
-**Offer:** At Leiven in Galaxy 6, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Leiven in Galaxy 6, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** ORR: Ownership does not change momentum. We need both records before a tug may move anything.
 
-**Contacts:** Geologist Jalen Orr, Tug Lead Mira Penn. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Geologist Jalen Orr, Tug Lead Mira Penn. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 6,600 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The hollow mass.
 
@@ -4236,6 +4733,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/rubble-covenant
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/rubble-covenant/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** mass and drift-vector clearance
+- **Recommended tier:** standard
+- **Parameters / Body mass kg:** 1000; 1500; 2500
+- **Parameters / Test seconds:** 20
+- **Parameters / Minimum miss distance metres:** 500
+- **Parameters / Mass tolerance kg:** 0.001
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** rubble-covenant-survey-1; rubble-covenant-survey-2; rubble-covenant-survey-3
+- **Survey / Instruction:** Measure each of three actual debris masses and velocity vectors. A scan alone clears none of them.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** rubble-covenant-work-port; rubble-covenant-work-starboard
+- **Field work / Instruction:** Attach two source-owned tug anchors; use their bounded thrust to change the two identified clearance trajectories.
+- **Field work / Acceptance:** Initial5000kg equals remaining bodies plus received material within0.001kg; predicted and actual passage miss the corridor by at least500m.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** rubble-covenant-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** rubble-covenant-plan-a-physical-proof; rubble-covenant-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The cooperative mass ledger balances and its actual tug-release test preserves the verified clear corridor.
+- **Branches / Plan-b / Targets:** rubble-covenant-plan-b-physical-proof; rubble-covenant-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Distinct bonded section boundaries reject an overlapping salvage claim; an actual test pass clears the exclusion zone.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** tug-coordination
+- **Player action:** Assign actual source-owned tug thrust to three registered fragments; measure their drift and clear the shared corridor while conserving mass and momentum.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Survey the moving debris; Coordinate the three tugs; Test the clear corridor; Settle ownership and return the instrument
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C14.01 - accept
 
@@ -4246,7 +4808,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -4257,27 +4819,7 @@ Mission-specific rules and resources:
 
 ![The Rubble Covenant: accept](assets/missions/stages/rubble-covenant/accept.png)
 
-#### C14.02 - survey
-
-**Place:** Noaraena (G06-S138). **Objective:** Measure three named debris masses and their actual drift vectors.
-
-**Story/dialogue:** ORR: Ownership does not change momentum. We need both records before a tug may move anything.
-
-- **Event:** entity_scan_completed
-- **Required targets:** rubble-covenant-survey-1; rubble-covenant-survey-2; rubble-covenant-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.rubble-covenant/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Rubble Covenant: survey](assets/missions/stages/rubble-covenant/survey.png)
-
-#### C14.03 - collect-reference
+#### C14.02 - collect-reference
 
 **Place:** Leiven (G06-S185). **Objective:** Collect the identified one-tonne reference instrument from Geologist Jalen Orr.
 
@@ -4286,7 +4828,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -4300,9 +4842,29 @@ Mission-specific rules and resources:
 
 ![The Rubble Covenant: collect-reference](assets/missions/stages/rubble-covenant/collect-reference.png)
 
+#### C14.03 - survey
+
+**Place:** Noaraena (G06-S138). **Objective:** Measure each of three actual debris masses and velocity vectors. A scan alone clears none of them.
+
+**Story/dialogue:** ORR: Ownership does not change momentum. We need both records before a tug may move anything.
+
+- **Event:** entity_scan_completed
+- **Required targets:** rubble-covenant-survey-1; rubble-covenant-survey-2; rubble-covenant-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.rubble-covenant/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Rubble Covenant: survey](assets/missions/stages/rubble-covenant/survey.png)
+
 #### C14.04 - field-work
 
-**Place:** Irasaori (G06-S010). **Objective:** Attach two identified tug anchors to the registered clearance bodies.
+**Place:** Irasaori (G06-S010). **Objective:** Attach two source-owned tug anchors; use their bounded thrust to change the two identified clearance trajectories.
 
 **Story/dialogue:** PENN: Keep anchor identity tied to the rock's conserved mass. A fragment is not a second claim.
 
@@ -4322,7 +4884,7 @@ Mission-specific rules and resources:
 
 #### C14.05 - independent-witness
 
-**Place:** Loaliel (G06-S071). **Objective:** Escort the survey tender through the proven clearance corridor.
+**Place:** Loaliel (G06-S071). **Objective:** Verify actual safe transit and living reception of the survey tender through the proven clearance corridor.
 
 **Story/dialogue:** PENN: The corridor is open only when the living survey crew receives it.
 
@@ -4342,9 +4904,9 @@ Mission-specific rules and resources:
 
 #### C14.06 - choose-settlement
 
-**Place:** Leiven (G06-S185). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Loaliel (G06-S071). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Geologist Jalen Orr: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Geologist Jalen Orr: Your mass and drift-vector clearance evidence is ready. Our arrived delegates have the signed mandate to choose here. Either pool the clearance work under the cooperative or bond individual salvage sections. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** rubble-covenant-settlement-choice
@@ -4442,11 +5004,13 @@ Geologist Jalen Orr: The audit has left one anomaly that belongs to neither side
 
 **Permanent clue:** The hollow mass (`rubble-covenant-trace`). One old trajectory record curves around an empty centre as though the missing mass had a boundary of its own.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.rubble-covenant`. Original loss and original fee receipts remain unchanged.
+
 ![The Rubble Covenant outcome rubble-covenant/choose-settlement/plan-a](assets/missions/outcomes/rubble-covenant-choose-settlement-plan-a.png)
 
 ![The Rubble Covenant outcome rubble-covenant/choose-settlement/plan-b](assets/missions/outcomes/rubble-covenant-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/rubble-covenant.json).
+[Complete structured definition](missions/definitions/rubble-covenant.json).
 
 ### C15 - A Garden in Transit
 
@@ -4454,11 +5018,11 @@ Geologist Jalen Orr: The audit has left one anomaly that belongs to neither side
 
 An orbital seed archive is moving because its lease is ending. Two destinations want the same climate collection, while the growers insist the living archive must not be divided blindly. The commander compares real receiving environments, accompanies the seed tender and obtains either a distributed custody charter or a shared quarantine berth.
 
-**Offer:** At Kurenash in Galaxy 7, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Kurenash in Galaxy 7, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** VEIL: A seed catalogue is not a cargo price list. Record the conditions that let it remain alive.
 
-**Contacts:** Custodian Tomas Veil, Captain Suri Arlen. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Custodian Tomas Veil, Captain Suri Arlen. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 6,100 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The dormant season.
 
@@ -4486,6 +5050,72 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/garden-in-transit
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/garden-in-transit/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** quarantine and climate compatibility
+- **Recommended tier:** standard
+- **Parameters / Temperature min:** 18
+- **Parameters / Temperature max:** 24
+- **Parameters / Humidity min:** 45
+- **Parameters / Humidity max:** 65
+- **Parameters / Test seconds:** 20
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** garden-in-transit-survey-1; garden-in-transit-survey-2; garden-in-transit-survey-3
+- **Survey / Instruction:** Observe three real receiving cradle environments under the archive consent token.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** garden-in-transit-work-port; garden-in-transit-work-starboard
+- **Field work / Instruction:** Use the sealed onboard reference at both isolated cradles; run their actual thermal and humidity controls.
+- **Field work / Acceptance:** Both cradles remain18-24degrees and45-65humidity units for20s; no reference culture or seed is consumed by the test.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** garden-in-transit-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** yes
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** garden-in-transit-plan-a-physical-proof; garden-in-transit-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both distinct receiving cradles pass the climate envelope and the source signs the actual custody split.
+- **Branches / Plan-b / Targets:** garden-in-transit-plan-b-physical-proof; garden-in-transit-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The shared quarantine locks reject an unapproved opening and the joint custodians acknowledge access without opening containment.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** life-support-control
+- **Player action:** Adjust two actual sealed cradle climate controls; route the live tender only after both receiving environments pass the stability window.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive life-support-control operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C15.01 - accept
 
@@ -4496,7 +5126,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -4507,27 +5137,7 @@ Mission-specific rules and resources:
 
 ![A Garden in Transit: accept](assets/missions/stages/garden-in-transit/accept.png)
 
-#### C15.02 - survey
-
-**Place:** Zorgadek (G07-S064). **Objective:** Scan the three receiving environmental cradles using the archive's consent token.
-
-**Story/dialogue:** VEIL: A seed catalogue is not a cargo price list. Record the conditions that let it remain alive.
-
-- **Event:** entity_scan_completed
-- **Required targets:** garden-in-transit-survey-1; garden-in-transit-survey-2; garden-in-transit-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.garden-in-transit/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![A Garden in Transit: survey](assets/missions/stages/garden-in-transit/survey.png)
-
-#### C15.03 - collect-reference
+#### C15.02 - collect-reference
 
 **Place:** Kurenash (G07-S222). **Objective:** Collect the identified one-tonne reference instrument from Custodian Tomas Veil.
 
@@ -4536,7 +5146,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -4550,9 +5160,29 @@ Mission-specific rules and resources:
 
 ![A Garden in Transit: collect-reference](assets/missions/stages/garden-in-transit/collect-reference.png)
 
+#### C15.03 - survey
+
+**Place:** Zorgadek (G07-S064). **Objective:** Observe three real receiving cradle environments under the archive consent token.
+
+**Story/dialogue:** VEIL: A seed catalogue is not a cargo price list. Record the conditions that let it remain alive.
+
+- **Event:** entity_scan_completed
+- **Required targets:** garden-in-transit-survey-1; garden-in-transit-survey-2; garden-in-transit-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.garden-in-transit/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![A Garden in Transit: survey](assets/missions/stages/garden-in-transit/survey.png)
+
 #### C15.04 - field-work
 
-**Place:** Vektaor (G07-S065). **Objective:** Test two isolated seed cradles with the loaned reference sampler.
+**Place:** Vektaor (G07-S065). **Objective:** Use the sealed onboard reference at both isolated cradles; run their actual thermal and humidity controls.
 
 **Story/dialogue:** ARLEN: Test capsules return to their registered owner. A copied inventory is not a new living collection.
 
@@ -4592,9 +5222,9 @@ Mission-specific rules and resources:
 
 #### C15.06 - choose-settlement
 
-**Place:** Kurenash (G07-S222). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Drelor (G07-S238). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Custodian Tomas Veil: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Custodian Tomas Veil: Your quarantine and climate compatibility evidence is ready. Our arrived delegates have the signed mandate to choose here. Either create distributed seed custody or establish a shared orbital archive. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** garden-in-transit-settlement-choice
@@ -4692,11 +5322,13 @@ Custodian Tomas Veil: The audit has left one anomaly that belongs to neither sid
 
 **Permanent clue:** The dormant season (`garden-in-transit-trace`). The archive contains a circular season boundary that encloses no named climate or world.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.garden-in-transit`. Original loss and original fee receipts remain unchanged.
+
 ![A Garden in Transit outcome garden-in-transit/choose-settlement/plan-a](assets/missions/outcomes/garden-in-transit-choose-settlement-plan-a.png)
 
 ![A Garden in Transit outcome garden-in-transit/choose-settlement/plan-b](assets/missions/outcomes/garden-in-transit-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/garden-in-transit.json).
+[Complete structured definition](missions/definitions/garden-in-transit.json).
 
 ### C16 - The Warrant Ledger
 
@@ -4704,11 +5336,11 @@ Custodian Tomas Veil: The audit has left one anomaly that belongs to neither sid
 
 Several bounty issuers have reused the same casualty evidence to obtain incompatible warrants. One convoy carries a real armed suspect and two wrongly listed witnesses. The commander audits the evidence chain, protects a neutral hearing and chooses simultaneous public correction or a protected restitution process.
 
-**Offer:** At Iaririn in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Iaririn in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** VOSS: A reward number is not evidence. A duplicate casualty cannot authorise another victim.
 
-**Contacts:** Marshal Nera Voss, Nia Toren. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Marshal Nera Voss, Nia Toren. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 8,200 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The unwritten warrant.
 
@@ -4736,6 +5368,70 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/warrant-ledger
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/warrant-ledger/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** conflicting-evidence adjudication
+- **Recommended tier:** advanced
+- **Parameters / Issuer records:** 3
+- **Parameters / Disputed victim records:** 2
+- **Parameters / Duplicate evidence uses allowed:** 0
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** warrant-ledger-survey-1; warrant-ledger-survey-2; warrant-ledger-survey-3
+- **Survey / Instruction:** Read three actual issuer-signed warrant records; compare their distinct evidence references.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** warrant-ledger-work-port; warrant-ledger-work-starboard
+- **Field work / Instruction:** Compare both victim records against the original independent incident seal and retain both conflicting claims.
+- **Field work / Acceptance:** Each incident identity is counted once; neither wrongly listed witness becomes a hostile target.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** warrant-ledger-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** warrant-ledger-plan-a-physical-proof; warrant-ledger-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both issuers acknowledge revocation before the witness safe-conduct register is accepted.
+- **Branches / Plan-b / Targets:** warrant-ledger-plan-b-physical-proof; warrant-ledger-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** A sealed hearing receives both records; each compensation debit has a matching funded recipient credit and no evidence is spent twice.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** evidence-reconciliation
+- **Player action:** Trace the three signed issuer records, present the two independent victim challenges and reject reused evidence before revocation/reissue.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive evidence-reconciliation operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C16.01 - accept
 
@@ -4746,7 +5442,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -4757,27 +5453,7 @@ Mission-specific rules and resources:
 
 ![The Warrant Ledger: accept](assets/missions/stages/warrant-ledger/accept.png)
 
-#### C16.02 - survey
-
-**Place:** Faera (G08-S148). **Objective:** Scan three registered warrant evidence beacons with independent issuer signatures.
-
-**Story/dialogue:** VOSS: A reward number is not evidence. A duplicate casualty cannot authorise another victim.
-
-- **Event:** entity_scan_completed
-- **Required targets:** warrant-ledger-survey-1; warrant-ledger-survey-2; warrant-ledger-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.warrant-ledger/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Warrant Ledger: survey](assets/missions/stages/warrant-ledger/survey.png)
-
-#### C16.03 - collect-reference
+#### C16.02 - collect-reference
 
 **Place:** Iaririn (G08-S003). **Objective:** Collect the identified one-tonne reference instrument from Marshal Nera Voss.
 
@@ -4786,7 +5462,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -4800,9 +5476,29 @@ Mission-specific rules and resources:
 
 ![The Warrant Ledger: collect-reference](assets/missions/stages/warrant-ledger/collect-reference.png)
 
+#### C16.03 - survey
+
+**Place:** Faera (G08-S148). **Objective:** Read three actual issuer-signed warrant records; compare their distinct evidence references.
+
+**Story/dialogue:** VOSS: A reward number is not evidence. A duplicate casualty cannot authorise another victim.
+
+- **Event:** entity_scan_completed
+- **Required targets:** warrant-ledger-survey-1; warrant-ledger-survey-2; warrant-ledger-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.warrant-ledger/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Warrant Ledger: survey](assets/missions/stages/warrant-ledger/survey.png)
+
 #### C16.04 - field-work
 
-**Place:** Neraen (G08-S187). **Objective:** Reconcile the two conflicting victim records at the independent evidence coupler.
+**Place:** Neraen (G08-S187). **Objective:** Compare both victim records against the original independent incident seal and retain both conflicting claims.
 
 **Story/dialogue:** TOREN: The dates prove reuse. Keep the original statements and their consent restrictions intact.
 
@@ -4822,7 +5518,7 @@ Mission-specific rules and resources:
 
 #### C16.05 - independent-witness
 
-**Place:** Lorion (G08-S137). **Objective:** Escort the consenting witness tender to the protected hearing berth.
+**Place:** Lorion (G08-S137). **Objective:** Verify actual safe transit and living reception of the consenting witness tender to the protected hearing berth.
 
 **Story/dialogue:** VOSS: A living received witness is our objective. Unrelated wanted kills do not advance it.
 
@@ -4842,9 +5538,9 @@ Mission-specific rules and resources:
 
 #### C16.06 - choose-settlement
 
-**Place:** Iaririn (G08-S003). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Lorion (G08-S137). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Marshal Nera Voss: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Marshal Nera Voss: Your conflicting-evidence adjudication evidence is ready. Our arrived delegates have the signed mandate to choose here. Either publish corrected warrants simultaneously or use protected restitution hearings. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** warrant-ledger-settlement-choice
@@ -4942,11 +5638,13 @@ Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. 
 
 **Permanent clue:** The unwritten warrant (`warrant-ledger-trace`). Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.warrant-ledger`. Original loss and original fee receipts remain unchanged.
+
 ![The Warrant Ledger outcome warrant-ledger/choose-settlement/plan-a](assets/missions/outcomes/warrant-ledger-choose-settlement-plan-a.png)
 
 ![The Warrant Ledger outcome warrant-ledger/choose-settlement/plan-b](assets/missions/outcomes/warrant-ledger-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/warrant-ledger.json).
+[Complete structured definition](missions/definitions/warrant-ledger.json).
 
 ### C17 - The Measure of Care
 
@@ -4954,11 +5652,11 @@ Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. 
 
 Two orbital clinics report incompatible storage readings for the same treatment. Miscalibrated refrigeration references have created an apparent shortage. The commander preserves a consented diagnostic sample, tests each cold chain and helps the clinics choose local reference standards or a jointly maintained calibration service.
 
-**Offer:** At Veron in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Veron in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** DAIN: We need the equipment's history, not a stranger's diagnosis.
 
-**Contacts:** Physicist Anja Kest, Coordinator Sera Dain. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Physicist Anja Kest, Coordinator Sera Dain. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 5,900 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The temperature of silence.
 
@@ -4986,6 +5684,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/measure-of-care
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/measure-of-care/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** cold-chain calibration against references
+- **Recommended tier:** foundation
+- **Parameters / Reference temperature:** 4
+- **Parameters / Maximum error:** 0.5
+- **Parameters / Sample count:** 3
+- **Parameters / Test seconds:** 18
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** measure-of-care-survey-1; measure-of-care-survey-2; measure-of-care-survey-3
+- **Survey / Instruction:** Read three signed refrigeration monitors without requesting patient names.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** measure-of-care-work-port; measure-of-care-work-starboard
+- **Field work / Instruction:** Run the sealed onboard reference against both external calibration cradles; adjust the actual offsets.
+- **Field work / Acceptance:** All three readings at each cradle are within0.5degrees of4 after an18s physical test.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** measure-of-care-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** measure-of-care-plan-a-physical-proof; measure-of-care-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Each clinic retains its own measured reference and acknowledged custody receipt.
+- **Branches / Plan-b / Targets:** measure-of-care-plan-b-physical-proof; measure-of-care-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Both clinics can stop the shared calibration service independently, without invalidating the sealed sample history.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** cold-chain-calibration
+- **Player action:** Set the actual reference controller and sample three independent sealed thermometer channels within the published tolerance.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive cold-chain-calibration operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C17.01 - accept
 
@@ -4996,7 +5759,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -5007,27 +5770,7 @@ Mission-specific rules and resources:
 
 ![The Measure of Care: accept](assets/missions/stages/measure-of-care/accept.png)
 
-#### C17.02 - survey
-
-**Place:** Almadan (G01-S022). **Objective:** Read three signed cold-chain monitors without opening patient records.
-
-**Story/dialogue:** DAIN: We need the equipment's history, not a stranger's diagnosis.
-
-- **Event:** entity_scan_completed
-- **Required targets:** measure-of-care-survey-1; measure-of-care-survey-2; measure-of-care-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.measure-of-care/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Measure of Care: survey](assets/missions/stages/measure-of-care/survey.png)
-
-#### C17.03 - collect-reference
+#### C17.02 - collect-reference
 
 **Place:** Veron (G01-S041). **Objective:** Collect the identified one-tonne reference instrument from Physicist Anja Kest.
 
@@ -5036,7 +5779,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -5050,9 +5793,29 @@ Mission-specific rules and resources:
 
 ![The Measure of Care: collect-reference](assets/missions/stages/measure-of-care/collect-reference.png)
 
+#### C17.03 - survey
+
+**Place:** Almadan (G01-S022). **Objective:** Read three signed refrigeration monitors without requesting patient names.
+
+**Story/dialogue:** DAIN: We need the equipment's history, not a stranger's diagnosis.
+
+- **Event:** entity_scan_completed
+- **Required targets:** measure-of-care-survey-1; measure-of-care-survey-2; measure-of-care-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.measure-of-care/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Measure of Care: survey](assets/missions/stages/measure-of-care/survey.png)
+
 #### C17.04 - field-work
 
-**Place:** Envesen (G01-S136). **Objective:** Run the sealed reference sample through the two external calibration cradles.
+**Place:** Envesen (G01-S136). **Objective:** Run the sealed onboard reference against both external calibration cradles; adjust the actual offsets.
 
 **Story/dialogue:** KEST: Keep temperature exposure and capsule identity together. A new label cannot repair a spoiled sample.
 
@@ -5072,7 +5835,7 @@ Mission-specific rules and resources:
 
 #### C17.05 - independent-witness
 
-**Place:** Betaven (G01-S071). **Objective:** Escort the clinic service crew to the independent test berth.
+**Place:** Betaven (G01-S071). **Objective:** Verify actual safe transit and living reception of the clinic service crew to the independent test berth.
 
 **Story/dialogue:** DAIN: Their arrival is verified by the receiving clinic. A crate alone cannot prove care happened.
 
@@ -5092,9 +5855,9 @@ Mission-specific rules and resources:
 
 #### C17.06 - choose-settlement
 
-**Place:** Veron (G01-S041). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Betaven (G01-S071). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Physicist Anja Kest: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Physicist Anja Kest: Your cold-chain calibration against references evidence is ready. Our arrived delegates have the signed mandate to choose here. Either keep independent clinic calibration references or establish a shared clinical calibration service. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** measure-of-care-settlement-choice
@@ -5192,11 +5955,13 @@ Physicist Anja Kest: The audit has left one anomaly that belongs to neither side
 
 **Permanent clue:** The temperature of silence (`measure-of-care-trace`). A reference recorder shows a stable curved boundary during a period with no recorded thermal source.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.measure-of-care`. Original loss and original fee receipts remain unchanged.
+
 ![The Measure of Care outcome measure-of-care/choose-settlement/plan-a](assets/missions/outcomes/measure-of-care-choose-settlement-plan-a.png)
 
 ![The Measure of Care outcome measure-of-care/choose-settlement/plan-b](assets/missions/outcomes/measure-of-care-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/measure-of-care.json).
+[Complete structured definition](missions/definitions/measure-of-care.json).
 
 ### C18 - The Long Return
 
@@ -5204,11 +5969,11 @@ Physicist Anja Kest: The audit has left one anomaly that belongs to neither side
 
 A dispersed maintenance crew can return home only if three competing carriers honour the same transfer agreement. Each carrier has a plausible but incomplete account of an earlier missed rendezvous. The commander reconstructs the physical custody chain, escorts a voluntary reunion tender and negotiates a shared handoff or direct return.
 
-**Offer:** At Zankakor in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Zankakor in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** SOREL: Each crew remembers a different clock. Ask who actually received people, not who filed first.
 
-**Contacts:** Coordinator Sera Dain, Captain Orin Sorel. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Coordinator Sera Dain, Captain Orin Sorel. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,800 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The passenger never booked.
 
@@ -5236,6 +6001,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/long-return
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/long-return/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** live multi-carrier handoff
+- **Recommended tier:** standard
+- **Parameters / Carriers:** 3
+- **Parameters / Handoff tests:** 2
+- **Parameters / Simultaneous custodians allowed:** 1
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** long-return-survey-1; long-return-survey-2; long-return-survey-3
+- **Survey / Instruction:** Read each consenting carrier rendezvous record and its actual named-party custody.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** long-return-work-port; long-return-work-starboard
+- **Field work / Instruction:** Run two neutral receiver handoff tests with the original onboard witness instrument.
+- **Field work / Acceptance:** At each test a real receiver accepts custody before the prior carrier releases it; exactly one holder owns each person record.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** long-return-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** yes
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** long-return-plan-a-physical-proof; long-return-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both carrier signatures bind the same consenting reunion group and its actual receiving berth.
+- **Branches / Plan-b / Targets:** long-return-plan-b-physical-proof; long-return-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The direct corridor grant names the actual reunion tender and the home berth acknowledges that same living group.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Handoff atomicity:** Prepare receiver capacity and consent while the sender remains sole custodian. Commit sender removal and receiver acquisition as one transaction and one receipt. Before commit sender owns it; afterwards receiver alone owns it. An acknowledgement is not concurrent custody.
+- **Interaction style:** consented-custody-chain
+- **Player action:** Fly between the three real carriers and perform two atomic source/receiver transfers while validating continuing consent.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive consented-custody-chain operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C18.01 - accept
 
@@ -5246,7 +6076,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -5257,27 +6087,7 @@ Mission-specific rules and resources:
 
 ![The Long Return: accept](assets/missions/stages/long-return/accept.png)
 
-#### C18.02 - survey
-
-**Place:** Darvan (G02-S127). **Objective:** Record three carrier rendezvous receipts from consenting relay crews.
-
-**Story/dialogue:** SOREL: Each crew remembers a different clock. Ask who actually received people, not who filed first.
-
-- **Event:** entity_scan_completed
-- **Required targets:** long-return-survey-1; long-return-survey-2; long-return-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.long-return/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Long Return: survey](assets/missions/stages/long-return/survey.png)
-
-#### C18.03 - collect-reference
+#### C18.02 - collect-reference
 
 **Place:** Zankakor (G02-S080). **Objective:** Collect the identified one-tonne reference instrument from Coordinator Sera Dain.
 
@@ -5286,7 +6096,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -5300,9 +6110,29 @@ Mission-specific rules and resources:
 
 ![The Long Return: collect-reference](assets/missions/stages/long-return/collect-reference.png)
 
+#### C18.03 - survey
+
+**Place:** Darvan (G02-S127). **Objective:** Read each consenting carrier rendezvous record and its actual named-party custody.
+
+**Story/dialogue:** SOREL: Each crew remembers a different clock. Ask who actually received people, not who filed first.
+
+- **Event:** entity_scan_completed
+- **Required targets:** long-return-survey-1; long-return-survey-2; long-return-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.long-return/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Long Return: survey](assets/missions/stages/long-return/survey.png)
+
 #### C18.04 - field-work
 
-**Place:** Halridor (G02-S001). **Objective:** Test two neutral custody handoffs using the loaned receiver witness.
+**Place:** Halridor (G02-S001). **Objective:** Run two neutral receiver handoff tests with the original onboard witness instrument.
 
 **Story/dialogue:** DAIN: These tests contain no passengers. Never make a real crew the bait for a missed rendezvous.
 
@@ -5342,9 +6172,9 @@ Mission-specific rules and resources:
 
 #### C18.06 - choose-settlement
 
-**Place:** Zankakor (G02-S080). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Elaris (G02-S118). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Coordinator Sera Dain: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Coordinator Sera Dain: Your live multi-carrier handoff evidence is ready. Our arrived delegates have the signed mandate to choose here. Either use a witnessed shared return handoff or give the reunion tender a direct return corridor. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** long-return-settlement-choice
@@ -5442,11 +6272,13 @@ Coordinator Sera Dain: The audit has left one anomaly that belongs to neither si
 
 **Permanent clue:** The passenger never booked (`long-return-trace`). The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.long-return`. Original loss and original fee receipts remain unchanged.
+
 ![The Long Return outcome long-return/choose-settlement/plan-a](assets/missions/outcomes/long-return-choose-settlement-plan-a.png)
 
 ![The Long Return outcome long-return/choose-settlement/plan-b](assets/missions/outcomes/long-return-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/long-return.json).
+[Complete structured definition](missions/definitions/long-return.json).
 
 ### C19 - The Unfinished Map
 
@@ -5454,11 +6286,11 @@ Coordinator Sera Dain: The audit has left one anomaly that belongs to neither si
 
 A dead surveyor's archive is being sold as a complete safe-navigation map, although its final measurements were never made. The commander recovers authorised copies from ordinary visible receivers, measures the disputed gaps and obtains either a clearly bounded public atlas or a witnessed research-only archive.
 
-**Offer:** At Sareith in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Sareith in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** ORR: An honest blank is safer than an invented coordinate.
 
-**Contacts:** Agent Mara Vale, Geologist Jalen Orr. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Agent Mara Vale, Geologist Jalen Orr. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 6,900 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The margin beyond the map.
 
@@ -5486,6 +6318,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/unfinished-map
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/unfinished-map/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** uncertainty envelope surveying
+- **Recommended tier:** foundation
+- **Parameters / Landmarks:** 3
+- **Parameters / Boundary tests:** 2
+- **Parameters / Maximum declared error metres:** 25
+- **Parameters / Dwell seconds:** 15
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** unfinished-map-survey-1; unfinished-map-survey-2; unfinished-map-survey-3
+- **Survey / Instruction:** Record three separately dated boundary archives; preserve their unmeasured portions.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** unfinished-map-work-port; unfinished-map-work-starboard
+- **Field work / Instruction:** Measure two actual boundary points for15s each with the onboard reference, then compare against the archive.
+- **Field work / Acceptance:** Both measured uncertainty radii are at most25m; unsurveyed cells remain explicitly unknown.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** unfinished-map-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** unfinished-map-plan-a-physical-proof; unfinished-map-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The public atlas includes its actual measured uncertainty layer and the custodians signed public-use permission.
+- **Branches / Plan-b / Targets:** unfinished-map-plan-b-physical-proof; unfinished-map-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The restricted receiver accepts the archive; the public hazard notice includes only independently measured hazards.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** triangulation-flight
+- **Player action:** Take two separated measurement baselines at three actual landmarks and compare the resulting uncertainty envelope.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive triangulation-flight operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C19.01 - accept
 
@@ -5496,7 +6393,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -5507,27 +6404,7 @@ Mission-specific rules and resources:
 
 ![The Unfinished Map: accept](assets/missions/stages/unfinished-map/accept.png)
 
-#### C19.02 - survey
-
-**Place:** Iosaira (G03-S179). **Objective:** Compare three independently dated boundary records at the survey relays.
-
-**Story/dialogue:** ORR: An honest blank is safer than an invented coordinate.
-
-- **Event:** entity_scan_completed
-- **Required targets:** unfinished-map-survey-1; unfinished-map-survey-2; unfinished-map-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.unfinished-map/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Unfinished Map: survey](assets/missions/stages/unfinished-map/survey.png)
-
-#### C19.03 - collect-reference
+#### C19.02 - collect-reference
 
 **Place:** Sareith (G03-S114). **Objective:** Collect the identified one-tonne reference instrument from Agent Mara Vale.
 
@@ -5536,7 +6413,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -5550,9 +6427,29 @@ Mission-specific rules and resources:
 
 ![The Unfinished Map: collect-reference](assets/missions/stages/unfinished-map/collect-reference.png)
 
+#### C19.03 - survey
+
+**Place:** Iosaira (G03-S179). **Objective:** Record three separately dated boundary archives; preserve their unmeasured portions.
+
+**Story/dialogue:** ORR: An honest blank is safer than an invented coordinate.
+
+- **Event:** entity_scan_completed
+- **Required targets:** unfinished-map-survey-1; unfinished-map-survey-2; unfinished-map-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.unfinished-map/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Unfinished Map: survey](assets/missions/stages/unfinished-map/survey.png)
+
 #### C19.04 - field-work
 
-**Place:** Sanaena (G03-S164). **Objective:** Measure two uncharted orbital boundary points using the loaned survey register.
+**Place:** Sanaena (G03-S164). **Objective:** Measure two actual boundary points for15s each with the onboard reference, then compare against the archive.
 
 **Story/dialogue:** VALE: Record uncertainty with the reading. Do not turn an estimate into a historical fact.
 
@@ -5572,7 +6469,7 @@ Mission-specific rules and resources:
 
 #### C19.05 - independent-witness
 
-**Place:** Naleara (G03-S077). **Objective:** Escort the consenting archive custodian to the publication berth.
+**Place:** Naleara (G03-S077). **Objective:** Verify actual safe transit and living reception of the consenting archive custodian to the publication berth.
 
 **Story/dialogue:** VALE: The custodian brings the original rights register. A stolen copy cannot grant consent.
 
@@ -5592,9 +6489,9 @@ Mission-specific rules and resources:
 
 #### C19.06 - choose-settlement
 
-**Place:** Sareith (G03-S114). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Naleara (G03-S077). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Agent Mara Vale: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Agent Mara Vale: Your uncertainty envelope surveying evidence is ready. Our arrived delegates have the signed mandate to choose here. Either publish a bounded atlas with explicit gaps or preserve a witnessed research archive. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** unfinished-map-settlement-choice
@@ -5692,11 +6589,13 @@ Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Th
 
 **Permanent clue:** The margin beyond the map (`unfinished-map-trace`). The archive's untouched margin carries an inward arc outside every surveyed coordinate frame.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.unfinished-map`. Original loss and original fee receipts remain unchanged.
+
 ![The Unfinished Map outcome unfinished-map/choose-settlement/plan-a](assets/missions/outcomes/unfinished-map-choose-settlement-plan-a.png)
 
 ![The Unfinished Map outcome unfinished-map/choose-settlement/plan-b](assets/missions/outcomes/unfinished-map-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/unfinished-map.json).
+[Complete structured definition](missions/definitions/unfinished-map.json).
 
 ### C20 - The Blue Reservoir
 
@@ -5704,11 +6603,11 @@ Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Th
 
 An orbital water commons is losing dissolved oxygen while every intake remains clean. A new circulation pump has trapped part of the living filter behind a one-way lease boundary. The commander measures actual flow, opens consented bypasses and chooses distributed filter cradles or a jointly governed reservoir.
 
-**Offer:** At Bornolom in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Bornolom in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** LERR: Clean intake water says nothing about what the circulation loop keeps from returning.
 
-**Contacts:** Engineer Cato Lerr, Custodian Tomas Veil. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Engineer Cato Lerr, Custodian Tomas Veil. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,300 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The dry current.
 
@@ -5736,6 +6635,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/blue-reservoir
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/blue-reservoir/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** closed fluid-flow balancing
+- **Recommended tier:** standard
+- **Parameters / Water units:** 1000
+- **Parameters / Oxygen min:** 60
+- **Parameters / Flow min:** 10
+- **Parameters / Test seconds:** 24
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** blue-reservoir-survey-1; blue-reservoir-survey-2; blue-reservoir-survey-3
+- **Survey / Instruction:** Observe the three real inlet, oxygen and return meters on the closed reservoir.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** blue-reservoir-work-port; blue-reservoir-work-starboard
+- **Field work / Instruction:** Open the two identified bypass locks only inside their measured containment limits.
+- **Field work / Acceptance:** The reservoir retains1000water units; return flow is at least10 and oxygen at least60 for24s.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** blue-reservoir-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** blue-reservoir-plan-a-physical-proof; blue-reservoir-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both independent cradle containment receipts preserve total water and each measured return flow passes.
+- **Branches / Plan-b / Targets:** blue-reservoir-plan-b-physical-proof; blue-reservoir-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The common controller rejects an over-capacity circulation command and either local stop safely closes the bounded bypass.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** flow-routing
+- **Player action:** Open/close the two source-owned sealed bypass valves; preserve total water while reaching oxygen and minimum-flow targets.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive flow-routing operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C20.01 - accept
 
@@ -5746,7 +6710,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -5757,27 +6721,7 @@ Mission-specific rules and resources:
 
 ![The Blue Reservoir: accept](assets/missions/stages/blue-reservoir/accept.png)
 
-#### C20.02 - survey
-
-**Place:** Galton (G04-S147). **Objective:** Scan three oxygen and flow monitors on the external reservoir manifold.
-
-**Story/dialogue:** LERR: Clean intake water says nothing about what the circulation loop keeps from returning.
-
-- **Event:** entity_scan_completed
-- **Required targets:** blue-reservoir-survey-1; blue-reservoir-survey-2; blue-reservoir-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.blue-reservoir/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Blue Reservoir: survey](assets/missions/stages/blue-reservoir/survey.png)
-
-#### C20.03 - collect-reference
+#### C20.02 - collect-reference
 
 **Place:** Bornolom (G04-S151). **Objective:** Collect the identified one-tonne reference instrument from Engineer Cato Lerr.
 
@@ -5786,7 +6730,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -5800,9 +6744,29 @@ Mission-specific rules and resources:
 
 ![The Blue Reservoir: collect-reference](assets/missions/stages/blue-reservoir/collect-reference.png)
 
+#### C20.03 - survey
+
+**Place:** Galton (G04-S147). **Objective:** Observe the three real inlet, oxygen and return meters on the closed reservoir.
+
+**Story/dialogue:** LERR: Clean intake water says nothing about what the circulation loop keeps from returning.
+
+- **Event:** entity_scan_completed
+- **Required targets:** blue-reservoir-survey-1; blue-reservoir-survey-2; blue-reservoir-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.blue-reservoir/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Blue Reservoir: survey](assets/missions/stages/blue-reservoir/survey.png)
+
 #### C20.04 - field-work
 
-**Place:** Bornalan (G04-S054). **Objective:** Open two measured bypass locks without releasing the living filter.
+**Place:** Bornalan (G04-S054). **Objective:** Open the two identified bypass locks only inside their measured containment limits.
 
 **Story/dialogue:** VEIL: The colony remains contained. A destroyed tank is neither a repair nor a rescued organism.
 
@@ -5822,7 +6786,7 @@ Mission-specific rules and resources:
 
 #### C20.05 - independent-witness
 
-**Place:** Dorbogan (G04-S150). **Objective:** Escort the water-commons inspection tender to the safe laboratory berth.
+**Place:** Dorbogan (G04-S150). **Objective:** Verify actual safe transit and living reception of the water-commons inspection tender to the safe laboratory berth.
 
 **Story/dialogue:** LERR: Its operators must observe the actual flow before accepting it.
 
@@ -5842,9 +6806,9 @@ Mission-specific rules and resources:
 
 #### C20.06 - choose-settlement
 
-**Place:** Bornolom (G04-S151). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Dorbogan (G04-S150). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Engineer Cato Lerr: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Engineer Cato Lerr: Your closed fluid-flow balancing evidence is ready. Our arrived delegates have the signed mandate to choose here. Either distribute the living filter among independent cradles or create a jointly supervised reservoir. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** blue-reservoir-settlement-choice
@@ -5942,11 +6906,13 @@ Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side.
 
 **Permanent clue:** The dry current (`blue-reservoir-trace`). The oldest flow recorder traces an inward curve through a channel that contains no water.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.blue-reservoir`. Original loss and original fee receipts remain unchanged.
+
 ![The Blue Reservoir outcome blue-reservoir/choose-settlement/plan-a](assets/missions/outcomes/blue-reservoir-choose-settlement-plan-a.png)
 
 ![The Blue Reservoir outcome blue-reservoir/choose-settlement/plan-b](assets/missions/outcomes/blue-reservoir-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/blue-reservoir.json).
+[Complete structured definition](missions/definitions/blue-reservoir.json).
 
 ### C21 - Mutual Shelter
 
@@ -5954,11 +6920,11 @@ Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side.
 
 A repair mutual has insured more emergency shelter than its docks can physically provide. A legal salvage claim on a disabled hauler exposes the shortfall. The commander measures real capacity, protects the hauler's crew and helps members choose a pooled reserve or independently bonded shelter.
 
-**Offer:** At Ashoes in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Ashoes in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** TOREN: A promise of shelter is useful only if a ship can actually fit.
 
-**Contacts:** Nia Toren, Captain Suri Arlen. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Nia Toren, Captain Suri Arlen. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,100 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The ownerless reserve.
 
@@ -5986,6 +6952,70 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/mutual-shelter
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/mutual-shelter/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** finite emergency-capacity stress test
+- **Recommended tier:** standard
+- **Parameters / Real berths:** 2
+- **Parameters / Simultaneous claims:** 3
+- **Parameters / Maximum granted claims:** 2
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** mutual-shelter-survey-1; mutual-shelter-survey-2; mutual-shelter-survey-3
+- **Survey / Instruction:** Measure three actual claim registers against the two physical emergency berths.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** mutual-shelter-work-port; mutual-shelter-work-starboard
+- **Field work / Instruction:** Reserve the two real berths and present the third test claim without occupying an imaginary slot.
+- **Field work / Acceptance:** Exactly two grants can exist; the third is refused and no existing occupied berth is displaced.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** mutual-shelter-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** mutual-shelter-plan-a-physical-proof; mutual-shelter-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The pooled reserve ledger covers both granted claims and a member withdrawal cannot consume an occupied allocation.
+- **Branches / Plan-b / Targets:** mutual-shelter-plan-b-physical-proof; mutual-shelter-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Both independent providers present funded berth bonds and the original hauler completes the receiving drill.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** capacity-stress-trial
+- **Player action:** Reserve two real shelter berths, present the third competing claim, verify its honest refusal and then release a real reservation.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive capacity-stress-trial operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C21.01 - accept
 
@@ -5996,7 +7026,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -6007,27 +7037,7 @@ Mission-specific rules and resources:
 
 ![Mutual Shelter: accept](assets/missions/stages/mutual-shelter/accept.png)
 
-#### C21.02 - survey
-
-**Place:** Voron (G05-S003). **Objective:** Scan three emergency-dock capacity registers and their physical berth limits.
-
-**Story/dialogue:** TOREN: A promise of shelter is useful only if a ship can actually fit.
-
-- **Event:** entity_scan_completed
-- **Required targets:** mutual-shelter-survey-1; mutual-shelter-survey-2; mutual-shelter-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.mutual-shelter/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Mutual Shelter: survey](assets/missions/stages/mutual-shelter/survey.png)
-
-#### C21.03 - collect-reference
+#### C21.02 - collect-reference
 
 **Place:** Ashoes (G05-S188). **Objective:** Collect the identified one-tonne reference instrument from Nia Toren.
 
@@ -6036,7 +7046,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -6050,9 +7060,29 @@ Mission-specific rules and resources:
 
 ![Mutual Shelter: collect-reference](assets/missions/stages/mutual-shelter/collect-reference.png)
 
+#### C21.03 - survey
+
+**Place:** Voron (G05-S003). **Objective:** Measure three actual claim registers against the two physical emergency berths.
+
+**Story/dialogue:** TOREN: A promise of shelter is useful only if a ship can actually fit.
+
+- **Event:** entity_scan_completed
+- **Required targets:** mutual-shelter-survey-1; mutual-shelter-survey-2; mutual-shelter-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.mutual-shelter/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Mutual Shelter: survey](assets/missions/stages/mutual-shelter/survey.png)
+
 #### C21.04 - field-work
 
-**Place:** Ranues (G05-S154). **Objective:** Reserve two real emergency berths against the independently measured capacity ledger.
+**Place:** Ranues (G05-S154). **Objective:** Reserve the two real berths and present the third test claim without occupying an imaginary slot.
 
 **Story/dialogue:** ARLEN: Reserve the space once. Selling a second receipt does not create another berth.
 
@@ -6072,7 +7102,7 @@ Mission-specific rules and resources:
 
 #### C21.05 - independent-witness
 
-**Place:** Peloen (G05-S107). **Objective:** Escort the disabled cooperative hauler to its verified repair berth.
+**Place:** Peloen (G05-S107). **Objective:** Verify actual safe transit and living reception of the disabled cooperative hauler to its verified repair berth.
 
 **Story/dialogue:** ARLEN: Its crew keeps its title while the repairs and hearing take place.
 
@@ -6092,9 +7122,9 @@ Mission-specific rules and resources:
 
 #### C21.06 - choose-settlement
 
-**Place:** Ashoes (G05-S188). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Peloen (G05-S107). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Nia Toren: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Nia Toren: Your finite emergency-capacity stress test evidence is ready. Our arrived delegates have the signed mandate to choose here. Either pool member-funded emergency capacity or bond independent shelter obligations. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** mutual-shelter-settlement-choice
@@ -6192,23 +7222,25 @@ Nia Toren: The audit has left one anomaly that belongs to neither side. An early
 
 **Permanent clue:** The ownerless reserve (`mutual-shelter-trace`). An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.mutual-shelter`. Original loss and original fee receipts remain unchanged.
+
 ![Mutual Shelter outcome mutual-shelter/choose-settlement/plan-a](assets/missions/outcomes/mutual-shelter-choose-settlement-plan-a.png)
 
 ![Mutual Shelter outcome mutual-shelter/choose-settlement/plan-b](assets/missions/outcomes/mutual-shelter-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/mutual-shelter.json).
+[Complete structured definition](missions/definitions/mutual-shelter.json).
 
 ### C22 - The Listening Frontier
 
 **Mission identity:** `l337.listening-frontier`. **Premise:** HOLT: Keep weapon signatures apart from survey bursts. A crowded channel does not prove an invasion.
 
-Human survey bursts are compressing a Larvaal migration channel into a narrow dangerous crossing. Both sides report collisions as attacks. The commander measures independent traces, establishes protected listening intervals and escorts a neutral witness before choosing distributed quiet windows or a shared migration relay.
+Human survey bursts are compressing a Larvaal migration channel into a narrow dangerous crossing. Both sides report collisions as attacks. The commander measures independent traces, establishes protected listening intervals and verifies actual safe transit and living reception of a neutral witness before choosing distributed quiet windows or a shared migration relay.
 
-**Offer:** At Lailaven in Galaxy 6, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Lailaven in Galaxy 6, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** HOLT: Keep weapon signatures apart from survey bursts. A crowded channel does not prove an invasion.
 
-**Contacts:** Captain Tamsin Holt, Agent Mara Vale. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Captain Tamsin Holt, Agent Mara Vale. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 9,100 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The voice outside the channel.
 
@@ -6236,6 +7268,72 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/listening-frontier
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/listening-frontier/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** reciprocal quiet-window timing
+- **Recommended tier:** advanced
+- **Parameters / Cycle seconds:** 12
+- **Parameters / Human window seconds:** 4
+- **Parameters / Larvaal window seconds:** 4
+- **Parameters / Quiet seconds:** 4
+- **Parameters / Test cycles:** 3
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** listening-frontier-survey-1; listening-frontier-survey-2; listening-frontier-survey-3
+- **Survey / Instruction:** Observe three human/Larvaal boundary listeners independently without rebroadcasting a migration pulse.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** listening-frontier-work-port; listening-frontier-work-starboard
+- **Field work / Instruction:** Calibrate the two quiet-window emitters against the onboard passive reference and run the12s cycle.
+- **Field work / Acceptance:** Three cycles contain4s human,4s Larvaal and4s silence, with no overlap; actual counterpart replies identify their senders.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** listening-frontier-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** listening-frontier-plan-a-physical-proof; listening-frontier-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The human schedule can withdraw independently and the distinct Larvaal listener acknowledges the revised window.
+- **Branches / Plan-b / Targets:** listening-frontier-plan-b-physical-proof; listening-frontier-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The relay enforces the full12s bound and both actual participants acknowledge their separate permissions.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** passive-signal-timing
+- **Player action:** Tune and leave the channel silent through human/Larvaal/quiet windows, then send only in the actual allocated reply window.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Measure the two languages; Establish a quiet window; Test reciprocal listening; Witness and ratify the protocol
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C22.01 - accept
 
@@ -6246,7 +7344,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -6257,27 +7355,7 @@ Mission-specific rules and resources:
 
 ![The Listening Frontier: accept](assets/missions/stages/listening-frontier/accept.png)
 
-#### C22.02 - survey
-
-**Place:** Eriara (G06-S015). **Objective:** Record three consenting human and Larvaal boundary listeners.
-
-**Story/dialogue:** HOLT: Keep weapon signatures apart from survey bursts. A crowded channel does not prove an invasion.
-
-- **Event:** entity_scan_completed
-- **Required targets:** listening-frontier-survey-1; listening-frontier-survey-2; listening-frontier-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.listening-frontier/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Listening Frontier: survey](assets/missions/stages/listening-frontier/survey.png)
-
-#### C22.03 - collect-reference
+#### C22.02 - collect-reference
 
 **Place:** Lailaven (G06-S225). **Objective:** Collect the identified one-tonne reference instrument from Captain Tamsin Holt.
 
@@ -6286,7 +7364,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -6300,9 +7378,29 @@ Mission-specific rules and resources:
 
 ![The Listening Frontier: collect-reference](assets/missions/stages/listening-frontier/collect-reference.png)
 
+#### C22.03 - survey
+
+**Place:** Eriara (G06-S015). **Objective:** Observe three human/Larvaal boundary listeners independently without rebroadcasting a migration pulse.
+
+**Story/dialogue:** HOLT: Keep weapon signatures apart from survey bursts. A crowded channel does not prove an invasion.
+
+- **Event:** entity_scan_completed
+- **Required targets:** listening-frontier-survey-1; listening-frontier-survey-2; listening-frontier-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.listening-frontier/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Listening Frontier: survey](assets/missions/stages/listening-frontier/survey.png)
+
 #### C22.04 - field-work
 
-**Place:** Leimaeli (G06-S254). **Objective:** Calibrate two external quiet-window emitters using the reference listener.
+**Place:** Leimaeli (G06-S254). **Objective:** Calibrate the two quiet-window emitters against the onboard passive reference and run the12s cycle.
 
 **Story/dialogue:** VALE: The window must leave room for a reply. Broadcasting louder is not listening.
 
@@ -6322,7 +7420,7 @@ Mission-specific rules and resources:
 
 #### C22.05 - independent-witness
 
-**Place:** Saesiara (G06-S120). **Objective:** Escort the neutral listening tender to its protected receiving berth.
+**Place:** Saesiara (G06-S120). **Objective:** Verify actual safe transit and living reception of the neutral listening tender to its protected receiving berth.
 
 **Story/dialogue:** HOLT: Protect the witness rather than farming incidental combat kills.
 
@@ -6342,9 +7440,9 @@ Mission-specific rules and resources:
 
 #### C22.06 - choose-settlement
 
-**Place:** Lailaven (G06-S225). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Saesiara (G06-S120). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Captain Tamsin Holt: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Captain Tamsin Holt: Your reciprocal quiet-window timing evidence is ready. Our arrived delegates have the signed mandate to choose here. Either publish independent quiet windows or establish a jointly witnessed migration relay. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** listening-frontier-settlement-choice
@@ -6442,11 +7540,13 @@ Captain Tamsin Holt: The audit has left one anomaly that belongs to neither side
 
 **Permanent clue:** The voice outside the channel (`listening-frontier-trace`). A quiet-window listener receives an inward-curved phase trace from outside both recognised transmission bands.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.listening-frontier`. Original loss and original fee receipts remain unchanged.
+
 ![The Listening Frontier outcome listening-frontier/choose-settlement/plan-a](assets/missions/outcomes/listening-frontier-choose-settlement-plan-a.png)
 
 ![The Listening Frontier outcome listening-frontier/choose-settlement/plan-b](assets/missions/outcomes/listening-frontier-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/listening-frontier.json).
+[Complete structured definition](missions/definitions/listening-frontier.json).
 
 ### C23 - An Assembly of Orbits
 
@@ -6454,11 +7554,11 @@ Captain Tamsin Holt: The audit has left one anomaly that belongs to neither side
 
 A cluster of orbital homes must share a single transfer corridor during a maintenance season. Old voting records count property shares but omit the crews who keep the corridor open. The commander verifies real occupancy and operating work, escorts delegates and establishes either rotating worker stewardship or publicly bounded berth representation.
 
-**Offer:** At Irkenan in Galaxy 7, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Irkenan in Galaxy 7, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** VOSS: A share certificate cannot stand in for the people on the next shift.
 
-**Contacts:** Marshal Nera Voss, Coordinator Sera Dain. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Marshal Nera Voss, Coordinator Sera Dain. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,700 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The absent seat.
 
@@ -6486,6 +7586,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/assembly-of-orbits
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/assembly-of-orbits/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** corridor-capacity and stop-authority allocation
+- **Recommended tier:** standard
+- **Parameters / Corridor slots:** 4
+- **Parameters / Working crews:** 3
+- **Parameters / Proposals:** 5
+- **Parameters / Protected free slots:** 1
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** assembly-of-orbits-survey-1; assembly-of-orbits-survey-2; assembly-of-orbits-survey-3
+- **Survey / Instruction:** Compare three consented occupancy/work registers with real corridor-slot use.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** assembly-of-orbits-work-port; assembly-of-orbits-work-starboard
+- **Field work / Instruction:** Run two independent capacity tests with the onboard assembly console; submit all five identified proposals.
+- **Field work / Acceptance:** At most three working allocations use the four-slot corridor while the protected fourth slot stays free.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** assembly-of-orbits-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** assembly-of-orbits-plan-a-physical-proof; assembly-of-orbits-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The rotation names all three working crews and each crew can stop only its own assigned movement.
+- **Branches / Plan-b / Targets:** assembly-of-orbits-plan-b-physical-proof; assembly-of-orbits-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The public representation register rejects a fifth capacity claim and preserves the protected free slot.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** schedule-allocation
+- **Player action:** Allocate five real requests across four physical corridor slots while preserving one protected free slot and crew consent.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive schedule-allocation operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C23.01 - accept
 
@@ -6496,7 +7661,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -6507,27 +7672,7 @@ Mission-specific rules and resources:
 
 ![An Assembly of Orbits: accept](assets/missions/stages/assembly-of-orbits/accept.png)
 
-#### C23.02 - survey
-
-**Place:** Darik (G07-S043). **Objective:** Compare three consented occupancy and corridor-work registers.
-
-**Story/dialogue:** VOSS: A share certificate cannot stand in for the people on the next shift.
-
-- **Event:** entity_scan_completed
-- **Required targets:** assembly-of-orbits-survey-1; assembly-of-orbits-survey-2; assembly-of-orbits-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.assembly-of-orbits/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![An Assembly of Orbits: survey](assets/missions/stages/assembly-of-orbits/survey.png)
-
-#### C23.03 - collect-reference
+#### C23.02 - collect-reference
 
 **Place:** Irkenan (G07-S007). **Objective:** Collect the identified one-tonne reference instrument from Marshal Nera Voss.
 
@@ -6536,7 +7681,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -6550,9 +7695,29 @@ Mission-specific rules and resources:
 
 ![An Assembly of Orbits: collect-reference](assets/missions/stages/assembly-of-orbits/collect-reference.png)
 
+#### C23.03 - survey
+
+**Place:** Darik (G07-S043). **Objective:** Compare three consented occupancy/work registers with real corridor-slot use.
+
+**Story/dialogue:** VOSS: A share certificate cannot stand in for the people on the next shift.
+
+- **Event:** entity_scan_completed
+- **Required targets:** assembly-of-orbits-survey-1; assembly-of-orbits-survey-2; assembly-of-orbits-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.assembly-of-orbits/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![An Assembly of Orbits: survey](assets/missions/stages/assembly-of-orbits/survey.png)
+
 #### C23.04 - field-work
 
-**Place:** Brekudek (G07-S032). **Objective:** Run two independent corridor-capacity tests with the loaned assembly console.
+**Place:** Brekudek (G07-S032). **Objective:** Run two independent capacity tests with the onboard assembly console; submit all five identified proposals.
 
 **Story/dialogue:** DAIN: Show every group the same limits before asking it to choose.
 
@@ -6572,7 +7737,7 @@ Mission-specific rules and resources:
 
 #### C23.05 - independent-witness
 
-**Place:** Kagakon (G07-S148). **Objective:** Escort the consenting delegate tender to the neutral assembly berth.
+**Place:** Kagakon (G07-S148). **Objective:** Verify actual safe transit and living reception of the consenting delegate tender to the neutral assembly berth.
 
 **Story/dialogue:** VOSS: The hearing requires received delegates, not an empty passenger manifest.
 
@@ -6592,9 +7757,9 @@ Mission-specific rules and resources:
 
 #### C23.06 - choose-settlement
 
-**Place:** Irkenan (G07-S007). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Kagakon (G07-S148). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Marshal Nera Voss: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Marshal Nera Voss: Your corridor-capacity and stop-authority allocation evidence is ready. Our arrived delegates have the signed mandate to choose here. Either rotate corridor stewardship among working crews or use bounded public berth representation. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** assembly-of-orbits-settlement-choice
@@ -6692,11 +7857,13 @@ Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. 
 
 **Permanent clue:** The absent seat (`assembly-of-orbits-trace`). The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.assembly-of-orbits`. Original loss and original fee receipts remain unchanged.
+
 ![An Assembly of Orbits outcome assembly-of-orbits/choose-settlement/plan-a](assets/missions/outcomes/assembly-of-orbits-choose-settlement-plan-a.png)
 
 ![An Assembly of Orbits outcome assembly-of-orbits/choose-settlement/plan-b](assets/missions/outcomes/assembly-of-orbits-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/assembly-of-orbits.json).
+[Complete structured definition](missions/definitions/assembly-of-orbits.json).
 
 ### C24 - Under Tow
 
@@ -6704,11 +7871,11 @@ Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. 
 
 An emergency transport network has standardised its forms but not the physical coupling limits of its vessels. A stranded work tender cannot accept the rescue tug sent for it. The commander measures real hull interfaces, recovers an independent coupler and verifies either interoperable local rescue pairs or a shared specialist tender. Crew identity, actual docking and return custody determine success.
 
-**Offer:** At Luera in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Luera in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** PENN: Matching form numbers do not make these collars fit.
 
-**Contacts:** Tug Lead Mira Penn, Coordinator Sera Dain. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Tug Lead Mira Penn, Coordinator Sera Dain. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 8,300 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The coupling without a vessel.
 
@@ -6736,6 +7903,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/under-tow
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/under-tow/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** coupler geometry and load testing
+- **Recommended tier:** standard
+- **Parameters / Coupler diameters metres:** 2; 3
+- **Parameters / Test load units:** 50
+- **Parameters / Limit units:** 60
+- **Parameters / Test seconds:** 15
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** under-tow-survey-1; under-tow-survey-2; under-tow-survey-3
+- **Survey / Instruction:** Measure three actual collar geometries and their signed independent load limits.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** under-tow-work-port; under-tow-work-starboard
+- **Field work / Instruction:** Run two low-load mechanical tests through the source-owned test rig using the original service reference.
+- **Field work / Acceptance:** Only the2m-to2m and3m-to3m pairings lock; both hold50load units for15s and reject a61-unit command.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** under-tow-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** yes
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** under-tow-plan-a-physical-proof; under-tow-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both compatible local pairs pass their own tests and the actual rescued tender reaches its compatible receiver.
+- **Branches / Plan-b / Targets:** under-tow-plan-b-physical-proof; under-tow-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The specialist tug can accept the real tender interface and the receiving station acknowledges its declared load envelope.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** tow-load-test
+- **Player action:** Direct two real source-owned couplers/tugs into engagement; apply measured test load, verify release above the limit, and conduct actual tow reception.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive tow-load-test operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C24.01 - accept
 
@@ -6746,7 +7978,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -6757,27 +7989,7 @@ Mission-specific rules and resources:
 
 ![Under Tow: accept](assets/missions/stages/under-tow/accept.png)
 
-#### C24.02 - survey
-
-**Place:** Allion (G08-S123). **Objective:** Scan three rescue-interface collars and their independent load limits.
-
-**Story/dialogue:** PENN: Matching form numbers do not make these collars fit.
-
-- **Event:** entity_scan_completed
-- **Required targets:** under-tow-survey-1; under-tow-survey-2; under-tow-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.under-tow/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Under Tow: survey](assets/missions/stages/under-tow/survey.png)
-
-#### C24.03 - collect-reference
+#### C24.02 - collect-reference
 
 **Place:** Luera (G08-S045). **Objective:** Collect the identified one-tonne reference instrument from Tug Lead Mira Penn.
 
@@ -6786,7 +7998,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -6800,9 +8012,29 @@ Mission-specific rules and resources:
 
 ![Under Tow: collect-reference](assets/missions/stages/under-tow/collect-reference.png)
 
+#### C24.03 - survey
+
+**Place:** Allion (G08-S123). **Objective:** Measure three actual collar geometries and their signed independent load limits.
+
+**Story/dialogue:** PENN: Matching form numbers do not make these collars fit.
+
+- **Event:** entity_scan_completed
+- **Required targets:** under-tow-survey-1; under-tow-survey-2; under-tow-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.under-tow/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Under Tow: survey](assets/missions/stages/under-tow/survey.png)
+
 #### C24.04 - field-work
 
-**Place:** Ealaera (G08-S220). **Objective:** Test two compatible couplings with the loaned service reference.
+**Place:** Ealaera (G08-S220). **Objective:** Run two low-load mechanical tests through the source-owned test rig using the original service reference.
 
 **Story/dialogue:** DAIN: Test against empty cradles first. People are not calibration weights.
 
@@ -6842,9 +8074,9 @@ Mission-specific rules and resources:
 
 #### C24.06 - choose-settlement
 
-**Place:** Luera (G08-S045). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Rivain (G08-S255). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Tug Lead Mira Penn: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Tug Lead Mira Penn: Your coupler geometry and load testing evidence is ready. Our arrived delegates have the signed mandate to choose here. Either accredit interoperable local rescue pairs or establish a shared specialist rescue tender. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** under-tow-settlement-choice
@@ -6942,11 +8174,13 @@ Tug Lead Mira Penn: The audit has left one anomaly that belongs to neither side.
 
 **Permanent clue:** The coupling without a vessel (`under-tow-trace`). An old interface calibration defines a curved inward contact surface with no compatible hull in its register.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.under-tow`. Original loss and original fee receipts remain unchanged.
+
 ![Under Tow outcome under-tow/choose-settlement/plan-a](assets/missions/outcomes/under-tow-choose-settlement-plan-a.png)
 
 ![Under Tow outcome under-tow/choose-settlement/plan-b](assets/missions/outcomes/under-tow-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/under-tow.json).
+[Complete structured definition](missions/definitions/under-tow.json).
 
 ### C25 - The Memory Atlas
 
@@ -6954,11 +8188,11 @@ Tug Lead Mira Penn: The audit has left one anomaly that belongs to neither side.
 
 A navigation publisher has combined voluntary travel diaries with instrument surveys and now presents memories as exact route measurements. The commander revisits three disputed orbital landmarks, separates consented testimony from physical data and chooses an annotated public atlas or a custodian-held memory archive.
 
-**Offer:** At Reris in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Reris in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** ORR: A beautiful memory is not a measured approach vector.
 
-**Contacts:** Agent Mara Vale, Geologist Jalen Orr. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Agent Mara Vale, Geologist Jalen Orr. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,200 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The place nobody remembers.
 
@@ -6986,6 +8220,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/memory-atlas
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/memory-atlas/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** measurement and testimony separation
+- **Recommended tier:** foundation
+- **Parameters / Landmarks:** 3
+- **Parameters / Instrument tests:** 2
+- **Parameters / Maximum error metres:** 20
+- **Parameters / Private diary fields allowed:** 0
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** memory-atlas-survey-1; memory-atlas-survey-2; memory-atlas-survey-3
+- **Survey / Instruction:** Observe three actual orbital landmarks independently of the consented travel diaries.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** memory-atlas-work-port; memory-atlas-work-starboard
+- **Field work / Instruction:** Compare two landmark instruments with the onboard reference watcher.
+- **Field work / Acceptance:** Both measured errors are at most20m; a recollection remains testimony and cannot substitute for an instrument observation.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** memory-atlas-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** memory-atlas-plan-a-physical-proof; memory-atlas-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Each contributor consents to their actual published excerpt; the evidence atlas labels measurements and testimony separately.
+- **Branches / Plan-b / Targets:** memory-atlas-plan-b-physical-proof; memory-atlas-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The named custodian receives the private diaries and the public layer contains no private diary fields, only measured hazards.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** navigation-measurement
+- **Player action:** Fly separated baselines and reconcile physical landmarks against measured error; private diary text cannot count as coordinates.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive navigation-measurement operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C25.01 - accept
 
@@ -6996,7 +8295,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -7007,27 +8306,7 @@ Mission-specific rules and resources:
 
 ![The Memory Atlas: accept](assets/missions/stages/memory-atlas/accept.png)
 
-#### C25.02 - survey
-
-**Place:** Nedasen (G01-S130). **Objective:** Record three orbital landmarks independently of the travel diaries.
-
-**Story/dialogue:** ORR: A beautiful memory is not a measured approach vector.
-
-- **Event:** entity_scan_completed
-- **Required targets:** memory-atlas-survey-1; memory-atlas-survey-2; memory-atlas-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.memory-atlas/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Memory Atlas: survey](assets/missions/stages/memory-atlas/survey.png)
-
-#### C25.03 - collect-reference
+#### C25.02 - collect-reference
 
 **Place:** Reris (G01-S080). **Objective:** Collect the identified one-tonne reference instrument from Agent Mara Vale.
 
@@ -7036,7 +8315,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -7050,9 +8329,29 @@ Mission-specific rules and resources:
 
 ![The Memory Atlas: collect-reference](assets/missions/stages/memory-atlas/collect-reference.png)
 
+#### C25.03 - survey
+
+**Place:** Nedasen (G01-S130). **Objective:** Observe three actual orbital landmarks independently of the consented travel diaries.
+
+**Story/dialogue:** ORR: A beautiful memory is not a measured approach vector.
+
+- **Event:** entity_scan_completed
+- **Required targets:** memory-atlas-survey-1; memory-atlas-survey-2; memory-atlas-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.memory-atlas/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Memory Atlas: survey](assets/missions/stages/memory-atlas/survey.png)
+
 #### C25.04 - field-work
 
-**Place:** Cemalis (G01-S008). **Objective:** Compare two landmark instruments against the loaned reference watcher.
+**Place:** Cemalis (G01-S008). **Objective:** Compare two landmark instruments with the onboard reference watcher.
 
 **Story/dialogue:** VALE: Keep consent attached to testimony and uncertainty attached to measurements.
 
@@ -7072,7 +8371,7 @@ Mission-specific rules and resources:
 
 #### C25.05 - independent-witness
 
-**Place:** Ledanor (G01-S174). **Objective:** Escort the consenting diary custodian to the archive receiving berth.
+**Place:** Ledanor (G01-S174). **Objective:** Verify actual safe transit and living reception of the consenting diary custodian to the archive receiving berth.
 
 **Story/dialogue:** VALE: The custodian decides which memories become public.
 
@@ -7092,9 +8391,9 @@ Mission-specific rules and resources:
 
 #### C25.06 - choose-settlement
 
-**Place:** Reris (G01-S080). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Ledanor (G01-S174). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Agent Mara Vale: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Agent Mara Vale: Your measurement and testimony separation evidence is ready. Our arrived delegates have the signed mandate to choose here. Either publish a separated evidence-and-memory atlas or keep the diaries with their custodians. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** memory-atlas-settlement-choice
@@ -7192,11 +8491,13 @@ Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Th
 
 **Permanent clue:** The place nobody remembers (`memory-atlas-trace`). Three unrelated diaries contain the same inward curve around a place none of their authors visited.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.memory-atlas`. Original loss and original fee receipts remain unchanged.
+
 ![The Memory Atlas outcome memory-atlas/choose-settlement/plan-a](assets/missions/outcomes/memory-atlas-choose-settlement-plan-a.png)
 
 ![The Memory Atlas outcome memory-atlas/choose-settlement/plan-b](assets/missions/outcomes/memory-atlas-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/memory-atlas.json).
+[Complete structured definition](missions/definitions/memory-atlas.json).
 
 ### C26 - A Fleet of Neighbours
 
@@ -7204,11 +8505,11 @@ Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Th
 
 Three settlements offer civilian protection ships after pirates close a relief corridor. Their hulls and fuel are finite, and every commander wants the same escort window. The player audits actual commitments, repairs a relief lane and escorts a dispatch tender before choosing a rotating protection rota or locally retained reserve pairs. Aid comes from the ships that actually arrive.
 
-**Offer:** At Morvasen in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Morvasen in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** ARLEN: A promised hull cannot protect a corridor it has not reached.
 
-**Contacts:** Marshal Nera Voss, Captain Suri Arlen. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Marshal Nera Voss, Captain Suri Arlen. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 9,400 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The formation with no centre.
 
@@ -7236,6 +8537,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/fleet-of-neighbours
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/fleet-of-neighbours/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** finite arrived-fleet scheduling
+- **Recommended tier:** advanced
+- **Parameters / Available hulls:** 3
+- **Parameters / Minimum local reserve:** 1
+- **Parameters / Duty limit seconds:** 120
+- **Parameters / Test callouts:** 1
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** fleet-of-neighbours-survey-1; fleet-of-neighbours-survey-2; fleet-of-neighbours-survey-3
+- **Survey / Instruction:** Verify three actual offered hull manifests, crew consent, fuel and departure commitments.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** fleet-of-neighbours-work-port; fleet-of-neighbours-work-starboard
+- **Field work / Instruction:** Repair the two relief-lane relays and observe the actual offered ships completing their routes.
+- **Field work / Acceptance:** Only arrived living hulls count; destroyed or merely promised hulls do not become protection points.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** fleet-of-neighbours-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** yes
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** fleet-of-neighbours-plan-a-physical-proof; fleet-of-neighbours-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The rota uses at most the actual arrived hulls and stops each duty at120s without replacing losses.
+- **Branches / Plan-b / Targets:** fleet-of-neighbours-plan-b-physical-proof; fleet-of-neighbours-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** One real local hull remains reserved and the single cross-settlement callout requires its actual departure, transit and arrival.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** fleet-dispatch
+- **Player action:** Choose real available response hulls, keep one local reserve and watch actual finite-fuel departure, route and callout receiving.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive fleet-dispatch operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C26.01 - accept
 
@@ -7246,7 +8612,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -7257,27 +8623,7 @@ Mission-specific rules and resources:
 
 ![A Fleet of Neighbours: accept](assets/missions/stages/fleet-of-neighbours/accept.png)
 
-#### C26.02 - survey
-
-**Place:** Vornetor (G02-S111). **Objective:** Verify three real relief-escort manifests and their available fuel.
-
-**Story/dialogue:** ARLEN: A promised hull cannot protect a corridor it has not reached.
-
-- **Event:** entity_scan_completed
-- **Required targets:** fleet-of-neighbours-survey-1; fleet-of-neighbours-survey-2; fleet-of-neighbours-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.fleet-of-neighbours/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![A Fleet of Neighbours: survey](assets/missions/stages/fleet-of-neighbours/survey.png)
-
-#### C26.03 - collect-reference
+#### C26.02 - collect-reference
 
 **Place:** Morvasen (G02-S117). **Objective:** Collect the identified one-tonne reference instrument from Marshal Nera Voss.
 
@@ -7286,7 +8632,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -7300,9 +8646,29 @@ Mission-specific rules and resources:
 
 ![A Fleet of Neighbours: collect-reference](assets/missions/stages/fleet-of-neighbours/collect-reference.png)
 
+#### C26.03 - survey
+
+**Place:** Vornetor (G02-S111). **Objective:** Verify three actual offered hull manifests, crew consent, fuel and departure commitments.
+
+**Story/dialogue:** ARLEN: A promised hull cannot protect a corridor it has not reached.
+
+- **Event:** entity_scan_completed
+- **Required targets:** fleet-of-neighbours-survey-1; fleet-of-neighbours-survey-2; fleet-of-neighbours-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.fleet-of-neighbours/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![A Fleet of Neighbours: survey](assets/missions/stages/fleet-of-neighbours/survey.png)
+
 #### C26.04 - field-work
 
-**Place:** Talnevan (G02-S227). **Objective:** Repair two external relief-lane relays with the loaned dispatch beacon.
+**Place:** Talnevan (G02-S227). **Objective:** Repair the two relief-lane relays and observe the actual offered ships completing their routes.
 
 **Story/dialogue:** VOSS: Keep the repair separate from the defence. A pirate kill cannot calibrate a relay.
 
@@ -7342,9 +8708,9 @@ Mission-specific rules and resources:
 
 #### C26.06 - choose-settlement
 
-**Place:** Morvasen (G02-S117). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Arvek (G02-S073). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Marshal Nera Voss: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Marshal Nera Voss: Your finite arrived-fleet scheduling evidence is ready. Our arrived delegates have the signed mandate to choose here. Either rotate arrived protection ships across settlements or retain local reserve pairs with mutual callouts. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** fleet-of-neighbours-settlement-choice
@@ -7442,11 +8808,13 @@ Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. 
 
 **Permanent clue:** The formation with no centre (`fleet-of-neighbours-trace`). An early dispatch diagram curves around an empty central formation slot with no assigned vessel.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.fleet-of-neighbours`. Original loss and original fee receipts remain unchanged.
+
 ![A Fleet of Neighbours outcome fleet-of-neighbours/choose-settlement/plan-a](assets/missions/outcomes/fleet-of-neighbours-choose-settlement-plan-a.png)
 
 ![A Fleet of Neighbours outcome fleet-of-neighbours/choose-settlement/plan-b](assets/missions/outcomes/fleet-of-neighbours-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/fleet-of-neighbours.json).
+[Complete structured definition](missions/definitions/fleet-of-neighbours.json).
 
 ### C27 - Uncounted Names
 
@@ -7454,11 +8822,11 @@ Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. 
 
 A dock automation system records a group of displaced workers as transferable industrial property because their first manifests used equipment-only forms. The commander obtains consented identities, establishes safe reception and helps the workers choose a private custody correction or a public register repair.
 
-**Offer:** At Oranisil in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Oranisil in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** DAIN: Ask the people concerned how their records should be used.
 
-**Contacts:** Coordinator Sera Dain, Nia Toren. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Coordinator Sera Dain, Nia Toren. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 6,500 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The unnamed entry.
 
@@ -7486,6 +8854,70 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/uncounted-names
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/uncounted-names/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** personhood and receiving-permission correction
+- **Recommended tier:** standard
+- **Parameters / People:** 3
+- **Parameters / Permission tests:** 2
+- **Parameters / Commodity transfers allowed:** 0
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** uncounted-names-survey-1; uncounted-names-survey-2; uncounted-names-survey-3
+- **Survey / Instruction:** Read three consented native identity receipts, redacting private names in public views.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** uncounted-names-work-port; uncounted-names-work-starboard
+- **Field work / Instruction:** Apply two actual receiver permission corrections with the onboard reference as independent witness.
+- **Field work / Acceptance:** All three people remain living/person records; no commodity transfer, sale or duplicate occupancy is permitted.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** uncounted-names-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** uncounted-names-plan-a-physical-proof; uncounted-names-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Each person acknowledges their protected individual correction and the receiver validates the new authority.
+- **Branches / Plan-b / Targets:** uncounted-names-plan-b-physical-proof; uncounted-names-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The public audit is anonymised and the corrected form refuses an equipment-only transfer for every registered person.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** private-consent-protocol
+- **Player action:** Obtain three actual peoples separate permissions and apply only their chosen access grants; test denial without exporting their identities.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive private-consent-protocol operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C27.01 - accept
 
@@ -7496,7 +8928,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -7507,27 +8939,7 @@ Mission-specific rules and resources:
 
 ![Uncounted Names: accept](assets/missions/stages/uncounted-names/accept.png)
 
-#### C27.02 - survey
-
-**Place:** Lyraven (G03-S193). **Objective:** Compare three consented identity receipts without publishing private names.
-
-**Story/dialogue:** DAIN: Ask the people concerned how their records should be used.
-
-- **Event:** entity_scan_completed
-- **Required targets:** uncounted-names-survey-1; uncounted-names-survey-2; uncounted-names-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.uncounted-names/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Uncounted Names: survey](assets/missions/stages/uncounted-names/survey.png)
-
-#### C27.03 - collect-reference
+#### C27.02 - collect-reference
 
 **Place:** Oranisil (G03-S154). **Objective:** Collect the identified one-tonne reference instrument from Coordinator Sera Dain.
 
@@ -7536,7 +8948,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -7550,9 +8962,29 @@ Mission-specific rules and resources:
 
 ![Uncounted Names: collect-reference](assets/missions/stages/uncounted-names/collect-reference.png)
 
+#### C27.03 - survey
+
+**Place:** Lyraven (G03-S193). **Objective:** Read three consented native identity receipts, redacting private names in public views.
+
+**Story/dialogue:** DAIN: Ask the people concerned how their records should be used.
+
+- **Event:** entity_scan_completed
+- **Required targets:** uncounted-names-survey-1; uncounted-names-survey-2; uncounted-names-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.uncounted-names/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Uncounted Names: survey](assets/missions/stages/uncounted-names/survey.png)
+
 #### C27.04 - field-work
 
-**Place:** Sialasil (G03-S190). **Objective:** Correct two external receiving permissions under witnessed consent.
+**Place:** Sialasil (G03-S190). **Objective:** Apply two actual receiver permission corrections with the onboard reference as independent witness.
 
 **Story/dialogue:** TOREN: The old manifest remains evidence, not an authority to transfer a person.
 
@@ -7572,7 +9004,7 @@ Mission-specific rules and resources:
 
 #### C27.05 - independent-witness
 
-**Place:** Aenisil (G03-S117). **Objective:** Escort the consenting worker tender to its chosen safe receiving berth.
+**Place:** Aenisil (G03-S117). **Objective:** Verify actual safe transit and living reception of the consenting worker tender to its chosen safe receiving berth.
 
 **Story/dialogue:** DAIN: Only living consenting arrivals count. Cargo canisters cannot represent people.
 
@@ -7592,9 +9024,9 @@ Mission-specific rules and resources:
 
 #### C27.06 - choose-settlement
 
-**Place:** Oranisil (G03-S154). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Aenisil (G03-S117). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Coordinator Sera Dain: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Coordinator Sera Dain: Your personhood and receiving-permission correction evidence is ready. Our arrived delegates have the signed mandate to choose here. Either repair individual records under protected custody or publish a systematic register repair. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** uncounted-names-settlement-choice
@@ -7692,11 +9124,13 @@ Coordinator Sera Dain: The audit has left one anomaly that belongs to neither si
 
 **Permanent clue:** The unnamed entry (`uncounted-names-trace`). The oldest register has an inward-curved entry naming no person, cargo or owner.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.uncounted-names`. Original loss and original fee receipts remain unchanged.
+
 ![Uncounted Names outcome uncounted-names/choose-settlement/plan-a](assets/missions/outcomes/uncounted-names-choose-settlement-plan-a.png)
 
 ![Uncounted Names outcome uncounted-names/choose-settlement/plan-b](assets/missions/outcomes/uncounted-names-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/uncounted-names.json).
+[Complete structured definition](missions/definitions/uncounted-names.json).
 
 ### C28 - The Honest Circuit
 
@@ -7704,11 +9138,11 @@ Coordinator Sera Dain: The audit has left one anomaly that belongs to neither si
 
 A new flight certification circuit rewards apparent speed without accounting for unsafe close passes or offloaded fuel. The commander independently measures its beacons, completes a real receiving test and chooses an efficiency standard or a safety-margin standard. The player completes the circuit with their current commander and ship.
 
-**Offer:** At Lonomon in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Lonomon in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** VENN: A fast time means little if the clock and the route disagree.
 
-**Contacts:** Captain Elara Venn, Relay Engineer Ivo Renn. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Captain Elara Venn, Relay Engineer Ivo Renn. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,000 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The tick outside the circuit.
 
@@ -7736,6 +9170,72 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/honest-circuit
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/honest-circuit/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** fuel-accounted flight certification
+- **Recommended tier:** advanced
+- **Parameters / Gate radius metres:** 80
+- **Parameters / Minimum separation metres:** 100
+- **Parameters / Speed min metres per second:** 5
+- **Parameters / Speed max metres per second:** 30
+- **Parameters / Abort window seconds:** 3
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** honest-circuit-survey-1; honest-circuit-survey-2; honest-circuit-survey-3
+- **Survey / Instruction:** Observe three independent timing beacons and compare their actual sample epochs.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** honest-circuit-work-port; honest-circuit-work-starboard
+- **Field work / Instruction:** Fly two ordered80m-radius gates at5-30m/s with the reference timing instrument aboard; retain fuel before/after.
+- **Field work / Acceptance:** Both actual gate crossings retain at least100m ordinary-traffic separation; offloaded fuel stays in the budget and a reset does not erase time.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** honest-circuit-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** honest-circuit-plan-a-physical-proof; honest-circuit-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The real receiving time and total measured fuel use, including dumped fuel, are published without inventing a profit or leaderboard rank.
+- **Branches / Plan-b / Targets:** honest-circuit-plan-b-physical-proof; honest-circuit-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** A real abort request within3s cancels the active approach and retains the observed closest-pass envelope; no unsafe pass is certified.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** piloted-flight-course
+- **Player action:** Fly both ordered physical gates at5-30m/s with real traffic separation; an unsafe approach aborts the trial without refunding spent fuel.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Prepare and inspect the course; Fly the instrumented circuit; Choose and audit the safety protocol
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C28.01 - accept
 
@@ -7746,7 +9246,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -7757,27 +9257,7 @@ Mission-specific rules and resources:
 
 ![The Honest Circuit: accept](assets/missions/stages/honest-circuit/accept.png)
 
-#### C28.02 - survey
-
-**Place:** Mobarum (G04-S218). **Objective:** Scan three circuit beacons and compare their independent timebases.
-
-**Story/dialogue:** VENN: A fast time means little if the clock and the route disagree.
-
-- **Event:** entity_scan_completed
-- **Required targets:** honest-circuit-survey-1; honest-circuit-survey-2; honest-circuit-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.honest-circuit/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Honest Circuit: survey](assets/missions/stages/honest-circuit/survey.png)
-
-#### C28.03 - collect-reference
+#### C28.02 - collect-reference
 
 **Place:** Lonomon (G04-S194). **Objective:** Collect the identified one-tonne reference instrument from Captain Elara Venn.
 
@@ -7786,7 +9266,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -7800,9 +9280,29 @@ Mission-specific rules and resources:
 
 ![The Honest Circuit: collect-reference](assets/missions/stages/honest-circuit/collect-reference.png)
 
+#### C28.03 - survey
+
+**Place:** Mobarum (G04-S218). **Objective:** Observe three independent timing beacons and compare their actual sample epochs.
+
+**Story/dialogue:** VENN: A fast time means little if the clock and the route disagree.
+
+- **Event:** entity_scan_completed
+- **Required targets:** honest-circuit-survey-1; honest-circuit-survey-2; honest-circuit-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.honest-circuit/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Honest Circuit: survey](assets/missions/stages/honest-circuit/survey.png)
+
 #### C28.04 - field-work
 
-**Place:** Lobagom (G04-S249). **Objective:** Complete two published corridor tests with the reference timing standard.
+**Place:** Lobagom (G04-S249). **Objective:** Fly two ordered80m-radius gates at5-30m/s with the reference timing instrument aboard; retain fuel before/after.
 
 **Story/dialogue:** RENN: Every limit is visible before the run. Pausing preserves the simulation clock.
 
@@ -7822,7 +9322,7 @@ Mission-specific rules and resources:
 
 #### C28.05 - independent-witness
 
-**Place:** Balmabol (G04-S109). **Objective:** Escort the consenting calibration tender through the same certified corridor.
+**Place:** Balmabol (G04-S109). **Objective:** Verify actual safe transit and living reception of the consenting calibration tender through the same certified corridor.
 
 **Story/dialogue:** VENN: The standard must work for a working tender as well as a fast player ship.
 
@@ -7842,9 +9342,9 @@ Mission-specific rules and resources:
 
 #### C28.06 - choose-settlement
 
-**Place:** Lonomon (G04-S194). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Balmabol (G04-S109). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Captain Elara Venn: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Captain Elara Venn: Your fuel-accounted flight certification evidence is ready. Our arrived delegates have the signed mandate to choose here. Either certify measured route efficiency or certify a minimum safety margin. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** honest-circuit-settlement-choice
@@ -7942,11 +9442,13 @@ Captain Elara Venn: The audit has left one anomaly that belongs to neither side.
 
 **Permanent clue:** The tick outside the circuit (`honest-circuit-trace`). A reference timebase records a curved phase mark between two valid circuit ticks.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.honest-circuit`. Original loss and original fee receipts remain unchanged.
+
 ![The Honest Circuit outcome honest-circuit/choose-settlement/plan-a](assets/missions/outcomes/honest-circuit-choose-settlement-plan-a.png)
 
 ![The Honest Circuit outcome honest-circuit/choose-settlement/plan-b](assets/missions/outcomes/honest-circuit-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/honest-circuit.json).
+[Complete structured definition](missions/definitions/honest-circuit.json).
 
 ### C29 - Small Lights
 
@@ -7954,11 +9456,11 @@ Captain Elara Venn: The audit has left one anomaly that belongs to neither side.
 
 A cluster of modest utility failures is ignored because each falls below an insurer's dispatch threshold. Together they isolate an orbital neighbourhood. The commander measures the combined fault, repairs actual receiving modules and escorts a maintenance crew before establishing pooled local callouts or independently funded service reserves.
 
-**Offer:** At Duniler in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Duniler in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** SENN: Small failures become large when every office treats them as someone else's.
 
-**Contacts:** Dispatcher Evi Senn, Engineer Cato Lerr. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Dispatcher Evi Senn, Engineer Cato Lerr. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 6,400 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The light before the fault.
 
@@ -7986,6 +9488,72 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/small-lights
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/small-lights/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** dependency fault isolation and response
+- **Recommended tier:** standard
+- **Parameters / Modules:** 2
+- **Parameters / Reserve kits:** 2
+- **Parameters / Response limit seconds:** 30
+- **Parameters / Repair kits:** 2
+- **Parameters / Initial owned kits:** 4
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** small-lights-survey-1; small-lights-survey-2; small-lights-survey-3
+- **Survey / Instruction:** Read three actual utility faults and their shared physical dependency graph.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** small-lights-work-port; small-lights-work-starboard
+- **Field work / Instruction:** Use one source-owned repair kit on each of the two external failed modules; verify the upstream dependency.
+- **Field work / Acceptance:** Begin with four individually registered source-owned kits: two repair kits and two separate reserve kits. Install exactly the two repair kits on the failed modules; retain both reserve kits as physical stock for plan-b. No kit may serve both roles or be consumed twice.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** small-lights-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** small-lights-plan-a-physical-proof; small-lights-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** One actual cross-utility callout reaches its receiving point within30s after explicit test arming.
+- **Branches / Plan-b / Targets:** small-lights-plan-b-physical-proof; small-lights-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Both independently funded reserve kits exist before the receiving drill; a ledger promise without physical stock fails.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** fault-isolation-and-logistics
+- **Player action:** Isolate the actual dependency fault, fit exactly two real repair kits, then run either the timed callout or separately stocked reserve drill.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive fault-isolation-and-logistics operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C29.01 - accept
 
@@ -7996,7 +9564,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -8007,27 +9575,7 @@ Mission-specific rules and resources:
 
 ![Small Lights: accept](assets/missions/stages/small-lights/accept.png)
 
-#### C29.02 - survey
-
-**Place:** Delenir (G05-S112). **Objective:** Read three neighbourhood utility faults and their actual shared dependencies.
-
-**Story/dialogue:** SENN: Small failures become large when every office treats them as someone else's.
-
-- **Event:** entity_scan_completed
-- **Required targets:** small-lights-survey-1; small-lights-survey-2; small-lights-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.small-lights/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Small Lights: survey](assets/missions/stages/small-lights/survey.png)
-
-#### C29.03 - collect-reference
+#### C29.02 - collect-reference
 
 **Place:** Duniler (G05-S228). **Objective:** Collect the identified one-tonne reference instrument from Dispatcher Evi Senn.
 
@@ -8036,7 +9584,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -8050,9 +9598,29 @@ Mission-specific rules and resources:
 
 ![Small Lights: collect-reference](assets/missions/stages/small-lights/collect-reference.png)
 
+#### C29.03 - survey
+
+**Place:** Delenir (G05-S112). **Objective:** Read three actual utility faults and their shared physical dependency graph.
+
+**Story/dialogue:** SENN: Small failures become large when every office treats them as someone else's.
+
+- **Event:** entity_scan_completed
+- **Required targets:** small-lights-survey-1; small-lights-survey-2; small-lights-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.small-lights/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Small Lights: survey](assets/missions/stages/small-lights/survey.png)
+
 #### C29.04 - field-work
 
-**Place:** Siluel (G05-S233). **Objective:** Restore two external service modules with the loaned utility lantern.
+**Place:** Siluel (G05-S233). **Objective:** Use one source-owned repair kit on each of the two external failed modules; verify the upstream dependency.
 
 **Story/dialogue:** LERR: Confirm the actual load before clearing a fault from the board.
 
@@ -8072,7 +9640,7 @@ Mission-specific rules and resources:
 
 #### C29.05 - independent-witness
 
-**Place:** Ashilun (G05-S156). **Objective:** Escort the consenting maintenance tender to the neighbourhood berth.
+**Place:** Ashilun (G05-S156). **Objective:** Verify actual safe transit and living reception of the consenting maintenance tender to the neighbourhood berth.
 
 **Story/dialogue:** SENN: The crew has to reach its work, not merely accept a dispatch.
 
@@ -8092,9 +9660,9 @@ Mission-specific rules and resources:
 
 #### C29.06 - choose-settlement
 
-**Place:** Duniler (G05-S228). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Ashilun (G05-S156). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Dispatcher Evi Senn: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Dispatcher Evi Senn: Your dependency fault isolation and response evidence is ready. Our arrived delegates have the signed mandate to choose here. Either pool local callouts across utilities or keep independently funded service reserves. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** small-lights-settlement-choice
@@ -8192,11 +9760,13 @@ Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side
 
 **Permanent clue:** The light before the fault (`small-lights-trace`). An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.small-lights`. Original loss and original fee receipts remain unchanged.
+
 ![Small Lights outcome small-lights/choose-settlement/plan-a](assets/missions/outcomes/small-lights-choose-settlement-plan-a.png)
 
 ![Small Lights outcome small-lights/choose-settlement/plan-b](assets/missions/outcomes/small-lights-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/small-lights.json).
+[Complete structured definition](missions/definitions/small-lights.json).
 
 ### C30 - The Passenger's Horizon
 
@@ -8204,11 +9774,11 @@ Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side
 
 A passenger cooperative sells a scenic orbital journey that excludes travellers whose cabin needs do not match its standard form. The commander tests real access and safe viewing positions, escorts a volunteer assessment tender and helps the travellers establish either adaptable shared cabins or individually guaranteed journey slots. Consent and actual fitted capacity determine the journey plan.
 
-**Offer:** At Aelara in Galaxy 6, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Aelara in Galaxy 6, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** SOREL: A fine horizon is useless if a passenger cannot safely reach it.
 
-**Contacts:** Captain Orin Sorel, Coordinator Sera Dain. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Captain Orin Sorel, Coordinator Sera Dain. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,500 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The horizon without a world.
 
@@ -8236,6 +9806,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/passengers-horizon
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/passengers-horizon/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** accessible boarding and viewing clearance
+- **Recommended tier:** standard
+- **Parameters / Volunteers:** 2
+- **Parameters / Interfaces:** 2
+- **Parameters / Minimum clearance metres:** 2
+- **Parameters / View dwell seconds:** 12
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** passengers-horizon-survey-1; passengers-horizon-survey-2; passengers-horizon-survey-3
+- **Survey / Instruction:** Observe three orbital sites against the two volunteers real declared access needs.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** passengers-horizon-work-port; passengers-horizon-work-starboard
+- **Field work / Instruction:** Test both actual boarding/viewing interfaces with the onboard access console and the source-owned empty test chair.
+- **Field work / Acceptance:** Each occupied-path clearance is at least2m and every declared route segment is compatible; no person is boarded by a test marker.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** passengers-horizon-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** passengers-horizon-plan-a-physical-proof; passengers-horizon-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The actual adjustable cabin fit passes both access needs and each volunteer separately consents to its itinerary.
+- **Branches / Plan-b / Targets:** passengers-horizon-plan-b-physical-proof; passengers-horizon-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Both individual journey allocations reserve compatible real places and the receiver verifies the12s viewing stop without forcing a traveller to join.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** accessible-interface-trial
+- **Player action:** Adjust the two real boarding interfaces with directional controls while consenting volunteers test sightline, clearance and independent stop controls.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive accessible-interface-trial operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C30.01 - accept
 
@@ -8246,7 +9881,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -8257,27 +9892,7 @@ Mission-specific rules and resources:
 
 ![The Passenger's Horizon: accept](assets/missions/stages/passengers-horizon/accept.png)
 
-#### C30.02 - survey
-
-**Place:** Izaeth (G06-S034). **Objective:** Scan three orbital viewing and receiving sites against the travellers' consented access needs.
-
-**Story/dialogue:** SOREL: A fine horizon is useless if a passenger cannot safely reach it.
-
-- **Event:** entity_scan_completed
-- **Required targets:** passengers-horizon-survey-1; passengers-horizon-survey-2; passengers-horizon-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.passengers-horizon/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Passenger's Horizon: survey](assets/missions/stages/passengers-horizon/survey.png)
-
-#### C30.03 - collect-reference
+#### C30.02 - collect-reference
 
 **Place:** Aelara (G06-S012). **Objective:** Collect the identified one-tonne reference instrument from Captain Orin Sorel.
 
@@ -8286,7 +9901,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -8300,9 +9915,29 @@ Mission-specific rules and resources:
 
 ![The Passenger's Horizon: collect-reference](assets/missions/stages/passengers-horizon/collect-reference.png)
 
+#### C30.03 - survey
+
+**Place:** Izaeth (G06-S034). **Objective:** Observe three orbital sites against the two volunteers real declared access needs.
+
+**Story/dialogue:** SOREL: A fine horizon is useless if a passenger cannot safely reach it.
+
+- **Event:** entity_scan_completed
+- **Required targets:** passengers-horizon-survey-1; passengers-horizon-survey-2; passengers-horizon-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.passengers-horizon/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Passenger's Horizon: survey](assets/missions/stages/passengers-horizon/survey.png)
+
 #### C30.04 - field-work
 
-**Place:** Evanieri (G06-S077). **Objective:** Test two external boarding and viewing interfaces with the loaned access console.
+**Place:** Evanieri (G06-S077). **Objective:** Test both actual boarding/viewing interfaces with the onboard access console and the source-owned empty test chair.
 
 **Story/dialogue:** DAIN: Use an empty test cradle first. People do not have to prove that an unsafe fitting hurts.
 
@@ -8322,7 +9957,7 @@ Mission-specific rules and resources:
 
 #### C30.05 - independent-witness
 
-**Place:** Noaliena (G06-S011). **Objective:** Escort the consenting assessment tender to its independently verified berth.
+**Place:** Noaliena (G06-S011). **Objective:** Verify actual safe transit and living reception of the consenting assessment tender to its independently verified berth.
 
 **Story/dialogue:** SOREL: Their actual reception is the evidence; a passenger count alone is not.
 
@@ -8342,9 +9977,9 @@ Mission-specific rules and resources:
 
 #### C30.06 - choose-settlement
 
-**Place:** Aelara (G06-S012). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Noaliena (G06-S011). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Captain Orin Sorel: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Captain Orin Sorel: Your accessible boarding and viewing clearance evidence is ready. Our arrived delegates have the signed mandate to choose here. Either provide adaptable shared journey cabins or guarantee individual accessible journey slots. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** passengers-horizon-settlement-choice
@@ -8442,11 +10077,13 @@ Captain Orin Sorel: The audit has left one anomaly that belongs to neither side.
 
 **Permanent clue:** The horizon without a world (`passengers-horizon-trace`). A viewing reference encloses an inward-curved horizon that belongs to none of the surveyed planets.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.passengers-horizon`. Original loss and original fee receipts remain unchanged.
+
 ![The Passenger's Horizon outcome passengers-horizon/choose-settlement/plan-a](assets/missions/outcomes/passengers-horizon-choose-settlement-plan-a.png)
 
 ![The Passenger's Horizon outcome passengers-horizon/choose-settlement/plan-b](assets/missions/outcomes/passengers-horizon-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/passengers-horizon.json).
+[Complete structured definition](missions/definitions/passengers-horizon.json).
 
 ### C31 - The Kind Distance
 
@@ -8454,11 +10091,11 @@ Captain Orin Sorel: The audit has left one anomaly that belongs to neither side.
 
 Two separated households want to restore contact but disagree about who may disclose their new locations. A relay broker offers to solve the problem by publishing both addresses. The commander measures private reply paths, verifies voluntary custody and helps the households choose an anonymous shared relay or individually revocable invitations. The households retain the right to decline a meeting.
 
-**Offer:** At Ravgakon in Galaxy 7, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Ravgakon in Galaxy 7, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** SOL: A reply means someone chose to answer. Silence is not consent.
 
-**Contacts:** Dispatcher Neris Sol, Coordinator Sera Dain. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Dispatcher Neris Sol, Coordinator Sera Dain. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 5,600 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The reply with no sender.
 
@@ -8486,6 +10123,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/kind-distance
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/kind-distance/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** revocable anonymous reply protocol
+- **Recommended tier:** foundation
+- **Parameters / Households:** 2
+- **Parameters / Challenge attempts:** 2
+- **Parameters / Invitation lease seconds:** 120
+- **Parameters / Public address fields allowed:** 0
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** kind-distance-survey-1; kind-distance-survey-2; kind-distance-survey-3
+- **Survey / Instruction:** Test three actual private reply relays without requesting household address disclosure.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** kind-distance-work-port; kind-distance-work-starboard
+- **Field work / Instruction:** Run two distinct challenge/reply exchanges through the onboard passive receiver and revoke one test invitation.
+- **Field work / Acceptance:** No public address fields are disclosed; the revoked invitation is refused while an unrelated consented reply still works.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** kind-distance-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** kind-distance-plan-a-physical-proof; kind-distance-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both households can revoke their own permission independently and a real consented reply reaches its named private receiver.
+- **Branches / Plan-b / Targets:** kind-distance-plan-b-physical-proof; kind-distance-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The two independently issued invitations expire at120s and the actual relay rejects their later replay.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** revocable-contact
+- **Player action:** Relay two independently consented invitations; revoke a live reply lease and prove neither private address nor forced meeting is exposed.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive revocable-contact operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C31.01 - accept
 
@@ -8496,7 +10198,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -8507,27 +10209,7 @@ Mission-specific rules and resources:
 
 ![The Kind Distance: accept](assets/missions/stages/kind-distance/accept.png)
 
-#### C31.02 - survey
-
-**Place:** Rakdek (G07-S252). **Objective:** Test three private reply relays without exposing either household's address.
-
-**Story/dialogue:** SOL: A reply means someone chose to answer. Silence is not consent.
-
-- **Event:** entity_scan_completed
-- **Required targets:** kind-distance-survey-1; kind-distance-survey-2; kind-distance-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.kind-distance/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Kind Distance: survey](assets/missions/stages/kind-distance/survey.png)
-
-#### C31.03 - collect-reference
+#### C31.02 - collect-reference
 
 **Place:** Ravgakon (G07-S046). **Objective:** Collect the identified one-tonne reference instrument from Dispatcher Neris Sol.
 
@@ -8536,7 +10218,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -8550,9 +10232,29 @@ Mission-specific rules and resources:
 
 ![The Kind Distance: collect-reference](assets/missions/stages/kind-distance/collect-reference.png)
 
+#### C31.03 - survey
+
+**Place:** Rakdek (G07-S252). **Objective:** Test three actual private reply relays without requesting household address disclosure.
+
+**Story/dialogue:** SOL: A reply means someone chose to answer. Silence is not consent.
+
+- **Event:** entity_scan_completed
+- **Required targets:** kind-distance-survey-1; kind-distance-survey-2; kind-distance-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.kind-distance/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Kind Distance: survey](assets/missions/stages/kind-distance/survey.png)
+
 #### C31.04 - field-work
 
-**Place:** Ravvaesh (G07-S235). **Objective:** Verify two anonymous invitation paths with the loaned passive receiver.
+**Place:** Ravvaesh (G07-S235). **Objective:** Run two distinct challenge/reply exchanges through the onboard passive receiver and revoke one test invitation.
 
 **Story/dialogue:** DAIN: The message may cross the boundary. The address must not follow without permission.
 
@@ -8572,7 +10274,7 @@ Mission-specific rules and resources:
 
 #### C31.05 - independent-witness
 
-**Place:** Zoraresh (G07-S202). **Objective:** Escort the consenting relay custodian to the independent privacy hearing berth.
+**Place:** Zoraresh (G07-S202). **Objective:** Verify actual safe transit and living reception of the consenting relay custodian to the independent privacy hearing berth.
 
 **Story/dialogue:** SOL: The custodian can confirm the rules without carrying either household.
 
@@ -8592,9 +10294,9 @@ Mission-specific rules and resources:
 
 #### C31.06 - choose-settlement
 
-**Place:** Ravgakon (G07-S046). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Zoraresh (G07-S202). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Dispatcher Neris Sol: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Dispatcher Neris Sol: Your revocable anonymous reply protocol evidence is ready. Our arrived delegates have the signed mandate to choose here. Either use an anonymous shared reply relay or issue individually revocable invitations. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** kind-distance-settlement-choice
@@ -8692,11 +10394,13 @@ Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither sid
 
 **Permanent clue:** The reply with no sender (`kind-distance-trace`). A dormant relay preserves an inward-curved reply predating every registered household key.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.kind-distance`. Original loss and original fee receipts remain unchanged.
+
 ![The Kind Distance outcome kind-distance/choose-settlement/plan-a](assets/missions/outcomes/kind-distance-choose-settlement-plan-a.png)
 
 ![The Kind Distance outcome kind-distance/choose-settlement/plan-b](assets/missions/outcomes/kind-distance-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/kind-distance.json).
+[Complete structured definition](missions/definitions/kind-distance.json).
 
 ### C32 - Cold Reserve
 
@@ -8704,11 +10408,11 @@ Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither sid
 
 A decommissioned defence reserve is still paying for autonomous cargo movements under expired authority. Its unmanned equipment is still executing the expired dispatch orders. The commander reconciles finite stores, disconnects real dispatch couplers and escorts an inspection crew before choosing a civilian reserve conversion or verified dismantling.
 
-**Offer:** At Fanerin in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Fanerin in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** PELL: Count what is here before anyone orders it somewhere else.
 
-**Contacts:** Marshal Nera Voss, Salvage Chief Ruan Pell. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Marshal Nera Voss, Salvage Chief Ruan Pell. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 8,800 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The unused order.
 
@@ -8736,6 +10440,70 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/cold-reserve
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/cold-reserve/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** autonomous dispatch isolation and stock custody
+- **Recommended tier:** advanced
+- **Parameters / Store units:** 12
+- **Parameters / Test orders:** 2
+- **Parameters / Unauthorised dispatch allowed:** 0
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** cold-reserve-survey-1; cold-reserve-survey-2; cold-reserve-survey-3
+- **Survey / Instruction:** Observe three real reserve store ledgers and account for all12 finite stock units.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** cold-reserve-work-port; cold-reserve-work-starboard
+- **Field work / Instruction:** Isolate the two external dispatch couplers and submit both obsolete test orders.
+- **Field work / Acceptance:** Neither old order launches cargo; stock remains received, stored or explicitly lost, never replenished by reloading.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** cold-reserve-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** cold-reserve-plan-a-physical-proof; cold-reserve-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The bounded civilian authority issues only its signed quota and the receiver actually takes the declared finite stock.
+- **Branches / Plan-b / Targets:** cold-reserve-plan-b-physical-proof; cold-reserve-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Both couplers remain physically isolated and all reclaimed material reaches a real receiving store.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** dispatch-authority-audit
+- **Player action:** Challenge the two expired dispatch orders against the real12-unit reserve; prove refusal before physically authorising conversion or dismantling.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive dispatch-authority-audit operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C32.01 - accept
 
@@ -8746,7 +10514,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -8757,27 +10525,7 @@ Mission-specific rules and resources:
 
 ![Cold Reserve: accept](assets/missions/stages/cold-reserve/accept.png)
 
-#### C32.02 - survey
-
-**Place:** Allaeth (G08-S062). **Objective:** Scan three reserve store ledgers and their actual physical inventories.
-
-**Story/dialogue:** PELL: Count what is here before anyone orders it somewhere else.
-
-- **Event:** entity_scan_completed
-- **Required targets:** cold-reserve-survey-1; cold-reserve-survey-2; cold-reserve-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.cold-reserve/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Cold Reserve: survey](assets/missions/stages/cold-reserve/survey.png)
-
-#### C32.03 - collect-reference
+#### C32.02 - collect-reference
 
 **Place:** Fanerin (G08-S084). **Objective:** Collect the identified one-tonne reference instrument from Marshal Nera Voss.
 
@@ -8786,7 +10534,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -8800,9 +10548,29 @@ Mission-specific rules and resources:
 
 ![Cold Reserve: collect-reference](assets/missions/stages/cold-reserve/collect-reference.png)
 
+#### C32.03 - survey
+
+**Place:** Allaeth (G08-S062). **Objective:** Observe three real reserve store ledgers and account for all12 finite stock units.
+
+**Story/dialogue:** PELL: Count what is here before anyone orders it somewhere else.
+
+- **Event:** entity_scan_completed
+- **Required targets:** cold-reserve-survey-1; cold-reserve-survey-2; cold-reserve-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.cold-reserve/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Cold Reserve: survey](assets/missions/stages/cold-reserve/survey.png)
+
 #### C32.04 - field-work
 
-**Place:** Illaven (G08-S112). **Objective:** Isolate two named external dispatch couplers from expired work authority.
+**Place:** Illaven (G08-S112). **Objective:** Isolate the two external dispatch couplers and submit both obsolete test orders.
 
 **Story/dialogue:** VOSS: Unmanned couplers are the target. Random military hulls and stations are not substitutes.
 
@@ -8822,7 +10590,7 @@ Mission-specific rules and resources:
 
 #### C32.05 - independent-witness
 
-**Place:** Saleir (G08-S225). **Objective:** Escort the independent inspection tender to the safe reserve berth.
+**Place:** Saleir (G08-S225). **Objective:** Verify actual safe transit and living reception of the independent inspection tender to the safe reserve berth.
 
 **Story/dialogue:** PELL: The inspectors must see the emptied dispatch path themselves.
 
@@ -8842,9 +10610,9 @@ Mission-specific rules and resources:
 
 #### C32.06 - choose-settlement
 
-**Place:** Fanerin (G08-S084). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Saleir (G08-S225). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Marshal Nera Voss: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Marshal Nera Voss: Your autonomous dispatch isolation and stock custody evidence is ready. Our arrived delegates have the signed mandate to choose here. Either convert the finite reserve to civilian emergency use or dismantle and reclaim the reserve. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** cold-reserve-settlement-choice
@@ -8942,11 +10710,13 @@ Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. 
 
 **Permanent clue:** The unused order (`cold-reserve-trace`). An expired dispatch order defines an inward route to a receiving volume that has never existed in the reserve.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.cold-reserve`. Original loss and original fee receipts remain unchanged.
+
 ![Cold Reserve outcome cold-reserve/choose-settlement/plan-a](assets/missions/outcomes/cold-reserve-choose-settlement-plan-a.png)
 
 ![Cold Reserve outcome cold-reserve/choose-settlement/plan-b](assets/missions/outcomes/cold-reserve-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/cold-reserve.json).
+[Complete structured definition](missions/definitions/cold-reserve.json).
 
 ### C33 - The Magnetic Orchard
 
@@ -8954,11 +10724,11 @@ Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. 
 
 A slowly growing Larvaal structure bends charged dust into living magnetic fronds. Human survey tethers disturb its growth, while some operators mistake the fronds for collectible weapons. The commander measures the field without taking living parts, removes two consented tethers and chooses protected independent boundaries or a jointly observed growth reserve.
 
-**Offer:** At Laris in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Laris in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** VALE: A living structure is not a rack of salvage waiting for a buyer.
 
-**Contacts:** Agent Mara Vale, Physicist Anja Kest. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Agent Mara Vale, Physicist Anja Kest. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 9,200 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The root without a stem.
 
@@ -8986,6 +10756,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/magnetic-orchard
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/magnetic-orchard/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** non-destructive field-boundary release
+- **Recommended tier:** advanced
+- **Parameters / Safe field maximum:** 30
+- **Parameters / Test seconds:** 18
+- **Parameters / Tethers:** 2
+- **Parameters / Living harvest allowed:** 0
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** magnetic-orchard-survey-1; magnetic-orchard-survey-2; magnetic-orchard-survey-3
+- **Survey / Instruction:** Observe three field boundaries from outside the marked30-unit exposure contour.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** magnetic-orchard-work-port; magnetic-orchard-work-starboard
+- **Field work / Instruction:** Use the isolated field reference to release the two consented human tethers; keep the living fronds intact.
+- **Field work / Acceptance:** For18s after release the actual protected contour is clear and no living organ or material is collected.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** magnetic-orchard-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** magnetic-orchard-plan-a-physical-proof; magnetic-orchard-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The human and Larvaal exclusion envelopes remain independently bounded and both registered custodians reply.
+- **Branches / Plan-b / Targets:** magnetic-orchard-plan-b-physical-proof; magnetic-orchard-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The jointly observed reserve has both actual consents and its monitor rejects an out-of-bound survey tether.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** field-guided-navigation
+- **Player action:** Fly the low-field approach and direct the two human tether releases only inside the measured safe field window.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive field-guided-navigation operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C33.01 - accept
 
@@ -8996,7 +10831,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -9007,27 +10842,7 @@ Mission-specific rules and resources:
 
 ![The Magnetic Orchard: accept](assets/missions/stages/magnetic-orchard/accept.png)
 
-#### C33.02 - survey
-
-**Place:** Nevedor (G01-S115). **Objective:** Observe three safe magnetic field boundaries without extracting living material.
-
-**Story/dialogue:** VALE: A living structure is not a rack of salvage waiting for a buyer.
-
-- **Event:** entity_scan_completed
-- **Required targets:** magnetic-orchard-survey-1; magnetic-orchard-survey-2; magnetic-orchard-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.magnetic-orchard/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Magnetic Orchard: survey](assets/missions/stages/magnetic-orchard/survey.png)
-
-#### C33.03 - collect-reference
+#### C33.02 - collect-reference
 
 **Place:** Laris (G01-S120). **Objective:** Collect the identified one-tonne reference instrument from Agent Mara Vale.
 
@@ -9036,7 +10851,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -9050,9 +10865,29 @@ Mission-specific rules and resources:
 
 ![The Magnetic Orchard: collect-reference](assets/missions/stages/magnetic-orchard/collect-reference.png)
 
+#### C33.03 - survey
+
+**Place:** Nevedor (G01-S115). **Objective:** Observe three field boundaries from outside the marked30-unit exposure contour.
+
+**Story/dialogue:** VALE: A living structure is not a rack of salvage waiting for a buyer.
+
+- **Event:** entity_scan_completed
+- **Required targets:** magnetic-orchard-survey-1; magnetic-orchard-survey-2; magnetic-orchard-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.magnetic-orchard/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Magnetic Orchard: survey](assets/missions/stages/magnetic-orchard/survey.png)
+
 #### C33.04 - field-work
 
-**Place:** Nesel (G01-S161). **Objective:** Release two identified human tethers using the isolated field reference.
+**Place:** Nesel (G01-S161). **Objective:** Use the isolated field reference to release the two consented human tethers; keep the living fronds intact.
 
 **Story/dialogue:** KEST: Keep the removed tether mass in custody. Cutting a frond is not removing our equipment.
 
@@ -9072,7 +10907,7 @@ Mission-specific rules and resources:
 
 #### C33.05 - independent-witness
 
-**Place:** Erron (G01-S089). **Objective:** Escort the neutral observation tender to the protected receiving cradle.
+**Place:** Erron (G01-S089). **Objective:** Verify actual safe transit and living reception of the neutral observation tender to the protected receiving cradle.
 
 **Story/dialogue:** VALE: Bring the observers through the measured gap rather than forcing a new one.
 
@@ -9092,9 +10927,9 @@ Mission-specific rules and resources:
 
 #### C33.06 - choose-settlement
 
-**Place:** Laris (G01-S120). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Erron (G01-S089). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Agent Mara Vale: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Agent Mara Vale: Your non-destructive field-boundary release evidence is ready. Our arrived delegates have the signed mandate to choose here. Either protect independent human and larvaal growth boundaries or establish a jointly observed growth reserve. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** magnetic-orchard-settlement-choice
@@ -9192,23 +11027,25 @@ Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Th
 
 **Permanent clue:** The root without a stem (`magnetic-orchard-trace`). The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.magnetic-orchard`. Original loss and original fee receipts remain unchanged.
+
 ![The Magnetic Orchard outcome magnetic-orchard/choose-settlement/plan-a](assets/missions/outcomes/magnetic-orchard-choose-settlement-plan-a.png)
 
 ![The Magnetic Orchard outcome magnetic-orchard/choose-settlement/plan-b](assets/missions/outcomes/magnetic-orchard-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/magnetic-orchard.json).
+[Complete structured definition](missions/definitions/magnetic-orchard.json).
 
 ### C34 - Open Measure
 
 **Mission identity:** `l337.open-measure`. **Premise:** LERR: A certificate should describe a fit, not manufacture a monopoly.
 
-Three independent workshops cannot exchange replacement parts because their calibration certificates use incompatible reference loads. A supplier profits by treating each disagreement as a new proprietary component. The commander measures actual tolerances, tests shared reference fittings and escorts a neutral technician before choosing public measurement standards or a witnessed interoperable service.
+Three independent workshops cannot exchange replacement parts because their calibration certificates use incompatible reference loads. A supplier profits by treating each disagreement as a new proprietary component. The commander measures actual tolerances, tests shared reference fittings and verifies actual safe transit and living reception of a neutral technician before choosing public measurement standards or a witnessed interoperable service.
 
-**Offer:** At Valtor in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Valtor in Galaxy 2, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** LERR: A certificate should describe a fit, not manufacture a monopoly.
 
-**Contacts:** Engineer Cato Lerr, Physicist Anja Kest. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Engineer Cato Lerr, Physicist Anja Kest. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 7,900 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The reference without a load.
 
@@ -9236,6 +11073,70 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/open-measure
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/open-measure/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** independent tolerance and fit verification
+- **Recommended tier:** foundation
+- **Parameters / Reference load units:** 100
+- **Parameters / Allowed error units:** 1
+- **Parameters / Independent parts:** 2
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** open-measure-survey-1; open-measure-survey-2; open-measure-survey-3
+- **Survey / Instruction:** Compare three signed workshop loads against the actual external test fittings.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** open-measure-work-port; open-measure-work-starboard
+- **Field work / Instruction:** Test the two independently manufactured parts with the original onboard tolerance programmer.
+- **Field work / Acceptance:** Both measured load errors are at most1unit around100; a matching product name or shared vendor certificate is not a physical fit.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** open-measure-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** open-measure-plan-a-physical-proof; open-measure-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** An independently made part fits the published reference and its real manufacturer signs the public measurement.
+- **Branches / Plan-b / Targets:** open-measure-plan-b-physical-proof; open-measure-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Each workshop can reject an out-of-tolerance part independently and both accept the reciprocal bounded service contract.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** load-and-fit-experiment
+- **Player action:** Apply the known reference load to both actual component mounts; compare fit and tolerance before publishing their calibrated specification.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive load-and-fit-experiment operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C34.01 - accept
 
@@ -9246,7 +11147,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -9257,27 +11158,7 @@ Mission-specific rules and resources:
 
 ![Open Measure: accept](assets/missions/stages/open-measure/accept.png)
 
-#### C34.02 - survey
-
-**Place:** Vorvakar (G02-S225). **Objective:** Compare three workshop reference loads against the actual external test fittings.
-
-**Story/dialogue:** LERR: A certificate should describe a fit, not manufacture a monopoly.
-
-- **Event:** entity_scan_completed
-- **Required targets:** open-measure-survey-1; open-measure-survey-2; open-measure-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.open-measure/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Open Measure: survey](assets/missions/stages/open-measure/survey.png)
-
-#### C34.03 - collect-reference
+#### C34.02 - collect-reference
 
 **Place:** Valtor (G02-S157). **Objective:** Collect the identified one-tonne reference instrument from Engineer Cato Lerr.
 
@@ -9286,7 +11167,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -9300,9 +11181,29 @@ Mission-specific rules and resources:
 
 ![Open Measure: collect-reference](assets/missions/stages/open-measure/collect-reference.png)
 
+#### C34.03 - survey
+
+**Place:** Vorvakar (G02-S225). **Objective:** Compare three signed workshop loads against the actual external test fittings.
+
+**Story/dialogue:** LERR: A certificate should describe a fit, not manufacture a monopoly.
+
+- **Event:** entity_scan_completed
+- **Required targets:** open-measure-survey-1; open-measure-survey-2; open-measure-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.open-measure/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Open Measure: survey](assets/missions/stages/open-measure/survey.png)
+
 #### C34.04 - field-work
 
-**Place:** Voransen (G02-S041). **Objective:** Test two independently made parts with the loaned tolerance programmer.
+**Place:** Voransen (G02-S041). **Objective:** Test the two independently manufactured parts with the original onboard tolerance programmer.
 
 **Story/dialogue:** KEST: Record the physical tolerances before looking at the supplier's label.
 
@@ -9322,7 +11223,7 @@ Mission-specific rules and resources:
 
 #### C34.05 - independent-witness
 
-**Place:** Morkador (G02-S077). **Objective:** Escort the independent calibration tender to the common test berth.
+**Place:** Morkador (G02-S077). **Objective:** Verify actual safe transit and living reception of the independent calibration tender to the common test berth.
 
 **Story/dialogue:** LERR: Its technician brings a separate instrument and a separate signing key.
 
@@ -9342,9 +11243,9 @@ Mission-specific rules and resources:
 
 #### C34.06 - choose-settlement
 
-**Place:** Valtor (G02-S157). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Morkador (G02-S077). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Engineer Cato Lerr: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Engineer Cato Lerr: Your independent tolerance and fit verification evidence is ready. Our arrived delegates have the signed mandate to choose here. Either publish an open physical measurement standard or establish a witnessed interoperable calibration service. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** open-measure-settlement-choice
@@ -9442,11 +11343,13 @@ Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side.
 
 **Permanent clue:** The reference without a load (`open-measure-trace`). A reference instrument preserves an inward-curved response while its test cradle is verifiably empty.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.open-measure`. Original loss and original fee receipts remain unchanged.
+
 ![Open Measure outcome open-measure/choose-settlement/plan-a](assets/missions/outcomes/open-measure-choose-settlement-plan-a.png)
 
 ![Open Measure outcome open-measure/choose-settlement/plan-b](assets/missions/outcomes/open-measure-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/open-measure.json).
+[Complete structured definition](missions/definitions/open-measure.json).
 
 ### C35 - The Shared Pulse
 
@@ -9454,11 +11357,11 @@ Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side.
 
 A Larvaal maintenance organ and a human beacon exchange incompatible acknowledgement pulses. Each automatically repeats faster when it receives the other's reply, creating a hazardous feedback loop. The commander establishes independent listening references, restores a consenting repair organ and verifies either separated timing windows or a shared bounded handshake.
 
-**Offer:** At Elaith in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Elaith in Galaxy 3, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** HOLT: More replies make this worse. Listen first.
 
-**Contacts:** Agent Mara Vale, Captain Tamsin Holt. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Agent Mara Vale, Captain Tamsin Holt. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 8,600 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The pulse before the reply.
 
@@ -9486,6 +11389,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/shared-pulse
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/shared-pulse/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** bounded acknowledgement and feedback cutoff
+- **Recommended tier:** advanced
+- **Parameters / Cycle seconds:** 10
+- **Parameters / Reply budget per side:** 1
+- **Parameters / Quiet seconds:** 4
+- **Parameters / Test cycles:** 3
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** shared-pulse-survey-1; shared-pulse-survey-2; shared-pulse-survey-3
+- **Survey / Instruction:** Observe three independent points without rebroadcasting their repeated acknowledgements.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** shared-pulse-work-port; shared-pulse-work-starboard
+- **Field work / Instruction:** Connect the repair reference at two actual handshake couplers and arm the controlled three-cycle test.
+- **Field work / Acceptance:** Each side sends at most one reply per10s cycle and each cycle contains at least4s continuous silence.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** shared-pulse-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** shared-pulse-plan-a-physical-proof; shared-pulse-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both separate time windows enforce their independent reply limits without suppressing a genuine custody response.
+- **Branches / Plan-b / Targets:** shared-pulse-plan-b-physical-proof; shared-pulse-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** Both custodians acknowledge the shared handshake; an injected duplicate reply is rejected and the actual feedback cutoff stays closed.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** bounded-relay-control
+- **Player action:** Set the two real reply cutoffs and follow three live cycles with exactly one reply each and the full quiet window.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive bounded-relay-control operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C35.01 - accept
 
@@ -9496,7 +11464,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -9507,27 +11475,7 @@ Mission-specific rules and resources:
 
 ![The Shared Pulse: accept](assets/missions/stages/shared-pulse/accept.png)
 
-#### C35.02 - survey
-
-**Place:** Siaseven (G03-S032). **Objective:** Measure three independent points around the feedback loop without rebroadcasting it.
-
-**Story/dialogue:** HOLT: More replies make this worse. Listen first.
-
-- **Event:** entity_scan_completed
-- **Required targets:** shared-pulse-survey-1; shared-pulse-survey-2; shared-pulse-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.shared-pulse/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Shared Pulse: survey](assets/missions/stages/shared-pulse/survey.png)
-
-#### C35.03 - collect-reference
+#### C35.02 - collect-reference
 
 **Place:** Elaith (G03-S196). **Objective:** Collect the identified one-tonne reference instrument from Agent Mara Vale.
 
@@ -9536,7 +11484,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -9550,9 +11498,29 @@ Mission-specific rules and resources:
 
 ![The Shared Pulse: collect-reference](assets/missions/stages/shared-pulse/collect-reference.png)
 
+#### C35.03 - survey
+
+**Place:** Siaseven (G03-S032). **Objective:** Observe three independent points without rebroadcasting their repeated acknowledgements.
+
+**Story/dialogue:** HOLT: More replies make this worse. Listen first.
+
+- **Event:** entity_scan_completed
+- **Required targets:** shared-pulse-survey-1; shared-pulse-survey-2; shared-pulse-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.shared-pulse/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Shared Pulse: survey](assets/missions/stages/shared-pulse/survey.png)
+
 #### C35.04 - field-work
 
-**Place:** Elasil (G03-S181). **Objective:** Install the consented repair reference at two external handshake couplers.
+**Place:** Elasil (G03-S181). **Objective:** Connect the repair reference at two actual handshake couplers and arm the controlled three-cycle test.
 
 **Story/dialogue:** VALE: The organ remains with its custodian. A repair is not a specimen theft.
 
@@ -9572,7 +11540,7 @@ Mission-specific rules and resources:
 
 #### C35.05 - independent-witness
 
-**Place:** Varioria (G03-S124). **Objective:** Escort the neutral relay tender to the protected verification berth.
+**Place:** Varioria (G03-S124). **Objective:** Verify actual safe transit and living reception of the neutral relay tender to the protected verification berth.
 
 **Story/dialogue:** HOLT: Keep its ordinary collision channel open throughout the test.
 
@@ -9592,9 +11560,9 @@ Mission-specific rules and resources:
 
 #### C35.06 - choose-settlement
 
-**Place:** Elaith (G03-S196). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Varioria (G03-S124). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Agent Mara Vale: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Agent Mara Vale: Your bounded acknowledgement and feedback cutoff evidence is ready. Our arrived delegates have the signed mandate to choose here. Either separate human and larvaal acknowledgement windows or adopt a shared bounded handshake. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** shared-pulse-settlement-choice
@@ -9692,23 +11660,25 @@ Agent Mara Vale: The audit has left one anomaly that belongs to neither side. A 
 
 **Permanent clue:** The pulse before the reply (`shared-pulse-trace`). A passive trace shows an inward curve before either known participant transmits.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.shared-pulse`. Original loss and original fee receipts remain unchanged.
+
 ![The Shared Pulse outcome shared-pulse/choose-settlement/plan-a](assets/missions/outcomes/shared-pulse-choose-settlement-plan-a.png)
 
 ![The Shared Pulse outcome shared-pulse/choose-settlement/plan-b](assets/missions/outcomes/shared-pulse-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/shared-pulse.json).
+[Complete structured definition](missions/definitions/shared-pulse.json).
 
 ### C36 - The Witness Window
 
 **Mission identity:** `l337.witness-window`. **Premise:** TOREN: Preserve evidence without turning its owner into a target.
 
-A shift worker witnessed an avoidable docking injury, but an arbitration system will erase the recording when its routine privacy window expires. The worker wants protection without surrendering control of testimony. The commander verifies consented copies, establishes a safe hearing and chooses an independently witnessed sealed archive or a public anonymised finding.
+A shift worker witnessed an avoidable docking injury, but an arbitration system had scheduled the recording for routine privacy expiry; a witness-consented preservation order now protects the original while this inquiry determines its safe final custody. The worker wants protection without surrendering control of testimony. The commander verifies consented copies, establishes a safe hearing and chooses an independently witnessed sealed archive or a public anonymised finding.
 
-**Offer:** At Fonogom in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Fonogom in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer. The archive already holds a witness-consented preservation order. It has no hidden expiry while you prepare or investigate.
 
 **Briefing:** TOREN: Preserve evidence without turning its owner into a target.
 
-**Contacts:** Coordinator Sera Dain, Nia Toren. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Coordinator Sera Dain, Nia Toren. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 8,100 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The frame nobody recorded.
 
@@ -9736,17 +11706,86 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/witness-window
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Preservation policy / Authority:** New explicit project design closing review F06
+- **Preservation policy / Hold before offer:** yes
+- **Preservation policy / Mission deadline seconds:** 0
+- **Preservation policy / Rule:** Before publishing the offer, the real archive custodian obtains witness consent and records the original record/version/hash under a case-scoped preservation hold. The hold has no expiry during preparation or accepted investigation. It survives abandonment as protected evidence; it grants neither success nor a clue. Only an authenticated receiving archive or witness-consented anonymised public release can close it. Private location fields never leave the authorised custody boundary. Custodian loss uses independently corroborated remedial evidence; no invented surviving original.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/witness-window/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** evidence escrow and privacy-preserving release
+- **Recommended tier:** foundation
+- **Parameters / Copies:** 3
+- **Parameters / Independent custody keys:** 2
+- **Parameters / Public private fields allowed:** 0
+- **Parameters / Challenge packets:** 2
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** witness-window-survey-1; witness-window-survey-2; witness-window-survey-3
+- **Survey / Instruction:** Read three authorised copy receipts without exposing the witness location; verify the preservation-hold identity.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** witness-window-work-port; witness-window-work-starboard
+- **Field work / Instruction:** Verify the two actual independent custody keys using the onboard witness verifier, then replay both challenge packets.
+- **Field work / Acceptance:** The protected original remains unchanged; either revoked key is refused and no preview publishes the private source.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** witness-window-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** witness-window-plan-a-physical-proof; witness-window-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both custody principals sign the sealed archive and the witness can revoke future disclosure without erasing the inquiry preservation record.
+- **Branches / Plan-b / Targets:** witness-window-plan-b-physical-proof; witness-window-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The public output contains zero private fields and the corrected actual docking procedure rejects the recorded unsafe allocation.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** preserved-evidence-challenge
+- **Player action:** Compare the three consented archive copies, challenge the two independent keys and verify the sealed or anonymised receiving outcome.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive preserved-evidence-challenge operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C36.01 - accept
 
-**Place:** Fonogom (G04-S234). **Objective:** Accept The Witness Window at Fonogom.
+**Place:** Fonogom (G04-S234). **Objective:** Accept The Witness Window at Fonogom. Verify the existing consented preservation-hold receipt before accepting.
 
-**Story/dialogue:** Coordinator Sera Dain: A shift worker witnessed an avoidable docking injury, but an arbitration system will erase the recording when its routine privacy window expires. Review the complete survey, loan and receiving requirements before confirming.
+**Story/dialogue:** Coordinator Sera Dain: A shift worker witnessed an avoidable docking injury, but an arbitration system had scheduled the recording for routine privacy expiry; a witness-consented preservation order now protects the original while this inquiry determines its safe final custody. Review the complete survey, loan and receiving requirements before confirming.
 
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -9757,27 +11796,7 @@ Mission-specific rules and resources:
 
 ![The Witness Window: accept](assets/missions/stages/witness-window/accept.png)
 
-#### C36.02 - survey
-
-**Place:** Anlanom (G04-S181). **Objective:** Compare three authorised recording receipts without revealing the witness's private location.
-
-**Story/dialogue:** TOREN: Preserve evidence without turning its owner into a target.
-
-- **Event:** entity_scan_completed
-- **Required targets:** witness-window-survey-1; witness-window-survey-2; witness-window-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.witness-window/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Witness Window: survey](assets/missions/stages/witness-window/survey.png)
-
-#### C36.03 - collect-reference
+#### C36.02 - collect-reference
 
 **Place:** Fonogom (G04-S234). **Objective:** Collect the identified one-tonne reference instrument from Coordinator Sera Dain.
 
@@ -9786,7 +11805,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -9800,9 +11819,29 @@ Mission-specific rules and resources:
 
 ![The Witness Window: collect-reference](assets/missions/stages/witness-window/collect-reference.png)
 
+#### C36.03 - survey
+
+**Place:** Anlanom (G04-S181). **Objective:** Read three authorised copy receipts without exposing the witness location; verify the preservation-hold identity.
+
+**Story/dialogue:** TOREN: Preserve evidence without turning its owner into a target.
+
+- **Event:** entity_scan_completed
+- **Required targets:** witness-window-survey-1; witness-window-survey-2; witness-window-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.witness-window/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Witness Window: survey](assets/missions/stages/witness-window/survey.png)
+
 #### C36.04 - field-work
 
-**Place:** Borbovar (G04-S041). **Objective:** Verify two independent custody keys with the loaned witness verifier.
+**Place:** Borbovar (G04-S041). **Objective:** Verify the two actual independent custody keys using the onboard witness verifier, then replay both challenge packets.
 
 **Story/dialogue:** DAIN: Neither key alone may reveal testimony or erase it.
 
@@ -9822,7 +11861,7 @@ Mission-specific rules and resources:
 
 #### C36.05 - independent-witness
 
-**Place:** Bogolan (G04-S205). **Objective:** Escort the consenting witness tender to the protected hearing berth.
+**Place:** Bogolan (G04-S205). **Objective:** Verify actual safe transit and living reception of the consenting witness tender to the protected hearing berth.
 
 **Story/dialogue:** DAIN: Actual safe reception matters more than a reassuring status word.
 
@@ -9842,9 +11881,9 @@ Mission-specific rules and resources:
 
 #### C36.06 - choose-settlement
 
-**Place:** Fonogom (G04-S234). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Bogolan (G04-S205). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Coordinator Sera Dain: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Coordinator Sera Dain: Your evidence escrow and privacy-preserving release evidence is ready. Our arrived delegates have the signed mandate to choose here. Either keep testimony in an independently witnessed sealed archive or publish an anonymised safety finding. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** witness-window-settlement-choice
@@ -9942,11 +11981,13 @@ Coordinator Sera Dain: The audit has left one anomaly that belongs to neither si
 
 **Permanent clue:** The frame nobody recorded (`witness-window-trace`). Between two authentic recording frames is an inward-shaped phase imprint with no camera source.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.witness-window`. Original loss and original fee receipts remain unchanged.
+
 ![The Witness Window outcome witness-window/choose-settlement/plan-a](assets/missions/outcomes/witness-window-choose-settlement-plan-a.png)
 
 ![The Witness Window outcome witness-window/choose-settlement/plan-b](assets/missions/outcomes/witness-window-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/witness-window.json).
+[Complete structured definition](missions/definitions/witness-window.json).
 
 ### C37 - Public Record
 
@@ -9954,11 +11995,11 @@ Coordinator Sera Dain: The audit has left one anomaly that belongs to neither si
 
 An orbital news service wants to report a dangerous cargo-routing fault, but its sponsor owns the only accepted recording instrument. The commander obtains independent readings, protects a consenting technical witness and helps the newsroom choose an open evidence release or a witnessed right-of-reply process.
 
-**Offer:** At Fenias in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Fenias in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** SOL: A story that cannot survive an independent reading is not ready to publish.
 
-**Contacts:** Dispatcher Neris Sol, Nia Toren. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Dispatcher Neris Sol, Nia Toren. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 6,300 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The unreported frequency.
 
@@ -9986,6 +12027,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/public-record
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/public-record/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** right-of-reply without evidence mutation
+- **Recommended tier:** foundation
+- **Parameters / Routing records:** 3
+- **Parameters / Independent tests:** 2
+- **Parameters / Reply lease seconds:** 120
+- **Parameters / Evidence edits allowed:** 0
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** public-record-survey-1; public-record-survey-2; public-record-survey-3
+- **Survey / Instruction:** Observe three actual cargo-routing decisions under the source observers consent.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** public-record-work-port; public-record-work-starboard
+- **Field work / Instruction:** Compare two external route controllers with the original public recorder; freeze the independently measured evidence version.
+- **Field work / Acceptance:** Both observations retain their original hashes; a sponsor or reply cannot edit the evidence.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 20
+- **Field work / Credit policy:** Only physical qualified time counts. A wrong target/ownership, occlusion, moving out of envelope or missing original pauses work; no remote button creates a repair. The named functional test must also pass.
+- **Field work / Work credit mode:** qualified-tool-work-and-functional-test
+- **Witness / Target:** public-record-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** public-record-plan-a-physical-proof; public-record-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The public receiver accepts the independently measured anonymised archive and the privacy audit finds no private identity fields.
+- **Branches / Plan-b / Targets:** public-record-plan-b-physical-proof; public-record-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** A120s reply period starts only after explicit receiver confirmation; expiry permits publication but is not a mission deadline, and the unchanged evidence remains preserved.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** routing-and-right-of-reply
+- **Player action:** Test three genuine publication routes and two independent challenges; explicitly arm a right-of-reply trial without modifying the preserved evidence.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Obtain the instrument and establish the evidence; Perform the distinctive routing-and-right-of-reply operation; Receive independent evidence and choose a settlement; Prove that settlement and audit the original loan
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C37.01 - accept
 
@@ -9996,7 +12102,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -10007,27 +12113,7 @@ Mission-specific rules and resources:
 
 ![Public Record: accept](assets/missions/stages/public-record/accept.png)
 
-#### C37.02 - survey
-
-**Place:** Fenel (G05-S166). **Objective:** Record three independent cargo-routing decisions using consented observers.
-
-**Story/dialogue:** SOL: A story that cannot survive an independent reading is not ready to publish.
-
-- **Event:** entity_scan_completed
-- **Required targets:** public-record-survey-1; public-record-survey-2; public-record-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.public-record/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Public Record: survey](assets/missions/stages/public-record/survey.png)
-
-#### C37.03 - collect-reference
+#### C37.02 - collect-reference
 
 **Place:** Fenias (G05-S012). **Objective:** Collect the identified one-tonne reference instrument from Dispatcher Neris Sol.
 
@@ -10036,7 +12122,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -10050,9 +12136,29 @@ Mission-specific rules and resources:
 
 ![Public Record: collect-reference](assets/missions/stages/public-record/collect-reference.png)
 
+#### C37.03 - survey
+
+**Place:** Fenel (G05-S166). **Objective:** Observe three actual cargo-routing decisions under the source observers consent.
+
+**Story/dialogue:** SOL: A story that cannot survive an independent reading is not ready to publish.
+
+- **Event:** entity_scan_completed
+- **Required targets:** public-record-survey-1; public-record-survey-2; public-record-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.public-record/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Public Record: survey](assets/missions/stages/public-record/survey.png)
+
 #### C37.04 - field-work
 
-**Place:** Heroeth (G05-S024). **Objective:** Compare two external route controllers with the loaned public recorder.
+**Place:** Heroeth (G05-S024). **Objective:** Compare two external route controllers with the original public recorder; freeze the independently measured evidence version.
 
 **Story/dialogue:** TOREN: Keep the sponsor's record beside the independent one. Disagreement is evidence, not a verdict.
 
@@ -10072,7 +12178,7 @@ Mission-specific rules and resources:
 
 #### C37.05 - independent-witness
 
-**Place:** Voron (G05-S003). **Objective:** Escort the consenting technical witness to the newsroom receiving berth.
+**Place:** Voron (G05-S003). **Objective:** Verify actual safe transit and living reception of the consenting technical witness to the newsroom receiving berth.
 
 **Story/dialogue:** SOL: The witness chooses what to disclose and must actually arrive safely.
 
@@ -10092,9 +12198,9 @@ Mission-specific rules and resources:
 
 #### C37.06 - choose-settlement
 
-**Place:** Fenias (G05-S012). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Voron (G05-S003). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Dispatcher Neris Sol: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Dispatcher Neris Sol: Your right-of-reply without evidence mutation evidence is ready. Our arrived delegates have the signed mandate to choose here. Either release the complete anonymised evidence set or use a witnessed right-of-reply hearing. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** public-record-settlement-choice
@@ -10192,23 +12298,25 @@ Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither sid
 
 **Permanent clue:** The unreported frequency (`public-record-trace`). The independent recorder captures a curved phase boundary outside the cargo controllers' published operating bands.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.public-record`. Original loss and original fee receipts remain unchanged.
+
 ![Public Record outcome public-record/choose-settlement/plan-a](assets/missions/outcomes/public-record-choose-settlement-plan-a.png)
 
 ![Public Record outcome public-record/choose-settlement/plan-b](assets/missions/outcomes/public-record-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/public-record.json).
+[Complete structured definition](missions/definitions/public-record.json).
 
 ### C38 - Signed Passage
 
 **Mission identity:** `l337.courier`. **Premise:** SENN: Departure is a promise. Delivery is the receiver taking this exact consignment.
 
-An orbital receiving service repeatedly loses custody of a harmless calibration shipment during carrier handoffs. No cargo is missing; the signatures claim delivery before a receiving cradle is assigned. The commander independently measures the handoffs, escorts a consenting receipt witness and establishes either individually signed receiving locks or a common bounded custody register. It is a complete original induction, separate from ordinary repeat courier jobs.
+An orbital receiving service repeatedly loses custody of a harmless calibration shipment during carrier handoffs. No cargo is missing; the signatures claim delivery before a receiving cradle is assigned. The commander independently measures the handoffs, verifies actual safe transit and living reception of a consenting receipt witness and establishes either individually signed receiving locks or a common bounded custody register. It is a complete original induction, separate from ordinary repeat courier jobs.
 
-**Offer:** At Neron in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Neron in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** SENN: Departure is a promise. Delivery is the receiver taking this exact consignment.
 
-**Contacts:** Dispatcher Evi Senn, Nia Toren. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Dispatcher Evi Senn, Nia Toren. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 4,300 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The empty destination.
 
@@ -10236,6 +12344,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/courier
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/courier/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** physical release-before-receive interlock
+- **Recommended tier:** foundation
+- **Parameters / Identified crates:** 1
+- **Parameters / Transfer tests:** 2
+- **Parameters / Simultaneous holders allowed:** 1
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** courier-survey-1; courier-survey-2; courier-survey-3
+- **Survey / Instruction:** Observe three actual receiving cradles and compare allocation time with receipt-signing time.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** courier-work-port; courier-work-starboard
+- **Field work / Instruction:** Move the same identified source-owned test crate through two actual cradle transfers under the onboard reference.
+- **Field work / Acceptance:** Each prior owner releases only after its authorised receiver acknowledges physical custody; exactly one holder is recorded, without creating a second crate.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** courier-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** courier-plan-a-physical-proof; courier-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** The independent sender and receiver locks bind the same physical consignment and reject an early receipt.
+- **Branches / Plan-b / Targets:** courier-plan-b-physical-proof; courier-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The common register rejects a duplicate consignment claim and retains the actual receiving proof for each handoff.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Handoff atomicity:** Prepare receiver capacity and consent while the sender remains sole custodian. Commit sender removal and receiver acquisition as one transaction and one receipt. Before commit sender owns it; afterwards receiver alone owns it. An acknowledgement is not concurrent custody.
+- **Interaction style:** physical-carrier-handoff
+- **Player action:** Meet two real carriers, prepare exact crate receiving capacity and atomically commit each actual handoff in order.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Collect the crate mandate; Visit the three live carriers; Execute the two atomic handoffs; Audit the selected receiving lock
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C38.01 - accept
 
@@ -10246,7 +12419,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -10257,27 +12430,7 @@ Mission-specific rules and resources:
 
 ![Signed Passage: accept](assets/missions/stages/courier/accept.png)
 
-#### C38.02 - survey
-
-**Place:** Lalen (G01-S160). **Objective:** Scan three independent receiving cradles and their actual allocation times.
-
-**Story/dialogue:** SENN: Departure is a promise. Delivery is the receiver taking this exact consignment.
-
-- **Event:** entity_scan_completed
-- **Required targets:** courier-survey-1; courier-survey-2; courier-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.courier/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![Signed Passage: survey](assets/missions/stages/courier/survey.png)
-
-#### C38.03 - collect-reference
+#### C38.02 - collect-reference
 
 **Place:** Neron (G01-S049). **Objective:** Collect the identified one-tonne reference instrument from Dispatcher Evi Senn.
 
@@ -10286,7 +12439,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -10300,9 +12453,29 @@ Mission-specific rules and resources:
 
 ![Signed Passage: collect-reference](assets/missions/stages/courier/collect-reference.png)
 
+#### C38.03 - survey
+
+**Place:** Lalen (G01-S160). **Objective:** Observe three actual receiving cradles and compare allocation time with receipt-signing time.
+
+**Story/dialogue:** SENN: Departure is a promise. Delivery is the receiver taking this exact consignment.
+
+- **Event:** entity_scan_completed
+- **Required targets:** courier-survey-1; courier-survey-2; courier-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.courier/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![Signed Passage: survey](assets/missions/stages/courier/survey.png)
+
 #### C38.04 - field-work
 
-**Place:** Illalis (G01-S034). **Objective:** Verify two physical custody transfers with the identified reference crate.
+**Place:** Illalis (G01-S034). **Objective:** Move the same identified source-owned test crate through two actual cradle transfers under the onboard reference.
 
 **Story/dialogue:** TOREN: A receipt cannot arrive before its receiving cradle exists.
 
@@ -10322,7 +12495,7 @@ Mission-specific rules and resources:
 
 #### C38.05 - independent-witness
 
-**Place:** Aetaria (G01-S002). **Objective:** Escort the independent receiving witness to the archive berth.
+**Place:** Aetaria (G01-S002). **Objective:** Verify actual safe transit and living reception of the independent receiving witness to the archive berth.
 
 **Story/dialogue:** SENN: The witness must arrive and examine the same custody chain.
 
@@ -10342,9 +12515,9 @@ Mission-specific rules and resources:
 
 #### C38.06 - choose-settlement
 
-**Place:** Neron (G01-S049). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Aetaria (G01-S002). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Dispatcher Evi Senn: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Dispatcher Evi Senn: Your physical release-before-receive interlock evidence is ready. Our arrived delegates have the signed mandate to choose here. Either use independently signed receiving locks or create a shared bounded custody register. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** courier-settlement-choice
@@ -10442,11 +12615,13 @@ Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side
 
 **Permanent clue:** The empty destination (`courier-empty-destination`). An early receiving receipt has an inward-curved watermark for a destination absent from all freight charts.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.courier`. Original loss and original fee receipts remain unchanged.
+
 ![Signed Passage outcome courier/choose-settlement/plan-a](assets/missions/outcomes/courier-choose-settlement-plan-a.png)
 
 ![Signed Passage outcome courier/choose-settlement/plan-b](assets/missions/outcomes/courier-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/courier.json).
+[Complete structured definition](missions/definitions/courier.json).
 
 ### C39 - The Guiding Light
 
@@ -10454,11 +12629,11 @@ Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side
 
 Crimbo's winter orbital services depend on a chain of navigation lanterns whose light-sharing contract does not account for the planet's long shadow. A maintenance crew has been routed to an unlit receiving pier. The commander measures the actual horizon, restores physical relays and escorts the crew before choosing independently maintained lantern segments or a shared winter rota.
 
-**Offer:** At Crimbo in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold.
+**Offer:** At Crimbo in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.
 
 **Briefing:** RENN: A lantern outside your line of sight is not a safe approach marker.
 
-**Contacts:** Dispatcher Evi Senn, Relay Engineer Ivo Renn. **Story craft:** SH001 Mule, SH061 Haflinger.
+**Contacts:** Dispatcher Evi Senn, Relay Engineer Ivo Renn. **Story craft:** SH001, SH061.
 
 **Successful settlement:** 5,700 CR. The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The extra lantern.
 
@@ -10486,6 +12661,71 @@ Mission-specific rules and resources:
 - **Reward policy:** Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.
 - **Identity policy:** Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.
 - **Persistence policy:** Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.
+- **Gameplay profile ref:** ../gameplay/campaign-profiles.json#/profiles/guiding-light
+- **Oracle design revision:** review-resolution-2026-10-24-v2
+- **Delegation policy:** Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.
+- **Recovery policy ref:** ../gameplay/recovery-policy.json
+- **Main quest continuity:** Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival.
+
+**Physical gameplay profile - new project estimates:**
+
+- **Id:** l337.design/guiding-light/physical-v2
+- **Authority:** New project design resolving the user-supplied 24 October review; values are labelled estimates, not historical recovery or implemented mechanics.
+- **Parameter status:** project-estimate-needs-play-balancing
+- **Primary mechanic:** shadow sight-line and overlapping beacon coverage
+- **Recommended tier:** foundation
+- **Parameters / Lanterns:** 3
+- **Parameters / Minimum overlap degrees:** 5
+- **Parameters / Test seconds:** 12
+- **Parameters / Repaired relays:** 2
+- **Normal controls:** Normal flight, targeting and contextual Confirm/Cancel. Confirm arms a specific owned device operation; the measured native producer, not the button, issues its success receipt.
+- **Loan policy:** One original 1t reference kit stays aboard and counts throughout; external test cradles/parts belong to their real source. The kit is neither consumed nor replaced by a similarly named commodity.
+- **Survey / Targets:** guiding-light-survey-1; guiding-light-survey-2; guiding-light-survey-3
+- **Survey / Instruction:** Measure three actual winter-shadow sight lines from the accessible marked observation volume above Crimbo.
+- **Survey / Dwell seconds per target:** 12
+- **Survey / Aim degrees:** 2
+- **Survey / Surface range native units:** 250; 1500
+- **Survey / Requires:** same actual target, front view and nearest unobstructed mesh; partial unfinished dwell resets on interruption/load, completed readings persist
+- **Field work / Targets:** guiding-light-work-port; guiding-light-work-starboard
+- **Field work / Instruction:** Use the onboard reference lantern to restore the two external relays and test their actual overlapping beam cones.
+- **Field work / Acceptance:** For12s the receiving lane has at least5degrees overlap without an unlit gap; no real-world season or planetary day wait is required.
+- **Field work / Surface clearance metres:** 50; 150
+- **Field work / Maximum relative speed metres per second:** 1
+- **Field work / Maximum aim degrees:** 2
+- **Field work / Minimum qualified work seconds:** 0
+- **Field work / Credit policy:** No generic hover/work countdown. Actual ordered flight, load, arbitration, transfer or dispatch events plus the named measured functional test produce the two existing work-target receipts. Range/tool hold applies only when the actual operation needs it.
+- **Field work / Work credit mode:** measured-operation-and-functional-test
+- **Witness / Target:** guiding-light-witness-received
+- **Witness / Hull:** SH061
+- **Witness / Operating crew:** 2
+- **Witness / Delegates:** 1
+- **Witness / Fitted standard cabins:** 1
+- **Witness / Standard cabin places:** 4
+- **Witness / Player cabins required:** 0
+- **Witness / Native requirement:** Actual identified hull and people, real departure/transit/doorway/receiving with own finite fuel and source-owned cabin; any source fitting must be physically calibrated. Reusing the hull class is not their arrival.
+- **Witness / Fallback:** Casualties persist. A lost witness follows the successful remedial-inquiry track; no dead person is cloned.
+- **Witness / Accompaniment required:** no
+- **Witness / Scheduling:** Starts its actual source-owned journey after the survey is committed and required source permission is granted. For non-escort profiles it travels concurrently with field work; the player may observe it but no stay-near timer or artificial follow waypoint is required. It still needs actual living arrival/docking before branch choice. For escorted profiles the player explicitly joins the genuine journey and protects/reaches the actual receiver.
+- **Branches / Plan-a / Targets:** guiding-light-plan-a-physical-proof; guiding-light-plan-a-receiving-proof
+- **Branches / Plan-a / Acceptance:** Both local maintenance owners receive their real repair records and the overlap is measured on the actual shadow-side approach.
+- **Branches / Plan-b / Targets:** guiding-light-plan-b-physical-proof; guiding-light-plan-b-receiving-proof
+- **Branches / Plan-b / Acceptance:** The signed shared rota preserves the same overlap and the actual maintenance tender reaches its lit receiving berth.
+- **Branch receipt policy:** Both distinct targets of the selected branch must have native physical/receiving evidence. Summary target is logical only; other-branch or mixed half-completions cannot qualify.
+- **Pacing / Loan before departure:** yes
+- **Pacing / Choice at actual witness receiver:** yes
+- **Pacing / Final audit at original issuer:** yes
+- **Pacing / No hidden deadline:** yes
+- **Pacing / No prior campaign gate:** yes
+- **Audit:** Original loan actually returned; measured observations, exact witness or remedial outcome and the two selected branch proofs agree. Payment and the one source clue commit once.
+- **Interaction style:** light-path-navigation
+- **Player action:** Fly the three lantern sightlines, align two winter relays and verify a lit safe receiving path through the current actual shadow geometry.
+- **Repeat avoidance:** One fixed mission-specific challenge state persists per commander/case. Wrong settings provide legible measured feedback. No random reroll, identical click sequence or cloned cargo may substitute for the named operation.
+- **Journal phases:** Collect the lantern reference; Fly the shadow sightlines; Align the winter relays; Receive the lit-berth tender; Choose upkeep and confirm the record
+- **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
+- **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
+- **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+
+[Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
 #### C39.01 - accept
 
@@ -10496,7 +12736,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** accept-verified
 - **Interaction item mass tonnes:** 0
-- **Next:** survey
+- **Next:** collect-reference
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -10507,27 +12747,7 @@ Mission-specific rules and resources:
 
 ![The Guiding Light: accept](assets/missions/stages/guiding-light/accept.png)
 
-#### C39.02 - survey
-
-**Place:** Crimbo (G08-S008). **Objective:** Measure three winter-shadow lantern sight lines at Crimbo's orbital relays.
-
-**Story/dialogue:** RENN: A lantern outside your line of sight is not a safe approach marker.
-
-- **Event:** entity_scan_completed
-- **Required targets:** guiding-light-survey-1; guiding-light-survey-2; guiding-light-survey-3
-- **Interaction item mass tonnes:** 0
-- **Next:** collect-reference
-- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
-- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
-- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
-- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
-- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
-- **Receipt:** l337.guiding-light/survey
-- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
-
-![The Guiding Light: survey](assets/missions/stages/guiding-light/survey.png)
-
-#### C39.03 - collect-reference
+#### C39.02 - collect-reference
 
 **Place:** Crimbo (G08-S008). **Objective:** Collect the identified one-tonne reference instrument from Dispatcher Evi Senn.
 
@@ -10536,7 +12756,7 @@ Mission-specific rules and resources:
 - **Event:** mission_contact_confirmed
 - **Required targets:** collect-reference-verified
 - **Interaction item mass tonnes:** 1
-- **Next:** field-work
+- **Next:** survey
 - **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
 - **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
 - **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
@@ -10550,9 +12770,29 @@ Mission-specific rules and resources:
 
 ![The Guiding Light: collect-reference](assets/missions/stages/guiding-light/collect-reference.png)
 
+#### C39.03 - survey
+
+**Place:** Crimbo (G08-S008). **Objective:** Measure three actual winter-shadow sight lines from the accessible marked observation volume above Crimbo.
+
+**Story/dialogue:** RENN: A lantern outside your line of sight is not a safe approach marker.
+
+- **Event:** entity_scan_completed
+- **Required targets:** guiding-light-survey-1; guiding-light-survey-2; guiding-light-survey-3
+- **Interaction item mass tonnes:** 0
+- **Next:** field-work
+- **Completion rule:** All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.
+- **Recovery:** Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.
+- **Confirmation:** Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.
+- **Cargo policy:** Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.
+- **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
+- **Receipt:** l337.guiding-light/survey
+- **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+
+![The Guiding Light: survey](assets/missions/stages/guiding-light/survey.png)
+
 #### C39.04 - field-work
 
-**Place:** Crimbo (G08-S008). **Objective:** Restore two external winter relays using the reference lantern.
+**Place:** Crimbo (G08-S008). **Objective:** Use the onboard reference lantern to restore the two external relays and test their actual overlapping beam cones.
 
 **Story/dialogue:** SENN: Record their real receiving acknowledgements before advertising the lane.
 
@@ -10572,7 +12812,7 @@ Mission-specific rules and resources:
 
 #### C39.05 - independent-witness
 
-**Place:** Crimbo (G08-S008). **Objective:** Escort the consenting maintenance tender to the now-lit winter service berth.
+**Place:** Crimbo (G08-S008). **Objective:** Verify actual safe transit and living reception of the consenting maintenance tender to the now-lit winter service berth.
 
 **Story/dialogue:** RENN: Keep the lanterns visible through the final approach; a distant signal alone does not receive a crew.
 
@@ -10592,9 +12832,9 @@ Mission-specific rules and resources:
 
 #### C39.06 - choose-settlement
 
-**Place:** Crimbo (G08-S008). **Objective:** Choose the verified settlement with the consenting operators.
+**Place:** Crimbo (G08-S008). **Objective:** At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.
 
-**Story/dialogue:** Dispatcher Evi Senn: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither.
+**Story/dialogue:** Dispatcher Evi Senn: Your shadow sight-line and overlapping beacon coverage evidence is ready. Our arrived delegates have the signed mandate to choose here. Either maintain independent winter lantern segments or publish a jointly maintained winter rota. Compare the actual tests and consequences before confirming; closing this view chooses neither.
 
 - **Event:** mission_choice_confirmed
 - **Required targets:** guiding-light-settlement-choice
@@ -10692,11 +12932,13 @@ Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side
 
 **Permanent clue:** The extra lantern (`lantern-extra-echo`). The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array.
 
+**Failure follow-up:** [Source-specific funded recovery](missions/gameplay/recovery-policy.json) under `l337.guiding-light`. Original loss and original fee receipts remain unchanged.
+
 ![The Guiding Light outcome guiding-light/choose-settlement/plan-a](assets/missions/outcomes/guiding-light-choose-settlement-plan-a.png)
 
 ![The Guiding Light outcome guiding-light/choose-settlement/plan-b](assets/missions/outcomes/guiding-light-choose-settlement-plan-b.png)
 
-[Complete structured definition](definitions/missions/guiding-light.json).
+[Complete structured definition](missions/definitions/guiding-light.json).
 
 ## Contract board, service careers and tutorials
 
@@ -12917,7 +15159,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C06 The Tithe of Worlds; C07 The Still Current; C08 Wayfarer Exchange; C09 The Quiet Nursery; C10 Borrowed Dawn; C11 The Open Shadow; C12 Harbour Without Orders; C13 False Colours; C14 The Rubble Covenant; C15 A Garden in Transit; C16 The Warrant Ledger; C17 The Measure of Care; C18 The Long Return; C19 The Unfinished Map; C20 The Blue Reservoir; C21 Mutual Shelter; C22 The Listening Frontier; C23 An Assembly of Orbits; C24 Under Tow; C25 The Memory Atlas; C26 A Fleet of Neighbours; C27 Uncounted Names; C28 The Honest Circuit; C29 Small Lights; C30 The Passenger's Horizon; C31 The Kind Distance; C32 Cold Reserve; C33 The Magnetic Orchard; C34 Open Measure; C35 The Shared Pulse; C36 The Witness Window; C37 Public Record; C38 Signed Passage; C39 The Guiding Light
 
-[Full definition](definitions/ships/SH001.json) / [Exact model/material/UV data](definitions/models/SH001.json).
+[Full definition](missions/gameplay/ships/SH001.json) / [Exact model/material/UV data](missions/gameplay/models/SH001.json).
 
 ### SH002 - Gyrfalcon Assault
 
@@ -12945,7 +15187,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH002.json) / [Exact model/material/UV data](definitions/models/SH002.json).
+[Full definition](missions/gameplay/ships/SH002.json) / [Exact model/material/UV data](missions/gameplay/models/SH002.json).
 
 ### SH003 - Gyrfalcon Command
 
@@ -12973,7 +15215,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH003.json) / [Exact model/material/UV data](definitions/models/SH003.json).
+[Full definition](missions/gameplay/ships/SH003.json) / [Exact model/material/UV data](missions/gameplay/models/SH003.json).
 
 ### SH004 - Gyrfalcon Patrol
 
@@ -13001,7 +15243,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C06 The Tithe of Worlds
 
-[Full definition](definitions/ships/SH004.json) / [Exact model/material/UV data](definitions/models/SH004.json).
+[Full definition](missions/gameplay/ships/SH004.json) / [Exact model/material/UV data](missions/gameplay/models/SH004.json).
 
 ### SH005 - Bison
 
@@ -13029,7 +15271,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C06 The Tithe of Worlds; C08 Wayfarer Exchange
 
-[Full definition](definitions/ships/SH005.json) / [Exact model/material/UV data](definitions/models/SH005.json).
+[Full definition](missions/gameplay/ships/SH005.json) / [Exact model/material/UV data](missions/gameplay/models/SH005.json).
 
 ### SH006 - Bison Mk II
 
@@ -13057,7 +15299,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH006.json) / [Exact model/material/UV data](definitions/models/SH006.json).
+[Full definition](missions/gameplay/ships/SH006.json) / [Exact model/material/UV data](missions/gameplay/models/SH006.json).
 
 ### SH007 - Impala Voyager
 
@@ -13085,7 +15327,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH007.json) / [Exact model/material/UV data](definitions/models/SH007.json).
+[Full definition](missions/gameplay/ships/SH007.json) / [Exact model/material/UV data](missions/gameplay/models/SH007.json).
 
 ### SH008 - Goshawk Explorer
 
@@ -13113,7 +15355,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH008.json) / [Exact model/material/UV data](definitions/models/SH008.json).
+[Full definition](missions/gameplay/ships/SH008.json) / [Exact model/material/UV data](missions/gameplay/models/SH008.json).
 
 ### SH009 - Goshawk Mk II
 
@@ -13141,7 +15383,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH009.json) / [Exact model/material/UV data](definitions/models/SH009.json).
+[Full definition](missions/gameplay/ships/SH009.json) / [Exact model/material/UV data](missions/gameplay/models/SH009.json).
 
 ### SH010 - Goshawk Mk II Custom
 
@@ -13169,7 +15411,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH010.json) / [Exact model/material/UV data](definitions/models/SH010.json).
+[Full definition](missions/gameplay/ships/SH010.json) / [Exact model/material/UV data](missions/gameplay/models/SH010.json).
 
 ### SH011 - Goshawk Scout
 
@@ -13197,7 +15439,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH011.json) / [Exact model/material/UV data](definitions/models/SH011.json).
+[Full definition](missions/gameplay/ships/SH011.json) / [Exact model/material/UV data](missions/gameplay/models/SH011.json).
 
 ### SH012 - Sable Liner
 
@@ -13225,7 +15467,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH012.json) / [Exact model/material/UV data](definitions/models/SH012.json).
+[Full definition](missions/gameplay/ships/SH012.json) / [Exact model/material/UV data](missions/gameplay/models/SH012.json).
 
 ### SH013 - Buffalo
 
@@ -13253,7 +15495,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH013.json) / [Exact model/material/UV data](definitions/models/SH013.json).
+[Full definition](missions/gameplay/ships/SH013.json) / [Exact model/material/UV data](missions/gameplay/models/SH013.json).
 
 ### SH014 - Buffalo Mk II
 
@@ -13281,7 +15523,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH014.json) / [Exact model/material/UV data](definitions/models/SH014.json).
+[Full definition](missions/gameplay/ships/SH014.json) / [Exact model/material/UV data](missions/gameplay/models/SH014.json).
 
 ### SH015 - Raven
 
@@ -13309,7 +15551,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH015.json) / [Exact model/material/UV data](definitions/models/SH015.json).
+[Full definition](missions/gameplay/ships/SH015.json) / [Exact model/material/UV data](missions/gameplay/models/SH015.json).
 
 ### SH016 - Mole Miner
 
@@ -13337,7 +15579,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH016.json) / [Exact model/material/UV data](definitions/models/SH016.json).
+[Full definition](missions/gameplay/ships/SH016.json) / [Exact model/material/UV data](missions/gameplay/models/SH016.json).
 
 ### SH017 - Mole Prospector
 
@@ -13365,7 +15607,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH017.json) / [Exact model/material/UV data](definitions/models/SH017.json).
+[Full definition](missions/gameplay/ships/SH017.json) / [Exact model/material/UV data](missions/gameplay/models/SH017.json).
 
 ### SH018 - Donkey
 
@@ -13393,7 +15635,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH018.json) / [Exact model/material/UV data](definitions/models/SH018.json).
+[Full definition](missions/gameplay/ships/SH018.json) / [Exact model/material/UV data](missions/gameplay/models/SH018.json).
 
 ### SH019 - Gazelle Explorer
 
@@ -13421,7 +15663,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH019.json) / [Exact model/material/UV data](definitions/models/SH019.json).
+[Full definition](missions/gameplay/ships/SH019.json) / [Exact model/material/UV data](missions/gameplay/models/SH019.json).
 
 ### SH020 - Crow Prototype
 
@@ -13449,7 +15691,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH020.json) / [Exact model/material/UV data](definitions/models/SH020.json).
+[Full definition](missions/gameplay/ships/SH020.json) / [Exact model/material/UV data](missions/gameplay/models/SH020.json).
 
 ### SH021 - Zebra
 
@@ -13477,7 +15719,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH021.json) / [Exact model/material/UV data](definitions/models/SH021.json).
+[Full definition](missions/gameplay/ships/SH021.json) / [Exact model/material/UV data](missions/gameplay/models/SH021.json).
 
 ### SH022 - Peregrine Mk I
 
@@ -13505,7 +15747,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH022.json) / [Exact model/material/UV data](definitions/models/SH022.json).
+[Full definition](missions/gameplay/ships/SH022.json) / [Exact model/material/UV data](missions/gameplay/models/SH022.json).
 
 ### SH023 - Peregrine Mk III
 
@@ -13533,7 +15775,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH023.json) / [Exact model/material/UV data](definitions/models/SH023.json).
+[Full definition](missions/gameplay/ships/SH023.json) / [Exact model/material/UV data](missions/gameplay/models/SH023.json).
 
 ### SH024 - Peregrine Mk IV
 
@@ -13561,7 +15803,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH024.json) / [Exact model/material/UV data](definitions/models/SH024.json).
+[Full definition](missions/gameplay/ships/SH024.json) / [Exact model/material/UV data](missions/gameplay/models/SH024.json).
 
 ### SH025 - Peregrine Mk V
 
@@ -13589,7 +15831,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH025.json) / [Exact model/material/UV data](definitions/models/SH025.json).
+[Full definition](missions/gameplay/ships/SH025.json) / [Exact model/material/UV data](missions/gameplay/models/SH025.json).
 
 ### SH026 - Harrier
 
@@ -13617,7 +15859,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C01 The Glass Meridian; C04 The Borrowed Voice
 
-[Full definition](definitions/ships/SH026.json) / [Exact model/material/UV data](definitions/models/SH026.json).
+[Full definition](missions/gameplay/ships/SH026.json) / [Exact model/material/UV data](missions/gameplay/models/SH026.json).
 
 ### SH027 - Ibex
 
@@ -13645,7 +15887,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH027.json) / [Exact model/material/UV data](definitions/models/SH027.json).
+[Full definition](missions/gameplay/ships/SH027.json) / [Exact model/material/UV data](missions/gameplay/models/SH027.json).
 
 ### SH028 - Lion Citadel
 
@@ -13662,7 +15904,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH028.json) / [Exact model/material/UV data](definitions/models/SH028.json).
+[Full definition](missions/gameplay/ships/SH028.json) / [Exact model/material/UV data](missions/gameplay/models/SH028.json).
 
 ### SH029 - Burro
 
@@ -13690,7 +15932,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH029.json) / [Exact model/material/UV data](definitions/models/SH029.json).
+[Full definition](missions/gameplay/ships/SH029.json) / [Exact model/material/UV data](missions/gameplay/models/SH029.json).
 
 ### SH030 - Sparrowhawk
 
@@ -13718,7 +15960,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH030.json) / [Exact model/material/UV data](definitions/models/SH030.json).
+[Full definition](missions/gameplay/ships/SH030.json) / [Exact model/material/UV data](missions/gameplay/models/SH030.json).
 
 ### SH031 - Kite Interceptor
 
@@ -13746,7 +15988,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH031.json) / [Exact model/material/UV data](definitions/models/SH031.json).
+[Full definition](missions/gameplay/ships/SH031.json) / [Exact model/material/UV data](missions/gameplay/models/SH031.json).
 
 ### SH032 - Panther Explorer
 
@@ -13774,7 +16016,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH032.json) / [Exact model/material/UV data](definitions/models/SH032.json).
+[Full definition](missions/gameplay/ships/SH032.json) / [Exact model/material/UV data](missions/gameplay/models/SH032.json).
 
 ### SH033 - Panther Scout
 
@@ -13802,7 +16044,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH033.json) / [Exact model/material/UV data](definitions/models/SH033.json).
+[Full definition](missions/gameplay/ships/SH033.json) / [Exact model/material/UV data](missions/gameplay/models/SH033.json).
 
 ### SH034 - Frog Station
 
@@ -13819,7 +16061,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH034.json) / [Exact model/material/UV data](definitions/models/SH034.json).
+[Full definition](missions/gameplay/ships/SH034.json) / [Exact model/material/UV data](missions/gameplay/models/SH034.json).
 
 ### SH035 - Stag Liner
 
@@ -13847,7 +16089,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH035.json) / [Exact model/material/UV data](definitions/models/SH035.json).
+[Full definition](missions/gameplay/ships/SH035.json) / [Exact model/material/UV data](missions/gameplay/models/SH035.json).
 
 ### SH036 - Zebu
 
@@ -13875,7 +16117,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH036.json) / [Exact model/material/UV data](definitions/models/SH036.json).
+[Full definition](missions/gameplay/ships/SH036.json) / [Exact model/material/UV data](missions/gameplay/models/SH036.json).
 
 ### SH037 - Vulture Mk I
 
@@ -13903,7 +16145,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH037.json) / [Exact model/material/UV data](definitions/models/SH037.json).
+[Full definition](missions/gameplay/ships/SH037.json) / [Exact model/material/UV data](missions/gameplay/models/SH037.json).
 
 ### SH038 - Vulture Mk II
 
@@ -13931,7 +16173,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH038.json) / [Exact model/material/UV data](definitions/models/SH038.json).
+[Full definition](missions/gameplay/ships/SH038.json) / [Exact model/material/UV data](missions/gameplay/models/SH038.json).
 
 ### SH039 - Vulture Mk III
 
@@ -13959,7 +16201,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH039.json) / [Exact model/material/UV data](definitions/models/SH039.json).
+[Full definition](missions/gameplay/ships/SH039.json) / [Exact model/material/UV data](missions/gameplay/models/SH039.json).
 
 ### SH040 - Newt Escape Pod
 
@@ -13987,7 +16229,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH040.json) / [Exact model/material/UV data](definitions/models/SH040.json).
+[Full definition](missions/gameplay/ships/SH040.json) / [Exact model/material/UV data](missions/gameplay/models/SH040.json).
 
 ### SH041 - Serval Fighter
 
@@ -14015,7 +16257,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH041.json) / [Exact model/material/UV data](definitions/models/SH041.json).
+[Full definition](missions/gameplay/ships/SH041.json) / [Exact model/material/UV data](missions/gameplay/models/SH041.json).
 
 ### SH042 - Saker
 
@@ -14043,7 +16285,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH042.json) / [Exact model/material/UV data](definitions/models/SH042.json).
+[Full definition](missions/gameplay/ships/SH042.json) / [Exact model/material/UV data](missions/gameplay/models/SH042.json).
 
 ### SH043 - Eagle Cruiser
 
@@ -14071,7 +16313,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH043.json) / [Exact model/material/UV data](definitions/models/SH043.json).
+[Full definition](missions/gameplay/ships/SH043.json) / [Exact model/material/UV data](missions/gameplay/models/SH043.json).
 
 ### SH044 - Harpy Assault
 
@@ -14099,7 +16341,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH044.json) / [Exact model/material/UV data](definitions/models/SH044.json).
+[Full definition](missions/gameplay/ships/SH044.json) / [Exact model/material/UV data](missions/gameplay/models/SH044.json).
 
 ### SH045 - Erne Corvette
 
@@ -14127,7 +16369,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH045.json) / [Exact model/material/UV data](definitions/models/SH045.json).
+[Full definition](missions/gameplay/ships/SH045.json) / [Exact model/material/UV data](missions/gameplay/models/SH045.json).
 
 ### SH046 - Harpy Dropship
 
@@ -14155,7 +16397,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH046.json) / [Exact model/material/UV data](definitions/models/SH046.json).
+[Full definition](missions/gameplay/ships/SH046.json) / [Exact model/material/UV data](missions/gameplay/models/SH046.json).
 
 ### SH047 - Harpy Gunship
 
@@ -14183,7 +16425,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH047.json) / [Exact model/material/UV data](definitions/models/SH047.json).
+[Full definition](missions/gameplay/ships/SH047.json) / [Exact model/material/UV data](missions/gameplay/models/SH047.json).
 
 ### SH048 - Lanner
 
@@ -14211,7 +16453,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH048.json) / [Exact model/material/UV data](definitions/models/SH048.json).
+[Full definition](missions/gameplay/ships/SH048.json) / [Exact model/material/UV data](missions/gameplay/models/SH048.json).
 
 ### SH049 - Hyena
 
@@ -14239,7 +16481,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C04 The Borrowed Voice; C07 The Still Current
 
-[Full definition](definitions/ships/SH049.json) / [Exact model/material/UV data](definitions/models/SH049.json).
+[Full definition](missions/gameplay/ships/SH049.json) / [Exact model/material/UV data](missions/gameplay/models/SH049.json).
 
 ### SH050 - Yak
 
@@ -14267,7 +16509,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH050.json) / [Exact model/material/UV data](definitions/models/SH050.json).
+[Full definition](missions/gameplay/ships/SH050.json) / [Exact model/material/UV data](missions/gameplay/models/SH050.json).
 
 ### SH051 - Jackal
 
@@ -14295,7 +16537,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH051.json) / [Exact model/material/UV data](definitions/models/SH051.json).
+[Full definition](missions/gameplay/ships/SH051.json) / [Exact model/material/UV data](missions/gameplay/models/SH051.json).
 
 ### SH052 - Percheron
 
@@ -14323,7 +16565,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH052.json) / [Exact model/material/UV data](definitions/models/SH052.json).
+[Full definition](missions/gameplay/ships/SH052.json) / [Exact model/material/UV data](missions/gameplay/models/SH052.json).
 
 ### SH053 - Percheron Prototype
 
@@ -14351,7 +16593,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH053.json) / [Exact model/material/UV data](definitions/models/SH053.json).
+[Full definition](missions/gameplay/ships/SH053.json) / [Exact model/material/UV data](missions/gameplay/models/SH053.json).
 
 ### SH054 - Hobby Fighter
 
@@ -14379,7 +16621,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH054.json) / [Exact model/material/UV data](definitions/models/SH054.json).
+[Full definition](missions/gameplay/ships/SH054.json) / [Exact model/material/UV data](missions/gameplay/models/SH054.json).
 
 ### SH055 - Condor
 
@@ -14407,7 +16649,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH055.json) / [Exact model/material/UV data](definitions/models/SH055.json).
+[Full definition](missions/gameplay/ships/SH055.json) / [Exact model/material/UV data](missions/gameplay/models/SH055.json).
 
 ### SH056 - Aplomado Interceptor
 
@@ -14435,7 +16677,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH056.json) / [Exact model/material/UV data](definitions/models/SH056.json).
+[Full definition](missions/gameplay/ships/SH056.json) / [Exact model/material/UV data](missions/gameplay/models/SH056.json).
 
 ### SH057 - Falconet
 
@@ -14463,7 +16705,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH057.json) / [Exact model/material/UV data](definitions/models/SH057.json).
+[Full definition](missions/gameplay/ships/SH057.json) / [Exact model/material/UV data](missions/gameplay/models/SH057.json).
 
 ### SH058 - Brabant
 
@@ -14491,7 +16733,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH058.json) / [Exact model/material/UV data](definitions/models/SH058.json).
+[Full definition](missions/gameplay/ships/SH058.json) / [Exact model/material/UV data](missions/gameplay/models/SH058.json).
 
 ### SH059 - Barbary
 
@@ -14519,7 +16761,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH059.json) / [Exact model/material/UV data](definitions/models/SH059.json).
+[Full definition](missions/gameplay/ships/SH059.json) / [Exact model/material/UV data](missions/gameplay/models/SH059.json).
 
 ### SH060 - Wombat
 
@@ -14547,7 +16789,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH060.json) / [Exact model/material/UV data](definitions/models/SH060.json).
+[Full definition](missions/gameplay/ships/SH060.json) / [Exact model/material/UV data](missions/gameplay/models/SH060.json).
 
 ### SH061 - Haflinger
 
@@ -14575,7 +16817,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C05 The Shattered Wake; C07 The Still Current; C08 Wayfarer Exchange; C09 The Quiet Nursery; C10 Borrowed Dawn; C11 The Open Shadow; C12 Harbour Without Orders; C13 False Colours; C14 The Rubble Covenant; C15 A Garden in Transit; C16 The Warrant Ledger; C17 The Measure of Care; C18 The Long Return; C19 The Unfinished Map; C20 The Blue Reservoir; C21 Mutual Shelter; C22 The Listening Frontier; C23 An Assembly of Orbits; C24 Under Tow; C25 The Memory Atlas; C26 A Fleet of Neighbours; C27 Uncounted Names; C28 The Honest Circuit; C29 Small Lights; C30 The Passenger's Horizon; C31 The Kind Distance; C32 Cold Reserve; C33 The Magnetic Orchard; C34 Open Measure; C35 The Shared Pulse; C36 The Witness Window; C37 Public Record; C38 Signed Passage; C39 The Guiding Light
 
-[Full definition](definitions/ships/SH061.json) / [Exact model/material/UV data](definitions/models/SH061.json).
+[Full definition](missions/gameplay/ships/SH061.json) / [Exact model/material/UV data](missions/gameplay/models/SH061.json).
 
 ### SH062 - Moose Clipper
 
@@ -14603,7 +16845,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH062.json) / [Exact model/material/UV data](definitions/models/SH062.json).
+[Full definition](missions/gameplay/ships/SH062.json) / [Exact model/material/UV data](missions/gameplay/models/SH062.json).
 
 ### SH063 - Seriema Courier
 
@@ -14631,7 +16873,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH063.json) / [Exact model/material/UV data](definitions/models/SH063.json).
+[Full definition](missions/gameplay/ships/SH063.json) / [Exact model/material/UV data](missions/gameplay/models/SH063.json).
 
 ### SH064 - Arna Cutter
 
@@ -14659,7 +16901,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH064.json) / [Exact model/material/UV data](definitions/models/SH064.json).
+[Full definition](missions/gameplay/ships/SH064.json) / [Exact model/material/UV data](missions/gameplay/models/SH064.json).
 
 ### SH065 - Vulture Raider
 
@@ -14687,7 +16929,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH065.json) / [Exact model/material/UV data](definitions/models/SH065.json).
+[Full definition](missions/gameplay/ships/SH065.json) / [Exact model/material/UV data](missions/gameplay/models/SH065.json).
 
 ### SH066 - Rabbit Explorer
 
@@ -14715,7 +16957,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH066.json) / [Exact model/material/UV data](definitions/models/SH066.json).
+[Full definition](missions/gameplay/ships/SH066.json) / [Exact model/material/UV data](missions/gameplay/models/SH066.json).
 
 ### SH067 - Rhinoceros Trader
 
@@ -14743,7 +16985,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH067.json) / [Exact model/material/UV data](definitions/models/SH067.json).
+[Full definition](missions/gameplay/ships/SH067.json) / [Exact model/material/UV data](missions/gameplay/models/SH067.json).
 
 ### SH068 - Badger
 
@@ -14771,7 +17013,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH068.json) / [Exact model/material/UV data](definitions/models/SH068.json).
+[Full definition](missions/gameplay/ships/SH068.json) / [Exact model/material/UV data](missions/gameplay/models/SH068.json).
 
 ### SH069 - Baza Fighter
 
@@ -14799,7 +17041,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH069.json) / [Exact model/material/UV data](definitions/models/SH069.json).
+[Full definition](missions/gameplay/ships/SH069.json) / [Exact model/material/UV data](missions/gameplay/models/SH069.json).
 
 ### SH070 - Baza Mk II
 
@@ -14827,7 +17069,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH070.json) / [Exact model/material/UV data](definitions/models/SH070.json).
+[Full definition](missions/gameplay/ships/SH070.json) / [Exact model/material/UV data](missions/gameplay/models/SH070.json).
 
 ### SH071 - Griffon
 
@@ -14855,7 +17097,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH071.json) / [Exact model/material/UV data](definitions/models/SH071.json).
+[Full definition](missions/gameplay/ships/SH071.json) / [Exact model/material/UV data](missions/gameplay/models/SH071.json).
 
 ### SH072 - Griffon Mk II
 
@@ -14883,7 +17125,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH072.json) / [Exact model/material/UV data](definitions/models/SH072.json).
+[Full definition](missions/gameplay/ships/SH072.json) / [Exact model/material/UV data](missions/gameplay/models/SH072.json).
 
 ### SH073 - Griffon Spectre
 
@@ -14911,7 +17153,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH073.json) / [Exact model/material/UV data](definitions/models/SH073.json).
+[Full definition](missions/gameplay/ships/SH073.json) / [Exact model/material/UV data](missions/gameplay/models/SH073.json).
 
 ### SH074 - Dzo
 
@@ -14939,7 +17181,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH074.json) / [Exact model/material/UV data](definitions/models/SH074.json).
+[Full definition](missions/gameplay/ships/SH074.json) / [Exact model/material/UV data](missions/gameplay/models/SH074.json).
 
 ### SH075 - Dzo Mk II
 
@@ -14967,7 +17209,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH075.json) / [Exact model/material/UV data](definitions/models/SH075.json).
+[Full definition](missions/gameplay/ships/SH075.json) / [Exact model/material/UV data](missions/gameplay/models/SH075.json).
 
 ### SH076 - Hog
 
@@ -14995,7 +17237,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH076.json) / [Exact model/material/UV data](definitions/models/SH076.json).
+[Full definition](missions/gameplay/ships/SH076.json) / [Exact model/material/UV data](missions/gameplay/models/SH076.json).
 
 ### SH077 - Tamaraw
 
@@ -15023,7 +17265,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH077.json) / [Exact model/material/UV data](definitions/models/SH077.json).
+[Full definition](missions/gameplay/ships/SH077.json) / [Exact model/material/UV data](missions/gameplay/models/SH077.json).
 
 ### SH078 - Oryx Voyager
 
@@ -15051,7 +17293,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH078.json) / [Exact model/material/UV data](definitions/models/SH078.json).
+[Full definition](missions/gameplay/ships/SH078.json) / [Exact model/material/UV data](missions/gameplay/models/SH078.json).
 
 ### SH079 - Carabao Carrier
 
@@ -15079,7 +17321,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH079.json) / [Exact model/material/UV data](definitions/models/SH079.json).
+[Full definition](missions/gameplay/ships/SH079.json) / [Exact model/material/UV data](missions/gameplay/models/SH079.json).
 
 ### SH080 - Carabao Highliner
 
@@ -15107,7 +17349,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH080.json) / [Exact model/material/UV data](definitions/models/SH080.json).
+[Full definition](missions/gameplay/ships/SH080.json) / [Exact model/material/UV data](missions/gameplay/models/SH080.json).
 
 ### SH081 - Jaguar
 
@@ -15135,7 +17377,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH081.json) / [Exact model/material/UV data](definitions/models/SH081.json).
+[Full definition](missions/gameplay/ships/SH081.json) / [Exact model/material/UV data](missions/gameplay/models/SH081.json).
 
 ### SH082 - Cheetah
 
@@ -15163,7 +17405,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH082.json) / [Exact model/material/UV data](definitions/models/SH082.json).
+[Full definition](missions/gameplay/ships/SH082.json) / [Exact model/material/UV data](missions/gameplay/models/SH082.json).
 
 ### SH083 - Hare Explorer
 
@@ -15191,7 +17433,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH083.json) / [Exact model/material/UV data](definitions/models/SH083.json).
+[Full definition](missions/gameplay/ships/SH083.json) / [Exact model/material/UV data](missions/gameplay/models/SH083.json).
 
 ### SH084 - Llama
 
@@ -15219,7 +17461,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH084.json) / [Exact model/material/UV data](definitions/models/SH084.json).
+[Full definition](missions/gameplay/ships/SH084.json) / [Exact model/material/UV data](missions/gameplay/models/SH084.json).
 
 ### SH085 - Laggar
 
@@ -15247,7 +17489,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH085.json) / [Exact model/material/UV data](definitions/models/SH085.json).
+[Full definition](missions/gameplay/ships/SH085.json) / [Exact model/material/UV data](missions/gameplay/models/SH085.json).
 
 ### SH086 - Alpaca
 
@@ -15275,7 +17517,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH086.json) / [Exact model/material/UV data](definitions/models/SH086.json).
+[Full definition](missions/gameplay/ships/SH086.json) / [Exact model/material/UV data](missions/gameplay/models/SH086.json).
 
 ### SH087 - Elk
 
@@ -15303,7 +17545,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH087.json) / [Exact model/material/UV data](definitions/models/SH087.json).
+[Full definition](missions/gameplay/ships/SH087.json) / [Exact model/material/UV data](missions/gameplay/models/SH087.json).
 
 ### SH088 - Springbok Starliner
 
@@ -15331,7 +17573,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH088.json) / [Exact model/material/UV data](definitions/models/SH088.json).
+[Full definition](missions/gameplay/ships/SH088.json) / [Exact model/material/UV data](missions/gameplay/models/SH088.json).
 
 ### SH089 - Antelope
 
@@ -15359,7 +17601,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH089.json) / [Exact model/material/UV data](definitions/models/SH089.json).
+[Full definition](missions/gameplay/ships/SH089.json) / [Exact model/material/UV data](missions/gameplay/models/SH089.json).
 
 ### SH090 - Elephant
 
@@ -15387,7 +17629,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH090.json) / [Exact model/material/UV data](definitions/models/SH090.json).
+[Full definition](missions/gameplay/ships/SH090.json) / [Exact model/material/UV data](missions/gameplay/models/SH090.json).
 
 ### SH091 - Gopher
 
@@ -15415,7 +17657,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH091.json) / [Exact model/material/UV data](definitions/models/SH091.json).
+[Full definition](missions/gameplay/ships/SH091.json) / [Exact model/material/UV data](missions/gameplay/models/SH091.json).
 
 ### SH092 - Aubrac
 
@@ -15443,7 +17685,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH092.json) / [Exact model/material/UV data](definitions/models/SH092.json).
+[Full definition](missions/gameplay/ships/SH092.json) / [Exact model/material/UV data](missions/gameplay/models/SH092.json).
 
 ### SH093 - Giraffe Liner
 
@@ -15471,7 +17713,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH093.json) / [Exact model/material/UV data](definitions/models/SH093.json).
+[Full definition](missions/gameplay/ships/SH093.json) / [Exact model/material/UV data](missions/gameplay/models/SH093.json).
 
 ### SH094 - Ictinia
 
@@ -15499,7 +17741,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH094.json) / [Exact model/material/UV data](definitions/models/SH094.json).
+[Full definition](missions/gameplay/ships/SH094.json) / [Exact model/material/UV data](missions/gameplay/models/SH094.json).
 
 ### SH095 - Ictinia X
 
@@ -15527,7 +17769,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH095.json) / [Exact model/material/UV data](definitions/models/SH095.json).
+[Full definition](missions/gameplay/ships/SH095.json) / [Exact model/material/UV data](missions/gameplay/models/SH095.json).
 
 ### SH096 - Wisent
 
@@ -15555,7 +17797,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH096.json) / [Exact model/material/UV data](definitions/models/SH096.json).
+[Full definition](missions/gameplay/ships/SH096.json) / [Exact model/material/UV data](missions/gameplay/models/SH096.json).
 
 ### SH097 - Wisent Mk II
 
@@ -15583,7 +17825,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH097.json) / [Exact model/material/UV data](definitions/models/SH097.json).
+[Full definition](missions/gameplay/ships/SH097.json) / [Exact model/material/UV data](missions/gameplay/models/SH097.json).
 
 ### SH098 - Anoa
 
@@ -15611,7 +17853,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH098.json) / [Exact model/material/UV data](definitions/models/SH098.json).
+[Full definition](missions/gameplay/ships/SH098.json) / [Exact model/material/UV data](missions/gameplay/models/SH098.json).
 
 ### SH099 - Ox
 
@@ -15639,7 +17881,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH099.json) / [Exact model/material/UV data](definitions/models/SH099.json).
+[Full definition](missions/gameplay/ships/SH099.json) / [Exact model/material/UV data](missions/gameplay/models/SH099.json).
 
 ### SH100 - Ox Mk II
 
@@ -15667,7 +17909,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH100.json) / [Exact model/material/UV data](definitions/models/SH100.json).
+[Full definition](missions/gameplay/ships/SH100.json) / [Exact model/material/UV data](missions/gameplay/models/SH100.json).
 
 ### SH101 - Dorcas Racer
 
@@ -15695,7 +17937,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH101.json) / [Exact model/material/UV data](definitions/models/SH101.json).
+[Full definition](missions/gameplay/ships/SH101.json) / [Exact model/material/UV data](missions/gameplay/models/SH101.json).
 
 ### SH102 - Dhole Haven
 
@@ -15712,7 +17954,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH102.json) / [Exact model/material/UV data](definitions/models/SH102.json).
+[Full definition](missions/gameplay/ships/SH102.json) / [Exact model/material/UV data](missions/gameplay/models/SH102.json).
 
 ### SH103 - Redtail Mk III
 
@@ -15740,7 +17982,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH103.json) / [Exact model/material/UV data](definitions/models/SH103.json).
+[Full definition](missions/gameplay/ships/SH103.json) / [Exact model/material/UV data](missions/gameplay/models/SH103.json).
 
 ### SH104 - Wildebeest
 
@@ -15768,7 +18010,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH104.json) / [Exact model/material/UV data](definitions/models/SH104.json).
+[Full definition](missions/gameplay/ships/SH104.json) / [Exact model/material/UV data](missions/gameplay/models/SH104.json).
 
 ### SH105 - Tapir Shuttle
 
@@ -15796,7 +18038,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH105.json) / [Exact model/material/UV data](definitions/models/SH105.json).
+[Full definition](missions/gameplay/ships/SH105.json) / [Exact model/material/UV data](missions/gameplay/models/SH105.json).
 
 ### SH106 - Tapir Mk II
 
@@ -15824,7 +18066,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH106.json) / [Exact model/material/UV data](definitions/models/SH106.json).
+[Full definition](missions/gameplay/ships/SH106.json) / [Exact model/material/UV data](missions/gameplay/models/SH106.json).
 
 ### SH107 - Magpie
 
@@ -15852,7 +18094,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH107.json) / [Exact model/material/UV data](definitions/models/SH107.json).
+[Full definition](missions/gameplay/ships/SH107.json) / [Exact model/material/UV data](missions/gameplay/models/SH107.json).
 
 ### SH108 - Besra
 
@@ -15880,7 +18122,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH108.json) / [Exact model/material/UV data](definitions/models/SH108.json).
+[Full definition](missions/gameplay/ships/SH108.json) / [Exact model/material/UV data](missions/gameplay/models/SH108.json).
 
 ### SH109 - Hippo
 
@@ -15908,7 +18150,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH109.json) / [Exact model/material/UV data](definitions/models/SH109.json).
+[Full definition](missions/gameplay/ships/SH109.json) / [Exact model/material/UV data](missions/gameplay/models/SH109.json).
 
 ### SH110 - Leopard Fighter
 
@@ -15936,7 +18178,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH110.json) / [Exact model/material/UV data](definitions/models/SH110.json).
+[Full definition](missions/gameplay/ships/SH110.json) / [Exact model/material/UV data](missions/gameplay/models/SH110.json).
 
 ### SH111 - Puma
 
@@ -15964,7 +18206,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH111.json) / [Exact model/material/UV data](definitions/models/SH111.json).
+[Full definition](missions/gameplay/ships/SH111.json) / [Exact model/material/UV data](missions/gameplay/models/SH111.json).
 
 ### SH112 - Larvaal Warden
 
@@ -15992,7 +18234,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH112.json) / [Exact model/material/UV data](definitions/models/SH112.json).
+[Full definition](missions/gameplay/ships/SH112.json) / [Exact model/material/UV data](missions/gameplay/models/SH112.json).
 
 ### SH113 - Larvaal Ravager
 
@@ -16020,7 +18262,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH113.json) / [Exact model/material/UV data](definitions/models/SH113.json).
+[Full definition](missions/gameplay/ships/SH113.json) / [Exact model/material/UV data](missions/gameplay/models/SH113.json).
 
 ### SH114 - Larvaal Sentinel
 
@@ -16048,7 +18290,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH114.json) / [Exact model/material/UV data](definitions/models/SH114.json).
+[Full definition](missions/gameplay/ships/SH114.json) / [Exact model/material/UV data](missions/gameplay/models/SH114.json).
 
 ### SH115 - Larvaal Lancer
 
@@ -16076,7 +18318,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH115.json) / [Exact model/material/UV data](definitions/models/SH115.json).
+[Full definition](missions/gameplay/ships/SH115.json) / [Exact model/material/UV data](missions/gameplay/models/SH115.json).
 
 ### SH116 - Larvaal Broodlord
 
@@ -16104,7 +18346,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH116.json) / [Exact model/material/UV data](definitions/models/SH116.json).
+[Full definition](missions/gameplay/ships/SH116.json) / [Exact model/material/UV data](missions/gameplay/models/SH116.json).
 
 ### SH117 - Larvaal Provoker
 
@@ -16132,7 +18374,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH117.json) / [Exact model/material/UV data](definitions/models/SH117.json).
+[Full definition](missions/gameplay/ships/SH117.json) / [Exact model/material/UV data](missions/gameplay/models/SH117.json).
 
 ### SH118 - Larvaal Reaver
 
@@ -16160,7 +18402,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH118.json) / [Exact model/material/UV data](definitions/models/SH118.json).
+[Full definition](missions/gameplay/ships/SH118.json) / [Exact model/material/UV data](missions/gameplay/models/SH118.json).
 
 ### SH119 - Larvaal Wraith
 
@@ -16188,7 +18430,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH119.json) / [Exact model/material/UV data](definitions/models/SH119.json).
+[Full definition](missions/gameplay/ships/SH119.json) / [Exact model/material/UV data](missions/gameplay/models/SH119.json).
 
 ### SH120 - Larvaal Seeker
 
@@ -16216,7 +18458,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH120.json) / [Exact model/material/UV data](definitions/models/SH120.json).
+[Full definition](missions/gameplay/ships/SH120.json) / [Exact model/material/UV data](missions/gameplay/models/SH120.json).
 
 ### SH121 - Larvaal Mender
 
@@ -16244,7 +18486,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH121.json) / [Exact model/material/UV data](definitions/models/SH121.json).
+[Full definition](missions/gameplay/ships/SH121.json) / [Exact model/material/UV data](missions/gameplay/models/SH121.json).
 
 ### SH122 - Larvaal Harvester
 
@@ -16272,7 +18514,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH122.json) / [Exact model/material/UV data](definitions/models/SH122.json).
+[Full definition](missions/gameplay/ships/SH122.json) / [Exact model/material/UV data](missions/gameplay/models/SH122.json).
 
 ### SH123 - Larvaal Sovereign
 
@@ -16300,7 +18542,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH123.json) / [Exact model/material/UV data](definitions/models/SH123.json).
+[Full definition](missions/gameplay/ships/SH123.json) / [Exact model/material/UV data](missions/gameplay/models/SH123.json).
 
 ### SH124 - Larvaal Warship
 
@@ -16328,7 +18570,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C02 A Choir Beneath the Static
 
-[Full definition](definitions/ships/SH124.json) / [Exact model/material/UV data](definitions/models/SH124.json).
+[Full definition](missions/gameplay/ships/SH124.json) / [Exact model/material/UV data](missions/gameplay/models/SH124.json).
 
 ### SH125 - Larvaal Drone
 
@@ -16356,7 +18598,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C02 A Choir Beneath the Static
 
-[Full definition](definitions/ships/SH125.json) / [Exact model/material/UV data](definitions/models/SH125.json).
+[Full definition](missions/gameplay/ships/SH125.json) / [Exact model/material/UV data](missions/gameplay/models/SH125.json).
 
 ### SH126 - Mangalica
 
@@ -16384,7 +18626,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH126.json) / [Exact model/material/UV data](definitions/models/SH126.json).
+[Full definition](missions/gameplay/ships/SH126.json) / [Exact model/material/UV data](missions/gameplay/models/SH126.json).
 
 ### SH127 - Gaur Trader
 
@@ -16412,7 +18654,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH127.json) / [Exact model/material/UV data](definitions/models/SH127.json).
+[Full definition](missions/gameplay/ships/SH127.json) / [Exact model/material/UV data](missions/gameplay/models/SH127.json).
 
 ### SH128 - Boar Transport
 
@@ -16440,7 +18682,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH128.json) / [Exact model/material/UV data](definitions/models/SH128.json).
+[Full definition](missions/gameplay/ships/SH128.json) / [Exact model/material/UV data](missions/gameplay/models/SH128.json).
 
 ### SH129 - Warthog 10 Guard
 
@@ -16468,7 +18710,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH129.json) / [Exact model/material/UV data](definitions/models/SH129.json).
+[Full definition](missions/gameplay/ships/SH129.json) / [Exact model/material/UV data](missions/gameplay/models/SH129.json).
 
 ### SH130 - Marmot 11 Prospector
 
@@ -16496,7 +18738,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH130.json) / [Exact model/material/UV data](definitions/models/SH130.json).
+[Full definition](missions/gameplay/ships/SH130.json) / [Exact model/material/UV data](missions/gameplay/models/SH130.json).
 
 ### SH131 - Warthog 6
 
@@ -16524,7 +18766,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH131.json) / [Exact model/material/UV data](definitions/models/SH131.json).
+[Full definition](missions/gameplay/ships/SH131.json) / [Exact model/material/UV data](missions/gameplay/models/SH131.json).
 
 ### SH132 - Warthog 7
 
@@ -16552,7 +18794,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH132.json) / [Exact model/material/UV data](definitions/models/SH132.json).
+[Full definition](missions/gameplay/ships/SH132.json) / [Exact model/material/UV data](missions/gameplay/models/SH132.json).
 
 ### SH133 - Warthog 8
 
@@ -16580,7 +18822,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH133.json) / [Exact model/material/UV data](definitions/models/SH133.json).
+[Full definition](missions/gameplay/ships/SH133.json) / [Exact model/material/UV data](missions/gameplay/models/SH133.json).
 
 ### SH134 - Warthog 9 Heavy
 
@@ -16608,7 +18850,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH134.json) / [Exact model/material/UV data](definitions/models/SH134.json).
+[Full definition](missions/gameplay/ships/SH134.json) / [Exact model/material/UV data](missions/gameplay/models/SH134.json).
 
 ### SH135 - Javelina
 
@@ -16636,7 +18878,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH135.json) / [Exact model/material/UV data](definitions/models/SH135.json).
+[Full definition](missions/gameplay/ships/SH135.json) / [Exact model/material/UV data](missions/gameplay/models/SH135.json).
 
 ### SH136 - Falcon Mk I
 
@@ -16664,7 +18906,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH136.json) / [Exact model/material/UV data](definitions/models/SH136.json).
+[Full definition](missions/gameplay/ships/SH136.json) / [Exact model/material/UV data](missions/gameplay/models/SH136.json).
 
 ### SH137 - Falcon Mk II
 
@@ -16692,7 +18934,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH137.json) / [Exact model/material/UV data](definitions/models/SH137.json).
+[Full definition](missions/gameplay/ships/SH137.json) / [Exact model/material/UV data](missions/gameplay/models/SH137.json).
 
 ### SH138 - Falcon Mk III
 
@@ -16720,7 +18962,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH138.json) / [Exact model/material/UV data](definitions/models/SH138.json).
+[Full definition](missions/gameplay/ships/SH138.json) / [Exact model/material/UV data](missions/gameplay/models/SH138.json).
 
 ### SH139 - Falcon Mk IV
 
@@ -16748,7 +18990,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH139.json) / [Exact model/material/UV data](definitions/models/SH139.json).
+[Full definition](missions/gameplay/ships/SH139.json) / [Exact model/material/UV data](missions/gameplay/models/SH139.json).
 
 ### SH140 - Chimango
 
@@ -16776,7 +19018,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH140.json) / [Exact model/material/UV data](definitions/models/SH140.json).
+[Full definition](missions/gameplay/ships/SH140.json) / [Exact model/material/UV data](missions/gameplay/models/SH140.json).
 
 ### SH141 - Salamander Station
 
@@ -16793,7 +19035,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH141.json) / [Exact model/material/UV data](definitions/models/SH141.json).
+[Full definition](missions/gameplay/ships/SH141.json) / [Exact model/material/UV data](missions/gameplay/models/SH141.json).
 
 ### SH142 - Buzzard Mk II
 
@@ -16821,7 +19063,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH142.json) / [Exact model/material/UV data](definitions/models/SH142.json).
+[Full definition](missions/gameplay/ships/SH142.json) / [Exact model/material/UV data](missions/gameplay/models/SH142.json).
 
 ### SH143 - Aardvark Miner
 
@@ -16849,7 +19091,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH143.json) / [Exact model/material/UV data](definitions/models/SH143.json).
+[Full definition](missions/gameplay/ships/SH143.json) / [Exact model/material/UV data](missions/gameplay/models/SH143.json).
 
 ### SH144 - Razorback
 
@@ -16877,7 +19119,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH144.json) / [Exact model/material/UV data](definitions/models/SH144.json).
+[Full definition](missions/gameplay/ships/SH144.json) / [Exact model/material/UV data](missions/gameplay/models/SH144.json).
 
 ### SH145 - Kestrel
 
@@ -16905,7 +19147,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH145.json) / [Exact model/material/UV data](definitions/models/SH145.json).
+[Full definition](missions/gameplay/ships/SH145.json) / [Exact model/material/UV data](missions/gameplay/models/SH145.json).
 
 ### SH146 - Merlin
 
@@ -16933,7 +19175,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH146.json) / [Exact model/material/UV data](definitions/models/SH146.json).
+[Full definition](missions/gameplay/ships/SH146.json) / [Exact model/material/UV data](missions/gameplay/models/SH146.json).
 
 ### SH147 - Hawk
 
@@ -16961,7 +19203,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH147.json) / [Exact model/material/UV data](definitions/models/SH147.json).
+[Full definition](missions/gameplay/ships/SH147.json) / [Exact model/material/UV data](missions/gameplay/models/SH147.json).
 
 ### SH148 - Morepork
 
@@ -16989,7 +19231,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH148.json) / [Exact model/material/UV data](definitions/models/SH148.json).
+[Full definition](missions/gameplay/ships/SH148.json) / [Exact model/material/UV data](missions/gameplay/models/SH148.json).
 
 ### SH149 - Owlet Mk II
 
@@ -17017,7 +19259,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH149.json) / [Exact model/material/UV data](definitions/models/SH149.json).
+[Full definition](missions/gameplay/ships/SH149.json) / [Exact model/material/UV data](missions/gameplay/models/SH149.json).
 
 ### SH150 - Reindeer Freighter
 
@@ -17045,7 +19287,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH150.json) / [Exact model/material/UV data](definitions/models/SH150.json).
+[Full definition](missions/gameplay/ships/SH150.json) / [Exact model/material/UV data](missions/gameplay/models/SH150.json).
 
 ### SH151 - Lynx Escort
 
@@ -17073,7 +19315,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH151.json) / [Exact model/material/UV data](definitions/models/SH151.json).
+[Full definition](missions/gameplay/ships/SH151.json) / [Exact model/material/UV data](missions/gameplay/models/SH151.json).
 
 ### SH152 - Osprey Scout
 
@@ -17101,7 +19343,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH152.json) / [Exact model/material/UV data](definitions/models/SH152.json).
+[Full definition](missions/gameplay/ships/SH152.json) / [Exact model/material/UV data](missions/gameplay/models/SH152.json).
 
 ### SH153 - Osprey Strike
 
@@ -17129,7 +19371,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH153.json) / [Exact model/material/UV data](definitions/models/SH153.json).
+[Full definition](missions/gameplay/ships/SH153.json) / [Exact model/material/UV data](missions/gameplay/models/SH153.json).
 
 ### SH154 - Osprey Patrol
 
@@ -17157,7 +19399,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH154.json) / [Exact model/material/UV data](definitions/models/SH154.json).
+[Full definition](missions/gameplay/ships/SH154.json) / [Exact model/material/UV data](missions/gameplay/models/SH154.json).
 
 ### SH155 - Osprey Carrier
 
@@ -17185,7 +19427,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH155.json) / [Exact model/material/UV data](definitions/models/SH155.json).
+[Full definition](missions/gameplay/ships/SH155.json) / [Exact model/material/UV data](missions/gameplay/models/SH155.json).
 
 ### SH156 - Lion Bastion
 
@@ -17202,7 +19444,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH156.json) / [Exact model/material/UV data](definitions/models/SH156.json).
+[Full definition](missions/gameplay/ships/SH156.json) / [Exact model/material/UV data](missions/gameplay/models/SH156.json).
 
 ### SH157 - Wolf Scout
 
@@ -17230,7 +19472,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH157.json) / [Exact model/material/UV data](definitions/models/SH157.json).
+[Full definition](missions/gameplay/ships/SH157.json) / [Exact model/material/UV data](missions/gameplay/models/SH157.json).
 
 ### SH158 - Wolf Mk I
 
@@ -17258,7 +19500,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH158.json) / [Exact model/material/UV data](definitions/models/SH158.json).
+[Full definition](missions/gameplay/ships/SH158.json) / [Exact model/material/UV data](missions/gameplay/models/SH158.json).
 
 ### SH159 - Wolf Mk II
 
@@ -17286,7 +19528,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH159.json) / [Exact model/material/UV data](definitions/models/SH159.json).
+[Full definition](missions/gameplay/ships/SH159.json) / [Exact model/material/UV data](missions/gameplay/models/SH159.json).
 
 ### SH160 - Wolf Cutter
 
@@ -17314,7 +19556,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH160.json) / [Exact model/material/UV data](definitions/models/SH160.json).
+[Full definition](missions/gameplay/ships/SH160.json) / [Exact model/material/UV data](missions/gameplay/models/SH160.json).
 
 ### SH161 - Wolf Citadel
 
@@ -17331,7 +19573,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH161.json) / [Exact model/material/UV data](definitions/models/SH161.json).
+[Full definition](missions/gameplay/ships/SH161.json) / [Exact model/material/UV data](missions/gameplay/models/SH161.json).
 
 ### SH162 - Larvaal Probe
 
@@ -17348,7 +19590,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C02 A Choir Beneath the Static
 
-[Full definition](definitions/ships/SH162.json) / [Exact model/material/UV data](definitions/models/SH162.json).
+[Full definition](missions/gameplay/ships/SH162.json) / [Exact model/material/UV data](missions/gameplay/models/SH162.json).
 
 ### SH163 - Lammergeier
 
@@ -17367,7 +19609,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH163.json) / [Exact model/material/UV data](definitions/models/SH163.json).
+[Full definition](missions/gameplay/ships/SH163.json) / [Exact model/material/UV data](missions/gameplay/models/SH163.json).
 
 ### SH164 - Toad Drug Factory
 
@@ -17384,7 +19626,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH164.json) / [Exact model/material/UV data](definitions/models/SH164.json).
+[Full definition](missions/gameplay/ships/SH164.json) / [Exact model/material/UV data](missions/gameplay/models/SH164.json).
 
 ### SH165 - Secretarybird
 
@@ -17412,7 +19654,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH165.json) / [Exact model/material/UV data](definitions/models/SH165.json).
+[Full definition](missions/gameplay/ships/SH165.json) / [Exact model/material/UV data](missions/gameplay/models/SH165.json).
 
 ### SH166 - Camel Rescue
 
@@ -17440,7 +19682,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH166.json) / [Exact model/material/UV data](definitions/models/SH166.json).
+[Full definition](missions/gameplay/ships/SH166.json) / [Exact model/material/UV data](missions/gameplay/models/SH166.json).
 
 ### SH167 - Secretarybird Survey
 
@@ -17468,7 +19710,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH167.json) / [Exact model/material/UV data](definitions/models/SH167.json).
+[Full definition](missions/gameplay/ships/SH167.json) / [Exact model/material/UV data](missions/gameplay/models/SH167.json).
 
 ### SH168 - Armadillo Miner
 
@@ -17496,7 +19738,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH168.json) / [Exact model/material/UV data](definitions/models/SH168.json).
+[Full definition](missions/gameplay/ships/SH168.json) / [Exact model/material/UV data](missions/gameplay/models/SH168.json).
 
 ### SH169 - Caracara Mk I
 
@@ -17524,7 +19766,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH169.json) / [Exact model/material/UV data](definitions/models/SH169.json).
+[Full definition](missions/gameplay/ships/SH169.json) / [Exact model/material/UV data](missions/gameplay/models/SH169.json).
 
 ### SH170 - Caracara Mk II
 
@@ -17552,7 +19794,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH170.json) / [Exact model/material/UV data](definitions/models/SH170.json).
+[Full definition](missions/gameplay/ships/SH170.json) / [Exact model/material/UV data](missions/gameplay/models/SH170.json).
 
 ### SH171 - Medusa
 
@@ -17580,4 +19822,4 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH171.json) / [Exact model/material/UV data](definitions/models/SH171.json).
+[Full definition](missions/gameplay/ships/SH171.json) / [Exact model/material/UV data](missions/gameplay/models/SH171.json).

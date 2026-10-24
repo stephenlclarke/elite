@@ -2,13 +2,16 @@
 
 This folder defines the intended finished game: gameplay, progression, the complete original mission stories and stage rules, equipment and upgrades, mission graphics, and the new L337 fleet. It contains full spoilers.
 
-Start with [the gameplay review](GAMEPLAY.md). [The complete single-file oracle](FINAL-GAME-ORACLE.md) contains everything in one Markdown file, with all ship definitions/images at the end. The smaller reading views below make the same material convenient to browse on GitHub.
+Start with [the gameplay review](missions/GAMEPLAY.md). [The complete single-file oracle](FINAL-GAME-ORACLE.md) contains everything in one Markdown file, with all ship definitions/images at the end. The smaller reading views below make the same material convenient to browse on GitHub.
 
-- [Gameplay, equipment, upgrades and milestone outcomes](GAMEPLAY.md)
-- [All general contracts, Wayfarer services and tutorials](CONTRACTS-AND-TUTORIALS.md)
-- [The Unwritten Route and the complete 64-source clue register](UNWRITTEN-ROUTE.md)
+- [Implementation guide and read-only ledger snapshot](implementation/README.md)
+- [Canonical mission data and all gameplay specifications](missions/README.md)
+- [Guaranteed clue continuity and distinct physical mission rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md)
+- [Gameplay, equipment, upgrades and milestone outcomes](missions/GAMEPLAY.md)
+- [All general contracts, Wayfarer services and tutorials](missions/CONTRACTS-AND-TUTORIALS.md)
+- [The Unwritten Route and the complete 64-source clue register](missions/UNWRITTEN-ROUTE.md)
 - [Every one of the 758 original mission graphics](MISSION-ARTWORK.md)
-- [Portable complete mission, fleet and world definitions](definitions/)
+- [Portable complete mission, fleet and world definitions](missions/)
 - [Exact asset provenance and geometry-image hashes](ASSET-PROVENANCE.json)
 - [Coverage counts](COVERAGE.json)
 - [Mission coherence and gameplay progression review](MISSION-COHERENCE-REVIEW.md)
@@ -65,5 +68,7 @@ Start with [the gameplay review](GAMEPLAY.md). [The complete single-file oracle]
 ## Authority and use
 
 Use this oracle to judge the intended finished product. Gameplay text describes the finished experience; it is not an implementation progress ledger. Mission IDs, target identities, branch requirements, custody, payouts, clues and hull access rules are preserved. Explicit estimates and reserved original design decisions are labelled rather than passed off as historical facts. The canonical work ledger remains the authority for implementation ownership and progress.
+
+Canonical mission data and gameplay specifications live under `missions/`, including the detailed engine/UX contracts, fleet models/stats and world/economy data. The implementation folder contains a dated, exact-byte ledger copy; it is a read-only snapshot, while the live main ledger remains the single work-packet authority. New source-continuity and mission-interaction rules are designed here and still require native implementation and play balancing.
 
 The single-file oracle is the complete reading source. The other Markdown views are exact section extracts with adjusted relative links. Update them together when changing the oracle. Artwork is original project content with methods and hashes recorded in the provenance manifest; ship illustrations use only the authenticated new L337 geometry.

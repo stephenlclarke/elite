@@ -1,0 +1,257 @@
+# Private campaign design schema; not installed in the game.
+id = "l337.hollow-manifest"
+missionID = "hollow-manifest"
+title = "The Hollow Manifest"
+subtitle = "The cargo exists on paper. The danger is aboard a real ship."
+contacts = ["Nia Toren", "Marek Iven"]
+ships = []
+offer = "Speak to freight auditor Nia Toren at Narargan in Galaxy 2 after completing one normal commodity sale. No score gate or link to another campaign."
+story = "A freight mutual is paying claims for industrial cargo that never left its warehouse. Reused seals make innocent captains appear responsible, while the true carrier transports unlisted refinery waste. The commander follows a physical seal through several freighters, rescues the carrier's stranded crew, recovers the original customs register and chooses public disclosure or a restitution tribunal. The witnesses are protected and the cargo fraud is resolved through evidence rather than revenge."
+playerBriefing = "Nia Toren: Two paid manifests name the same crate, and both captains insist it never reached them. Scan the freighters at Garrivek. If we follow the seal rather than the accusation, we can find where the cargo really went."
+rewardCR = 5600
+completionBenefit = "Expense reimbursement is tracked separately; the selected public report or restitution fund appears in local gossip. Existing legal status is never reset. A permanent clue for The Unwritten Route: The inward mark."
+items = [{ id = "inspection-kit", massTonnes = 1, acquireStage = "analyse-seals", consumeStage = "return-equipment" }]
+schema = "l337-mission-design/1"
+version = "1.0.0"
+license = "MIT"
+status = "Private original story and stage design; not a runnable pack for the current engine"
+authoredSource = "Original L337 narrative, objectives, dialogs, locations and rewards"
+terminalStage = "complete"
+rewardReceipt = "l337.hollow-manifest/final-payment"
+rewardPolicy = "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue."
+branchPolicy = "Record the selected evidence/protocol outcome in pack state and gossip. Branches reconverge at the next stage and share the advertised base payment."
+identityPolicy = "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type."
+persistencePolicy = "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported."
+engineWork = "Implement/verify the event contracts in ENGINE-CONTRACT.md before declaring this pack playable. Current native special-case bindings are superseded by mission-scoped events in the proposed version."
+completionClue = { questID = "l337.unwritten-route", clueID = "manifest-hidden-imprint", label = "The inward mark", journalText = "Beneath the recalled seal's ordinary signature is a second imprint: loops around an empty centre, with each loop pointing inward.", massTonnes = 0, uniquePerSource = true, receipt = "l337.unwritten-route/clue/manifest-hidden-imprint", awardWithSuccessfulTerminal = true }
+artwork = { manifest = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json", manifestSHA256 = "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904", briefing = { id = "hollow-manifest", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/illustrations/hollow-manifest.png", sha256 = "49bbec2ae34b48ab6c1af85651a11d6cef7fe3689736ecc8b04bad9229dc5978", visibility = "Current mission briefing" }, contacts = [{ name = "Nia Toren", portrait = { id = "nia-toren", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/nia-toren.png", sha256 = "edd32ff6ae3bab7d344bf4a65ea90cc375ee3f3de728f20c8309e5da4a9dc842", visibility = "Current mission briefing" } }, { name = "Marek Iven", portrait = { id = "marek-iven", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/marek-iven.png", sha256 = "02651322307b78d5be938337b57a23fc7b11a3d4b15934f2b60b02c8f23dbe96", visibility = "Current mission briefing" } }], ships = [], items = [{ id = "inspection-kit", asset = { id = "inspection-kit", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/props/inspection-kit.png", sha256 = "db5a04fa4407f1098cc69430ad85807278331c05fa1604cd8393578b4f9a3798", visibility = "Current mission briefing" } }], outcomes = [{ id = "hollow-manifest/choose-remedy/choice-1", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/hollow-manifest-choose-remedy-choice-1.png", sha256 = "8077bec07f48b07906626d69eac9c2a7f7270e413e963b7d54d34991bc023ea0", visibility = "Only the actual committed branch" }, { id = "hollow-manifest/choose-remedy/choice-2", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/hollow-manifest-choose-remedy-choice-2.png", sha256 = "6c6521b15045b87a89c07163ab6f76f861a49fd8a228c45d76e79fe969a1e9bc", visibility = "Only the actual committed branch" }] }
+
+[[stages]]
+id = "accept"
+galaxy = 1
+system = 120
+objective = "Accept the duplicate-manifest audit at Narargan."
+event = "mission_contact_confirmed"
+requiredTargets = ["toren-commission"]
+dialog = "TOREN: The mutual has paid for the same machinery twice. I want a complete custody record. Keep the captains alive and their original seals intact."
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G02-S120"
+locationName = "Narargan"
+next = "inspect-freighters"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/accept"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/accept", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/accept.png", sha256 = "e5c49d83484899d4729ac831fa5c780718d6a2e5b509c041617e48ebb9cf0ec1", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "inspect-freighters"
+galaxy = 1
+system = 113
+objective = "Scan the cargo seals on two consenting freighters at Garrivek."
+event = "entity_scan_completed"
+requiredTargets = ["freighter-seal-a", "freighter-seal-b"]
+dialog = "Both seals are authentic, but their manufacturing scratches match. These are two impressions of one physical master, not two independent shipments."
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G02-S113"
+locationName = "Garrivek"
+next = "analyse-seals"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/inspect-freighters"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/inspect-freighters", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/inspect-freighters.png", sha256 = "d82d50e53396ad02ebf7081eee6ef084e6960a1e7e5cadb38c605a03ea9d8b52", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "analyse-seals"
+galaxy = 1
+system = 27
+objective = "Have the seals examined at Torenran and collect a loaned one-tonne inspection kit."
+event = "mission_contact_confirmed"
+requiredTargets = ["seal-laboratory"]
+dialog = "IVEN: The master seal was recalled. Someone retained it, stamped new dates and sent an empty carrier along the insured route. Take this scanner kit; it belongs to the laboratory."
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G02-S027"
+locationName = "Torenran"
+next = "follow-carrier"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/analyse-seals"
+itemEffects = [{ kind = "add", item = "inspection-kit", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/analyse-seals", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/analyse-seals.png", sha256 = "3c794669416d18537d880cb30a83ba3c0dd9e254e155f30e1b65137a3df888d3", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "follow-carrier"
+galaxy = 1
+system = 182
+objective = "Follow three cargo-handler wake marks to the hidden transfer cradle at Haldator."
+event = "entity_scan_completed"
+requiredTargets = ["wake-one", "wake-two", "wake-three"]
+dialog = "The marks lead away from the station approach. The cradle accepted cargo that has no line in the carrier's declared manifest."
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G02-S182"
+locationName = "Haldator"
+next = "recover-register"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/follow-carrier"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/follow-carrier", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/follow-carrier.png", sha256 = "026906fdf05752ac465fbce5932dda8bc0a212708f8754d7bcef593d29846c50", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "recover-register"
+galaxy = 1
+system = 34
+objective = "Recover the cradle's original custody register at Durenran."
+event = "mission_item_recovered"
+requiredTargets = ["custody-register"]
+dialog = "The register lists sealed refinery waste. The machinery manifests were insurance cover for its transport. The carrier's crew were not told what their holds contained."
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G02-S034"
+locationName = "Durenran"
+next = "rescue-crew"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/recover-register"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/recover-register", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/recover-register.png", sha256 = "ea3b28c65c80ad63cdaf7f85e6d43c91bffa19083dd185d6a528fd95acc165cc", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "rescue-crew"
+galaxy = 1
+system = 182
+objective = "Guide the damaged carrier's evacuation launch to Haldator station."
+event = "escort_arrived"
+requiredTargets = ["evacuation-launch"]
+dialog = "The waste has overheated a service compartment. The evacuation launch carries the crew and its unaltered cargo log. Keep the route clear until station rescue accepts it."
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G02-S182"
+locationName = "Haldator"
+next = "reconstruct-ledger"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/rescue-crew"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/rescue-crew", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/rescue-crew.png", sha256 = "cca6e0cb19a33ab3ca44e43cda6cc49cb57498198572a02fb0d77d6bd2e91ad0", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "reconstruct-ledger"
+galaxy = 1
+system = 113
+objective = "Dock at Garrivek and reconcile the register, seals and rescued crew's log."
+event = "mission_contact_confirmed"
+requiredTargets = ["ledger-reconstruction"]
+dialog = "TOREN: The warehouse dates, recalled master and transfer register now agree. We can identify every false claim without inventing an accusation or silencing a witness."
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G02-S113"
+locationName = "Garrivek"
+next = "choose-remedy"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/reconstruct-ledger"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/reconstruct-ledger", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/reconstruct-ledger.png", sha256 = "af300446d97738353d133ba740e28b60a021167ef77606a09727ee5d3fc9c6d5", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "choose-remedy"
+galaxy = 1
+system = 27
+objective = "Choose public disclosure or a crew restitution tribunal at Torenran."
+event = "mission_choice_confirmed"
+requiredTargets = ["manifest-remedy"]
+dialog = "IVEN: Publish the full ledger to stop new claims immediately, or lodge it with the restitution tribunal so the crews receive compensation first. The evidence is preserved in either case."
+interactionItemMassTonnes = 0
+choices = ["Publish the complete custody ledger", "Submit the case to the restitution tribunal"]
+locationKey = "G02-S027"
+locationName = "Torenran"
+next = "return-equipment"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/choose-remedy"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/choose-remedy", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/choose-remedy.png", sha256 = "fdf8cb8879d4a0ceb354dcd9b364e3446a5259fc181f609f16b30b76beb8fd80", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "return-equipment"
+galaxy = 1
+system = 120
+objective = "Return the inspection kit and seal the remaining evidence at Narargan."
+event = "mission_contact_confirmed"
+requiredTargets = ["inspection-kit-return"]
+dialog = "TOREN: The kit is back with the laboratory. The original seal and custody register will remain available to the crews."
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G02-S120"
+locationName = "Narargan"
+next = "close-case"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/return-equipment"
+itemEffects = [{ kind = "remove", item = "inspection-kit", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/return-equipment", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/return-equipment.png", sha256 = "6a92f721558f991d104628d843226c76eab16644b48f5b21cd3360fc3ded6721", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "close-case"
+galaxy = 1
+system = 120
+objective = "Confirm the fraud resolution and collect payment at Narargan."
+event = "mission_contact_confirmed"
+requiredTargets = ["manifest-payment"]
+dialog = "TOREN: The false claims have stopped and the crew is safe. Your audit fee is 5,600 CR. Your own offences, if any, remain your responsibility.\n\nTOREN: The master seal carried an older imprint beneath its serial number. It was never part of the freight register. Keep the image; the loops seem to point towards something missing from the middle."
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G02-S120"
+locationName = "Narargan"
+next = "complete"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.hollow-manifest/close-case"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "hollow-manifest/close-case", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/hollow-manifest/close-case.png", sha256 = "ed19e25f6f58b015d92627bbc7264f9511bebfe69e2ba272d42e0af07b6ebc3d", visibility = "Mission stage briefing and completed history" }

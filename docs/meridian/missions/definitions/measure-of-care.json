@@ -1,0 +1,469 @@
+{
+  "id": "l337.measure-of-care",
+  "missionID": "measure-of-care",
+  "title": "The Measure of Care",
+  "originKind": "new-original",
+  "subtitle": "DAIN: We need the equipment's history, not a stranger's diagnosis.",
+  "contacts": [
+    "Physicist Anja Kest",
+    "Coordinator Sera Dain"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Veron in Galaxy 1, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.",
+  "story": "Two orbital clinics report incompatible storage readings for the same treatment. Miscalibrated refrigeration references have created an apparent shortage. The commander preserves a consented diagnostic sample, tests each cold chain and helps the clinics choose local reference standards or a jointly maintained calibration service.",
+  "playerBriefing": "DAIN: We need the equipment's history, not a stranger's diagnosis.",
+  "rewardCR": 5900,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The temperature of silence.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "measure-of-care-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "measure-of-care-reference",
+    "propForm": "cold-crate",
+    "palette": "ice-blue",
+    "stageObjects": [
+      "measure-of-care-reference",
+      "measure-of-care-reference",
+      "measure-of-care-reference",
+      "measure-of-care-reference",
+      "SH061",
+      "measure-of-care-reference",
+      "measure-of-care-reference",
+      "measure-of-care-reference",
+      "measure-of-care-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.measure-of-care/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "measure-of-care-trace",
+    "label": "The temperature of silence",
+    "journalText": "A reference recorder shows a stable curved boundary during a period with no recorded thermal source.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/measure-of-care-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "briefing": {
+      "id": "measure-of-care",
+      "file": "../../assets/missions/illustrations/measure-of-care.png",
+      "sha256": "02661e4a4e8511db2dc10766cd5be2d29cfe0fcca24a7ad248086b1bf5236965",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Physicist Anja Kest",
+        "portrait": {
+          "id": "anja-kest",
+          "file": "../../assets/missions/portraits/anja-kest.png",
+          "sha256": "4932e9fa711c3655952a7940674a69162c8fa5c39606ba2dca7912ab10804153",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Coordinator Sera Dain",
+        "portrait": {
+          "id": "sera-dain",
+          "file": "../../assets/missions/portraits/sera-dain.png",
+          "sha256": "00fbf43416f761618a897264b8fd4e30df7f7ff47736f27c1c4d66fedfdcb787",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "measure-of-care-reference",
+        "asset": {
+          "id": "measure-of-care-reference",
+          "file": "../../assets/missions/props/measure-of-care-reference.png",
+          "sha256": "fda5c3cc2d59c7656041a8dabe47a7eb0e53082ce7438d8347ca9a0ba35fd91e",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "measure-of-care/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/measure-of-care-choose-settlement-plan-a.png",
+        "sha256": "34e46d0b9cbb6d4341d59b70e8039667bb16e8d49a4d0234a0a48519f2182ed0",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "measure-of-care/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/measure-of-care-choose-settlement-plan-b.png",
+        "sha256": "385a48283632487ee9ab528e54202905abe398dd89325627d1c0b2615e8753c5",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 0,
+      "system": 41,
+      "objective": "Accept The Measure of Care at Veron.",
+      "dialog": "Physicist Anja Kest: Two orbital clinics report incompatible storage readings for the same treatment. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S041",
+      "locationName": "Veron",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/accept",
+        "file": "../../assets/missions/stages/measure-of-care/accept.png",
+        "sha256": "63be3850a425dc1a09907bd1adb461c4dcd774e9e54d3b3adde8f8ee6d1639ef",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 0,
+      "system": 41,
+      "objective": "Collect the identified one-tonne reference instrument from Physicist Anja Kest.",
+      "dialog": "Physicist Anja Kest: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G01-S041",
+      "locationName": "Veron",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "measure-of-care-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/collect-reference",
+        "file": "../../assets/missions/stages/measure-of-care/collect-reference.png",
+        "sha256": "85ce36bdcd871c3783a3868c77e355345333a7999a205cb22633e36d84116fbd",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 0,
+      "system": 22,
+      "objective": "Read three signed refrigeration monitors without requesting patient names.",
+      "dialog": "DAIN: We need the equipment's history, not a stranger's diagnosis.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "measure-of-care-survey-1",
+        "measure-of-care-survey-2",
+        "measure-of-care-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S022",
+      "locationName": "Almadan",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/survey",
+        "file": "../../assets/missions/stages/measure-of-care/survey.png",
+        "sha256": "64cbff5ddb5d39c9db13a6993f31054643a7c8ae5fcc85c98359dd354d03728e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 0,
+      "system": 136,
+      "objective": "Run the sealed onboard reference against both external calibration cradles; adjust the actual offsets.",
+      "dialog": "KEST: Keep temperature exposure and capsule identity together. A new label cannot repair a spoiled sample.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "measure-of-care-work-port",
+        "measure-of-care-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G01-S136",
+      "locationName": "Envesen",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/field-work",
+        "file": "../../assets/missions/stages/measure-of-care/field-work.png",
+        "sha256": "8a7f9949806f154e50de641c7ee6ce698c6f5f99d5c324c26575f363ff32118a",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 0,
+      "system": 71,
+      "objective": "Verify actual safe transit and living reception of the clinic service crew to the independent test berth.",
+      "dialog": "DAIN: Their arrival is verified by the receiving clinic. A crate alone cannot prove care happened.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "measure-of-care-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G01-S071",
+      "locationName": "Betaven",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/independent-witness",
+        "file": "../../assets/missions/stages/measure-of-care/independent-witness.png",
+        "sha256": "be3fca769686ca745f45cf9fa69cb78fcef0ed6d40935e312685bc2aff87ab13",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 0,
+      "system": 71,
+      "objective": "At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.",
+      "dialog": "Physicist Anja Kest: Your cold-chain calibration against references evidence is ready. Our arrived delegates have the signed mandate to choose here. Either keep independent clinic calibration references or establish a shared clinical calibration service. Compare the actual tests and consequences before confirming; closing this view chooses neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "measure-of-care-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Keep independent clinic calibration references",
+        "Establish a shared clinical calibration service"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G01-S071",
+      "locationName": "Betaven",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/choose-settlement",
+        "file": "../../assets/missions/stages/measure-of-care/choose-settlement.png",
+        "sha256": "bec25ebd5e2d1a1871a0da9eaf0b8fadfa3e603c7d2de2c7cf9edc8304ecb274",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 0,
+      "system": 136,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Physicist Anja Kest: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "measure-of-care-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "measure-of-care-plan-a-physical-proof",
+            "measure-of-care-plan-a-receiving-proof"
+          ],
+          "objective": "Verify both reference calibrations and independent custody records.",
+          "dialog": "KEST: Independence needs measured agreement, not identical software.",
+          "gossip": "The Measure of Care: Keep independent clinic calibration references."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "measure-of-care-plan-b-physical-proof",
+            "measure-of-care-plan-b-receiving-proof"
+          ],
+          "objective": "Verify the shared service limit and each clinic's stop authority.",
+          "dialog": "DAIN: Either clinic must be able to stop unsafe transfers.",
+          "gossip": "The Measure of Care: Establish a shared clinical calibration service."
+        }
+      ],
+      "locationKey": "G01-S136",
+      "locationName": "Envesen",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/apply-settlement",
+        "file": "../../assets/missions/stages/measure-of-care/apply-settlement.png",
+        "sha256": "eb13202d769c906bcf92c795d37668f25abf450fcf2849752659852d6c3c877e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 0,
+      "system": 41,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Physicist Anja Kest: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S041",
+      "locationName": "Veron",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "measure-of-care-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/return-and-audit",
+        "file": "../../assets/missions/stages/measure-of-care/return-and-audit.png",
+        "sha256": "439fe74522a252ba777b43bde30a395fc84b076e71b9e0706cf8c1a8cb775a8f",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 0,
+      "system": 41,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Physicist Anja Kest: The independent audit is complete. Your fee is 5900 CR. The operators retain the chosen settlement and their original records.\n\nPhysicist Anja Kest: The audit has left one anomaly that belongs to neither side. A reference recorder shows a stable curved boundary during a period with no recorded thermal source. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G01-S041",
+      "locationName": "Veron",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.measure-of-care/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "measure-of-care/close-case",
+        "file": "../../assets/missions/stages/measure-of-care/close-case.png",
+        "sha256": "d1fa4deff44a88eb134e2f00ad93c4a64cc09fb7b456de96544a9816541f6e7e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ],
+  "gameplayProfileRef": "../gameplay/campaign-profiles.json#/profiles/measure-of-care",
+  "oracleDesignRevision": "review-resolution-2026-10-24-v2",
+  "delegationPolicy": "Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.",
+  "recoveryPolicyRef": "../gameplay/recovery-policy.json",
+  "mainQuestContinuity": "Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival."
+}

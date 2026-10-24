@@ -1,0 +1,240 @@
+# Private campaign design schema; not installed in the game.
+id = "l337.small-lights"
+missionID = "small-lights"
+title = "Small Lights"
+originKind = "new-original"
+subtitle = "SENN: Small failures become large when every office treats them as someone else's."
+contacts = ["Dispatcher Evi Senn", "Engineer Cato Lerr"]
+ships = ["SH001", "SH061"]
+offer = "At Duniler in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold."
+story = "A cluster of modest utility failures is ignored because each falls below an insurer's dispatch threshold. Together they isolate an orbital neighbourhood. The commander measures the combined fault, repairs actual receiving modules and escorts a maintenance crew before establishing pooled local callouts or independently funded service reserves."
+playerBriefing = "SENN: Small failures become large when every office treats them as someone else's."
+rewardCR = 6400
+completionBenefit = "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The light before the fault."
+branchPolicy = "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue."
+items = [{ id = "small-lights-reference", massTonnes = 1, acquireStage = "collect-reference", consumeStage = "return-and-audit" }]
+interactionNotes = ["Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.", "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.", "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.", "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."]
+authoringArt = { propID = "small-lights-reference", propForm = "lantern", palette = "petrol-brass", stageObjects = ["small-lights-reference", "small-lights-reference", "small-lights-reference", "small-lights-reference", "SH061", "small-lights-reference", "small-lights-reference", "small-lights-reference", "small-lights-reference"] }
+schema = "l337-mission-design/1"
+version = "1.0.0"
+license = "MIT"
+status = "Private original story and stage design; not a runnable pack for the current engine"
+authoredSource = "Original L337 narrative, objectives, dialogs, locations and rewards"
+terminalStage = "complete"
+rewardReceipt = "l337.small-lights/final-payment"
+rewardPolicy = "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue."
+identityPolicy = "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type."
+persistencePolicy = "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported."
+engineWork = "Implement/verify the event contracts in ENGINE-CONTRACT.md before declaring this pack playable. Current native special-case bindings are superseded by mission-scoped events in the proposed version."
+completionClue = { questID = "l337.unwritten-route", clueID = "small-lights-trace", label = "The light before the fault", journalText = "An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed.", massTonnes = 0, uniquePerSource = true, receipt = "l337.unwritten-route/clue/small-lights-trace", awardWithSuccessfulTerminal = true }
+artwork = { manifest = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json", manifestSHA256 = "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904", briefing = { id = "small-lights", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/illustrations/small-lights.png", sha256 = "6b3302d161f0f1a552f9d58300fce7d664dfd0e3e98dabf973c726caab6120b2", visibility = "Current mission briefing" }, contacts = [{ name = "Dispatcher Evi Senn", portrait = { id = "evi-senn", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/evi-senn.png", sha256 = "af7604ee750727f21ddd5f3017ac5f5d330ee1376c77fbcc712011671216486d", visibility = "Current mission briefing" } }, { name = "Engineer Cato Lerr", portrait = { id = "cato-lerr", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/cato-lerr.png", sha256 = "0f3b7b44d62b83e4e22052ddc765217c3961426533e147608bb20d5216588418", visibility = "Current mission briefing" } }], ships = [{ id = "SH001", asset = { id = "SH001", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH001.png", sha256 = "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }, { id = "SH061", asset = { id = "SH061", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH061.png", sha256 = "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }], items = [{ id = "small-lights-reference", asset = { id = "small-lights-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/props/small-lights-reference.png", sha256 = "c5e998873577af57e6776a04f17bfcfcde8e374415bc2ee816219ebe18170954", visibility = "Current mission briefing" } }], outcomes = [{ id = "small-lights/choose-settlement/plan-a", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/small-lights-choose-settlement-plan-a.png", sha256 = "aa3240161b75a8fcaaed2d662e1591f4230c6116ba79e464a52467033c880b07", visibility = "Only the actual committed branch" }, { id = "small-lights/choose-settlement/plan-b", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/small-lights-choose-settlement-plan-b.png", sha256 = "dc01d13939ebeb4e5b4b67994f18c198503ece9886bf110c7169d94fbb8cd741", visibility = "Only the actual committed branch" }] }
+
+[[stages]]
+id = "accept"
+galaxy = 4
+system = 228
+objective = "Accept Small Lights at Duniler."
+dialog = "Dispatcher Evi Senn: A cluster of modest utility failures is ignored because each falls below an insurer's dispatch threshold. Review the complete survey, loan and receiving requirements before confirming."
+event = "mission_contact_confirmed"
+requiredTargets = ["accept-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G05-S228"
+locationName = "Duniler"
+next = "survey"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/accept"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/accept", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/accept.png", sha256 = "9cfd4203b41e25ed41e61b9209eb845ee6f0d9fa6e7baf2435761425218b3354", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "survey"
+galaxy = 4
+system = 112
+objective = "Read three neighbourhood utility faults and their actual shared dependencies."
+dialog = "SENN: Small failures become large when every office treats them as someone else's."
+event = "entity_scan_completed"
+requiredTargets = ["small-lights-survey-1", "small-lights-survey-2", "small-lights-survey-3"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G05-S112"
+locationName = "Delenir"
+next = "collect-reference"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/survey"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/survey", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/survey.png", sha256 = "d8e4293b8305fd6e4181cae06cf1d91e86cba13c0060e4fa8fe09a50d8c818c7", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "collect-reference"
+galaxy = 4
+system = 228
+objective = "Collect the identified one-tonne reference instrument from Dispatcher Evi Senn."
+dialog = "Dispatcher Evi Senn: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity."
+event = "mission_contact_confirmed"
+requiredTargets = ["collect-reference-verified"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G05-S228"
+locationName = "Duniler"
+next = "field-work"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/collect-reference"
+itemEffects = [{ kind = "add", item = "small-lights-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/collect-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/collect-reference.png", sha256 = "6ca6286484a6d7202c4e78b68e2e2681b9865a43d667d1e40ac0c88a73c48477", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "field-work"
+galaxy = 4
+system = 233
+objective = "Restore two external service modules with the loaned utility lantern."
+dialog = "LERR: Confirm the actual load before clearing a fault from the board."
+event = "mission_action_confirmed"
+requiredTargets = ["small-lights-work-port", "small-lights-work-starboard"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G05-S233"
+locationName = "Siluel"
+next = "independent-witness"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/field-work"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/field-work", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/field-work.png", sha256 = "d13bbba70601ddb24721dbeaeecce80c63ea9da414116ecd802e3e2af6993ca4", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "independent-witness"
+galaxy = 4
+system = 156
+objective = "Escort the consenting maintenance tender to the neighbourhood berth."
+dialog = "SENN: The crew has to reach its work, not merely accept a dispatch."
+event = "escort_arrived"
+requiredTargets = ["small-lights-witness-received"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G05-S156"
+locationName = "Ashilun"
+next = "choose-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/independent-witness"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/independent-witness", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/independent-witness.png", sha256 = "aaa67d8ebf8ccb36257dc1b13b65d460d645c5959e551dcf2d146062e3cc1be9", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "choose-settlement"
+galaxy = 4
+system = 228
+objective = "Choose the verified settlement with the consenting operators."
+dialog = "Dispatcher Evi Senn: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither."
+event = "mission_choice_confirmed"
+requiredTargets = ["small-lights-settlement-choice"]
+interactionItemMassTonnes = 1
+choices = ["Pool local callouts across utilities", "Keep independently funded service reserves"]
+choiceIDs = ["plan-a", "plan-b"]
+locationKey = "G05-S228"
+locationName = "Duniler"
+next = "apply-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/choose-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/choose-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/choose-settlement.png", sha256 = "fa754dcfdd141adf81f26eceead6f7a0b2481d447541e301f52c24f3402e6a74", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "apply-settlement"
+galaxy = 4
+system = 233
+objective = "Verify both independent proofs for the selected settlement."
+dialog = "Dispatcher Evi Senn: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof."
+event = "mission_action_confirmed"
+requiredTargets = ["small-lights-settlement-summary"]
+interactionItemMassTonnes = 1
+choices = []
+branchStage = "choose-settlement"
+branchVariants = [{ choiceID = "plan-a", event = "mission_action_confirmed", requiredTargets = ["small-lights-plan-a-physical-proof", "small-lights-plan-a-receiving-proof"], objective = "Verify a shared capacity ledger and a real cross-utility response.", dialog = "LERR: Shared work needs spare capacity behind it.", gossip = "Small Lights: Pool local callouts across utilities." }, { choiceID = "plan-b", event = "mission_action_confirmed", requiredTargets = ["small-lights-plan-b-physical-proof", "small-lights-plan-b-receiving-proof"], objective = "Verify two stocked reserves and their receiving drill.", dialog = "SENN: Count the parts on the shelf, not the promises on the form.", gossip = "Small Lights: Keep independently funded service reserves." }]
+locationKey = "G05-S233"
+locationName = "Siluel"
+next = "return-and-audit"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/apply-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/apply-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/apply-settlement.png", sha256 = "af158f6c53493f1d7ab69e1ddc78600e20247c21a9959daf0b76db2308b2e6fb", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "return-and-audit"
+galaxy = 4
+system = 228
+objective = "Return the reference instrument and confirm all physical receiving and settlement receipts."
+dialog = "Dispatcher Evi Senn: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case."
+event = "mission_contact_confirmed"
+requiredTargets = ["return-and-audit-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G05-S228"
+locationName = "Duniler"
+next = "close-case"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/return-and-audit"
+itemEffects = [{ kind = "remove", item = "small-lights-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/return-and-audit", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/return-and-audit.png", sha256 = "56112c42e925c4475d7f15fc824b4f16ebd00d67913aaef94d407a1a19522d87", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "close-case"
+galaxy = 4
+system = 228
+objective = "Confirm successful completion, the recorded settlement and the once-only fee."
+dialog = "Dispatcher Evi Senn: The independent audit is complete. Your fee is 6400 CR. The operators retain the chosen settlement and their original records.\n\nDispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed. It is preserved in your journal for the AI at PLUGH."
+event = "mission_contact_confirmed"
+requiredTargets = ["close-case-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G05-S228"
+locationName = "Duniler"
+next = "complete"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.small-lights/close-case"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "small-lights/close-case", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/small-lights/close-case.png", sha256 = "86fe72ef0a5582c9e4699fb31b58d09a1c8b1356a8ae5a2f8217c0671329aeae", visibility = "Mission stage briefing and completed history" }

@@ -1,0 +1,645 @@
+{
+  "id": "l337.still-current",
+  "missionID": "still-current",
+  "originKind": "new-original",
+  "title": "The Still Current",
+  "subtitle": "The harvesters are idle. The charge is still moving.",
+  "contacts": [
+    "Physicist Anja Kest",
+    "Salvage Chief Ruan Pell"
+  ],
+  "ships": [
+    "SH001",
+    "SH049",
+    "SH061"
+  ],
+  "offer": "At Valrator in Galaxy 2, after one completed ordinary trade, answer a utility survey notice. No combat-rank gate. The recovered charge cell and later baffle programmer each need one tonne of free hold, never both at once.",
+  "story": "A mothballed orbital energy lattice near Karrakor reports no output, yet three independent utility meters show its charge reservoir growing. A maintenance tender is trapped outside an over-heated service corridor. Physicist Anja Kest suspects that conductive dust has bridged the collector isolation gaps, turning the dormant structure into an unintended capacitor. Salvage Chief Ruan Pell finds that uncrewed reclamation machinery is repeatedly reconnecting the bridges because it mistakes a stored commissioning instruction for a current work order. The commander must establish the real energy balance, rescue the technicians, position insulated baffles and revoke the obsolete work authority. The settlements then choose between a supervised community buffer and dismantling the collectors for reuse. Every step relies on measured charge, physical isolation and real receiving records.",
+  "playerBriefing": "KEST: These three meters cannot all be wrong in the same way. We stopped buying power from the lattice years ago. Find where the charge goes before someone reconnects a corridor full of people.",
+  "rewardCR": 8400,
+  "completionBenefit": "The selected community buffer or completed material recovery remains in the local utility record. No personal ship curse, permanent equipment damage, legal-status reset or free hull. A permanent clue for The Unwritten Route: The resting arc.",
+  "branchPolicy": "Choose community-buffer or material-recovery once at choose-lattice. Revoke obsolete work authority in both routes. Commit matching proofs at the collectors and reservoir; mixed evidence cannot complete the campaign. Both routes pay 8,400 CR and award the same clue.",
+  "items": [
+    {
+      "id": "lattice-charge-cell",
+      "massTonnes": 1,
+      "acquireStage": "recover-cell",
+      "consumeStage": "analyse-charge"
+    },
+    {
+      "id": "baffle-programmer",
+      "massTonnes": 1,
+      "acquireStage": "analyse-charge",
+      "consumeStage": "return-programmer"
+    }
+  ],
+  "interactionNotes": [
+    "Use normal targeting, scan and contextual Confirm. The survey is voluntary; Esc closes a briefing without accepting, placing a device or choosing a settlement. No additional keyboard binding.",
+    "The charge-cell exchange loans the one-tonne baffle programmer atomically. Keep that tool through both collector operations and return it at Valrator before final payment.",
+    "Lattice field exposure adds cabin heat only while the ship is physically inside a clearly marked hazard volume. The normal cabin-temperature HUD and an audible warning remain available. Leaving the volume permits normal cooling; the mission never hides instruments, fires weapons, buys cargo or redirects a jump.",
+    "The array starts with 900 measured charge units and no active generation source after isolation. Account for every routed, safely discharged or recovered unit. Display the remaining charge and the actual safe work windows. Moving a baffle is not a fresh energy source.",
+    "The maintenance tender and its technicians are real identified actors. Only its arrival at the designated safe berth completes rescue. If lost, preserve casualties and arrange an actual replacement retrieval before continuing; never resurrect a named individual or clone cargo.",
+    "Automated reclamation machines are unmanned service equipment, not station hulls. A patrol kill or destroyed station cannot supply isolation evidence. Scavengers may interfere, but combat is never the energy-balance or completion predicate.",
+    "Normal pause stops simulation heat and operations. Current-format saving preserves energy allocations, baffle positions, disabled work authority, tool custody and branch evidence. There is no hidden global deadline."
+  ],
+  "energyRules": {
+    "initialChargeUnits": 900,
+    "externalInputAfterIsolation": 0,
+    "collectorIDs": [
+      "collector-port",
+      "collector-keel",
+      "collector-starboard"
+    ],
+    "baffles": [
+      "baffle-inner",
+      "baffle-middle",
+      "baffle-outer"
+    ],
+    "safeDischargeLimitPerOperation": 90,
+    "bufferCapacity": 600,
+    "requiredLocalDeliveryUnits": 300,
+    "accounting": "Measured charge = remaining + physically delivered + safely discharged + recovered storage. No negative quantity, repeated transfer or unverified receiving endpoint.",
+    "heat": "A named geometric work volume supplies bounded simulation-time heat through the ordinary thermal system. It is never tied to a random GUI event or commander identity.",
+    "restoration": "A current save restores the same meter identities, actual balances and recorded baffle placements. Culled scene meshes do not change logical control or charge.",
+    "branchTransferPolicy": {
+      "communityBuffer": "Only the 300-unit verified local delivery and 600-unit retained tested buffer are permitted. Optional discharge or transfer to recovery storage is not an allowed community-buffer operation.",
+      "materialRecovery": "Account for the emptied reservoir through verified recovery storage and controlled discharge, plus actual collector-material reception. Each discharge operation is capped at 90 units.",
+      "conservation": "remaining + delivered + safely discharged + recovered = 900; no branch permits new charge or erased receipts",
+      "authority": "original-missions/STILL-CURRENT-CONTRACT.md",
+      "authoritySHA256": "ed92e61707ffdecd3f64d085621b6b9bd1c9cf2f6a8f493f243652d8b69d0b41",
+      "sourceLine": 11
+    }
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.still-current/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "current-resting-arc",
+    "label": "The resting arc",
+    "journalText": "The lattice's oldest meter records an inward arc before any collector was built. The measured charge is zero, but the phase signature still encloses a quiet centre.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/current-resting-arc",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "briefing": {
+      "id": "still-current",
+      "file": "../../assets/missions/illustrations/still-current.png",
+      "sha256": "b1e4cd058f36e62a5dc9b031cec8378f8c3def32f7be2cb9ba8b176df7ac91b4",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Physicist Anja Kest",
+        "portrait": {
+          "id": "anja-kest",
+          "file": "../../assets/missions/portraits/anja-kest.png",
+          "sha256": "4932e9fa711c3655952a7940674a69162c8fa5c39606ba2dca7912ab10804153",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Salvage Chief Ruan Pell",
+        "portrait": {
+          "id": "ruan-pell",
+          "file": "../../assets/missions/portraits/ruan-pell.png",
+          "sha256": "191b885106514ca4b035ba3921d122275e0052a2e4c1f92405fa6cea66e28cfc",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH049",
+        "asset": {
+          "id": "SH049",
+          "file": "../../assets/missions/ships/SH049.png",
+          "sha256": "7e2fd7265116b45127368d09ad3db5470a5ac4d57098bc00499459a4121a7990",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "lattice-charge-cell",
+        "asset": {
+          "id": "lattice-charge-cell",
+          "file": "../../assets/missions/props/lattice-charge-cell.png",
+          "sha256": "89883cd2a26c66a1a1a761dcd759d5c8549dae7a53848ff62f2fe1703e1006b4",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "id": "baffle-programmer",
+        "asset": {
+          "id": "baffle-programmer",
+          "file": "../../assets/missions/props/baffle-programmer.png",
+          "sha256": "9e0917604246e70b3e7a111339c81b3e84e5e68c5e363384b5df8a5c094cbf40",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "still-current/choose-lattice/community-buffer",
+        "file": "../../assets/missions/outcomes/still-current-choose-lattice-community-buffer.png",
+        "sha256": "950c090f209d4331c7810a9fbb0cef0f9f46d29bbe283d1db3afb555ebad27cd",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "still-current/choose-lattice/material-recovery",
+        "file": "../../assets/missions/outcomes/still-current-choose-lattice-material-recovery.png",
+        "sha256": "2f0af78f99093f107938751b7180701ae31e3bfecc6738ee4265d2d54880b6dd",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 1,
+      "system": 90,
+      "objective": "Accept the dormant-lattice survey at Valrator.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "kest-survey-commission"
+      ],
+      "dialog": "KEST: We need measured values, not a rumour about haunted machinery. You can leave the survey at any safe berth; your ship will remain yours to control.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S090",
+      "locationName": "Valrator",
+      "next": "survey-current",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/accept",
+        "file": "../../assets/missions/stages/still-current/accept.png",
+        "sha256": "deaff00212c973ec69fd22843cc058a1eb21491ef826368c072c0d0b5197b9d6",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey-current",
+      "galaxy": 1,
+      "system": 174,
+      "objective": "Scan three utility meters around the Karrakor lattice.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "meter-supply",
+        "meter-reservoir",
+        "meter-return"
+      ],
+      "dialog": "The supply meter reads zero. The reservoir and return meters still record a growing potential difference. Their independent calibration signatures agree.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G02-S174",
+      "locationName": "Karrakor",
+      "next": "recover-cell",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/survey-current",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/survey-current",
+        "file": "../../assets/missions/stages/still-current/survey-current.png",
+        "sha256": "16ae3db94c4b844c416bd2ef1206fdd7107aa1df29948ca1937c69a2b08fe61e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "recover-cell",
+      "galaxy": 1,
+      "system": 174,
+      "objective": "Recover the one-tonne insulated charge cell from the unmanned maintenance sled.",
+      "event": "mission_item_recovered",
+      "requiredTargets": [
+        "lattice-cell-identified"
+      ],
+      "dialog": "PELL: The sled is empty. Use the insulated service latch and preserve the cell; blowing up a random machine tells us nothing about the trapped charge.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S174",
+      "locationName": "Karrakor",
+      "next": "analyse-charge",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/recover-cell",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "lattice-charge-cell",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/recover-cell",
+        "file": "../../assets/missions/stages/still-current/recover-cell.png",
+        "sha256": "ab15922b8dc8b1de9f2c7772f667d54264f15bbd85d443d4d9e2dc95fdfb81c8",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "analyse-charge",
+      "galaxy": 1,
+      "system": 90,
+      "objective": "Exchange the charge cell for Kest's baffle programmer at Valrator.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "kest-charge-analysis"
+      ],
+      "dialog": "KEST: The cell stores charge across dust bridges. The reclamation controller keeps rebuilding them from an obsolete instruction. I will keep the cell and loan you this programmer in the same hold slot.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S090",
+      "locationName": "Valrator",
+      "next": "rescue-technicians",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/analyse-charge",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "lattice-charge-cell",
+          "massTonnes": 1
+        },
+        {
+          "kind": "add",
+          "item": "baffle-programmer",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/analyse-charge",
+        "file": "../../assets/missions/stages/still-current/analyse-charge.png",
+        "sha256": "52210be8db715e18b8e46c619331e6cf1b1af8cf66a868dc22035ab7a61dfa5c",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "rescue-technicians",
+      "galaxy": 1,
+      "system": 174,
+      "objective": "Escort the identified maintenance tender through the safe corridor to its reception berth.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "pell-maintenance-tender-received"
+      ],
+      "dialog": "PELL: The technicians are aboard this tender. Keep the clear corridor open until reception records their arrival. Do not enter the charged lattice to shorten the route.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S174",
+      "locationName": "Karrakor",
+      "next": "map-feedlines",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/rescue-technicians",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/rescue-technicians",
+        "file": "../../assets/missions/stages/still-current/rescue-technicians.png",
+        "sha256": "8efa9ca2a42a3992a274cf75f2729904df2af029f5f263e4a21eed2495032cc0",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "map-feedlines",
+      "galaxy": 1,
+      "system": 159,
+      "objective": "Scan the three external feedlines at Mortor and identify the obsolete work authority.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "feedline-port",
+        "feedline-keel",
+        "feedline-starboard"
+      ],
+      "dialog": "All three collectors are connected to the same archived work order. Revoke that authority before any branch can be safe; no living crew has consented to its renewal.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S159",
+      "locationName": "Mortor",
+      "next": "place-baffles",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/map-feedlines",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/map-feedlines",
+        "file": "../../assets/missions/stages/still-current/map-feedlines.png",
+        "sha256": "8abee86f67bd2e149a952c6966c0728d4c61a4cad0f67aca0ed04a3836dcad26",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "place-baffles",
+      "galaxy": 1,
+      "system": 174,
+      "objective": "Position three insulated baffles at the marked Karrakor work points.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "baffle-inner-positioned",
+        "baffle-middle-positioned",
+        "baffle-outer-positioned"
+      ],
+      "dialog": "The baffles split the work volume into visible safe windows. Watch normal cabin heat and withdraw between operations if needed. The programmer records each physical lock.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S174",
+      "locationName": "Karrakor",
+      "next": "choose-lattice",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/place-baffles",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/place-baffles",
+        "file": "../../assets/missions/stages/still-current/place-baffles.png",
+        "sha256": "ee43e009e79ff97a98443376cbf8222dfeb18dcc00812eec1d25c6c13d4eb234",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-lattice",
+      "galaxy": 1,
+      "system": 90,
+      "objective": "Choose the lattice's future with the local utility operators.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "lattice-settlement-choice"
+      ],
+      "dialog": "KEST: A supervised buffer can deliver stored power under local limits. Or we can empty the reservoir and reclaim the collectors. Both require the old work authority to be removed.",
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Commission a bounded community energy buffer",
+        "Recover the stored energy and dismantle the collectors"
+      ],
+      "choiceIDs": [
+        "community-buffer",
+        "material-recovery"
+      ],
+      "locationKey": "G02-S090",
+      "locationName": "Valrator",
+      "next": "isolate-collectors",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/choose-lattice",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/choose-lattice",
+        "file": "../../assets/missions/stages/still-current/choose-lattice.png",
+        "sha256": "666e7f72a02b0cbc0184198d668847893f74813f02de9c0f94d15d281a115625",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "isolate-collectors",
+      "galaxy": 1,
+      "system": 174,
+      "objective": "Revoke the obsolete work order and apply the chosen collector settlement.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "collector-settlement-proof"
+      ],
+      "dialog": "Only the marked collector modules are involved. Their signed work-order revocation and measured isolation are separate from the nearby station.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-lattice",
+      "branchVariants": [
+        {
+          "choiceID": "community-buffer",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "collector-authority-revoked",
+            "collector-quota-tested"
+          ],
+          "objective": "Revoke the archived work authority and test the locally bounded collector quota.",
+          "dialog": "An order outside the consented quota is rejected. No reclaimed machine can reconnect a dust bridge by replaying the old job.",
+          "gossip": "The lattice collectors now obey locally tested utility limits."
+        },
+        {
+          "choiceID": "material-recovery",
+          "event": "campaign_target_disabled",
+          "requiredTargets": [
+            "collector-authority-disabled",
+            "collector-bus-isolated"
+          ],
+          "objective": "Disable the archived work controller and verify all collector bus links are isolated.",
+          "dialog": "The unmanned controller is isolated. Its receiving log proves the collectors cannot reconnect to the reservoir.",
+          "gossip": "The dormant collectors are isolated for controlled material recovery."
+        }
+      ],
+      "completionRule": "Require every distinct proof of the persisted chosen branch at this exact mission instance and world; unrelated deaths or missing meshes prove nothing.",
+      "locationKey": "G02-S174",
+      "locationName": "Karrakor",
+      "next": "settle-reservoir",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/isolate-collectors",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/isolate-collectors",
+        "file": "../../assets/missions/stages/still-current/isolate-collectors.png",
+        "sha256": "0723631c60d7f6f90b92178d5cbab56970b159b5881fba58152d7b0ae6641210",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "settle-reservoir",
+      "galaxy": 1,
+      "system": 159,
+      "objective": "Account for the full stored charge and complete the selected settlement at Mortor.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "reservoir-settlement-proof"
+      ],
+      "dialog": "The displayed balance must reach an accounted state. Deliveries require a real receiving meter; safe discharge and recovered storage retain their own receipts.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-lattice",
+      "branchVariants": [
+        {
+          "choiceID": "community-buffer",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "community-delivery-received",
+            "buffer-capacity-tested"
+          ],
+          "objective": "Deliver 300 measured charge units to the local utility and prove the remaining 600 stay inside the bounded buffer.",
+          "dialog": "The utility has received its 300 units. The buffer holds 600 and refuses an over-capacity order.",
+          "gossip": "A measured community reserve now supports the utility without autonomous reconnection."
+        },
+        {
+          "choiceID": "material-recovery",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "recovered-storage-received",
+            "collector-material-received"
+          ],
+          "objective": "Transfer all remaining charge to registered recovery storage and confirm the collectors' material delivery.",
+          "dialog": "Recovery storage and the receiving yard account for the remaining energy and dismantled components. Nothing vanished into an inventory adjustment.",
+          "gossip": "The lattice is retired; its stored energy and materials have reached the local operators."
+        }
+      ],
+      "completionRule": "Require the correct chosen settlement, completed collector isolation and all actual energy/custody receipts. No count-only or mixed-branch shortcut.",
+      "locationKey": "G02-S159",
+      "locationName": "Mortor",
+      "next": "return-programmer",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/settle-reservoir",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/settle-reservoir",
+        "file": "../../assets/missions/stages/still-current/settle-reservoir.png",
+        "sha256": "d41d70db817c4a38b95c7416e97bd5d15fa8520b241c942ce4e0d1c449807f5d",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-programmer",
+      "galaxy": 1,
+      "system": 90,
+      "objective": "Return the baffle programmer and verify the final energy balance at Valrator.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "kest-programmer-return"
+      ],
+      "dialog": "KEST: The meter identities, local receipts and reservoir balance agree. The work tool is returned; your readings remain with the utility record.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G02-S090",
+      "locationName": "Valrator",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/return-programmer",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "baffle-programmer",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/return-programmer",
+        "file": "../../assets/missions/stages/still-current/return-programmer.png",
+        "sha256": "d7f70a2382ad47ce3d24a2bbfea8cb3aed797b0b4d0889031c1c80917444d3e3",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 1,
+      "system": 90,
+      "objective": "Confirm the completed lattice settlement and collect the survey fee.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "lattice-final-payment"
+      ],
+      "dialog": "PELL: The technicians reached reception and the lattice is under its agreed control. Your survey fee is 8,400 CR. The recorded outcome remains part of this system.\n\nKEST: This arc predates the lattice. It cannot be part of the dust bridge or its work order. I have copied the zero-charge phase record to your journal; PLUGH's AI may recognise it.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "dialogByChoice": [
+        {
+          "choiceID": "community-buffer",
+          "text": "KEST: The buffer is supervised by its users. It cannot turn an old commissioning instruction into a claim on new power."
+        },
+        {
+          "choiceID": "material-recovery",
+          "text": "PELL: The collectors are safely retired and their material is received. The empty corridor can be used again."
+        }
+      ],
+      "locationKey": "G02-S090",
+      "locationName": "Valrator",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.still-current/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "still-current/close-case",
+        "file": "../../assets/missions/stages/still-current/close-case.png",
+        "sha256": "f158baaa63e63b874163bd7a69e22ef0889112824fb8d21779558e9c9e25cc96",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ],
+  "recoveryPolicyRef": "../gameplay/recovery-policy.json",
+  "mainQuestContinuity": "Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival."
+}

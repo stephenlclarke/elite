@@ -1,0 +1,198 @@
+# Player control guide
+
+This guide describes the current development source. Station AUTO defence is not claimed in the published 1.4.0 app, and its integrated native flight, save and quality acceptance is still pending. Check the build identity of the app you are using.
+
+The main pattern is the same everywhere: **numbers open areas, arrows move, Return chooses, Escape goes back one level, K opens contextual help**. Visible buttons and the Mac menu bar expose secondary actions. Search receives ordinary typing until Return or Escape finishes it; letters and numbers typed there never open screens, activate XYZZY or change galaxies.
+
+## Main screens
+
+| Key | Docked | In flight |
+| --- | --- | --- |
+| 0 | Launch | Front view |
+| 1 | — | Rear view |
+| 2 | — | Left view |
+| 3 | Equipment | Right view |
+| 4 | Galactic chart, planet facts and globe | Galactic chart |
+| 5 | Short range chart, planet facts and globe | Short range chart |
+| 6 | Ship showroom | System data and globe |
+| 7 | Market: buy and sell | Market prices |
+| 8 | Commander status | Commander status |
+| 9 | Inventory | Inventory |
+
+Showroom specifications also show recorded fleet collection status and first encounter location. In flight, Tab selects an actual target; a visible, unobstructed original catalogue actor can enter your encounter record, and a fitted Identification targeting tier records its type. Catalogue milestones distinguish player-attributed destruction from real station doorway docking. Browsing a model grants no discovery or blueprint. These development records do not enable pending hulls or fabrication services.
+
+The Screens menu offers these same destinations. Plain numbers are the navigation shortcuts; there are no additional Command-number shortcuts. Docked 1/2 have no action; use Market (7) and Tab to choose Buy or Sell. Number keys work in read-only browsers as well as ordinary screens, but mission dialogs, help, pause and XYZZY consume their own controls. Escape from ordinary information screens returns through the screens you visited, ending at commander status when docked or your cockpit in flight. Switching to a cockpit view starts a fresh return path. Escape in the cockpit leaves you flying.
+
+## Basic flight
+
+| Control | Action |
+| --- | --- |
+| Up / Down | Pitch up / down |
+| Left / Right | Roll left / right |
+| Hold Space | Accelerate |
+| Hold Delete | Brake; releasing holds the reached speed |
+| Hold Return | Fire the selected weapon or tool |
+| W | Change weapon: cycle fitted combat, mining, salvage and EMP tools |
+| F | Cycle target filters: Ships / Mining / Salvage / All |
+| Tab | Select the next target with a fitted targeting computer; selecting the station engages full automatic docking at Docking tier or higher |
+| Q | Release automatic guidance and stop the tool, preserving momentum |
+| 4 / 5, then H | Select a chart destination, then begin hyperspace in flight |
+
+The WEAPON row above the scanner shows the selected weapon and its activity. Changing weapon or target, reaching work-hold readiness, or interrupting an operation requires a fresh Return press. See the [shared flight control reference](FLIGHT-CONTROLS.generated.md) for tool-specific requirements.
+
+Trackpad: two fingers steer at the current speed, one brakes, three accelerate. Hold two fingers off centre to keep turning. Centre them or lift all fingers to centre the yoke and cruise. macOS gestures can intercept three-finger input; see the README trackpad section.
+
+The yellow station compass shows range and left/right/up/down bearings relative to the current cockpit view, even beyond scanner range. BEHIND means turn toward the indicated side. It does not require equipment. To dock automatically, fit a Docking or better targeting computer and press Tab until the station is selected. Guidance faces the safe approach waypoint, stops outside the entrance, then aligns and closes through the doorway. Q or manual steering/throttle returns control to you.
+
+## Specialist flight actions
+
+Every action in this table is visible in the **Flight** menu. Equipment requirements and fuel, docking, mass-lock and jump rules still apply.
+
+| Action | Shortcut, where provided |
+| --- | --- |
+| Next target / station automatic docking | Tab |
+| Cancel guidance | Q |
+| Hyperspace to selected system | H |
+| In-system jump | J |
+| Galactic hyperdrive | G |
+| Activate ECM | E |
+| Arm / disarm / fire missile | T / U / M |
+| Detonate energy bomb | Flight > Detonate Energy Bomb |
+| Launch escape pod | Command-Shift-E, or Flight > Launch Escape Pod |
+
+Escape is reserved for Back. R has no flight-targeting action. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Option-Up/Down pages its wrapped cargo, route and resource readings. Pass scoopable cargo below your nose with Fuel Scoops fitted.
+
+Flight HUD bearings point to the actual moving planet and sun, including astern and off-screen directions. Owned Fuel Scoops fitted to the active hull collect solar fuel automatically when cruising nose-first in the outer corona; no extra key is needed. Stored scoops do not collect. Fractional fuel carries between valid updates and collection stops at the installed capacity. Stay near the corona edge, watch Cabin temp, and turn away to cool before it reaches the limit. Sun and planet surfaces are fatal, and overheating destroys the ship even with unlimited XYZZY fuel. Ordinary commander files load docked at the saved system. In the current development source, saves retain ordinary NPC identities and condition, owned equipment and accommodation, cargo custody and mission-owned actors/projectiles. Versioned mission saves additionally retain flight/world state for restoration; they do not create a fresh local scene or refill spent NPC resources. Restoration rechecks retained custody and native context. Final quality/release acceptance of the composed development changes remains pending.
+
+Optional Spin Hold is in the Game menu. V toggles it, B stops smoothly, brackets start anticlockwise/clockwise spin, and held minus / equals or plus changes the spin rate. Arrows pitch/yaw in this mode; Space/Delete still changes forward speed. One-finger circles choose spin direction, one/two/three contacts slow/hold/increase it, and two-finger movement aims pitch/yaw. Help, pause and focus loss cancel Spin Hold. This specialist prototype is separate from ordinary flight.
+
+## Station tasks and mission dialogs
+
+At a main orbital station, open Market with 7. Prices, stock and your holdings stay in one table. Up/Down, scrolling or clicking selects a commodity. Tab or the visible Buy/Sell controls changes mode without changing the selected item; Return or Buy one/Sell one trades one unit. Left sells one and Right buys one. Repeat trades for multiple units. Keys 1/2 have no docked action; the docked Screens menu exposes the single Market entry. In flight, 7 remains read-only prices and 1/2 remain rear/left views.
+
+At a main orbital station, Equipment remains on 3. Up/Down selects an item and Return purchases/refuels; Left/Right or the visible mount controls chooses its laser mount. Selecting a shield, energy or navigation module shows offered and currently fitted values as percentages of that family’s authored Basic template (100%). Shield cap/regen lists front and rear separately. Navigation time and fuel use are costs, so smaller percentages are better. Fitted values include retained upgrades; looking at another offer never changes them. Commander Status (8) is a readiness/location/finance/legal summary. Inventory (9) owns the cargo manifest, reserved mission property and complete laser/equipment list. Up/Down or scrolling reads additional rows; Option-Up/Down pages. Escape returns to the previous area, not through each Market mode.
+
+The development RRS waystation/headquarters docks provide **Game > Station Contracts**, with no general Market, refuelling, equipment-shop or auto-trade service. A commander save destination is required; the app prepares one for a new commander, and Save As chooses another. **Up/Down** selects an assignment, **Return** opens its review, **Left/Right** chooses Confirm/Decline/Back, and **Return** or clicking selects that action. Reading or Back transfers nothing. Scenario 2 delivery requires actual entry at the same system's original main orbital station, then explicit debrief Confirm in Station Contracts. Mission Gallery reads the retained assignment without accepting or delivering it. Headquarters board access is a project extension; other RRS scenarios remain queued. See [the development delivery walkthrough](https://github.com/stephenlclarke/elite/blob/6552b68f7a146ceb79b4376d33cc8afd3f987399/README.md#development-rrs-document-assignments) and [current acceptance](https://github.com/stephenlclarke/elite/blob/6552b68f7a146ceb79b4376d33cc8afd3f987399/docs/WHOLE-APP-REMEDIATION.md).
+
+Navigation and energy use **Basic / Intermediate / Advanced** component grades. Shields use **Basic / Basic II / Intermediate / Intermediate II / Advanced / Advanced II / Elite**. Basic foundations are supplied with a new ship; the shop shows current module names while saved legacy keys remain compatible. Owned recovered upgrades are fitted through Inventory's painted review/action, including eligible ordinary upgrades in flight; reading or selecting alone consumes nothing. Applied upgrades accumulate and may promote the same component without replenishing resources. See [module statistics, prices and progression](https://github.com/stephenlclarke/elite/blob/6552b68f7a146ceb79b4376d33cc8afd3f987399/docs/EQUIPMENT-MODULES.md).
+
+In the current development source, **Equipment (3) > Passenger Facilities > Passenger Berth** adds cabin controls: **Return** buys/fits one, **S** stores an empty fitted cabin, and **R** refits an empty stored cabin. Each fitted cabin needs 5t and one equipment unit; the base estimated purchase price is 1,000 CR before discounts. Used/reserved cabins cannot be removed. **K** includes S/R help only for the selected Passenger Berth row. Storage/refitting keeps the owned cabin and costs no second purchase. A commander save location is required; failed saving leaves cabin state and cash unchanged. The focused native cabin methods pass; full quality/release acceptance remains pending, and this is not a claim about the published 1.4.0 app.
+
+**Game > Mission Contacts** opens an eligible station contact. Legacy dialogs use arrows to choose Confirm or Back, Return or a click to select, and Escape to return without a transfer. Script dialogs with choices use **Up/Down** to browse answers and **Left/Right** to select Confirm or Back; **Return** or clicking Confirm submits the selected answer. Reading, changing the highlighted answer or choosing Back does not answer. Exclusive branches can be confirmed only once; repeatable conversation answers count only when the mission offers them again and you explicitly confirm each answer. **Option-Up/Down** or trackpad scrolling reads long messages. Dialogs return to the screen that opened them. These script-choice/conversation controls describe current development source; initial enrolment and automatic naval orders/rewards retain their campaign rules.
+
+The development **Glass Meridian opening** starts at Venn’s Avenor Station Contracts review after three visited systems and two identified ship types. Arrows/Return review and Confirm the commission. At Renas, Tab selects a certified clock; scan both in either order from front view, within 2 degrees and 250–1,500 surface units with clear sight, for 12 continuous seconds each. Completed readings survive saves; pause freezes and interruption/load resets unfinished dwell. Later stages and the final payment remain unavailable. There is no replacement commander.
+
+The development **Flight and reception practice** uses the Station Contracts arrows/Return review controls at its issuing original main berth. Fly with your current commander and fitting: face and approach that berth in front view, then make a real doorway arrival and separately Confirm reception. No trial reset, payment or deadline applies. Saved completed approach evidence remains; cancellation, escape or loss gives no clue. See the [practice walkthrough](https://github.com/stephenlclarke/elite/blob/6552b68f7a146ceb79b4376d33cc8afd3f987399/README.md#mission-gallery) for the measured alignment/range conditions and current verification limits.
+
+**Game > Station Rumours** opens the local station rumour. Escape returns to the previous screen. **Game > Mission Gallery** opens the mission list. **Up/Down** selects, **Return** or a click opens details, **Tab** switches list/details, and arrows/scrolling in details reads more; **Option-Up/Down** pages. **Escape** returns through campaign links/details to the list, then to the previous screen. Browsing is read-only and freezes flight.
+
+In the current development source, **T** or **Game > Try Selected Mission** starts an eligible isolated trial. An owned campaign assignment instead opens **Try Campaign** review: arrows choose Back or Try campaign, then Return/click confirms a fresh root campaign with its assignments; Back leaves live progress untouched. **Return** in campaign details opens its links; arrows select a link and Return/click follows it. **Option-Up/Down** moves eight campaign links at a time. **R** or **Game > Retry Selected Mission** retries/resumes an eligible saved suspended entry after its exact required content is available; unavailable entries explain why they cannot retry.
+
+During a trial, **Game > Restart Mission Trial** restores its authored starting state, and **Game > Return to Commander** restores the live commander and save context. Return/Space at the trial loss screen also restarts. Trial saves stay separate from the live save; a trial cannot replace live progress. These controls are source-integrated and covered by focused cases, while full composed quality/release acceptance remains pending; they are not a claim about the published 1.4.0 app.
+
+Naval mission messages retain the two-second incoming-message delay. Return/Space advances; arrows review pages; Escape closes the message. These controls do not accept/reject a mission or change its automatic award rules. Campaign-specific details are in the campaign guides.
+
+## Charts, search and routes
+
+Left/Right or clicking selects a planet. Docked charts 4/5 include all planet facts, clues and the globe; Option-Up/Down scrolls that data panel. In flight, 6 retains the separate data page. The retired docked data page is replaced by showroom 6.
+
+| Action | Control |
+| --- | --- |
+| Search the viewed galaxy | Slash on the galactic chart |
+| Filter / select result | Type; Up/Down moves; Return chooses |
+| Finish search | Escape, returning to the chart before a second Escape goes back |
+| Erase / reset search | Delete / Command-Delete, or click Clear |
+| Browse galaxies | Click a galaxy button, or brackets on the galactic chart |
+| Current location / distance | O / D |
+| Colour by economy/government/technology | M |
+| Local-chart range | Z |
+| Open routes with fitted navigation computer | N |
+| Toggle automatic top-five profit scan | P on either chart or the navigation screen |
+| Preview route candidate | Up/Down, or click a candidate |
+| Commit previewed route | Return, or click Set route |
+| Switch route-preview map scale | 4: galaxy / 5: local |
+| Read route details | Option-Up/Down |
+| Clear route | C |
+| Cancel route preview, preserving active plan | Escape, or click Back |
+
+Profit scan starts enabled by XYZZY and its switch is saved with the commander. It recomputes up to five positive-profit destinations within the current fuel and jump limit. Gold rings and numbers 1-5 highlight them on the current galaxy charts; navigation details list credit estimates or explain that none qualify. Estimates compare sellable carried cargo with selling here, then add affordable exports using available hold space and current stock, at conservative destination prices. They exclude fuel costs and danger; no cargo is bought, route selected or jump started by scanning.
+
+N opens route alternatives with a graphical preview on either the galactic or short-range chart. Up/Down or clicking a candidate previews it without replacing the active plan. Return or **Set route** commits it; **Back** or Escape cancels the preview and preserves the active plan. Short-range legs clip to the local map, with an offscreen-continuation cue. 4/5 switches map scale while keeping the same candidates and preview.
+
+Alternatives compare Fewest Jumps, Safest and Trade Opportunities, with a Best Cargo Sale detour when it improves estimated sale return. Identical paths combine their labels. Basic searches within installed fuel capacity in LY plus 7 LY; Advanced adds 14 LY; Military searches the whole current galaxy. Legal hops respect the fitted computer cap: the first leg uses actual remaining fuel, and later legs assume station refuelling to installed capacity. Risk and conservative trade/cargo estimates remain summaries, not guaranteed profits or affordable refuelling.
+
+Setting a route does not jump. Successful Set route cancels any pending jump countdown before choosing the new next hop and reports that cancellation; stale candidates and Back preserve the countdown. Dock at each stop, launch, and use H for the next jump. Foreign-galaxy browsing cannot initiate actual travel or route planning.
+
+## Ship showroom
+
+Open with 6 while docked. W and Command-Shift-W have no showroom action. Use arrows or click to choose a ship; Return or the Specifications button reads it. Tab or the Ships/Specifications button switches the active pane, visibly named in the footer. A double-click opens specifications directly. Arrows act on the active pane; scrolling acts on the pane under the pointer. Option-Up/Down pages that pane.
+
+Slash or clicking the search field begins a filter. Up/Down works immediately on the results, Return opens the selected specifications, Delete erases a letter, and Command-Delete clears the search. Clear filter is also clickable. No matches means no stale model. Escape leaves search, then specifications, then the showroom, preserving selection while you move between panes and help. Reopening the showroom starts unfiltered on your currently owned ship.
+
+Click **Pin baseline**, select another ship and use **Compare**. **Your ship** restores your actual fitted ship as the comparison baseline. **Prev profile / Next profile** cycle the current source/refit set. **Source notes / Game values** switches between source profiles and native game values; **Pause model / Rotate model** controls movement. **Switch ship - review trade** opens the exchange quote. Return opens specifications first, then the quote; Left/Right or Tab chooses Back or Confirm, and Return selects it. Browsing and reviewing a quote do not buy a ship; only confirming a valid trade changes your hull and balance. See [source units, estimates and attribution](SHIP-SHOWROOM.md).
+
+## Help and MacBook keys
+
+K, Command-K or Help > Player Key Guide opens help for the current activity; arrows change pages; Escape or K closes it. Help preserves the underlying search, list, selection or dialog. Command-P pauses/resumes; Escape resumes a paused game. Command-S saves the active file, Command-Shift-S chooses a save location, Command-O reloads the active file, Command-Shift-O opens another file, and Command-Q quits. Return/Space continues the displayed commander from the title or starts a fresh commander after game over. Current development starts use Commander Rowan Calder at Avenor in an SH025 with 720 CR and full fuel; the published 1.4.0 normal start uses Commander Jameson in a Cobra Mk III with 100 CR. Startup restores the last successfully saved commander in memory, waits at the title, and preserves the saved file; a first development launch presents XYZZY opening credits and a rotating ship before the L337 title. The title and opening credits display the app version, repository and full source commit SHA when bundled build metadata is available.
+
+In the development source, destination registration creates no commander file and does not change the last-successful-save preference. A failed startup restore followed by Start New uses a distinct new destination, preserving the selected file or missing path. The first successful write remembers that location. Fitting changes after native launch and accepted RRS/contract actions save automatically; failed writing refuses the change. Use Command-S for other progress and Command-Shift-S to choose another destination. These startup changes await final quality/release acceptance; they are not claimed for the published 1.4.0 app.
+
+Delete means the ordinary MacBook key marked Delete or backspace, which erases to the left. Command-Delete clears an active search. Option-Up/Down is the documented paging combination; ordinary arrows and trackpad scrolling are sufficient for essential tasks. External keyboards may also send Page Up/Down and forward Delete; Fn-Up/Down and Fn-Delete remain optional macOS aliases. No essential action requires Home, End, Insert, Clear, a keypad or function keys.
+
+## XYZZY options
+
+Type XYZZY outside a search to refit a Cobra Mk III with maximum hardware and open the secret menu. Current development preserves your commander name and grants 1,000,000 CR on first activation; the published 1.4.0 XYZZY identity is Commander Clarke. K gives its help, Escape returns to the game, and numbers select options here rather than game areas.
+
+| Key | Option |
+| --- | --- |
+| 0 | Cycle white wireframes, coloured wireframes and shaded panels |
+| 1 | Fit Docking targeting tier |
+| 2 | Restore maximum hardware, shields and fuel |
+| 3 | Toggle unlimited missiles |
+| 4 | Toggle unlimited fuel |
+| 5 | Show the current fuel/navigation jump limit |
+| 6 | Toggle auto-trade, including illegal goods |
+| 7 | Toggle speech |
+| 8 | Toggle unlimited cargo, subject to selling excess before disabling |
+| 9 | Show cash; initial XYZZY grant is 1 million CR |
+| A | Toggle automatic target assistance |
+| B | Toggle military return fire |
+| C | Restore the Cobra Mk III and maximum hardware without a purchase; preserve cargo and mission progress |
+| E | Toggle automatic ECM |
+| F | Fit Fuel Scoops |
+
+## Compatibility shortcuts
+
+Experienced players can still use X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
+
+Existing browser-specific close aliases (L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
+
+Shipyard: click Switch ship, or Return to read specifications then Return again to review the quote, then Left/Right and Return to choose Back or Confirm trade. Escape cancels. Sort: click A-Z/Power; filters and selection stay in place. Source variants are enabled only when more than one profile exists. Status/inventory and chart/route scrolling stop at the viewport boundaries; hints appear only while content overflows.
+
+XYZZY L (or clicking its row) resets legal status to Clean. Saved mission progress is preserved. Save/Save As: Command-S / Command-Shift-S. Reload/Open: Command-O / Command-Shift-O. The last successful save restores in memory on launch and waits at the title before continuing. Ordinary commander files restore docked at the saved system; current development versioned mission saves also restore their saved flight/world state, retaining mission ships and spent resources.
+
+## Installed mission packs
+
+**Commander > Install Mission Pack** selects a TOML file. **Game > Mission Gallery** lists valid packs and saved progress, including suspended entries. **Game > Mission Contacts** or docked **B** opens eligible contacts. Legacy dialogs use arrows for Confirm/Back. In script-choice dialogs, **Up/Down** browses answers and **Left/Right** selects Confirm/Back; **Return** or clicking Confirm submits the highlighted answer. **Escape** returns without an answer or pending transfer. Repeatable answers require a fresh offer and explicit confirmation each time. **Option-Up/Down** and trackpad scrolling read long dialogs. See the Gallery trial, campaign-review and retry controls under Station tasks above. The additional script controls describe development source, with final quality/release acceptance pending.
+
+For **schema 2 Lua missions**, select the complete folder in **Commander > Install Mission Pack...**. The same picker accepts legacy TOML files; each format retains its separate library. `--validate-mission-pack` accepts either input. Folder content validation reports unsupported capabilities and declared dependencies without establishing runtime availability. Manual folder copying into `~/.xyzzy/elite/script-packs/` still takes effect after restarting. See [Schema 2 Lua mission authoring](https://github.com/stephenlclarke/elite/blob/6552b68f7a146ceb79b4376d33cc8afd3f987399/docs/SCRIPT-MISSION-PACKS.md). Generated courier jobs are bundled; other authoring examples require explicit installation.
+
+## EMP Pirate Blaster
+
+In the development source, W cycles Combat Laser, Mining Laser, Salvage Cutter and EMP Pirate Blaster. Hold Return to charge the separately fitted forward EMP for ten simulation seconds. An actual ECM activation cancels it. Normal energy grades provide power 32/48/64/80 and occluded mesh reach 3,000/4,500/6,000/7,500 units. At release the whole pulse costs 8 electrical power and 18 heat once, with a 1.5-second cooldown. Its target-centred weaker splash reaches one-third of the primary range and can strike the player. The shop price is 3,000 CR at TL9; XYZZY retains four Naval lasers and grants one EMP fitting.
+
+The struck shield absorbs first, followed by electrical reserve; hull integrity is separate. Zero power disables engines and ordinary weapons while keeping drift and spin. Emergency bombs and an owned escape pod remain available. Actual crew ejections use saved independent schedules and safe actor admission. Occupied pods remain protected people. A fitted cutter, Salvage Module and scoops can capture remaining crew during the original 30-second window; repeated hits never extend it. Surviving crew recover their current craft only after that deadline and positive earned recharge; an unoccupied derelict can be salvaged. Orange disabled/salvage cues and red active threats apply in every display mode, while white hull lines remain white. The composed save format is version 26. Focused core sanitizer checks pass; full custody/native, quality and release acceptance remain pending.
+
+## Station AUTO defence in development
+
+Selecting a station with Docking or better keeps the station as the destination while AUTO uses the ship's fastest safely brakeable approach and limited evasion. It can aim fitted combat lasers independently of travel, without changing the cockpit view, selected tool or weapon lock. The normal law, protection, obstruction, heat, energy and equipment rules still apply; disabled salvageable craft are not automatic targets. Near the station, clearance, doorway attitude and spin matching take priority over defensive steering.
+
+Fitted ECM responds to incoming missiles during station AUTO without changing the separate XYZZY Auto ECM option. With Military return fire enabled, an actual ECM-confirmed source still receives a missile response when its joined forward target and native launch conditions permit; a laser hit does not consume that order. Finite owned ammunition is used unless the existing explicit unlimited mode is enabled. Automatic missiles require successful publication to the bound commander save before they enter flight; a refused save preserves ammunition while docking and other defence can continue. **Q**, manual steering or station throttle cancels guidance as before. No new key or option is added.
+
+## Most Wanted in station gossip
+
+Open Station Rumours at the local main station. The Most Wanted list shows up to ten current-galaxy careers with positive native bounties; fewer entries or an empty board are valid. Up/Down or click selects, Return/Details opens a dossier, Escape/Back returns, G/Gossip opens the complete existing rumour text and K explains controls. Dossier arrows scroll. P/Plot last sighting opens the existing route preview only for a still-current other-pilot listing with a valid historical report; it does not set a route automatically or track a live target. YOU cannot be hunted through this action.
+
+Purple means a current listed craft, not permission to attack. Native law, occlusion and settlement still govern combat. Recoverable orange and real incoming-missile red remain separate. Reported kills count only accepted attributed ship deaths observed by this commander; earlier history remains Unknown even for a high combat rank. Legal amnesty removes player eligibility without erasing this history. This source feature awaits coordinator compilation and native acceptance.
+
+The development Wayfarer Exchange opening uses the same **Station Contracts** arrows, Return/click Confirm and Escape/Back controls. At Avenor choose Senn's induction review after a verified sale/delivery; at Renas review the sealed 1t clinic crate, Navidor destination and 1800-second armed-flight allowance before Confirm pickup. Back transfers nothing. Pause stops flight time; reopening/loading never resets the original deadline. Later receiving/accreditation remains unavailable in this source slice.

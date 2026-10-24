@@ -1,0 +1,292 @@
+{
+  "schema": "l337.dispatch-service-design/1",
+  "id": "l337.wayfarer-services",
+  "title": "Wayfarer Exchange services",
+  "license": "MIT",
+  "status": "Private original service designs; not installed or runnable in the current app",
+  "maximumActive": 3,
+  "templates": [
+    {
+      "id": "l337.wayfarer-service/cold-chain",
+      "title": "Cold-chain clinic service",
+      "kind": "cold-chain",
+      "description": "Carry a sealed medical sample with an advertised integrity budget.",
+      "requiredCargoTonnes": 1,
+      "requiredBerths": 0,
+      "perishable": true,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 320,
+        "perRouteLegCR": 85,
+        "hazardPremiumCR": 90,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "collect",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "clinic-cold-crate"
+        },
+        {
+          "id": "deliver",
+          "objective": "Carry a sealed medical sample with an advertised integrity budget.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "clinic-cold-crate"
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "clinic-cold-crate"
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Reserve the exact source consignment, transfer it to the player at pickup and to the actual named receiver at completion. No manufactured replacement stock."
+    },
+    {
+      "id": "l337.wayfarer-service/repair-loop",
+      "title": "Closed repair exchange",
+      "kind": "repair-loop",
+      "description": "Carry an identified failed unit to its workshop and return the serviced unit to its registered owner.",
+      "requiredCargoTonnes": 2,
+      "requiredBerths": 0,
+      "perishable": false,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 430,
+        "perRouteLegCR": 90,
+        "hazardPremiumCR": 80,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "collect",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "return-cassette"
+        },
+        {
+          "id": "service",
+          "objective": "Carry an identified failed unit to its workshop and return the serviced unit to its registered owner.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "return-cassette"
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "return-cassette"
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Reserve the exact source consignment, transfer it to the player at pickup and to the actual named receiver at completion. No manufactured replacement stock.",
+      "routePolicy": "Quote the complete source-to-workshop-to-original-owner loop. The work stage verifies the same serial unit was serviced at the named workshop; final reception is at its original owner."
+    },
+    {
+      "id": "l337.wayfarer-service/seed-transfer",
+      "title": "Seed-bank transfer",
+      "kind": "seed-transfer",
+      "description": "Transfer a consented seed consignment between independent custodians.",
+      "requiredCargoTonnes": 3,
+      "requiredBerths": 0,
+      "perishable": true,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 510,
+        "perRouteLegCR": 95,
+        "hazardPremiumCR": 110,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "collect",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "seed-transfer-case"
+        },
+        {
+          "id": "deliver",
+          "objective": "Transfer a consented seed consignment between independent custodians.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "seed-transfer-case"
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "seed-transfer-case"
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Reserve the exact source consignment, transfer it to the player at pickup and to the actual named receiver at completion. No manufactured replacement stock."
+    },
+    {
+      "id": "l337.wayfarer-service/field-relief",
+      "title": "Remote utility relief",
+      "kind": "field-relief",
+      "description": "Deliver actual repair materials to a remote utility receiving crew and verify their service handoff.",
+      "requiredCargoTonnes": 4,
+      "requiredBerths": 0,
+      "perishable": false,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 610,
+        "perRouteLegCR": 110,
+        "hazardPremiumCR": 120,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "collect",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "utility-service-pallet"
+        },
+        {
+          "id": "install",
+          "objective": "Deliver actual repair materials to a remote utility receiving crew and verify their service handoff.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "utility-service-pallet"
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "utility-service-pallet"
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Reserve the exact source consignment, transfer it to the player at pickup and to the actual named receiver at completion. No manufactured replacement stock."
+    },
+    {
+      "id": "l337.wayfarer-service/record-recovery",
+      "title": "Crew record recovery",
+      "kind": "record-recovery",
+      "description": "Recover a specific flight/custody recorder without treating cargo wreckage as a living survivor.",
+      "requiredCargoTonnes": 1,
+      "requiredBerths": 0,
+      "perishable": false,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 460,
+        "perRouteLegCR": 95,
+        "hazardPremiumCR": 130,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "locate",
+          "objective": "Locate and identify the unique physical recorder; leave it in the wreck cradle until recovery.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "crew-custody-recorder"
+        },
+        {
+          "id": "recover",
+          "objective": "Recover a specific flight/custody recorder without treating cargo wreckage as a living survivor.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "crew-custody-recorder"
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "crew-custody-recorder"
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Identification alone leaves the recorder at its unique wreck cradle. Recovery transfers it once to the player; final reception transfers that same recorder to its custodian."
+    },
+    {
+      "id": "l337.wayfarer-service/convoy-watch",
+      "title": "Registered convoy watch",
+      "kind": "convoy-watch",
+      "description": "Escort the exact registered convoy and require the receiver's real cargo and arrival record.",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "perishable": false,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 700,
+        "perRouteLegCR": 120,
+        "hazardPremiumCR": 170,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "register",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "convoy-receipt-beacon"
+        },
+        {
+          "id": "escort",
+          "objective": "Escort the exact registered convoy and require the receiver's real cargo and arrival record.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "convoy-receipt-beacon"
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "convoy-receipt-beacon"
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Cargo remains aboard the identified convoy. Registration neither moves it into the player hold nor clones it. A living registered convoy and its actual cargo must reach reception."
+    }
+  ],
+  "sourceAssets": [],
+  "sourceScripts": [],
+  "acceptance": "Preview every quoted condition; commit exact stock and aggregate capacity reservations atomically. Keep consistent arrows, Confirm and Esc through the shared station board.",
+  "persistence": "Current-format offered quotes, accepted instances, unique consignments, target actors, custody, remaining integrity/time, reservations, outcomes and once-only payment receipts.",
+  "contentBoundary": "All six service families and their prose, prices and recipes are independently authored here. No external company name, source mission groups, script, artwork or progress alias is loaded."
+}

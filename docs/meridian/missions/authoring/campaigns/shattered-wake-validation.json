@@ -1,0 +1,23 @@
+{
+  "singleShipWeaponsCannotDamageStation": true,
+  "unregisteredOrUnconfirmedCollisionsRejected": true,
+  "repeatedAsteroidsCanDestroy": true,
+  "largeBodyPlusFragmentsCanDestroy": true,
+  "oneOrdinaryLargeBodyAbsorbed": true,
+  "shieldRechargeAndPauseChecked": true,
+  "breakupBudgetConserved": true,
+  "parentAndChildDoubleCountingRejected": true,
+  "duplicateImpactsRejected": true,
+  "realLossPersistsOnReload": true,
+  "reliefAndInquiryRequiredForPaymentAndClue": true,
+  "payoutOnceAcrossReload": true,
+  "outcomePayments": {
+    "station-saved": 7800,
+    "station-evacuated": 4800,
+    "station-lost": 1800
+  },
+  "currentSaveFormatOnly": true,
+  "modelOnly": true,
+  "runtimePlaytested": false,
+  "gameRepositoryModified": false
+}

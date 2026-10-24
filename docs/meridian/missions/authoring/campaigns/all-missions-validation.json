@@ -1,0 +1,20 @@
+{
+  "activeInventoryEntries": 89,
+  "sourceEntriesAccountedFor": true,
+  "entireSourcePackagesAndNestedMissionsExcluded": true,
+  "campaigns": 39,
+  "repeatableFamilies": 21,
+  "tutorials": 4,
+  "campaignStages": 368,
+  "familyStages": 75,
+  "requiredDistinctBaseClues": 64,
+  "everySourceHasClueAndArtwork": true,
+  "noSourceAliasOrSelfUnlockCycle": true,
+  "donationsAndTrainingUseVerifiedTerminals": true,
+  "currentFormatsOnly": true,
+  "installedMissionFilesUnchanged": true,
+  "provenanceHashesAgree": true,
+  "privateOnly": true,
+  "runtimePlaytested": false,
+  "legalClearanceGuaranteed": false
+}

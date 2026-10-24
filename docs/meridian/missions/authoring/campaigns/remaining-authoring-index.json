@@ -1,0 +1,846 @@
+{
+  "files": [
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/quiet-nursery.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/borrowed-dawn.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/open-shadow.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/harbour-without-orders.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/false-colours.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/rubble-covenant.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/garden-in-transit.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/warrant-ledger.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/measure-of-care.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/long-return.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/unfinished-map.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/blue-reservoir.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/mutual-shelter.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/listening-frontier.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/assembly-of-orbits.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/under-tow.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/memory-atlas.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/fleet-of-neighbours.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/uncounted-names.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/honest-circuit.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/small-lights.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/passengers-horizon.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/kind-distance.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/cold-reserve.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/magnetic-orchard.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/open-measure.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/shared-pulse.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/witness-window.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/public-record.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/courier.authoring.json",
+    "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining/guiding-light.authoring.json"
+  ],
+  "campaigns": 31,
+  "rows": [
+    {
+      "inventoryID": "C01",
+      "target": "l337.glass-meridian",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C02",
+      "target": "l337.quiet-choir",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C03",
+      "target": "l337.quiet-nursery",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C04",
+      "target": "l337.borrowed-dawn",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C05",
+      "target": "l337.open-shadow",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C06",
+      "target": "l337.harbour-without-orders",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C07",
+      "target": "l337.false-colours",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C08",
+      "target": "l337.rubble-covenant",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C09",
+      "target": "l337.garden-in-transit",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C10",
+      "target": "l337.warrant-ledger",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C11",
+      "target": "l337.warrant-ledger",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "C12",
+      "target": "l337.measure-of-care",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R01",
+      "target": "l337.contract/bonded-freight",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R02",
+      "target": "l337.contract/bonded-freight",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R03",
+      "target": "l337.contract/bonded-freight",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R04",
+      "target": "l337.contract/bonded-freight",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R05",
+      "target": "l337.long-return",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R06",
+      "target": "l337.long-return",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R07",
+      "target": "l337.long-return",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R08",
+      "target": "l337.unfinished-map",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R09",
+      "target": "l337.rubble-covenant",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "R10",
+      "target": "l337.false-colours",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "T01",
+      "target": "l337.training/flight-reception",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "T02",
+      "target": "l337.training/safe-gunnery",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "T03",
+      "target": "l337.training/defensive-flight",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "T04",
+      "target": "l337.training/navigation-trade",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G02",
+      "target": "l337.contract/sealed-dispatch",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G03",
+      "target": "l337.contract/consented-freight",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G04",
+      "target": "l337.contract/bonded-freight",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G05",
+      "target": "l337.contract/cabin-journey",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G06",
+      "target": "l337.contract/orbital-outlook",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G07",
+      "target": "l337.contract/verified-warrant",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G08",
+      "target": "l337.contract/corridor-defence",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G12",
+      "target": "l337.contract/custody-rescue",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G13",
+      "target": "l337.contract/identified-salvage",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G14",
+      "target": "l337.contract/consented-survey",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G16",
+      "target": "l337.contract/isolation-work",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G20",
+      "target": "l337.contract/measured-extraction",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G21",
+      "target": "l337.contract/mutual-contribution",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G22",
+      "target": "l337.contract/orbital-evacuation",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "G24",
+      "target": "l337.contract/hostile-larvaal-defence",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P01",
+      "target": "l337.warrant-ledger",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P02",
+      "target": "l337.blue-reservoir",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P03",
+      "target": "l337.shattered-wake",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P04",
+      "target": "l337.mutual-shelter",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P05",
+      "target": "l337.hollow-manifest",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P06",
+      "target": "l337.listening-frontier",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P07",
+      "target": "l337.long-return",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P08",
+      "target": "l337.still-current",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P09",
+      "target": "l337.assembly-of-orbits",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P10",
+      "target": "l337.under-tow",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P11",
+      "target": "l337.assembly-of-orbits",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P12",
+      "target": "l337.memory-atlas",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P13",
+      "target": "l337.fleet-of-neighbours",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P14",
+      "target": "l337.fleet-of-neighbours",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P15",
+      "target": "l337.measure-of-care",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P16",
+      "target": "l337.warrant-ledger",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P17",
+      "target": "l337.uncounted-names",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P18",
+      "target": "l337.tithe-of-worlds",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P19",
+      "target": "l337.mutual-shelter",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P20",
+      "target": "l337.training",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P21",
+      "target": "l337.honest-circuit",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P22",
+      "target": "l337.small-lights",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P23",
+      "target": "l337.passengers-horizon",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P24",
+      "target": "l337.memory-atlas",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P25",
+      "target": "l337.kind-distance",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P26",
+      "target": "l337.cold-reserve",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P27",
+      "target": "l337.guiding-light",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P28",
+      "target": "l337.under-tow",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P29",
+      "target": "l337.warrant-ledger",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P30",
+      "target": "l337.under-tow",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P31",
+      "target": "l337.fleet-of-neighbours",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P32",
+      "target": "l337.honest-circuit",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P33",
+      "target": "l337.false-colours",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P34",
+      "target": "l337.uncounted-names",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P35",
+      "target": "l337.borrowed-voice",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P36",
+      "target": "l337.open-shadow",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P37",
+      "target": "l337.magnetic-orchard",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P38",
+      "target": "l337.open-measure",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P39",
+      "target": "l337.passengers-horizon",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P40",
+      "target": "l337.unfinished-map",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P41",
+      "target": "l337.listening-frontier",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P42",
+      "target": "l337.public-record",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P43",
+      "target": "l337.shared-pulse",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P44",
+      "target": "l337.witness-window",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P45",
+      "target": "l337.wayfarer-exchange",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P46",
+      "target": "l337.open-measure",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P47",
+      "target": "l337.witness-window",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    },
+    {
+      "inventoryID": "P48",
+      "target": "l337.magnetic-orchard",
+      "sourcePackageIncluded": false,
+      "sourceScriptsImported": false,
+      "sourceArtworkImported": false,
+      "sourceDialogueImported": false,
+      "disposition": "Entire external source content excluded; original alternative or original objective family replaces it. Consolidation is explicit, not a claim to reproduce the original subplots."
+    }
+  ],
+  "sourceFile": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining-briefs.json",
+  "sourceSHA256": "d5fe502df2d0cc785c530938dab585496d2228d6437fdb790ac30583a5924fe5",
+  "maintainedGenerator": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/author-all-remaining.py",
+  "scopeSnapshotSHA256": "4b4779edcfc863756a99b32485bc88f4594f8759da94a727aaaa5d90d1f3c93e",
+  "sourcePackagesBundled": false,
+  "sourcePackageAliasesSupported": false,
+  "currentFormatsOnly": true
+}

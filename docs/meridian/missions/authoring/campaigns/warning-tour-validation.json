@@ -1,0 +1,14 @@
+{
+  "optionalWarningTour": true,
+  "destinations": 3,
+  "verifiedWarningAndConfirmationRequired": true,
+  "eachSystemDispatchesOnce": true,
+  "noArrivalBenefitFromOfferOrDeparture": true,
+  "limitedAndDeclinedOffersPersist": true,
+  "lostShipsCannotReappear": true,
+  "confirmedArrivalChangesHelp": true,
+  "currentFormatSaveReloadChecked": true,
+  "modelOnly": true,
+  "flightSimulationTested": false,
+  "gameRepositoryModified": false
+}

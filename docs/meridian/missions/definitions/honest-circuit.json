@@ -1,0 +1,469 @@
+{
+  "id": "l337.honest-circuit",
+  "missionID": "honest-circuit",
+  "title": "The Honest Circuit",
+  "originKind": "new-original",
+  "subtitle": "VENN: A fast time means little if the clock and the route disagree.",
+  "contacts": [
+    "Captain Elara Venn",
+    "Relay Engineer Ivo Renn"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Lonomon in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.",
+  "story": "A new flight certification circuit rewards apparent speed without accounting for unsafe close passes or offloaded fuel. The commander independently measures its beacons, completes a real receiving test and chooses an efficiency standard or a safety-margin standard. The player completes the circuit with their current commander and ship.",
+  "playerBriefing": "VENN: A fast time means little if the clock and the route disagree.",
+  "rewardCR": 7000,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The tick outside the circuit.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "honest-circuit-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "honest-circuit-reference",
+    "propForm": "clock",
+    "palette": "ice-blue",
+    "stageObjects": [
+      "honest-circuit-reference",
+      "honest-circuit-reference",
+      "honest-circuit-reference",
+      "honest-circuit-reference",
+      "SH061",
+      "honest-circuit-reference",
+      "honest-circuit-reference",
+      "honest-circuit-reference",
+      "honest-circuit-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.honest-circuit/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "honest-circuit-trace",
+    "label": "The tick outside the circuit",
+    "journalText": "A reference timebase records a curved phase mark between two valid circuit ticks.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/honest-circuit-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "briefing": {
+      "id": "honest-circuit",
+      "file": "../../assets/missions/illustrations/honest-circuit.png",
+      "sha256": "d146e53e73405c9cfb055a74a8e646c629dd3356f0a258d5e4c11d8329537633",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Captain Elara Venn",
+        "portrait": {
+          "id": "elara-venn",
+          "file": "../../assets/missions/portraits/elara-venn.png",
+          "sha256": "914d2dcf3b47fed3efe388e62b9ac0cefb2a0bce5a4a1fd731190fe4c999d8a1",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Relay Engineer Ivo Renn",
+        "portrait": {
+          "id": "ivo-renn",
+          "file": "../../assets/missions/portraits/ivo-renn.png",
+          "sha256": "221034ba281a63e3d3dbd4f56eafedd9e76d553560a3d284e296c126aa9aaff0",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "honest-circuit-reference",
+        "asset": {
+          "id": "honest-circuit-reference",
+          "file": "../../assets/missions/props/honest-circuit-reference.png",
+          "sha256": "f21dd09939e17c98ee0cc4b2c7c241c94b806a7f09063bcdf3f730b32b318b06",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "honest-circuit/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/honest-circuit-choose-settlement-plan-a.png",
+        "sha256": "2f9a2b356ed99ec5b4a0f165dff4ba8b5385a2f5a9d67d1178850f2e12d278d6",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "honest-circuit/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/honest-circuit-choose-settlement-plan-b.png",
+        "sha256": "74431bc5351829d6ff750d600e2b3f68d0b90e2ce95950131339f093ab96e10a",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 3,
+      "system": 194,
+      "objective": "Accept The Honest Circuit at Lonomon.",
+      "dialog": "Captain Elara Venn: A new flight certification circuit rewards apparent speed without accounting for unsafe close passes or offloaded fuel. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S194",
+      "locationName": "Lonomon",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/accept",
+        "file": "../../assets/missions/stages/honest-circuit/accept.png",
+        "sha256": "2b43864c44b4aa5ec3897fc4172cdcc1880cd47f4741f0f57a3bf1be0cabf443",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 3,
+      "system": 194,
+      "objective": "Collect the identified one-tonne reference instrument from Captain Elara Venn.",
+      "dialog": "Captain Elara Venn: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G04-S194",
+      "locationName": "Lonomon",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "honest-circuit-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/collect-reference",
+        "file": "../../assets/missions/stages/honest-circuit/collect-reference.png",
+        "sha256": "16a5411c3755a8321a0bd3735cd2a353f54a773ac3dfd366b475935ec902fff9",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 3,
+      "system": 218,
+      "objective": "Observe three independent timing beacons and compare their actual sample epochs.",
+      "dialog": "VENN: A fast time means little if the clock and the route disagree.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "honest-circuit-survey-1",
+        "honest-circuit-survey-2",
+        "honest-circuit-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S218",
+      "locationName": "Mobarum",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/survey",
+        "file": "../../assets/missions/stages/honest-circuit/survey.png",
+        "sha256": "6f6e1c85783a80513df22dc5385e86839282389ebc10544ad539d7b057e5660f",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 3,
+      "system": 249,
+      "objective": "Fly two ordered80m-radius gates at5-30m/s with the reference timing instrument aboard; retain fuel before/after.",
+      "dialog": "RENN: Every limit is visible before the run. Pausing preserves the simulation clock.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "honest-circuit-work-port",
+        "honest-circuit-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G04-S249",
+      "locationName": "Lobagom",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/field-work",
+        "file": "../../assets/missions/stages/honest-circuit/field-work.png",
+        "sha256": "5e8350037c8802c1aad1d705ef02a23d6d868229a1bdfcbe34308093b5cca946",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 3,
+      "system": 109,
+      "objective": "Verify actual safe transit and living reception of the consenting calibration tender through the same certified corridor.",
+      "dialog": "VENN: The standard must work for a working tender as well as a fast player ship.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "honest-circuit-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G04-S109",
+      "locationName": "Balmabol",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/independent-witness",
+        "file": "../../assets/missions/stages/honest-circuit/independent-witness.png",
+        "sha256": "f000398874ab4a5d285757e1f9a6727ecee4fcbeb0fe247170e1832c4ce24704",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 3,
+      "system": 109,
+      "objective": "At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.",
+      "dialog": "Captain Elara Venn: Your fuel-accounted flight certification evidence is ready. Our arrived delegates have the signed mandate to choose here. Either certify measured route efficiency or certify a minimum safety margin. Compare the actual tests and consequences before confirming; closing this view chooses neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "honest-circuit-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Certify measured route efficiency",
+        "Certify a minimum safety margin"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G04-S109",
+      "locationName": "Balmabol",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/choose-settlement",
+        "file": "../../assets/missions/stages/honest-circuit/choose-settlement.png",
+        "sha256": "c69b736e7cf4cf09fea9bca3335585d50f703d7461b05f9d3bfcca5a631d5b88",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 3,
+      "system": 249,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Captain Elara Venn: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "honest-circuit-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "honest-circuit-plan-a-physical-proof",
+            "honest-circuit-plan-a-receiving-proof"
+          ],
+          "objective": "Verify fuel accounting and actual receiving time.",
+          "dialog": "RENN: Efficiency includes the fuel actually used, not a removed manifest.",
+          "gossip": "The Honest Circuit: Certify measured route efficiency."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "honest-circuit-plan-b-physical-proof",
+            "honest-circuit-plan-b-receiving-proof"
+          ],
+          "objective": "Verify the closest-pass envelope and emergency abort test.",
+          "dialog": "VENN: A safe abort is a valid measured result, not a punishment.",
+          "gossip": "The Honest Circuit: Certify a minimum safety margin."
+        }
+      ],
+      "locationKey": "G04-S249",
+      "locationName": "Lobagom",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/apply-settlement",
+        "file": "../../assets/missions/stages/honest-circuit/apply-settlement.png",
+        "sha256": "b4f9b08763f5537a096274e75a8c39b866cfcd1385154f645961f47cca5a8fa6",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 3,
+      "system": 194,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Captain Elara Venn: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S194",
+      "locationName": "Lonomon",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "honest-circuit-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/return-and-audit",
+        "file": "../../assets/missions/stages/honest-circuit/return-and-audit.png",
+        "sha256": "7ba155adae8b49d46e247d9a1b4e2cc6f0f361a10d56de07d39b699db730584a",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 3,
+      "system": 194,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Captain Elara Venn: The independent audit is complete. Your fee is 7000 CR. The operators retain the chosen settlement and their original records.\n\nCaptain Elara Venn: The audit has left one anomaly that belongs to neither side. A reference timebase records a curved phase mark between two valid circuit ticks. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G04-S194",
+      "locationName": "Lonomon",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.honest-circuit/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "honest-circuit/close-case",
+        "file": "../../assets/missions/stages/honest-circuit/close-case.png",
+        "sha256": "b0c3ac69dc886ac0cc80af0b3ab1c398506554042b37e48e5aa80f3d8466b062",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ],
+  "gameplayProfileRef": "../gameplay/campaign-profiles.json#/profiles/honest-circuit",
+  "oracleDesignRevision": "review-resolution-2026-10-24-v2",
+  "delegationPolicy": "Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.",
+  "recoveryPolicyRef": "../gameplay/recovery-policy.json",
+  "mainQuestContinuity": "Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival."
+}

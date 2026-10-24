@@ -1,0 +1,3300 @@
+{
+  "campaigns": 39,
+  "stages": 368,
+  "routeLegs": [
+    {
+      "mission": "l337.glass-meridian",
+      "fromStage": "accept",
+      "toStage": "compare-clocks",
+      "galaxy": 0,
+      "systems": [
+        7,
+        185
+      ]
+    },
+    {
+      "mission": "l337.glass-meridian",
+      "fromStage": "compare-clocks",
+      "toStage": "recover-surveyor",
+      "galaxy": 0,
+      "systems": [
+        185,
+        0,
+        69,
+        190,
+        164
+      ]
+    },
+    {
+      "mission": "l337.glass-meridian",
+      "fromStage": "recover-surveyor",
+      "toStage": "audit-reservations",
+      "galaxy": 0,
+      "systems": [
+        164,
+        190,
+        69,
+        0
+      ]
+    },
+    {
+      "mission": "l337.glass-meridian",
+      "fromStage": "audit-reservations",
+      "toStage": "recover-standard",
+      "galaxy": 0,
+      "systems": [
+        0,
+        69,
+        109,
+        146,
+        227,
+        162
+      ]
+    },
+    {
+      "mission": "l337.glass-meridian",
+      "fromStage": "recover-standard",
+      "toStage": "rebuild-lane",
+      "galaxy": 0,
+      "systems": [
+        162,
+        107,
+        211,
+        190,
+        91
+      ]
+    },
+    {
+      "mission": "l337.glass-meridian",
+      "fromStage": "rebuild-lane",
+      "toStage": "escort-clinic",
+      "galaxy": 0,
+      "systems": [
+        91
+      ]
+    },
+    {
+      "mission": "l337.glass-meridian",
+      "fromStage": "escort-clinic",
+      "toStage": "release-evidence",
+      "galaxy": 0,
+      "systems": [
+        91,
+        0,
+        185,
+        7
+      ]
+    },
+    {
+      "mission": "l337.glass-meridian",
+      "fromStage": "release-evidence",
+      "toStage": "close-case",
+      "galaxy": 0,
+      "systems": [
+        7
+      ]
+    },
+    {
+      "mission": "l337.quiet-choir",
+      "fromStage": "accept",
+      "toStage": "calibrate",
+      "galaxy": 3,
+      "systems": [
+        40,
+        249
+      ]
+    },
+    {
+      "mission": "l337.quiet-choir",
+      "fromStage": "calibrate",
+      "toStage": "recover-collector",
+      "galaxy": 3,
+      "systems": [
+        249,
+        78
+      ]
+    },
+    {
+      "mission": "l337.quiet-choir",
+      "fromStage": "recover-collector",
+      "toStage": "interpret",
+      "galaxy": 3,
+      "systems": [
+        78,
+        109
+      ]
+    },
+    {
+      "mission": "l337.quiet-choir",
+      "fromStage": "interpret",
+      "toStage": "repair-probe",
+      "galaxy": 3,
+      "systems": [
+        109,
+        40,
+        184
+      ]
+    },
+    {
+      "mission": "l337.quiet-choir",
+      "fromStage": "repair-probe",
+      "toStage": "listen",
+      "galaxy": 3,
+      "systems": [
+        184,
+        36,
+        127
+      ]
+    },
+    {
+      "mission": "l337.quiet-choir",
+      "fromStage": "listen",
+      "toStage": "expose-imitation",
+      "galaxy": 3,
+      "systems": [
+        127,
+        36,
+        132
+      ]
+    },
+    {
+      "mission": "l337.quiet-choir",
+      "fromStage": "expose-imitation",
+      "toStage": "rendezvous",
+      "galaxy": 3,
+      "systems": [
+        132,
+        40
+      ]
+    },
+    {
+      "mission": "l337.quiet-choir",
+      "fromStage": "rendezvous",
+      "toStage": "close-case",
+      "galaxy": 3,
+      "systems": [
+        40
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "accept",
+      "toStage": "inspect-freighters",
+      "galaxy": 1,
+      "systems": [
+        120,
+        113
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "inspect-freighters",
+      "toStage": "analyse-seals",
+      "galaxy": 1,
+      "systems": [
+        113,
+        27
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "analyse-seals",
+      "toStage": "follow-carrier",
+      "galaxy": 1,
+      "systems": [
+        27,
+        182
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "follow-carrier",
+      "toStage": "recover-register",
+      "galaxy": 1,
+      "systems": [
+        182,
+        27,
+        34
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "recover-register",
+      "toStage": "rescue-crew",
+      "galaxy": 1,
+      "systems": [
+        34,
+        27,
+        182
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "rescue-crew",
+      "toStage": "reconstruct-ledger",
+      "galaxy": 1,
+      "systems": [
+        182,
+        113
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "reconstruct-ledger",
+      "toStage": "choose-remedy",
+      "galaxy": 1,
+      "systems": [
+        113,
+        27
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "choose-remedy",
+      "toStage": "return-equipment",
+      "galaxy": 1,
+      "systems": [
+        27,
+        120
+      ]
+    },
+    {
+      "mission": "l337.hollow-manifest",
+      "fromStage": "return-equipment",
+      "toStage": "close-case",
+      "galaxy": 1,
+      "systems": [
+        120
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "accept",
+      "toStage": "verify-distress",
+      "galaxy": 2,
+      "systems": [
+        20,
+        137
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "verify-distress",
+      "toStage": "collect-verifier",
+      "galaxy": 2,
+      "systems": [
+        137,
+        56
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "collect-verifier",
+      "toStage": "meet-dispatcher",
+      "galaxy": 2,
+      "systems": [
+        56
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "meet-dispatcher",
+      "toStage": "protect-dispatcher",
+      "galaxy": 2,
+      "systems": [
+        56
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "protect-dispatcher",
+      "toStage": "choose-operation",
+      "galaxy": 2,
+      "systems": [
+        56,
+        20
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "choose-operation",
+      "toStage": "intercept-orders",
+      "galaxy": 2,
+      "systems": [
+        20,
+        137
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "intercept-orders",
+      "toStage": "audit-access",
+      "galaxy": 2,
+      "systems": [
+        137,
+        129
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "audit-access",
+      "toStage": "restore-channels",
+      "galaxy": 2,
+      "systems": [
+        129,
+        137
+      ]
+    },
+    {
+      "mission": "l337.borrowed-voice",
+      "fromStage": "restore-channels",
+      "toStage": "close-case",
+      "galaxy": 2,
+      "systems": [
+        137,
+        20
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "accept",
+      "toStage": "survey-train",
+      "galaxy": 5,
+      "systems": [
+        20,
+        59
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "survey-train",
+      "toStage": "collect-coupler",
+      "galaxy": 5,
+      "systems": [
+        59
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "collect-coupler",
+      "toStage": "silence-driver",
+      "galaxy": 5,
+      "systems": [
+        59
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "silence-driver",
+      "toStage": "choose-defence",
+      "galaxy": 5,
+      "systems": [
+        59
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "choose-defence",
+      "toStage": "deploy-defence",
+      "galaxy": 5,
+      "systems": [
+        59
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "deploy-defence",
+      "toStage": "hold-the-approach",
+      "galaxy": 5,
+      "systems": [
+        59
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "hold-the-approach",
+      "toStage": "escort-rescue",
+      "galaxy": 5,
+      "systems": [
+        59
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "escort-rescue",
+      "toStage": "deliver-relief-record",
+      "galaxy": 5,
+      "systems": [
+        59,
+        20
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "deliver-relief-record",
+      "toStage": "complete-inquiry",
+      "galaxy": 5,
+      "systems": [
+        20
+      ]
+    },
+    {
+      "mission": "l337.shattered-wake",
+      "fromStage": "complete-inquiry",
+      "toStage": "close-case",
+      "galaxy": 5,
+      "systems": [
+        20
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "accept",
+      "toStage": "trace-diversions",
+      "galaxy": 6,
+      "systems": [
+        105,
+        20
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "trace-diversions",
+      "toStage": "recover-ledger",
+      "galaxy": 6,
+      "systems": [
+        20
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "recover-ledger",
+      "toStage": "audit-acquisitions",
+      "galaxy": 6,
+      "systems": [
+        20,
+        105
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "audit-acquisitions",
+      "toStage": "protect-lifeline",
+      "galaxy": 6,
+      "systems": [
+        105,
+        20,
+        69
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "protect-lifeline",
+      "toStage": "secure-ore-junction",
+      "galaxy": 6,
+      "systems": [
+        69,
+        20
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "secure-ore-junction",
+      "toStage": "secure-water-junction",
+      "galaxy": 6,
+      "systems": [
+        20,
+        69
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "secure-water-junction",
+      "toStage": "read-acquisition-network",
+      "galaxy": 6,
+      "systems": [
+        69,
+        20,
+        245
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "read-acquisition-network",
+      "toStage": "choose-settlement",
+      "galaxy": 6,
+      "systems": [
+        245,
+        20,
+        105
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "choose-settlement",
+      "toStage": "settle-ore",
+      "galaxy": 6,
+      "systems": [
+        105,
+        20
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "settle-ore",
+      "toStage": "settle-water",
+      "galaxy": 6,
+      "systems": [
+        20,
+        69
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "settle-water",
+      "toStage": "settle-foundry",
+      "galaxy": 6,
+      "systems": [
+        69,
+        20,
+        245
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "settle-foundry",
+      "toStage": "verify-control",
+      "galaxy": 6,
+      "systems": [
+        245,
+        20,
+        105
+      ]
+    },
+    {
+      "mission": "l337.tithe-of-worlds",
+      "fromStage": "verify-control",
+      "toStage": "close-case",
+      "galaxy": 6,
+      "systems": [
+        105
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "accept",
+      "toStage": "survey-current",
+      "galaxy": 1,
+      "systems": [
+        90,
+        174
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "survey-current",
+      "toStage": "recover-cell",
+      "galaxy": 1,
+      "systems": [
+        174
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "recover-cell",
+      "toStage": "analyse-charge",
+      "galaxy": 1,
+      "systems": [
+        174,
+        90
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "analyse-charge",
+      "toStage": "rescue-technicians",
+      "galaxy": 1,
+      "systems": [
+        90,
+        174
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "rescue-technicians",
+      "toStage": "map-feedlines",
+      "galaxy": 1,
+      "systems": [
+        174,
+        159
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "map-feedlines",
+      "toStage": "place-baffles",
+      "galaxy": 1,
+      "systems": [
+        159,
+        174
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "place-baffles",
+      "toStage": "choose-lattice",
+      "galaxy": 1,
+      "systems": [
+        174,
+        90
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "choose-lattice",
+      "toStage": "isolate-collectors",
+      "galaxy": 1,
+      "systems": [
+        90,
+        174
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "isolate-collectors",
+      "toStage": "settle-reservoir",
+      "galaxy": 1,
+      "systems": [
+        174,
+        159
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "settle-reservoir",
+      "toStage": "return-programmer",
+      "galaxy": 1,
+      "systems": [
+        159,
+        90
+      ]
+    },
+    {
+      "mission": "l337.still-current",
+      "fromStage": "return-programmer",
+      "toStage": "close-case",
+      "galaxy": 1,
+      "systems": [
+        90
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "accept",
+      "toStage": "collect-coldcrate",
+      "galaxy": 0,
+      "systems": [
+        7,
+        185
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "collect-coldcrate",
+      "toStage": "deliver-coldchain",
+      "galaxy": 0,
+      "systems": [
+        185,
+        0,
+        69,
+        190,
+        164
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "deliver-coldchain",
+      "toStage": "recover-cassette",
+      "galaxy": 0,
+      "systems": [
+        164,
+        190,
+        69,
+        0
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "recover-cassette",
+      "toStage": "close-repair-loop",
+      "galaxy": 0,
+      "systems": [
+        0,
+        185
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "close-repair-loop",
+      "toStage": "survey-seed-vault",
+      "galaxy": 0,
+      "systems": [
+        185,
+        0,
+        69,
+        109,
+        146,
+        227,
+        162
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "survey-seed-vault",
+      "toStage": "escort-seed-ark",
+      "galaxy": 0,
+      "systems": [
+        162,
+        107,
+        211,
+        190,
+        91
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "escort-seed-ark",
+      "toStage": "recover-crew-log",
+      "galaxy": 0,
+      "systems": [
+        91,
+        190,
+        211
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "recover-crew-log",
+      "toStage": "return-survivors",
+      "galaxy": 0,
+      "systems": [
+        211,
+        190,
+        69,
+        0
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "return-survivors",
+      "toStage": "reopen-utility-route",
+      "galaxy": 0,
+      "systems": [
+        0,
+        69,
+        190
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "reopen-utility-route",
+      "toStage": "choose-charter",
+      "galaxy": 0,
+      "systems": [
+        190,
+        69,
+        0,
+        185,
+        7
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "choose-charter",
+      "toStage": "commit-charter",
+      "galaxy": 0,
+      "systems": [
+        7
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "commit-charter",
+      "toStage": "certify-network",
+      "galaxy": 0,
+      "systems": [
+        7
+      ]
+    },
+    {
+      "mission": "l337.wayfarer-exchange",
+      "fromStage": "certify-network",
+      "toStage": "close-case",
+      "galaxy": 0,
+      "systems": [
+        7
+      ]
+    },
+    {
+      "mission": "l337.quiet-nursery",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 0,
+      "systems": [
+        3,
+        4
+      ]
+    },
+    {
+      "mission": "l337.quiet-nursery",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 0,
+      "systems": [
+        4,
+        3
+      ]
+    },
+    {
+      "mission": "l337.quiet-nursery",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 0,
+      "systems": [
+        3,
+        122
+      ]
+    },
+    {
+      "mission": "l337.quiet-nursery",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 0,
+      "systems": [
+        122,
+        179
+      ]
+    },
+    {
+      "mission": "l337.quiet-nursery",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 0,
+      "systems": [
+        179,
+        3
+      ]
+    },
+    {
+      "mission": "l337.quiet-nursery",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 0,
+      "systems": [
+        3,
+        122
+      ]
+    },
+    {
+      "mission": "l337.quiet-nursery",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 0,
+      "systems": [
+        122,
+        3
+      ]
+    },
+    {
+      "mission": "l337.quiet-nursery",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 0,
+      "systems": [
+        3
+      ]
+    },
+    {
+      "mission": "l337.borrowed-dawn",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 1,
+      "systems": [
+        37,
+        224
+      ]
+    },
+    {
+      "mission": "l337.borrowed-dawn",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 1,
+      "systems": [
+        224,
+        37
+      ]
+    },
+    {
+      "mission": "l337.borrowed-dawn",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 1,
+      "systems": [
+        37,
+        14
+      ]
+    },
+    {
+      "mission": "l337.borrowed-dawn",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 1,
+      "systems": [
+        14,
+        33
+      ]
+    },
+    {
+      "mission": "l337.borrowed-dawn",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 1,
+      "systems": [
+        33,
+        37
+      ]
+    },
+    {
+      "mission": "l337.borrowed-dawn",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 1,
+      "systems": [
+        37,
+        14
+      ]
+    },
+    {
+      "mission": "l337.borrowed-dawn",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 1,
+      "systems": [
+        14,
+        37
+      ]
+    },
+    {
+      "mission": "l337.borrowed-dawn",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 1,
+      "systems": [
+        37
+      ]
+    },
+    {
+      "mission": "l337.open-shadow",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 2,
+      "systems": [
+        74,
+        173
+      ]
+    },
+    {
+      "mission": "l337.open-shadow",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 2,
+      "systems": [
+        173,
+        74
+      ]
+    },
+    {
+      "mission": "l337.open-shadow",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 2,
+      "systems": [
+        74,
+        52
+      ]
+    },
+    {
+      "mission": "l337.open-shadow",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 2,
+      "systems": [
+        52,
+        44
+      ]
+    },
+    {
+      "mission": "l337.open-shadow",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 2,
+      "systems": [
+        44,
+        74
+      ]
+    },
+    {
+      "mission": "l337.open-shadow",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 2,
+      "systems": [
+        74,
+        52
+      ]
+    },
+    {
+      "mission": "l337.open-shadow",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 2,
+      "systems": [
+        52,
+        74
+      ]
+    },
+    {
+      "mission": "l337.open-shadow",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 2,
+      "systems": [
+        74
+      ]
+    },
+    {
+      "mission": "l337.harbour-without-orders",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 3,
+      "systems": [
+        111,
+        92
+      ]
+    },
+    {
+      "mission": "l337.harbour-without-orders",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 3,
+      "systems": [
+        92,
+        111
+      ]
+    },
+    {
+      "mission": "l337.harbour-without-orders",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 3,
+      "systems": [
+        111,
+        145
+      ]
+    },
+    {
+      "mission": "l337.harbour-without-orders",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 3,
+      "systems": [
+        145,
+        111,
+        48
+      ]
+    },
+    {
+      "mission": "l337.harbour-without-orders",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 3,
+      "systems": [
+        48,
+        111
+      ]
+    },
+    {
+      "mission": "l337.harbour-without-orders",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 3,
+      "systems": [
+        111,
+        145
+      ]
+    },
+    {
+      "mission": "l337.harbour-without-orders",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 3,
+      "systems": [
+        145,
+        111
+      ]
+    },
+    {
+      "mission": "l337.harbour-without-orders",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 3,
+      "systems": [
+        111
+      ]
+    },
+    {
+      "mission": "l337.false-colours",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 4,
+      "systems": [
+        148,
+        49
+      ]
+    },
+    {
+      "mission": "l337.false-colours",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 4,
+      "systems": [
+        49,
+        148
+      ]
+    },
+    {
+      "mission": "l337.false-colours",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 4,
+      "systems": [
+        148,
+        222
+      ]
+    },
+    {
+      "mission": "l337.false-colours",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 4,
+      "systems": [
+        222,
+        200
+      ]
+    },
+    {
+      "mission": "l337.false-colours",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 4,
+      "systems": [
+        200,
+        148
+      ]
+    },
+    {
+      "mission": "l337.false-colours",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 4,
+      "systems": [
+        148,
+        222
+      ]
+    },
+    {
+      "mission": "l337.false-colours",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 4,
+      "systems": [
+        222,
+        148
+      ]
+    },
+    {
+      "mission": "l337.false-colours",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 4,
+      "systems": [
+        148
+      ]
+    },
+    {
+      "mission": "l337.rubble-covenant",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 5,
+      "systems": [
+        185,
+        138
+      ]
+    },
+    {
+      "mission": "l337.rubble-covenant",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 5,
+      "systems": [
+        138,
+        185
+      ]
+    },
+    {
+      "mission": "l337.rubble-covenant",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 5,
+      "systems": [
+        185,
+        10
+      ]
+    },
+    {
+      "mission": "l337.rubble-covenant",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 5,
+      "systems": [
+        10,
+        71
+      ]
+    },
+    {
+      "mission": "l337.rubble-covenant",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 5,
+      "systems": [
+        71,
+        185
+      ]
+    },
+    {
+      "mission": "l337.rubble-covenant",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 5,
+      "systems": [
+        185,
+        10
+      ]
+    },
+    {
+      "mission": "l337.rubble-covenant",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 5,
+      "systems": [
+        10,
+        185
+      ]
+    },
+    {
+      "mission": "l337.rubble-covenant",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 5,
+      "systems": [
+        185
+      ]
+    },
+    {
+      "mission": "l337.garden-in-transit",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 6,
+      "systems": [
+        222,
+        64
+      ]
+    },
+    {
+      "mission": "l337.garden-in-transit",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 6,
+      "systems": [
+        64,
+        222
+      ]
+    },
+    {
+      "mission": "l337.garden-in-transit",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 6,
+      "systems": [
+        222,
+        65
+      ]
+    },
+    {
+      "mission": "l337.garden-in-transit",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 6,
+      "systems": [
+        65,
+        238
+      ]
+    },
+    {
+      "mission": "l337.garden-in-transit",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 6,
+      "systems": [
+        238,
+        222
+      ]
+    },
+    {
+      "mission": "l337.garden-in-transit",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 6,
+      "systems": [
+        222,
+        65
+      ]
+    },
+    {
+      "mission": "l337.garden-in-transit",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 6,
+      "systems": [
+        65,
+        222
+      ]
+    },
+    {
+      "mission": "l337.garden-in-transit",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 6,
+      "systems": [
+        222
+      ]
+    },
+    {
+      "mission": "l337.warrant-ledger",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 7,
+      "systems": [
+        3,
+        148
+      ]
+    },
+    {
+      "mission": "l337.warrant-ledger",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 7,
+      "systems": [
+        148,
+        3
+      ]
+    },
+    {
+      "mission": "l337.warrant-ledger",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 7,
+      "systems": [
+        3,
+        187
+      ]
+    },
+    {
+      "mission": "l337.warrant-ledger",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 7,
+      "systems": [
+        187,
+        137
+      ]
+    },
+    {
+      "mission": "l337.warrant-ledger",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 7,
+      "systems": [
+        137,
+        3
+      ]
+    },
+    {
+      "mission": "l337.warrant-ledger",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 7,
+      "systems": [
+        3,
+        187
+      ]
+    },
+    {
+      "mission": "l337.warrant-ledger",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 7,
+      "systems": [
+        187,
+        3
+      ]
+    },
+    {
+      "mission": "l337.warrant-ledger",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 7,
+      "systems": [
+        3
+      ]
+    },
+    {
+      "mission": "l337.measure-of-care",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 0,
+      "systems": [
+        41,
+        22
+      ]
+    },
+    {
+      "mission": "l337.measure-of-care",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 0,
+      "systems": [
+        22,
+        41
+      ]
+    },
+    {
+      "mission": "l337.measure-of-care",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 0,
+      "systems": [
+        41,
+        22,
+        136
+      ]
+    },
+    {
+      "mission": "l337.measure-of-care",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 0,
+      "systems": [
+        136,
+        71
+      ]
+    },
+    {
+      "mission": "l337.measure-of-care",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 0,
+      "systems": [
+        71,
+        136,
+        22,
+        41
+      ]
+    },
+    {
+      "mission": "l337.measure-of-care",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 0,
+      "systems": [
+        41,
+        22,
+        136
+      ]
+    },
+    {
+      "mission": "l337.measure-of-care",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 0,
+      "systems": [
+        136,
+        22,
+        41
+      ]
+    },
+    {
+      "mission": "l337.measure-of-care",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 0,
+      "systems": [
+        41
+      ]
+    },
+    {
+      "mission": "l337.long-return",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 1,
+      "systems": [
+        80,
+        127
+      ]
+    },
+    {
+      "mission": "l337.long-return",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 1,
+      "systems": [
+        127,
+        80
+      ]
+    },
+    {
+      "mission": "l337.long-return",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 1,
+      "systems": [
+        80,
+        1
+      ]
+    },
+    {
+      "mission": "l337.long-return",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 1,
+      "systems": [
+        1,
+        54,
+        118
+      ]
+    },
+    {
+      "mission": "l337.long-return",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 1,
+      "systems": [
+        118,
+        80
+      ]
+    },
+    {
+      "mission": "l337.long-return",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 1,
+      "systems": [
+        80,
+        1
+      ]
+    },
+    {
+      "mission": "l337.long-return",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 1,
+      "systems": [
+        1,
+        80
+      ]
+    },
+    {
+      "mission": "l337.long-return",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 1,
+      "systems": [
+        80
+      ]
+    },
+    {
+      "mission": "l337.unfinished-map",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 2,
+      "systems": [
+        114,
+        179
+      ]
+    },
+    {
+      "mission": "l337.unfinished-map",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 2,
+      "systems": [
+        179,
+        114
+      ]
+    },
+    {
+      "mission": "l337.unfinished-map",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 2,
+      "systems": [
+        114,
+        164
+      ]
+    },
+    {
+      "mission": "l337.unfinished-map",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 2,
+      "systems": [
+        164,
+        77
+      ]
+    },
+    {
+      "mission": "l337.unfinished-map",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 2,
+      "systems": [
+        77,
+        114
+      ]
+    },
+    {
+      "mission": "l337.unfinished-map",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 2,
+      "systems": [
+        114,
+        164
+      ]
+    },
+    {
+      "mission": "l337.unfinished-map",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 2,
+      "systems": [
+        164,
+        114
+      ]
+    },
+    {
+      "mission": "l337.unfinished-map",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 2,
+      "systems": [
+        114
+      ]
+    },
+    {
+      "mission": "l337.blue-reservoir",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 3,
+      "systems": [
+        151,
+        147
+      ]
+    },
+    {
+      "mission": "l337.blue-reservoir",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 3,
+      "systems": [
+        147,
+        151
+      ]
+    },
+    {
+      "mission": "l337.blue-reservoir",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 3,
+      "systems": [
+        151,
+        54
+      ]
+    },
+    {
+      "mission": "l337.blue-reservoir",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 3,
+      "systems": [
+        54,
+        150
+      ]
+    },
+    {
+      "mission": "l337.blue-reservoir",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 3,
+      "systems": [
+        150,
+        151
+      ]
+    },
+    {
+      "mission": "l337.blue-reservoir",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 3,
+      "systems": [
+        151,
+        54
+      ]
+    },
+    {
+      "mission": "l337.blue-reservoir",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 3,
+      "systems": [
+        54,
+        151
+      ]
+    },
+    {
+      "mission": "l337.blue-reservoir",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 3,
+      "systems": [
+        151
+      ]
+    },
+    {
+      "mission": "l337.mutual-shelter",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 4,
+      "systems": [
+        188,
+        3
+      ]
+    },
+    {
+      "mission": "l337.mutual-shelter",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 4,
+      "systems": [
+        3,
+        188
+      ]
+    },
+    {
+      "mission": "l337.mutual-shelter",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 4,
+      "systems": [
+        188,
+        154
+      ]
+    },
+    {
+      "mission": "l337.mutual-shelter",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 4,
+      "systems": [
+        154,
+        107
+      ]
+    },
+    {
+      "mission": "l337.mutual-shelter",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 4,
+      "systems": [
+        107,
+        188
+      ]
+    },
+    {
+      "mission": "l337.mutual-shelter",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 4,
+      "systems": [
+        188,
+        154
+      ]
+    },
+    {
+      "mission": "l337.mutual-shelter",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 4,
+      "systems": [
+        154,
+        188
+      ]
+    },
+    {
+      "mission": "l337.mutual-shelter",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 4,
+      "systems": [
+        188
+      ]
+    },
+    {
+      "mission": "l337.listening-frontier",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 5,
+      "systems": [
+        225,
+        15
+      ]
+    },
+    {
+      "mission": "l337.listening-frontier",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 5,
+      "systems": [
+        15,
+        225
+      ]
+    },
+    {
+      "mission": "l337.listening-frontier",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 5,
+      "systems": [
+        225,
+        254
+      ]
+    },
+    {
+      "mission": "l337.listening-frontier",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 5,
+      "systems": [
+        254,
+        15,
+        120
+      ]
+    },
+    {
+      "mission": "l337.listening-frontier",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 5,
+      "systems": [
+        120,
+        225
+      ]
+    },
+    {
+      "mission": "l337.listening-frontier",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 5,
+      "systems": [
+        225,
+        254
+      ]
+    },
+    {
+      "mission": "l337.listening-frontier",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 5,
+      "systems": [
+        254,
+        225
+      ]
+    },
+    {
+      "mission": "l337.listening-frontier",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 5,
+      "systems": [
+        225
+      ]
+    },
+    {
+      "mission": "l337.assembly-of-orbits",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 6,
+      "systems": [
+        7,
+        43
+      ]
+    },
+    {
+      "mission": "l337.assembly-of-orbits",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 6,
+      "systems": [
+        43,
+        7
+      ]
+    },
+    {
+      "mission": "l337.assembly-of-orbits",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 6,
+      "systems": [
+        7,
+        32
+      ]
+    },
+    {
+      "mission": "l337.assembly-of-orbits",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 6,
+      "systems": [
+        32,
+        148
+      ]
+    },
+    {
+      "mission": "l337.assembly-of-orbits",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 6,
+      "systems": [
+        148,
+        7
+      ]
+    },
+    {
+      "mission": "l337.assembly-of-orbits",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 6,
+      "systems": [
+        7,
+        32
+      ]
+    },
+    {
+      "mission": "l337.assembly-of-orbits",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 6,
+      "systems": [
+        32,
+        7
+      ]
+    },
+    {
+      "mission": "l337.assembly-of-orbits",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 6,
+      "systems": [
+        7
+      ]
+    },
+    {
+      "mission": "l337.under-tow",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 7,
+      "systems": [
+        45,
+        123
+      ]
+    },
+    {
+      "mission": "l337.under-tow",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 7,
+      "systems": [
+        123,
+        45
+      ]
+    },
+    {
+      "mission": "l337.under-tow",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 7,
+      "systems": [
+        45,
+        220
+      ]
+    },
+    {
+      "mission": "l337.under-tow",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 7,
+      "systems": [
+        220,
+        255
+      ]
+    },
+    {
+      "mission": "l337.under-tow",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 7,
+      "systems": [
+        255,
+        45
+      ]
+    },
+    {
+      "mission": "l337.under-tow",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 7,
+      "systems": [
+        45,
+        220
+      ]
+    },
+    {
+      "mission": "l337.under-tow",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 7,
+      "systems": [
+        220,
+        45
+      ]
+    },
+    {
+      "mission": "l337.under-tow",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 7,
+      "systems": [
+        45
+      ]
+    },
+    {
+      "mission": "l337.memory-atlas",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 0,
+      "systems": [
+        80,
+        130
+      ]
+    },
+    {
+      "mission": "l337.memory-atlas",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 0,
+      "systems": [
+        130,
+        80
+      ]
+    },
+    {
+      "mission": "l337.memory-atlas",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 0,
+      "systems": [
+        80,
+        8
+      ]
+    },
+    {
+      "mission": "l337.memory-atlas",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 0,
+      "systems": [
+        8,
+        80,
+        174
+      ]
+    },
+    {
+      "mission": "l337.memory-atlas",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 0,
+      "systems": [
+        174,
+        80
+      ]
+    },
+    {
+      "mission": "l337.memory-atlas",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 0,
+      "systems": [
+        80,
+        8
+      ]
+    },
+    {
+      "mission": "l337.memory-atlas",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 0,
+      "systems": [
+        8,
+        80
+      ]
+    },
+    {
+      "mission": "l337.memory-atlas",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 0,
+      "systems": [
+        80
+      ]
+    },
+    {
+      "mission": "l337.fleet-of-neighbours",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 1,
+      "systems": [
+        117,
+        111
+      ]
+    },
+    {
+      "mission": "l337.fleet-of-neighbours",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 1,
+      "systems": [
+        111,
+        117
+      ]
+    },
+    {
+      "mission": "l337.fleet-of-neighbours",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 1,
+      "systems": [
+        117,
+        227
+      ]
+    },
+    {
+      "mission": "l337.fleet-of-neighbours",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 1,
+      "systems": [
+        227,
+        111,
+        73
+      ]
+    },
+    {
+      "mission": "l337.fleet-of-neighbours",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 1,
+      "systems": [
+        73,
+        117
+      ]
+    },
+    {
+      "mission": "l337.fleet-of-neighbours",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 1,
+      "systems": [
+        117,
+        227
+      ]
+    },
+    {
+      "mission": "l337.fleet-of-neighbours",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 1,
+      "systems": [
+        227,
+        117
+      ]
+    },
+    {
+      "mission": "l337.fleet-of-neighbours",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 1,
+      "systems": [
+        117
+      ]
+    },
+    {
+      "mission": "l337.uncounted-names",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 2,
+      "systems": [
+        154,
+        193
+      ]
+    },
+    {
+      "mission": "l337.uncounted-names",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 2,
+      "systems": [
+        193,
+        154
+      ]
+    },
+    {
+      "mission": "l337.uncounted-names",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 2,
+      "systems": [
+        154,
+        190
+      ]
+    },
+    {
+      "mission": "l337.uncounted-names",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 2,
+      "systems": [
+        190,
+        117
+      ]
+    },
+    {
+      "mission": "l337.uncounted-names",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 2,
+      "systems": [
+        117,
+        154
+      ]
+    },
+    {
+      "mission": "l337.uncounted-names",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 2,
+      "systems": [
+        154,
+        190
+      ]
+    },
+    {
+      "mission": "l337.uncounted-names",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 2,
+      "systems": [
+        190,
+        154
+      ]
+    },
+    {
+      "mission": "l337.uncounted-names",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 2,
+      "systems": [
+        154
+      ]
+    },
+    {
+      "mission": "l337.honest-circuit",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 3,
+      "systems": [
+        194,
+        218
+      ]
+    },
+    {
+      "mission": "l337.honest-circuit",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 3,
+      "systems": [
+        218,
+        194
+      ]
+    },
+    {
+      "mission": "l337.honest-circuit",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 3,
+      "systems": [
+        194,
+        249
+      ]
+    },
+    {
+      "mission": "l337.honest-circuit",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 3,
+      "systems": [
+        249,
+        109
+      ]
+    },
+    {
+      "mission": "l337.honest-circuit",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 3,
+      "systems": [
+        109,
+        194
+      ]
+    },
+    {
+      "mission": "l337.honest-circuit",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 3,
+      "systems": [
+        194,
+        249
+      ]
+    },
+    {
+      "mission": "l337.honest-circuit",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 3,
+      "systems": [
+        249,
+        194
+      ]
+    },
+    {
+      "mission": "l337.honest-circuit",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 3,
+      "systems": [
+        194
+      ]
+    },
+    {
+      "mission": "l337.small-lights",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 4,
+      "systems": [
+        228,
+        112
+      ]
+    },
+    {
+      "mission": "l337.small-lights",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 4,
+      "systems": [
+        112,
+        228
+      ]
+    },
+    {
+      "mission": "l337.small-lights",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 4,
+      "systems": [
+        228,
+        233
+      ]
+    },
+    {
+      "mission": "l337.small-lights",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 4,
+      "systems": [
+        233,
+        156
+      ]
+    },
+    {
+      "mission": "l337.small-lights",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 4,
+      "systems": [
+        156,
+        228
+      ]
+    },
+    {
+      "mission": "l337.small-lights",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 4,
+      "systems": [
+        228,
+        233
+      ]
+    },
+    {
+      "mission": "l337.small-lights",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 4,
+      "systems": [
+        233,
+        228
+      ]
+    },
+    {
+      "mission": "l337.small-lights",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 4,
+      "systems": [
+        228
+      ]
+    },
+    {
+      "mission": "l337.passengers-horizon",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 5,
+      "systems": [
+        12,
+        34
+      ]
+    },
+    {
+      "mission": "l337.passengers-horizon",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 5,
+      "systems": [
+        34,
+        12
+      ]
+    },
+    {
+      "mission": "l337.passengers-horizon",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 5,
+      "systems": [
+        12,
+        77
+      ]
+    },
+    {
+      "mission": "l337.passengers-horizon",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 5,
+      "systems": [
+        77,
+        11
+      ]
+    },
+    {
+      "mission": "l337.passengers-horizon",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 5,
+      "systems": [
+        11,
+        12
+      ]
+    },
+    {
+      "mission": "l337.passengers-horizon",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 5,
+      "systems": [
+        12,
+        77
+      ]
+    },
+    {
+      "mission": "l337.passengers-horizon",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 5,
+      "systems": [
+        77,
+        12
+      ]
+    },
+    {
+      "mission": "l337.passengers-horizon",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 5,
+      "systems": [
+        12
+      ]
+    },
+    {
+      "mission": "l337.kind-distance",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 6,
+      "systems": [
+        46,
+        252
+      ]
+    },
+    {
+      "mission": "l337.kind-distance",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 6,
+      "systems": [
+        252,
+        46
+      ]
+    },
+    {
+      "mission": "l337.kind-distance",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 6,
+      "systems": [
+        46,
+        235
+      ]
+    },
+    {
+      "mission": "l337.kind-distance",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 6,
+      "systems": [
+        235,
+        46,
+        202
+      ]
+    },
+    {
+      "mission": "l337.kind-distance",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 6,
+      "systems": [
+        202,
+        46
+      ]
+    },
+    {
+      "mission": "l337.kind-distance",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 6,
+      "systems": [
+        46,
+        235
+      ]
+    },
+    {
+      "mission": "l337.kind-distance",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 6,
+      "systems": [
+        235,
+        46
+      ]
+    },
+    {
+      "mission": "l337.kind-distance",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 6,
+      "systems": [
+        46
+      ]
+    },
+    {
+      "mission": "l337.cold-reserve",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 7,
+      "systems": [
+        84,
+        62
+      ]
+    },
+    {
+      "mission": "l337.cold-reserve",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 7,
+      "systems": [
+        62,
+        84
+      ]
+    },
+    {
+      "mission": "l337.cold-reserve",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 7,
+      "systems": [
+        84,
+        112
+      ]
+    },
+    {
+      "mission": "l337.cold-reserve",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 7,
+      "systems": [
+        112,
+        225
+      ]
+    },
+    {
+      "mission": "l337.cold-reserve",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 7,
+      "systems": [
+        225,
+        84
+      ]
+    },
+    {
+      "mission": "l337.cold-reserve",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 7,
+      "systems": [
+        84,
+        112
+      ]
+    },
+    {
+      "mission": "l337.cold-reserve",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 7,
+      "systems": [
+        112,
+        84
+      ]
+    },
+    {
+      "mission": "l337.cold-reserve",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 7,
+      "systems": [
+        84
+      ]
+    },
+    {
+      "mission": "l337.magnetic-orchard",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 0,
+      "systems": [
+        120,
+        115
+      ]
+    },
+    {
+      "mission": "l337.magnetic-orchard",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 0,
+      "systems": [
+        115,
+        120
+      ]
+    },
+    {
+      "mission": "l337.magnetic-orchard",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 0,
+      "systems": [
+        120,
+        161
+      ]
+    },
+    {
+      "mission": "l337.magnetic-orchard",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 0,
+      "systems": [
+        161,
+        89
+      ]
+    },
+    {
+      "mission": "l337.magnetic-orchard",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 0,
+      "systems": [
+        89,
+        120
+      ]
+    },
+    {
+      "mission": "l337.magnetic-orchard",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 0,
+      "systems": [
+        120,
+        161
+      ]
+    },
+    {
+      "mission": "l337.magnetic-orchard",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 0,
+      "systems": [
+        161,
+        120
+      ]
+    },
+    {
+      "mission": "l337.magnetic-orchard",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 0,
+      "systems": [
+        120
+      ]
+    },
+    {
+      "mission": "l337.open-measure",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 1,
+      "systems": [
+        157,
+        225
+      ]
+    },
+    {
+      "mission": "l337.open-measure",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 1,
+      "systems": [
+        225,
+        157
+      ]
+    },
+    {
+      "mission": "l337.open-measure",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 1,
+      "systems": [
+        157,
+        41
+      ]
+    },
+    {
+      "mission": "l337.open-measure",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 1,
+      "systems": [
+        41,
+        77
+      ]
+    },
+    {
+      "mission": "l337.open-measure",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 1,
+      "systems": [
+        77,
+        157
+      ]
+    },
+    {
+      "mission": "l337.open-measure",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 1,
+      "systems": [
+        157,
+        41
+      ]
+    },
+    {
+      "mission": "l337.open-measure",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 1,
+      "systems": [
+        41,
+        157
+      ]
+    },
+    {
+      "mission": "l337.open-measure",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 1,
+      "systems": [
+        157
+      ]
+    },
+    {
+      "mission": "l337.shared-pulse",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 2,
+      "systems": [
+        196,
+        32
+      ]
+    },
+    {
+      "mission": "l337.shared-pulse",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 2,
+      "systems": [
+        32,
+        196
+      ]
+    },
+    {
+      "mission": "l337.shared-pulse",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 2,
+      "systems": [
+        196,
+        181
+      ]
+    },
+    {
+      "mission": "l337.shared-pulse",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 2,
+      "systems": [
+        181,
+        196,
+        124
+      ]
+    },
+    {
+      "mission": "l337.shared-pulse",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 2,
+      "systems": [
+        124,
+        196
+      ]
+    },
+    {
+      "mission": "l337.shared-pulse",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 2,
+      "systems": [
+        196,
+        181
+      ]
+    },
+    {
+      "mission": "l337.shared-pulse",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 2,
+      "systems": [
+        181,
+        196
+      ]
+    },
+    {
+      "mission": "l337.shared-pulse",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 2,
+      "systems": [
+        196
+      ]
+    },
+    {
+      "mission": "l337.witness-window",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 3,
+      "systems": [
+        234,
+        181
+      ]
+    },
+    {
+      "mission": "l337.witness-window",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 3,
+      "systems": [
+        181,
+        234
+      ]
+    },
+    {
+      "mission": "l337.witness-window",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 3,
+      "systems": [
+        234,
+        41
+      ]
+    },
+    {
+      "mission": "l337.witness-window",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 3,
+      "systems": [
+        41,
+        205
+      ]
+    },
+    {
+      "mission": "l337.witness-window",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 3,
+      "systems": [
+        205,
+        234
+      ]
+    },
+    {
+      "mission": "l337.witness-window",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 3,
+      "systems": [
+        234,
+        41
+      ]
+    },
+    {
+      "mission": "l337.witness-window",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 3,
+      "systems": [
+        41,
+        234
+      ]
+    },
+    {
+      "mission": "l337.witness-window",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 3,
+      "systems": [
+        234
+      ]
+    },
+    {
+      "mission": "l337.public-record",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 4,
+      "systems": [
+        12,
+        166
+      ]
+    },
+    {
+      "mission": "l337.public-record",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 4,
+      "systems": [
+        166,
+        12
+      ]
+    },
+    {
+      "mission": "l337.public-record",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 4,
+      "systems": [
+        12,
+        24
+      ]
+    },
+    {
+      "mission": "l337.public-record",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 4,
+      "systems": [
+        24,
+        3
+      ]
+    },
+    {
+      "mission": "l337.public-record",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 4,
+      "systems": [
+        3,
+        12
+      ]
+    },
+    {
+      "mission": "l337.public-record",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 4,
+      "systems": [
+        12,
+        24
+      ]
+    },
+    {
+      "mission": "l337.public-record",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 4,
+      "systems": [
+        24,
+        12
+      ]
+    },
+    {
+      "mission": "l337.public-record",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 4,
+      "systems": [
+        12
+      ]
+    },
+    {
+      "mission": "l337.courier",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 0,
+      "systems": [
+        49,
+        160
+      ]
+    },
+    {
+      "mission": "l337.courier",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 0,
+      "systems": [
+        160,
+        49
+      ]
+    },
+    {
+      "mission": "l337.courier",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 0,
+      "systems": [
+        49,
+        34
+      ]
+    },
+    {
+      "mission": "l337.courier",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 0,
+      "systems": [
+        34,
+        49,
+        2
+      ]
+    },
+    {
+      "mission": "l337.courier",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 0,
+      "systems": [
+        2,
+        49
+      ]
+    },
+    {
+      "mission": "l337.courier",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 0,
+      "systems": [
+        49,
+        34
+      ]
+    },
+    {
+      "mission": "l337.courier",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 0,
+      "systems": [
+        34,
+        49
+      ]
+    },
+    {
+      "mission": "l337.courier",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 0,
+      "systems": [
+        49
+      ]
+    },
+    {
+      "mission": "l337.guiding-light",
+      "fromStage": "accept",
+      "toStage": "survey",
+      "galaxy": 7,
+      "systems": [
+        8
+      ]
+    },
+    {
+      "mission": "l337.guiding-light",
+      "fromStage": "survey",
+      "toStage": "collect-reference",
+      "galaxy": 7,
+      "systems": [
+        8
+      ]
+    },
+    {
+      "mission": "l337.guiding-light",
+      "fromStage": "collect-reference",
+      "toStage": "field-work",
+      "galaxy": 7,
+      "systems": [
+        8
+      ]
+    },
+    {
+      "mission": "l337.guiding-light",
+      "fromStage": "field-work",
+      "toStage": "independent-witness",
+      "galaxy": 7,
+      "systems": [
+        8
+      ]
+    },
+    {
+      "mission": "l337.guiding-light",
+      "fromStage": "independent-witness",
+      "toStage": "choose-settlement",
+      "galaxy": 7,
+      "systems": [
+        8
+      ]
+    },
+    {
+      "mission": "l337.guiding-light",
+      "fromStage": "choose-settlement",
+      "toStage": "apply-settlement",
+      "galaxy": 7,
+      "systems": [
+        8
+      ]
+    },
+    {
+      "mission": "l337.guiding-light",
+      "fromStage": "apply-settlement",
+      "toStage": "return-and-audit",
+      "galaxy": 7,
+      "systems": [
+        8
+      ]
+    },
+    {
+      "mission": "l337.guiding-light",
+      "fromStage": "return-and-audit",
+      "toStage": "close-case",
+      "galaxy": 7,
+      "systems": [
+        8
+      ]
+    }
+  ],
+  "everyLegReachableAt6LY": true,
+  "uniqueStages": true,
+  "tomlRoundTrip": true,
+  "runtimePlayabilityTested": false,
+  "originalProseAuthored": true,
+  "gameRepositoryWritten": false
+}

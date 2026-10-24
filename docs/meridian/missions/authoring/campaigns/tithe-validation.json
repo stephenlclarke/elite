@@ -1,0 +1,28 @@
+{
+  "originalFactions": 3,
+  "stages": 14,
+  "finiteReserveHulls": 8,
+  "launchSuppliesSpentOnce": true,
+  "destroyedHullsCannotRespawn": true,
+  "fleetKillsCannotCompleteCampaign": true,
+  "bothSettlements": {
+    "bounded-charter": true,
+    "sever-network": true
+  },
+  "wrongBranchInstanceAndLocationRejected": true,
+  "distinctProofsRequiredAtThreeNodes": true,
+  "genuineConvoyArrivalRequired": true,
+  "programmerReturnedAtVerification": true,
+  "settlementVerificationRequired": true,
+  "explicitCommissionConfirmationRequired": true,
+  "cancelledOfferChangesNothing": true,
+  "wrongCommissionEvidenceRejected": true,
+  "permanentDecalOnce": true,
+  "markingSurvivesBothEndingsPaintHullReplacementAndReload": true,
+  "programmerCustodyRequired": true,
+  "finalPaymentAndClueOnce": true,
+  "currentFormatReloadChecked": true,
+  "modelOnly": true,
+  "runtimePlaytested": false,
+  "gameRepositoryModified": false
+}

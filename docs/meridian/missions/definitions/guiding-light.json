@@ -1,0 +1,469 @@
+{
+  "id": "l337.guiding-light",
+  "missionID": "guiding-light",
+  "title": "The Guiding Light",
+  "originKind": "new-original",
+  "subtitle": "RENN: A lantern outside your line of sight is not a safe approach marker.",
+  "contacts": [
+    "Dispatcher Evi Senn",
+    "Relay Engineer Ivo Renn"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Crimbo in Galaxy 8, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.",
+  "story": "Crimbo's winter orbital services depend on a chain of navigation lanterns whose light-sharing contract does not account for the planet's long shadow. A maintenance crew has been routed to an unlit receiving pier. The commander measures the actual horizon, restores physical relays and escorts the crew before choosing independently maintained lantern segments or a shared winter rota.",
+  "playerBriefing": "RENN: A lantern outside your line of sight is not a safe approach marker.",
+  "rewardCR": 5700,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The extra lantern.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "guiding-light-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "guiding-light-reference",
+    "propForm": "lantern",
+    "palette": "petrol-brass",
+    "stageObjects": [
+      "guiding-light-reference",
+      "guiding-light-reference",
+      "guiding-light-reference",
+      "guiding-light-reference",
+      "SH061",
+      "guiding-light-reference",
+      "guiding-light-reference",
+      "guiding-light-reference",
+      "guiding-light-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.guiding-light/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "lantern-extra-echo",
+    "label": "The extra lantern",
+    "journalText": "The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/lantern-extra-echo",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "briefing": {
+      "id": "guiding-light",
+      "file": "../../assets/missions/illustrations/guiding-light.png",
+      "sha256": "051bcd0a0da3ae61581257d955640972f2b441971980c3568ef70513e2e20f54",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Dispatcher Evi Senn",
+        "portrait": {
+          "id": "evi-senn",
+          "file": "../../assets/missions/portraits/evi-senn.png",
+          "sha256": "af7604ee750727f21ddd5f3017ac5f5d330ee1376c77fbcc712011671216486d",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Relay Engineer Ivo Renn",
+        "portrait": {
+          "id": "ivo-renn",
+          "file": "../../assets/missions/portraits/ivo-renn.png",
+          "sha256": "221034ba281a63e3d3dbd4f56eafedd9e76d553560a3d284e296c126aa9aaff0",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "guiding-light-reference",
+        "asset": {
+          "id": "guiding-light-reference",
+          "file": "../../assets/missions/props/guiding-light-reference.png",
+          "sha256": "a2a8332b651b84a7aaa7a6d83d40751fab4fb75162d07f7f0f894fb31e427949",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "guiding-light/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/guiding-light-choose-settlement-plan-a.png",
+        "sha256": "b81cbd95fcec518ae84d8a6d0a4fafee44c5ec9a41236211f50cb1ac187d1f94",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "guiding-light/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/guiding-light-choose-settlement-plan-b.png",
+        "sha256": "ff561aae5520813a54c247de953a813fcae2595f63815de8d7961957f989ae5a",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "Accept The Guiding Light at Crimbo.",
+      "dialog": "Dispatcher Evi Senn: Crimbo's winter orbital services depend on a chain of navigation lanterns whose light-sharing contract does not account for the planet's long shadow. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/accept",
+        "file": "../../assets/missions/stages/guiding-light/accept.png",
+        "sha256": "1dee85c12e1a633109b1f62f5ed7a5b9a848112c0ffab6ef071222d1e2273b83",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "Collect the identified one-tonne reference instrument from Dispatcher Evi Senn.",
+      "dialog": "Dispatcher Evi Senn: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "guiding-light-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/collect-reference",
+        "file": "../../assets/missions/stages/guiding-light/collect-reference.png",
+        "sha256": "bcff2e6fac27ea3b6e828f89a38268102b4beb9643b8e10a96f505bffca6281d",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "Measure three actual winter-shadow sight lines from the accessible marked observation volume above Crimbo.",
+      "dialog": "RENN: A lantern outside your line of sight is not a safe approach marker.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "guiding-light-survey-1",
+        "guiding-light-survey-2",
+        "guiding-light-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/survey",
+        "file": "../../assets/missions/stages/guiding-light/survey.png",
+        "sha256": "506744dc7f451f53780825ab68f8a014eed3602170d8563a0576348e2cc25185",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "Use the onboard reference lantern to restore the two external relays and test their actual overlapping beam cones.",
+      "dialog": "SENN: Record their real receiving acknowledgements before advertising the lane.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "guiding-light-work-port",
+        "guiding-light-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/field-work",
+        "file": "../../assets/missions/stages/guiding-light/field-work.png",
+        "sha256": "cfab3828875cecd7c50f140cb29ab95f5a0ea7570076d5062d16f310fab8c794",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "Verify actual safe transit and living reception of the consenting maintenance tender to the now-lit winter service berth.",
+      "dialog": "RENN: Keep the lanterns visible through the final approach; a distant signal alone does not receive a crew.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "guiding-light-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/independent-witness",
+        "file": "../../assets/missions/stages/guiding-light/independent-witness.png",
+        "sha256": "f79d4e5b88bf0f21ef3fc4e5fc314a6b89f5a2bf6fc1a0c1a2e2de946a7f0617",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.",
+      "dialog": "Dispatcher Evi Senn: Your shadow sight-line and overlapping beacon coverage evidence is ready. Our arrived delegates have the signed mandate to choose here. Either maintain independent winter lantern segments or publish a jointly maintained winter rota. Compare the actual tests and consequences before confirming; closing this view chooses neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "guiding-light-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Maintain independent winter lantern segments",
+        "Publish a jointly maintained winter rota"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/choose-settlement",
+        "file": "../../assets/missions/stages/guiding-light/choose-settlement.png",
+        "sha256": "b6dcf0dafef361eb4f55b94eb39d95e6e25dfb7110edf2cbfe7cee12e662876e",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Dispatcher Evi Senn: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "guiding-light-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "guiding-light-plan-a-physical-proof",
+            "guiding-light-plan-a-receiving-proof"
+          ],
+          "objective": "Verify both local maintenance receipts and the overlapping safe horizon.",
+          "dialog": "RENN: Each segment has to see the next before it can guide a traveller.",
+          "gossip": "The Guiding Light: Maintain independent winter lantern segments."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "guiding-light-plan-b-physical-proof",
+            "guiding-light-plan-b-receiving-proof"
+          ],
+          "objective": "Verify the signed rota and a real shadow-side receiving test.",
+          "dialog": "SENN: A shared schedule needs an actual crew behind its next shift.",
+          "gossip": "The Guiding Light: Publish a jointly maintained winter rota."
+        }
+      ],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/apply-settlement",
+        "file": "../../assets/missions/stages/guiding-light/apply-settlement.png",
+        "sha256": "c24faa7f7321a4a6998238c67752193f08689fac178f1ebeade1be75747ef76c",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Dispatcher Evi Senn: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "guiding-light-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/return-and-audit",
+        "file": "../../assets/missions/stages/guiding-light/return-and-audit.png",
+        "sha256": "f2dc7efad2278b3a41eb023ca04ece3b9fc2c848007a98f5387585b1c42b8cf6",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 7,
+      "system": 8,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Dispatcher Evi Senn: The independent audit is complete. Your fee is 5700 CR. The operators retain the chosen settlement and their original records.\n\nDispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G08-S008",
+      "locationName": "Crimbo",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.guiding-light/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "guiding-light/close-case",
+        "file": "../../assets/missions/stages/guiding-light/close-case.png",
+        "sha256": "b42c2278724680f5769701214efb621e97e5048823428a628d5b355e114938d6",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ],
+  "gameplayProfileRef": "../gameplay/campaign-profiles.json#/profiles/guiding-light",
+  "oracleDesignRevision": "review-resolution-2026-10-24-v2",
+  "delegationPolicy": "Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.",
+  "recoveryPolicyRef": "../gameplay/recovery-policy.json",
+  "mainQuestContinuity": "Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival."
+}

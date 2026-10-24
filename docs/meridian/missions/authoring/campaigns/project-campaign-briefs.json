@@ -1,0 +1,99 @@
+{
+  "license": "MIT",
+  "briefs": [
+    {
+      "slug": "courier",
+      "title": "Signed Passage",
+      "sources": [],
+      "galaxy": 0,
+      "fee": 4300,
+      "cast": [
+        "Dispatcher Evi Senn",
+        "Nia Toren"
+      ],
+      "prop": [
+        "crate",
+        "cream-maroon"
+      ],
+      "story": "An orbital receiving service repeatedly loses custody of a harmless calibration shipment during carrier handoffs. No cargo is missing; the signatures claim delivery before a receiving cradle is assigned. The commander independently measures the handoffs, escorts a consenting receipt witness and establishes either individually signed receiving locks or a common bounded custody register. It is a complete original induction, separate from ordinary repeat courier jobs.",
+      "survey": [
+        "Scan three independent receiving cradles and their actual allocation times.",
+        "SENN: Departure is a promise. Delivery is the receiver taking this exact consignment."
+      ],
+      "work": [
+        "Verify two physical custody transfers with the identified reference crate.",
+        "TOREN: A receipt cannot arrive before its receiving cradle exists.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the independent receiving witness to the archive berth.",
+        "SENN: The witness must arrive and examine the same custody chain.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Use independently signed receiving locks",
+          "Verify the sender release and the independent receiver's physical lock.",
+          "TOREN: Neither side may invent the other's signature."
+        ],
+        [
+          "Create a shared bounded custody register",
+          "Verify the receiving ledger and the no-duplicate-consignment test.",
+          "SENN: Shared records must still describe one real crate."
+        ]
+      ],
+      "clue": [
+        "The empty destination",
+        "An early receiving receipt has an inward-curved watermark for a destination absent from all freight charts."
+      ]
+    },
+    {
+      "slug": "guiding-light",
+      "title": "The Guiding Light",
+      "sources": [
+        "P27"
+      ],
+      "galaxy": 7,
+      "fee": 5700,
+      "cast": [
+        "Dispatcher Evi Senn",
+        "Relay Engineer Ivo Renn"
+      ],
+      "prop": [
+        "lantern",
+        "petrol-brass"
+      ],
+      "story": "Crimbo's winter orbital services depend on a chain of navigation lanterns whose light-sharing contract does not account for the planet's long shadow. A maintenance crew has been routed to an unlit receiving pier. The commander measures the actual horizon, restores physical relays and escorts the crew before choosing independently maintained lantern segments or a shared winter rota.",
+      "survey": [
+        "Measure three winter-shadow lantern sight lines at Crimbo's orbital relays.",
+        "RENN: A lantern outside your line of sight is not a safe approach marker."
+      ],
+      "work": [
+        "Restore two external winter relays using the reference lantern.",
+        "SENN: Record their real receiving acknowledgements before advertising the lane.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting maintenance tender to the now-lit winter service berth.",
+        "RENN: Keep the lanterns visible through the final approach; a distant signal alone does not receive a crew.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Maintain independent winter lantern segments",
+          "Verify both local maintenance receipts and the overlapping safe horizon.",
+          "RENN: Each segment has to see the next before it can guide a traveller."
+        ],
+        [
+          "Publish a jointly maintained winter rota",
+          "Verify the signed rota and a real shadow-side receiving test.",
+          "SENN: A shared schedule needs an actual crew behind its next shift."
+        ]
+      ],
+      "clue": [
+        "The extra lantern",
+        "The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array."
+      ]
+    }
+  ]
+}

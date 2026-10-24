@@ -1,0 +1,469 @@
+{
+  "id": "l337.kind-distance",
+  "missionID": "kind-distance",
+  "title": "The Kind Distance",
+  "originKind": "new-original",
+  "subtitle": "SOL: A reply means someone chose to answer. Silence is not consent.",
+  "contacts": [
+    "Dispatcher Neris Sol",
+    "Coordinator Sera Dain"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Ravgakon in Galaxy 7, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.",
+  "story": "Two separated households want to restore contact but disagree about who may disclose their new locations. A relay broker offers to solve the problem by publishing both addresses. The commander measures private reply paths, verifies voluntary custody and helps the households choose an anonymous shared relay or individually revocable invitations. The households retain the right to decline a meeting.",
+  "playerBriefing": "SOL: A reply means someone chose to answer. Silence is not consent.",
+  "rewardCR": 5600,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The reply with no sender.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "kind-distance-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "kind-distance-reference",
+    "propForm": "receiver",
+    "palette": "cream-maroon",
+    "stageObjects": [
+      "kind-distance-reference",
+      "kind-distance-reference",
+      "kind-distance-reference",
+      "kind-distance-reference",
+      "SH061",
+      "kind-distance-reference",
+      "kind-distance-reference",
+      "kind-distance-reference",
+      "kind-distance-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.kind-distance/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "kind-distance-trace",
+    "label": "The reply with no sender",
+    "journalText": "A dormant relay preserves an inward-curved reply predating every registered household key.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/kind-distance-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "briefing": {
+      "id": "kind-distance",
+      "file": "../../assets/missions/illustrations/kind-distance.png",
+      "sha256": "0fd28cbb627f8e4a595fca2b8d9f4bcf3927208a56bfce806cfc6231233d0ca4",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Dispatcher Neris Sol",
+        "portrait": {
+          "id": "neris-sol",
+          "file": "../../assets/missions/portraits/neris-sol.png",
+          "sha256": "2f1e095e90b7f86bc2799b25a5adb0f64e1570107ff71e03dccbf86a86b01d13",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Coordinator Sera Dain",
+        "portrait": {
+          "id": "sera-dain",
+          "file": "../../assets/missions/portraits/sera-dain.png",
+          "sha256": "00fbf43416f761618a897264b8fd4e30df7f7ff47736f27c1c4d66fedfdcb787",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "kind-distance-reference",
+        "asset": {
+          "id": "kind-distance-reference",
+          "file": "../../assets/missions/props/kind-distance-reference.png",
+          "sha256": "9f266174e8c0e483b3379b57d9a2f73c4cc17e8a369443f916222ec2b82ca161",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "kind-distance/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/kind-distance-choose-settlement-plan-a.png",
+        "sha256": "8caab633ad577bdb23f9f3868dca8cc5bb7780757a0f5dc9ab2d24ed5e73ceb6",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "kind-distance/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/kind-distance-choose-settlement-plan-b.png",
+        "sha256": "89f9f185f8ff1bed18b909812d1abf5d0d612e4401b7c68c941d70ef533b9e0b",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 6,
+      "system": 46,
+      "objective": "Accept The Kind Distance at Ravgakon.",
+      "dialog": "Dispatcher Neris Sol: Two separated households want to restore contact but disagree about who may disclose their new locations. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G07-S046",
+      "locationName": "Ravgakon",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/accept",
+        "file": "../../assets/missions/stages/kind-distance/accept.png",
+        "sha256": "64e574e12ef63d00ab6c8f00aa1de9c59c7416f062fc970a306323296bfd1537",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 6,
+      "system": 46,
+      "objective": "Collect the identified one-tonne reference instrument from Dispatcher Neris Sol.",
+      "dialog": "Dispatcher Neris Sol: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G07-S046",
+      "locationName": "Ravgakon",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "kind-distance-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/collect-reference",
+        "file": "../../assets/missions/stages/kind-distance/collect-reference.png",
+        "sha256": "50d37f17da8676559e5d09821bf89f0b4370077fc2778f5ced325f865fbad346",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 6,
+      "system": 252,
+      "objective": "Test three actual private reply relays without requesting household address disclosure.",
+      "dialog": "SOL: A reply means someone chose to answer. Silence is not consent.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "kind-distance-survey-1",
+        "kind-distance-survey-2",
+        "kind-distance-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G07-S252",
+      "locationName": "Rakdek",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/survey",
+        "file": "../../assets/missions/stages/kind-distance/survey.png",
+        "sha256": "b13918cf311da5d547fb72cb75220cc41b3897216753751a18b50c1754ad4a61",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 6,
+      "system": 235,
+      "objective": "Run two distinct challenge/reply exchanges through the onboard passive receiver and revoke one test invitation.",
+      "dialog": "DAIN: The message may cross the boundary. The address must not follow without permission.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "kind-distance-work-port",
+        "kind-distance-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G07-S235",
+      "locationName": "Ravvaesh",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/field-work",
+        "file": "../../assets/missions/stages/kind-distance/field-work.png",
+        "sha256": "46f8b9635c05f02d8673164c3e884dea10617b15924227c40e2beb2847579bd9",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 6,
+      "system": 202,
+      "objective": "Verify actual safe transit and living reception of the consenting relay custodian to the independent privacy hearing berth.",
+      "dialog": "SOL: The custodian can confirm the rules without carrying either household.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "kind-distance-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G07-S202",
+      "locationName": "Zoraresh",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/independent-witness",
+        "file": "../../assets/missions/stages/kind-distance/independent-witness.png",
+        "sha256": "8c5f3e6eabf1104931ec374cc9a3f805b2e30a856d273921bf345ca76f7010cb",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 6,
+      "system": 202,
+      "objective": "At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.",
+      "dialog": "Dispatcher Neris Sol: Your revocable anonymous reply protocol evidence is ready. Our arrived delegates have the signed mandate to choose here. Either use an anonymous shared reply relay or issue individually revocable invitations. Compare the actual tests and consequences before confirming; closing this view chooses neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "kind-distance-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Use an anonymous shared reply relay",
+        "Issue individually revocable invitations"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G07-S202",
+      "locationName": "Zoraresh",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/choose-settlement",
+        "file": "../../assets/missions/stages/kind-distance/choose-settlement.png",
+        "sha256": "3701d6c41a44f835fba3b75276ca02e888578ef188fb8a171fe92757ca2798cc",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 6,
+      "system": 235,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Dispatcher Neris Sol: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "kind-distance-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "kind-distance-plan-a-physical-proof",
+            "kind-distance-plan-a-receiving-proof"
+          ],
+          "objective": "Verify independent revocation and a consented reply receipt.",
+          "dialog": "DAIN: Either household may close its path without closing the other's.",
+          "gossip": "The Kind Distance: Use an anonymous shared reply relay."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "kind-distance-plan-b-physical-proof",
+            "kind-distance-plan-b-receiving-proof"
+          ],
+          "objective": "Verify both invitation controls and their expiry test.",
+          "dialog": "SOL: An invitation is not an obligation to travel.",
+          "gossip": "The Kind Distance: Issue individually revocable invitations."
+        }
+      ],
+      "locationKey": "G07-S235",
+      "locationName": "Ravvaesh",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/apply-settlement",
+        "file": "../../assets/missions/stages/kind-distance/apply-settlement.png",
+        "sha256": "fce82158576ed2b75a71af5dae57b3838432c52b87b9824fdd2ecba23f3bdbb7",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 6,
+      "system": 46,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Dispatcher Neris Sol: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G07-S046",
+      "locationName": "Ravgakon",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "kind-distance-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/return-and-audit",
+        "file": "../../assets/missions/stages/kind-distance/return-and-audit.png",
+        "sha256": "38e09d54ed92bed6e4d982a5ca93886bc8d000abd86612798071c42e074f4b9a",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 6,
+      "system": 46,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Dispatcher Neris Sol: The independent audit is complete. Your fee is 5600 CR. The operators retain the chosen settlement and their original records.\n\nDispatcher Neris Sol: The audit has left one anomaly that belongs to neither side. A dormant relay preserves an inward-curved reply predating every registered household key. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G07-S046",
+      "locationName": "Ravgakon",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.kind-distance/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "kind-distance/close-case",
+        "file": "../../assets/missions/stages/kind-distance/close-case.png",
+        "sha256": "17fa91977f6fe75eda252f4ebf73f32cb0a1dcb6c15c5d5111a973057e1c7de5",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ],
+  "gameplayProfileRef": "../gameplay/campaign-profiles.json#/profiles/kind-distance",
+  "oracleDesignRevision": "review-resolution-2026-10-24-v2",
+  "delegationPolicy": "Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.",
+  "recoveryPolicyRef": "../gameplay/recovery-policy.json",
+  "mainQuestContinuity": "Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival."
+}

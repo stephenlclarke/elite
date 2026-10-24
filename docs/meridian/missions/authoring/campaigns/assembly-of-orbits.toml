@@ -1,0 +1,240 @@
+# Private campaign design schema; not installed in the game.
+id = "l337.assembly-of-orbits"
+missionID = "assembly-of-orbits"
+title = "An Assembly of Orbits"
+originKind = "new-original"
+subtitle = "VOSS: A share certificate cannot stand in for the people on the next shift."
+contacts = ["Marshal Nera Voss", "Coordinator Sera Dain"]
+ships = ["SH001", "SH061"]
+offer = "At Irkenan in Galaxy 7, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold."
+story = "A cluster of orbital homes must share a single transfer corridor during a maintenance season. Old voting records count property shares but omit the crews who keep the corridor open. The commander verifies real occupancy and operating work, escorts delegates and establishes either rotating worker stewardship or publicly bounded berth representation."
+playerBriefing = "VOSS: A share certificate cannot stand in for the people on the next shift."
+rewardCR = 7700
+completionBenefit = "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The absent seat."
+branchPolicy = "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue."
+items = [{ id = "assembly-of-orbits-reference", massTonnes = 1, acquireStage = "collect-reference", consumeStage = "return-and-audit" }]
+interactionNotes = ["Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.", "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.", "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.", "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."]
+authoringArt = { propID = "assembly-of-orbits-reference", propForm = "console", palette = "cream-maroon", stageObjects = ["assembly-of-orbits-reference", "assembly-of-orbits-reference", "assembly-of-orbits-reference", "assembly-of-orbits-reference", "SH061", "assembly-of-orbits-reference", "assembly-of-orbits-reference", "assembly-of-orbits-reference", "assembly-of-orbits-reference"] }
+schema = "l337-mission-design/1"
+version = "1.0.0"
+license = "MIT"
+status = "Private original story and stage design; not a runnable pack for the current engine"
+authoredSource = "Original L337 narrative, objectives, dialogs, locations and rewards"
+terminalStage = "complete"
+rewardReceipt = "l337.assembly-of-orbits/final-payment"
+rewardPolicy = "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue."
+identityPolicy = "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type."
+persistencePolicy = "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported."
+engineWork = "Implement/verify the event contracts in ENGINE-CONTRACT.md before declaring this pack playable. Current native special-case bindings are superseded by mission-scoped events in the proposed version."
+completionClue = { questID = "l337.unwritten-route", clueID = "assembly-of-orbits-trace", label = "The absent seat", journalText = "The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists.", massTonnes = 0, uniquePerSource = true, receipt = "l337.unwritten-route/clue/assembly-of-orbits-trace", awardWithSuccessfulTerminal = true }
+artwork = { manifest = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json", manifestSHA256 = "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904", briefing = { id = "assembly-of-orbits", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/illustrations/assembly-of-orbits.png", sha256 = "40c4bcd9d9fc18077529a152745207baa3875eb7671bdfbc79533a89142520a4", visibility = "Current mission briefing" }, contacts = [{ name = "Marshal Nera Voss", portrait = { id = "nera-voss", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/nera-voss.png", sha256 = "ef89437d6acf73621448ed87545203708666b3f84902e5f1457a6f467fdd2232", visibility = "Current mission briefing" } }, { name = "Coordinator Sera Dain", portrait = { id = "sera-dain", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/sera-dain.png", sha256 = "00fbf43416f761618a897264b8fd4e30df7f7ff47736f27c1c4d66fedfdcb787", visibility = "Current mission briefing" } }], ships = [{ id = "SH001", asset = { id = "SH001", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH001.png", sha256 = "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }, { id = "SH061", asset = { id = "SH061", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH061.png", sha256 = "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }], items = [{ id = "assembly-of-orbits-reference", asset = { id = "assembly-of-orbits-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/props/assembly-of-orbits-reference.png", sha256 = "cd18176e862ecd7f5d704a32200ccc984dbb77277f5d8698323f95d67b391cef", visibility = "Current mission briefing" } }], outcomes = [{ id = "assembly-of-orbits/choose-settlement/plan-a", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/assembly-of-orbits-choose-settlement-plan-a.png", sha256 = "693c6f94fa1afba3f7b9150a115f2ddc9f7c9bf714a2d6e17d32aecfb42496c6", visibility = "Only the actual committed branch" }, { id = "assembly-of-orbits/choose-settlement/plan-b", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/assembly-of-orbits-choose-settlement-plan-b.png", sha256 = "81803f5b54a8a379b545ff76359b448368b81cb83f4d9e955ea106155a55fd54", visibility = "Only the actual committed branch" }] }
+
+[[stages]]
+id = "accept"
+galaxy = 6
+system = 7
+objective = "Accept An Assembly of Orbits at Irkenan."
+dialog = "Marshal Nera Voss: A cluster of orbital homes must share a single transfer corridor during a maintenance season. Review the complete survey, loan and receiving requirements before confirming."
+event = "mission_contact_confirmed"
+requiredTargets = ["accept-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G07-S007"
+locationName = "Irkenan"
+next = "survey"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/accept"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/accept", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/accept.png", sha256 = "0f4bbde6d47dcddc036702a9dfddfdb19c2a4e22ed8116ec5b87859f1080e76f", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "survey"
+galaxy = 6
+system = 43
+objective = "Compare three consented occupancy and corridor-work registers."
+dialog = "VOSS: A share certificate cannot stand in for the people on the next shift."
+event = "entity_scan_completed"
+requiredTargets = ["assembly-of-orbits-survey-1", "assembly-of-orbits-survey-2", "assembly-of-orbits-survey-3"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G07-S043"
+locationName = "Darik"
+next = "collect-reference"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/survey"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/survey", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/survey.png", sha256 = "6f816e219fb123dd300c41f60d7cf5592f2a5167dc03bf11fe7365fa1ee19960", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "collect-reference"
+galaxy = 6
+system = 7
+objective = "Collect the identified one-tonne reference instrument from Marshal Nera Voss."
+dialog = "Marshal Nera Voss: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity."
+event = "mission_contact_confirmed"
+requiredTargets = ["collect-reference-verified"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G07-S007"
+locationName = "Irkenan"
+next = "field-work"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/collect-reference"
+itemEffects = [{ kind = "add", item = "assembly-of-orbits-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/collect-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/collect-reference.png", sha256 = "22a56cf47f7803734711ddc2f79d1f10f5574cd648b887b7ffa56bd7acd15381", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "field-work"
+galaxy = 6
+system = 32
+objective = "Run two independent corridor-capacity tests with the loaned assembly console."
+dialog = "DAIN: Show every group the same limits before asking it to choose."
+event = "mission_action_confirmed"
+requiredTargets = ["assembly-of-orbits-work-port", "assembly-of-orbits-work-starboard"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G07-S032"
+locationName = "Brekudek"
+next = "independent-witness"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/field-work"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/field-work", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/field-work.png", sha256 = "62919f326fbe958b950c734c15c1fbada7b6a9e420173dd6d472ddb047fc8a40", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "independent-witness"
+galaxy = 6
+system = 148
+objective = "Escort the consenting delegate tender to the neutral assembly berth."
+dialog = "VOSS: The hearing requires received delegates, not an empty passenger manifest."
+event = "escort_arrived"
+requiredTargets = ["assembly-of-orbits-witness-received"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G07-S148"
+locationName = "Kagakon"
+next = "choose-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/independent-witness"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/independent-witness", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/independent-witness.png", sha256 = "2972937cddad49e5b4bf0ab80e21307282d27de08b10be8b47cb391eedaed7f2", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "choose-settlement"
+galaxy = 6
+system = 7
+objective = "Choose the verified settlement with the consenting operators."
+dialog = "Marshal Nera Voss: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither."
+event = "mission_choice_confirmed"
+requiredTargets = ["assembly-of-orbits-settlement-choice"]
+interactionItemMassTonnes = 1
+choices = ["Rotate corridor stewardship among working crews", "Use bounded public berth representation"]
+choiceIDs = ["plan-a", "plan-b"]
+locationKey = "G07-S007"
+locationName = "Irkenan"
+next = "apply-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/choose-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/choose-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/choose-settlement.png", sha256 = "ca009f4ff13401395ed22518339364f22a0a6ae83cebfeb90f9c73c7ec248a13", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "apply-settlement"
+galaxy = 6
+system = 32
+objective = "Verify both independent proofs for the selected settlement."
+dialog = "Marshal Nera Voss: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof."
+event = "mission_action_confirmed"
+requiredTargets = ["assembly-of-orbits-settlement-summary"]
+interactionItemMassTonnes = 1
+choices = []
+branchStage = "choose-settlement"
+branchVariants = [{ choiceID = "plan-a", event = "mission_action_confirmed", requiredTargets = ["assembly-of-orbits-plan-a-physical-proof", "assembly-of-orbits-plan-a-receiving-proof"], objective = "Verify the rota and each crew's stop authority.", dialog = "DAIN: Rotation needs a safe handover, not a race to the controls.", gossip = "An Assembly of Orbits: Rotate corridor stewardship among working crews." }, { choiceID = "plan-b", event = "mission_action_confirmed", requiredTargets = ["assembly-of-orbits-plan-b-physical-proof", "assembly-of-orbits-plan-b-receiving-proof"], objective = "Verify the published representation register and capacity cap.", dialog = "VOSS: No vote can create more corridor than the measured envelope.", gossip = "An Assembly of Orbits: Use bounded public berth representation." }]
+locationKey = "G07-S032"
+locationName = "Brekudek"
+next = "return-and-audit"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/apply-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/apply-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/apply-settlement.png", sha256 = "1bf6593ab153eea2791d545cab02ec867dd3e654d039068b3ad3d5357026460c", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "return-and-audit"
+galaxy = 6
+system = 7
+objective = "Return the reference instrument and confirm all physical receiving and settlement receipts."
+dialog = "Marshal Nera Voss: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case."
+event = "mission_contact_confirmed"
+requiredTargets = ["return-and-audit-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G07-S007"
+locationName = "Irkenan"
+next = "close-case"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/return-and-audit"
+itemEffects = [{ kind = "remove", item = "assembly-of-orbits-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/return-and-audit", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/return-and-audit.png", sha256 = "f22b8744c8f2e5dc4925dba823f3d23fbc60b5e573effd33ed2beb77af55e126", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "close-case"
+galaxy = 6
+system = 7
+objective = "Confirm successful completion, the recorded settlement and the once-only fee."
+dialog = "Marshal Nera Voss: The independent audit is complete. Your fee is 7700 CR. The operators retain the chosen settlement and their original records.\n\nMarshal Nera Voss: The audit has left one anomaly that belongs to neither side. The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists. It is preserved in your journal for the AI at PLUGH."
+event = "mission_contact_confirmed"
+requiredTargets = ["close-case-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G07-S007"
+locationName = "Irkenan"
+next = "complete"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.assembly-of-orbits/close-case"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "assembly-of-orbits/close-case", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/assembly-of-orbits/close-case.png", sha256 = "bd36864b90327da16baacd6e7ec82e4b6aeb95a48467fef21a2bba6c53d766a7", visibility = "Mission stage briefing and completed history" }

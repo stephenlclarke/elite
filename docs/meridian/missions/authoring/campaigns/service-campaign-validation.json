@@ -1,0 +1,13 @@
+{
+  "status": "Private reference-model checks passed",
+  "checks": [
+    "Both energy settlements conserve 900 units and pay/clue exactly once after real rescue and tool return",
+    "All six service families verify stage, target, custody and receiver; quote and save replay never duplicate payment or clues",
+    "Aggregate cargo and three-active-contract limits reject atomically; uncollected cancellation releases only its real reservation",
+    "Pickup arms budgets; pause and current saves preserve them; spoiled/lost work pays nothing and cannot recreate stock"
+  ],
+  "campaigns": 2,
+  "repeatableFamilies": 6,
+  "runtimePlaytested": false,
+  "gameModified": false
+}

@@ -1,0 +1,208 @@
+{
+  "schema": "l337.salvage-ux/1",
+  "title": "Capital ship and asteroid targeting: hold, destroy or extract",
+  "date": "2026-10-18",
+  "status": "Private proposal clarification; implementation and handoff are not authorised.",
+  "intent": "Targeting establishes a safe hold relative to a capital ship or asteroid. Acquiring any disabled ship for salvage automatically selects the fitted Salvage Cutter; acquiring an asteroid automatically selects the fitted Mining Laser. The player may then select Main Laser to destroy the target instead.",
+  "definition": "Geostationary orbit means target-relative station keeping here: match the target's drift and rotation and remain at a safe working offset from its surface. It does not mean parking at a fixed world coordinate or adding a planetary gravity simulation.",
+  "precedence": "This clarification controls tool keys, acquisition defaults and capital/asteroid hold behaviour. Tool defaults apply immediately on acquisition, before approach/hold completes, and apply to any disabled salvage ship, not only capital ships. Automatic hold is not restricted to abandoned targets, and choosing or firing the Main Laser does not cancel it. Salvage eligibility, ownership, station protection, equipment, capacity and physical safety rules still apply.",
+  "bindings": [
+    {
+      "key": "Tab",
+      "action": "Next target",
+      "behaviour": "Cycle eligible targets in the current filter; acquire the selected target, apply its fitted tool default immediately and start its permitted guidance. Do not add a duplicate targeting key."
+    },
+    {
+      "key": "F",
+      "action": "Target filter",
+      "behaviour": "Cycle Ships / Mining / Salvage / All. Show the active filter. Mining includes asteroids; Salvage includes capital-sized ships, wrecks and compatible loose salvage, with ownership shown before any extraction."
+    },
+    {
+      "key": "W",
+      "action": "Change weapon",
+      "behaviour": "Cycle equipped Main Laser, Mining Laser, Salvage Cutter and EMP Blaster. Update the persistent weapon indicator immediately; retain the current hold."
+    },
+    {
+      "key": "Return",
+      "action": "Fire",
+      "behaviour": "Hold Return to operate the selected weapon: fire the Main Laser, mine with the Mining Laser, cut with the Salvage Cutter, or charge/fire EMP. Release to stop the held action. Require a fresh press after a weapon change, readiness transition or interruption. Releasing Return retains the hold."
+    },
+    {
+      "key": "I",
+      "action": "Target details",
+      "behaviour": "Expand or collapse the existing target panel, retaining the target and hold."
+    },
+    {
+      "key": "Q",
+      "action": "Release hold",
+      "behaviour": "End automatic hold/guidance and stop the active tool. Return control to the player while preserving momentum."
+    },
+    {
+      "key": "E",
+      "action": "ECM",
+      "behaviour": "Activate fitted ECM directly, subject to actual energy and cooldown requirements. ECM stays separate from weapon selection."
+    }
+  ],
+  "targets": [
+    {
+      "target": "Capital ship or large wreck",
+      "guidance": "Targeting core and Salvage Module",
+      "extract": "Salvage Cutter and Fuel Scoops",
+      "destroy": "Main Laser; hold remains engaged while firing"
+    },
+    {
+      "target": "Disabled ship or wreck of any size",
+      "guidance": "Targeting core and Salvage Module",
+      "extract": "Salvage Cutter selected automatically on acquisition; Fuel Scoops collect released material",
+      "destroy": "W selects Main Laser; hold remains engaged while firing"
+    },
+    {
+      "target": "Asteroid",
+      "guidance": "Targeting core and Mining Module",
+      "extract": "Mining Laser and Fuel Scoops",
+      "destroy": "Main Laser; hold remains engaged while firing"
+    },
+    {
+      "target": "Single-scoop loose salvage or ore",
+      "guidance": "Targeting core, matching Salvage or Mining Module, and Fuel Scoops",
+      "extract": "Automatic safe approach and scoop; no extraction tool or second confirmation",
+      "destroy": "Manual fire remains subject to the selected tool, line of sight and protection rules"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Acquire and hold",
+      "rules": [
+        "Selecting a capital-sized ship or asteroid automatically approaches a safe surface-relative work position and matches drift and spin when the matching guidance module is installed. Acquisition never fires a tool. Show APPROACHING, MATCHING MOTION, HOLDING or an explicit BLOCKED reason.",
+        "The hull's actual surface and swept protrusions determine clearance. Work within the selected tool's real range, acceleration and manoeuvring limits. Refuse an impossible hold safely, without teleporting, collision-producing pursuit or unlimited thrust.",
+        "Hold continues between extraction bursts, after switching to the Main Laser, while the Main Laser fires, after a section is depleted and while released material is collected. A combat tool choice is not a request to leave orbit.",
+        "The large target remains the primary lock. Collecting a fragment or changing an accessible work section never substitutes a child object for the parent ship or asteroid.",
+        "Missing Mining/Salvage Module prevents that specialized automatic hold and reports the precise requirement. Ordinary manual flight, main-laser targeting and manual use of actually fitted work tools remain available. Core tier alone does not grant either specialist module."
+      ]
+    },
+    {
+      "title": "Choose destruction or extraction",
+      "rules": [
+        "Immediately on acquiring any disabled ship for salvage, automatically select the fitted Salvage Cutter. Immediately on acquiring an asteroid, automatically select the fitted Mining Laser. Do not wait for stable hold. This is selection only: extraction remains inhibited until safe range, aim, motion and permissions are satisfied, followed by a fresh Return press.",
+        "Apply the default once for each new target acquisition, regardless of the tool used on the previous target. W can override it for the current target. Completing approach or refreshing the HUD must not overwrite that current-target choice or repeatedly reselect the default.",
+        "After the automatic selection, W allows the player to choose Main Laser instead, then a fresh held Return fires it while maintaining the same hold. W can select the appropriate extraction tool again without another approach or target selection.",
+        "If the extraction tool is absent, state Salvage Cutter not fitted or Mining Laser not fitted and retain a safe hold. Never replace an attempted extraction shot with combat fire. The player may explicitly select an equipped Main Laser and press Return to destroy the target.",
+        "A wreck can be cut only at an eligible recoverable section. Occupied, claimed or mission-protected targets display their state; merely holding position does not make them abandoned or grant salvage rights. A living ship must meet the existing abandonment/disablement and custody rules before extraction is enabled.",
+        "Active stations retain their docking action and protection; this capital-ship hold rule does not convert an operational station into a destructible salvage target.",
+        "Main Laser damage follows normal combat and legal rules. Destroying an asteroid produces much smaller collectible chunks with total recoverable mass strictly below 5% of the original rock; the rest disintegrates permanently. This is poor-yield salvage, not normal Mining Laser extraction. Destruction of ship systems can lose recoverable components. Depletion, destruction and disappearance are separate outcomes."
+      ]
+    },
+    {
+      "title": "Cut, mine and collect",
+      "rules": [
+        "Held Return operates only the explicitly selected tool. The Main Laser uses the current supported combat mount; Mining Laser uses its supported mining facing and a corresponding safe work pose; Salvage Cutter uses its separate utility fitting. Changing tool does not replace or remove any combat laser.",
+        "Mining or cutting automatically enables fitted Fuel Scoops for reachable released material. No extra scoop activation, fragment retargeting or Auto salvage confirmation is needed.",
+        "Collect through the real scoop aperture with safe relative movement and sufficient unreserved hold space. No cargo teleport or unbounded tractor effect. An inaccessible or oversized lot stays in space and produces a clear reason.",
+        "Releasing Return stops the beam but retains target-relative hold. Already reachable material can finish collection. Finite section progress, remaining ore and issued item identities survive retargeting and current-format save/load without rerolling or duplication.",
+        "A destroyed parent ends its hold and reports destruction. A fully extracted parent that still exists reports Salvage complete or Mining complete and stays selected in a safe hold until cancelled. A successfully scooped single item reports Collected rather than Target lost."
+      ]
+    },
+    {
+      "title": "Normal laser breakup of asteroids",
+      "rules": [
+        "Selecting the intact asteroid establishes safe target-relative hold with the Mining Module. Changing to Main Laser and firing preserves hold until the parent actually breaks apart; then its hold ends safely and real surviving chunks remain in space.",
+        "The asteroid breaks into a small number of much smaller physical collectible chunks. More than 95% of the intact mass being shattered disintegrates and is permanently unrecoverable.",
+        "All collectible chunks and their descendants share one finite mass budget strictly below 5% of the immutable original mass recorded for that breakup. Count previously collected destruction debris against that same budget. Further chunk breakup never creates a fresh mass basis or budget.",
+        "Convert to authoritative commodity mass units and round down. Never round a small yield up to one unit if that meets or exceeds the 5% bound. If no supported collectible unit fits, the remaining dust yields no collectible chunk.",
+        "Ordinary rock/mineral debris from the asteroid composition, with no generic ship-technology reward. Existing legitimate mining lots are separate and must not be copied into the destruction yield.",
+        "Collect surviving chunks physically through fitted scoops and the existing aperture/capacity rules. The Mining Module supports automatic collection of asteroid material; no additional Salvage Module is required. Selecting one loose compatible chunk uses the existing one-item automatic approach/collection.",
+        "Resolve and persist the breakup and its chunk identities once. Retargeting, culling, revisiting, NPC collection and current-format save/load must never reroll or replenish this mass budget."
+      ]
+    },
+    {
+      "title": "HUD and help",
+      "rules": [
+        "The selected-weapon indicator is mandatory and persistent in every flight view, with no target required and even when the target panel is collapsed. Reserve a readable row immediately above the scanner. Always name the actual selected fitting and its current readiness/activity; do not rely on colour, beam appearance or a temporary message.",
+        "Use the same contextual footer in every flight view: W: CHANGE WEAPON | RETURN: FIRE | E: ECM | Q: RELEASE HOLD. The persistent WEAPON indicator names Main Laser, Mining Laser, Salvage Cutter or EMP Blaster and its actual state. Do not relabel Return as Mine, Cut or Charge; these describe weapon behaviour beneath the common Fire action.",
+        "The target panel shows the accessible highlighted section, remaining salvage and known recoverability/compatibility. Tool switching and details remain available while holding. Keep text readable without overlap in compact and full-screen views.",
+        "The same Tab, F, W, Return, I, Q and E definitions and selected-weapon names must appear in README controls, equipment descriptions, mining/salvage guides, contextual help and control menus after implementation. Capital-ship and asteroid examples must demonstrate both destruction and extraction.",
+        "Also retain target identity/type, ownership/protection, filter, approach/hold state, surface clearance, relative drift/spin, heat/energy and free cargo capacity where relevant, without crowding or obscuring the selected-weapon row.",
+        "The proposal README and every help-screen Flight controls block are generated from gameplay-design/controls.json. Its four key/action pairs are authoritative; context-specific menu confirmation stays visibly separate."
+      ]
+    },
+    {
+      "title": "Manual takeover and interruptions",
+      "rules": [
+        "Q, deliberate manual steering/throttle or selecting another primary target ends guidance immediately and stops the tool, preserving momentum. W and Return are tool inputs, not manual flight overrides.",
+        "Changing the target filter cancels the current automatic hold and firing before the new selection cycle. Opening target details does not cancel or secretly retarget it.",
+        "Incoming attack interrupts extraction and warns. Any safety cancellation is visible and does not silently re-engage; require a fresh player command and a fresh Return press before tool use resumes. Space combat, heat and collisions remain live during hold.",
+        "XYZZY explicitly fits both specialist modules, Mining Laser, Salvage Cutter and Fuel Scoops. Resource cheats remain independent; tool selection still never fires automatically."
+      ]
+    }
+  ],
+  "acceptance": [
+    "Acquire an asteroid while Main Laser or Salvage Cutter was previously selected: fitted Mining Laser is selected immediately, before approach completes. No beam fires until hold is safe and a fresh Return is held. Mine and collect ore physically, release Return and remain holding.",
+    "From the same asteroid hold, W selects Main Laser; held Return fires without cancelling guidance. Actual destruction breaks the parent into much smaller chunks; sum of all normal-laser salvage and descendant fragments is strictly less than 5% of original asteroid mass. More than 95% is permanently lost, and the parent hold ends only when the parent breaks apart.",
+    "Acquire an abandoned capital ship: match drift/spin, cut an accessible section, collect released lots and keep the original parent lock. Switch W to Main Laser and fire while hold remains stable.",
+    "Acquire disabled salvage ships of both small and capital size with Mining Laser or Main Laser previously selected: fitted Salvage Cutter is selected immediately. A subsequent W override survives approach completion and repeated HUD updates; acquiring another target applies that new target's default again.",
+    "Acquire a non-abandoned capital ship with valid guidance: approach/hold is independent of salvage permission. Protection/custody rules block inappropriate cutting; main-laser attack retains its actual legal consequences.",
+    "Missing work tool preserves a safe hold with a precise message; explicitly choosing Main Laser still works. Missing module refuses specialized hold. Missing scoops/full hold leaves actual items recoverable.",
+    "Switch W, become ready or interrupt while Return is already held: no newly selected tool fires until release and a fresh press. Releasing Return alone never releases hold.",
+    "Q/manual takeover cancels safely. Depleted-but-present target remains held; real destruction ends its hold; successful single-item collection is not reported as loss.",
+    "Verify pointer/menu equivalents, contextual tool labels and matching controls/help at compact and full-screen sizes. Validate actual simulation, current-format persistence and native controls before claiming release completion.",
+    "In front, rear and side views, every drawing mode, compact and full-screen sizes, with no target or a collapsed target panel: the selected-weapon indicator remains visible and agrees with the fitting Return will operate. W and automatic target defaults update it before any next shot; charging, firing, heat/cooldown and blocked states come from actual runtime data. Missing fittings show an explicit state, and ECM activation does not substitute the selected weapon.",
+    "Compare the proposal README, every generated help topic, salvage controls table and contextual footer against gameplay-design/controls.json: W Change weapon, Return Fire, E ECM, Q Release hold. Future runtime acceptance must enumerate every actual help screen and reject stale keys or conflicting action labels.",
+    "Test the destructive asteroid yield at below/exactly/above 5%, tiny masses and commodity-unit boundaries: exactly 5% is refused. Repeated hits, further chunk breakup, partial mining, NPC collection, culling and current-format save/load cannot duplicate material or reset the original breakup budget. Supported surviving chunks remain physically scoopable with finite cargo space."
+  ],
+  "selectionDefaults": [
+    {
+      "target": "Any disabled ship targeted for salvage",
+      "tool": "Salvage Cutter",
+      "when": "Immediately on acquiring the salvage target, if fitted"
+    },
+    {
+      "target": "Asteroid",
+      "tool": "Mining Laser",
+      "when": "Immediately on acquiring the asteroid target, if fitted"
+    }
+  ],
+  "weaponIndicator": {
+    "label": "WEAPON",
+    "placement": "Persistent instrument row immediately above the central scanner, using reserved layout space. Keep it visible in every flight view and drawing mode, with or without a target or expanded target panel, at compact and full-screen sizes.",
+    "content": "Show the currently selected Main Laser, Mining Laser, Salvage Cutter or EMP Blaster, followed by its actual state. For Main Laser also show the fitted laser variant and current mount/view where space permits. Use NONE only when no compatible weapon/tool is fitted; a temporarily blocked fitting retains its name and the reason.",
+    "states": [
+      "READY",
+      "FIRING",
+      "MINING",
+      "CUTTING",
+      "CHARGING",
+      "COOLDOWN",
+      "OVERHEATED",
+      "NO ENERGY",
+      "NOT FITTED",
+      "WAITING FOR HOLD",
+      "BLOCKED"
+    ],
+    "stateAuthority": "Read selected fitting, readiness, charging progress, cooldown and obstruction from authoritative runtime state. Do not infer the selected weapon from target type, the last beam drawn or a transient notification. Show one applicable current state; selection alone never implies readiness or firing.",
+    "updates": "Refresh immediately on W changes, automatic cutter/mining selection, fitting changes and view/mount changes. The same selected-weapon authority determines what Return operates and what the HUD names. Update the label before accepting another tool-use input.",
+    "presentation": "Keep the weapon name visible continuously, not only in a toast, target detail panel or help screen. Status uses words as well as optional colour. Preserve the compact fixed font and a reserved row so it cannot overlap scanner, shields, missile rack or contextual help.",
+    "examples": [
+      "WEAPON: MAIN LASER (FRONT) | READY",
+      "WEAPON: MINING LASER | MINING",
+      "WEAPON: SALVAGE CUTTER | WAITING FOR HOLD",
+      "WEAPON: EMP BLASTER | CHARGING 65%",
+      "WEAPON: NONE"
+    ],
+    "exampleNotice": "Examples describe the proposed display only. Numeric charge progress must come from the actual charge state.",
+    "help": "W: CHANGE WEAPON | RETURN: FIRE | E: ECM | Q: RELEASE HOLD. Keep this same control wording for every weapon; explain mining, cutting or EMP charging through the weapon name, actual activity state and secondary help text."
+  },
+  "sharedControls": "gameplay-design/controls.json",
+  "normalLaserAsteroidBreakup": {
+    "trigger": "Normal combat laser destroys an asteroid; Mining Laser extraction is a separate process.",
+    "recoverableFractionUpperBound": 0.05,
+    "upperBoundExclusive": true,
+    "massBasis": "Record the intact mass immediately before the first destructive breakup as the immutable original mass for that breakup. It cannot exceed the original creation mass or remaining unextracted mass. Earlier legitimate mining lots remain separate.",
+    "result": "The asteroid breaks into a small number of much smaller physical collectible chunks. More than 95% of the intact mass being shattered disintegrates and is permanently unrecoverable.",
+    "budget": "All collectible chunks and their descendants share one finite mass budget strictly below 5% of the immutable original mass recorded for that breakup. Count previously collected destruction debris against that same budget. Further chunk breakup never creates a fresh mass basis or budget.",
+    "units": "Convert to authoritative commodity mass units and round down. Never round a small yield up to one unit if that meets or exceeds the 5% bound. If no supported collectible unit fits, the remaining dust yields no collectible chunk.",
+    "contents": "Ordinary rock/mineral debris from the asteroid composition, with no generic ship-technology reward. Existing legitimate mining lots are separate and must not be copied into the destruction yield.",
+    "persistence": "Resolve and persist the breakup and its chunk identities once. Retargeting, culling, revisiting, NPC collection and current-format save/load must never reroll or replenish this mass budget.",
+    "collection": "Collect surviving chunks physically through fitted scoops and the existing aperture/capacity rules. The Mining Module supports automatic collection of asteroid material; no additional Salvage Module is required. Selecting one loose compatible chunk uses the existing one-item automatic approach/collection.",
+    "hold": "Selecting the intact asteroid establishes safe target-relative hold with the Mining Module. Changing to Main Laser and firing preserves hold until the parent actually breaks apart; then its hold ends safely and real surviving chunks remain in space."
+  }
+}

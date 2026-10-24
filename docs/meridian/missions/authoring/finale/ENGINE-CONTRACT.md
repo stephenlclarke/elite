@@ -1,0 +1,37 @@
+# The Unwritten Route: engine and UI contract
+
+This is a private design specification, not an installed mission pack. It adds a shared mystery to the completed mission proposals. The current app must implement and validate these contracts before playability can be claimed. All journal records, completion receipts, encounter ownership, combat attribution and fabrication permissions belong to GameRuntime. AppKit submits confirmed intents on the main actor.
+
+## Mission rewards and clue collection
+
+Each of the 39 campaigns grants its distinct clue only after verified terminal completion; every legitimate successful branch qualifies. Signed Passage and The Guiding Light require their complete new investigation, physical handoffs and audit, rather than a partial delivery or loan return. Each of the 21 repeatable families and four tutorials contributes its own distinct first-success clue. Donations qualify through the real recipient's settlement, training through actual completed practice, and delivery through exact-consignment reception. Failure, abandonment, incidental payments and repeated completions cannot supply another source. Commit each clue atomically with that source's actual terminal settlement, never merely because credits changed.
+
+Clues are permanent, zero-mass commander journal records. They survive normal ship changes, escape-pod use, saving and loading. Do not place them in saleable cargo or require free hold space. Every commander starts with no clues and uses the same current 64-clue base set, `l337.base-missions`, including The Still Current's resting arc and completed Wayfarer Exchange induction's unbooked window. Exchange repeat services grant their own distinct first-success family clues and never impersonate these or the separate dispatch clue. Test exact required-ID inclusion; repeated completions cannot stand in for a missing clue. Optional future paid packs are not prerequisites for this base-game mystery.
+
+The journal lists the 64 source missions, collected clues and progress such as Clues 3/64. The last required distinct clue also supplies a normal navigation beacon to PLUGH if needed, so a player can complete this mystery without finding a cheat command. Reveal a stable local PLUGH entry and save its position. PLUGH remains system identity 256 in each galaxy. Identifying a station as PLUGH requires its registered station kind and identity, not its displayed name.
+
+## Decoding and trail visibility
+
+At any PLUGH station, the AI offers Decode collected traces. An incomplete collection shows the missing source clues. With the complete collection, Confirm commits the decoder receipt and reveals the first instruction; Esc changes nothing. Repeated visits preserve progress instead of restarting it. Do not consume or erase the clue records after decoding.
+
+The four flight objectives unlock in order. Show only the current instruction, marked target, progress count and completed history; later destinations and Medusa's identity remain hidden. Each scan/action must refer to the current mission instance, physical target and world identity. Preserve partial objective evidence, prevent repeated scans of one node from satisfying multiple nodes, and regenerate lost noncompleted objective entities after a load or culling. At Berilir, require distinct evidence from all three marked echoes; repeating one echo cannot complete the objective. At Ranenor, the alignment waypoints should work whenever the player arrives; use an accessible marked orbital observation position rather than requiring real-world waiting for a planet's day cycle.
+
+## Medusa's encounter gate
+
+The only normal Medusa spawn requires the complete decoded clue set and all four flight objective receipts, including opening the cradle at Ashor. Spawn one uniquely identified encounter there. No ambient, faction, wanted-target, random, misjump, general mission-pack or XYZZY provider may create SH171 earlier. Route every encounter provider through the same central availability check. Reusing the ship type or inventing an unrelated mission target must not grant this quest's kill record. Do not show the ship's real catalogue name, specifications, full art or a recognisable silhouette before its legitimate quest encounter; a redacted unknown collection slot is sufficient.
+
+The confrontation uses the independently balanced Medusa ship definition and normal combat rules. On first legitimate targeting, reveal its catalogue identity and wireframe. Real destruction credited to the player grants the permanent reconstruction record and full rendering. The record is delivered automatically; do not add an unadvertised requirement to scoop a particular wreck before returning to PLUGH. Culling, escape, a nonplayer kill or a same-type unrelated ship does not count. If the encounter is lost without a credited player kill, make it available again at its unlocked cradle checkpoint without requiring all missions and clues again. Keep one active encounter identity per commander and invalidate the old identity when retrying.
+
+## AI reconstruction, fabrication and purchase
+
+The kill record alone is insufficient for purchase. On a subsequent dock at any PLUGH station, offer Reconstruct Medusa. Confirm atomically records the AI reconstruction and fabrication entitlement. Other stations, NPCs named Plugh, ordinary gallery selection and XYZZY convenience settings cannot supply this entitlement.
+
+PLUGH stations share the reconstructed design and can then fabricate Medusa for normal paid purchase. Retain the independently authored hull price, currently 288,000 CR, and ordinary trade-in, cargo, fitting and ownership rules. Use a clear shipyard action such as Trade in current ship and buy Medusa, with the final price and trade-in quote shown before confirmation. Buying elsewhere remains unavailable and indicates Fabricated at PLUGH. The quest grants access, not a free ship. Reconstructing twice or revisiting a station does not duplicate rewards or ownership.
+
+The central purchase predicate is `plughQuestFabrication`, replacing SH171's previous `xyzzyOnly` policy in the private specification. Check it in every purchase, direct ship switch, fabrication and trade-in path. Generic blueprint ownership or an earlier SH171 discovery cannot bypass the missing AI reconstruction receipt.
+
+## Saving, loading and acceptance
+
+Use only the current L337 save and mission-pack formats. Persist clue source receipts, decoder receipt, ordered trail evidence, encounter generation/identity, valid player kill record and AI fabrication receipt. Load these records to resume normal play; loading does not award cash, clues or fabrication rights. Every new commander starts with no mystery progress and no Medusa entitlement. Normal generic SH171 kills cannot substitute for this quest-instance confrontation. Retain collected clues when an optional pack is removed; the required base missions ship with the game.
+
+Before implementation is accepted, test incomplete/duplicate clue collections, all valid and invalid mission endings, missing packs, partial ordered scans, reload during combat, NPC destruction, culling, encounter retry, direct-switch attempts, XYZZY bypass attempts, counterfeit station names, any-galaxy PLUGH reconstruction, insufficient purchase funds, trade-in cancellation and duplicate event/payment delivery. The private Python state model checks the major ordering and gate invariants only; it does not test the game renderer, combat, docking or the Swift mission engine.

@@ -1,0 +1,240 @@
+# Private campaign design schema; not installed in the game.
+id = "l337.harbour-without-orders"
+missionID = "harbour-without-orders"
+title = "Harbour Without Orders"
+originKind = "new-original"
+subtitle = "RELL: The harbour is intact. Its doors are closed by three mutually invalid signatures."
+contacts = ["Controller Edda Rell", "Marshal Nera Voss"]
+ships = ["SH001", "SH061"]
+offer = "At Gallodor in Galaxy 4, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold."
+story = "A port's arrival allocator has lost its signing authority after a disputed maintenance transfer. No one is attacking the station, but every berth refuses every arriving ship. The commander establishes who can authorise safe approaches, brings in an independent traffic witness and tests either distributed berth authority or a temporary public harbour office."
+playerBriefing = "RELL: The harbour is intact. Its doors are closed by three mutually invalid signatures."
+rewardCR = 7600
+completionBenefit = "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The unsigned berth."
+branchPolicy = "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue."
+items = [{ id = "harbour-without-orders-reference", massTonnes = 1, acquireStage = "collect-reference", consumeStage = "return-and-audit" }]
+interactionNotes = ["Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.", "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.", "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.", "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."]
+authoringArt = { propID = "harbour-without-orders-reference", propForm = "controller", palette = "slate-orange", stageObjects = ["harbour-without-orders-reference", "harbour-without-orders-reference", "harbour-without-orders-reference", "harbour-without-orders-reference", "SH061", "harbour-without-orders-reference", "harbour-without-orders-reference", "harbour-without-orders-reference", "harbour-without-orders-reference"] }
+schema = "l337-mission-design/1"
+version = "1.0.0"
+license = "MIT"
+status = "Private original story and stage design; not a runnable pack for the current engine"
+authoredSource = "Original L337 narrative, objectives, dialogs, locations and rewards"
+terminalStage = "complete"
+rewardReceipt = "l337.harbour-without-orders/final-payment"
+rewardPolicy = "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue."
+identityPolicy = "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type."
+persistencePolicy = "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported."
+engineWork = "Implement/verify the event contracts in ENGINE-CONTRACT.md before declaring this pack playable. Current native special-case bindings are superseded by mission-scoped events in the proposed version."
+completionClue = { questID = "l337.unwritten-route", clueID = "harbour-without-orders-trace", label = "The unsigned berth", journalText = "The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary.", massTonnes = 0, uniquePerSource = true, receipt = "l337.unwritten-route/clue/harbour-without-orders-trace", awardWithSuccessfulTerminal = true }
+artwork = { manifest = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json", manifestSHA256 = "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904", briefing = { id = "harbour-without-orders", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/illustrations/harbour-without-orders.png", sha256 = "4cecd58d3c68b1f209b0acf55563cea666e875a3c174087dba3b9b37edcabffe", visibility = "Current mission briefing" }, contacts = [{ name = "Controller Edda Rell", portrait = { id = "edda-rell", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/edda-rell.png", sha256 = "434b2dcc291f0f02ac19240f37bf1a0c8590bd544ef4f1c014c66bc0b7fa5c1b", visibility = "Current mission briefing" } }, { name = "Marshal Nera Voss", portrait = { id = "nera-voss", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/portraits/nera-voss.png", sha256 = "ef89437d6acf73621448ed87545203708666b3f84902e5f1457a6f467fdd2232", visibility = "Current mission briefing" } }], ships = [{ id = "SH001", asset = { id = "SH001", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH001.png", sha256 = "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }, { id = "SH061", asset = { id = "SH061", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/ships/SH061.png", sha256 = "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79", visibility = "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility" } }], items = [{ id = "harbour-without-orders-reference", asset = { id = "harbour-without-orders-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/props/harbour-without-orders-reference.png", sha256 = "2dd03158437c3b1c17306298f083524d802f79044c65d594bb4f4a1f9a873979", visibility = "Current mission briefing" } }], outcomes = [{ id = "harbour-without-orders/choose-settlement/plan-a", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/harbour-without-orders-choose-settlement-plan-a.png", sha256 = "1b014715c2eecebe63ec2e70ef370978af1bea6b4c13c93ef7d469aa0423b0b5", visibility = "Only the actual committed branch" }, { id = "harbour-without-orders/choose-settlement/plan-b", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/outcomes/harbour-without-orders-choose-settlement-plan-b.png", sha256 = "ce6ade10285ca615c8f408ef764a7a97989df9a8da64107d45f3e27dc386054e", visibility = "Only the actual committed branch" }] }
+
+[[stages]]
+id = "accept"
+galaxy = 3
+system = 111
+objective = "Accept Harbour Without Orders at Gallodor."
+dialog = "Controller Edda Rell: A port's arrival allocator has lost its signing authority after a disputed maintenance transfer. Review the complete survey, loan and receiving requirements before confirming."
+event = "mission_contact_confirmed"
+requiredTargets = ["accept-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G04-S111"
+locationName = "Gallodor"
+next = "survey"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/accept"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/accept", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/accept.png", sha256 = "83f1fa05d49007553859613e8cbc493aa97b17cbb67e1492be4a7cc2120da0d8", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "survey"
+galaxy = 3
+system = 92
+objective = "Scan the three external arrival allocators and record their refusal certificates."
+dialog = "RELL: The harbour is intact. Its doors are closed by three mutually invalid signatures."
+event = "entity_scan_completed"
+requiredTargets = ["harbour-without-orders-survey-1", "harbour-without-orders-survey-2", "harbour-without-orders-survey-3"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G04-S092"
+locationName = "Ombolom"
+next = "collect-reference"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/survey"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/survey", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/survey.png", sha256 = "a9277f92b38da6177df39cf6b745abdb6f2f4f9e563efae71122468438c56f10", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "collect-reference"
+galaxy = 3
+system = 111
+objective = "Collect the identified one-tonne reference instrument from Controller Edda Rell."
+dialog = "Controller Edda Rell: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity."
+event = "mission_contact_confirmed"
+requiredTargets = ["collect-reference-verified"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G04-S111"
+locationName = "Gallodor"
+next = "field-work"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/collect-reference"
+itemEffects = [{ kind = "add", item = "harbour-without-orders-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/collect-reference", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/collect-reference.png", sha256 = "d2de17bcfa11b919f1f831e04dc32b40911dbffe02324714c1c389ab5774eccc", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "field-work"
+galaxy = 3
+system = 145
+objective = "Install temporary safety limits at the two external approach relays."
+dialog = "VOSS: These limits prevent conflicting approaches while the operators decide who may sign."
+event = "mission_action_confirmed"
+requiredTargets = ["harbour-without-orders-work-port", "harbour-without-orders-work-starboard"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G04-S145"
+locationName = "Emdor"
+next = "independent-witness"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/field-work"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/field-work", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/field-work.png", sha256 = "17071aa8160dd846bb8f62c639db25046b55f6ab2c45c018900131d3857c8db6", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "independent-witness"
+galaxy = 3
+system = 48
+objective = "Escort the neutral traffic witness to the emergency receiving berth."
+dialog = "RELL: Reception must identify our witness and the berth used. A ship disappearing near the station proves nothing."
+event = "escort_arrived"
+requiredTargets = ["harbour-without-orders-witness-received"]
+interactionItemMassTonnes = 1
+choices = []
+locationKey = "G04-S048"
+locationName = "Emron"
+next = "choose-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/independent-witness"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/independent-witness", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/independent-witness.png", sha256 = "876519f77f0801d84095e400dedd1ffeaa14663574fcd11896245ba517203db2", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "choose-settlement"
+galaxy = 3
+system = 111
+objective = "Choose the verified settlement with the consenting operators."
+dialog = "Controller Edda Rell: Both choices preserve the independent evidence. Choose who controls the future work; closing this dialog selects neither."
+event = "mission_choice_confirmed"
+requiredTargets = ["harbour-without-orders-settlement-choice"]
+interactionItemMassTonnes = 1
+choices = ["Return authority to independent berth operators", "Create a time-limited public harbour office"]
+choiceIDs = ["plan-a", "plan-b"]
+locationKey = "G04-S111"
+locationName = "Gallodor"
+next = "apply-settlement"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/choose-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/choose-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/choose-settlement.png", sha256 = "aa9b9a148615ad410f0cea324f8c36afc978a47f5e4f7b13428455c9704e324b", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "apply-settlement"
+galaxy = 3
+system = 145
+objective = "Verify both independent proofs for the selected settlement."
+dialog = "Controller Edda Rell: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof."
+event = "mission_action_confirmed"
+requiredTargets = ["harbour-without-orders-settlement-summary"]
+interactionItemMassTonnes = 1
+choices = []
+branchStage = "choose-settlement"
+branchVariants = [{ choiceID = "plan-a", event = "mission_action_confirmed", requiredTargets = ["harbour-without-orders-plan-a-physical-proof", "harbour-without-orders-plan-a-receiving-proof"], objective = "Verify two operator keys and a conflict-free simultaneous approach test.", dialog = "VOSS: Each berth may sign its own approach, within the common exclusion envelope.", gossip = "Harbour Without Orders: Return authority to independent berth operators." }, { choiceID = "plan-b", event = "mission_action_confirmed", requiredTargets = ["harbour-without-orders-plan-b-physical-proof", "harbour-without-orders-plan-b-receiving-proof"], objective = "Verify the public key register and its automatic authority expiry.", dialog = "RELL: Emergency authority must come with a visible end.", gossip = "Harbour Without Orders: Create a time-limited public harbour office." }]
+locationKey = "G04-S145"
+locationName = "Emdor"
+next = "return-and-audit"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/apply-settlement"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/apply-settlement", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/apply-settlement.png", sha256 = "f7d05f01e2ee3ada90028c59b3c874dac8665eb1a0c3182c5d9b1bc0998fc544", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "return-and-audit"
+galaxy = 3
+system = 111
+objective = "Return the reference instrument and confirm all physical receiving and settlement receipts."
+dialog = "Controller Edda Rell: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case."
+event = "mission_contact_confirmed"
+requiredTargets = ["return-and-audit-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G04-S111"
+locationName = "Gallodor"
+next = "close-case"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/return-and-audit"
+itemEffects = [{ kind = "remove", item = "harbour-without-orders-reference", massTonnes = 1 }]
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/return-and-audit", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/return-and-audit.png", sha256 = "52a7598ad6d3efe3168d1c5eb706a71fde8347ca8901c2be6c7cc5637891fc24", visibility = "Mission stage briefing and completed history" }
+
+[[stages]]
+id = "close-case"
+galaxy = 3
+system = 111
+objective = "Confirm successful completion, the recorded settlement and the once-only fee."
+dialog = "Controller Edda Rell: The independent audit is complete. Your fee is 7600 CR. The operators retain the chosen settlement and their original records.\n\nController Edda Rell: The audit has left one anomaly that belongs to neither side. The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary. It is preserved in your journal for the AI at PLUGH."
+event = "mission_contact_confirmed"
+requiredTargets = ["close-case-verified"]
+interactionItemMassTonnes = 0
+choices = []
+locationKey = "G04-S111"
+locationName = "Gallodor"
+next = "complete"
+completionRule = "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once."
+recovery = "Persist each completed target. Recreate an uncompleted objective after load or entity loss; duplicate scans and incidental removal cannot complete it. Escort destruction returns to the escort briefing with a replacement launch and no reward."
+confirmation = "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch."
+cargoPolicy = "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable."
+declinePolicy = "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available."
+receipt = "l337.harbour-without-orders/close-case"
+itemEffects = []
+itemTransaction = "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody."
+artwork = { id = "harbour-without-orders/close-case", file = "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/stages/harbour-without-orders/close-case.png", sha256 = "e0e8b64a58e4ddf6dad2bca01e9dfd8c94161713e9dd27b4c97c2934259a7044", visibility = "Mission stage briefing and completed history" }

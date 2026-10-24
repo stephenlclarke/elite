@@ -1,0 +1,1039 @@
+{
+  "scope": "Portable supporting contract copies; source hashes preserve provenance. Exact-byte ledger is an explicit exception to link rewriting.",
+  "files": [
+    {
+      "file": "missions/gameplay/contracts/ux/C01-P02-B-ENMADAN-RESERVATION-AUDIT-20261022.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/C01-P02-B-ENMADAN-RESERVATION-AUDIT-20261022.md",
+      "sourceSHA256": "8ced99c893c676463409b12dd9c4e404566406809191a9d11ee740d6e2ce8764",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "8ced99c893c676463409b12dd9c4e404566406809191a9d11ee740d6e2ce8764"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/CONTROLS.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/CONTROLS.md",
+      "sourceSHA256": "fa9e8156055549554fe1095e90da8ea9ff58abc207d880f93b6634b1ad335d2f",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "0a065fb7386d070b5c77bc9758eefba933627d4ca8ba14862a9bf4c955c203ea"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G01-SEALED-DISPATCH-CLOSED-PROFILE-HANDOFF-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G01-SEALED-DISPATCH-CLOSED-PROFILE-HANDOFF-20261020.md",
+      "sourceSHA256": "0f41263901789b5b18971f99d74ac334f4b09dfa48b52f2a8c02445999637947",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "0f41263901789b5b18971f99d74ac334f4b09dfa48b52f2a8c02445999637947"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G02-FINITE-SUPPLIER-STOCK-PREREQUISITE-BRIEF-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G02-FINITE-SUPPLIER-STOCK-PREREQUISITE-BRIEF-20261020.md",
+      "sourceSHA256": "48a47dec3dc5464644c913c602cef14dd9eb967dbee19922c267f1d5051002ea",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "48a47dec3dc5464644c913c602cef14dd9eb967dbee19922c267f1d5051002ea"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G04-STATION-PASSENGER-JOURNEY-APPROVED-HANDOFF-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G04-STATION-PASSENGER-JOURNEY-APPROVED-HANDOFF-20261020.md",
+      "sourceSHA256": "378ad6b2231b3ebfa2f97953c114261346fb75085fcc30a8455b96cef4b44ecb",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "378ad6b2231b3ebfa2f97953c114261346fb75085fcc30a8455b96cef4b44ecb"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G05-ORBITAL-OUTLOOK-COMPLETE-JOURNEY-HANDOFF-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G05-ORBITAL-OUTLOOK-COMPLETE-JOURNEY-HANDOFF-20261020.md",
+      "sourceSHA256": "492bae53c032206d9b2abff11253095eb6041fe445e66b2b22f43c0a6cdec62b",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "492bae53c032206d9b2abff11253095eb6041fe445e66b2b22f43c0a6cdec62b"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G05-ROOT-APPROVAL-20261020.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G05-ROOT-APPROVAL-20261020.json",
+      "sourceSHA256": "cc53c16c4ae2f1536bb42d6311a0e5a951e3f533464559f3fa20d75a5e233e17",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G08-NON-EMP-RESCUE-COMPLETE-JOURNEY-DRAFT-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G08-NON-EMP-RESCUE-COMPLETE-JOURNEY-DRAFT-20261020.md",
+      "sourceSHA256": "6c33de3ce3a3c58e3b8ed71fa2af189b3106432e67811e8547a591a6daecad84",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "6c33de3ce3a3c58e3b8ed71fa2af189b3106432e67811e8547a591a6daecad84"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G08-ROOT-APPROVAL-20261020.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G08-ROOT-APPROVAL-20261020.json",
+      "sourceSHA256": "8cdba88e7a12767a8df566560877010ae0148692f9ef0b2d8075a6c723dfbb92",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G09-IDENTIFIED-SALVAGE-COMPLETE-JOURNEY-DRAFT-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G09-IDENTIFIED-SALVAGE-COMPLETE-JOURNEY-DRAFT-20261020.md",
+      "sourceSHA256": "d7fa601e21d9f1572827e3d42e227b2661a0ffa00431d7c8294f219fe0ba1178",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "d7fa601e21d9f1572827e3d42e227b2661a0ffa00431d7c8294f219fe0ba1178"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G09-ROOT-APPROVAL-20261020.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G09-ROOT-APPROVAL-20261020.json",
+      "sourceSHA256": "67c90964d08224aa1692c6b9d380d1b359bd58054f8caaafa34e9a1bd112f2ed",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G10-CONSENTED-SURVEY-COMPLETE-JOURNEY-APPROVED-HANDOFF-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G10-CONSENTED-SURVEY-COMPLETE-JOURNEY-APPROVED-HANDOFF-20261020.md",
+      "sourceSHA256": "ee76463452b88c8f3fcb50c19b9492784e47a869c4ecedaa751bd37e5050d43e",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "ee76463452b88c8f3fcb50c19b9492784e47a869c4ecedaa751bd37e5050d43e"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G10-ROOT-APPROVAL-20261020.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G10-ROOT-APPROVAL-20261020.json",
+      "sourceSHA256": "1b00d1590b4946e4a02eed504630682442b3dc1ee1560ec7b067c9ddcab34abb",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G11-P01-TWO-COMPONENT-ISOLATION-PROVIDER-20261022.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G11-P01-TWO-COMPONENT-ISOLATION-PROVIDER-20261022.md",
+      "sourceSHA256": "3d8bdebb4179375c84d0901125db86ae3e12984430e0c5176a17d4b21e90447f",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "3d8bdebb4179375c84d0901125db86ae3e12984430e0c5176a17d4b21e90447f"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G11-P02-PARENT-ACCEPTANCE-AND-PROGRAMMER-CONTRACT-20261022.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G11-P02-PARENT-ACCEPTANCE-AND-PROGRAMMER-CONTRACT-20261022.md",
+      "sourceSHA256": "6f4888ce0a4811896bb154daa043dcb7e8d39663f50a54fb1017e104840c5b04",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "a2f5895d063a804e69065b8a84fb1db6897767797a8efc248f52d7e712cbf8d0"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G12-MEASURED-EXTRACTION-COMPLETE-JOURNEY-DRAFT-20261021.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G12-MEASURED-EXTRACTION-COMPLETE-JOURNEY-DRAFT-20261021.md",
+      "sourceSHA256": "532a2b2d5e3bef933b4d0ec2b50eede1fa6714eae210cedbb116d19ffd8317f9",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "532a2b2d5e3bef933b4d0ec2b50eede1fa6714eae210cedbb116d19ffd8317f9"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G12-ROOT-APPROVAL-20261021.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G12-ROOT-APPROVAL-20261021.json",
+      "sourceSHA256": "1b5c1c862ed265e1b1303085525ae1b53023b5aa5c4d24ebdee365cf161abf0a",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G13-MUTUAL-CONTRIBUTION-IMPLEMENTATION-HANDOFF-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G13-MUTUAL-CONTRIBUTION-IMPLEMENTATION-HANDOFF-20261020.md",
+      "sourceSHA256": "85e9517de4cec79504109bacf31d348a7608e9badcd9026776d38e1eeb6df0be",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "85e9517de4cec79504109bacf31d348a7608e9badcd9026776d38e1eeb6df0be"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G14-FOUR-PERSON-EVACUATION-COMPLETE-JOURNEY-DRAFT-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G14-FOUR-PERSON-EVACUATION-COMPLETE-JOURNEY-DRAFT-20261020.md",
+      "sourceSHA256": "c955bf2f7912d5d973c34cd3a9ebaaf2e082624676748947b1279843f73dbc32",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "c955bf2f7912d5d973c34cd3a9ebaaf2e082624676748947b1279843f73dbc32"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/G14-ROOT-APPROVAL-20261020.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G14-ROOT-APPROVAL-20261020.json",
+      "sourceSHA256": "f29e7d0c009ba09051b70b94639125726413076e2a7bfae3eebbeadebd0a6219",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/M01-BOUNDED-CLOSURE-MAP-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/M01-BOUNDED-CLOSURE-MAP-20261020.md",
+      "sourceSHA256": "5ed7ff6a8f0407704364e2a86a9fed6ab97113f1492c6d7bbe39fcdb71954fc8",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "5ed7ff6a8f0407704364e2a86a9fed6ab97113f1492c6d7bbe39fcdb71954fc8"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/T03-P01-DEFENSIVE-FLIGHT-PRACTICE-20261022.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/T03-P01-DEFENSIVE-FLIGHT-PRACTICE-20261022.md",
+      "sourceSHA256": "521e6e5bd7b0957db15a202f7cb5705b7668c5b600c3b02ce31d864e2c271b65",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "521e6e5bd7b0957db15a202f7cb5705b7668c5b600c3b02ce31d864e2c271b65"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/T04-NAVIGATION-TRADE-DEFAULT-DELIVERY-HANDOFF-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/T04-NAVIGATION-TRADE-DEFAULT-DELIVERY-HANDOFF-20261020.md",
+      "sourceSHA256": "52b687f5a557eacd1e993fa3978f7ba024f858ab0d19ef98bd144519da274a81",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "52b687f5a557eacd1e993fa3978f7ba024f858ab0d19ef98bd144519da274a81"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/W03-SEED-TRANSFER-APPROVED-HANDOFF-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/W03-SEED-TRANSFER-APPROVED-HANDOFF-20261020.md",
+      "sourceSHA256": "2a36c90fd99a4c2e0faa3ef46ba9e93fa3b00e1237cbb7337bb34e4382bb55d3",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "2a36c90fd99a4c2e0faa3ef46ba9e93fa3b00e1237cbb7337bb34e4382bb55d3"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/W05-CREW-RECORD-RECOVERY-COMPLETE-JOURNEY-DRAFT-20261020.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/W05-CREW-RECORD-RECOVERY-COMPLETE-JOURNEY-DRAFT-20261020.md",
+      "sourceSHA256": "f5b4463c9414e7714024176dbbf8a7defbcc252e34394f09397a2bdc82b3a466",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "f5b4463c9414e7714024176dbbf8a7defbcc252e34394f09397a2bdc82b3a466"
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/W05-ROOT-APPROVAL-20261020.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/W05-ROOT-APPROVAL-20261020.json",
+      "sourceSHA256": "b71f0e3af66a22158e2cef9af512f1a4c3e05bbfd2acfdc68b416f4e860a8fbf",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/controls.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/controls.json",
+      "sourceSHA256": "a62c33f20b7f183510078d12e604a626b3cdebaf65dc9e24a86b08d9855c4abe",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/help-screens.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/help-screens.json",
+      "sourceSHA256": "eb0342df16172eed3b0e0d90e782530c592d4204456f4dabefca5652e7b470df",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/ux/salvage-ux.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/salvage-ux.json",
+      "sourceSHA256": "45192c598eb3d258e3c28409ad593c490b9cfc8fd5844ae84a75e4c27983c887",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/ALL-MISSIONS.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/ALL-MISSIONS.md",
+      "sourceSHA256": "d176962aca03d3b9959cfa9e43964bdeca2e7a7d5a31cea24ad5210ffba41af2",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "90c77a4b2379a48f1c781555d85198fb75650f522e1d70adb1e15e0776353c39"
+    },
+    {
+      "file": "missions/authoring/campaigns/CONTENT-RIGHTS.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/CONTENT-RIGHTS.md",
+      "sourceSHA256": "17cdda7213258570d91679a83aa7621f710a75a62615dc17a6ca6b0ba4d87cb1",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "b27f7732fa3ac130054fd64b12fef5813030a478ebfde0938b3e93be8e9445b1"
+    },
+    {
+      "file": "missions/authoring/campaigns/ENGINE-CONTRACT.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/ENGINE-CONTRACT.md",
+      "sourceSHA256": "cc26ad3f94d5d5907e2615fffed9a696ab4aeb0d21b6dc833664f2c49c4bfc64",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "5b544ad56933d3ae40146812a449c0ab70c5778f0f7a84d79ca56d07d5b2e69b"
+    },
+    {
+      "file": "missions/authoring/campaigns/ORIGINALITY.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/ORIGINALITY.md",
+      "sourceSHA256": "901b5039a48585a23f4091faccb6026fa3ca8a386f8727ac1bc78e7270bd143a",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "901b5039a48585a23f4091faccb6026fa3ca8a386f8727ac1bc78e7270bd143a"
+    },
+    {
+      "file": "missions/authoring/campaigns/README.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/README.md",
+      "sourceSHA256": "4e86589413cadf3938a05eb0fa8103be211448f2951697ba27f79d77f3b510c0",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "670ce59e0f138a97e020cc36b51ce89781fbe67b555da32547f0b0a5c91a444c"
+    },
+    {
+      "file": "missions/authoring/campaigns/SHATTERED-WAKE-CONTRACT.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/SHATTERED-WAKE-CONTRACT.md",
+      "sourceSHA256": "744d81302e406dff699442c9ba59a2010ad921696c7ef83cbc00f1ca4ddcc5b5",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "744d81302e406dff699442c9ba59a2010ad921696c7ef83cbc00f1ca4ddcc5b5"
+    },
+    {
+      "file": "missions/authoring/campaigns/STILL-CURRENT-CONTRACT.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/STILL-CURRENT-CONTRACT.md",
+      "sourceSHA256": "ed92e61707ffdecd3f64d085621b6b9bd1c9cf2f6a8f493f243652d8b69d0b41",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "ed92e61707ffdecd3f64d085621b6b9bd1c9cf2f6a8f493f243652d8b69d0b41"
+    },
+    {
+      "file": "missions/authoring/campaigns/TITHE-CONTRACT.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/TITHE-CONTRACT.md",
+      "sourceSHA256": "e1e1acfcc62844c85f591013835a3ab1b3912ec5a980052d9ec2eb0244d976c9",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "39a734fd24c6e85de3ff901618e515568017977bd0e2c915a1bc34ec782af14d"
+    },
+    {
+      "file": "missions/authoring/campaigns/all-missions-validation.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/all-missions-validation.json",
+      "sourceSHA256": "65558c98abd8a7841dd5f1e84a8f4f994737edcd1c06fb3d0b9b01aa18c614c3",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/assembly-of-orbits.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/assembly-of-orbits.md",
+      "sourceSHA256": "f345689c19bfef84e7a76fe835874c668949e9689b4c5c691507e7c01fb0e3e5",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "75cf5509d3a6ec9873cfb631cbe964d6b0ba4605058dbd39377dc8c9391747f7"
+    },
+    {
+      "file": "missions/authoring/campaigns/assembly-of-orbits.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/assembly-of-orbits.toml",
+      "sourceSHA256": "8d7c2417a64ab0aeb9a7ff1cce39570f152f9c94f92865779b7b107d3aa17147",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/blue-reservoir.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/blue-reservoir.md",
+      "sourceSHA256": "827b796030e1cc6aa1794cf5cfdc74a29c3686146000a7724609f39953f53ed0",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "15e9a7004e958bf667f369fc8ac0b75ec8feba8e55b59ea55d067292a7b32b31"
+    },
+    {
+      "file": "missions/authoring/campaigns/blue-reservoir.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/blue-reservoir.toml",
+      "sourceSHA256": "a56982c650c23e9b140ff22bb8b14d0074c67d627ac3ec29a2c36a03d48dd5dd",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/borrowed-dawn.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-dawn.md",
+      "sourceSHA256": "bdff24248dae73e4e32a30f28460fd430c1c38d909dae9bed42944211caedd1a",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "00304a6965ae4101d24c128cbdf4cc36ee799242b8510dbfee859813f8f3ded0"
+    },
+    {
+      "file": "missions/authoring/campaigns/borrowed-dawn.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-dawn.toml",
+      "sourceSHA256": "d94a7cdf5fc95b948851bb34484a2b8611fc1e8f52a858e9edd9af5e48c4d4fe",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/borrowed-voice.authoring.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-voice.authoring.json",
+      "sourceSHA256": "2c76f133ba95a2b177c0d9001245bc4de192f722c528277c6ee08ca74033cdf6",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/borrowed-voice.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-voice.md",
+      "sourceSHA256": "021cefd7fc33d147c91837cbad40305222e3b994d2f314f5b9c7c0b44a15f1f2",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "da750ceaec622703b5080177ab20fa36a15e77e8b7fcdcb000e88b6a9639cd50"
+    },
+    {
+      "file": "missions/authoring/campaigns/borrowed-voice.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/borrowed-voice.toml",
+      "sourceSHA256": "806cfdd3761a16754e3458848cec89b6471945cc2399d0f1464d3265d979d9dd",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/catalogue.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/catalogue.json",
+      "sourceSHA256": "cb1fa1d5e1cf32d61ca4e65a7a4bcbe62491e974b4a3a13ff833fd4d82cfbc40",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/cold-reserve.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/cold-reserve.md",
+      "sourceSHA256": "2a74036effc30051c7d20050fcc612642d487330350caaa95e2244d2633643c5",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "4633ce3903a8b4779337afa3ff3fe474ccf0c2a9490cf90a6f60ab71981577b0"
+    },
+    {
+      "file": "missions/authoring/campaigns/cold-reserve.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/cold-reserve.toml",
+      "sourceSHA256": "6e12058f2653bb57667e3b34c1bdb2d280877c1bd37caae957d02ba4357f2d21",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/courier.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/courier.md",
+      "sourceSHA256": "2951328ebab9825ef498fe874b78482ec5986a3081ed002357eabc8e678b7863",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "9284efa08ef73bcec9ac63d30022c6ebbd9c06b7d5160523a13d68cc783d4d82"
+    },
+    {
+      "file": "missions/authoring/campaigns/courier.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/courier.toml",
+      "sourceSHA256": "4644804759fbcca23d527e3e03d5fc42077320005d700445a2d4875b3ec1d749",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/false-colours.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/false-colours.md",
+      "sourceSHA256": "cd71eb15f5d303e15d2ddd5a4c84d8502cac59e496cfee7e5715ba2fa504aed6",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "692e8877856768fc7964ab08edadf6209ae1e676babdcde8be4e22f232c3076d"
+    },
+    {
+      "file": "missions/authoring/campaigns/false-colours.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/false-colours.toml",
+      "sourceSHA256": "e6ed8cb1d93da3f29070210e7023a8a9453c8a3ce2749b7a26a1de141d31675b",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/fleet-of-neighbours.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/fleet-of-neighbours.md",
+      "sourceSHA256": "5a20ee46726db6f69465291d8c406b67411429e01cf4a00158754b9815267dda",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "c7577c328545f7618d35c53459b252c9e43b3e389bdcfc6456a472263bf2db74"
+    },
+    {
+      "file": "missions/authoring/campaigns/fleet-of-neighbours.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/fleet-of-neighbours.toml",
+      "sourceSHA256": "dc8cd9974e480e4773776f77092d3e7d3a81e6c9d4c7eaa4adbbdf9fd98fa17a",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/garden-in-transit.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/garden-in-transit.md",
+      "sourceSHA256": "4e3e50a6a674ecc77c39bf33953315a136f778ee5b85c8e640d289144c8f5c7f",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "919487d09be34c7df8035efd199e9b0f818a2db50127b9ed3a3defd7e353885c"
+    },
+    {
+      "file": "missions/authoring/campaigns/garden-in-transit.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/garden-in-transit.toml",
+      "sourceSHA256": "a81c1f0e7cfce2ebd8e61b2703b9edee9a305b0fbd4881e3068a9bf8d332ecff",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/glass-meridian.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/glass-meridian.md",
+      "sourceSHA256": "02120c77e0defb14dbf5d03679c0faf4a1c15d7c3cf85919a14598219d89afe0",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "ddb95e203aff8cf94d31f3d76bcaa4cc4538a70c216268f408e9e725f3dc28bb"
+    },
+    {
+      "file": "missions/authoring/campaigns/glass-meridian.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/glass-meridian.toml",
+      "sourceSHA256": "3a215b5281d255f323e00f40e78f2f1e19bdf309bd3ba78ba276be808821c054",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/guiding-light.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/guiding-light.md",
+      "sourceSHA256": "feecbd8c3935bdf90abdbe614eeb24d3e50adcfb1e262a4c44d30a6572683d22",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "6e9d7ee35184ba8b15a271b77b9e29585ee70b3eca78ce443add87f69a1f7789"
+    },
+    {
+      "file": "missions/authoring/campaigns/guiding-light.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/guiding-light.toml",
+      "sourceSHA256": "2c4fa44ccece8f18051f5982d9c9e3837560a5d9e4229ba4a5bdf822256f1fba",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/harbour-without-orders.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/harbour-without-orders.md",
+      "sourceSHA256": "3de61729a992d57d664b569bab518cd46b6be8322110a4580fc6fa5519fa6d08",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "b6529a9f4446a86b98cd9bf750c1e6b9d9f819ceb0d88224bd0b2eb427b08459"
+    },
+    {
+      "file": "missions/authoring/campaigns/harbour-without-orders.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/harbour-without-orders.toml",
+      "sourceSHA256": "d7df4d1ac24e9904ad8eb5d43a351f17b8ce3c39cad4ed93f8a3d3b5f4240047",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/hollow-manifest.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/hollow-manifest.md",
+      "sourceSHA256": "b3a94b2b2e298df290f73b0f50472be498dfa67a14daad7e8c7f4e62986e45ca",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "d46c136df316b8bb87cc1abceab66565ee2c60273b9afa56fec3b141281693cf"
+    },
+    {
+      "file": "missions/authoring/campaigns/hollow-manifest.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/hollow-manifest.toml",
+      "sourceSHA256": "dc77748757ec109ce96823a21684ad9a638605598ae6334990759b6a533c23c3",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/honest-circuit.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/honest-circuit.md",
+      "sourceSHA256": "bd42b59227809dc0d03a274f2a171818f765d33c8cd69a5dc2727eef6ff700f5",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "7ecdfd18fcdadb7fe7d659a0f506aa581dbfe6107d79813440c6396d7ea1569b"
+    },
+    {
+      "file": "missions/authoring/campaigns/honest-circuit.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/honest-circuit.toml",
+      "sourceSHA256": "e22c10c4049fdd3d446144fb7d7b0a31c63f6c5886ddcc2853c8be4af2b7f77b",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/kind-distance.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/kind-distance.md",
+      "sourceSHA256": "7f8f2a7cd1e72550a06f5c514fe74f0307933a3c015d2d68bba26b98d47d3770",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "fb22057de7b55e73d7cfff165c87979edf0f2de9dd1e7d8067e5797e0171006f"
+    },
+    {
+      "file": "missions/authoring/campaigns/kind-distance.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/kind-distance.toml",
+      "sourceSHA256": "b79ce650495cb5c81b95ad19dc610c057fe820d26e33b6634c2b4bb20de973f7",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/listening-frontier.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/listening-frontier.md",
+      "sourceSHA256": "1a6f790421c2cf6db608c263e1b64f000ed34e64b8a78d4239cc227cdf35e01b",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "df681d82c555c0b9fd48a0506b599ed31dbc2bfaa8d69abb8b09006c32021280"
+    },
+    {
+      "file": "missions/authoring/campaigns/listening-frontier.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/listening-frontier.toml",
+      "sourceSHA256": "96e91f9feed142a5e332c10b66379423998ee17c5ac345cbf3487632b7122b69",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/long-return.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/long-return.md",
+      "sourceSHA256": "04356d137cac29a28d789302363326c008efc1f9d5112106718eb7da48c6c81f",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "025f2f71fc315c5ff3f7331865d51abf3488f2f677d9180737d726baa1546e5b"
+    },
+    {
+      "file": "missions/authoring/campaigns/long-return.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/long-return.toml",
+      "sourceSHA256": "873c410746d0f0aa59d8dfb3907b5afd27186d6aba50a773c1e8ce92c9b728b7",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/magnetic-orchard.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/magnetic-orchard.md",
+      "sourceSHA256": "1b896a8952d047308e013c3432f36bf6b63bf61969ce592a9fa5352c0e07ac06",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "db68b3157fe0350a32aa9057175e9f957a86077929070938598638d4c3c64622"
+    },
+    {
+      "file": "missions/authoring/campaigns/magnetic-orchard.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/magnetic-orchard.toml",
+      "sourceSHA256": "866c4ce7251dd99c3c988a05d70c76d44d2d710d436cd1999438ea1c6cb7465d",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/manifest.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/manifest.json",
+      "sourceSHA256": "1e5f8e926af9f3801afd4bd4488df80fcd96f48584fdb993dbea63d621b105a7",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/measure-of-care.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/measure-of-care.md",
+      "sourceSHA256": "fce07e47d4039dc5caca2215c3744f756d04904e79ea9c747bc06465afde72fa",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "739ed1a2cce18d2a544844a17bec0b096f8c594bb345cc5d0c8e555edee18886"
+    },
+    {
+      "file": "missions/authoring/campaigns/measure-of-care.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/measure-of-care.toml",
+      "sourceSHA256": "c0a21c3bc5362c8d6a5b6f8d2baa169702cb1c913872b4d38f80b8708c9e6d09",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/memory-atlas.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/memory-atlas.md",
+      "sourceSHA256": "1fc11bea1eb941ef8bf2b1f5811aa8e6fd744713bb68d438043efd328555039a",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "7f9502a6d98cf60cbf44c13700dcfa94543703986f5bbb17b30debe04bed5d91"
+    },
+    {
+      "file": "missions/authoring/campaigns/memory-atlas.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/memory-atlas.toml",
+      "sourceSHA256": "a257a9b6797b243e2785e41d8e5d1e41d686d8e1d48f9a3ad5819840f92c83ef",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/mutual-shelter.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/mutual-shelter.md",
+      "sourceSHA256": "a759554219f286d99cadbf86c176af955740b5c14180b03deca80c2c40e6dc7c",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "b1713cba425efe96be661a59ce092704b7dda2b5f6c576956d251d21d2f9f12d"
+    },
+    {
+      "file": "missions/authoring/campaigns/mutual-shelter.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/mutual-shelter.toml",
+      "sourceSHA256": "feaa17c582cb5b8ace878b2d53273b2e71217c0d4d0d949b5abd5e6decc6ddea",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/open-measure.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/open-measure.md",
+      "sourceSHA256": "856dd3b5033bf9e1c5eeae7599aaad2feacb9fc2b10366504ddded65cdfc46fa",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "d2f4d980fa3b26271165cb5cd81912ba09b0d3ab42821c45c18d112d4e9ad012"
+    },
+    {
+      "file": "missions/authoring/campaigns/open-measure.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/open-measure.toml",
+      "sourceSHA256": "3104b6c6381bb71e0ff672137d95aee6c794b3c90e5e572a8c18b93181792c97",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/open-shadow.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/open-shadow.md",
+      "sourceSHA256": "7188d5b26ec4ad782089bfee7167870726be7ad560c850515a1598be23e451af",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "32efc0a2e847f24e69542e4bb9407300e6333bb77623620b2b30b4f7cd6e0ffa"
+    },
+    {
+      "file": "missions/authoring/campaigns/open-shadow.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/open-shadow.toml",
+      "sourceSHA256": "44859a16c821fe1f4f45a95d4a360b5586515c93d5a5e3615a8923040c8e3970",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/original-families-manifest.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/original-families-manifest.json",
+      "sourceSHA256": "05fff02529f740140ef2c2610ef845d8cc1f0198590480e3040500b259b2fd9b",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/original-families.authoring.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/original-families.authoring.json",
+      "sourceSHA256": "71578f34aa6b9c15ea6aba833a56c4af068dac9f3e94515112f985d03d83f2ce",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/original-families.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/original-families.json",
+      "sourceSHA256": "de515448d92f6d29488049e9b5f9d2c0692eb520ea38ac32588088443a827069",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/original-families.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/original-families.md",
+      "sourceSHA256": "ac2c26f25fe3caa2cdadc271726e220d3b8fc17ee4168a22f3829566b0b29e8f",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "1eb344140d93f271b11b4c96b17a82501730a6fbed9ca15541ecc48236396d01"
+    },
+    {
+      "file": "missions/authoring/campaigns/original-families.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/original-families.toml",
+      "sourceSHA256": "b9994f987a6e277195fb9d4c04455564e2bb3acf5eda335e92e4384ea818630e",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/passengers-horizon.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/passengers-horizon.md",
+      "sourceSHA256": "a888e36b8003bf459f8f2ad196b00670c29ad98289d26c559bf46a0f14ca8f87",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "10649ebf56a6baea75604f2538acbb56364fac932a0f313b2dabfb54cf914011"
+    },
+    {
+      "file": "missions/authoring/campaigns/passengers-horizon.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/passengers-horizon.toml",
+      "sourceSHA256": "454e7de8ec6bf03bd448b8560643533476bc07091c1489e4b8f21c8aa1cf0a86",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/project-campaign-briefs.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/project-campaign-briefs.json",
+      "sourceSHA256": "d9dec470c503c98f948252ae78bb286cd3298647b1e6cfb976985c1b9b10d6d6",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/public-record.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/public-record.md",
+      "sourceSHA256": "6a3a4ef9deb0c4ed72e55e771f89c09499c5eafb3d37d6f008dceab1fcc10fdf",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "7e05812fd87d6300fd17273107b6411ad0ef72f34a4bc11c6c9382b803e0beb3"
+    },
+    {
+      "file": "missions/authoring/campaigns/public-record.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/public-record.toml",
+      "sourceSHA256": "68413893b6a8269784fbbe41f35538d95ff92a81475cb63ecda58fa821b6c7a4",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/quiet-choir.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/quiet-choir.md",
+      "sourceSHA256": "b9eab7e087364350a6ea4deb8c40cd655d1c6f3f034d3afd99a6bb1abab39960",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "eab1906b20e90c23996a6e7111a5b395d7ae95bfb27e533e64aaeacd3feb89db"
+    },
+    {
+      "file": "missions/authoring/campaigns/quiet-choir.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/quiet-choir.toml",
+      "sourceSHA256": "f86c91e5aeaf34f5f2bc37241a1ae03ddad4252f7d5b4ad7356b3bd8c85ac94a",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/quiet-nursery.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/quiet-nursery.md",
+      "sourceSHA256": "cbb1f39386f4e03b16e5cdaeb956ca75f9dde2381a564db8231c200cbf647ee4",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "955d4d3d95ee4f27a9c9af60e916187d9cece03e5b63192e3b79ae2c0b23bc58"
+    },
+    {
+      "file": "missions/authoring/campaigns/quiet-nursery.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/quiet-nursery.toml",
+      "sourceSHA256": "5169b465e851b64af7505914bdb14fef6826d83890ae9df9fa291d1f0712b32e",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/remaining-authoring-index.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining-authoring-index.json",
+      "sourceSHA256": "95fd2c52b4ce13bed06aca1095e42feb96111566b8c8a046b91f9bc79bd6d725",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/remaining-briefs.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/remaining-briefs.json",
+      "sourceSHA256": "d5fe502df2d0cc785c530938dab585496d2228d6437fdb790ac30583a5924fe5",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/rubble-covenant.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/rubble-covenant.md",
+      "sourceSHA256": "c270adcf89799841e0292d68cba96596b8167bfc3f4768ec9bd1e2a7368045cc",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "0fdf5ec0f8d8d6842d3a7e08c0d8ba23d6b7e2f8ebb10d6c090bb2f224305537"
+    },
+    {
+      "file": "missions/authoring/campaigns/rubble-covenant.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/rubble-covenant.toml",
+      "sourceSHA256": "567574c50b171cd00b3c821088a0c76cb0d44b9db46502f875f20796298ed83f",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/service-campaign-validation.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/service-campaign-validation.json",
+      "sourceSHA256": "245b67ed2335417b32ff9298aefcf30ca9f72c2502a12e66b021a1ce040d4b48",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/shared-pulse.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shared-pulse.md",
+      "sourceSHA256": "995317f4757b7cf7b0785efb358616a44ebd7af3ce47e85fca7b0713abaa0100",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "6e7cb3845126c9f10da2117f750b819223cdde3310ea7fc05ecfa907bf09b27e"
+    },
+    {
+      "file": "missions/authoring/campaigns/shared-pulse.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shared-pulse.toml",
+      "sourceSHA256": "5e520be357efc8b56056c754d07208816e5c950d667ef47a48a4e7a01015c1af",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/shattered-wake-validation.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shattered-wake-validation.json",
+      "sourceSHA256": "9b2c350595111525c6d51f6146ee751cbfedb0d26c0066244a66f092f7c8ce92",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/shattered-wake.authoring.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shattered-wake.authoring.json",
+      "sourceSHA256": "002f0c6407f645171426e4d93efed43044e2238fafde493757e4de667057924e",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/shattered-wake.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shattered-wake.md",
+      "sourceSHA256": "138c39a50ed068c7b3748b7d1d2da95d301eb5e78028d2e5b044133eb528dcdc",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "c3ca8ccffca0b5fc61ec8c4a9a952c5de85653edaf93dfb3206b2b44a2371ac2"
+    },
+    {
+      "file": "missions/authoring/campaigns/shattered-wake.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/shattered-wake.toml",
+      "sourceSHA256": "f24d52724d64f9802078cb141a0629848abfe0c696a5beefb6e8b1ff6ee2f6cf",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/small-lights.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/small-lights.md",
+      "sourceSHA256": "e222b33e89c13b5afaa1cfd3dd61ef609c389cac13378e972d889d4ab7b9a418",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "d02eaa9466c922c6edb5d8c0e2b0fb1f0dfe2c579974f6556779d40e787a5868"
+    },
+    {
+      "file": "missions/authoring/campaigns/small-lights.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/small-lights.toml",
+      "sourceSHA256": "4844a0c2a5ee1b90b2b6d37799b9ab23a622204a1e6578c2c8e30323e36d6f3a",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/still-current.authoring.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/still-current.authoring.json",
+      "sourceSHA256": "128b4c3292c3a9a20ea42b89747c988344d482623337da93b376466f83f53d24",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/still-current.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/still-current.md",
+      "sourceSHA256": "162c64a0cdc84d9150ba8322523816f07bda13c95ced9814af9816e64836c563",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "5292696322a9842411a343e2bed8cbd471367c0872478dc324e0e06bbe3f5f89"
+    },
+    {
+      "file": "missions/authoring/campaigns/still-current.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/still-current.toml",
+      "sourceSHA256": "92cb2053ca486a6291fa80957bb520a6c885e0f406a8504541d154352e8f608d",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/tithe-of-worlds.authoring.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/tithe-of-worlds.authoring.json",
+      "sourceSHA256": "92c3f34bd49ab943e6d3eb69c65cc909f191e3d4462de417cbbc9648ea67dd89",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/tithe-of-worlds.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/tithe-of-worlds.md",
+      "sourceSHA256": "4446ca3de2f92b0751e53f30bd1b681d6bd69f318260c63c6bb12866b4906be2",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "113155317c9bb6fd36a09ffcb7025c5607859528f54dc3eb86ca85d2b6cbe3c7"
+    },
+    {
+      "file": "missions/authoring/campaigns/tithe-of-worlds.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/tithe-of-worlds.toml",
+      "sourceSHA256": "c8f1d6221c0a3effc301f38c9fc8c4535b618dcf668807e15eff3899ee277992",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/tithe-validation.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/tithe-validation.json",
+      "sourceSHA256": "e94fb379ecdf24ff6515a88657362e7fdd65e08a5567ad3a1bc5bc37b192bd36",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/uncounted-names.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/uncounted-names.md",
+      "sourceSHA256": "6ec299f982835393d2d8f76cc042d6b4bc8308ec39eca745c64edec9c1baf7d8",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "2039badab8746f527a0d1d2dd7232329f946d731d21c313c7b496c20edf41068"
+    },
+    {
+      "file": "missions/authoring/campaigns/uncounted-names.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/uncounted-names.toml",
+      "sourceSHA256": "f1af07603d1dc9ba3c37ba590e07fbb17f65fd646d972385fdd55b9834260300",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/under-tow.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/under-tow.md",
+      "sourceSHA256": "437fa3ae0a293f0d5b5897e8e0cd99d26035add234f76147ff8dbbfbcf7e9314",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "a5a6cd71ec03463cb8780fcb920e7f5d906a8edb7821ea98f49ec053ee252c16"
+    },
+    {
+      "file": "missions/authoring/campaigns/under-tow.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/under-tow.toml",
+      "sourceSHA256": "851d8ceadf4c4c3ebafacdb6137f0f058b0c86b01e767fb928536b4db4f60631",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/unfinished-map.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/unfinished-map.md",
+      "sourceSHA256": "0c572b0f5d18ba5aac24d04518dda8bd9dcab3425793af55f72bbe294eb4f861",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "6a135ae75b04a3439a913e8d405466d03c7b6d6b8e39276eae3fb7d4aa74eecb"
+    },
+    {
+      "file": "missions/authoring/campaigns/unfinished-map.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/unfinished-map.toml",
+      "sourceSHA256": "a2ead798235a843039f13897a406cd8f58517c7801751e699f28a2fe594eba15",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/validation.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/validation.json",
+      "sourceSHA256": "feb5d45dbc70810e3df37902796f88eddba0ded44ba079b2849beecfbc2560ff",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/warning-tour-validation.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/warning-tour-validation.json",
+      "sourceSHA256": "adfa8421e3a4d04b398137889290008ad8417cbb98c26866f94c2140d78b3a54",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/warrant-ledger.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/warrant-ledger.md",
+      "sourceSHA256": "1fb0e86c6ece95dd2255558273a4ff7880c312d51a0ea3df43fd27a2b3bff9bb",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "fb4a2af16d61f98129c2ec50eade704296ec422b4081b8c50d64f4417e58ebdf"
+    },
+    {
+      "file": "missions/authoring/campaigns/warrant-ledger.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/warrant-ledger.toml",
+      "sourceSHA256": "4c20f9a7ab13d17f5e2da5c0875b6a9764d8b1b428f0e95918cd3999f47b6c42",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/wayfarer-exchange.authoring.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-exchange.authoring.json",
+      "sourceSHA256": "906632685aebe8ce6b7896450b5b0039220ce9e6f2d6a59dc93521b7d91cf36c",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/wayfarer-exchange.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-exchange.md",
+      "sourceSHA256": "f93474716c0243c537cb2c3a9c0d728725fb8427295a35f3c025e0da851876f1",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "6541a94239faab70f0d5d70974919fccc2fedaf66d80d71221392cac15250428"
+    },
+    {
+      "file": "missions/authoring/campaigns/wayfarer-exchange.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-exchange.toml",
+      "sourceSHA256": "f4ba400702ed2e0cd2fd265f23980e8781f356ab2af7b7d2cc63901fa520823c",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/wayfarer-services-manifest.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services-manifest.json",
+      "sourceSHA256": "101847a1f6f14c25c341a77f8b66705d9d02c332d934fe8b84440f0a1487592a",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/wayfarer-services.authoring.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services.authoring.json",
+      "sourceSHA256": "704db61bd7a008804db5d964caa6169d06e4a8f6148de93a91a39c931ba50c81",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/wayfarer-services.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services.json",
+      "sourceSHA256": "2db129ce91100c3a32c0316e2059ca449f7812725bc157ea000993161a0d2c39",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/wayfarer-services.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services.md",
+      "sourceSHA256": "f8431dbea21fc6a7dc4c663746e8d1292e0d3f8575389617bb5109f629d48e9c",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "91f62579173116c74f8823337c7313db57193f30d65129f1a4e50f9004e99adb"
+    },
+    {
+      "file": "missions/authoring/campaigns/wayfarer-services.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/wayfarer-services.toml",
+      "sourceSHA256": "86ff03ba806da0cb453ab2a57d6ae9be4c38310511af7e7f3bf8e65e8b653f5b",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/campaigns/witness-window.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/witness-window.md",
+      "sourceSHA256": "4d5d29fc63d118bb891d576b79871e7eab335ec50fbb05954037756765481af3",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "0c68d1911cb559ea8eb9a182f0f12889734def03b3bd11ab82a299e50996a80a"
+    },
+    {
+      "file": "missions/authoring/campaigns/witness-window.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/original-missions/witness-window.toml",
+      "sourceSHA256": "d65fcb81f3565970cbf355d6ff41ea1dedf046c9ecb2d2094f44aeda58f95b88",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/finale/ENGINE-CONTRACT.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/ENGINE-CONTRACT.md",
+      "sourceSHA256": "034b18730fbca658ee89dd03696d26e6af00f45dc56fd89b950f5d1999a6f67c",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "034b18730fbca658ee89dd03696d26e6af00f45dc56fd89b950f5d1999a6f67c"
+    },
+    {
+      "file": "missions/authoring/finale/README.md",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/README.md",
+      "sourceSHA256": "91ccdc700b238ff71dc63974a26e60549570d359ac83e4e3026c0b087e83694c",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only.",
+      "bundledSHA256": "ecd38a626fe2f4846c9a18edd88a371fe9daeef8afe47f24ee0ef1e85fa09f45"
+    },
+    {
+      "file": "missions/authoring/finale/authoring.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/authoring.json",
+      "sourceSHA256": "3191e5ed0c885d60bc66710b59eac2fc1cd44de40a1f774fb22d459b0b05c2c0",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/finale/completion-hooks.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/completion-hooks.json",
+      "sourceSHA256": "c1bfb685dc858d2fa7149bcc939f15c974516b545dc2eb7f7f40183b5836186b",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/finale/manifest.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/manifest.json",
+      "sourceSHA256": "1f5de18e24814da27cb73e72905894e351cc9e9ef21064835c65d0ea14840863",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/finale/quest.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/quest.json",
+      "sourceSHA256": "137ac7b0b0e5e67fac2911807b1748f2978b80a984846f4c3a63f54f47390b1b",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/finale/unwritten-route.toml",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/unwritten-route.toml",
+      "sourceSHA256": "f3b833c0636b21e64104f02de89d3634f61bbb6603eb8ea6b0cef447e2aca1bc",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/authoring/finale/validation.json",
+      "source": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/validation.json",
+      "sourceSHA256": "708c919c59f254457d35d92274e35e03444a23b364b974ee9138a98dd029ad3e",
+      "authority": "Frozen authored detail; later explicit oracle resolutions override conflicts. Approval/validation receipts establish their original bounded scope only."
+    },
+    {
+      "file": "missions/gameplay/contracts/runtime/GAMEPLAY-CONTRACTS.md",
+      "source": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/docs/GAMEPLAY-CONTRACTS.md",
+      "sourceSHA256": "57e711807b4bbcb1bb4baa614202cf0be92f397b57f8d8e51ae3f2b7ba9fe7ca",
+      "authority": "Candidate implementation reference at6552b68f7a146ceb79b4376d33cc8afd3f987399; not a final-game completeness claim or override of final-game design.",
+      "bundledSHA256": "57e711807b4bbcb1bb4baa614202cf0be92f397b57f8d8e51ae3f2b7ba9fe7ca"
+    },
+    {
+      "file": "missions/gameplay/contracts/runtime/MISSION-PACKS.md",
+      "source": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/docs/MISSION-PACKS.md",
+      "sourceSHA256": "a3af04415a4a79778ea57fd8604e032dfeccce042c92ae51fae032da8b8c9a40",
+      "authority": "Candidate implementation reference at6552b68f7a146ceb79b4376d33cc8afd3f987399; not a final-game completeness claim or override of final-game design.",
+      "bundledSHA256": "551252f57d48759533da23897372e80654f038dde9bf9e5d2f91a9dc2c700334"
+    },
+    {
+      "file": "missions/gameplay/contracts/runtime/EQUIPMENT-ACTOR-BOUNDARY.md",
+      "source": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/docs/EQUIPMENT-ACTOR-BOUNDARY.md",
+      "sourceSHA256": "7045b3c0948429dead2d8d337fe506e481ae7fc0274c88881cc155b153b5e186",
+      "authority": "Candidate implementation reference at6552b68f7a146ceb79b4376d33cc8afd3f987399; not a final-game completeness claim or override of final-game design.",
+      "bundledSHA256": "7045b3c0948429dead2d8d337fe506e481ae7fc0274c88881cc155b153b5e186"
+    },
+    {
+      "file": "missions/gameplay/contracts/runtime/SHIP-SHOWROOM.md",
+      "source": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/docs/SHIP-SHOWROOM.md",
+      "sourceSHA256": "107fde67eab890acb3126cf0d904a22b7fa69bab3607de99e5e2c914fb289b62",
+      "authority": "Candidate implementation reference at6552b68f7a146ceb79b4376d33cc8afd3f987399; not a final-game completeness claim or override of final-game design.",
+      "bundledSHA256": "18b8f27540880fde07060e33e542977517a829e79f2b3027fa95ffd4824acb16"
+    },
+    {
+      "file": "missions/gameplay/contracts/runtime/CONTROLS.md",
+      "source": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/docs/CONTROLS.md",
+      "sourceSHA256": "b9d9644da3af918d8c782191dc3a2c5a138f9829ff713ebc2513e0d31978b778",
+      "authority": "Candidate implementation reference at6552b68f7a146ceb79b4376d33cc8afd3f987399; not a final-game completeness claim or override of final-game design.",
+      "bundledSHA256": "f7e41e738f2849d2e1ba3b4db16a3373e2aee3d80a3c670c312c67266fb4b1fb"
+    },
+    {
+      "file": "missions/gameplay/contracts/runtime/FLIGHT-CONTROLS.generated.md",
+      "source": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/docs/FLIGHT-CONTROLS.generated.md",
+      "sourceSHA256": "9a5b4979044b76e9448ff75a9afc8209691c0c406fe2ef963d65fc38d8f9130f",
+      "authority": "Candidate implementation reference at6552b68f7a146ceb79b4376d33cc8afd3f987399; not a final-game completeness claim or override of final-game design.",
+      "bundledSHA256": "9a5b4979044b76e9448ff75a9afc8209691c0c406fe2ef963d65fc38d8f9130f"
+    },
+    {
+      "file": "missions/gameplay/contracts/runtime/SHIP-FILES.md",
+      "source": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/docs/SHIP-FILES.md",
+      "sourceSHA256": "e186685ef673648fad1f512fc5c9776e7d5dfa639fc37faed36b2fa97361694a",
+      "authority": "Candidate implementation reference at6552b68f7a146ceb79b4376d33cc8afd3f987399; not a final-game completeness claim or override of final-game design.",
+      "bundledSHA256": "89bc394b0610ee69ecefc858401b04001ed1af92b9a13c2e202c5ce53d048129"
+    },
+    {
+      "file": "missions/gameplay/contracts/runtime/SHIP-DATA-SCOPE.md",
+      "source": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/docs/SHIP-DATA-SCOPE.md",
+      "sourceSHA256": "802ce5b944505735420514d54a8afd96a6b10f5c127af45bb60dd3b5fe2df6ac",
+      "authority": "Candidate implementation reference at6552b68f7a146ceb79b4376d33cc8afd3f987399; not a final-game completeness claim or override of final-game design.",
+      "bundledSHA256": "40f5a575f9646ad6a1abe3ccf5a1d637e3f4be6b504a42c00ba7d2e2c84388c6"
+    },
+    {
+      "file": "missions/gameplay/contracts/engine/SCRIPTABLE-MISSION-ENGINE-DESIGN.md",
+      "source": "/Users/sclarke/github/elite/docs/research/scriptable-mission-engine-design.md",
+      "sourceSHA256": "e9b345fc02f5f9c5d4919e61f869b6eedda870bde7113008d73c3ca6bcc7f763",
+      "authority": "Architecture reference only. Historical mission bindings and source identities are excluded from the final original campaign set.",
+      "bundledSHA256": "fc1b481d85fdce3b9ee60e125cc9eca70233d407009c0fa34de22dce86e886da"
+    },
+    {
+      "file": "implementation/COMPLETION-LEDGER.snapshot.md",
+      "source": "git:e6c95b40a5ca7e5e33c7689b041c8ef3b72e2a29:docs/COMPLETION-LEDGER.md",
+      "sourceSHA256": "7b7c20118a8c55c16289842313fc9229abb3a5699696ac29b8a66f9fd482d4d0",
+      "authority": "Read-only exact-byte work-ledger snapshot; canonical live ledger remains the single work-packet authority.",
+      "bundledSHA256": "7b7c20118a8c55c16289842313fc9229abb3a5699696ac29b8a66f9fd482d4d0"
+    }
+  ]
+}

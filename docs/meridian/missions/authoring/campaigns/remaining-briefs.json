@@ -1,0 +1,1454 @@
+{
+  "status": "Private original campaign briefs; sources below are exclusion inventory IDs only, never runtime dependencies",
+  "license": "MIT",
+  "briefs": [
+    {
+      "slug": "quiet-nursery",
+      "title": "The Quiet Nursery",
+      "sources": [
+        "C03"
+      ],
+      "galaxy": 0,
+      "fee": 4600,
+      "cast": [
+        "Physicist Anja Kest",
+        "Custodian Tomas Veil"
+      ],
+      "prop": [
+        "culture",
+        "sage-umber"
+      ],
+      "story": "A nursery habitat's root cultures are failing even though its environmental reports show perfect conditions. The reports average away short pressure pulses caused by a shared ventilation controller. The commander measures the pulses, carries a reference culture to a test berth and helps the growers choose independent breathing cells or a jointly supervised controller.",
+      "survey": [
+        "Measure three pressure pulses outside the nursery's service vents.",
+        "KEST: Averages hide the moment when a root stops breathing. Record the shortest pulse as carefully as the longest."
+      ],
+      "work": [
+        "Install the reference culture in the isolated orbital test cradle.",
+        "VEIL: The reference belongs to the growers. Keep its containment sealed until the receiving cradle acknowledges the same serial capsule.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting horticulture tender to the test berth.",
+        "VEIL: The gardeners will inspect their own crop. An empty tender or a flight recorder cannot stand in for their arrival.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Give each nursery cell an independent air regulator",
+          "Verify the two independent regulator locks and their separate pressure tests.",
+          "KEST: Isolation must work under a pulse, not merely appear as a switch label."
+        ],
+        [
+          "Establish a shared grower-controlled ventilation schedule",
+          "Verify the grower countersignature and the bounded ventilation schedule.",
+          "VEIL: Shared air requires a published limit and a way for every cell to stop the controller."
+        ]
+      ],
+      "clue": [
+        "The breath between readings",
+        "The unaveraged pressure trace includes a quiet inward curl that no nursery valve produces."
+      ],
+      "cover": "an orbital botanical laboratory with a pale jade sealed root-culture capsule, three delicate pressure traces and translucent growing cells beyond a window; patient horticultural science, no animals or infestation"
+    },
+    {
+      "slug": "borrowed-dawn",
+      "title": "Borrowed Dawn",
+      "sources": [
+        "C04"
+      ],
+      "galaxy": 1,
+      "fee": 6800,
+      "cast": [
+        "Controller Edda Rell",
+        "Tug Lead Mira Penn"
+      ],
+      "prop": [
+        "watcher",
+        "petrol-brass"
+      ],
+      "story": "Three orbital homes depend on a leased sunlight reflector whose ownership contract has expired. Its automatic parking motion will leave one habitat cold while overheating another. The commander measures the actual illumination, moves a work crew through a safe corridor and establishes either independent mirror limits or a public light-sharing schedule.",
+      "survey": [
+        "Scan the three illumination monitors before the reflector moves.",
+        "RELL: The sun is not failing. Our agreement about where the light goes has failed."
+      ],
+      "work": [
+        "Lock two reflector actuators inside their measured safe travel envelopes.",
+        "PENN: These are external actuator collars. Touching them does not breach or damage a station.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the identified mirror crew to the shadow-side service berth.",
+        "PENN: Keep the tender in the clear corridor. We need the actual crew to test the locks.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Give each habitat its own bounded reflector segment",
+          "Test independent segment stops and receive both habitat approvals.",
+          "RELL: One controller must not be able to steal another home's dawn."
+        ],
+        [
+          "Publish a joint illumination rota",
+          "Verify the signed rota and its physical over-temperature cutoff.",
+          "PENN: A timetable is useful only if the machinery obeys its limit."
+        ]
+      ],
+      "clue": [
+        "The unlit interval",
+        "A photometer records a curved shadow during an interval when no physical reflector crosses its view."
+      ],
+      "cover": "a dark orbital solar-control alcove, three gold light paths from separated mirror segments above a cool blue planet; a bronze illumination meter and manual actuator collar in foreground, no exploding star"
+    },
+    {
+      "slug": "open-shadow",
+      "title": "The Open Shadow",
+      "sources": [
+        "C05",
+        "P36"
+      ],
+      "galaxy": 2,
+      "fee": 7400,
+      "cast": [
+        "Agent Mara Vale",
+        "Relay Engineer Ivo Renn"
+      ],
+      "prop": [
+        "receiver",
+        "ice-blue"
+      ],
+      "story": "A civilian rescue service uses a privacy filter that hides passenger identities but should never hide collision warnings. An update has coupled the two channels. The commander compares cooperative test vessels, installs an independently measured reference and negotiates either public collision telemetry or a witnessed privacy escrow.",
+      "survey": [
+        "Compare identity and collision channels on three consenting calibration beacons.",
+        "VALE: Privacy is a right. Silence on a collision channel is a physical hazard. Measure them separately."
+      ],
+      "work": [
+        "Attach the reference receiver to two external test couplers.",
+        "RENN: The reference listens without recording a passenger's identity. Keep the two receipts distinct.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Guide the volunteer test tender through the measured crossing corridor.",
+        "VALE: Its pilot knows the test. Do not use an uninformed traveller as bait.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Publish anonymous collision telemetry",
+          "Verify the anonymous broadcast and independent close-pass warning.",
+          "VALE: Publish movement, not names."
+        ],
+        [
+          "Use a witnessed identity escrow with a safety channel",
+          "Verify the escrow witness and continuously open collision channel.",
+          "RENN: Closing the archive must never close the warning."
+        ]
+      ],
+      "clue": [
+        "The shadow with no hull",
+        "The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record."
+      ],
+      "cover": "an empty orbital sensor-testing chamber, a circular passive receiver comparing a steady cyan collision trace with a veiled amber identity trace, dark glass and restrained teal light"
+    },
+    {
+      "slug": "harbour-without-orders",
+      "title": "Harbour Without Orders",
+      "sources": [
+        "C06"
+      ],
+      "galaxy": 3,
+      "fee": 7600,
+      "cast": [
+        "Controller Edda Rell",
+        "Marshal Nera Voss"
+      ],
+      "prop": [
+        "controller",
+        "slate-orange"
+      ],
+      "story": "A port's arrival allocator has lost its signing authority after a disputed maintenance transfer. No one is attacking the station, but every berth refuses every arriving ship. The commander establishes who can authorise safe approaches, brings in an independent traffic witness and tests either distributed berth authority or a temporary public harbour office.",
+      "survey": [
+        "Scan the three external arrival allocators and record their refusal certificates.",
+        "RELL: The harbour is intact. Its doors are closed by three mutually invalid signatures."
+      ],
+      "work": [
+        "Install temporary safety limits at the two external approach relays.",
+        "VOSS: These limits prevent conflicting approaches while the operators decide who may sign.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the neutral traffic witness to the emergency receiving berth.",
+        "RELL: Reception must identify our witness and the berth used. A ship disappearing near the station proves nothing.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Return authority to independent berth operators",
+          "Verify two operator keys and a conflict-free simultaneous approach test.",
+          "VOSS: Each berth may sign its own approach, within the common exclusion envelope."
+        ],
+        [
+          "Create a time-limited public harbour office",
+          "Verify the public key register and its automatic authority expiry.",
+          "RELL: Emergency authority must come with a visible end."
+        ]
+      ],
+      "clue": [
+        "The unsigned berth",
+        "The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary."
+      ],
+      "cover": "a civilian orbital harbour-control room, three closed cyan arrival tracks around an empty docking coordinate, an amber authority module on a workbench, no battle or occupied station"
+    },
+    {
+      "slug": "false-colours",
+      "title": "False Colours",
+      "sources": [
+        "C07",
+        "R10",
+        "P33"
+      ],
+      "galaxy": 4,
+      "fee": 6200,
+      "cast": [
+        "Nia Toren",
+        "Captain Tamsin Holt"
+      ],
+      "prop": [
+        "seal",
+        "navy-copper"
+      ],
+      "story": "A lawful hauler is being mistaken for a patrol vessel because a transponder recycler issued duplicate identity keys. A frightened militia has closed the freight corridor. The commander obtains the original key chain, protects a cooperative verification flight and chooses public revocation or a supervised reissue. Attributed evidence resolves the identity dispute.",
+      "survey": [
+        "Scan three cooperative identity repeaters along the disputed freight corridor.",
+        "TOREN: A colour on a scanner is not a warrant. Find the original signing chain."
+      ],
+      "work": [
+        "Compare both duplicate keys against the independent physical seal.",
+        "HOLT: The seal's manufacturing trace proves a duplicate issue. Do not destroy the vessels carrying the evidence.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the accused hauler to the independent verification berth.",
+        "HOLT: Keep both pilot and cargo safe until the receiver records the examination.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Publish a simultaneous revocation and safe-conduct notice",
+          "Verify the revocation receipt and militia safe-conduct acknowledgement.",
+          "TOREN: Neither duplicate becomes guilty by being the first to answer."
+        ],
+        [
+          "Reissue both keys under independent supervision",
+          "Verify two distinct replacement identities and the retired-key ledger.",
+          "HOLT: Both pilots must see the same retirement record."
+        ]
+      ],
+      "clue": [
+        "The seal before the key",
+        "An older layer in the physical seal contains a curved signature absent from every transponder issue record."
+      ],
+      "cover": "an orbital identity workshop, two blank transponder keys with different coloured status lights beside a copper forensic seal and magnifier, distant freight beacons beyond a small window"
+    },
+    {
+      "slug": "rubble-covenant",
+      "title": "The Rubble Covenant",
+      "sources": [
+        "C08",
+        "R09"
+      ],
+      "galaxy": 5,
+      "fee": 6600,
+      "cast": [
+        "Geologist Jalen Orr",
+        "Tug Lead Mira Penn"
+      ],
+      "prop": [
+        "anchor",
+        "ochre-charcoal"
+      ],
+      "story": "A ring-mining cooperative wants to reopen a debris corridor but rival insurers classify every unclaimed rock as someone else's property. The commander maps the actual masses, attaches verified tug anchors and escorts a survey crew before choosing pooled clearance or individually bonded salvage. Safe passage depends on verified clearance and an agreed ownership charter.",
+      "survey": [
+        "Measure three named debris masses and their actual drift vectors.",
+        "ORR: Ownership does not change momentum. We need both records before a tug may move anything."
+      ],
+      "work": [
+        "Attach two identified tug anchors to the registered clearance bodies.",
+        "PENN: Keep anchor identity tied to the rock's conserved mass. A fragment is not a second claim.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the survey tender through the proven clearance corridor.",
+        "PENN: The corridor is open only when the living survey crew receives it.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Pool the clearance work under the cooperative",
+          "Verify the shared mass ledger and a witnessed tug release.",
+          "ORR: All recovered material stays on the same conservation ledger."
+        ],
+        [
+          "Bond individual salvage sections",
+          "Verify section boundaries and the independent exclusion-zone test.",
+          "PENN: A private claim cannot reach across a neighbour's safe corridor."
+        ]
+      ],
+      "clue": [
+        "The hollow mass",
+        "One old trajectory record curves around an empty centre as though the missing mass had a boundary of its own."
+      ],
+      "cover": "a practical orbital tug workbench with a bronze anchoring collar, coarse dark stone samples and a luminous measured debris corridor beyond a window, no impact or exploding station"
+    },
+    {
+      "slug": "garden-in-transit",
+      "title": "A Garden in Transit",
+      "sources": [
+        "C09"
+      ],
+      "galaxy": 6,
+      "fee": 6100,
+      "cast": [
+        "Custodian Tomas Veil",
+        "Captain Suri Arlen"
+      ],
+      "prop": [
+        "seed-case",
+        "sage-umber"
+      ],
+      "story": "An orbital seed archive is moving because its lease is ending. Two destinations want the same climate collection, while the growers insist the living archive must not be divided blindly. The commander compares real receiving environments, accompanies the seed tender and obtains either a distributed custody charter or a shared quarantine berth.",
+      "survey": [
+        "Scan the three receiving environmental cradles using the archive's consent token.",
+        "VEIL: A seed catalogue is not a cargo price list. Record the conditions that let it remain alive."
+      ],
+      "work": [
+        "Test two isolated seed cradles with the loaned reference sampler.",
+        "ARLEN: Test capsules return to their registered owner. A copied inventory is not a new living collection.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the identified seed tender to its agreed quarantine berth.",
+        "VEIL: Its custodians remain aboard until actual reception confirms their collection.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Create distributed seed custody",
+          "Verify two compatible climate receipts and their consented custody split.",
+          "VEIL: Split only the collection the growers agreed to share."
+        ],
+        [
+          "Establish a shared orbital archive",
+          "Verify the common quarantine lock and joint access charter.",
+          "ARLEN: A shared berth needs enforceable access for both settlements."
+        ]
+      ],
+      "clue": [
+        "The dormant season",
+        "The archive contains a circular season boundary that encloses no named climate or world."
+      ],
+      "cover": "a quiet orbital seed-archive corridor, a sage seed case with three sealed canisters and two carefully separated climate cradles, soft green growth light and copper supports"
+    },
+    {
+      "slug": "warrant-ledger",
+      "title": "The Warrant Ledger",
+      "sources": [
+        "C10",
+        "C11",
+        "P01",
+        "P16",
+        "P29"
+      ],
+      "galaxy": 7,
+      "fee": 8200,
+      "cast": [
+        "Marshal Nera Voss",
+        "Nia Toren"
+      ],
+      "prop": [
+        "ledger",
+        "slate-orange"
+      ],
+      "story": "Several bounty issuers have reused the same casualty evidence to obtain incompatible warrants. One convoy carries a real armed suspect and two wrongly listed witnesses. The commander audits the evidence chain, protects a neutral hearing and chooses simultaneous public correction or a protected restitution process.",
+      "survey": [
+        "Scan three registered warrant evidence beacons with independent issuer signatures.",
+        "VOSS: A reward number is not evidence. A duplicate casualty cannot authorise another victim."
+      ],
+      "work": [
+        "Reconcile the two conflicting victim records at the independent evidence coupler.",
+        "TOREN: The dates prove reuse. Keep the original statements and their consent restrictions intact.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting witness tender to the protected hearing berth.",
+        "VOSS: A living received witness is our objective. Unrelated wanted kills do not advance it.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Publish corrected warrants simultaneously",
+          "Verify issuer revocations and the witness safe-conduct register.",
+          "VOSS: No issuer may keep the false warrant active during publication."
+        ],
+        [
+          "Use protected restitution hearings",
+          "Verify the sealed hearing record and compensated witness custody.",
+          "TOREN: Protected testimony still needs an independent auditable receipt."
+        ]
+      ],
+      "clue": [
+        "The unwritten warrant",
+        "Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world."
+      ],
+      "cover": "an orbital civilian evidence office, three blank warrant tabs and a deep slate ledger core under a forensic lamp, purple tracking light reflected in glass, no guns, assassin or text"
+    },
+    {
+      "slug": "measure-of-care",
+      "title": "The Measure of Care",
+      "sources": [
+        "C12",
+        "P15"
+      ],
+      "galaxy": 0,
+      "fee": 5900,
+      "cast": [
+        "Physicist Anja Kest",
+        "Coordinator Sera Dain"
+      ],
+      "prop": [
+        "cold-crate",
+        "ice-blue"
+      ],
+      "story": "Two orbital clinics report incompatible storage readings for the same treatment. Miscalibrated refrigeration references have created an apparent shortage. The commander preserves a consented diagnostic sample, tests each cold chain and helps the clinics choose local reference standards or a jointly maintained calibration service.",
+      "survey": [
+        "Read three signed cold-chain monitors without opening patient records.",
+        "DAIN: We need the equipment's history, not a stranger's diagnosis."
+      ],
+      "work": [
+        "Run the sealed reference sample through the two external calibration cradles.",
+        "KEST: Keep temperature exposure and capsule identity together. A new label cannot repair a spoiled sample.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the clinic service crew to the independent test berth.",
+        "DAIN: Their arrival is verified by the receiving clinic. A crate alone cannot prove care happened.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Keep independent clinic calibration references",
+          "Verify both reference calibrations and independent custody records.",
+          "KEST: Independence needs measured agreement, not identical software."
+        ],
+        [
+          "Establish a shared clinical calibration service",
+          "Verify the shared service limit and each clinic's stop authority.",
+          "DAIN: Either clinic must be able to stop unsafe transfers."
+        ]
+      ],
+      "clue": [
+        "The temperature of silence",
+        "A reference recorder shows a stable curved boundary during a period with no recorded thermal source."
+      ],
+      "cover": "a civilian orbital clinic laboratory, a sealed blue-white diagnostic cold crate and independent calibration dials, calm cream work surfaces with cyan light, no patient faces or medical insignia"
+    },
+    {
+      "slug": "long-return",
+      "title": "The Long Return",
+      "sources": [
+        "R05",
+        "R06",
+        "R07",
+        "P07"
+      ],
+      "galaxy": 1,
+      "fee": 7800,
+      "cast": [
+        "Coordinator Sera Dain",
+        "Captain Orin Sorel"
+      ],
+      "prop": [
+        "recorder",
+        "cream-maroon"
+      ],
+      "story": "A dispersed maintenance crew can return home only if three competing carriers honour the same transfer agreement. Each carrier has a plausible but incomplete account of an earlier missed rendezvous. The commander reconstructs the physical custody chain, escorts a voluntary reunion tender and negotiates a shared handoff or direct return.",
+      "survey": [
+        "Record three carrier rendezvous receipts from consenting relay crews.",
+        "SOREL: Each crew remembers a different clock. Ask who actually received people, not who filed first."
+      ],
+      "work": [
+        "Test two neutral custody handoffs using the loaned receiver witness.",
+        "DAIN: These tests contain no passengers. Never make a real crew the bait for a missed rendezvous.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the named reunion tender to its consented receiving berth.",
+        "SOREL: Keep the surviving crew list honest. A substitute hull does not restore someone lost.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Use a witnessed shared return handoff",
+          "Verify both carrier signatures and the live crew reception.",
+          "DAIN: Shared responsibility must still identify who received each person."
+        ],
+        [
+          "Give the reunion tender a direct return corridor",
+          "Verify the corridor reservation and home-berth arrival authority.",
+          "SOREL: A direct journey is safe only if its last berth is real."
+        ]
+      ],
+      "clue": [
+        "The passenger never booked",
+        "The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination."
+      ],
+      "cover": "an empty orbital crew-transfer lounge, cream seating, a red-edged custody recorder and three calm rendezvous lights through a window, humane quiet atmosphere without people"
+    },
+    {
+      "slug": "unfinished-map",
+      "title": "The Unfinished Map",
+      "sources": [
+        "R08",
+        "P40"
+      ],
+      "galaxy": 2,
+      "fee": 6900,
+      "cast": [
+        "Agent Mara Vale",
+        "Geologist Jalen Orr"
+      ],
+      "prop": [
+        "register",
+        "navy-copper"
+      ],
+      "story": "A dead surveyor's archive is being sold as a complete safe-navigation map, although its final measurements were never made. The commander recovers authorised copies from ordinary visible receivers, measures the disputed gaps and obtains either a clearly bounded public atlas or a witnessed research-only archive.",
+      "survey": [
+        "Compare three independently dated boundary records at the survey relays.",
+        "ORR: An honest blank is safer than an invented coordinate."
+      ],
+      "work": [
+        "Measure two uncharted orbital boundary points using the loaned survey register.",
+        "VALE: Record uncertainty with the reading. Do not turn an estimate into a historical fact.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting archive custodian to the publication berth.",
+        "VALE: The custodian brings the original rights register. A stolen copy cannot grant consent.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Publish a bounded atlas with explicit gaps",
+          "Verify the uncertainty layer and public-use consent record.",
+          "ORR: The blank areas must survive publication."
+        ],
+        [
+          "Preserve a witnessed research archive",
+          "Verify the restricted archive receipt and a public hazard notice.",
+          "VALE: Restricted research cannot keep a known flight hazard secret."
+        ]
+      ],
+      "clue": [
+        "The margin beyond the map",
+        "The archive's untouched margin carries an inward arc outside every surveyed coordinate frame."
+      ],
+      "cover": "an original orbital cartography desk, dark blank atlas plates and a copper survey register, disconnected cyan boundary arcs above a sparse star field, no familiar galactic map"
+    },
+    {
+      "slug": "blue-reservoir",
+      "title": "The Blue Reservoir",
+      "sources": [
+        "P02"
+      ],
+      "galaxy": 3,
+      "fee": 7300,
+      "cast": [
+        "Engineer Cato Lerr",
+        "Custodian Tomas Veil"
+      ],
+      "prop": [
+        "water",
+        "ivory-teal"
+      ],
+      "story": "An orbital water commons is losing dissolved oxygen while every intake remains clean. A new circulation pump has trapped part of the living filter behind a one-way lease boundary. The commander measures actual flow, opens consented bypasses and chooses distributed filter cradles or a jointly governed reservoir.",
+      "survey": [
+        "Scan three oxygen and flow monitors on the external reservoir manifold.",
+        "LERR: Clean intake water says nothing about what the circulation loop keeps from returning."
+      ],
+      "work": [
+        "Open two measured bypass locks without releasing the living filter.",
+        "VEIL: The colony remains contained. A destroyed tank is neither a repair nor a rescued organism.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the water-commons inspection tender to the safe laboratory berth.",
+        "LERR: Its operators must observe the actual flow before accepting it.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Distribute the living filter among independent cradles",
+          "Verify both containment receipts and balanced flow tests.",
+          "VEIL: Divide only a viable culture, with each receiver's consent."
+        ],
+        [
+          "Create a jointly supervised reservoir",
+          "Verify common circulation limits and independent shutdown authority.",
+          "LERR: Shared water needs a physical limit as well as a charter."
+        ]
+      ],
+      "clue": [
+        "The dry current",
+        "The oldest flow recorder traces an inward curve through a channel that contains no water."
+      ],
+      "cover": "an orbital water-commons control bay, blue translucent circulation loops around a contained pale green living filter, original ivory and teal machinery, no sea creature or submerged city"
+    },
+    {
+      "slug": "mutual-shelter",
+      "title": "Mutual Shelter",
+      "sources": [
+        "P04",
+        "P19"
+      ],
+      "galaxy": 4,
+      "fee": 7100,
+      "cast": [
+        "Nia Toren",
+        "Captain Suri Arlen"
+      ],
+      "prop": [
+        "ledger",
+        "petrol-brass"
+      ],
+      "story": "A repair mutual has insured more emergency shelter than its docks can physically provide. A legal salvage claim on a disabled hauler exposes the shortfall. The commander measures real capacity, protects the hauler's crew and helps members choose a pooled reserve or independently bonded shelter.",
+      "survey": [
+        "Scan three emergency-dock capacity registers and their physical berth limits.",
+        "TOREN: A promise of shelter is useful only if a ship can actually fit."
+      ],
+      "work": [
+        "Reserve two real emergency berths against the independently measured capacity ledger.",
+        "ARLEN: Reserve the space once. Selling a second receipt does not create another berth.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the disabled cooperative hauler to its verified repair berth.",
+        "ARLEN: Its crew keeps its title while the repairs and hearing take place.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Pool member-funded emergency capacity",
+          "Verify the real reserve ledger and member withdrawal limits.",
+          "TOREN: Publish what is covered before accepting anyone's contribution."
+        ],
+        [
+          "Bond independent shelter obligations",
+          "Verify each provider's berth bond and an actual receiving drill.",
+          "ARLEN: A bond needs a berth behind it, not another bond."
+        ]
+      ],
+      "clue": [
+        "The ownerless reserve",
+        "An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor."
+      ],
+      "cover": "an orbital cooperative repair office, a bronze emergency-capacity ledger and two blank berth tokens, warm cream lighting and orderly drydock gantries in the distance"
+    },
+    {
+      "slug": "listening-frontier",
+      "title": "The Listening Frontier",
+      "sources": [
+        "P06",
+        "P41"
+      ],
+      "galaxy": 5,
+      "fee": 9100,
+      "cast": [
+        "Captain Tamsin Holt",
+        "Agent Mara Vale"
+      ],
+      "prop": [
+        "listener",
+        "jade"
+      ],
+      "story": "Human survey bursts are compressing a Larvaal migration channel into a narrow dangerous crossing. Both sides report collisions as attacks. The commander measures independent traces, establishes protected listening intervals and escorts a neutral witness before choosing distributed quiet windows or a shared migration relay.",
+      "survey": [
+        "Record three consenting human and Larvaal boundary listeners.",
+        "HOLT: Keep weapon signatures apart from survey bursts. A crowded channel does not prove an invasion."
+      ],
+      "work": [
+        "Calibrate two external quiet-window emitters using the reference listener.",
+        "VALE: The window must leave room for a reply. Broadcasting louder is not listening.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the neutral listening tender to its protected receiving berth.",
+        "HOLT: Protect the witness rather than farming incidental combat kills.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Publish independent quiet windows",
+          "Verify human schedule withdrawal and Larvaal acknowledgement.",
+          "VALE: Each side needs a measured interval it can trust."
+        ],
+        [
+          "Establish a jointly witnessed migration relay",
+          "Verify relay limits and both independent reply receipts.",
+          "HOLT: No single operator may close the other's return path."
+        ]
+      ],
+      "clue": [
+        "The voice outside the channel",
+        "A quiet-window listener receives an inward-curved phase trace from outside both recognised transmission bands."
+      ],
+      "cover": "a silent orbital listening observatory, smooth jade crescent instruments and two separate human cyan and alien gold signal paths leaving a quiet gap, no warships or battle"
+    },
+    {
+      "slug": "assembly-of-orbits",
+      "title": "An Assembly of Orbits",
+      "sources": [
+        "P09",
+        "P11"
+      ],
+      "galaxy": 6,
+      "fee": 7700,
+      "cast": [
+        "Marshal Nera Voss",
+        "Coordinator Sera Dain"
+      ],
+      "prop": [
+        "console",
+        "cream-maroon"
+      ],
+      "story": "A cluster of orbital homes must share a single transfer corridor during a maintenance season. Old voting records count property shares but omit the crews who keep the corridor open. The commander verifies real occupancy and operating work, escorts delegates and establishes either rotating worker stewardship or publicly bounded berth representation.",
+      "survey": [
+        "Compare three consented occupancy and corridor-work registers.",
+        "VOSS: A share certificate cannot stand in for the people on the next shift."
+      ],
+      "work": [
+        "Run two independent corridor-capacity tests with the loaned assembly console.",
+        "DAIN: Show every group the same limits before asking it to choose.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting delegate tender to the neutral assembly berth.",
+        "VOSS: The hearing requires received delegates, not an empty passenger manifest.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Rotate corridor stewardship among working crews",
+          "Verify the rota and each crew's stop authority.",
+          "DAIN: Rotation needs a safe handover, not a race to the controls."
+        ],
+        [
+          "Use bounded public berth representation",
+          "Verify the published representation register and capacity cap.",
+          "VOSS: No vote can create more corridor than the measured envelope."
+        ]
+      ],
+      "clue": [
+        "The absent seat",
+        "The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists."
+      ],
+      "cover": "an empty neutral orbital assembly chamber, circular civilian work consoles around a deliberately unoccupied centre, cream and maroon fittings, no throne, flags or insignia"
+    },
+    {
+      "slug": "under-tow",
+      "title": "Under Tow",
+      "sources": [
+        "P10",
+        "P28",
+        "P30"
+      ],
+      "galaxy": 7,
+      "fee": 8300,
+      "cast": [
+        "Tug Lead Mira Penn",
+        "Coordinator Sera Dain"
+      ],
+      "prop": [
+        "coupler",
+        "slate-orange"
+      ],
+      "story": "An emergency transport network has standardised its forms but not the physical coupling limits of its vessels. A stranded work tender cannot accept the rescue tug sent for it. The commander measures real hull interfaces, recovers an independent coupler and verifies either interoperable local rescue pairs or a shared specialist tender. Crew identity, actual docking and return custody determine success.",
+      "survey": [
+        "Scan three rescue-interface collars and their independent load limits.",
+        "PENN: Matching form numbers do not make these collars fit."
+      ],
+      "work": [
+        "Test two compatible couplings with the loaned service reference.",
+        "DAIN: Test against empty cradles first. People are not calibration weights.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the identified rescued work tender to an actually compatible berth.",
+        "PENN: It stays a real vessel with a living crew until reception records the handoff.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Accredit interoperable local rescue pairs",
+          "Verify two tested coupling pairs and their crew reception drill.",
+          "PENN: A local promise must identify the tug that can keep it."
+        ],
+        [
+          "Establish a shared specialist rescue tender",
+          "Verify specialist dispatch limits and the receiving-station agreement.",
+          "DAIN: Shared rescue capacity cannot be sold twice."
+        ]
+      ],
+      "clue": [
+        "The coupling without a vessel",
+        "An old interface calibration defines a curved inward contact surface with no compatible hull in its register."
+      ],
+      "cover": "an original orbital rescue workshop, a slate and copper load coupler between two visibly different empty interface cradles, amber safety lights, no branded rescue ship"
+    },
+    {
+      "slug": "memory-atlas",
+      "title": "The Memory Atlas",
+      "sources": [
+        "P12",
+        "P24"
+      ],
+      "galaxy": 0,
+      "fee": 7200,
+      "cast": [
+        "Agent Mara Vale",
+        "Geologist Jalen Orr"
+      ],
+      "prop": [
+        "watcher",
+        "navy-copper"
+      ],
+      "story": "A navigation publisher has combined voluntary travel diaries with instrument surveys and now presents memories as exact route measurements. The commander revisits three disputed orbital landmarks, separates consented testimony from physical data and chooses an annotated public atlas or a custodian-held memory archive.",
+      "survey": [
+        "Record three orbital landmarks independently of the travel diaries.",
+        "ORR: A beautiful memory is not a measured approach vector."
+      ],
+      "work": [
+        "Compare two landmark instruments against the loaned reference watcher.",
+        "VALE: Keep consent attached to testimony and uncertainty attached to measurements.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting diary custodian to the archive receiving berth.",
+        "VALE: The custodian decides which memories become public.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Publish a separated evidence-and-memory atlas",
+          "Verify independent measurement labels and each contributor's consent.",
+          "ORR: Let readers see where testimony ends and the instrument begins."
+        ],
+        [
+          "Keep the diaries with their custodians",
+          "Verify restricted custody and publish only measured hazard corrections.",
+          "VALE: Privacy does not require keeping an unsafe chart in circulation."
+        ]
+      ],
+      "clue": [
+        "The place nobody remembers",
+        "Three unrelated diaries contain the same inward curve around a place none of their authors visited."
+      ],
+      "cover": "an orbital archive desk, blank translucent memory plates beside a navy survey watcher and sparse cyan landmark markers, warm copper lamps, no recognisable source star chart"
+    },
+    {
+      "slug": "fleet-of-neighbours",
+      "title": "A Fleet of Neighbours",
+      "sources": [
+        "P13",
+        "P14",
+        "P31"
+      ],
+      "galaxy": 1,
+      "fee": 9400,
+      "cast": [
+        "Marshal Nera Voss",
+        "Captain Suri Arlen"
+      ],
+      "prop": [
+        "beacon",
+        "slate-orange"
+      ],
+      "story": "Three settlements offer civilian protection ships after pirates close a relief corridor. Their hulls and fuel are finite, and every commander wants the same escort window. The player audits actual commitments, repairs a relief lane and escorts a dispatch tender before choosing a rotating protection rota or locally retained reserve pairs. Aid comes from the ships that actually arrive.",
+      "survey": [
+        "Verify three real relief-escort manifests and their available fuel.",
+        "ARLEN: A promised hull cannot protect a corridor it has not reached."
+      ],
+      "work": [
+        "Repair two external relief-lane relays with the loaned dispatch beacon.",
+        "VOSS: Keep the repair separate from the defence. A pirate kill cannot calibrate a relay.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the registered civilian dispatch tender to relief reception.",
+        "ARLEN: Record arrivals and losses honestly. Do not recreate a destroyed helper from its promise.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Rotate arrived protection ships across settlements",
+          "Verify the arrived-hull rota and each crew's consented duty limit.",
+          "VOSS: Duty changes only when the actual replacement arrives."
+        ],
+        [
+          "Retain local reserve pairs with mutual callouts",
+          "Verify both local reserves and a real cross-settlement callout.",
+          "ARLEN: A reserve is a living ship, not an accounting entry."
+        ]
+      ],
+      "clue": [
+        "The formation with no centre",
+        "An early dispatch diagram curves around an empty central formation slot with no assigned vessel."
+      ],
+      "cover": "a civilian orbital dispatch bay, three distinct unmarked escort tokens and a copper route beacon, a distant relief lane of amber lights, no military emblems or combat"
+    },
+    {
+      "slug": "uncounted-names",
+      "title": "Uncounted Names",
+      "sources": [
+        "P17",
+        "P34"
+      ],
+      "galaxy": 2,
+      "fee": 6500,
+      "cast": [
+        "Coordinator Sera Dain",
+        "Nia Toren"
+      ],
+      "prop": [
+        "register",
+        "cream-maroon"
+      ],
+      "story": "A dock automation system records a group of displaced workers as transferable industrial property because their first manifests used equipment-only forms. The commander obtains consented identities, establishes safe reception and helps the workers choose a private custody correction or a public register repair.",
+      "survey": [
+        "Compare three consented identity receipts without publishing private names.",
+        "DAIN: Ask the people concerned how their records should be used."
+      ],
+      "work": [
+        "Correct two external receiving permissions under witnessed consent.",
+        "TOREN: The old manifest remains evidence, not an authority to transfer a person.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting worker tender to its chosen safe receiving berth.",
+        "DAIN: Only living consenting arrivals count. Cargo canisters cannot represent people.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Repair individual records under protected custody",
+          "Verify each consented correction and independent reception authority.",
+          "TOREN: A correction must not erase the evidence of what went wrong."
+        ],
+        [
+          "Publish a systematic register repair",
+          "Verify anonymised audit results and the permanent form correction.",
+          "DAIN: Publish the fault without publishing the people who suffered it."
+        ]
+      ],
+      "clue": [
+        "The unnamed entry",
+        "The oldest register has an inward-curved entry naming no person, cargo or owner."
+      ],
+      "cover": "a calm orbital reception office, cream custody register and blank private identity tabs under a soft lamp, an open receiving corridor in the distance, no captive people or branded symbols"
+    },
+    {
+      "slug": "honest-circuit",
+      "title": "The Honest Circuit",
+      "sources": [
+        "P21",
+        "P32"
+      ],
+      "galaxy": 3,
+      "fee": 7000,
+      "cast": [
+        "Captain Elara Venn",
+        "Relay Engineer Ivo Renn"
+      ],
+      "prop": [
+        "clock",
+        "ice-blue"
+      ],
+      "story": "A new flight certification circuit rewards apparent speed without accounting for unsafe close passes or offloaded fuel. The commander independently measures its beacons, completes a real receiving test and chooses an efficiency standard or a safety-margin standard. The player completes the circuit with their current commander and ship.",
+      "survey": [
+        "Scan three circuit beacons and compare their independent timebases.",
+        "VENN: A fast time means little if the clock and the route disagree."
+      ],
+      "work": [
+        "Complete two published corridor tests with the reference timing standard.",
+        "RENN: Every limit is visible before the run. Pausing preserves the simulation clock.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting calibration tender through the same certified corridor.",
+        "VENN: The standard must work for a working tender as well as a fast player ship.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Certify measured route efficiency",
+          "Verify fuel accounting and actual receiving time.",
+          "RENN: Efficiency includes the fuel actually used, not a removed manifest."
+        ],
+        [
+          "Certify a minimum safety margin",
+          "Verify the closest-pass envelope and emergency abort test.",
+          "VENN: A safe abort is a valid measured result, not a punishment."
+        ]
+      ],
+      "clue": [
+        "The tick outside the circuit",
+        "A reference timebase records a curved phase mark between two valid circuit ticks."
+      ],
+      "cover": "an orbital flight-calibration desk with a circular silver timing instrument, three independent cyan route arcs and an amber safety envelope through dark glass, no race branding"
+    },
+    {
+      "slug": "small-lights",
+      "title": "Small Lights",
+      "sources": [
+        "P22"
+      ],
+      "galaxy": 4,
+      "fee": 6400,
+      "cast": [
+        "Dispatcher Evi Senn",
+        "Engineer Cato Lerr"
+      ],
+      "prop": [
+        "lantern",
+        "petrol-brass"
+      ],
+      "story": "A cluster of modest utility failures is ignored because each falls below an insurer's dispatch threshold. Together they isolate an orbital neighbourhood. The commander measures the combined fault, repairs actual receiving modules and escorts a maintenance crew before establishing pooled local callouts or independently funded service reserves.",
+      "survey": [
+        "Read three neighbourhood utility faults and their actual shared dependencies.",
+        "SENN: Small failures become large when every office treats them as someone else's."
+      ],
+      "work": [
+        "Restore two external service modules with the loaned utility lantern.",
+        "LERR: Confirm the actual load before clearing a fault from the board.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting maintenance tender to the neighbourhood berth.",
+        "SENN: The crew has to reach its work, not merely accept a dispatch.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Pool local callouts across utilities",
+          "Verify a shared capacity ledger and a real cross-utility response.",
+          "LERR: Shared work needs spare capacity behind it."
+        ],
+        [
+          "Keep independently funded service reserves",
+          "Verify two stocked reserves and their receiving drill.",
+          "SENN: Count the parts on the shelf, not the promises on the form."
+        ]
+      ],
+      "clue": [
+        "The light before the fault",
+        "An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed."
+      ],
+      "cover": "an original orbital neighbourhood utility alcove, three small amber service lanterns around a slate maintenance programmer, warm lights on a dark planet beyond, hopeful modest scale"
+    },
+    {
+      "slug": "passengers-horizon",
+      "title": "The Passenger's Horizon",
+      "sources": [
+        "P23",
+        "P39"
+      ],
+      "galaxy": 5,
+      "fee": 7500,
+      "cast": [
+        "Captain Orin Sorel",
+        "Coordinator Sera Dain"
+      ],
+      "prop": [
+        "console",
+        "ivory-teal"
+      ],
+      "story": "A passenger cooperative sells a scenic orbital journey that excludes travellers whose cabin needs do not match its standard form. The commander tests real access and safe viewing positions, escorts a volunteer assessment tender and helps the travellers establish either adaptable shared cabins or individually guaranteed journey slots. Consent and actual fitted capacity determine the journey plan.",
+      "survey": [
+        "Scan three orbital viewing and receiving sites against the travellers' consented access needs.",
+        "SOREL: A fine horizon is useless if a passenger cannot safely reach it."
+      ],
+      "work": [
+        "Test two external boarding and viewing interfaces with the loaned access console.",
+        "DAIN: Use an empty test cradle first. People do not have to prove that an unsafe fitting hurts.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting assessment tender to its independently verified berth.",
+        "SOREL: Their actual reception is the evidence; a passenger count alone is not.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Provide adaptable shared journey cabins",
+          "Verify compatible fittings and each traveller's independent consent.",
+          "DAIN: Shared access cannot erase an individual's needs."
+        ],
+        [
+          "Guarantee individual accessible journey slots",
+          "Verify reserved capacity and the safe receiving itinerary.",
+          "SOREL: A reservation includes every receiving point, not just departure."
+        ]
+      ],
+      "clue": [
+        "The horizon without a world",
+        "A viewing reference encloses an inward-curved horizon that belongs to none of the surveyed planets."
+      ],
+      "cover": "an empty accessible civilian orbital passenger lounge, cream and teal interface console, broad unobstructed viewing glass over a blue planet, calm inclusive working environment"
+    },
+    {
+      "slug": "kind-distance",
+      "title": "The Kind Distance",
+      "sources": [
+        "P25"
+      ],
+      "galaxy": 6,
+      "fee": 5600,
+      "cast": [
+        "Dispatcher Neris Sol",
+        "Coordinator Sera Dain"
+      ],
+      "prop": [
+        "receiver",
+        "cream-maroon"
+      ],
+      "story": "Two separated households want to restore contact but disagree about who may disclose their new locations. A relay broker offers to solve the problem by publishing both addresses. The commander measures private reply paths, verifies voluntary custody and helps the households choose an anonymous shared relay or individually revocable invitations. The households retain the right to decline a meeting.",
+      "survey": [
+        "Test three private reply relays without exposing either household's address.",
+        "SOL: A reply means someone chose to answer. Silence is not consent."
+      ],
+      "work": [
+        "Verify two anonymous invitation paths with the loaned passive receiver.",
+        "DAIN: The message may cross the boundary. The address must not follow without permission.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting relay custodian to the independent privacy hearing berth.",
+        "SOL: The custodian can confirm the rules without carrying either household.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Use an anonymous shared reply relay",
+          "Verify independent revocation and a consented reply receipt.",
+          "DAIN: Either household may close its path without closing the other's."
+        ],
+        [
+          "Issue individually revocable invitations",
+          "Verify both invitation controls and their expiry test.",
+          "SOL: An invitation is not an obligation to travel."
+        ]
+      ],
+      "clue": [
+        "The reply with no sender",
+        "A dormant relay preserves an inward-curved reply predating every registered household key."
+      ],
+      "cover": "an empty orbital communications alcove, two separate cream reply terminals joined by a subtle curved cyan light path, a red-edged passive receiver, humane quiet atmosphere"
+    },
+    {
+      "slug": "cold-reserve",
+      "title": "Cold Reserve",
+      "sources": [
+        "P26"
+      ],
+      "galaxy": 7,
+      "fee": 8800,
+      "cast": [
+        "Marshal Nera Voss",
+        "Salvage Chief Ruan Pell"
+      ],
+      "prop": [
+        "storage",
+        "sand-graphite"
+      ],
+      "story": "A decommissioned defence reserve is still paying for autonomous cargo movements under expired authority. Its unmanned equipment is still executing the expired dispatch orders. The commander reconciles finite stores, disconnects real dispatch couplers and escorts an inspection crew before choosing a civilian reserve conversion or verified dismantling.",
+      "survey": [
+        "Scan three reserve store ledgers and their actual physical inventories.",
+        "PELL: Count what is here before anyone orders it somewhere else."
+      ],
+      "work": [
+        "Isolate two named external dispatch couplers from expired work authority.",
+        "VOSS: Unmanned couplers are the target. Random military hulls and stations are not substitutes.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the independent inspection tender to the safe reserve berth.",
+        "PELL: The inspectors must see the emptied dispatch path themselves.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Convert the finite reserve to civilian emergency use",
+          "Verify capped civilian authority and actual received stock.",
+          "VOSS: No old order may survive behind the new label."
+        ],
+        [
+          "Dismantle and reclaim the reserve",
+          "Verify dispatch isolation and conserved material reception.",
+          "PELL: Scenery disappearing is not material arriving."
+        ]
+      ],
+      "clue": [
+        "The unused order",
+        "An expired dispatch order defines an inward route to a receiving volume that has never existed in the reserve."
+      ],
+      "cover": "a cold orbital storage hall, finite dark reserve canisters with copper caps beside an isolated dispatch coupler, amber manual lock lights, no weapons or military insignia"
+    },
+    {
+      "slug": "magnetic-orchard",
+      "title": "The Magnetic Orchard",
+      "sources": [
+        "P37",
+        "P48"
+      ],
+      "galaxy": 0,
+      "fee": 9200,
+      "cast": [
+        "Agent Mara Vale",
+        "Physicist Anja Kest"
+      ],
+      "prop": [
+        "outer-cradle",
+        "jade"
+      ],
+      "story": "A slowly growing Larvaal structure bends charged dust into living magnetic fronds. Human survey tethers disturb its growth, while some operators mistake the fronds for collectible weapons. The commander measures the field without taking living parts, removes two consented tethers and chooses protected independent boundaries or a jointly observed growth reserve.",
+      "survey": [
+        "Observe three safe magnetic field boundaries without extracting living material.",
+        "VALE: A living structure is not a rack of salvage waiting for a buyer."
+      ],
+      "work": [
+        "Release two identified human tethers using the isolated field reference.",
+        "KEST: Keep the removed tether mass in custody. Cutting a frond is not removing our equipment.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the neutral observation tender to the protected receiving cradle.",
+        "VALE: Bring the observers through the measured gap rather than forcing a new one.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Protect independent human and Larvaal growth boundaries",
+          "Verify both exclusion envelopes and their reply receipts.",
+          "KEST: Each boundary needs room to change without touching the other."
+        ],
+        [
+          "Establish a jointly observed growth reserve",
+          "Verify the consented reserve and independent monitoring limits.",
+          "VALE: Observation does not grant ownership."
+        ]
+      ],
+      "clue": [
+        "The root without a stem",
+        "The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure."
+      ],
+      "cover": "an original orbital observation room overlooking smooth jade crescent growth instruments and fine gold charged-dust fronds in space, scientific rather than monstrous, no ships or blades"
+    },
+    {
+      "slug": "open-measure",
+      "title": "Open Measure",
+      "sources": [
+        "P38",
+        "P46"
+      ],
+      "galaxy": 1,
+      "fee": 7900,
+      "cast": [
+        "Engineer Cato Lerr",
+        "Physicist Anja Kest"
+      ],
+      "prop": [
+        "programmer",
+        "cobalt-cream"
+      ],
+      "story": "Three independent workshops cannot exchange replacement parts because their calibration certificates use incompatible reference loads. A supplier profits by treating each disagreement as a new proprietary component. The commander measures actual tolerances, tests shared reference fittings and escorts a neutral technician before choosing public measurement standards or a witnessed interoperable service.",
+      "survey": [
+        "Compare three workshop reference loads against the actual external test fittings.",
+        "LERR: A certificate should describe a fit, not manufacture a monopoly."
+      ],
+      "work": [
+        "Test two independently made parts with the loaned tolerance programmer.",
+        "KEST: Record the physical tolerances before looking at the supplier's label.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the independent calibration tender to the common test berth.",
+        "LERR: Its technician brings a separate instrument and a separate signing key.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Publish an open physical measurement standard",
+          "Verify the public reference and an independently manufactured fit.",
+          "KEST: A standard works when someone else can reproduce it."
+        ],
+        [
+          "Establish a witnessed interoperable calibration service",
+          "Verify reciprocal service limits and independent rejection rights.",
+          "LERR: Every workshop must be able to refuse an unsafe result."
+        ]
+      ],
+      "clue": [
+        "The reference without a load",
+        "A reference instrument preserves an inward-curved response while its test cradle is verifiably empty."
+      ],
+      "cover": "an orbital precision workshop, cobalt and cream tolerance programmer between two visibly different metal reference fittings, copper gauges and soft cyan measurement light"
+    },
+    {
+      "slug": "shared-pulse",
+      "title": "The Shared Pulse",
+      "sources": [
+        "P43"
+      ],
+      "galaxy": 2,
+      "fee": 8600,
+      "cast": [
+        "Agent Mara Vale",
+        "Captain Tamsin Holt"
+      ],
+      "prop": [
+        "culture",
+        "jade"
+      ],
+      "story": "A Larvaal maintenance organ and a human beacon exchange incompatible acknowledgement pulses. Each automatically repeats faster when it receives the other's reply, creating a hazardous feedback loop. The commander establishes independent listening references, restores a consenting repair organ and verifies either separated timing windows or a shared bounded handshake.",
+      "survey": [
+        "Measure three independent points around the feedback loop without rebroadcasting it.",
+        "HOLT: More replies make this worse. Listen first."
+      ],
+      "work": [
+        "Install the consented repair reference at two external handshake couplers.",
+        "VALE: The organ remains with its custodian. A repair is not a specimen theft.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the neutral relay tender to the protected verification berth.",
+        "HOLT: Keep its ordinary collision channel open throughout the test.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Separate human and Larvaal acknowledgement windows",
+          "Verify both finite reply budgets and the silent interval.",
+          "VALE: A finite reply leaves room for the other voice to stop."
+        ],
+        [
+          "Adopt a shared bounded handshake",
+          "Verify both custodians' acknowledgements and the loop cutoff.",
+          "HOLT: Either side must be able to end the exchange safely."
+        ]
+      ],
+      "clue": [
+        "The pulse before the reply",
+        "A passive trace shows an inward curve before either known participant transmits."
+      ],
+      "cover": "a quiet original orbital handshake laboratory, pale jade living resonator beside an ivory human beacon, two cyan and gold pulses separated by dark space, no bombs or enemy disguise"
+    },
+    {
+      "slug": "witness-window",
+      "title": "The Witness Window",
+      "sources": [
+        "P44",
+        "P47"
+      ],
+      "galaxy": 3,
+      "fee": 8100,
+      "cast": [
+        "Coordinator Sera Dain",
+        "Nia Toren"
+      ],
+      "prop": [
+        "verifier",
+        "ice-blue"
+      ],
+      "story": "A shift worker witnessed an avoidable docking injury, but an arbitration system will erase the recording when its routine privacy window expires. The worker wants protection without surrendering control of testimony. The commander verifies consented copies, establishes a safe hearing and chooses an independently witnessed sealed archive or a public anonymised finding.",
+      "survey": [
+        "Compare three authorised recording receipts without revealing the witness's private location.",
+        "TOREN: Preserve evidence without turning its owner into a target."
+      ],
+      "work": [
+        "Verify two independent custody keys with the loaned witness verifier.",
+        "DAIN: Neither key alone may reveal testimony or erase it.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting witness tender to the protected hearing berth.",
+        "DAIN: Actual safe reception matters more than a reassuring status word.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Keep testimony in an independently witnessed sealed archive",
+          "Verify both custody signatures and the witness's revocation control.",
+          "TOREN: Protection is not a transfer of ownership."
+        ],
+        [
+          "Publish an anonymised safety finding",
+          "Verify the anonymisation audit and corrected docking procedure.",
+          "DAIN: Warn the next crew without exposing this one."
+        ]
+      ],
+      "clue": [
+        "The frame nobody recorded",
+        "Between two authentic recording frames is an inward-shaped phase imprint with no camera source."
+      ],
+      "cover": "a civilian orbital witness-protection office, a compact icy-blue two-key verifier and sealed blank recording plates under warm light, quiet empty hearing doorway, no weapons or crime-scene imagery"
+    },
+    {
+      "slug": "public-record",
+      "title": "Public Record",
+      "sources": [
+        "P42"
+      ],
+      "galaxy": 4,
+      "fee": 6300,
+      "cast": [
+        "Dispatcher Neris Sol",
+        "Nia Toren"
+      ],
+      "prop": [
+        "recorder",
+        "ochre-charcoal"
+      ],
+      "story": "An orbital news service wants to report a dangerous cargo-routing fault, but its sponsor owns the only accepted recording instrument. The commander obtains independent readings, protects a consenting technical witness and helps the newsroom choose an open evidence release or a witnessed right-of-reply process.",
+      "survey": [
+        "Record three independent cargo-routing decisions using consented observers.",
+        "SOL: A story that cannot survive an independent reading is not ready to publish."
+      ],
+      "work": [
+        "Compare two external route controllers with the loaned public recorder.",
+        "TOREN: Keep the sponsor's record beside the independent one. Disagreement is evidence, not a verdict.",
+        "mission_action_confirmed"
+      ],
+      "second": [
+        "Escort the consenting technical witness to the newsroom receiving berth.",
+        "SOL: The witness chooses what to disclose and must actually arrive safely.",
+        "escort_arrived"
+      ],
+      "choices": [
+        [
+          "Release the complete anonymised evidence set",
+          "Verify the independent archive and privacy-preserving public copy.",
+          "TOREN: Publication must preserve both the measurements and their limits."
+        ],
+        [
+          "Use a witnessed right-of-reply hearing",
+          "Verify the reply deadline record and the unchanged evidence escrow.",
+          "SOL: A reply may challenge a claim; it cannot erase the original measurement."
+        ]
+      ],
+      "clue": [
+        "The unreported frequency",
+        "The independent recorder captures a curved phase boundary outside the cargo controllers' published operating bands."
+      ],
+      "cover": "an empty orbital newsroom evidence desk, ochre recorder and two independent blank observation plates, restrained cyan waveform light and copper task lamp, no newspaper text or logos"
+    }
+  ]
+}

@@ -1,0 +1,469 @@
+{
+  "id": "l337.mutual-shelter",
+  "missionID": "mutual-shelter",
+  "title": "Mutual Shelter",
+  "originKind": "new-original",
+  "subtitle": "TOREN: A promise of shelter is useful only if a ship can actually fit.",
+  "contacts": [
+    "Nia Toren",
+    "Captain Suri Arlen"
+  ],
+  "ships": [
+    "SH001",
+    "SH061"
+  ],
+  "offer": "At Ashoes in Galaxy 5, after one ordinary trade. No imported score gate or source campaign prerequisite. The reference loan needs one tonne of free hold. The original reference is collected here before the survey departure. The settlement choice is made with actual arrived delegates at the witness receiver; final return/audit remains at this issuer.",
+  "story": "A repair mutual has insured more emergency shelter than its docks can physically provide. A legal salvage claim on a disabled hauler exposes the shortfall. The commander measures real capacity, protects the hauler's crew and helps members choose a pooled reserve or independently bonded shelter.",
+  "playerBriefing": "TOREN: A promise of shelter is useful only if a ship can actually fit.",
+  "rewardCR": 7100,
+  "completionBenefit": "The selected verified settlement persists in local records. No free hull, unrelated legal reset or artificial combat kills. A permanent clue for The Unwritten Route: The ownerless reserve.",
+  "branchPolicy": "Store the selected plan-a or plan-b identity once, separately from its authored display label. Apply only that branch at apply-settlement; both distinct physical and receiving proofs are required. Both legitimate endings share one final reward and one source clue.",
+  "items": [
+    {
+      "id": "mutual-shelter-reference",
+      "massTonnes": 1,
+      "acquireStage": "collect-reference",
+      "consumeStage": "return-and-audit"
+    }
+  ],
+  "interactionNotes": [
+    "Use the existing mission log, targeting, scan, contextual Confirm and Esc. Preview all obligations before accepting; cancellation changes nothing.",
+    "Keep the reference instrument in reserved custody through the field work, witness reception and selected settlement. Returning it is part of the independent terminal audit.",
+    "Preserve actual crew and entity identities. Culling is not death or arrival. A lost unnamed tender may be replaced with a new consenting crew after real rescue handling; never resurrect a named casualty. A lost reference invalidates its old serial before a real replacement loan.",
+    "All objectives are space flight or space-station handoffs. Stations remain protected from single-ship weapons. No source world overrides, equipment budgets, hidden reputation grind or external storyline progress is required."
+  ],
+  "authoringArt": {
+    "propID": "mutual-shelter-reference",
+    "propForm": "ledger",
+    "palette": "petrol-brass",
+    "stageObjects": [
+      "mutual-shelter-reference",
+      "mutual-shelter-reference",
+      "mutual-shelter-reference",
+      "mutual-shelter-reference",
+      "SH061",
+      "mutual-shelter-reference",
+      "mutual-shelter-reference",
+      "mutual-shelter-reference",
+      "mutual-shelter-reference"
+    ]
+  },
+  "schema": "l337-mission-design/1",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authoredSource": "Original L337 narrative, objectives, dialogs, locations and rewards",
+  "terminalStage": "complete",
+  "rewardReceipt": "l337.mutual-shelter/final-payment",
+  "rewardPolicy": "Pay credits once, atomically with the terminal receipt. Delay optional equipment fitting if incompatible; offer it again without duplicating payment. Never award kill points for non-kills or clear unrelated legal status. Commit the clue and terminal reward receipt atomically; a pending optional fitting does not delay the clue.",
+  "identityPolicy": "Match locations by galaxy/system identity, not coordinates or displayed spelling. Match entities by mission instance and target ID, never merely ship type.",
+  "persistencePolicy": "Every campaign starts unaccepted with its current identity and zero progress. Persist current-format stage evidence, choices, mission-item custody, reward and clue receipts. Resume these records on load; replayed events cannot duplicate rewards. No previous campaign or save format is imported.",
+  "completionClue": {
+    "questID": "l337.unwritten-route",
+    "clueID": "mutual-shelter-trace",
+    "label": "The ownerless reserve",
+    "journalText": "An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor.",
+    "massTonnes": 0,
+    "uniquePerSource": true,
+    "receipt": "l337.unwritten-route/clue/mutual-shelter-trace",
+    "awardWithSuccessfulTerminal": true
+  },
+  "artwork": {
+    "manifest": "../../assets/missions/manifest.json",
+    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "briefing": {
+      "id": "mutual-shelter",
+      "file": "../../assets/missions/illustrations/mutual-shelter.png",
+      "sha256": "8f8c92859a7f1f4295ba777b6405ca4a59ec5686de5b55e528f46e2e4dbeba24",
+      "visibility": "Current mission briefing"
+    },
+    "contacts": [
+      {
+        "name": "Nia Toren",
+        "portrait": {
+          "id": "nia-toren",
+          "file": "../../assets/missions/portraits/nia-toren.png",
+          "sha256": "edd32ff6ae3bab7d344bf4a65ea90cc375ee3f3de728f20c8309e5da4a9dc842",
+          "visibility": "Current mission briefing"
+        }
+      },
+      {
+        "name": "Captain Suri Arlen",
+        "portrait": {
+          "id": "suri-arlen",
+          "file": "../../assets/missions/portraits/suri-arlen.png",
+          "sha256": "24ed55a2d4d49f9d99f5c385972060c2d7564ff42f40d43690cc802ebe25894c",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "SH001",
+        "asset": {
+          "id": "SH001",
+          "file": "../../assets/missions/ships/SH001.png",
+          "sha256": "0d9e84c0f35facfff99dbe12663c48d3ba6a1a2f482c0ab4b5983e503cf9aa38",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      },
+      {
+        "id": "SH061",
+        "asset": {
+          "id": "SH061",
+          "file": "../../assets/missions/ships/SH061.png",
+          "sha256": "093475e0e190e905e7860d718b9b19857099e42e1f6c55f90aacba6df1235f79",
+          "visibility": "SH171 only after legitimate quest encounter; other ships follow discovery and current mission visibility"
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "mutual-shelter-reference",
+        "asset": {
+          "id": "mutual-shelter-reference",
+          "file": "../../assets/missions/props/mutual-shelter-reference.png",
+          "sha256": "4dcd9e81b76788acc929d5f91d4616e8bc409d74e84e761a88f8a1f8fa012afa",
+          "visibility": "Current mission briefing"
+        }
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "mutual-shelter/choose-settlement/plan-a",
+        "file": "../../assets/missions/outcomes/mutual-shelter-choose-settlement-plan-a.png",
+        "sha256": "512eb5e2937f7018c9cadfe6122a32de6a62e3e3ccb6823aae2c210b6d2c3354",
+        "visibility": "Only the actual committed branch"
+      },
+      {
+        "id": "mutual-shelter/choose-settlement/plan-b",
+        "file": "../../assets/missions/outcomes/mutual-shelter-choose-settlement-plan-b.png",
+        "sha256": "af1a21c2278dc3ff90c2d97665701be7b269a0f3b6e59f0d3e619a4af91a6356",
+        "visibility": "Only the actual committed branch"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 4,
+      "system": 188,
+      "objective": "Accept Mutual Shelter at Ashoes.",
+      "dialog": "Nia Toren: A repair mutual has insured more emergency shelter than its docks can physically provide. Review the complete survey, loan and receiving requirements before confirming.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "accept-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G05-S188",
+      "locationName": "Ashoes",
+      "next": "collect-reference",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/accept",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/accept",
+        "file": "../../assets/missions/stages/mutual-shelter/accept.png",
+        "sha256": "0ada467c046ec9ab56443e7c854495fd526739c6f59cd5a0a9f2b7d3047a52c8",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "collect-reference",
+      "galaxy": 4,
+      "system": 188,
+      "objective": "Collect the identified one-tonne reference instrument from Nia Toren.",
+      "dialog": "Nia Toren: This instrument is a loan. I retain it until your hold has room, and the final audit returns this exact serial identity.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "collect-reference-verified"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G05-S188",
+      "locationName": "Ashoes",
+      "next": "survey",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/collect-reference",
+      "itemEffects": [
+        {
+          "kind": "add",
+          "item": "mutual-shelter-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/collect-reference",
+        "file": "../../assets/missions/stages/mutual-shelter/collect-reference.png",
+        "sha256": "5b6e51961918fc9835f594b1f24ca0ee47bba1e1352e822f51966420b4deb235",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "survey",
+      "galaxy": 4,
+      "system": 3,
+      "objective": "Measure three actual claim registers against the two physical emergency berths.",
+      "dialog": "TOREN: A promise of shelter is useful only if a ship can actually fit.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "mutual-shelter-survey-1",
+        "mutual-shelter-survey-2",
+        "mutual-shelter-survey-3"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G05-S003",
+      "locationName": "Voron",
+      "next": "field-work",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/survey",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/survey",
+        "file": "../../assets/missions/stages/mutual-shelter/survey.png",
+        "sha256": "ecf11945a67ac4c863732f77ac911226ba99b7f1b4833a663d03c00bf428a677",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "field-work",
+      "galaxy": 4,
+      "system": 154,
+      "objective": "Reserve the two real berths and present the third test claim without occupying an imaginary slot.",
+      "dialog": "ARLEN: Reserve the space once. Selling a second receipt does not create another berth.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "mutual-shelter-work-port",
+        "mutual-shelter-work-starboard"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G05-S154",
+      "locationName": "Ranues",
+      "next": "independent-witness",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/field-work",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/field-work",
+        "file": "../../assets/missions/stages/mutual-shelter/field-work.png",
+        "sha256": "c3d2798061e87418171758456f10916c856072f590b688becf953ef9765b6144",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "independent-witness",
+      "galaxy": 4,
+      "system": 107,
+      "objective": "Verify actual safe transit and living reception of the disabled cooperative hauler to its verified repair berth.",
+      "dialog": "ARLEN: Its crew keeps its title while the repairs and hearing take place.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "mutual-shelter-witness-received"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "locationKey": "G05-S107",
+      "locationName": "Peloen",
+      "next": "choose-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/independent-witness",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/independent-witness",
+        "file": "../../assets/missions/stages/mutual-shelter/independent-witness.png",
+        "sha256": "638f3383f47cf5e2dcd93321a94cef02ceab67a123a67c57e28ed6cc334b0511",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "choose-settlement",
+      "galaxy": 4,
+      "system": 107,
+      "objective": "At the actual witness receiving station, choose the settlement with the arrived authorised operator delegates.",
+      "dialog": "Nia Toren: Your finite emergency-capacity stress test evidence is ready. Our arrived delegates have the signed mandate to choose here. Either pool member-funded emergency capacity or bond independent shelter obligations. Compare the actual tests and consequences before confirming; closing this view chooses neither.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "mutual-shelter-settlement-choice"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Pool member-funded emergency capacity",
+        "Bond independent shelter obligations"
+      ],
+      "choiceIDs": [
+        "plan-a",
+        "plan-b"
+      ],
+      "locationKey": "G05-S107",
+      "locationName": "Peloen",
+      "next": "apply-settlement",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/choose-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/choose-settlement",
+        "file": "../../assets/missions/stages/mutual-shelter/choose-settlement.png",
+        "sha256": "fe45c78bd25fc03811dbba51d1a1d991af21408edb153842d4d777b8813e725c",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "apply-settlement",
+      "galaxy": 4,
+      "system": 154,
+      "objective": "Verify both independent proofs for the selected settlement.",
+      "dialog": "Nia Toren: The selected plan must work in the physical system. A statement or unrelated kill cannot supply either proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "mutual-shelter-settlement-summary"
+      ],
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-settlement",
+      "branchVariants": [
+        {
+          "choiceID": "plan-a",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "mutual-shelter-plan-a-physical-proof",
+            "mutual-shelter-plan-a-receiving-proof"
+          ],
+          "objective": "Verify the real reserve ledger and member withdrawal limits.",
+          "dialog": "TOREN: Publish what is covered before accepting anyone's contribution.",
+          "gossip": "Mutual Shelter: Pool member-funded emergency capacity."
+        },
+        {
+          "choiceID": "plan-b",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "mutual-shelter-plan-b-physical-proof",
+            "mutual-shelter-plan-b-receiving-proof"
+          ],
+          "objective": "Verify each provider's berth bond and an actual receiving drill.",
+          "dialog": "ARLEN: A bond needs a berth behind it, not another bond.",
+          "gossip": "Mutual Shelter: Bond independent shelter obligations."
+        }
+      ],
+      "locationKey": "G05-S154",
+      "locationName": "Ranues",
+      "next": "return-and-audit",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/apply-settlement",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/apply-settlement",
+        "file": "../../assets/missions/stages/mutual-shelter/apply-settlement.png",
+        "sha256": "601cdb9777c907137072328e6fec05e61f5b497f21d76618583c804a06511edb",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "return-and-audit",
+      "galaxy": 4,
+      "system": 188,
+      "objective": "Return the reference instrument and confirm all physical receiving and settlement receipts.",
+      "dialog": "Nia Toren: The loan is returned. Check the actual observations, living witness reception and both selected settlement proofs before closing the case.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "return-and-audit-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G05-S188",
+      "locationName": "Ashoes",
+      "next": "close-case",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/return-and-audit",
+      "itemEffects": [
+        {
+          "kind": "remove",
+          "item": "mutual-shelter-reference",
+          "massTonnes": 1
+        }
+      ],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/return-and-audit",
+        "file": "../../assets/missions/stages/mutual-shelter/return-and-audit.png",
+        "sha256": "42996c2b3d988415212143e5bbb3da97ee0bc70c3878cfec07df2f7591920e08",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    },
+    {
+      "id": "close-case",
+      "galaxy": 4,
+      "system": 188,
+      "objective": "Confirm successful completion, the recorded settlement and the once-only fee.",
+      "dialog": "Nia Toren: The independent audit is complete. Your fee is 7100 CR. The operators retain the chosen settlement and their original records.\n\nNia Toren: The audit has left one anomaly that belongs to neither side. An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor. It is preserved in your journal for the AI at PLUGH.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "close-case-verified"
+      ],
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "locationKey": "G05-S188",
+      "locationName": "Ashoes",
+      "next": "complete",
+      "completionRule": "All requiredTargets must have confirmed mission-scoped evidence; consume the transition once.",
+      "recovery": "Persist completed target evidence. Restore unloaded or culled actors from saved state with their same identity; genuine destruction and casualties remain recorded. Retry an escort only through its mission-specific recovery procedure and genuinely available crew, hull and cargo. Loss or replacement earns no arrival or reward. A dead named witness cannot be replaced by a lookalike.",
+      "confirmation": "Confirm accepts a transfer or choice; Esc only closes the dialog and never transfers an item, spends money or selects a branch.",
+      "cargoPolicy": "Reserve the listed mission item separately from commodities. Require free hold before accepting it; never silently delete, sell or overwrite player cargo. Contacts hold it safely when space is unavailable.",
+      "declinePolicy": "Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.",
+      "receipt": "l337.mutual-shelter/close-case",
+      "itemEffects": [],
+      "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
+      "artwork": {
+        "id": "mutual-shelter/close-case",
+        "file": "../../assets/missions/stages/mutual-shelter/close-case.png",
+        "sha256": "62e3d34083c577849261f4f7f73a889cd1a7287ef5e879f50d37b749c17fa7c1",
+        "visibility": "Mission stage briefing and completed history"
+      }
+    }
+  ],
+  "gameplayProfileRef": "../gameplay/campaign-profiles.json#/profiles/mutual-shelter",
+  "oracleDesignRevision": "review-resolution-2026-10-24-v2",
+  "delegationPolicy": "Before launch, original principals register named living delegates and sign the exact settlement scope. Only their actual arrival at the witness receiver permits the local choice. Delegation grants no remote physical proof or access beyond that original scope.",
+  "recoveryPolicyRef": "../gameplay/recovery-policy.json",
+  "mainQuestContinuity": "Original failure remains recorded. A successful separately scoped continuity inquiry can earn this same source clue without its original fee or reward; always requestable through the clue journal/charter orbital desk, independent of money, source stock and original station/witness survival."
+}

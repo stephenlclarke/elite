@@ -1,0 +1,210 @@
+{
+  "id": "l337.borrowed-voice",
+  "missionID": "borrowed-voice",
+  "originKind": "new-original",
+  "title": "The Borrowed Voice",
+  "subtitle": "Someone has learned to speak with the rescue network's voice.",
+  "contacts": [
+    "Coordinator Sera Dain",
+    "Relay Engineer Ivo Renn",
+    "Dispatcher Neris Sol"
+  ],
+  "ships": [
+    "SH026",
+    "SH049"
+  ],
+  "offer": "At Taledea in Galaxy 3, after visiting five different systems, speak to rescue coordinator Sera Dain. No combat score, prior campaign, purchased scanner or military fitting is required.",
+  "story": "Rescue tenders in the Taledea cluster are answering empty distress calls while real casualties wait. A covert salvage syndicate has enrolled a second operator under a dispatcher's credentials and is selling rescue movements to ambushers. Dispatcher Neris Sol discovered the duplicate account and went into hiding. The commander validates the false calls, equips an independent verifier, brings Sol to safety and chooses between publicly revoking the compromised key or quietly drawing a syndicate observer to an empty decoy. Both routes recover an authenticated access record. The commander exposes the infiltrating account and restores the rescue channels.",
+  "playerBriefing": "SERA DAIN: Our tenders have been called to three empty wrecks. Meanwhile, a real casualty waited alone. Compare the relay records at Ilasaeli. Do not broadcast patient locations; someone may be listening with one of our own keys.",
+  "rewardCR": 7200,
+  "completionBenefit": "The rescue network resumes service. The selected open-revocation or protected-witness outcome appears in regional gossip. No legal-status reset, artificial kill points, free hull or general faction immunity.",
+  "items": [
+    {
+      "id": "independent-verifier",
+      "massTonnes": 1,
+      "acquireStage": "collect-verifier",
+      "consumeStage": "audit-access"
+    }
+  ],
+  "branchPolicy": "Store open-revocation or quiet-decoy once at choose-operation. intercept-orders uses only the selected branch's objective, targets and dialog. Reconverge at audit-access; both successful routes pay 7,200 CR and grant the same permanent clue. Closing the choice commits nothing.",
+  "stages": [
+    {
+      "id": "accept",
+      "galaxy": 2,
+      "system": 20,
+      "objective": "Accept the rescue-channel investigation at Taledea.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "dain-commission"
+      ],
+      "dialog": "DAIN: These calls use a genuine rescue key. I cannot tell the tenders to ignore it until we can distinguish a victim from an imitation. Take measurements first. An accusation will not keep anyone alive.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "verify-distress",
+      "galaxy": 2,
+      "system": 137,
+      "objective": "Compare the three marked distress beacons with their local casualty sensors at Ilasaeli.",
+      "event": "entity_scan_completed",
+      "requiredTargets": [
+        "empty-beacon-one",
+        "empty-beacon-two",
+        "occupied-service-beacon"
+      ],
+      "dialog": "Two calls advertise occupied wrecks but have no cabin heat, escape telemetry or life signs. A third service beacon matches an actual casualty. All three were signed with the same operator key; only the empty calls contain a second enrollment stamp.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "collect-verifier",
+      "galaxy": 2,
+      "system": 56,
+      "objective": "Dock at Noserin and collect Ivo Renn's one-tonne independent verifier.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "renn-verifier-handover"
+      ],
+      "dialog": "RENN: This verifier listens without identifying your position to the rescue network. One tonne of free hold is enough. I will keep it here until you have room. Return it with the signed access record; I need the physical clock to prove when the key was used.",
+      "interactionItemMassTonnes": 1,
+      "choices": []
+    },
+    {
+      "id": "meet-dispatcher",
+      "galaxy": 2,
+      "system": 56,
+      "objective": "At Noserin, use the private rescue terminal to confirm Neris Sol's account of the duplicate enrollment.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "sol-witness-statement"
+      ],
+      "dialog": "SOL: I am speaking from the maintenance refuge, through Renn's isolated link. I cancelled a relief shift that I had never booked. The account remained active after I went off duty. I saved the enrollment challenge before they shut me out. Bring my Harrier to a protected berth here at Noserin before you challenge that account.",
+      "interactionItemMassTonnes": 1,
+      "choices": []
+    },
+    {
+      "id": "protect-dispatcher",
+      "galaxy": 2,
+      "system": 56,
+      "objective": "Escort Sol's marked Harrier from the maintenance refuge to Noserin station.",
+      "event": "escort_arrived",
+      "requiredTargets": [
+        "sol-protected-arrival"
+      ],
+      "dialog": "SOL: I will follow you from the maintenance refuge to rescue control. Stay with my Harrier until the station confirms the protected berth. If the ship is lost, the station rescue tug will recover my emergency capsule; the protected extraction can resume once I am back at the refuge.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "recovery": "If Sol's Harrier is disabled or destroyed, its tracked emergency capsule is recovered by the station rescue tug and returned to the maintenance refuge. Pause the escort until recovery is confirmed; only then offer a new Harrier extraction. Persist the witness and capsule identities. Culling is not death or arrival. Never silently recreate a dead witness, award arrival for the rescue tug, or lose the authenticated evidence."
+    },
+    {
+      "id": "choose-operation",
+      "galaxy": 2,
+      "system": 20,
+      "objective": "Return to Taledea and choose how to isolate the infiltrating operator.",
+      "event": "mission_choice_confirmed",
+      "requiredTargets": [
+        "rescue-operation-choice"
+      ],
+      "dialog": "DAIN: Sol is safe. We can revoke the key openly and obtain its frozen access audit, stopping the false calls now. Or use an unoccupied decoy and a passive receiver to identify the syndicate's observer before revoking it. Both protect the tenders. We will not use a real casualty as bait.",
+      "interactionItemMassTonnes": 1,
+      "choices": [
+        "Revoke the compromised key openly",
+        "Identify the observer with an empty decoy"
+      ],
+      "choiceIDs": [
+        "open-revocation",
+        "quiet-decoy"
+      ]
+    },
+    {
+      "id": "intercept-orders",
+      "galaxy": 2,
+      "system": 137,
+      "objective": "At Ilasaeli, carry out the selected operation and obtain its authenticated proof.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "countermeasure-proof"
+      ],
+      "dialog": "Use the independent verifier at the marked service nodes. Only the targets for your chosen operation are active. Destroying an observer or an unrelated ship does not produce a verified access record.",
+      "interactionItemMassTonnes": 1,
+      "choices": [],
+      "branchStage": "choose-operation",
+      "completionRule": "Resolve the saved choice from branchStage. Require every distinct target in that branchVariant, with its specified event and mission-instance proof. Never accept the other branch's targets or combine half of each route.",
+      "branchVariants": [
+        {
+          "choiceID": "open-revocation",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "key-revocation-ack",
+            "frozen-access-audit"
+          ],
+          "objective": "Confirm key revocation at the Ilasaeli rescue relay, then use the verifier to download its frozen signed audit.",
+          "dialog": "The network revokes the duplicate key and isolates its queued calls. The frozen audit contains a paid subscription to rescue positions, signed by the second operator account. The tenders are rerouted through the spare channel.",
+          "gossip": "The compromised rescue key was revoked publicly; the signed access audit is available to affected crews. Sol's location remains confidential."
+        },
+        {
+          "choiceID": "quiet-decoy",
+          "event": "mission_action_confirmed",
+          "requiredTargets": [
+            "unoccupied-decoy-armed",
+            "observer-receipt-recovered"
+          ],
+          "objective": "Arm the empty decoy beacon, then retrieve the observer's signed handshake from the passive receiver at Ilasaeli.",
+          "dialog": "The empty decoy advertises a service outage without passenger or patient data. A syndicate observer answers it. Your passive receiver records its paid subscription handshake; rescue control then revokes the duplicate key. The observer need not be destroyed or pursued.",
+          "gossip": "A protected rescue operation exposed the syndicate's subscription account. The witness and the passive receiver's position remain confidential."
+        }
+      ]
+    },
+    {
+      "id": "audit-access",
+      "galaxy": 2,
+      "system": 129,
+      "objective": "Dock at Aiven and return the verifier with the authenticated record to Ivo Renn.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "renn-access-audit"
+      ],
+      "dialog": "RENN: The physical clock and enrollment challenge agree. This account has been selling live rescue movements under Sol's name. Rescue control can revoke its credentials and submit the signed record to the local hearing. I have kept the unrelated patient records sealed.",
+      "interactionItemMassTonnes": 1,
+      "choices": []
+    },
+    {
+      "id": "restore-channels",
+      "galaxy": 2,
+      "system": 137,
+      "objective": "Rekey the three marked rescue beacons at Ilasaeli and confirm a clean service test.",
+      "event": "mission_action_confirmed",
+      "requiredTargets": [
+        "rekey-beacon-one",
+        "rekey-beacon-two",
+        "rekey-service-beacon"
+      ],
+      "dialog": "Each beacon accepts its own new key and passes a local test. The old duplicate account can no longer issue calls. The rescue tenders receive a route containing genuine casualties and no observer subscriptions.",
+      "interactionItemMassTonnes": 0,
+      "choices": []
+    },
+    {
+      "id": "close-case",
+      "galaxy": 2,
+      "system": 20,
+      "objective": "Dock at Taledea, confirm the restored rescue network and collect the agreed fee.",
+      "event": "mission_contact_confirmed",
+      "requiredTargets": [
+        "dain-payment"
+      ],
+      "dialog": "DAIN: Sol is safe, the duplicate account is closed and the tenders are answering real calls again. Your fee is 7,200 CR. The hearing receives the authenticated record; your chosen disclosure policy protects the witness.",
+      "interactionItemMassTonnes": 0,
+      "choices": [],
+      "dialogByChoice": [
+        {
+          "choiceID": "open-revocation",
+          "text": "DAIN: Your public revocation stopped the false calls immediately. Crews can inspect the redacted audit themselves; patient and witness locations remain protected."
+        },
+        {
+          "choiceID": "quiet-decoy",
+          "text": "DAIN: Your quiet operation identified the observer's subscription without risking a casualty or ordering a killing. The hearing will receive the record under witness protection."
+        }
+      ]
+    }
+  ]
+}

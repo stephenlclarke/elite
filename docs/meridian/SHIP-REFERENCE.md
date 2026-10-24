@@ -1,6 +1,6 @@
 # New L337 ship definitions and images - final reference
 
-[Return to the oracle contents](README.md). This reading view is extracted from [the complete single-file oracle](FINAL-GAME-ORACLE.md); its rules are the same.
+[Oracle contents](./README.md). This is a derived reading view of [the full oracle](./FINAL-GAME-ORACLE.md). Canonical mission data and gameplay specifications are in `docs/meridian/missions/`.
 
 This is the original L337 fleet, from Mule SH001 through Medusa SH171. It does not use the predecessor catalogue names, models or `main` branch ship GIFs. The exact authored specification and authenticated original model/material/UV data are included beside each record. Its role, flyability and purchase policy remain explicit; a familiar ID does not import a previous ship's crew, dimensions or weapons.
 
@@ -214,7 +214,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C06 The Tithe of Worlds; C07 The Still Current; C08 Wayfarer Exchange; C09 The Quiet Nursery; C10 Borrowed Dawn; C11 The Open Shadow; C12 Harbour Without Orders; C13 False Colours; C14 The Rubble Covenant; C15 A Garden in Transit; C16 The Warrant Ledger; C17 The Measure of Care; C18 The Long Return; C19 The Unfinished Map; C20 The Blue Reservoir; C21 Mutual Shelter; C22 The Listening Frontier; C23 An Assembly of Orbits; C24 Under Tow; C25 The Memory Atlas; C26 A Fleet of Neighbours; C27 Uncounted Names; C28 The Honest Circuit; C29 Small Lights; C30 The Passenger's Horizon; C31 The Kind Distance; C32 Cold Reserve; C33 The Magnetic Orchard; C34 Open Measure; C35 The Shared Pulse; C36 The Witness Window; C37 Public Record; C38 Signed Passage; C39 The Guiding Light
 
-[Full definition](definitions/ships/SH001.json) / [Exact model/material/UV data](definitions/models/SH001.json).
+[Full definition](missions/gameplay/ships/SH001.json) / [Exact model/material/UV data](missions/gameplay/models/SH001.json).
 
 ## SH002 - Gyrfalcon Assault
 
@@ -242,7 +242,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH002.json) / [Exact model/material/UV data](definitions/models/SH002.json).
+[Full definition](missions/gameplay/ships/SH002.json) / [Exact model/material/UV data](missions/gameplay/models/SH002.json).
 
 ## SH003 - Gyrfalcon Command
 
@@ -270,7 +270,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH003.json) / [Exact model/material/UV data](definitions/models/SH003.json).
+[Full definition](missions/gameplay/ships/SH003.json) / [Exact model/material/UV data](missions/gameplay/models/SH003.json).
 
 ## SH004 - Gyrfalcon Patrol
 
@@ -298,7 +298,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C06 The Tithe of Worlds
 
-[Full definition](definitions/ships/SH004.json) / [Exact model/material/UV data](definitions/models/SH004.json).
+[Full definition](missions/gameplay/ships/SH004.json) / [Exact model/material/UV data](missions/gameplay/models/SH004.json).
 
 ## SH005 - Bison
 
@@ -326,7 +326,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C06 The Tithe of Worlds; C08 Wayfarer Exchange
 
-[Full definition](definitions/ships/SH005.json) / [Exact model/material/UV data](definitions/models/SH005.json).
+[Full definition](missions/gameplay/ships/SH005.json) / [Exact model/material/UV data](missions/gameplay/models/SH005.json).
 
 ## SH006 - Bison Mk II
 
@@ -354,7 +354,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH006.json) / [Exact model/material/UV data](definitions/models/SH006.json).
+[Full definition](missions/gameplay/ships/SH006.json) / [Exact model/material/UV data](missions/gameplay/models/SH006.json).
 
 ## SH007 - Impala Voyager
 
@@ -382,7 +382,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH007.json) / [Exact model/material/UV data](definitions/models/SH007.json).
+[Full definition](missions/gameplay/ships/SH007.json) / [Exact model/material/UV data](missions/gameplay/models/SH007.json).
 
 ## SH008 - Goshawk Explorer
 
@@ -410,7 +410,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH008.json) / [Exact model/material/UV data](definitions/models/SH008.json).
+[Full definition](missions/gameplay/ships/SH008.json) / [Exact model/material/UV data](missions/gameplay/models/SH008.json).
 
 ## SH009 - Goshawk Mk II
 
@@ -438,7 +438,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH009.json) / [Exact model/material/UV data](definitions/models/SH009.json).
+[Full definition](missions/gameplay/ships/SH009.json) / [Exact model/material/UV data](missions/gameplay/models/SH009.json).
 
 ## SH010 - Goshawk Mk II Custom
 
@@ -466,7 +466,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH010.json) / [Exact model/material/UV data](definitions/models/SH010.json).
+[Full definition](missions/gameplay/ships/SH010.json) / [Exact model/material/UV data](missions/gameplay/models/SH010.json).
 
 ## SH011 - Goshawk Scout
 
@@ -494,7 +494,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH011.json) / [Exact model/material/UV data](definitions/models/SH011.json).
+[Full definition](missions/gameplay/ships/SH011.json) / [Exact model/material/UV data](missions/gameplay/models/SH011.json).
 
 ## SH012 - Sable Liner
 
@@ -522,7 +522,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH012.json) / [Exact model/material/UV data](definitions/models/SH012.json).
+[Full definition](missions/gameplay/ships/SH012.json) / [Exact model/material/UV data](missions/gameplay/models/SH012.json).
 
 ## SH013 - Buffalo
 
@@ -550,7 +550,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH013.json) / [Exact model/material/UV data](definitions/models/SH013.json).
+[Full definition](missions/gameplay/ships/SH013.json) / [Exact model/material/UV data](missions/gameplay/models/SH013.json).
 
 ## SH014 - Buffalo Mk II
 
@@ -578,7 +578,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH014.json) / [Exact model/material/UV data](definitions/models/SH014.json).
+[Full definition](missions/gameplay/ships/SH014.json) / [Exact model/material/UV data](missions/gameplay/models/SH014.json).
 
 ## SH015 - Raven
 
@@ -606,7 +606,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH015.json) / [Exact model/material/UV data](definitions/models/SH015.json).
+[Full definition](missions/gameplay/ships/SH015.json) / [Exact model/material/UV data](missions/gameplay/models/SH015.json).
 
 ## SH016 - Mole Miner
 
@@ -634,7 +634,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH016.json) / [Exact model/material/UV data](definitions/models/SH016.json).
+[Full definition](missions/gameplay/ships/SH016.json) / [Exact model/material/UV data](missions/gameplay/models/SH016.json).
 
 ## SH017 - Mole Prospector
 
@@ -662,7 +662,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH017.json) / [Exact model/material/UV data](definitions/models/SH017.json).
+[Full definition](missions/gameplay/ships/SH017.json) / [Exact model/material/UV data](missions/gameplay/models/SH017.json).
 
 ## SH018 - Donkey
 
@@ -690,7 +690,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH018.json) / [Exact model/material/UV data](definitions/models/SH018.json).
+[Full definition](missions/gameplay/ships/SH018.json) / [Exact model/material/UV data](missions/gameplay/models/SH018.json).
 
 ## SH019 - Gazelle Explorer
 
@@ -718,7 +718,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH019.json) / [Exact model/material/UV data](definitions/models/SH019.json).
+[Full definition](missions/gameplay/ships/SH019.json) / [Exact model/material/UV data](missions/gameplay/models/SH019.json).
 
 ## SH020 - Crow Prototype
 
@@ -746,7 +746,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH020.json) / [Exact model/material/UV data](definitions/models/SH020.json).
+[Full definition](missions/gameplay/ships/SH020.json) / [Exact model/material/UV data](missions/gameplay/models/SH020.json).
 
 ## SH021 - Zebra
 
@@ -774,7 +774,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH021.json) / [Exact model/material/UV data](definitions/models/SH021.json).
+[Full definition](missions/gameplay/ships/SH021.json) / [Exact model/material/UV data](missions/gameplay/models/SH021.json).
 
 ## SH022 - Peregrine Mk I
 
@@ -802,7 +802,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH022.json) / [Exact model/material/UV data](definitions/models/SH022.json).
+[Full definition](missions/gameplay/ships/SH022.json) / [Exact model/material/UV data](missions/gameplay/models/SH022.json).
 
 ## SH023 - Peregrine Mk III
 
@@ -830,7 +830,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH023.json) / [Exact model/material/UV data](definitions/models/SH023.json).
+[Full definition](missions/gameplay/ships/SH023.json) / [Exact model/material/UV data](missions/gameplay/models/SH023.json).
 
 ## SH024 - Peregrine Mk IV
 
@@ -858,7 +858,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH024.json) / [Exact model/material/UV data](definitions/models/SH024.json).
+[Full definition](missions/gameplay/ships/SH024.json) / [Exact model/material/UV data](missions/gameplay/models/SH024.json).
 
 ## SH025 - Peregrine Mk V
 
@@ -886,7 +886,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH025.json) / [Exact model/material/UV data](definitions/models/SH025.json).
+[Full definition](missions/gameplay/ships/SH025.json) / [Exact model/material/UV data](missions/gameplay/models/SH025.json).
 
 ## SH026 - Harrier
 
@@ -914,7 +914,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C01 The Glass Meridian; C04 The Borrowed Voice
 
-[Full definition](definitions/ships/SH026.json) / [Exact model/material/UV data](definitions/models/SH026.json).
+[Full definition](missions/gameplay/ships/SH026.json) / [Exact model/material/UV data](missions/gameplay/models/SH026.json).
 
 ## SH027 - Ibex
 
@@ -942,7 +942,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH027.json) / [Exact model/material/UV data](definitions/models/SH027.json).
+[Full definition](missions/gameplay/ships/SH027.json) / [Exact model/material/UV data](missions/gameplay/models/SH027.json).
 
 ## SH028 - Lion Citadel
 
@@ -959,7 +959,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH028.json) / [Exact model/material/UV data](definitions/models/SH028.json).
+[Full definition](missions/gameplay/ships/SH028.json) / [Exact model/material/UV data](missions/gameplay/models/SH028.json).
 
 ## SH029 - Burro
 
@@ -987,7 +987,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH029.json) / [Exact model/material/UV data](definitions/models/SH029.json).
+[Full definition](missions/gameplay/ships/SH029.json) / [Exact model/material/UV data](missions/gameplay/models/SH029.json).
 
 ## SH030 - Sparrowhawk
 
@@ -1015,7 +1015,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH030.json) / [Exact model/material/UV data](definitions/models/SH030.json).
+[Full definition](missions/gameplay/ships/SH030.json) / [Exact model/material/UV data](missions/gameplay/models/SH030.json).
 
 ## SH031 - Kite Interceptor
 
@@ -1043,7 +1043,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH031.json) / [Exact model/material/UV data](definitions/models/SH031.json).
+[Full definition](missions/gameplay/ships/SH031.json) / [Exact model/material/UV data](missions/gameplay/models/SH031.json).
 
 ## SH032 - Panther Explorer
 
@@ -1071,7 +1071,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH032.json) / [Exact model/material/UV data](definitions/models/SH032.json).
+[Full definition](missions/gameplay/ships/SH032.json) / [Exact model/material/UV data](missions/gameplay/models/SH032.json).
 
 ## SH033 - Panther Scout
 
@@ -1099,7 +1099,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH033.json) / [Exact model/material/UV data](definitions/models/SH033.json).
+[Full definition](missions/gameplay/ships/SH033.json) / [Exact model/material/UV data](missions/gameplay/models/SH033.json).
 
 ## SH034 - Frog Station
 
@@ -1116,7 +1116,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH034.json) / [Exact model/material/UV data](definitions/models/SH034.json).
+[Full definition](missions/gameplay/ships/SH034.json) / [Exact model/material/UV data](missions/gameplay/models/SH034.json).
 
 ## SH035 - Stag Liner
 
@@ -1144,7 +1144,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH035.json) / [Exact model/material/UV data](definitions/models/SH035.json).
+[Full definition](missions/gameplay/ships/SH035.json) / [Exact model/material/UV data](missions/gameplay/models/SH035.json).
 
 ## SH036 - Zebu
 
@@ -1172,7 +1172,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH036.json) / [Exact model/material/UV data](definitions/models/SH036.json).
+[Full definition](missions/gameplay/ships/SH036.json) / [Exact model/material/UV data](missions/gameplay/models/SH036.json).
 
 ## SH037 - Vulture Mk I
 
@@ -1200,7 +1200,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH037.json) / [Exact model/material/UV data](definitions/models/SH037.json).
+[Full definition](missions/gameplay/ships/SH037.json) / [Exact model/material/UV data](missions/gameplay/models/SH037.json).
 
 ## SH038 - Vulture Mk II
 
@@ -1228,7 +1228,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH038.json) / [Exact model/material/UV data](definitions/models/SH038.json).
+[Full definition](missions/gameplay/ships/SH038.json) / [Exact model/material/UV data](missions/gameplay/models/SH038.json).
 
 ## SH039 - Vulture Mk III
 
@@ -1256,7 +1256,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH039.json) / [Exact model/material/UV data](definitions/models/SH039.json).
+[Full definition](missions/gameplay/ships/SH039.json) / [Exact model/material/UV data](missions/gameplay/models/SH039.json).
 
 ## SH040 - Newt Escape Pod
 
@@ -1284,7 +1284,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH040.json) / [Exact model/material/UV data](definitions/models/SH040.json).
+[Full definition](missions/gameplay/ships/SH040.json) / [Exact model/material/UV data](missions/gameplay/models/SH040.json).
 
 ## SH041 - Serval Fighter
 
@@ -1312,7 +1312,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH041.json) / [Exact model/material/UV data](definitions/models/SH041.json).
+[Full definition](missions/gameplay/ships/SH041.json) / [Exact model/material/UV data](missions/gameplay/models/SH041.json).
 
 ## SH042 - Saker
 
@@ -1340,7 +1340,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH042.json) / [Exact model/material/UV data](definitions/models/SH042.json).
+[Full definition](missions/gameplay/ships/SH042.json) / [Exact model/material/UV data](missions/gameplay/models/SH042.json).
 
 ## SH043 - Eagle Cruiser
 
@@ -1368,7 +1368,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH043.json) / [Exact model/material/UV data](definitions/models/SH043.json).
+[Full definition](missions/gameplay/ships/SH043.json) / [Exact model/material/UV data](missions/gameplay/models/SH043.json).
 
 ## SH044 - Harpy Assault
 
@@ -1396,7 +1396,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH044.json) / [Exact model/material/UV data](definitions/models/SH044.json).
+[Full definition](missions/gameplay/ships/SH044.json) / [Exact model/material/UV data](missions/gameplay/models/SH044.json).
 
 ## SH045 - Erne Corvette
 
@@ -1424,7 +1424,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH045.json) / [Exact model/material/UV data](definitions/models/SH045.json).
+[Full definition](missions/gameplay/ships/SH045.json) / [Exact model/material/UV data](missions/gameplay/models/SH045.json).
 
 ## SH046 - Harpy Dropship
 
@@ -1452,7 +1452,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH046.json) / [Exact model/material/UV data](definitions/models/SH046.json).
+[Full definition](missions/gameplay/ships/SH046.json) / [Exact model/material/UV data](missions/gameplay/models/SH046.json).
 
 ## SH047 - Harpy Gunship
 
@@ -1480,7 +1480,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH047.json) / [Exact model/material/UV data](definitions/models/SH047.json).
+[Full definition](missions/gameplay/ships/SH047.json) / [Exact model/material/UV data](missions/gameplay/models/SH047.json).
 
 ## SH048 - Lanner
 
@@ -1508,7 +1508,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH048.json) / [Exact model/material/UV data](definitions/models/SH048.json).
+[Full definition](missions/gameplay/ships/SH048.json) / [Exact model/material/UV data](missions/gameplay/models/SH048.json).
 
 ## SH049 - Hyena
 
@@ -1536,7 +1536,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C04 The Borrowed Voice; C07 The Still Current
 
-[Full definition](definitions/ships/SH049.json) / [Exact model/material/UV data](definitions/models/SH049.json).
+[Full definition](missions/gameplay/ships/SH049.json) / [Exact model/material/UV data](missions/gameplay/models/SH049.json).
 
 ## SH050 - Yak
 
@@ -1564,7 +1564,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH050.json) / [Exact model/material/UV data](definitions/models/SH050.json).
+[Full definition](missions/gameplay/ships/SH050.json) / [Exact model/material/UV data](missions/gameplay/models/SH050.json).
 
 ## SH051 - Jackal
 
@@ -1592,7 +1592,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH051.json) / [Exact model/material/UV data](definitions/models/SH051.json).
+[Full definition](missions/gameplay/ships/SH051.json) / [Exact model/material/UV data](missions/gameplay/models/SH051.json).
 
 ## SH052 - Percheron
 
@@ -1620,7 +1620,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH052.json) / [Exact model/material/UV data](definitions/models/SH052.json).
+[Full definition](missions/gameplay/ships/SH052.json) / [Exact model/material/UV data](missions/gameplay/models/SH052.json).
 
 ## SH053 - Percheron Prototype
 
@@ -1648,7 +1648,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH053.json) / [Exact model/material/UV data](definitions/models/SH053.json).
+[Full definition](missions/gameplay/ships/SH053.json) / [Exact model/material/UV data](missions/gameplay/models/SH053.json).
 
 ## SH054 - Hobby Fighter
 
@@ -1676,7 +1676,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH054.json) / [Exact model/material/UV data](definitions/models/SH054.json).
+[Full definition](missions/gameplay/ships/SH054.json) / [Exact model/material/UV data](missions/gameplay/models/SH054.json).
 
 ## SH055 - Condor
 
@@ -1704,7 +1704,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH055.json) / [Exact model/material/UV data](definitions/models/SH055.json).
+[Full definition](missions/gameplay/ships/SH055.json) / [Exact model/material/UV data](missions/gameplay/models/SH055.json).
 
 ## SH056 - Aplomado Interceptor
 
@@ -1732,7 +1732,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH056.json) / [Exact model/material/UV data](definitions/models/SH056.json).
+[Full definition](missions/gameplay/ships/SH056.json) / [Exact model/material/UV data](missions/gameplay/models/SH056.json).
 
 ## SH057 - Falconet
 
@@ -1760,7 +1760,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH057.json) / [Exact model/material/UV data](definitions/models/SH057.json).
+[Full definition](missions/gameplay/ships/SH057.json) / [Exact model/material/UV data](missions/gameplay/models/SH057.json).
 
 ## SH058 - Brabant
 
@@ -1788,7 +1788,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH058.json) / [Exact model/material/UV data](definitions/models/SH058.json).
+[Full definition](missions/gameplay/ships/SH058.json) / [Exact model/material/UV data](missions/gameplay/models/SH058.json).
 
 ## SH059 - Barbary
 
@@ -1816,7 +1816,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH059.json) / [Exact model/material/UV data](definitions/models/SH059.json).
+[Full definition](missions/gameplay/ships/SH059.json) / [Exact model/material/UV data](missions/gameplay/models/SH059.json).
 
 ## SH060 - Wombat
 
@@ -1844,7 +1844,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH060.json) / [Exact model/material/UV data](definitions/models/SH060.json).
+[Full definition](missions/gameplay/ships/SH060.json) / [Exact model/material/UV data](missions/gameplay/models/SH060.json).
 
 ## SH061 - Haflinger
 
@@ -1872,7 +1872,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C05 The Shattered Wake; C07 The Still Current; C08 Wayfarer Exchange; C09 The Quiet Nursery; C10 Borrowed Dawn; C11 The Open Shadow; C12 Harbour Without Orders; C13 False Colours; C14 The Rubble Covenant; C15 A Garden in Transit; C16 The Warrant Ledger; C17 The Measure of Care; C18 The Long Return; C19 The Unfinished Map; C20 The Blue Reservoir; C21 Mutual Shelter; C22 The Listening Frontier; C23 An Assembly of Orbits; C24 Under Tow; C25 The Memory Atlas; C26 A Fleet of Neighbours; C27 Uncounted Names; C28 The Honest Circuit; C29 Small Lights; C30 The Passenger's Horizon; C31 The Kind Distance; C32 Cold Reserve; C33 The Magnetic Orchard; C34 Open Measure; C35 The Shared Pulse; C36 The Witness Window; C37 Public Record; C38 Signed Passage; C39 The Guiding Light
 
-[Full definition](definitions/ships/SH061.json) / [Exact model/material/UV data](definitions/models/SH061.json).
+[Full definition](missions/gameplay/ships/SH061.json) / [Exact model/material/UV data](missions/gameplay/models/SH061.json).
 
 ## SH062 - Moose Clipper
 
@@ -1900,7 +1900,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH062.json) / [Exact model/material/UV data](definitions/models/SH062.json).
+[Full definition](missions/gameplay/ships/SH062.json) / [Exact model/material/UV data](missions/gameplay/models/SH062.json).
 
 ## SH063 - Seriema Courier
 
@@ -1928,7 +1928,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH063.json) / [Exact model/material/UV data](definitions/models/SH063.json).
+[Full definition](missions/gameplay/ships/SH063.json) / [Exact model/material/UV data](missions/gameplay/models/SH063.json).
 
 ## SH064 - Arna Cutter
 
@@ -1956,7 +1956,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH064.json) / [Exact model/material/UV data](definitions/models/SH064.json).
+[Full definition](missions/gameplay/ships/SH064.json) / [Exact model/material/UV data](missions/gameplay/models/SH064.json).
 
 ## SH065 - Vulture Raider
 
@@ -1984,7 +1984,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH065.json) / [Exact model/material/UV data](definitions/models/SH065.json).
+[Full definition](missions/gameplay/ships/SH065.json) / [Exact model/material/UV data](missions/gameplay/models/SH065.json).
 
 ## SH066 - Rabbit Explorer
 
@@ -2012,7 +2012,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH066.json) / [Exact model/material/UV data](definitions/models/SH066.json).
+[Full definition](missions/gameplay/ships/SH066.json) / [Exact model/material/UV data](missions/gameplay/models/SH066.json).
 
 ## SH067 - Rhinoceros Trader
 
@@ -2040,7 +2040,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH067.json) / [Exact model/material/UV data](definitions/models/SH067.json).
+[Full definition](missions/gameplay/ships/SH067.json) / [Exact model/material/UV data](missions/gameplay/models/SH067.json).
 
 ## SH068 - Badger
 
@@ -2068,7 +2068,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH068.json) / [Exact model/material/UV data](definitions/models/SH068.json).
+[Full definition](missions/gameplay/ships/SH068.json) / [Exact model/material/UV data](missions/gameplay/models/SH068.json).
 
 ## SH069 - Baza Fighter
 
@@ -2096,7 +2096,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH069.json) / [Exact model/material/UV data](definitions/models/SH069.json).
+[Full definition](missions/gameplay/ships/SH069.json) / [Exact model/material/UV data](missions/gameplay/models/SH069.json).
 
 ## SH070 - Baza Mk II
 
@@ -2124,7 +2124,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH070.json) / [Exact model/material/UV data](definitions/models/SH070.json).
+[Full definition](missions/gameplay/ships/SH070.json) / [Exact model/material/UV data](missions/gameplay/models/SH070.json).
 
 ## SH071 - Griffon
 
@@ -2152,7 +2152,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH071.json) / [Exact model/material/UV data](definitions/models/SH071.json).
+[Full definition](missions/gameplay/ships/SH071.json) / [Exact model/material/UV data](missions/gameplay/models/SH071.json).
 
 ## SH072 - Griffon Mk II
 
@@ -2180,7 +2180,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH072.json) / [Exact model/material/UV data](definitions/models/SH072.json).
+[Full definition](missions/gameplay/ships/SH072.json) / [Exact model/material/UV data](missions/gameplay/models/SH072.json).
 
 ## SH073 - Griffon Spectre
 
@@ -2208,7 +2208,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH073.json) / [Exact model/material/UV data](definitions/models/SH073.json).
+[Full definition](missions/gameplay/ships/SH073.json) / [Exact model/material/UV data](missions/gameplay/models/SH073.json).
 
 ## SH074 - Dzo
 
@@ -2236,7 +2236,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH074.json) / [Exact model/material/UV data](definitions/models/SH074.json).
+[Full definition](missions/gameplay/ships/SH074.json) / [Exact model/material/UV data](missions/gameplay/models/SH074.json).
 
 ## SH075 - Dzo Mk II
 
@@ -2264,7 +2264,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH075.json) / [Exact model/material/UV data](definitions/models/SH075.json).
+[Full definition](missions/gameplay/ships/SH075.json) / [Exact model/material/UV data](missions/gameplay/models/SH075.json).
 
 ## SH076 - Hog
 
@@ -2292,7 +2292,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH076.json) / [Exact model/material/UV data](definitions/models/SH076.json).
+[Full definition](missions/gameplay/ships/SH076.json) / [Exact model/material/UV data](missions/gameplay/models/SH076.json).
 
 ## SH077 - Tamaraw
 
@@ -2320,7 +2320,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH077.json) / [Exact model/material/UV data](definitions/models/SH077.json).
+[Full definition](missions/gameplay/ships/SH077.json) / [Exact model/material/UV data](missions/gameplay/models/SH077.json).
 
 ## SH078 - Oryx Voyager
 
@@ -2348,7 +2348,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH078.json) / [Exact model/material/UV data](definitions/models/SH078.json).
+[Full definition](missions/gameplay/ships/SH078.json) / [Exact model/material/UV data](missions/gameplay/models/SH078.json).
 
 ## SH079 - Carabao Carrier
 
@@ -2376,7 +2376,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH079.json) / [Exact model/material/UV data](definitions/models/SH079.json).
+[Full definition](missions/gameplay/ships/SH079.json) / [Exact model/material/UV data](missions/gameplay/models/SH079.json).
 
 ## SH080 - Carabao Highliner
 
@@ -2404,7 +2404,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH080.json) / [Exact model/material/UV data](definitions/models/SH080.json).
+[Full definition](missions/gameplay/ships/SH080.json) / [Exact model/material/UV data](missions/gameplay/models/SH080.json).
 
 ## SH081 - Jaguar
 
@@ -2432,7 +2432,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH081.json) / [Exact model/material/UV data](definitions/models/SH081.json).
+[Full definition](missions/gameplay/ships/SH081.json) / [Exact model/material/UV data](missions/gameplay/models/SH081.json).
 
 ## SH082 - Cheetah
 
@@ -2460,7 +2460,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH082.json) / [Exact model/material/UV data](definitions/models/SH082.json).
+[Full definition](missions/gameplay/ships/SH082.json) / [Exact model/material/UV data](missions/gameplay/models/SH082.json).
 
 ## SH083 - Hare Explorer
 
@@ -2488,7 +2488,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH083.json) / [Exact model/material/UV data](definitions/models/SH083.json).
+[Full definition](missions/gameplay/ships/SH083.json) / [Exact model/material/UV data](missions/gameplay/models/SH083.json).
 
 ## SH084 - Llama
 
@@ -2516,7 +2516,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH084.json) / [Exact model/material/UV data](definitions/models/SH084.json).
+[Full definition](missions/gameplay/ships/SH084.json) / [Exact model/material/UV data](missions/gameplay/models/SH084.json).
 
 ## SH085 - Laggar
 
@@ -2544,7 +2544,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH085.json) / [Exact model/material/UV data](definitions/models/SH085.json).
+[Full definition](missions/gameplay/ships/SH085.json) / [Exact model/material/UV data](missions/gameplay/models/SH085.json).
 
 ## SH086 - Alpaca
 
@@ -2572,7 +2572,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH086.json) / [Exact model/material/UV data](definitions/models/SH086.json).
+[Full definition](missions/gameplay/ships/SH086.json) / [Exact model/material/UV data](missions/gameplay/models/SH086.json).
 
 ## SH087 - Elk
 
@@ -2600,7 +2600,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH087.json) / [Exact model/material/UV data](definitions/models/SH087.json).
+[Full definition](missions/gameplay/ships/SH087.json) / [Exact model/material/UV data](missions/gameplay/models/SH087.json).
 
 ## SH088 - Springbok Starliner
 
@@ -2628,7 +2628,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH088.json) / [Exact model/material/UV data](definitions/models/SH088.json).
+[Full definition](missions/gameplay/ships/SH088.json) / [Exact model/material/UV data](missions/gameplay/models/SH088.json).
 
 ## SH089 - Antelope
 
@@ -2656,7 +2656,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH089.json) / [Exact model/material/UV data](definitions/models/SH089.json).
+[Full definition](missions/gameplay/ships/SH089.json) / [Exact model/material/UV data](missions/gameplay/models/SH089.json).
 
 ## SH090 - Elephant
 
@@ -2684,7 +2684,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH090.json) / [Exact model/material/UV data](definitions/models/SH090.json).
+[Full definition](missions/gameplay/ships/SH090.json) / [Exact model/material/UV data](missions/gameplay/models/SH090.json).
 
 ## SH091 - Gopher
 
@@ -2712,7 +2712,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH091.json) / [Exact model/material/UV data](definitions/models/SH091.json).
+[Full definition](missions/gameplay/ships/SH091.json) / [Exact model/material/UV data](missions/gameplay/models/SH091.json).
 
 ## SH092 - Aubrac
 
@@ -2740,7 +2740,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH092.json) / [Exact model/material/UV data](definitions/models/SH092.json).
+[Full definition](missions/gameplay/ships/SH092.json) / [Exact model/material/UV data](missions/gameplay/models/SH092.json).
 
 ## SH093 - Giraffe Liner
 
@@ -2768,7 +2768,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH093.json) / [Exact model/material/UV data](definitions/models/SH093.json).
+[Full definition](missions/gameplay/ships/SH093.json) / [Exact model/material/UV data](missions/gameplay/models/SH093.json).
 
 ## SH094 - Ictinia
 
@@ -2796,7 +2796,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH094.json) / [Exact model/material/UV data](definitions/models/SH094.json).
+[Full definition](missions/gameplay/ships/SH094.json) / [Exact model/material/UV data](missions/gameplay/models/SH094.json).
 
 ## SH095 - Ictinia X
 
@@ -2824,7 +2824,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH095.json) / [Exact model/material/UV data](definitions/models/SH095.json).
+[Full definition](missions/gameplay/ships/SH095.json) / [Exact model/material/UV data](missions/gameplay/models/SH095.json).
 
 ## SH096 - Wisent
 
@@ -2852,7 +2852,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH096.json) / [Exact model/material/UV data](definitions/models/SH096.json).
+[Full definition](missions/gameplay/ships/SH096.json) / [Exact model/material/UV data](missions/gameplay/models/SH096.json).
 
 ## SH097 - Wisent Mk II
 
@@ -2880,7 +2880,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH097.json) / [Exact model/material/UV data](definitions/models/SH097.json).
+[Full definition](missions/gameplay/ships/SH097.json) / [Exact model/material/UV data](missions/gameplay/models/SH097.json).
 
 ## SH098 - Anoa
 
@@ -2908,7 +2908,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH098.json) / [Exact model/material/UV data](definitions/models/SH098.json).
+[Full definition](missions/gameplay/ships/SH098.json) / [Exact model/material/UV data](missions/gameplay/models/SH098.json).
 
 ## SH099 - Ox
 
@@ -2936,7 +2936,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH099.json) / [Exact model/material/UV data](definitions/models/SH099.json).
+[Full definition](missions/gameplay/ships/SH099.json) / [Exact model/material/UV data](missions/gameplay/models/SH099.json).
 
 ## SH100 - Ox Mk II
 
@@ -2964,7 +2964,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH100.json) / [Exact model/material/UV data](definitions/models/SH100.json).
+[Full definition](missions/gameplay/ships/SH100.json) / [Exact model/material/UV data](missions/gameplay/models/SH100.json).
 
 ## SH101 - Dorcas Racer
 
@@ -2992,7 +2992,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH101.json) / [Exact model/material/UV data](definitions/models/SH101.json).
+[Full definition](missions/gameplay/ships/SH101.json) / [Exact model/material/UV data](missions/gameplay/models/SH101.json).
 
 ## SH102 - Dhole Haven
 
@@ -3009,7 +3009,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH102.json) / [Exact model/material/UV data](definitions/models/SH102.json).
+[Full definition](missions/gameplay/ships/SH102.json) / [Exact model/material/UV data](missions/gameplay/models/SH102.json).
 
 ## SH103 - Redtail Mk III
 
@@ -3037,7 +3037,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH103.json) / [Exact model/material/UV data](definitions/models/SH103.json).
+[Full definition](missions/gameplay/ships/SH103.json) / [Exact model/material/UV data](missions/gameplay/models/SH103.json).
 
 ## SH104 - Wildebeest
 
@@ -3065,7 +3065,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH104.json) / [Exact model/material/UV data](definitions/models/SH104.json).
+[Full definition](missions/gameplay/ships/SH104.json) / [Exact model/material/UV data](missions/gameplay/models/SH104.json).
 
 ## SH105 - Tapir Shuttle
 
@@ -3093,7 +3093,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH105.json) / [Exact model/material/UV data](definitions/models/SH105.json).
+[Full definition](missions/gameplay/ships/SH105.json) / [Exact model/material/UV data](missions/gameplay/models/SH105.json).
 
 ## SH106 - Tapir Mk II
 
@@ -3121,7 +3121,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH106.json) / [Exact model/material/UV data](definitions/models/SH106.json).
+[Full definition](missions/gameplay/ships/SH106.json) / [Exact model/material/UV data](missions/gameplay/models/SH106.json).
 
 ## SH107 - Magpie
 
@@ -3149,7 +3149,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH107.json) / [Exact model/material/UV data](definitions/models/SH107.json).
+[Full definition](missions/gameplay/ships/SH107.json) / [Exact model/material/UV data](missions/gameplay/models/SH107.json).
 
 ## SH108 - Besra
 
@@ -3177,7 +3177,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH108.json) / [Exact model/material/UV data](definitions/models/SH108.json).
+[Full definition](missions/gameplay/ships/SH108.json) / [Exact model/material/UV data](missions/gameplay/models/SH108.json).
 
 ## SH109 - Hippo
 
@@ -3205,7 +3205,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH109.json) / [Exact model/material/UV data](definitions/models/SH109.json).
+[Full definition](missions/gameplay/ships/SH109.json) / [Exact model/material/UV data](missions/gameplay/models/SH109.json).
 
 ## SH110 - Leopard Fighter
 
@@ -3233,7 +3233,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH110.json) / [Exact model/material/UV data](definitions/models/SH110.json).
+[Full definition](missions/gameplay/ships/SH110.json) / [Exact model/material/UV data](missions/gameplay/models/SH110.json).
 
 ## SH111 - Puma
 
@@ -3261,7 +3261,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH111.json) / [Exact model/material/UV data](definitions/models/SH111.json).
+[Full definition](missions/gameplay/ships/SH111.json) / [Exact model/material/UV data](missions/gameplay/models/SH111.json).
 
 ## SH112 - Larvaal Warden
 
@@ -3289,7 +3289,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH112.json) / [Exact model/material/UV data](definitions/models/SH112.json).
+[Full definition](missions/gameplay/ships/SH112.json) / [Exact model/material/UV data](missions/gameplay/models/SH112.json).
 
 ## SH113 - Larvaal Ravager
 
@@ -3317,7 +3317,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH113.json) / [Exact model/material/UV data](definitions/models/SH113.json).
+[Full definition](missions/gameplay/ships/SH113.json) / [Exact model/material/UV data](missions/gameplay/models/SH113.json).
 
 ## SH114 - Larvaal Sentinel
 
@@ -3345,7 +3345,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH114.json) / [Exact model/material/UV data](definitions/models/SH114.json).
+[Full definition](missions/gameplay/ships/SH114.json) / [Exact model/material/UV data](missions/gameplay/models/SH114.json).
 
 ## SH115 - Larvaal Lancer
 
@@ -3373,7 +3373,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH115.json) / [Exact model/material/UV data](definitions/models/SH115.json).
+[Full definition](missions/gameplay/ships/SH115.json) / [Exact model/material/UV data](missions/gameplay/models/SH115.json).
 
 ## SH116 - Larvaal Broodlord
 
@@ -3401,7 +3401,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH116.json) / [Exact model/material/UV data](definitions/models/SH116.json).
+[Full definition](missions/gameplay/ships/SH116.json) / [Exact model/material/UV data](missions/gameplay/models/SH116.json).
 
 ## SH117 - Larvaal Provoker
 
@@ -3429,7 +3429,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH117.json) / [Exact model/material/UV data](definitions/models/SH117.json).
+[Full definition](missions/gameplay/ships/SH117.json) / [Exact model/material/UV data](missions/gameplay/models/SH117.json).
 
 ## SH118 - Larvaal Reaver
 
@@ -3457,7 +3457,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH118.json) / [Exact model/material/UV data](definitions/models/SH118.json).
+[Full definition](missions/gameplay/ships/SH118.json) / [Exact model/material/UV data](missions/gameplay/models/SH118.json).
 
 ## SH119 - Larvaal Wraith
 
@@ -3485,7 +3485,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH119.json) / [Exact model/material/UV data](definitions/models/SH119.json).
+[Full definition](missions/gameplay/ships/SH119.json) / [Exact model/material/UV data](missions/gameplay/models/SH119.json).
 
 ## SH120 - Larvaal Seeker
 
@@ -3513,7 +3513,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH120.json) / [Exact model/material/UV data](definitions/models/SH120.json).
+[Full definition](missions/gameplay/ships/SH120.json) / [Exact model/material/UV data](missions/gameplay/models/SH120.json).
 
 ## SH121 - Larvaal Mender
 
@@ -3541,7 +3541,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH121.json) / [Exact model/material/UV data](definitions/models/SH121.json).
+[Full definition](missions/gameplay/ships/SH121.json) / [Exact model/material/UV data](missions/gameplay/models/SH121.json).
 
 ## SH122 - Larvaal Harvester
 
@@ -3569,7 +3569,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH122.json) / [Exact model/material/UV data](definitions/models/SH122.json).
+[Full definition](missions/gameplay/ships/SH122.json) / [Exact model/material/UV data](missions/gameplay/models/SH122.json).
 
 ## SH123 - Larvaal Sovereign
 
@@ -3597,7 +3597,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH123.json) / [Exact model/material/UV data](definitions/models/SH123.json).
+[Full definition](missions/gameplay/ships/SH123.json) / [Exact model/material/UV data](missions/gameplay/models/SH123.json).
 
 ## SH124 - Larvaal Warship
 
@@ -3625,7 +3625,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C02 A Choir Beneath the Static
 
-[Full definition](definitions/ships/SH124.json) / [Exact model/material/UV data](definitions/models/SH124.json).
+[Full definition](missions/gameplay/ships/SH124.json) / [Exact model/material/UV data](missions/gameplay/models/SH124.json).
 
 ## SH125 - Larvaal Drone
 
@@ -3653,7 +3653,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C02 A Choir Beneath the Static
 
-[Full definition](definitions/ships/SH125.json) / [Exact model/material/UV data](definitions/models/SH125.json).
+[Full definition](missions/gameplay/ships/SH125.json) / [Exact model/material/UV data](missions/gameplay/models/SH125.json).
 
 ## SH126 - Mangalica
 
@@ -3681,7 +3681,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH126.json) / [Exact model/material/UV data](definitions/models/SH126.json).
+[Full definition](missions/gameplay/ships/SH126.json) / [Exact model/material/UV data](missions/gameplay/models/SH126.json).
 
 ## SH127 - Gaur Trader
 
@@ -3709,7 +3709,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH127.json) / [Exact model/material/UV data](definitions/models/SH127.json).
+[Full definition](missions/gameplay/ships/SH127.json) / [Exact model/material/UV data](missions/gameplay/models/SH127.json).
 
 ## SH128 - Boar Transport
 
@@ -3737,7 +3737,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH128.json) / [Exact model/material/UV data](definitions/models/SH128.json).
+[Full definition](missions/gameplay/ships/SH128.json) / [Exact model/material/UV data](missions/gameplay/models/SH128.json).
 
 ## SH129 - Warthog 10 Guard
 
@@ -3765,7 +3765,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH129.json) / [Exact model/material/UV data](definitions/models/SH129.json).
+[Full definition](missions/gameplay/ships/SH129.json) / [Exact model/material/UV data](missions/gameplay/models/SH129.json).
 
 ## SH130 - Marmot 11 Prospector
 
@@ -3793,7 +3793,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH130.json) / [Exact model/material/UV data](definitions/models/SH130.json).
+[Full definition](missions/gameplay/ships/SH130.json) / [Exact model/material/UV data](missions/gameplay/models/SH130.json).
 
 ## SH131 - Warthog 6
 
@@ -3821,7 +3821,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH131.json) / [Exact model/material/UV data](definitions/models/SH131.json).
+[Full definition](missions/gameplay/ships/SH131.json) / [Exact model/material/UV data](missions/gameplay/models/SH131.json).
 
 ## SH132 - Warthog 7
 
@@ -3849,7 +3849,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH132.json) / [Exact model/material/UV data](definitions/models/SH132.json).
+[Full definition](missions/gameplay/ships/SH132.json) / [Exact model/material/UV data](missions/gameplay/models/SH132.json).
 
 ## SH133 - Warthog 8
 
@@ -3877,7 +3877,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH133.json) / [Exact model/material/UV data](definitions/models/SH133.json).
+[Full definition](missions/gameplay/ships/SH133.json) / [Exact model/material/UV data](missions/gameplay/models/SH133.json).
 
 ## SH134 - Warthog 9 Heavy
 
@@ -3905,7 +3905,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH134.json) / [Exact model/material/UV data](definitions/models/SH134.json).
+[Full definition](missions/gameplay/ships/SH134.json) / [Exact model/material/UV data](missions/gameplay/models/SH134.json).
 
 ## SH135 - Javelina
 
@@ -3933,7 +3933,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH135.json) / [Exact model/material/UV data](definitions/models/SH135.json).
+[Full definition](missions/gameplay/ships/SH135.json) / [Exact model/material/UV data](missions/gameplay/models/SH135.json).
 
 ## SH136 - Falcon Mk I
 
@@ -3961,7 +3961,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH136.json) / [Exact model/material/UV data](definitions/models/SH136.json).
+[Full definition](missions/gameplay/ships/SH136.json) / [Exact model/material/UV data](missions/gameplay/models/SH136.json).
 
 ## SH137 - Falcon Mk II
 
@@ -3989,7 +3989,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH137.json) / [Exact model/material/UV data](definitions/models/SH137.json).
+[Full definition](missions/gameplay/ships/SH137.json) / [Exact model/material/UV data](missions/gameplay/models/SH137.json).
 
 ## SH138 - Falcon Mk III
 
@@ -4017,7 +4017,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH138.json) / [Exact model/material/UV data](definitions/models/SH138.json).
+[Full definition](missions/gameplay/ships/SH138.json) / [Exact model/material/UV data](missions/gameplay/models/SH138.json).
 
 ## SH139 - Falcon Mk IV
 
@@ -4045,7 +4045,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH139.json) / [Exact model/material/UV data](definitions/models/SH139.json).
+[Full definition](missions/gameplay/ships/SH139.json) / [Exact model/material/UV data](missions/gameplay/models/SH139.json).
 
 ## SH140 - Chimango
 
@@ -4073,7 +4073,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH140.json) / [Exact model/material/UV data](definitions/models/SH140.json).
+[Full definition](missions/gameplay/ships/SH140.json) / [Exact model/material/UV data](missions/gameplay/models/SH140.json).
 
 ## SH141 - Salamander Station
 
@@ -4090,7 +4090,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH141.json) / [Exact model/material/UV data](definitions/models/SH141.json).
+[Full definition](missions/gameplay/ships/SH141.json) / [Exact model/material/UV data](missions/gameplay/models/SH141.json).
 
 ## SH142 - Buzzard Mk II
 
@@ -4118,7 +4118,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH142.json) / [Exact model/material/UV data](definitions/models/SH142.json).
+[Full definition](missions/gameplay/ships/SH142.json) / [Exact model/material/UV data](missions/gameplay/models/SH142.json).
 
 ## SH143 - Aardvark Miner
 
@@ -4146,7 +4146,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH143.json) / [Exact model/material/UV data](definitions/models/SH143.json).
+[Full definition](missions/gameplay/ships/SH143.json) / [Exact model/material/UV data](missions/gameplay/models/SH143.json).
 
 ## SH144 - Razorback
 
@@ -4174,7 +4174,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH144.json) / [Exact model/material/UV data](definitions/models/SH144.json).
+[Full definition](missions/gameplay/ships/SH144.json) / [Exact model/material/UV data](missions/gameplay/models/SH144.json).
 
 ## SH145 - Kestrel
 
@@ -4202,7 +4202,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH145.json) / [Exact model/material/UV data](definitions/models/SH145.json).
+[Full definition](missions/gameplay/ships/SH145.json) / [Exact model/material/UV data](missions/gameplay/models/SH145.json).
 
 ## SH146 - Merlin
 
@@ -4230,7 +4230,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH146.json) / [Exact model/material/UV data](definitions/models/SH146.json).
+[Full definition](missions/gameplay/ships/SH146.json) / [Exact model/material/UV data](missions/gameplay/models/SH146.json).
 
 ## SH147 - Hawk
 
@@ -4258,7 +4258,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH147.json) / [Exact model/material/UV data](definitions/models/SH147.json).
+[Full definition](missions/gameplay/ships/SH147.json) / [Exact model/material/UV data](missions/gameplay/models/SH147.json).
 
 ## SH148 - Morepork
 
@@ -4286,7 +4286,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH148.json) / [Exact model/material/UV data](definitions/models/SH148.json).
+[Full definition](missions/gameplay/ships/SH148.json) / [Exact model/material/UV data](missions/gameplay/models/SH148.json).
 
 ## SH149 - Owlet Mk II
 
@@ -4314,7 +4314,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH149.json) / [Exact model/material/UV data](definitions/models/SH149.json).
+[Full definition](missions/gameplay/ships/SH149.json) / [Exact model/material/UV data](missions/gameplay/models/SH149.json).
 
 ## SH150 - Reindeer Freighter
 
@@ -4342,7 +4342,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH150.json) / [Exact model/material/UV data](definitions/models/SH150.json).
+[Full definition](missions/gameplay/ships/SH150.json) / [Exact model/material/UV data](missions/gameplay/models/SH150.json).
 
 ## SH151 - Lynx Escort
 
@@ -4370,7 +4370,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH151.json) / [Exact model/material/UV data](definitions/models/SH151.json).
+[Full definition](missions/gameplay/ships/SH151.json) / [Exact model/material/UV data](missions/gameplay/models/SH151.json).
 
 ## SH152 - Osprey Scout
 
@@ -4398,7 +4398,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH152.json) / [Exact model/material/UV data](definitions/models/SH152.json).
+[Full definition](missions/gameplay/ships/SH152.json) / [Exact model/material/UV data](missions/gameplay/models/SH152.json).
 
 ## SH153 - Osprey Strike
 
@@ -4426,7 +4426,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH153.json) / [Exact model/material/UV data](definitions/models/SH153.json).
+[Full definition](missions/gameplay/ships/SH153.json) / [Exact model/material/UV data](missions/gameplay/models/SH153.json).
 
 ## SH154 - Osprey Patrol
 
@@ -4454,7 +4454,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH154.json) / [Exact model/material/UV data](definitions/models/SH154.json).
+[Full definition](missions/gameplay/ships/SH154.json) / [Exact model/material/UV data](missions/gameplay/models/SH154.json).
 
 ## SH155 - Osprey Carrier
 
@@ -4482,7 +4482,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH155.json) / [Exact model/material/UV data](definitions/models/SH155.json).
+[Full definition](missions/gameplay/ships/SH155.json) / [Exact model/material/UV data](missions/gameplay/models/SH155.json).
 
 ## SH156 - Lion Bastion
 
@@ -4499,7 +4499,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH156.json) / [Exact model/material/UV data](definitions/models/SH156.json).
+[Full definition](missions/gameplay/ships/SH156.json) / [Exact model/material/UV data](missions/gameplay/models/SH156.json).
 
 ## SH157 - Wolf Scout
 
@@ -4527,7 +4527,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH157.json) / [Exact model/material/UV data](definitions/models/SH157.json).
+[Full definition](missions/gameplay/ships/SH157.json) / [Exact model/material/UV data](missions/gameplay/models/SH157.json).
 
 ## SH158 - Wolf Mk I
 
@@ -4555,7 +4555,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH158.json) / [Exact model/material/UV data](definitions/models/SH158.json).
+[Full definition](missions/gameplay/ships/SH158.json) / [Exact model/material/UV data](missions/gameplay/models/SH158.json).
 
 ## SH159 - Wolf Mk II
 
@@ -4583,7 +4583,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH159.json) / [Exact model/material/UV data](definitions/models/SH159.json).
+[Full definition](missions/gameplay/ships/SH159.json) / [Exact model/material/UV data](missions/gameplay/models/SH159.json).
 
 ## SH160 - Wolf Cutter
 
@@ -4611,7 +4611,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH160.json) / [Exact model/material/UV data](definitions/models/SH160.json).
+[Full definition](missions/gameplay/ships/SH160.json) / [Exact model/material/UV data](missions/gameplay/models/SH160.json).
 
 ## SH161 - Wolf Citadel
 
@@ -4628,7 +4628,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH161.json) / [Exact model/material/UV data](definitions/models/SH161.json).
+[Full definition](missions/gameplay/ships/SH161.json) / [Exact model/material/UV data](missions/gameplay/models/SH161.json).
 
 ## SH162 - Larvaal Probe
 
@@ -4645,7 +4645,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** C02 A Choir Beneath the Static
 
-[Full definition](definitions/ships/SH162.json) / [Exact model/material/UV data](definitions/models/SH162.json).
+[Full definition](missions/gameplay/ships/SH162.json) / [Exact model/material/UV data](missions/gameplay/models/SH162.json).
 
 ## SH163 - Lammergeier
 
@@ -4664,7 +4664,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH163.json) / [Exact model/material/UV data](definitions/models/SH163.json).
+[Full definition](missions/gameplay/ships/SH163.json) / [Exact model/material/UV data](missions/gameplay/models/SH163.json).
 
 ## SH164 - Toad Drug Factory
 
@@ -4681,7 +4681,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH164.json) / [Exact model/material/UV data](definitions/models/SH164.json).
+[Full definition](missions/gameplay/ships/SH164.json) / [Exact model/material/UV data](missions/gameplay/models/SH164.json).
 
 ## SH165 - Secretarybird
 
@@ -4709,7 +4709,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH165.json) / [Exact model/material/UV data](definitions/models/SH165.json).
+[Full definition](missions/gameplay/ships/SH165.json) / [Exact model/material/UV data](missions/gameplay/models/SH165.json).
 
 ## SH166 - Camel Rescue
 
@@ -4737,7 +4737,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH166.json) / [Exact model/material/UV data](definitions/models/SH166.json).
+[Full definition](missions/gameplay/ships/SH166.json) / [Exact model/material/UV data](missions/gameplay/models/SH166.json).
 
 ## SH167 - Secretarybird Survey
 
@@ -4765,7 +4765,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH167.json) / [Exact model/material/UV data](definitions/models/SH167.json).
+[Full definition](missions/gameplay/ships/SH167.json) / [Exact model/material/UV data](missions/gameplay/models/SH167.json).
 
 ## SH168 - Armadillo Miner
 
@@ -4793,7 +4793,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH168.json) / [Exact model/material/UV data](definitions/models/SH168.json).
+[Full definition](missions/gameplay/ships/SH168.json) / [Exact model/material/UV data](missions/gameplay/models/SH168.json).
 
 ## SH169 - Caracara Mk I
 
@@ -4821,7 +4821,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH169.json) / [Exact model/material/UV data](definitions/models/SH169.json).
+[Full definition](missions/gameplay/ships/SH169.json) / [Exact model/material/UV data](missions/gameplay/models/SH169.json).
 
 ## SH170 - Caracara Mk II
 
@@ -4849,7 +4849,7 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH170.json) / [Exact model/material/UV data](definitions/models/SH170.json).
+[Full definition](missions/gameplay/ships/SH170.json) / [Exact model/material/UV data](missions/gameplay/models/SH170.json).
 
 ## SH171 - Medusa
 
@@ -4877,4 +4877,4 @@ The facing mask uses Front = 1, Rear = 2, Left = 4 and Right = 8. It declares su
 
 **Mission appearances:** Ordinary role/habitat, discovery and compatible mission use; no campaign appearance is invented.
 
-[Full definition](definitions/ships/SH171.json) / [Exact model/material/UV data](definitions/models/SH171.json).
+[Full definition](missions/gameplay/ships/SH171.json) / [Exact model/material/UV data](missions/gameplay/models/SH171.json).

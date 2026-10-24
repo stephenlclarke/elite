@@ -1,0 +1,516 @@
+{
+  "schema": "l337.dispatch-service-design/1",
+  "id": "l337.wayfarer-services",
+  "title": "Wayfarer Exchange services",
+  "license": "MIT",
+  "status": "Private original service designs; not installed or runnable in the current app",
+  "maximumActive": 3,
+  "templates": [
+    {
+      "id": "l337.wayfarer-service/cold-chain",
+      "title": "Cold-chain clinic service",
+      "kind": "cold-chain",
+      "description": "Carry a sealed medical sample with an advertised integrity budget.",
+      "requiredCargoTonnes": 1,
+      "requiredBerths": 0,
+      "perishable": true,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 320,
+        "perRouteLegCR": 85,
+        "hazardPremiumCR": 90,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "collect",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "clinic-cold-crate",
+          "artwork": {
+            "id": "l337.wayfarer-service/cold-chain/collect",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/cold-chain-collect.png",
+            "sha256": "56716144c5d56f95bff80d34c6ecec60e663998534d138fd2ca4edcff40e5448",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "deliver",
+          "objective": "Carry a sealed medical sample with an advertised integrity budget.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "clinic-cold-crate",
+          "artwork": {
+            "id": "l337.wayfarer-service/cold-chain/deliver",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/cold-chain-deliver.png",
+            "sha256": "a9a2e9119a9496b597aad398276d8dc51f3b3f45e464d3dae7243628cd0e0859",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "clinic-cold-crate",
+          "artwork": {
+            "id": "l337.wayfarer-service/cold-chain/receive",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/cold-chain-receive.png",
+            "sha256": "f4fae2b146020255b863c38b4ce0cdc77bc597c351dfb2b0e9eed69de89cf1af",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Reserve the exact source consignment, transfer it to the player at pickup and to the actual named receiver at completion. No manufactured replacement stock.",
+      "completionClue": {
+        "source": "l337.wayfarer-service/cold-chain",
+        "missionTitle": "Cold-chain clinic service",
+        "id": "exchange-service-cold-chain",
+        "label": "The cold chain trace",
+        "text": "The first verified cold-chain clinic service receiving record carries a distinct inward-curved phase mark predating this consignment.",
+        "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/exchange-service-cold-chain",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "exchange-service-cold-chain",
+          "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/clues/exchange-service-cold-chain.svg",
+          "sha256": "9625ad0dfda283b927bcb5c406e99b05c458bcf2b3495cb752372ec1ae1d3769",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      }
+    },
+    {
+      "id": "l337.wayfarer-service/repair-loop",
+      "title": "Closed repair exchange",
+      "kind": "repair-loop",
+      "description": "Carry an identified failed unit to its workshop and return the serviced unit to its registered owner.",
+      "requiredCargoTonnes": 2,
+      "requiredBerths": 0,
+      "perishable": false,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 430,
+        "perRouteLegCR": 90,
+        "hazardPremiumCR": 80,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "collect",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "return-cassette",
+          "artwork": {
+            "id": "l337.wayfarer-service/repair-loop/collect",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/repair-loop-collect.png",
+            "sha256": "cf960efa331021123abaf8f04d09473062ae0da2d811ac4ff85163cfea771e5d",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "service",
+          "objective": "Carry an identified failed unit to its workshop and return the serviced unit to its registered owner.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "return-cassette",
+          "artwork": {
+            "id": "l337.wayfarer-service/repair-loop/service",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/repair-loop-service.png",
+            "sha256": "0c725f41070a77367ff3c0bbe064a07cdf23aec7bdf6c8da7c683b5f681922c2",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "return-cassette",
+          "artwork": {
+            "id": "l337.wayfarer-service/repair-loop/receive",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/repair-loop-receive.png",
+            "sha256": "352010b78778eaad8eaed2b32259ce7f0ae8019ac5f278ce7ea1c47e8ffe9193",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Reserve the exact source consignment, transfer it to the player at pickup and to the actual named receiver at completion. No manufactured replacement stock.",
+      "routePolicy": "Quote the complete source-to-workshop-to-original-owner loop. The work stage verifies the same serial unit was serviced at the named workshop; final reception is at its original owner.",
+      "completionClue": {
+        "source": "l337.wayfarer-service/repair-loop",
+        "missionTitle": "Closed repair exchange",
+        "id": "exchange-service-repair-loop",
+        "label": "The repair loop trace",
+        "text": "The first verified closed repair exchange receiving record carries a distinct inward-curved phase mark predating this consignment.",
+        "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/exchange-service-repair-loop",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "exchange-service-repair-loop",
+          "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/clues/exchange-service-repair-loop.svg",
+          "sha256": "0a45933b18524a7495f9ecddabeb0fa589636d0037d8914ed07349e71f6b422e",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      }
+    },
+    {
+      "id": "l337.wayfarer-service/seed-transfer",
+      "title": "Seed-bank transfer",
+      "kind": "seed-transfer",
+      "description": "Transfer a consented seed consignment between independent custodians.",
+      "requiredCargoTonnes": 3,
+      "requiredBerths": 0,
+      "perishable": true,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 510,
+        "perRouteLegCR": 95,
+        "hazardPremiumCR": 110,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "collect",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "seed-transfer-case",
+          "artwork": {
+            "id": "l337.wayfarer-service/seed-transfer/collect",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/seed-transfer-collect.png",
+            "sha256": "d2114fe9fbd8a886164f8174768ca4082cb307ef7a6e14436d4928d84bbc8c07",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "deliver",
+          "objective": "Transfer a consented seed consignment between independent custodians.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "seed-transfer-case",
+          "artwork": {
+            "id": "l337.wayfarer-service/seed-transfer/deliver",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/seed-transfer-deliver.png",
+            "sha256": "6bfea58f3bfd35219914790003b9a77360b45139362b058acf13fb871cd1e03e",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "seed-transfer-case",
+          "artwork": {
+            "id": "l337.wayfarer-service/seed-transfer/receive",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/seed-transfer-receive.png",
+            "sha256": "404b044c8fc6101311715fb25a65c5f287b83b18505c9fcde58f9a3e924ead2e",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Reserve the exact source consignment, transfer it to the player at pickup and to the actual named receiver at completion. No manufactured replacement stock.",
+      "completionClue": {
+        "source": "l337.wayfarer-service/seed-transfer",
+        "missionTitle": "Seed-bank transfer",
+        "id": "exchange-service-seed-transfer",
+        "label": "The seed transfer trace",
+        "text": "The first verified seed-bank transfer receiving record carries a distinct inward-curved phase mark predating this consignment.",
+        "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/exchange-service-seed-transfer",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "exchange-service-seed-transfer",
+          "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/clues/exchange-service-seed-transfer.svg",
+          "sha256": "b0cf69a956ed6002bd75cdf93a6814344ec7d47146c341cde943e3a6b9778d84",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      }
+    },
+    {
+      "id": "l337.wayfarer-service/field-relief",
+      "title": "Remote utility relief",
+      "kind": "field-relief",
+      "description": "Deliver actual repair materials to a remote utility receiving crew and verify their service handoff.",
+      "requiredCargoTonnes": 4,
+      "requiredBerths": 0,
+      "perishable": false,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 610,
+        "perRouteLegCR": 110,
+        "hazardPremiumCR": 120,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "collect",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "utility-service-pallet",
+          "artwork": {
+            "id": "l337.wayfarer-service/field-relief/collect",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/field-relief-collect.png",
+            "sha256": "a84bccecba349d2c2c9661f921434aa483ce225d73274abc813f86f7d06f0659",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "install",
+          "objective": "Deliver actual repair materials to a remote utility receiving crew and verify their service handoff.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "utility-service-pallet",
+          "artwork": {
+            "id": "l337.wayfarer-service/field-relief/install",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/field-relief-install.png",
+            "sha256": "07dbee570198f303c9cfa807c554458f38986839e0c5b859ddf1afb7707cb438",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "utility-service-pallet",
+          "artwork": {
+            "id": "l337.wayfarer-service/field-relief/receive",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/field-relief-receive.png",
+            "sha256": "8bbbed8be1169ec3c3b2f3da7d03deb81002ee62a6a7834933930d81d0dbf4c4",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Reserve the exact source consignment, transfer it to the player at pickup and to the actual named receiver at completion. No manufactured replacement stock.",
+      "completionClue": {
+        "source": "l337.wayfarer-service/field-relief",
+        "missionTitle": "Remote utility relief",
+        "id": "exchange-service-field-relief",
+        "label": "The field relief trace",
+        "text": "The first verified remote utility relief receiving record carries a distinct inward-curved phase mark predating this consignment.",
+        "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/exchange-service-field-relief",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "exchange-service-field-relief",
+          "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/clues/exchange-service-field-relief.svg",
+          "sha256": "e318a20e9eb12d934ccba8f2af053a2365cb77af3ccde12a9603b1cba596e982",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      }
+    },
+    {
+      "id": "l337.wayfarer-service/record-recovery",
+      "title": "Crew record recovery",
+      "kind": "record-recovery",
+      "description": "Recover a specific flight/custody recorder without treating cargo wreckage as a living survivor.",
+      "requiredCargoTonnes": 1,
+      "requiredBerths": 0,
+      "perishable": false,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 460,
+        "perRouteLegCR": 95,
+        "hazardPremiumCR": 130,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "locate",
+          "objective": "Locate and identify the unique physical recorder; leave it in the wreck cradle until recovery.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "crew-custody-recorder",
+          "artwork": {
+            "id": "l337.wayfarer-service/record-recovery/locate",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/record-recovery-locate.png",
+            "sha256": "d301586843c9caac8f908ca7494fc7cb2007230f05b20f507420e613338a31b2",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "recover",
+          "objective": "Recover a specific flight/custody recorder without treating cargo wreckage as a living survivor.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "crew-custody-recorder",
+          "artwork": {
+            "id": "l337.wayfarer-service/record-recovery/recover",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/record-recovery-recover.png",
+            "sha256": "0552e8cb61d6b285438d54da943e262199083d45b948dbb0fc15b158aead55fe",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "crew-custody-recorder",
+          "artwork": {
+            "id": "l337.wayfarer-service/record-recovery/receive",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/record-recovery-receive.png",
+            "sha256": "0310cb1101f7ecff283dd9fe0f7a08b96fe0eb412064bd9eee24cd2f78331e52",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Identification alone leaves the recorder at its unique wreck cradle. Recovery transfers it once to the player; final reception transfers that same recorder to its custodian.",
+      "completionClue": {
+        "source": "l337.wayfarer-service/record-recovery",
+        "missionTitle": "Crew record recovery",
+        "id": "exchange-service-record-recovery",
+        "label": "The record recovery trace",
+        "text": "The first verified crew record recovery receiving record carries a distinct inward-curved phase mark predating this consignment.",
+        "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/exchange-service-record-recovery",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "exchange-service-record-recovery",
+          "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/clues/exchange-service-record-recovery.svg",
+          "sha256": "f608fa2dfeef79e701a381cc1455cd65c071dbcbf50afaeca18ebd4861b99f1b",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      }
+    },
+    {
+      "id": "l337.wayfarer-service/convoy-watch",
+      "title": "Registered convoy watch",
+      "kind": "convoy-watch",
+      "description": "Escort the exact registered convoy and require the receiver's real cargo and arrival record.",
+      "requiredCargoTonnes": 0,
+      "requiredBerths": 0,
+      "perishable": false,
+      "qualification": "Accredited for advanced or hazardous variants; ordinary variants show their own equipment/capacity conditions.",
+      "quote": {
+        "baseCR": 700,
+        "perRouteLegCR": 120,
+        "hazardPremiumCR": 170,
+        "derivation": "Independent service budget plus reachable route legs and declared hazard tier; never imported source tables or hidden multipliers."
+      },
+      "deadlinePolicy": "Only explicitly quoted simulation-time deadlines. Pause stops the clock; saving preserves the remainder and does not reset it.",
+      "failurePolicy": "Preserve actual losses. A retry uses a new unique consignment from actual source stock and its own quote; no payment, restored cargo or induction clue from a failed instance.",
+      "stages": [
+        {
+          "id": "register",
+          "objective": "Confirm the registered source custody.",
+          "event": "service_pickup_confirmed",
+          "targetRole": "registered-source",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "convoy-receipt-beacon",
+          "artwork": {
+            "id": "l337.wayfarer-service/convoy-watch/register",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/convoy-watch-register.png",
+            "sha256": "21020a1be0575da55efa2cbc28bdec94f30c3804f5fed5cd2b7c0db567d8f3bb",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "escort",
+          "objective": "Escort the exact registered convoy and require the receiver's real cargo and arrival record.",
+          "event": "service_objective_verified",
+          "targetRole": "registered-objective",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "convoy-receipt-beacon",
+          "artwork": {
+            "id": "l337.wayfarer-service/convoy-watch/escort",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/convoy-watch-escort.png",
+            "sha256": "7810d1ed47cefddfc8a6df56f0712f38ce2bb85aedaf2e099de7c3261c4b5016",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        },
+        {
+          "id": "receive",
+          "objective": "Commit the exact qualifying receiver and payment receipt.",
+          "event": "service_receipt_confirmed",
+          "targetRole": "registered-receiver",
+          "receiptScope": "Current service instance and unique consignment",
+          "primaryArt": "convoy-receipt-beacon",
+          "artwork": {
+            "id": "l337.wayfarer-service/convoy-watch/receive",
+            "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/services/convoy-watch-receive.png",
+            "sha256": "82f35542ef7b05a08215bc3fa750e8ce697bf23137609516cc743cd1b9d8074a",
+            "visibility": "Current offered service preview or accepted service instance; never reveals future mystery content"
+          }
+        }
+      ],
+      "cluePolicy": "Grant this service family its own distinct permanent zero-mass clue on first verified successful reception. Repeat jobs retain it; never grant the induction clue or impersonate another family.",
+      "custodyPolicy": "Cargo remains aboard the identified convoy. Registration neither moves it into the player hold nor clones it. A living registered convoy and its actual cargo must reach reception.",
+      "completionClue": {
+        "source": "l337.wayfarer-service/convoy-watch",
+        "missionTitle": "Registered convoy watch",
+        "id": "exchange-service-convoy-watch",
+        "label": "The convoy watch trace",
+        "text": "The first verified registered convoy watch receiving record carries a distinct inward-curved phase mark predating this consignment.",
+        "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family.",
+        "massTonnes": 0,
+        "awardEvent": "successful-mission-completion-committed",
+        "receipt": "l337.unwritten-route/clue/exchange-service-convoy-watch",
+        "duplicateRule": "Grant this source clue once per commander; repeat completions retain the same clue and never replace a missing source.",
+        "branchRule": "Every legitimate successful ending grants the same source clue; abandonment, failure, voided contracts and incidental sub-rewards do not.",
+        "artwork": {
+          "id": "exchange-service-convoy-watch",
+          "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/clues/exchange-service-convoy-watch.svg",
+          "sha256": "087a644c943c1ac401cadd326bbef404632353798e525b013b29bfa15c6e0d67",
+          "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
+        }
+      }
+    }
+  ],
+  "sourceAssets": [],
+  "sourceScripts": [],
+  "acceptance": "Preview every quoted condition; commit exact stock and aggregate capacity reservations atomically. Keep consistent arrows, Confirm and Esc through the shared station board.",
+  "persistence": "Current-format offered quotes, accepted instances, unique consignments, target actors, custody, remaining integrity/time, reservations, outcomes and once-only payment receipts.",
+  "contentBoundary": "All six service families and their prose, prices and recipes are independently authored here. No external company name, source mission groups, script, artwork or progress alias is loaded.",
+  "artworkManifest": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json",
+  "artworkManifestSHA256": "9a1324e19e3cc9227792fc5c456160449cc1174264a884611d819d8fe07e2904"
+}

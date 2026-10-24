@@ -1,0 +1,5126 @@
+{
+  "schema": "l337.recovery-objectives/1",
+  "rows": [
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.glass-meridian",
+      "clueID": "meridian-offset",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-choir",
+      "clueID": "choir-silent-voice",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.hollow-manifest",
+      "clueID": "manifest-hidden-imprint",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.guiding-light",
+      "clueID": "lantern-extra-echo",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.courier",
+      "clueID": "courier-empty-destination",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-voice",
+      "clueID": "voice-unclaimed-channel",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shattered-wake",
+      "clueID": "wake-before-impact",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.tithe-of-worlds",
+      "clueID": "tithe-unclaimed-reserve",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.still-current",
+      "clueID": "current-resting-arc",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-exchange",
+      "clueID": "exchange-unbooked-window",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.quiet-nursery",
+      "clueID": "quiet-nursery-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.borrowed-dawn",
+      "clueID": "borrowed-dawn-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-shadow",
+      "clueID": "open-shadow-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.harbour-without-orders",
+      "clueID": "harbour-without-orders-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.false-colours",
+      "clueID": "false-colours-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.rubble-covenant",
+      "clueID": "rubble-covenant-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.garden-in-transit",
+      "clueID": "garden-in-transit-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.warrant-ledger",
+      "clueID": "warrant-ledger-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.measure-of-care",
+      "clueID": "measure-of-care-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.long-return",
+      "clueID": "long-return-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.unfinished-map",
+      "clueID": "unfinished-map-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.blue-reservoir",
+      "clueID": "blue-reservoir-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.mutual-shelter",
+      "clueID": "mutual-shelter-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.listening-frontier",
+      "clueID": "listening-frontier-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.assembly-of-orbits",
+      "clueID": "assembly-of-orbits-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.under-tow",
+      "clueID": "under-tow-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.memory-atlas",
+      "clueID": "memory-atlas-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.fleet-of-neighbours",
+      "clueID": "fleet-of-neighbours-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.uncounted-names",
+      "clueID": "uncounted-names-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.honest-circuit",
+      "clueID": "honest-circuit-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.small-lights",
+      "clueID": "small-lights-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.passengers-horizon",
+      "clueID": "passengers-horizon-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.kind-distance",
+      "clueID": "kind-distance-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.cold-reserve",
+      "clueID": "cold-reserve-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.magnetic-orchard",
+      "clueID": "magnetic-orchard-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.open-measure",
+      "clueID": "open-measure-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.shared-pulse",
+      "clueID": "shared-pulse-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.witness-window",
+      "clueID": "witness-window-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.public-record",
+      "clueID": "public-record-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/sealed-dispatch",
+      "clueID": "sealed-dispatch-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-freight",
+      "clueID": "consented-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/bonded-freight",
+      "clueID": "bonded-freight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/cabin-journey",
+      "clueID": "cabin-journey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-outlook",
+      "clueID": "orbital-outlook-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/verified-warrant",
+      "clueID": "verified-warrant-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/corridor-defence",
+      "clueID": "corridor-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/custody-rescue",
+      "clueID": "custody-rescue-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/identified-salvage",
+      "clueID": "identified-salvage-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/consented-survey",
+      "clueID": "consented-survey-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/isolation-work",
+      "clueID": "isolation-work-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/measured-extraction",
+      "clueID": "measured-extraction-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/mutual-contribution",
+      "clueID": "mutual-contribution-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/orbital-evacuation",
+      "clueID": "orbital-evacuation-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.contract/hostile-larvaal-defence",
+      "clueID": "hostile-larvaal-defence-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/flight-reception",
+      "clueID": "flight-reception-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/safe-gunnery",
+      "clueID": "safe-gunnery-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/defensive-flight",
+      "clueID": "defensive-flight-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.training/navigation-trade",
+      "clueID": "navigation-trade-family-trace",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/cold-chain",
+      "clueID": "exchange-service-cold-chain",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/repair-loop",
+      "clueID": "exchange-service-repair-loop",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/seed-transfer",
+      "clueID": "exchange-service-seed-transfer",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/field-relief",
+      "clueID": "exchange-service-field-relief",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/record-recovery",
+      "clueID": "exchange-service-record-recovery",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "renewed-or-remedial",
+      "order": 0,
+      "stage": "offer-and-fund",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "renewed-or-remedial",
+      "order": 1,
+      "stage": "renew-source-survey",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "renewed-or-remedial",
+      "order": 2,
+      "stage": "perform-source-remedy",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "renewed-or-remedial",
+      "order": 3,
+      "stage": "verify-independent-reception",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "renewed-or-remedial",
+      "order": 4,
+      "stage": "close-followup",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "guaranteed-continuity",
+      "order": 0,
+      "stage": "request-case",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "guaranteed-continuity",
+      "order": 1,
+      "stage": "measure-source-trace",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "guaranteed-continuity",
+      "order": 2,
+      "stage": "test-corrective-model",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "guaranteed-continuity",
+      "order": 3,
+      "stage": "independent-audit",
+      "nativeImplementationQualified": false
+    },
+    {
+      "sourceID": "l337.wayfarer-service/convoy-watch",
+      "clueID": "exchange-service-convoy-watch",
+      "track": "guaranteed-continuity",
+      "order": 4,
+      "stage": "close-inquiry",
+      "nativeImplementationQualified": false
+    }
+  ],
+  "count": 640
+}

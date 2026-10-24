@@ -1,0 +1,688 @@
+{
+  "id": "l337.unwritten-route",
+  "title": "The Unwritten Route",
+  "version": "1.0.0",
+  "requiredClueSet": "l337.base-missions",
+  "requiredSources": [
+    "l337.glass-meridian",
+    "l337.quiet-choir",
+    "l337.hollow-manifest",
+    "l337.guiding-light",
+    "l337.courier",
+    "l337.borrowed-voice",
+    "l337.shattered-wake",
+    "l337.tithe-of-worlds",
+    "l337.still-current",
+    "l337.wayfarer-exchange",
+    "l337.quiet-nursery",
+    "l337.borrowed-dawn",
+    "l337.open-shadow",
+    "l337.harbour-without-orders",
+    "l337.false-colours",
+    "l337.rubble-covenant",
+    "l337.garden-in-transit",
+    "l337.warrant-ledger",
+    "l337.measure-of-care",
+    "l337.long-return",
+    "l337.unfinished-map",
+    "l337.blue-reservoir",
+    "l337.mutual-shelter",
+    "l337.listening-frontier",
+    "l337.assembly-of-orbits",
+    "l337.under-tow",
+    "l337.memory-atlas",
+    "l337.fleet-of-neighbours",
+    "l337.uncounted-names",
+    "l337.honest-circuit",
+    "l337.small-lights",
+    "l337.passengers-horizon",
+    "l337.kind-distance",
+    "l337.cold-reserve",
+    "l337.magnetic-orchard",
+    "l337.open-measure",
+    "l337.shared-pulse",
+    "l337.witness-window",
+    "l337.public-record",
+    "l337.contract/sealed-dispatch",
+    "l337.contract/consented-freight",
+    "l337.contract/bonded-freight",
+    "l337.contract/cabin-journey",
+    "l337.contract/orbital-outlook",
+    "l337.contract/verified-warrant",
+    "l337.contract/corridor-defence",
+    "l337.contract/custody-rescue",
+    "l337.contract/identified-salvage",
+    "l337.contract/consented-survey",
+    "l337.contract/isolation-work",
+    "l337.contract/measured-extraction",
+    "l337.contract/mutual-contribution",
+    "l337.contract/orbital-evacuation",
+    "l337.contract/hostile-larvaal-defence",
+    "l337.training/flight-reception",
+    "l337.training/safe-gunnery",
+    "l337.training/defensive-flight",
+    "l337.training/navigation-trade",
+    "l337.wayfarer-service/cold-chain",
+    "l337.wayfarer-service/repair-loop",
+    "l337.wayfarer-service/seed-transfer",
+    "l337.wayfarer-service/field-relief",
+    "l337.wayfarer-service/record-recovery",
+    "l337.wayfarer-service/convoy-watch"
+  ],
+  "clues": [
+    {
+      "id": "meridian-offset",
+      "source": "l337.glass-meridian",
+      "missionTitle": "The Glass Meridian",
+      "label": "The missing instant",
+      "text": "The recovered timing standard contains an interval that none of the lane clocks measured. Inside that interval, a curved trace repeats eight times.",
+      "awardDialog": "VENN: There is one detail the inquiry could not explain: a curved trace in the timing standard, written between the clock ticks. I have copied it to your journal. PLUGH's AI may be able to read it."
+    },
+    {
+      "id": "choir-silent-voice",
+      "source": "l337.quiet-choir",
+      "missionTitle": "A Choir Beneath the Static",
+      "label": "The silent voice",
+      "text": "The restored Larvaal call contains a reply from beyond the gathering. Its pauses describe a curve, but no Larvaal vessel claims the voice.",
+      "awardDialog": "VALE: One voice answered from outside the gathering. The Larvaal listeners do not recognise it. Its pauses form a pattern like a map. I have preserved the reply in your journal."
+    },
+    {
+      "id": "manifest-hidden-imprint",
+      "source": "l337.hollow-manifest",
+      "missionTitle": "The Hollow Manifest",
+      "label": "The inward mark",
+      "text": "Beneath the recalled seal's ordinary signature is a second imprint: loops around an empty centre, with each loop pointing inward.",
+      "awardDialog": "TOREN: The master seal carried an older imprint beneath its serial number. It was never part of the freight register. Keep the image; the loops seem to point towards something missing from the middle."
+    },
+    {
+      "source": "l337.guiding-light",
+      "missionTitle": "The Guiding Light",
+      "id": "lantern-extra-echo",
+      "label": "The extra lantern",
+      "text": "The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array.",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. The verified winter relay record preserves one extra inward-moving lantern phase absent from the physical array. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.courier",
+      "missionTitle": "Signed Passage",
+      "id": "courier-empty-destination",
+      "label": "The empty destination",
+      "text": "An early receiving receipt has an inward-curved watermark for a destination absent from all freight charts.",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. An early receiving receipt has an inward-curved watermark for a destination absent from all freight charts. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "id": "voice-unclaimed-channel",
+      "source": "l337.borrowed-voice",
+      "missionTitle": "The Borrowed Voice",
+      "label": "The unclaimed channel",
+      "text": "The independent verifier recorded a reply before its verification challenge could have transmitted. Its curved phase trace folds around a quiet centre, as though the receiver were inside a larger listening ring.",
+      "awardDialog": "RENN: One reply is not in either operator's access record. Its phase curls around an empty centre, and its timestamp precedes the challenge. It is not evidence against Sol or the observer. I have copied the anomaly to your journal; PLUGH's AI may recognise its shape."
+    },
+    {
+      "id": "wake-before-impact",
+      "source": "l337.shattered-wake",
+      "missionTitle": "The Shattered Wake",
+      "label": "The curve before the fall",
+      "text": "Before the mass driver restarted, the orbital recorder traced a loop of inward-facing points around a quiet centre. The curve passes through the same absence described by the other collected traces.",
+      "awardDialog": "ORR: This curved trace predates the debris. It is not evidence that anyone deliberately caused the disaster. I have copied it to your journal; PLUGH's AI may be able to place it beside your other traces."
+    },
+    {
+      "id": "tithe-unclaimed-reserve",
+      "source": "l337.tithe-of-worlds",
+      "missionTitle": "The Tithe of Worlds",
+      "label": "The unclaimed reserve",
+      "text": "The acquisition ledger contains a reserve entry with no owner, quantity or destination. Its inward-curving phase marks form a ring around an unallocated centre; the signature predates Tithe's creation.",
+      "awardDialog": "LERR: This reserve is not part of Tithe's acquisitions. The entry predates its first instruction and names no material at all. I have copied the curved signature to your journal. PLUGH's AI may recognise what the ledger could not allocate."
+    },
+    {
+      "id": "current-resting-arc",
+      "source": "l337.still-current",
+      "missionTitle": "The Still Current",
+      "label": "The resting arc",
+      "text": "The lattice's oldest meter records an inward arc before any collector was built. The measured charge is zero, but the phase signature still encloses a quiet centre.",
+      "awardDialog": "KEST: This arc predates the lattice. It cannot be part of the dust bridge or its work order. I have copied the zero-charge phase record to your journal; PLUGH's AI may recognise it."
+    },
+    {
+      "id": "exchange-unbooked-window",
+      "source": "l337.wayfarer-exchange",
+      "missionTitle": "Wayfarer Exchange",
+      "label": "The unbooked window",
+      "text": "The first signed route ledger reserves a window with no carrier, cargo or destination. Its curved boundary points inward and matches a bearing outside the published service network.",
+      "awardDialog": "VEIL: Every real consignment is accounted for. This older reservation names no shipment at all. Keep its curved signature in your journal; the AI at PLUGH may be able to explain the unused window."
+    },
+    {
+      "source": "l337.quiet-nursery",
+      "missionTitle": "The Quiet Nursery",
+      "id": "quiet-nursery-trace",
+      "label": "The breath between readings",
+      "text": "The unaveraged pressure trace includes a quiet inward curl that no nursery valve produces.",
+      "awardDialog": "Physicist Anja Kest: The audit has left one anomaly that belongs to neither side. The unaveraged pressure trace includes a quiet inward curl that no nursery valve produces. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.borrowed-dawn",
+      "missionTitle": "Borrowed Dawn",
+      "id": "borrowed-dawn-trace",
+      "label": "The unlit interval",
+      "text": "A photometer records a curved shadow during an interval when no physical reflector crosses its view.",
+      "awardDialog": "Controller Edda Rell: The audit has left one anomaly that belongs to neither side. A photometer records a curved shadow during an interval when no physical reflector crosses its view. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.open-shadow",
+      "missionTitle": "The Open Shadow",
+      "id": "open-shadow-trace",
+      "label": "The shadow with no hull",
+      "text": "The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The passive comparison contains an inward-moving phase shadow without an associated vessel or identity record. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.harbour-without-orders",
+      "missionTitle": "Harbour Without Orders",
+      "id": "harbour-without-orders-trace",
+      "label": "The unsigned berth",
+      "text": "The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary.",
+      "awardDialog": "Controller Edda Rell: The audit has left one anomaly that belongs to neither side. The allocator's oldest signed audit describes an empty central berth enclosed by a curved approach boundary. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.false-colours",
+      "missionTitle": "False Colours",
+      "id": "false-colours-trace",
+      "label": "The seal before the key",
+      "text": "An older layer in the physical seal contains a curved signature absent from every transponder issue record.",
+      "awardDialog": "Nia Toren: The audit has left one anomaly that belongs to neither side. An older layer in the physical seal contains a curved signature absent from every transponder issue record. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.rubble-covenant",
+      "missionTitle": "The Rubble Covenant",
+      "id": "rubble-covenant-trace",
+      "label": "The hollow mass",
+      "text": "One old trajectory record curves around an empty centre as though the missing mass had a boundary of its own.",
+      "awardDialog": "Geologist Jalen Orr: The audit has left one anomaly that belongs to neither side. One old trajectory record curves around an empty centre as though the missing mass had a boundary of its own. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.garden-in-transit",
+      "missionTitle": "A Garden in Transit",
+      "id": "garden-in-transit-trace",
+      "label": "The dormant season",
+      "text": "The archive contains a circular season boundary that encloses no named climate or world.",
+      "awardDialog": "Custodian Tomas Veil: The audit has left one anomaly that belongs to neither side. The archive contains a circular season boundary that encloses no named climate or world. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.warrant-ledger",
+      "missionTitle": "The Warrant Ledger",
+      "id": "warrant-ledger-trace",
+      "label": "The unwritten warrant",
+      "text": "Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world.",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. Beneath the reused evidence lies a curved jurisdiction mark naming neither a person nor an issuing world. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.measure-of-care",
+      "missionTitle": "The Measure of Care",
+      "id": "measure-of-care-trace",
+      "label": "The temperature of silence",
+      "text": "A reference recorder shows a stable curved boundary during a period with no recorded thermal source.",
+      "awardDialog": "Physicist Anja Kest: The audit has left one anomaly that belongs to neither side. A reference recorder shows a stable curved boundary during a period with no recorded thermal source. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.long-return",
+      "missionTitle": "The Long Return",
+      "id": "long-return-trace",
+      "label": "The passenger never booked",
+      "text": "The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination.",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. The oldest rendezvous record reserves a curved empty space with no passenger, mass or destination. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.unfinished-map",
+      "missionTitle": "The Unfinished Map",
+      "id": "unfinished-map-trace",
+      "label": "The margin beyond the map",
+      "text": "The archive's untouched margin carries an inward arc outside every surveyed coordinate frame.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The archive's untouched margin carries an inward arc outside every surveyed coordinate frame. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.blue-reservoir",
+      "missionTitle": "The Blue Reservoir",
+      "id": "blue-reservoir-trace",
+      "label": "The dry current",
+      "text": "The oldest flow recorder traces an inward curve through a channel that contains no water.",
+      "awardDialog": "Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side. The oldest flow recorder traces an inward curve through a channel that contains no water. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.mutual-shelter",
+      "missionTitle": "Mutual Shelter",
+      "id": "mutual-shelter-trace",
+      "label": "The ownerless reserve",
+      "text": "An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor.",
+      "awardDialog": "Nia Toren: The audit has left one anomaly that belongs to neither side. An early shelter ledger reserves an inward-shaped volume that has never been assigned a hull or creditor. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.listening-frontier",
+      "missionTitle": "The Listening Frontier",
+      "id": "listening-frontier-trace",
+      "label": "The voice outside the channel",
+      "text": "A quiet-window listener receives an inward-curved phase trace from outside both recognised transmission bands.",
+      "awardDialog": "Captain Tamsin Holt: The audit has left one anomaly that belongs to neither side. A quiet-window listener receives an inward-curved phase trace from outside both recognised transmission bands. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.assembly-of-orbits",
+      "missionTitle": "An Assembly of Orbits",
+      "id": "assembly-of-orbits-trace",
+      "label": "The absent seat",
+      "text": "The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists.",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. The oldest assembly diagram encloses an empty central seat with a curved boundary absent from all membership lists. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.under-tow",
+      "missionTitle": "Under Tow",
+      "id": "under-tow-trace",
+      "label": "The coupling without a vessel",
+      "text": "An old interface calibration defines a curved inward contact surface with no compatible hull in its register.",
+      "awardDialog": "Tug Lead Mira Penn: The audit has left one anomaly that belongs to neither side. An old interface calibration defines a curved inward contact surface with no compatible hull in its register. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.memory-atlas",
+      "missionTitle": "The Memory Atlas",
+      "id": "memory-atlas-trace",
+      "label": "The place nobody remembers",
+      "text": "Three unrelated diaries contain the same inward curve around a place none of their authors visited.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. Three unrelated diaries contain the same inward curve around a place none of their authors visited. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.fleet-of-neighbours",
+      "missionTitle": "A Fleet of Neighbours",
+      "id": "fleet-of-neighbours-trace",
+      "label": "The formation with no centre",
+      "text": "An early dispatch diagram curves around an empty central formation slot with no assigned vessel.",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. An early dispatch diagram curves around an empty central formation slot with no assigned vessel. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.uncounted-names",
+      "missionTitle": "Uncounted Names",
+      "id": "uncounted-names-trace",
+      "label": "The unnamed entry",
+      "text": "The oldest register has an inward-curved entry naming no person, cargo or owner.",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. The oldest register has an inward-curved entry naming no person, cargo or owner. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.honest-circuit",
+      "missionTitle": "The Honest Circuit",
+      "id": "honest-circuit-trace",
+      "label": "The tick outside the circuit",
+      "text": "A reference timebase records a curved phase mark between two valid circuit ticks.",
+      "awardDialog": "Captain Elara Venn: The audit has left one anomaly that belongs to neither side. A reference timebase records a curved phase mark between two valid circuit ticks. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.small-lights",
+      "missionTitle": "Small Lights",
+      "id": "small-lights-trace",
+      "label": "The light before the fault",
+      "text": "An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed.",
+      "awardDialog": "Dispatcher Evi Senn: The audit has left one anomaly that belongs to neither side. An old utility lantern records an inward pulse before any of the neighbourhood's equipment was installed. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.passengers-horizon",
+      "missionTitle": "The Passenger's Horizon",
+      "id": "passengers-horizon-trace",
+      "label": "The horizon without a world",
+      "text": "A viewing reference encloses an inward-curved horizon that belongs to none of the surveyed planets.",
+      "awardDialog": "Captain Orin Sorel: The audit has left one anomaly that belongs to neither side. A viewing reference encloses an inward-curved horizon that belongs to none of the surveyed planets. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.kind-distance",
+      "missionTitle": "The Kind Distance",
+      "id": "kind-distance-trace",
+      "label": "The reply with no sender",
+      "text": "A dormant relay preserves an inward-curved reply predating every registered household key.",
+      "awardDialog": "Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither side. A dormant relay preserves an inward-curved reply predating every registered household key. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.cold-reserve",
+      "missionTitle": "Cold Reserve",
+      "id": "cold-reserve-trace",
+      "label": "The unused order",
+      "text": "An expired dispatch order defines an inward route to a receiving volume that has never existed in the reserve.",
+      "awardDialog": "Marshal Nera Voss: The audit has left one anomaly that belongs to neither side. An expired dispatch order defines an inward route to a receiving volume that has never existed in the reserve. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.magnetic-orchard",
+      "missionTitle": "The Magnetic Orchard",
+      "id": "magnetic-orchard-trace",
+      "label": "The root without a stem",
+      "text": "The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. The magnetic reference shows an inward-curved root enclosing a quiet centre absent from the visible living structure. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.open-measure",
+      "missionTitle": "Open Measure",
+      "id": "open-measure-trace",
+      "label": "The reference without a load",
+      "text": "A reference instrument preserves an inward-curved response while its test cradle is verifiably empty.",
+      "awardDialog": "Engineer Cato Lerr: The audit has left one anomaly that belongs to neither side. A reference instrument preserves an inward-curved response while its test cradle is verifiably empty. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.shared-pulse",
+      "missionTitle": "The Shared Pulse",
+      "id": "shared-pulse-trace",
+      "label": "The pulse before the reply",
+      "text": "A passive trace shows an inward curve before either known participant transmits.",
+      "awardDialog": "Agent Mara Vale: The audit has left one anomaly that belongs to neither side. A passive trace shows an inward curve before either known participant transmits. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.witness-window",
+      "missionTitle": "The Witness Window",
+      "id": "witness-window-trace",
+      "label": "The frame nobody recorded",
+      "text": "Between two authentic recording frames is an inward-shaped phase imprint with no camera source.",
+      "awardDialog": "Coordinator Sera Dain: The audit has left one anomaly that belongs to neither side. Between two authentic recording frames is an inward-shaped phase imprint with no camera source. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.public-record",
+      "missionTitle": "Public Record",
+      "id": "public-record-trace",
+      "label": "The unreported frequency",
+      "text": "The independent recorder captures a curved phase boundary outside the cargo controllers' published operating bands.",
+      "awardDialog": "Dispatcher Neris Sol: The audit has left one anomaly that belongs to neither side. The independent recorder captures a curved phase boundary outside the cargo controllers' published operating bands. It is preserved in your journal for the AI at PLUGH."
+    },
+    {
+      "source": "l337.contract/sealed-dispatch",
+      "missionTitle": "Sealed dispatch",
+      "id": "sealed-dispatch-family-trace",
+      "label": "The sealed dispatch trace",
+      "text": "The first verified sealed dispatch record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/consented-freight",
+      "missionTitle": "Consented freight supply",
+      "id": "consented-freight-family-trace",
+      "label": "The consented freight trace",
+      "text": "The first verified consented freight supply record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/bonded-freight",
+      "missionTitle": "Bonded freight passage",
+      "id": "bonded-freight-family-trace",
+      "label": "The bonded freight trace",
+      "text": "The first verified bonded freight passage record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/cabin-journey",
+      "missionTitle": "Consented cabin journey",
+      "id": "cabin-journey-family-trace",
+      "label": "The cabin journey trace",
+      "text": "The first verified consented cabin journey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/orbital-outlook",
+      "missionTitle": "Orbital outlook journey",
+      "id": "orbital-outlook-family-trace",
+      "label": "The orbital outlook trace",
+      "text": "The first verified orbital outlook journey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/verified-warrant",
+      "missionTitle": "Verified hostile warrant",
+      "id": "verified-warrant-family-trace",
+      "label": "The verified warrant trace",
+      "text": "The first verified verified hostile warrant record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/corridor-defence",
+      "missionTitle": "Registered corridor defence",
+      "id": "corridor-defence-family-trace",
+      "label": "The corridor defence trace",
+      "text": "The first verified registered corridor defence record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/custody-rescue",
+      "missionTitle": "Consented custody rescue",
+      "id": "custody-rescue-family-trace",
+      "label": "The custody rescue trace",
+      "text": "The first verified consented custody rescue record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/identified-salvage",
+      "missionTitle": "Identified salvage return",
+      "id": "identified-salvage-family-trace",
+      "label": "The identified salvage trace",
+      "text": "The first verified identified salvage return record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/consented-survey",
+      "missionTitle": "Consented orbital survey",
+      "id": "consented-survey-family-trace",
+      "label": "The consented survey trace",
+      "text": "The first verified consented orbital survey record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/isolation-work",
+      "missionTitle": "External isolation work",
+      "id": "isolation-work-family-trace",
+      "label": "The isolation work trace",
+      "text": "The first verified external isolation work record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/measured-extraction",
+      "missionTitle": "Measured asteroid extraction",
+      "id": "measured-extraction-family-trace",
+      "label": "The measured extraction trace",
+      "text": "The first verified measured asteroid extraction record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/mutual-contribution",
+      "missionTitle": "Mutual relief contribution",
+      "id": "mutual-contribution-family-trace",
+      "label": "The mutual contribution trace",
+      "text": "The first verified mutual relief contribution record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/orbital-evacuation",
+      "missionTitle": "Registered orbital evacuation",
+      "id": "orbital-evacuation-family-trace",
+      "label": "The orbital evacuation trace",
+      "text": "The first verified registered orbital evacuation record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.contract/hostile-larvaal-defence",
+      "missionTitle": "Designated hostile Larvaal defence",
+      "id": "hostile-larvaal-defence-family-trace",
+      "label": "The hostile larvaal defence trace",
+      "text": "The first verified designated hostile larvaal defence record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.training/flight-reception",
+      "missionTitle": "Flight and reception practice",
+      "id": "flight-reception-family-trace",
+      "label": "The flight reception trace",
+      "text": "The first verified flight and reception practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.training/safe-gunnery",
+      "missionTitle": "Safe gunnery practice",
+      "id": "safe-gunnery-family-trace",
+      "label": "The safe gunnery trace",
+      "text": "The first verified safe gunnery practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.training/defensive-flight",
+      "missionTitle": "Defensive flight practice",
+      "id": "defensive-flight-family-trace",
+      "label": "The defensive flight trace",
+      "text": "The first verified defensive flight practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.training/navigation-trade",
+      "missionTitle": "Navigation and trade practice",
+      "id": "navigation-trade-family-trace",
+      "label": "The navigation trade trace",
+      "text": "The first verified navigation and trade practice record contains a distinct inward-curved phase imprint that predates this job and its participating equipment.",
+      "awardDialog": "RECEPTION: One older curved signature lies outside this job's ordinary evidence. It is preserved in your journal for the AI at PLUGH.",
+      "successRule": "Only the actual verified successful terminal for this current family, including required real custody, consent, attributed combat or financial settlement. Not acceptance, incidental payment, failure, cancellation or a different family."
+    },
+    {
+      "source": "l337.wayfarer-service/cold-chain",
+      "missionTitle": "Cold-chain clinic service",
+      "id": "exchange-service-cold-chain",
+      "label": "The cold chain trace",
+      "text": "The first verified cold-chain clinic service receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family."
+    },
+    {
+      "source": "l337.wayfarer-service/repair-loop",
+      "missionTitle": "Closed repair exchange",
+      "id": "exchange-service-repair-loop",
+      "label": "The repair loop trace",
+      "text": "The first verified closed repair exchange receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family."
+    },
+    {
+      "source": "l337.wayfarer-service/seed-transfer",
+      "missionTitle": "Seed-bank transfer",
+      "id": "exchange-service-seed-transfer",
+      "label": "The seed transfer trace",
+      "text": "The first verified seed-bank transfer receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family."
+    },
+    {
+      "source": "l337.wayfarer-service/field-relief",
+      "missionTitle": "Remote utility relief",
+      "id": "exchange-service-field-relief",
+      "label": "The field relief trace",
+      "text": "The first verified remote utility relief receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family."
+    },
+    {
+      "source": "l337.wayfarer-service/record-recovery",
+      "missionTitle": "Crew record recovery",
+      "id": "exchange-service-record-recovery",
+      "label": "The record recovery trace",
+      "text": "The first verified crew record recovery receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family."
+    },
+    {
+      "source": "l337.wayfarer-service/convoy-watch",
+      "missionTitle": "Registered convoy watch",
+      "id": "exchange-service-convoy-watch",
+      "label": "The convoy watch trace",
+      "text": "The first verified registered convoy watch receiving record carries a distinct inward-curved phase mark predating this consignment.",
+      "awardDialog": "SENN: This service is received and paid. Its older curved signature is copied to your journal; later work keeps the same clue rather than replacing another family."
+    }
+  ],
+  "trail": [
+    {
+      "id": "decode-at-plugh",
+      "kind": "plugh-ai-confirmation",
+      "location": "any-plugh",
+      "instruction": "Take the complete clue collection to the AI at any PLUGH station and choose Decode the collected traces.",
+      "dialog": "PLUGH AI: These traces are different views of the same route. Together they describe a moving lens. Begin at Corur in Amber Divide, Galaxy 5. A dormant listener waits above the dark hemisphere. Scan it and bring the missing instant into phase."
+    },
+    {
+      "id": "wake-the-listener",
+      "kind": "scan",
+      "galaxy": 4,
+      "system": 83,
+      "targets": [
+        "corur-dormant-listener"
+      ],
+      "instruction": "At Corur, scan the dormant listener above the planet's dark hemisphere.",
+      "dialog": "The listener unfolds a narrow arc of green points. Its timing matches the missing instant. The arc bends towards the ringed industrial world of Berilir."
+    },
+    {
+      "id": "read-the-ring",
+      "kind": "scan",
+      "galaxy": 4,
+      "system": 250,
+      "targets": [
+        "berilir-inner-echo",
+        "berilir-middle-echo",
+        "berilir-outer-echo"
+      ],
+      "instruction": "At Berilir, scan three marked echoes along the asteroid ring to complete the listener's pattern.",
+      "dialog": "Each echo answers one part of the silent voice. Together they trace an inward curve. The next bearing crosses the green world of Ranenor, where the extra lantern is reflected after local nightfall."
+    },
+    {
+      "id": "align-the-lanterns",
+      "kind": "mission-action",
+      "galaxy": 4,
+      "system": 115,
+      "targets": [
+        "ranenor-lantern-port",
+        "ranenor-lantern-starboard"
+      ],
+      "instruction": "At Ranenor, align the two orbital lanterns from the marked observation waypoint. Confirm each alignment when its reflected trace meets the inward mark.",
+      "dialog": "The two traces meet around an empty centre. The watermark now reads as a direction: the uncharted outer cradle at Ashor. Its entrance will answer only the complete pattern."
+    },
+    {
+      "id": "open-the-cradle",
+      "kind": "mission-action",
+      "galaxy": 4,
+      "system": 84,
+      "targets": [
+        "ashor-outer-cradle"
+      ],
+      "instruction": "Reach the marked outer-cradle waypoint at Ashor and transmit the complete decoded pattern.",
+      "dialog": "The cradle's green traces converge. Something has been following the same route from the other side. The AI identifies its returning signature: MEDUSA. Its propulsion organs open and turn towards your ship."
+    },
+    {
+      "id": "destroy-medusa",
+      "kind": "player-credited-ship-destruction",
+      "galaxy": 4,
+      "system": 84,
+      "targets": [
+        "unwritten-route-medusa"
+      ],
+      "instruction": "Destroy the revealed Medusa. Your combat record must credit the destruction of this specific vessel.",
+      "dialog": "MEDUSA DESTROYED. Its final emission completes the missing structure in the inward mark. The reconstruction record is secure in your journal. Return to a PLUGH station so its AI can decode the fabrication pattern."
+    },
+    {
+      "id": "fabricate-at-plugh",
+      "kind": "plugh-ai-confirmation",
+      "location": "any-plugh",
+      "instruction": "Return to any PLUGH station and ask its AI to reconstruct the Medusa from the destruction record.",
+      "dialog": "PLUGH AI: The final emission completes the design. I can now grow the Medusa's hull and reproduce its systems. Fabrication access is available at PLUGH stations. Select Medusa in the shipyard to review the price and trade-in quote."
+    }
+  ],
+  "completionEvidence": {
+    "id": "convergent-heart",
+    "label": "The convergent heart",
+    "source": "l337.unwritten-route",
+    "awardStage": "fabricate-at-plugh",
+    "massTonnes": 0,
+    "requiredForOwnUnlock": false,
+    "text": "The completed PLUGH reconstruction resolves the collected inward traces into Medusa's living convergent structure. This is the mystery's epilogue evidence, not a prerequisite for itself."
+  }
+}

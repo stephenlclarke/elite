@@ -1,0 +1,433 @@
+{
+  "id": "l337.unwritten-route",
+  "title": "The Unwritten Route",
+  "version": "1.0.0",
+  "status": "Private proposal only; runtime implementation pending",
+  "requiredClueSet": "l337.base-missions",
+  "cluesRequired": 64,
+  "requiredClueIDs": [
+    "meridian-offset",
+    "choir-silent-voice",
+    "manifest-hidden-imprint",
+    "lantern-extra-echo",
+    "courier-empty-destination",
+    "voice-unclaimed-channel",
+    "wake-before-impact",
+    "tithe-unclaimed-reserve",
+    "current-resting-arc",
+    "exchange-unbooked-window",
+    "quiet-nursery-trace",
+    "borrowed-dawn-trace",
+    "open-shadow-trace",
+    "harbour-without-orders-trace",
+    "false-colours-trace",
+    "rubble-covenant-trace",
+    "garden-in-transit-trace",
+    "warrant-ledger-trace",
+    "measure-of-care-trace",
+    "long-return-trace",
+    "unfinished-map-trace",
+    "blue-reservoir-trace",
+    "mutual-shelter-trace",
+    "listening-frontier-trace",
+    "assembly-of-orbits-trace",
+    "under-tow-trace",
+    "memory-atlas-trace",
+    "fleet-of-neighbours-trace",
+    "uncounted-names-trace",
+    "honest-circuit-trace",
+    "small-lights-trace",
+    "passengers-horizon-trace",
+    "kind-distance-trace",
+    "cold-reserve-trace",
+    "magnetic-orchard-trace",
+    "open-measure-trace",
+    "shared-pulse-trace",
+    "witness-window-trace",
+    "public-record-trace",
+    "sealed-dispatch-family-trace",
+    "consented-freight-family-trace",
+    "bonded-freight-family-trace",
+    "cabin-journey-family-trace",
+    "orbital-outlook-family-trace",
+    "verified-warrant-family-trace",
+    "corridor-defence-family-trace",
+    "custody-rescue-family-trace",
+    "identified-salvage-family-trace",
+    "consented-survey-family-trace",
+    "isolation-work-family-trace",
+    "measured-extraction-family-trace",
+    "mutual-contribution-family-trace",
+    "orbital-evacuation-family-trace",
+    "hostile-larvaal-defence-family-trace",
+    "flight-reception-family-trace",
+    "safe-gunnery-family-trace",
+    "defensive-flight-family-trace",
+    "navigation-trade-family-trace",
+    "exchange-service-cold-chain",
+    "exchange-service-repair-loop",
+    "exchange-service-seed-transfer",
+    "exchange-service-field-relief",
+    "exchange-service-record-recovery",
+    "exchange-service-convoy-watch"
+  ],
+  "sourceMissions": [
+    {
+      "source": "l337.glass-meridian",
+      "title": "The Glass Meridian",
+      "clue": "The missing instant"
+    },
+    {
+      "source": "l337.quiet-choir",
+      "title": "A Choir Beneath the Static",
+      "clue": "The silent voice"
+    },
+    {
+      "source": "l337.hollow-manifest",
+      "title": "The Hollow Manifest",
+      "clue": "The inward mark"
+    },
+    {
+      "source": "l337.guiding-light",
+      "title": "The Guiding Light",
+      "clue": "The extra lantern"
+    },
+    {
+      "source": "l337.courier",
+      "title": "Signed Passage",
+      "clue": "The empty destination"
+    },
+    {
+      "source": "l337.borrowed-voice",
+      "title": "The Borrowed Voice",
+      "clue": "The unclaimed channel"
+    },
+    {
+      "source": "l337.shattered-wake",
+      "title": "The Shattered Wake",
+      "clue": "The curve before the fall"
+    },
+    {
+      "source": "l337.tithe-of-worlds",
+      "title": "The Tithe of Worlds",
+      "clue": "The unclaimed reserve"
+    },
+    {
+      "source": "l337.still-current",
+      "title": "The Still Current",
+      "clue": "The resting arc"
+    },
+    {
+      "source": "l337.wayfarer-exchange",
+      "title": "Wayfarer Exchange",
+      "clue": "The unbooked window"
+    },
+    {
+      "source": "l337.quiet-nursery",
+      "title": "The Quiet Nursery",
+      "clue": "The breath between readings"
+    },
+    {
+      "source": "l337.borrowed-dawn",
+      "title": "Borrowed Dawn",
+      "clue": "The unlit interval"
+    },
+    {
+      "source": "l337.open-shadow",
+      "title": "The Open Shadow",
+      "clue": "The shadow with no hull"
+    },
+    {
+      "source": "l337.harbour-without-orders",
+      "title": "Harbour Without Orders",
+      "clue": "The unsigned berth"
+    },
+    {
+      "source": "l337.false-colours",
+      "title": "False Colours",
+      "clue": "The seal before the key"
+    },
+    {
+      "source": "l337.rubble-covenant",
+      "title": "The Rubble Covenant",
+      "clue": "The hollow mass"
+    },
+    {
+      "source": "l337.garden-in-transit",
+      "title": "A Garden in Transit",
+      "clue": "The dormant season"
+    },
+    {
+      "source": "l337.warrant-ledger",
+      "title": "The Warrant Ledger",
+      "clue": "The unwritten warrant"
+    },
+    {
+      "source": "l337.measure-of-care",
+      "title": "The Measure of Care",
+      "clue": "The temperature of silence"
+    },
+    {
+      "source": "l337.long-return",
+      "title": "The Long Return",
+      "clue": "The passenger never booked"
+    },
+    {
+      "source": "l337.unfinished-map",
+      "title": "The Unfinished Map",
+      "clue": "The margin beyond the map"
+    },
+    {
+      "source": "l337.blue-reservoir",
+      "title": "The Blue Reservoir",
+      "clue": "The dry current"
+    },
+    {
+      "source": "l337.mutual-shelter",
+      "title": "Mutual Shelter",
+      "clue": "The ownerless reserve"
+    },
+    {
+      "source": "l337.listening-frontier",
+      "title": "The Listening Frontier",
+      "clue": "The voice outside the channel"
+    },
+    {
+      "source": "l337.assembly-of-orbits",
+      "title": "An Assembly of Orbits",
+      "clue": "The absent seat"
+    },
+    {
+      "source": "l337.under-tow",
+      "title": "Under Tow",
+      "clue": "The coupling without a vessel"
+    },
+    {
+      "source": "l337.memory-atlas",
+      "title": "The Memory Atlas",
+      "clue": "The place nobody remembers"
+    },
+    {
+      "source": "l337.fleet-of-neighbours",
+      "title": "A Fleet of Neighbours",
+      "clue": "The formation with no centre"
+    },
+    {
+      "source": "l337.uncounted-names",
+      "title": "Uncounted Names",
+      "clue": "The unnamed entry"
+    },
+    {
+      "source": "l337.honest-circuit",
+      "title": "The Honest Circuit",
+      "clue": "The tick outside the circuit"
+    },
+    {
+      "source": "l337.small-lights",
+      "title": "Small Lights",
+      "clue": "The light before the fault"
+    },
+    {
+      "source": "l337.passengers-horizon",
+      "title": "The Passenger's Horizon",
+      "clue": "The horizon without a world"
+    },
+    {
+      "source": "l337.kind-distance",
+      "title": "The Kind Distance",
+      "clue": "The reply with no sender"
+    },
+    {
+      "source": "l337.cold-reserve",
+      "title": "Cold Reserve",
+      "clue": "The unused order"
+    },
+    {
+      "source": "l337.magnetic-orchard",
+      "title": "The Magnetic Orchard",
+      "clue": "The root without a stem"
+    },
+    {
+      "source": "l337.open-measure",
+      "title": "Open Measure",
+      "clue": "The reference without a load"
+    },
+    {
+      "source": "l337.shared-pulse",
+      "title": "The Shared Pulse",
+      "clue": "The pulse before the reply"
+    },
+    {
+      "source": "l337.witness-window",
+      "title": "The Witness Window",
+      "clue": "The frame nobody recorded"
+    },
+    {
+      "source": "l337.public-record",
+      "title": "Public Record",
+      "clue": "The unreported frequency"
+    },
+    {
+      "source": "l337.contract/sealed-dispatch",
+      "title": "Sealed dispatch",
+      "clue": "The sealed dispatch trace"
+    },
+    {
+      "source": "l337.contract/consented-freight",
+      "title": "Consented freight supply",
+      "clue": "The consented freight trace"
+    },
+    {
+      "source": "l337.contract/bonded-freight",
+      "title": "Bonded freight passage",
+      "clue": "The bonded freight trace"
+    },
+    {
+      "source": "l337.contract/cabin-journey",
+      "title": "Consented cabin journey",
+      "clue": "The cabin journey trace"
+    },
+    {
+      "source": "l337.contract/orbital-outlook",
+      "title": "Orbital outlook journey",
+      "clue": "The orbital outlook trace"
+    },
+    {
+      "source": "l337.contract/verified-warrant",
+      "title": "Verified hostile warrant",
+      "clue": "The verified warrant trace"
+    },
+    {
+      "source": "l337.contract/corridor-defence",
+      "title": "Registered corridor defence",
+      "clue": "The corridor defence trace"
+    },
+    {
+      "source": "l337.contract/custody-rescue",
+      "title": "Consented custody rescue",
+      "clue": "The custody rescue trace"
+    },
+    {
+      "source": "l337.contract/identified-salvage",
+      "title": "Identified salvage return",
+      "clue": "The identified salvage trace"
+    },
+    {
+      "source": "l337.contract/consented-survey",
+      "title": "Consented orbital survey",
+      "clue": "The consented survey trace"
+    },
+    {
+      "source": "l337.contract/isolation-work",
+      "title": "External isolation work",
+      "clue": "The isolation work trace"
+    },
+    {
+      "source": "l337.contract/measured-extraction",
+      "title": "Measured asteroid extraction",
+      "clue": "The measured extraction trace"
+    },
+    {
+      "source": "l337.contract/mutual-contribution",
+      "title": "Mutual relief contribution",
+      "clue": "The mutual contribution trace"
+    },
+    {
+      "source": "l337.contract/orbital-evacuation",
+      "title": "Registered orbital evacuation",
+      "clue": "The orbital evacuation trace"
+    },
+    {
+      "source": "l337.contract/hostile-larvaal-defence",
+      "title": "Designated hostile Larvaal defence",
+      "clue": "The hostile larvaal defence trace"
+    },
+    {
+      "source": "l337.training/flight-reception",
+      "title": "Flight and reception practice",
+      "clue": "The flight reception trace"
+    },
+    {
+      "source": "l337.training/safe-gunnery",
+      "title": "Safe gunnery practice",
+      "clue": "The safe gunnery trace"
+    },
+    {
+      "source": "l337.training/defensive-flight",
+      "title": "Defensive flight practice",
+      "clue": "The defensive flight trace"
+    },
+    {
+      "source": "l337.training/navigation-trade",
+      "title": "Navigation and trade practice",
+      "clue": "The navigation trade trace"
+    },
+    {
+      "source": "l337.wayfarer-service/cold-chain",
+      "title": "Cold-chain clinic service",
+      "clue": "The cold chain trace"
+    },
+    {
+      "source": "l337.wayfarer-service/repair-loop",
+      "title": "Closed repair exchange",
+      "clue": "The repair loop trace"
+    },
+    {
+      "source": "l337.wayfarer-service/seed-transfer",
+      "title": "Seed-bank transfer",
+      "clue": "The seed transfer trace"
+    },
+    {
+      "source": "l337.wayfarer-service/field-relief",
+      "title": "Remote utility relief",
+      "clue": "The field relief trace"
+    },
+    {
+      "source": "l337.wayfarer-service/record-recovery",
+      "title": "Crew record recovery",
+      "clue": "The record recovery trace"
+    },
+    {
+      "source": "l337.wayfarer-service/convoy-watch",
+      "title": "Registered convoy watch",
+      "clue": "The convoy watch trace"
+    }
+  ],
+  "stages": 7,
+  "shipID": "SH171",
+  "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/unwritten-route.toml",
+  "sha256": "f3b833c0636b21e64104f02de89d3634f61bbb6603eb8ea6b0cef447e2aca1bc",
+  "authoringFile": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/authoring.json",
+  "authoringSHA256": "3191e5ed0c885d60bc66710b59eac2fc1cd44de40a1f774fb22d459b0b05c2c0",
+  "generatorFile": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/generate.py",
+  "generatorSHA256": "c4688228545c7f780c91a8e200df02b2667d5d905510c5ba9b590512de97ecb0",
+  "artworkManifest": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/manifest.json",
+  "artworkGallery": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/mission-artwork/index.html",
+  "completionHooks": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/medusa-mystery/completion-hooks.json",
+  "spawnRule": {
+    "requiresDecodedClues": true,
+    "requiredTrailReceipts": [
+      "l337.unwritten-route/step/wake-the-listener",
+      "l337.unwritten-route/step/read-the-ring",
+      "l337.unwritten-route/step/align-the-lanterns",
+      "l337.unwritten-route/step/open-the-cradle"
+    ],
+    "galaxy": 4,
+    "system": 84,
+    "site": "ashor-outer-cradle",
+    "uniquePerCommander": true
+  },
+  "fabricationRule": {
+    "requiresAllClues": true,
+    "requiresFullTrail": true,
+    "requiresPlayerKillRecord": true,
+    "requiresSubsequentPlughAIConfirmation": true,
+    "stationKind": "plugh",
+    "systemID": 256,
+    "shipID": "SH171",
+    "purchasePolicy": "plughQuestFabrication",
+    "freeShip": false
+  },
+  "summary": "Complete the required missions, retain their distinct clues, decode the whole collection at PLUGH, follow every revealed instruction, destroy the unique Medusa, then return to PLUGH for reconstruction and paid fabrication access.",
+  "implementation": "Integrate the completion hooks, actor-owned journal and ordered quest state, exclusive encounter gate, player kill attribution, PLUGH AI reconstruction and central purchase policy. Exercise save boundaries and every attempted bypass before claiming playability."
+}
