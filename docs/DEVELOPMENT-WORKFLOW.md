@@ -1,5 +1,11 @@
 # Developer and reviewer workflow
 
+## Branch and commit naming
+
+Stephen's standard from24October2026: all new branches use a Conventional Commit type followed by a slash and a short lowercase kebab-case description: `feat/`, `fix/`, `perf/`, `refactor/`, `test/`, `docs/`, `build/`, `ci/`, `chore/`, `style/` or `revert/`. Use `feat/` for new features; do not create new `feature/` branches or ad hoc prefixes such as `infra/` or `diagnostic/`. For example, `feat/passenger-cabins`, `fix/chart-help`, `perf/test-observations` and `chore/retained-diagnostics`.
+
+Commits and PR titles use the matching Conventional Commit form, such as `feat(cabins): add cryogenic accommodation` or `fix(help): match chart scrolling hints`. Branch prefixes follow these types by project convention; Conventional Commits itself defines commit messages. Existing active branches keep their names and PR ancestry; apply this rule to new branches rather than renaming ongoing work. Never include `codex` in a branch name, commit message or PR title.
+
 ## Hygiene is part of every work packet
 
 This is a required packet step, not a separate daily cleanup task. It does not add another review, test run or Orchestrator approval. Link an existing defect issue when applicable; a ledger item and its PR are sufficient for feature work. Do not create another issue solely to mirror a PR or satisfy this checklist.
