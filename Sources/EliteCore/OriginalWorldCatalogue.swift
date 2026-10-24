@@ -139,7 +139,7 @@ public struct OriginalWorldCatalogue: Sendable {
 
   private static let resources: Bundle =
     Bundle.main.resourceURL.flatMap {
-      Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+      Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
     } ?? Bundle.module
 
   private static func fingerprint(_ data: Data) -> String {

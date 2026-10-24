@@ -52,7 +52,7 @@ cd elite
 make run
 ```
 
-The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. SwiftPM resolves the pinned TOMLDecoder dependency automatically. A fresh current development game opens with XYZZY credits and a rotating ship, then the L337 title screen. The published 1.4.0 app uses the Right-On Commander title. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch. Restoring the last saved commander waits at the title screen before continuing that commander; opening a save during play goes straight to status. The title and opening credits show the app version, repository and full source commit SHA. Finder/Run builds embed their build identity; a bare SwiftPM executable explicitly reports unavailable commit metadata.
+The Run action builds and opens `dist/L337.app`. You can also open that app from Finder after building it. SwiftPM resolves the pinned TOMLDecoder dependency automatically. A fresh current development game opens with XYZZY credits and a rotating ship, then the L337 title screen. The published 1.4.0 app uses the Right-On Commander title. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch. Restoring the last saved commander waits at the title screen before continuing that commander; opening a save during play goes straight to status. The title and opening credits show the app version, repository and full source commit SHA. Finder/Run builds embed their build identity; a bare SwiftPM executable explicitly reports unavailable commit metadata.
 
 ## Licence
 

@@ -9,7 +9,7 @@ extension ScriptPackLibrary {
   static var bundledCourierDirectory: URL {
     let resources =
       Bundle.main.resourceURL.flatMap {
-        Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+        Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
       } ?? Bundle.module
     return resources.resourceURL!.appendingPathComponent("ScriptPacks/generated-couriers")
   }
