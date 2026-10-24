@@ -12479,6 +12479,18 @@
       "m01_priority": 1,
       "mba_priority": "M01 first",
       "new_implementation_assigned": false
+    },
+    {
+      "at": "2026-10-24T10:33:13.100798+00:00",
+      "checkpoint_key": "20261024-m01-6552-independent-review-fallback-recorded",
+      "head": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+      "pr": 25,
+      "review_service": "unknown error",
+      "fallback_comment": 6383149655,
+      "service_retries": 0,
+      "new_tests": 0,
+      "new_head": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
