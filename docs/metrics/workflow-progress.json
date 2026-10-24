@@ -12438,6 +12438,19 @@
       "unchanged_python_hashes_verified": 8,
       "exclusive_paths_verified": 33,
       "m01_repair_preserved": true
+    },
+    {
+      "at": "2026-10-24T10:27:26.410277+00:00",
+      "checkpoint_key": "20261024-m02-prior-hosted-success-rebase-published",
+      "m02_prior_head": "29df8a0c7662b2b84a5dfeeb96314f4f56923bfb",
+      "m02_prior_run": 40084290033,
+      "github_conclusion": "success",
+      "artifact_verification": "pending MBA",
+      "published_head": "3e79d1270c06d82e99eb93b601e88ebb2e23d068",
+      "pr": 215,
+      "remote_head_verified": true,
+      "m01_quality": "in_progress",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
