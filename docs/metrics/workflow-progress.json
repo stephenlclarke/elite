@@ -11140,6 +11140,30 @@
       "quality_status": "in_progress",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:21:59.587765+00:00",
+      "checkpoint_key": "20261024-m01-a890-required-quality-failed-review-assigned",
+      "event": "Required qualified-head quality run failed; sole terminal artifact review assigned to MBA",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "published_head": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+      "run": 40062040085,
+      "job": 120777440160,
+      "quality_status": "completed",
+      "quality_conclusion": "failure",
+      "job_started_at": "2026-10-24T04:21:52Z",
+      "job_completed_at": "2026-10-24T07:20:43Z",
+      "job_seconds": 10731,
+      "composite_step_exit_code": 2,
+      "diagnostic_artifact_upload": "success",
+      "failure_cause": "pending_independent_terminal_artifact_review",
+      "independent_review_status": "assigned",
+      "retained_maintained_unit_pass_run": 40062035350,
+      "retained_maintained_unit_pass_methods": 524,
+      "issue185_status": "open",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
