@@ -440,10 +440,42 @@ public enum ScriptPackLibrary {
         "Unknown script pack keys: " + unknown.sorted().joined(separator: ", "))
     }
   }
+  @inline(never)
   static func validate(_ manifest: ScriptManifest) throws {
     try WayfarerColdChainSave.validateDeclaration(manifest)
     try WayfarerRepairLoopSave.validateDeclaration(manifest)
     try WayfarerFieldReliefSave.validateDeclaration(manifest)
+    // Finish common resource frames before entering the native declaration validators.
+    try validateManifestCoreDeclarations(manifest)
+    try validateNPCDeclarations(manifest)
+    try validateWorldJobs(manifest)
+    try validateChoices(manifest)
+    try validateAnswers(manifest)
+    try validateBooks(manifest)
+    try validateProcurement(manifest)
+    try validateFreight(manifest)
+    try validateStationPassengerJourney(manifest)
+    try validateOriginalEvacuationJourney(manifest)
+    try validateOrbitalOutlookJourney(manifest)
+    try validateOriginalSurvey(manifest)
+    try validateGlassMeridian(manifest)
+    try validateWayfarerInduction(manifest)
+    try validateFlightReception(manifest)
+    try validateMeasuredExtraction(manifest)
+    try validateRecordRecovery(manifest)
+    try validateIdentifiedSalvage(manifest)
+    try validateOriginalRescueJourney(manifest)
+    try validateCollections(manifest)
+    try validateFinance(manifest)
+    try validatePledge(manifest)
+    try validateCourier(manifest)
+    try validateProviderContract(manifest)
+    try validateCampaignChildren(manifest)
+    try validateManifestResourceDeclarations(manifest)
+  }
+
+  @inline(never)
+  private static func validateManifestCoreDeclarations(_ manifest: ScriptManifest) throws {
     guard manifest.schemaVersion == 2, manifest.missionAPI == 2, manifest.minimumEngine == "2.0.0",
       PackValidation.identifier(manifest.id), PackValidation.identifier(manifest.mission.id),
       PackValidation.version(manifest.version), (0...1000).contains(manifest.priority),
@@ -510,30 +542,10 @@ public enum ScriptPackLibrary {
     else {
       throw MissionPackError("Invalid encounter declarations or missing native classic capability.")
     }
-    try validateNPCDeclarations(manifest)
-    try validateWorldJobs(manifest)
-    try validateChoices(manifest)
-    try validateAnswers(manifest)
-    try validateBooks(manifest)
-    try validateProcurement(manifest)
-    try validateFreight(manifest)
-    try validateStationPassengerJourney(manifest)
-    try validateOriginalEvacuationJourney(manifest)
-    try validateOrbitalOutlookJourney(manifest)
-    try validateOriginalSurvey(manifest)
-    try validateGlassMeridian(manifest)
-    try validateWayfarerInduction(manifest)
-    try validateFlightReception(manifest)
-    try validateMeasuredExtraction(manifest)
-    try validateRecordRecovery(manifest)
-    try validateIdentifiedSalvage(manifest)
-    try validateOriginalRescueJourney(manifest)
-    try validateCollections(manifest)
-    try validateFinance(manifest)
-    try validatePledge(manifest)
-    try validateCourier(manifest)
-    try validateProviderContract(manifest)
-    try validateCampaignChildren(manifest)
+  }
+
+  @inline(never)
+  private static func validateManifestResourceDeclarations(_ manifest: ScriptManifest) throws {
     let requirements = manifest.receiptRequirements ?? []
     guard requirements.count <= 32, Set(requirements.map(\.id)).count == requirements.count,
       requirements.allSatisfy(\.valid),

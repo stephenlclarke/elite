@@ -119,241 +119,98 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-cabin-journey")
   }
 
+  @inline(never)
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
     // Keep installed versions and their original ordering. Only identical content deduplicates.
     var library = installed(directory: directory)
-    do {
-      let courier = try read(bundledCourierDirectory)
-      if !library.packs.contains(where: { $0.digest == courier.digest }) {
-        library.packs.append(courier)
-      }
-    } catch {
-      library.errors.append("Bundled courier pack: " + error.localizedDescription)
-    }
-    do {
-      let bonded = try read(bundledBondedFreightDirectory)
-      if !library.packs.contains(where: { $0.digest == bonded.digest }) {
-        library.packs.append(bonded)
-      }
-    } catch {
-      library.errors.append("Bundled bonded freight pack: " + error.localizedDescription)
-    }
-    do {
-      let coldChain = try read(bundledColdChainDirectory)
-      if !library.packs.contains(where: { $0.digest == coldChain.digest }) {
-        library.packs.append(coldChain)
-      }
-    } catch {
-      library.errors.append("Bundled cold-chain pack: " + error.localizedDescription)
-    }
-    do {
-      let repairLoop = try read(bundledRepairLoopDirectory)
-      if !library.packs.contains(where: { $0.digest == repairLoop.digest }) {
-        library.packs.append(repairLoop)
-      }
-    } catch {
-      library.errors.append("Bundled repair-loop pack: " + error.localizedDescription)
-    }
-    do {
-      let seedTransfer = try read(bundledSeedTransferDirectory)
-      if !library.packs.contains(where: { $0.digest == seedTransfer.digest }) {
-        library.packs.append(seedTransfer)
-      }
-    } catch {
-      library.errors.append("Bundled seed-transfer pack: " + error.localizedDescription)
-    }
-    do {
-      let contribution = try read(bundledMutualContributionDirectory)
-      if !library.packs.contains(where: { $0.digest == contribution.digest }) {
-        library.packs.append(contribution)
-      }
-    } catch {
-      library.errors.append("Bundled mutual contribution pack: " + error.localizedDescription)
-    }
-    do {
-      let navigationTrade = try read(bundledNavigationTradeDirectory)
-      if !library.packs.contains(where: { $0.digest == navigationTrade.digest }) {
-        library.packs.append(navigationTrade)
-      }
-    } catch {
-      library.errors.append("Bundled navigation/trade pack: " + error.localizedDescription)
-    }
-    do {
-      let sealedDispatch = try read(bundledSealedDispatchDirectory)
-      if !library.packs.contains(where: { $0.digest == sealedDispatch.digest }) {
-        library.packs.append(sealedDispatch)
-      }
-    } catch {
-      library.errors.append("Bundled sealed-dispatch pack: " + error.localizedDescription)
-    }
-    do {
-      let warrant = try read(bundledVerifiedWarrantDirectory)
-      if !library.packs.contains(where: { $0.digest == warrant.digest }) {
-        library.packs.append(warrant)
-      }
-    } catch {
-      library.errors.append("Bundled verified warrant pack: " + error.localizedDescription)
-    }
-    do {
-      let corridor = try read(bundledCorridorDefenceDirectory)
-      if !library.packs.contains(where: { $0.digest == corridor.digest }) {
-        library.packs.append(corridor)
-      }
-    } catch {
-      library.errors.append("Bundled corridor defence pack: " + error.localizedDescription)
-    }
-    do {
-      let supplied = try read(bundledConsentedFreightDirectory)
-      if !library.packs.contains(where: { $0.digest == supplied.digest }) {
-        library.packs.append(supplied)
-      }
-    } catch {
-      library.errors.append("Bundled consented freight pack: " + error.localizedDescription)
-    }
-    do {
-      let journey = try read(bundledCabinJourneyDirectory)
-      if !library.packs.contains(where: { $0.digest == journey.digest }) {
-        library.packs.append(journey)
-      }
-    } catch {
-      library.errors.append("Bundled native cabin journey pack: " + error.localizedDescription)
-    }
-    do {
-      let outlook = try read(bundledOrbitalOutlookDirectory)
-      if !library.packs.contains(where: { $0.digest == outlook.digest }) {
-        library.packs.append(outlook)
-      }
-    } catch {
-      library.errors.append("Bundled orbital outlook journey pack: " + error.localizedDescription)
-    }
-    do {
-      let rescue = try read(bundledOriginalRescueDirectory)
-      if !library.packs.contains(where: { $0.digest == rescue.digest }) {
-        library.packs.append(rescue)
-      }
-    } catch {
-      library.errors.append("Bundled original custody rescue pack: " + error.localizedDescription)
-    }
-    do {
-      let evacuation = try read(bundledOrbitalEvacuationDirectory)
-      if !library.packs.contains(where: { $0.digest == evacuation.digest }) {
-        library.packs.append(evacuation)
-      }
-    } catch { library.errors.append("Bundled evacuation pack: " + error.localizedDescription) }
-    do {
-      let survey = try read(bundledOriginalSurveyDirectory)
-      if !library.packs.contains(where: { $0.digest == survey.digest }) {
-        library.packs.append(survey)
-      }
-    } catch {
-      library.errors.append("Bundled consented survey pack: " + error.localizedDescription)
-    }
-    do {
-      let recovery = try read(bundledIdentifiedSalvageDirectory)
-      if !library.packs.contains(where: { $0.digest == recovery.digest }) {
-        library.packs.append(recovery)
-      }
-    } catch {
-      library.errors.append("Bundled identified salvage pack: " + error.localizedDescription)
-    }
-    do {
-      let recorder = try read(bundledRecordRecoveryDirectory)
-      if !library.packs.contains(where: { $0.digest == recorder.digest }) {
-        library.packs.append(recorder)
-      }
-    } catch {
-      library.errors.append("Bundled crew record recovery pack: " + error.localizedDescription)
-    }
-    do {
-      let relief = try read(bundledFieldReliefDirectory)
-      if !library.packs.contains(where: { $0.digest == relief.digest }) {
-        library.packs.append(relief)
-      }
-    } catch {
-      library.errors.append("Bundled field-relief pack: " + error.localizedDescription)
-    }
-    do {
-      let extraction = try read(bundledMeasuredExtractionDirectory)
-      if !library.packs.contains(where: { $0.digest == extraction.digest }) {
-        library.packs.append(extraction)
-      }
-    } catch {
-      library.errors.append("Bundled measured extraction pack: " + error.localizedDescription)
-    }
-    do {
-      let practice = try read(bundledDefensiveFlightDirectory)
-      if !library.packs.contains(where: { $0.digest == practice.digest }) {
-        library.packs.append(practice)
-      }
-    } catch {
-      library.errors.append("Bundled defensive flight pack: " + error.localizedDescription)
-    }
-    do {
-      let practice = try read(bundledSafeGunneryDirectory)
-      if !library.packs.contains(where: { $0.digest == practice.digest }) {
-        library.packs.append(practice)
-      }
-    } catch { library.errors.append("Bundled safe gunnery pack: " + error.localizedDescription) }
-    do {
-      let practice = try read(bundledFlightReceptionDirectory)
-      if !library.packs.contains(where: { $0.digest == practice.digest }) {
-        library.packs.append(practice)
-      }
-    } catch { library.errors.append("Bundled flight practice pack: " + error.localizedDescription) }
-    do {
-      let induction = try read(bundledWayfarerInductionDirectory)
-      if !library.packs.contains(where: { $0.digest == induction.digest }) {
-        library.packs.append(induction)
-      }
-    } catch { library.errors.append("Bundled Exchange induction: " + error.localizedDescription) }
-    do {
-      let ark = try read(bundledInductionArkDirectory)
-      if !library.packs.contains(where: { $0.digest == ark.digest }) { library.packs.append(ark) }
-    } catch { library.errors.append("Bundled registered seed ark: " + error.localizedDescription) }
-    do {
-      let source = try read(bundledInductionCrewLogDirectory)
-      if !library.packs.contains(where: { $0.digest == source.digest }) {
-        library.packs.append(source)
-      }
-    } catch {
-      library.errors.append("Bundled Cevilis custody source: " + error.localizedDescription)
-    }
-    do {
-      let source = try read(bundledInductionUtilityDirectory)
-      if !library.packs.contains(where: { $0.digest == source.digest }) {
-        library.packs.append(source)
-      }
-    } catch { library.errors.append("Bundled Enron utility source: " + error.localizedDescription) }
-    do {
-      let opening = try read(bundledGlassMeridianDirectory)
-      if !library.packs.contains(where: { $0.digest == opening.digest }) {
-        library.packs.append(opening)
-      }
-    } catch { library.errors.append("Bundled Glass Meridian: " + error.localizedDescription) }
-    do {
-      let clinic = try read(bundledInductionClinicDirectory)
-      if !library.packs.contains(where: { $0.digest == clinic.digest }) {
-        library.packs.append(clinic)
-      }
-    } catch {
-      library.errors.append("Bundled original Renas clinic source: " + error.localizedDescription)
-    }
-    do {
-      let workshop = try read(bundledInductionWorkshopDirectory)
-      if !library.packs.contains(where: { $0.digest == workshop.digest }) {
-        library.packs.append(workshop)
-      }
-    } catch {
-      library.errors.append("Bundled original Enmadan workshop: " + error.localizedDescription)
-    }
-    do {
-      let seed = try read(bundledInductionSeedDirectory)
-      if !library.packs.contains(where: { $0.digest == seed.digest }) { library.packs.append(seed) }
-    } catch {
-      library.errors.append("Bundled original Enlirin seed: " + error.localizedDescription)
-    }
+    appendBundledPack(bundledCourierDirectory, errorPrefix: "Bundled courier pack: ", to: &library)
+    appendBundledPack(
+      bundledBondedFreightDirectory, errorPrefix: "Bundled bonded freight pack: ", to: &library)
+    appendBundledPack(
+      bundledColdChainDirectory, errorPrefix: "Bundled cold-chain pack: ", to: &library)
+    appendBundledPack(
+      bundledRepairLoopDirectory, errorPrefix: "Bundled repair-loop pack: ", to: &library)
+    appendBundledPack(
+      bundledSeedTransferDirectory, errorPrefix: "Bundled seed-transfer pack: ", to: &library)
+    appendBundledPack(
+      bundledMutualContributionDirectory, errorPrefix: "Bundled mutual contribution pack: ",
+      to: &library)
+    appendBundledPack(
+      bundledNavigationTradeDirectory, errorPrefix: "Bundled navigation/trade pack: ", to: &library)
+    appendBundledPack(
+      bundledSealedDispatchDirectory, errorPrefix: "Bundled sealed-dispatch pack: ", to: &library)
+    appendBundledPack(
+      bundledVerifiedWarrantDirectory, errorPrefix: "Bundled verified warrant pack: ", to: &library)
+    appendBundledPack(
+      bundledCorridorDefenceDirectory, errorPrefix: "Bundled corridor defence pack: ", to: &library)
+    appendBundledPack(
+      bundledConsentedFreightDirectory, errorPrefix: "Bundled consented freight pack: ",
+      to: &library)
+    appendBundledPack(
+      bundledCabinJourneyDirectory, errorPrefix: "Bundled native cabin journey pack: ", to: &library
+    )
+    appendBundledPack(
+      bundledOrbitalOutlookDirectory, errorPrefix: "Bundled orbital outlook journey pack: ",
+      to: &library)
+    appendBundledPack(
+      bundledOriginalRescueDirectory, errorPrefix: "Bundled original custody rescue pack: ",
+      to: &library)
+    appendBundledPack(
+      bundledOrbitalEvacuationDirectory, errorPrefix: "Bundled evacuation pack: ", to: &library)
+    appendBundledPack(
+      bundledOriginalSurveyDirectory, errorPrefix: "Bundled consented survey pack: ", to: &library)
+    appendBundledPack(
+      bundledIdentifiedSalvageDirectory, errorPrefix: "Bundled identified salvage pack: ",
+      to: &library)
+    appendBundledPack(
+      bundledRecordRecoveryDirectory, errorPrefix: "Bundled crew record recovery pack: ",
+      to: &library)
+    appendBundledPack(
+      bundledFieldReliefDirectory, errorPrefix: "Bundled field-relief pack: ", to: &library)
+    appendBundledPack(
+      bundledMeasuredExtractionDirectory, errorPrefix: "Bundled measured extraction pack: ",
+      to: &library)
+    appendBundledPack(
+      bundledDefensiveFlightDirectory, errorPrefix: "Bundled defensive flight pack: ", to: &library)
+    appendBundledPack(
+      bundledSafeGunneryDirectory, errorPrefix: "Bundled safe gunnery pack: ", to: &library)
+    appendBundledPack(
+      bundledFlightReceptionDirectory, errorPrefix: "Bundled flight practice pack: ", to: &library)
+    appendBundledPack(
+      bundledWayfarerInductionDirectory, errorPrefix: "Bundled Exchange induction: ", to: &library)
+    appendBundledPack(
+      bundledInductionArkDirectory, errorPrefix: "Bundled registered seed ark: ", to: &library)
+    appendBundledPack(
+      bundledInductionCrewLogDirectory, errorPrefix: "Bundled Cevilis custody source: ",
+      to: &library)
+    appendBundledPack(
+      bundledInductionUtilityDirectory, errorPrefix: "Bundled Enron utility source: ", to: &library)
+    appendBundledPack(
+      bundledGlassMeridianDirectory, errorPrefix: "Bundled Glass Meridian: ", to: &library)
+    appendBundledPack(
+      bundledInductionClinicDirectory, errorPrefix: "Bundled original Renas clinic source: ",
+      to: &library)
+    appendBundledPack(
+      bundledInductionWorkshopDirectory, errorPrefix: "Bundled original Enmadan workshop: ",
+      to: &library)
+    appendBundledPack(
+      bundledInductionSeedDirectory, errorPrefix: "Bundled original Enlirin seed: ", to: &library)
     return library
+  }
+
+  @inline(never)
+  private static func appendBundledPack(
+    _ directory: URL, errorPrefix: String,
+    to library: inout (packs: [ScriptPack], errors: [String])
+  ) {
+    // Only one decoded pack is live here while its reader validates nested declarations.
+    do {
+      let pack = try read(directory)
+      if !library.packs.contains(where: { $0.digest == pack.digest }) { library.packs.append(pack) }
+    } catch {
+      library.errors.append(errorPrefix + error.localizedDescription)
+    }
   }
 }
