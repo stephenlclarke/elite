@@ -11953,6 +11953,18 @@
       "game_units_rerun_assigned": false,
       "usable_build_delivered": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-24T09:22:48.610750+00:00",
+      "checkpoint_key": "20261024-m01-native-hook-fix-published",
+      "commit": "69f8af9653e5b274574f837984cad2fbdbb0399a",
+      "focused_fake_runner_methods_passed": 15,
+      "focused_fake_wall_seconds": 0.6261749579571187,
+      "exit_code": 0,
+      "source_review": "SOURCE_CLEAR",
+      "real_quality_state": "pending",
+      "usable_build_delivered": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
