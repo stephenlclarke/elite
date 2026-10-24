@@ -10848,6 +10848,26 @@
       "quality_status": "in_progress",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T03:33:18.658886+00:00",
+      "checkpoint_key": "20261024-m01-51fb-required-quality-failed",
+      "event": "Required final-head quality failed; sole terminal artifact review assigned",
+      "published_head": "51fbcee474854c190fb748e101f3b8c27d84718a",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "run": 40054216562,
+      "job": 120753471793,
+      "job_started_at": "2026-10-24T02:27:12Z",
+      "job_completed_at": "2026-10-24T03:32:47Z",
+      "job_seconds": 3935,
+      "quality_status": "failure",
+      "composite_exit_code": 2,
+      "diagnostic_upload": "success",
+      "failure_cause": "not_yet_verified",
+      "new_execution_assigned": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
