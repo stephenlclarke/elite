@@ -53,7 +53,8 @@ struct GameplayOrdnanceRuntimeTests {
     // the separate legacy beam and cannot exercise the native front-mounted ray.
     game.bodies.removeAll { $0.id == 70 }
     game.commander.cargo[CommodityIdentity.food.rawValue] = 1
-    let sequence = try #require(game.commander.flightSimulation.allocateSpawn())
+    let allocatedSequence = game.commander.flightSimulation.allocateSpawn()
+    let sequence = try #require(allocatedSequence)
     let context = try #require(game.gameplayContext())
     var orientation = Basis3()
     orientation.x = .init(-1, 0, 0)
