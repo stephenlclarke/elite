@@ -253,6 +253,12 @@ public enum PlayerHelp {
     return rows
   }
 
+  private static func chartDataHint(_ game: Game) -> String {
+    guard game.docked else { return "PLANET DATA: 6" }
+    return Display.chartDataWindow(game).last == 0
+      ? "ALL PLANET DATA VISIBLE" : "UP / DOWN / SCROLL - PLANET DATA"
+  }
+
   private static func context(for screen: Screen, game: Game) -> HelpPage {
     switch screen {
     case .front, .rear, .left, .right:
@@ -362,7 +368,7 @@ public enum PlayerHelp {
         title: "CHARTS AND PLANET DATA",
         rows: [
           "LEFT / RIGHT OR CLICK - SELECT PLANET",
-          game.docked ? "UP / DOWN / SCROLL - PLANET DATA" : "PLANET DATA: 6",
+          chartDataHint(game),
           "SLASH (GALACTIC CHART) - SEARCH",
           "TYPE - FILTER; UP / DOWN - RESULT",
           "RETURN - CHOOSE; ESC - END SEARCH",
