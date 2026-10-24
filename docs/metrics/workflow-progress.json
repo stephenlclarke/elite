@@ -12167,6 +12167,29 @@
       "m02_next_reserved_hunk": "EliteApp.installMenu Quit label uses shared title authority",
       "m01_complete": false,
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T09:49:04.189232+00:00",
+      "checkpoint_key": "20261024-m01-62b-sigbus-source-and-outcomes-verified",
+      "run": 40082188418,
+      "source_commit": "62b3374bbc5198e8a0124caac32abb98ee64bc63",
+      "synthetic_checkout": "dd15f31aa063b917acf24769a00fb069d6634fd1",
+      "source_inputs_matched": 1882,
+      "artifact_files_verified": 11,
+      "terminal_failure": "normal SwiftTesting helper unexpected signal10 SIGBUS",
+      "exact_cause": "pending delayed OS report PID/image join; initial collector had no eligible capture",
+      "partial_unique_pass_names": 204,
+      "partial_unique_started_names": 3111,
+      "complete_suite_pass": false,
+      "make_ci_seconds": 802.2601285418496,
+      "exit_code": 2,
+      "blocker_issue": 185,
+      "receipt": "/tmp/elite-mba-62b-terminal-quality-review.json",
+      "m01_complete": false,
+      "usable_build_delivered": false,
+      "delayed_os_report": "/tmp/elite-m01-62b-delayed-crash/swiftpm-testing-helper-2026-10-24-104433.ips",
+      "report_obtained_without_rerun": true,
+      "compiler_policy": "Host policy intentionally pinned standalone6.4.1; earlier Apple6.4 focused parity not established"
     }
   ],
   "two_developer_phase": {
