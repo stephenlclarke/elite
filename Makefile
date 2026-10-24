@@ -22,10 +22,10 @@ address:
 leaks:
 	swift build
 	mkdir -p reports
-	/usr/bin/leaks --atExit -- "$$(swift build --show-bin-path)/Elite" --diagnostics > reports/leaks.txt 2>&1
+	/usr/bin/leaks --atExit -- "$$(swift build --show-bin-path)/L337" --diagnostics > reports/leaks.txt 2>&1
 	@tail -8 reports/leaks.txt
 readme-media:
-	swift run Elite --readme-media
+	swift run L337 --readme-media
 	mkdir -p Resources
 	iconutil -c icns .build/Elite.iconset -o Resources/Elite.icns
 
@@ -49,7 +49,7 @@ liberator-design:
 sonar:
 	./script/sonar.sh
 mission-packs-check:
-	swift run Elite --validate-mission-pack docs/mission-packs/courier.toml
+	swift run L337 --validate-mission-pack docs/mission-packs/courier.toml
 flight-controls-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 Tools/generate-flight-controls.py --repo-root . --check
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/tests -p 'test_flight_controls.py'

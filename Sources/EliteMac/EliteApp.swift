@@ -1012,7 +1012,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
 }
 
 @main
-struct EliteApp {
+struct L337App {
   @MainActor static func main() async throws {
     if let index = CommandLine.arguments.firstIndex(of: "--validate-commander-save") {
       do {

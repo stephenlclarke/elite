@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-  name: "Elite",
+  name: "L337",
   platforms: [.macOS(.v14)],
-  products: [.executable(name: "Elite", targets: ["EliteMac"])],
+  products: [.executable(name: "L337", targets: ["EliteMac"])],
   dependencies: [.package(url: "https://github.com/dduan/TOMLDecoder.git", exact: "0.4.5")],
   targets: [
     .target(

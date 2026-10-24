@@ -124,7 +124,7 @@ public struct MissionPackLibrary: Sendable {
   public static let bundled: MissionPackLibrary = {
     let resources =
       Bundle.main.resourceURL.flatMap {
-        Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+        Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
       } ?? Bundle.module
     do {
       return try load(

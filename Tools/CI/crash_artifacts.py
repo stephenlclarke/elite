@@ -55,7 +55,7 @@ def coverage_helper(pid, row, workspace):
     argv = arguments(row)
     if not argv or not Path(argv[0]).is_absolute() or Path(argv[0]).name != 'swiftpm-testing-helper':
         return None
-    image = Path(workspace) / '.build/arm64-apple-macosx/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests'
+    image = Path(workspace) / '.build/arm64-apple-macosx/debug/L337PackageTests.xctest/Contents/MacOS/L337PackageTests'
     expected = [argv[0], '--test-bundle-path', str(image), '--enable-code-coverage',
                 str(image), '--testing-library', 'swift-testing']
     if argv != expected or not row.get('start'):
