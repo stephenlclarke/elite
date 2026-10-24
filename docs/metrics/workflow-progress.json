@@ -12190,6 +12190,21 @@
       "delayed_os_report": "/tmp/elite-m01-62b-delayed-crash/swiftpm-testing-helper-2026-10-24-104433.ips",
       "report_obtained_without_rerun": true,
       "compiler_policy": "Host policy intentionally pinned standalone6.4.1; earlier Apple6.4 focused parity not established"
+    },
+    {
+      "at": "2026-10-24T09:49:57.402625+00:00",
+      "checkpoint_key": "20261024-m01-actual-field-relief-copy-fault-repair-assigned",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "blocker_issue": 185,
+      "evidence": "Delayed existing OS report matched PID80183/imageB9767EE3; guard fault in outlined WayfarerFieldReliefDefinition optional copy",
+      "faulted_reader": "WayfarerFieldReliefSave.validateDeclaration",
+      "owning_method": "OriginalColdChainTests.productionResourcePinsNativeTermsAndDeduplicatesItsExactDigest",
+      "scope": "Minimal addressable readonly declaration boundary; original policy/state/schema preserved",
+      "diagnostic_reruns": 0,
+      "execution_assigned": "One owning/directconsumer focused batch after source review",
+      "m01_complete": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
