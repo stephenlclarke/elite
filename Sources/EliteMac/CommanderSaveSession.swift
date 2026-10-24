@@ -10,7 +10,7 @@ final class CommanderSaveSession {
   init(
     preferences: UserDefaults? = .standard,
     defaultURL: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(
-      ".xyzzy/elite/commander.json")
+      ".xyzzy/l337/commander.json")
   ) {
     self.preferences = preferences
     self.defaultURL = defaultURL

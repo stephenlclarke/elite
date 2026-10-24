@@ -134,7 +134,7 @@ public struct MissionPackLibrary: Sendable {
   }()
   public static var userDirectory: URL {
     FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(
-      ".xyzzy/elite/mission-packs")
+      ".xyzzy/l337/mission-packs")
   }
   public static func read(_ url: URL, bundled: Bool = false) throws -> LoadedMissionPack {
     let properties = try url.resourceValues(forKeys: [
