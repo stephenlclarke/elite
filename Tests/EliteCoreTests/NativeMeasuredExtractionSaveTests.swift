@@ -479,8 +479,11 @@ private func measuredJSON(_ value: Any) throws -> Data {
       // Integral NSDecimalNumber values can exceed Double's exact integer range.
       return try JSONSerialization.data(withJSONObject: number, options: [.fragmentsAllowed])
     }
-    guard number.doubleValue.isFinite else { throw SaveError.invalidCommander }
-    return try JSONEncoder().encode(number.doubleValue)
+    let scalarBytes = try JSONSerialization.data(
+      withJSONObject: number, options: [.fragmentsAllowed])
+    let scalar = try JSONDecoder().decode(Double.self, from: scalarBytes)
+    guard scalar.isFinite else { throw SaveError.invalidCommander }
+    return try JSONEncoder().encode(scalar)
   }
   return try JSONSerialization.data(withJSONObject: value, options: [.fragmentsAllowed])
 }
