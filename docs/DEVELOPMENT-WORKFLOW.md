@@ -1,12 +1,25 @@
 # Developer and reviewer workflow
 
+## Hygiene is part of every work packet
+
+This is a required packet step, not a separate daily cleanup task. It does not add another review, test run or Orchestrator approval.
+
+| Owner | Required action | Finish condition |
+| --- | --- | --- |
+| Developer | Link the existing issue and PR, push the complete correction and tests, request review once, and give one next action. Continue the next authorised packet while checks/review run. | Every pushed packet has an owner and clear review/check status. |
+| MBA reviewer | Reconcile every issue covered by the reviewed head; reply to actionable PR comments, verify the relevant existing unit results, resolve addressed threads and close defects whose own acceptance is met. | No verified bounded defect remains open merely waiting for an unrelated merge, release, test campaign or review-service recovery. State the exact unreleased source scope when closing. |
+| PR author | Merge promptly when applicable final-head checks, review and approvals pass. Confirm automatic head deletion, and retire superseded PRs after preserving source and checking ownership. | Each PR is merged, explicitly blocked by a named gate, or held for a named later milestone. Active branches and managed worktrees remain protected. |
+| Orchestrator | At packet handoffs, check unresolved issues, oldest ready PRs and stale branches; route ready remediation and close gaps in ownership. Retain the daily sweep as a backstop. | Ledger and GitHub agree on assignment, source qualification, merge and usable delivery; no duplicate review or test execution. |
+
+Use `awaiting-merge` only when that issue explicitly requires merged publication. Use `release-acceptance` for actual release/install requirements. A bounded source fix can close on reviewed code and applicable passing units; this does not claim it is merged, released or playable. Required merge protections and final release checks remain unchanged. Do not delete unmerged work to reduce a branch count.
+
 **Hosted unit artifact ownership:** MBA alone downloads and verifies hosted unit artifacts for G3/G4 packets. Developers read check metadata and report source/run IDs; they do not duplicate downloads or rerun qualification. MBA reuses its sole copy. Only a genuinely pre-existing author copy or explicit Root ownership change requires a coordination exception. M01 result and correction review remains first.
 
 **M02/M03 upstream sync — Stephen, 24 October:** G3 and G4 fetch the latest published M01 workstream every 30 minutes, with 45 minutes the maximum active gap. At a clean checkpoint, each owner rebases their isolated branch onto origin/feature/canonical-mission-composition; after M01 merges, use origin/main. Incorporate new upstream commits, including documentation. Preserve unfinished edits in an owned checkpoint first; never discard edits, replace shared files or rewrite main/shared M01. If the upstream head is unchanged, record a no-op and continue without rebase/commit churn. Owners report sync time, upstream SHA and outcome with handoffs; Root records meaningful ledger changes and routes semantic conflicts. Retain unaffected review/unit evidence and rerun only affected cases. The quiet `keep-m02-and-m03-current-with-m01` follow-up checks due times every10minutes, dispatching an actual fetch/rebase only when the individual owner's last sync is at least30minutes old, targeting completion by40minutes within the45-minute maximum. This prevents independent rebase-clock resets from creating a60-minute gap. It stops when both streams are finished or explicitly stopped.
 
 **Current review priority — 24 October 2026:** Stephen directs MBA to handle actionable M01 release work before M02 or M03. Review M02/M03 only when no M01 correction or result disposition is ready. If M01 arrives, preserve lower-priority work and switch after the safe current tool operation. Developers continue independently; do not interrupt CI or repeat tests.
 
-Updated 23 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
+Updated 24 October 2026. This is the current workflow authority; older process instructions are historical. The [completion ledger](COMPLETION-LEDGER.md) alone defines work, priority, ownership and progress.
 
 ## Current scope: M01 and existing defect remediation
 

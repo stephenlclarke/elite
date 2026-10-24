@@ -12741,6 +12741,15 @@
       "test_speed_second_head": "3129537d5fc1a8d5aa7e708ba30651974a0c939b",
       "new_tests_run": false,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-enforce-per-packet-hygiene",
+      "timestamp": "2026-10-24T13:25:04.675109+00:00",
+      "bounded_issue_merge_wait_removed": true,
+      "reviewer_closes_when_own_acceptance_met": true,
+      "merge_and_release_gates_unchanged": true,
+      "new_tests_required": false,
+      "actual_closure_count": "pending GitHub confirmation"
     }
   ],
   "two_developer_phase": {
