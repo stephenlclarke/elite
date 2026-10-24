@@ -10289,6 +10289,20 @@
       "reviewer": "MBA",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T00:02:22.931782+00:00",
+      "checkpoint_key": "20261024-m01-projected-test-correction-reviewed",
+      "event": "Two exact compile corrections committed and independently cleared in same M01 packet; original 19-method command retained",
+      "source_head": "e7749ef9b0686d8b2d7427b2fe5a2eee1fb0f2de",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "source_review": "clear",
+      "assertions_preserved": true,
+      "planned_methods": 19,
+      "unit_result": "pending",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
