@@ -10410,7 +10410,7 @@
       "event": "Existing full-quality log exposes 41 assertion-bearing methods; bounded same-packet issue triage/remediation assigned",
       "head": "ae97d337cb9cf25b58322a21946e9ece297dd60a",
       "run": 40043514103,
-      "run_status": "in_progress",
+      "run_status": "completed",
       "distinct_assertion_methods": 41,
       "assertion_records": 75,
       "initial_five_terminal_failure_count_incomplete": true,
@@ -10421,7 +10421,14 @@
       "terminal_aggregate_available": false,
       "earlier_524_and_19_scoped_passes_retained": true,
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "run_conclusion": "failure",
+      "quality_started_at": "2026-10-24T00:10:37Z",
+      "quality_completed_at": "2026-10-24T01:32:17Z",
+      "quality_wall_seconds": 4900,
+      "composite_exit_code": 2,
+      "diagnostic_artifact_upload": "success",
+      "terminal_artifact_review": "pending"
     }
   ],
   "two_developer_phase": {
