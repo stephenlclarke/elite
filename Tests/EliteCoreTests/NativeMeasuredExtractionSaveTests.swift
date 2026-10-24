@@ -285,6 +285,28 @@ private func measuredPositiveFailure(_ bytes: Data, pointer: ScriptSavePointer, 
     let firstBadIntake = leaf?.captures.firstIndex {
       (try? NativeMeasuredExtraction.intakeAuthority($0)) != $0.authority
     }
+    if let root = try? JSONSerialization.jsonObject(with: bytes) as? [String: Any] {
+      if let source = decoded.savedMeasuredExtractionSource,
+        let raw = root["savedMeasuredExtractionSource"],
+        let canonical = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(source))
+      {
+        facts += " sourceCanonicalDifference=\(measuredRawDifference(raw, canonical) ?? "none")"
+      }
+      if let leaf,
+        let instances = root["instances"] as? [Any],
+        let raw = instances.compactMap({ $0 as? [String: Any] })
+          .compactMap({ $0["savedMeasuredExtraction"] }).first,
+        let canonical = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(leaf))
+      {
+        facts += " stateCanonicalDifference=\(measuredRawDifference(raw, canonical) ?? "none")"
+        if let rawState = raw as? [String: Any],
+          let extraction = rawState["extraction"] as? [String: Any]
+        {
+          facts +=
+            " bodyCount=\((extraction["body"] as? [Any])?.count ?? -1) emittedCount=\((extraction["emitted"] as? [Any])?.count ?? -1) equipmentCount=\((extraction["equipment"] as? [Any])?.count ?? -1)"
+        }
+      }
+    }
     var candidate = original
     candidate.scriptState = decoded
     facts +=
@@ -350,4 +372,34 @@ extension NativeMeasuredExtractionSaveTests {
           changed, source: source, state: state, commander: collected.commander))
     }
   }
+}
+
+// Report only the first raw canonical mismatch. This does not change validation or saved bytes.
+private func measuredRawDifference(_ raw: Any, _ canonical: Any, path: String = "$", depth: Int = 0)
+  -> String?
+{
+  guard depth < 32 else { return path + ":depth" }
+  if let left = raw as? [String: Any], let right = canonical as? [String: Any] {
+    for key in Set(left.keys).union(right.keys).sorted() {
+      guard let a = left[key], let b = right[key] else { return path + "." + key + ":key" }
+      if let difference = measuredRawDifference(a, b, path: path + "." + key, depth: depth + 1) {
+        return difference
+      }
+    }
+    return nil
+  }
+  if let left = raw as? [Any], let right = canonical as? [Any] {
+    guard left.count == right.count else { return path + ":count" }
+    for index in left.indices {
+      if let difference = measuredRawDifference(
+        left[index], right[index], path: path + "[\(index)]", depth: depth + 1)
+      {
+        return difference
+      }
+    }
+    return nil
+  }
+  if NSDictionary(dictionary: ["value": raw]).isEqual(["value": canonical]) { return nil }
+  return path + ":" + String(String(describing: raw).prefix(80))
+    + "/" + String(String(describing: canonical).prefix(80))
 }

@@ -50,6 +50,7 @@ private func nativeMiningScene(mining: Bool = true) throws -> (Game, ActorIdenti
   let body = try #require(game.bodies.first { $0.physical?.rock == rock.identity })
   let actor = try #require(body.physical?.identity)
   game.bodies = [body]
+  game.ensurePhysicalActors()
   #expect(game.gameplayMesh(for: body).vertices.count > 0)
   #expect(body.energy == game.commander.miningLedger.remainingEnergy(for: rock))
   return (game, actor)
@@ -403,8 +404,12 @@ extension NativeViewTests {
         try await fixture.press(48, "\t")
       }
       let snapshot = await fixture.delegate.runtime.snapshot()
-      #expect(snapshot.workGuidance == nil && snapshot.autoPilot.targetID == nil)
-      #expect(snapshot.message == "FIT A MINING TARGETING MODULE")
+      #expect(snapshot.workGuidance == nil && snapshot.workBraking == nil)
+      #expect(snapshot.autoTargetBody?.physical?.rock != nil)
+      #expect(snapshot.message == "AUTO TARGETING ENGAGED")
+      #expect(snapshot.lastAppliedWorkMotion == nil && snapshot.laserFlash == 0)
+      #expect(snapshot.flightWorldVelocity == beforeSelection.flightWorldVelocity)
+      #expect(snapshot.commander.miningLedger == game.commander.miningLedger)
       #expect(snapshot.commander.cargo == game.commander.cargo)
       #expect(snapshot.commander.salvageLedger == game.commander.salvageLedger)
       #expect(snapshot.commander.equipmentInventory == game.commander.equipmentInventory)
@@ -458,7 +463,9 @@ extension NativeViewTests {
     let delta = 0.005
     let budget = before.commander.performance.acceleration * 18 * delta
     try #require(before.manualResidualFlight && initial.length > budget)
-    #expect(before.message == "MANUAL CONTROL")
+    let releaseMessage =
+      "MANUAL CONTROL - " + FlightControlAuthority.ActionID.releaseHold.binding.label.uppercased()
+    #expect(before.message == releaseMessage)
     fixture.view.keyDown(with: try fixture.event(51, "", down: true))
     #expect(fixture.view.held.contains("backspace") && fixture.view.controls.throttle == -1)
     try await fixture.frame(delta)
@@ -471,7 +478,7 @@ extension NativeViewTests {
     try await fixture.frame(delta)
     let cruise = await fixture.delegate.runtime.snapshot()
     #expect((cruise.flightWorldVelocity - braked.flightWorldVelocity).length < 1e-8)
-    #expect(cruise.message == "MANUAL CONTROL")
+    #expect(cruise.message == releaseMessage)
     #expect(cruise.commander.salvageLedger.boundActor(for: lot) == actor)
     #expect(cruise.commander.cargo == before.commander.cargo)
     #expect(cruise.commander.equipmentInventory == before.commander.equipmentInventory)

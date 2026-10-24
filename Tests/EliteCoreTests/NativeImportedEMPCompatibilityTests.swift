@@ -125,29 +125,45 @@ struct NativeImportedEMPCompatibilityTests {
     let bytes = try Data(contentsOf: file)
     try await runtime.load(from: file, persistMigrations: false)
     let loaded = await runtime.snapshot()
-    if loaded.commander != saved.commander || loaded.bodies != saved.bodies {
-      func stationRows(_ value: Game) -> String {
-        value.bodies.filter { $0.nativeStationIdentity != nil }.prefix(3).map { body in
-          let binding = value.commander.nativeStations?.ledger.records.first {
-            $0.identity == body.nativeStationIdentity
-          }?.binding
-          return
-            "id=\(body.id),actor=\(body.physical?.identity.entity ?? 0),spawn=\(body.physical?.spawnIdentity?.sequence ?? 0),ledgerBody=\(binding?.bodyID ?? -1),ledgerActor=\(binding?.actor.entity ?? 0)"
-        }.joined(separator: ";")
-      }
-      let nonRRSBefore = saved.bodies.filter { $0.nativeStationIdentity == nil }
-      let nonRRSAfter = loaded.bodies.filter { $0.nativeStationIdentity == nil }
-      let ids = Set(saved.bodies.map(\.id)).union(loaded.bodies.map(\.id)).sorted().filter { id in
-        saved.bodies.first { $0.id == id } != loaded.bodies.first { $0.id == id }
-      }.prefix(3)
-      let beforeRRS = saved.bodies.filter { $0.nativeStationIdentity != nil }.count
-      let afterRRS = loaded.bodies.filter { $0.nativeStationIdentity != nil }.count
-      FileHandle.standardError.write(
-        Data(
-          "EMP reload RRS=\(beforeRRS)/\(afterRRS) actor=\(saved.commander.flightSimulation.nextActor)/\(loaded.commander.flightSimulation.nextActor) spawn=\(saved.commander.flightSimulation.nextSpawn)/\(loaded.commander.flightSimulation.nextSpawn) bodyCursor=\(saved.nextBodyID)/\(loaded.nextBodyID) sameEMP=\(saved.commander.savedEMPState == loaded.commander.savedEMPState) sameSalvageSections=\(saved.commander.alienStorageState?.current.salvage.sections == loaded.commander.alienStorageState?.current.salvage.sections) sameNPC=\(saved.commander.npcPersistence == loaded.commander.npcPersistence) sameWanted=\(saved.commander.wantedCareers == loaded.commander.wantedCareers) sameMarkets=\(saved.commander.originalMarkets == loaded.commander.originalMarkets) sameEquipment=\(saved.commander.equipmentInventory == loaded.commander.equipmentInventory) sameNonRRS=\(nonRRSBefore == nonRRSAfter) differingIDs=\(Array(ids)) before[\(stationRows(saved))] after[\(stationRows(loaded))]\n"
-            .utf8))
+    // Cold restoration gives the retained source station fresh live addresses. Derive
+    // exactly those addresses from the saved cursors; all other fields remain equal.
+    let stationIndex = try #require(saved.bodies.firstIndex { $0.nativeStationIdentity != nil })
+    try #require(saved.bodies.filter { $0.nativeStationIdentity != nil }.count == 1)
+    let station = try #require(saved.bodies[stationIndex].nativeStationIdentity)
+    let flight = saved.commander.flightSimulation
+    let actor = ActorIdentity(
+      system: saved.systemIdentity, visit: flight.visit, entity: flight.nextActor)
+    let spawn = SpawnIdentity(
+      system: saved.systemIdentity, visit: flight.visit, sequence: flight.nextSpawn,
+      member: 0, producer: .mission)
+    func object<T: Encodable>(_ value: T) throws -> [String: Any] {
+      try #require(
+        JSONSerialization.jsonObject(with: JSONEncoder().encode(value)) as? [String: Any])
     }
-    #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
+    var expectedCommander = saved.commander
+    var expectedBodies = saved.bodies
+    var expectedFlight = try object(flight)
+    expectedFlight["nextActor"] = flight.nextActor + 1
+    expectedFlight["nextSpawn"] = flight.nextSpawn + 1
+    expectedCommander.flightSimulation = try JSONDecoder().decode(
+      FlightSimulationState.self, from: JSONSerialization.data(withJSONObject: expectedFlight))
+    var expectedPhysical = try object(#require(expectedBodies[stationIndex].physical))
+    expectedPhysical["identity"] = try object(actor)
+    expectedPhysical["spawnIdentity"] = try object(spawn)
+    expectedBodies[stationIndex].id = saved.nextBodyID
+    expectedBodies[stationIndex].physical = try JSONDecoder().decode(
+      PhysicalActorState.self, from: JSONSerialization.data(withJSONObject: expectedPhysical))
+    let world = try #require(saved.commander.nativeStations)
+    let recordIndex = try #require(world.ledger.records.firstIndex { $0.identity == station })
+    var expectedLedger = try object(world.ledger)
+    var records = try #require(expectedLedger["records"] as? [[String: Any]])
+    records[recordIndex]["binding"] = try object(
+      NativeStationBinding(actor: actor, bodyID: saved.nextBodyID))
+    expectedLedger["records"] = records
+    expectedCommander.nativeStations?.ledger = try JSONDecoder().decode(
+      NativeStationLedger.self, from: JSONSerialization.data(withJSONObject: expectedLedger))
+    #expect(loaded.commander == expectedCommander && loaded.bodies == expectedBodies)
+    #expect(loaded.nextBodyID == saved.nextBodyID + 1)
     #expect(nativeEMPHulls(loaded, source: source).count == 1)
     let observedFileBytes = try Data(contentsOf: file)
     #expect(observedFileBytes == bytes)

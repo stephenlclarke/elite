@@ -221,6 +221,10 @@ extension NativeViewTests {
     try #require(loadedTarget.physical?.npc?.resources?.electrical?.remaining == 1)
     try #require(loadedTarget.physical?.npc?.resources?.electrical?.disabledAt == nil)
     view.pending.removeAll()
+    let stationWeapons = Dictionary(
+      uniqueKeysWithValues: view.game.bodies.compactMap { body in
+        body.nativeStationIdentity.map { ($0, (body.missiles, body.ecmEnabled)) }
+      })
     func event(_ code: UInt16, _ text: String, down: Bool) throws -> NSEvent {
       try #require(
         NSEvent.keyEvent(
@@ -254,9 +258,15 @@ extension NativeViewTests {
       try #require(view.game.scriptSimulationSave.randomState == 0)
       try #require(view.game.ecmFrames == 0 && view.game.screen != .gameOver && !view.game.docked)
       try #require(
-        view.game.bodies.allSatisfy {
-          $0.missiles == 0 && !$0.ecmEnabled && !$0.enemyMissile && $0.playerMissileTarget == nil
-            && $0.physical?.ordnance == nil && $0.blackjackRole == nil
+        view.game.bodies.allSatisfy { body in
+          let weaponsUnchanged: Bool
+          if let station = body.nativeStationIdentity, let expected = stationWeapons[station] {
+            weaponsUnchanged = body.missiles == expected.0 && body.ecmEnabled == expected.1
+          } else {
+            weaponsUnchanged = body.missiles == 0 && !body.ecmEnabled
+          }
+          return weaponsUnchanged && !body.enemyMissile && body.playerMissileTarget == nil
+            && body.physical?.ordnance == nil && body.blackjackRole == nil
         })
       await delegate.processFrame(in: view, delta: { 0.1 })
       heldFrames += 1

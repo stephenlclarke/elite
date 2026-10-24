@@ -228,6 +228,26 @@ extension NativeMeasuredExtractionAcquisitionTests {
         $0.cancelAutoTarget()
         $0.weaponsTargetID = nil
       }
+      // Release preserves the moving hold's momentum. Brake through real controls
+      // before placing this manual firing scene; no target or hold is reacquired.
+      var braking = Controls()
+      braking.throttle = -1
+      await runtime.setControls(braking)
+      for _ in 0..<200 {
+        if await runtime.snapshot().flightWorldVelocity.length < 1e-8 { break }
+        _ = await runtime.advance(delta: 0.05)
+      }
+      await runtime.setControls(Controls())
+      try #require(await runtime.snapshot().flightWorldVelocity.length < 1e-8)
+      await runtime.nativeCommand { game in
+        guard let rock = game.measuredExtractionRock else { return }
+        var pose = game.commander.flightSimulation.pose
+        pose.position = rock.position - pose.orientation.apply(.init(0, 0, 1000))
+        NativeStationTestFixture.reframe(&game, to: pose)
+      }
+      let manual = await runtime.snapshot()
+      try #require(manual.workGuidance == nil && manual.autoPilot.targetID == nil)
+      try #require(manual.weaponsTargetID == nil)
     } else {
       for _ in 0..<4 {
         if await runtime.snapshot().selectedFlightTool == .combatLaser { break }

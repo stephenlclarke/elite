@@ -49,6 +49,10 @@ struct GameplayOrdnanceRuntimeTests {
 
   @Test func actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam() throws {
     var game = missileRuntimeGame(distance: 1000)
+    // This victim fires its front-mounted beam back toward the incoming missile.
+    let victimIndex = try #require(game.bodies.firstIndex { $0.id == 70 })
+    game.bodies[victimIndex].orientation.x = .init(-1, 0, 0)
+    game.bodies[victimIndex].orientation.z = .init(0, 0, -1)
     let launched = game.fireMissile()
     #expect(launched)
     let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })

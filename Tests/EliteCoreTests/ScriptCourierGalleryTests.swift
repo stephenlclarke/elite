@@ -554,7 +554,12 @@ extension NativeViewTests {
     await harness.drain()
     let held = await harness.delegate.runtime.snapshot()
     #expect(held.commander.scriptState.instances.values.first?.courier?.terminal == nil)
-    #expect(held.commander.scriptState.instances.count == 1)
+    #expect(
+      held.commander.scriptState.instances.count == 1,
+      Comment(
+        rawValue:
+          "Courier trial acceptance: message=\(held.message); quoteAllowed=\(String(describing: confirm.contractBoard.quote?.allowed)); quoteIssues=\(Array(confirm.contractBoard.quote?.issues.prefix(4) ?? []).map { String($0.prefix(200)) }); fuel=\(confirm.commander.fuel); system=\(confirm.commander.system); painted=\(harness.view.paintedMissionMenuPresentation == confirm.scriptPagePresentation)"
+      ))
     harness.delegate.queueCommanderFile(.saveActive)
     await harness.drain()
     _ = try await harness.delegate.runtime.loadForInterface()
@@ -619,6 +624,8 @@ extension NativeViewTests {
     try await harness.review(row: 1)
     try await harness.paint()
     try harness.press("right")
+    await harness.drain()
+    try await harness.paint()
     try harness.press("return")
     await harness.drain()
     let accepted = await harness.delegate.runtime.snapshot()

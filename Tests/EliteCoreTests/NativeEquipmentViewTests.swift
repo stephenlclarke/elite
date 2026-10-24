@@ -599,7 +599,10 @@ extension NativeEquipmentFixture {
     let rows = view.game.inventoryInformationRows(width: view.bounds.width)
     let first = try #require(
       rows.firstIndex { row in
-        guard row.preview?.command != nil else { return false }
+        guard let command = row.preview?.command else { return false }
+        if !recovered {
+          guard case .fit = command.action else { return false }
+        }
         if recovered {
           if case .recovered = row.subject { return true }
           return false

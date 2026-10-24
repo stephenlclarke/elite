@@ -325,7 +325,12 @@ extension StationSecurityTests {
     try #require(response.encounters.batches.flatMap(\.requests).count == 2)
     let receipts = game.admitEncounterPlan(response.encounters)
     let officers = Set(receipts.compactMap(\.actor))
-    try #require(officers.count == 2 && receipts.allSatisfy { $0.refusal == nil })
+    try #require(
+      officers.count == 2 && receipts.allSatisfy { $0.refusal == nil },
+      Comment(
+        rawValue:
+          "Native police admission: \(receipts.prefix(2).map { String(describing: $0.refusal) }); source=\(source); player=\(observed.player.position); station=\(station.position)"
+      ))
     game.commander.stationSecurity.acknowledge(receipts: receipts)
     let current = try #require(game.gameplayContext())
     let pursuit = game.commander.stationSecurity.advance(context: current)

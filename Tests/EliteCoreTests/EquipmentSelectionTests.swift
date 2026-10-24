@@ -29,13 +29,16 @@ struct EquipmentSelectionTests {
     game.commander.fuel = game.commander.fuelCapacity
     game.screen = .equipment
     game.commander.credits = 100_000
-    game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
+    let mining = try #require(Equipment.all.first { $0.name == LaserKind.mining.equipmentName })
+    game.commander.system = try #require(
+      game.systems.first { $0.technology >= mining.requiredTechnologyLevel }?.id)
+    game.selectedSystem = game.commander.system
+    game.market = MarketItem.at(game.currentSystem)
     try game.commander.prepareEquipment(legacy: false)
     let front = try #require(game.commander.fittedEquipment(at: .laser(.front)))
     for _ in 0..<4 { game.key("right") }
     #expect(game.equipmentWorkTool && game.equipmentMount == .rear)
-    game.selection = try #require(
-      Equipment.all.firstIndex { $0.name == LaserKind.mining.equipmentName })
+    game.selection = try #require(Equipment.all.firstIndex { $0.name == mining.name })
     game.key("return")
     #expect(game.commander.hasMiningWorkTool)
     #expect(game.commander.fittedEquipment(at: .laser(.front)) == front)
