@@ -12998,6 +12998,34 @@
       "superseded_cancellation_requested": true,
       "followup_review": "pending G4",
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-pr223-final-source-clear",
+      "timestamp": "2026-10-24T14:38:14.195986+00:00",
+      "pr": 223,
+      "head": "04aa01c86e5168a5160f4cd87f07a3af72f47df9",
+      "reviewer": "G4",
+      "source_result": "CLEAR composed scopes",
+      "review_receipt": "/tmp/elite-g4-pr223-04aa-source-review.json",
+      "unit_run": 40103063706,
+      "unit_qualification": "pending",
+      "reviewer_execution": false,
+      "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-m03-technology-pr224-pushed",
+      "timestamp": "2026-10-24T14:38:43.462050+00:00",
+      "owner": "G3",
+      "pr": 224,
+      "head": "f16737cb41f61ea84328a48bc4d5fe9a373811b9",
+      "parent": "04aa01c86e5168a5160f4cd87f07a3af72f47df9",
+      "production_technology_arguments": 11,
+      "new_methods": 3,
+      "selected_methods": 540,
+      "unit_run": 40103335910,
+      "source_reviewer": "G4",
+      "unit_qualification": "pending",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
