@@ -226,8 +226,8 @@ struct NativeMeasuredExtractionFixture {
     // native ready state with the trigger released, then extraction presses it.
     await runtime.setControls(Controls())
     for _ in 0..<400 {
-      _ = await runtime.advance(delta: 0.05)
-      if await runtime.snapshot().workGuidance?.holding == true { break }
+      let frame = await runtime.advance(delta: 0.05)
+      if frame.workGuidance?.holding == true { break }
     }
     let ready = await runtime.snapshot()
     let selected = try #require(ready.informationTargetBody)
@@ -247,8 +247,8 @@ struct NativeMeasuredExtractionFixture {
     controls.fire = true
     await runtime.setControls(controls)
     for _ in 0..<1000 {
-      _ = await runtime.advance(delta: 0.05)
-      if await runtime.snapshot().commander.miningLedger.isDepleted(NativeMeasuredExtraction.root) {
+      let frame = await runtime.advance(delta: 0.05)
+      if frame.commander.miningLedger.isDepleted(NativeMeasuredExtraction.root) {
         break
       }
     }
