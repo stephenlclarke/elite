@@ -12061,6 +12061,21 @@
         "M02/M03 ready packets only with no actionable M01 review"
       ],
       "developers_continue_independently": true
+    },
+    {
+      "at": "2026-10-24T09:35:04.755740+00:00",
+      "checkpoint_key": "20261024-m02-m03-worktrees-confirmed-and-m03-gap-approved",
+      "base": "62b3374bbc5198e8a0124caac32abb98ee64bc63",
+      "branches": [
+        "feature/m02-cockpit-station-completion",
+        "feature/m03-original-universe-completion"
+      ],
+      "m03_first_gap": "Predecessor contact-name presentation in mission/template/resource joins",
+      "m03_approved_scope": "Pure approved-name resolver and exact presentation hunks only",
+      "m02_state": "isolated branch created; concrete gap selection in progress",
+      "review_priority": "M01 before M02/M03",
+      "resource_limit": "Coordinate push-triggered main-host VM jobs during M01 quality",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
