@@ -782,7 +782,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     menu.addItem(app)
     app.submenu = NSMenu()
     app.submenu?.addItem(
-      withTitle: "Quit Elite", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+      withTitle: "Quit \(NewCommanderDefaults.title)",
+      action: #selector(NSApplication.terminate(_:)),
+      keyEquivalent: "q")
     let commander = NSMenuItem()
     commander.title = "Commander"
     menu.addItem(commander)
