@@ -1,0 +1,248 @@
+{
+  "source": "9146909960b97dca6fa03135125d256bb08aec6c",
+  "selection": {
+    "head": "9146909960b97dca6fa03135125d256bb08aec6c",
+    "baseline": "51fbcee474854c190fb748e101f3b8c27d84718a",
+    "actual_failure_methods": [
+      "actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce()",
+      "interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID()",
+      "actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation()",
+      "staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack()",
+      "workToolCannotFireThroughShipsStationsOrCelestials()",
+      "reviewedCatalogueRolesCargoFamiliesAndDeclaredCoverageAreConsistent()",
+      "actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception()",
+      "nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling()"
+    ],
+    "explicit_method_names": [
+      "actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce",
+      "interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID",
+      "actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation",
+      "staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack",
+      "workToolCannotFireThroughShipsStationsOrCelestials",
+      "reviewedCatalogueRolesCargoFamiliesAndDeclaredCoverageAreConsistent",
+      "actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception",
+      "nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling",
+      "evacuationGenuine47And48IndependentlyComposeG02G04G05G08",
+      "actualNativeMissileInterceptionStillFinishesItsOwnCurrentThreat",
+      "originalReopenClockPauseDeclineAndPageFactsStayStable",
+      "acceptanceAdvancesOnceAndNativeAbandonmentAdvancesAgain",
+      "failedWriterPreservesGenerationThenRetryAndCurrentReloadRetainTerms",
+      "outlookProductionConsentNamesWholeItineraryAndRequiresSeparatePaidCabins",
+      "outlookSourceAndBoardWriterRefusalPreserveOriginalPeopleAndBothCabins",
+      "outlookNativeRepliesWithdrawWhenActualCabinFitChanges"
+    ],
+    "directly_affected_unit_suites": [
+      "MiningWorkToolTests"
+    ],
+    "filter": "(?:^|[./])(?:actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce|interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID|actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation|staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack|workToolCannotFireThroughShipsStationsOrCelestials|reviewedCatalogueRolesCargoFamiliesAndDeclaredCoverageAreConsistent|actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception|nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling|evacuationGenuine47And48IndependentlyComposeG02G04G05G08|actualNativeMissileInterceptionStillFinishesItsOwnCurrentThreat|originalReopenClockPauseDeclineAndPageFactsStayStable|acceptanceAdvancesOnceAndNativeAbandonmentAdvancesAgain|failedWriterPreservesGenerationThenRetryAndCurrentReloadRetainTerms|outlookProductionConsentNamesWholeItineraryAndRequiresSeparatePaidCabins|outlookSourceAndBoardWriterRefusalPreserveOriginalPeopleAndBothCabins|outlookNativeRepliesWithdrawWhenActualCabinFitChanges)\\(|MiningWorkToolTests/",
+    "expected_unique_methods": 26,
+    "command": [
+      "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "test",
+      "--jobs",
+      "3",
+      "--enable-code-coverage",
+      "--xunit-output",
+      "/tmp/elite-m01-page-lifetimes-r1.xml",
+      "--filter",
+      "(?:^|[./])(?:actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce|interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID|actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation|staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack|workToolCannotFireThroughShipsStationsOrCelestials|reviewedCatalogueRolesCargoFamiliesAndDeclaredCoverageAreConsistent|actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception|nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling|evacuationGenuine47And48IndependentlyComposeG02G04G05G08|actualNativeMissileInterceptionStillFinishesItsOwnCurrentThreat|originalReopenClockPauseDeclineAndPageFactsStayStable|acceptanceAdvancesOnceAndNativeAbandonmentAdvancesAgain|failedWriterPreservesGenerationThenRetryAndCurrentReloadRetainTerms|outlookProductionConsentNamesWholeItineraryAndRequiresSeparatePaidCabins|outlookSourceAndBoardWriterRefusalPreserveOriginalPeopleAndBothCabins|outlookNativeRepliesWithdrawWhenActualCabinFitChanges)\\(|MiningWorkToolTests/"
+    ],
+    "prior_compile_attempt": "fe6755a7241e5583d0a6f6d5fdf4f89e08437862"
+  },
+  "result": {
+    "head": "9146909960b97dca6fa03135125d256bb08aec6c",
+    "command": [
+      "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "test",
+      "--jobs",
+      "3",
+      "--enable-code-coverage",
+      "--xunit-output",
+      "/tmp/elite-m01-page-lifetimes-r1.xml",
+      "--filter",
+      "(?:^|[./])(?:actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce|interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID|actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation|staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack|workToolCannotFireThroughShipsStationsOrCelestials|reviewedCatalogueRolesCargoFamiliesAndDeclaredCoverageAreConsistent|actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception|nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling|evacuationGenuine47And48IndependentlyComposeG02G04G05G08|actualNativeMissileInterceptionStillFinishesItsOwnCurrentThreat|originalReopenClockPauseDeclineAndPageFactsStayStable|acceptanceAdvancesOnceAndNativeAbandonmentAdvancesAgain|failedWriterPreservesGenerationThenRetryAndCurrentReloadRetainTerms|outlookProductionConsentNamesWholeItineraryAndRequiresSeparatePaidCabins|outlookSourceAndBoardWriterRefusalPreserveOriginalPeopleAndBothCabins|outlookNativeRepliesWithdrawWhenActualCabinFitChanges)\\(|MiningWorkToolTests/"
+    ],
+    "swift": "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)\nTarget: arm64-apple-macosx15.0\n",
+    "sdk": "15.5",
+    "exit_code": 1,
+    "wall_seconds": 781.6847272079999
+  },
+  "artifacts": {
+    "/tmp/elite-m01-page-lifetimes-r1.log": {
+      "bytes": 43220,
+      "sha256": "8c92c9359e6d7063bf3f88fd770bf9ff3416bb42625836c07c6a166dd483cc04"
+    },
+    "/tmp/elite-m01-page-lifetimes-r1-start.json": {
+      "bytes": 1551,
+      "sha256": "b702afa80bc636064394046492d1ad48e469166cc2509e19e339d0e0c3ae927f"
+    },
+    "/tmp/elite-m01-page-lifetimes-r1-result.json": {
+      "bytes": 1606,
+      "sha256": "7319fe8e8b95eb96fea5377bad8ff40bf9bda31509677dc51bc166d21188b92c"
+    }
+  },
+  "build_seconds": 128.54,
+  "test_seconds": 651.955,
+  "unique_methods": 26,
+  "passed_methods": 24,
+  "failed_methods": 2,
+  "assertion_records": 2,
+  "xml_present": false,
+  "fault_markers": false,
+  "passed": [
+    {
+      "method": "originalReopenClockPauseDeclineAndPageFactsStayStable()",
+      "seconds": 11.385,
+      "status": "passed"
+    },
+    {
+      "method": "storingMiningToolRemovesCapabilityWithoutChangingAnyCombatFacing()",
+      "seconds": 11.385,
+      "status": "passed"
+    },
+    {
+      "method": "installedWorkToolRequiresDeclaredHullSupportAndMiningType()",
+      "seconds": 11.385,
+      "status": "passed"
+    },
+    {
+      "method": "depletedLedgerCannotBeBypassedByAStalePositiveEnergyRockBody()",
+      "seconds": 11.385,
+      "status": "passed"
+    },
+    {
+      "method": "actualMiningFrontFitRemainsUsableWithoutTheSeparateUtility()",
+      "seconds": 12.288,
+      "status": "passed"
+    },
+    {
+      "method": "explicitWorkToolCoexistsWithFourNavalFacingsAndAnIndependentCutter()",
+      "seconds": 12.288,
+      "status": "passed"
+    },
+    {
+      "method": "realRockWithoutItsModuleRetainsManualTrackingAndSelectedWeaponWithoutHold()",
+      "seconds": 12.586,
+      "status": "passed"
+    },
+    {
+      "method": "selectedMissingCutterDoesNotFallThroughToACombatLaser()",
+      "seconds": 12.586,
+      "status": "passed"
+    },
+    {
+      "method": "actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation()",
+      "seconds": 12.586,
+      "status": "passed"
+    },
+    {
+      "method": "workToolCannotFireThroughShipsStationsOrCelestials()",
+      "seconds": 12.587,
+      "status": "passed"
+    },
+    {
+      "method": "staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack()",
+      "seconds": 13.458,
+      "status": "passed"
+    },
+    {
+      "method": "nonfiniteResourcesRefuseBeforeRockLedgerEmissionOrResourceMutation()",
+      "seconds": 13.458,
+      "status": "passed"
+    },
+    {
+      "method": "flightToolSelectionDoesNotFireAndReturnUsesMiningInsteadOfTheNavalLaser()",
+      "seconds": 13.459,
+      "status": "passed"
+    },
+    {
+      "method": "failedWriterPreservesGenerationThenRetryAndCurrentReloadRetainTerms()",
+      "seconds": 13.459,
+      "status": "passed"
+    },
+    {
+      "method": "acceptanceAdvancesOnceAndNativeAbandonmentAdvancesAgain()",
+      "seconds": 13.459,
+      "status": "passed"
+    },
+    {
+      "method": "shieldedIncomingDamageStopsManualMiningUntilTheTriggerIsReleased()",
+      "seconds": 13.459,
+      "status": "passed"
+    },
+    {
+      "method": "actualNativeMissileInterceptionStillFinishesItsOwnCurrentThreat()",
+      "seconds": 2.719,
+      "status": "passed"
+    },
+    {
+      "method": "reviewedCatalogueRolesCargoFamiliesAndDeclaredCoverageAreConsistent()",
+      "seconds": 2.719,
+      "status": "passed"
+    },
+    {
+      "method": "outlookNativeRepliesWithdrawWhenActualCabinFitChanges()",
+      "seconds": 2.634,
+      "status": "passed"
+    },
+    {
+      "method": "outlookSourceAndBoardWriterRefusalPreserveOriginalPeopleAndBothCabins()",
+      "seconds": 3.739,
+      "status": "passed"
+    },
+    {
+      "method": "outlookProductionConsentNamesWholeItineraryAndRequiresSeparatePaidCabins()",
+      "seconds": 3.758,
+      "status": "passed"
+    },
+    {
+      "method": "nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling()",
+      "seconds": 4.143,
+      "status": "passed"
+    },
+    {
+      "method": "evacuationGenuine47And48IndependentlyComposeG02G04G05G08(alien:composed:)",
+      "seconds": 87.171,
+      "status": "passed"
+    },
+    {
+      "method": "actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception()",
+      "seconds": 651.953,
+      "status": "passed"
+    }
+  ],
+  "failed": [
+    "interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID",
+    "actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce"
+  ],
+  "assertions": [
+    "\u2718 Test interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID() recorded an issue at NativeMissionThreatIsolationTests.swift:68:9: Expectation failed: (contact?.hit.target \u2192 .body(10)) == (.body(admission.bodyID) \u2192 .body(14))",
+    "\u2718 Test actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce() recorded an issue at NativeMeasuredExtractionJourneyTests.swift:312:11: Expectation failed: (captures \u2192 10) >= (count \u2192 12)"
+  ],
+  "verification": {
+    "exact_selection_verified": true,
+    "reviewed_committed_source_hashes_verified": true,
+    "scope": "24 individual passes in a failed 26-method aggregate; not full quality, issue185 closure, coverage, sanitizers, leaks or release qualification."
+  },
+  "prior_compile_attempt": {
+    "source": "fe6755a7241e5583d0a6f6d5fdf4f89e08437862",
+    "exit": 1,
+    "seconds": 271.596645833,
+    "tests_executed": 0,
+    "cause": "NPCResourceTests nested Game modify overlapped RHS performance read; corrected in9146909 and reviewed.",
+    "artifacts": {
+      "/tmp/elite-m01-page-lifetimes.log": {
+        "bytes": 157597,
+        "sha256": "9c016572b674b97d6294a570703397f534aac1e1cdb35a8b5e6b62b47ecfc9f9"
+      },
+      "/tmp/elite-m01-page-lifetimes-start.json": {
+        "bytes": 1548,
+        "sha256": "347dd6051cef461d8a2022d1fc59a1b93c0d31d6315f34c077015a286a8b1bb9"
+      },
+      "/tmp/elite-m01-page-lifetimes-result.json": {
+        "bytes": 1599,
+        "sha256": "f648670293a03703c27d337e3d851779506c23e0a386ef363cdde88e5527f12b"
+      }
+    }
+  }
+}

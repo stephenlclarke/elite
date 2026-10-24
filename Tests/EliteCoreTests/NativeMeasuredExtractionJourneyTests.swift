@@ -309,9 +309,44 @@ struct NativeMeasuredExtractionFixture {
       let details = remaining.prefix(3).map { body in
         "id=\(body.id),position=\(body.position),velocity=\(String(describing: body.physical?.velocity)),spin=\(String(describing: body.physical?.angularVelocity))"
       }.joined(separator: "; ")
+      let originals = current.commander.scriptState.savedMeasuredExtractionSource?.originals ?? []
+      var custody: [String: Int] = [:]
+      for original in originals {
+        let key: String
+        switch original.custody {
+        case .unfilled: key = "unfilled"
+        case .raw: key = "raw"
+        case .processed: key = "processed"
+        case .returned: key = "returned"
+        case .lost: key = "lost"
+        }
+        custody[key, default: 0] += 1
+      }
+      let unfilled = originals.filter { $0.custody == .unfilled }
+      let pending = current.commander.miningLedger.pendingPayloads
+      let pendingUnfilled = unfilled.filter { original in
+        pending.contains { $0.identity == original.payload }
+      }.count
+      let boundUnfilled = unfilled.filter {
+        current.commander.miningLedger.boundActor(for: $0.payload) != nil
+      }.count
+      let presentUnfilled = unfilled.filter { original in
+        current.bodies.contains { $0.physical?.payload == original.payload }
+      }.count
+      let mission = current.measuredExtractionState
+      let outcome = mission.flatMap {
+        current.commander.scriptState.instances[$0.permission.mission]?.outcome
+      }
+      let losses = (mission?.losses ?? []).prefix(3).map { loss in
+        let bodies = loss.bodies.prefix(2).map { "\($0.id):\($0.energy)" }.joined(separator: ",")
+        return
+          "\(loss.kind.rawValue):originals=\(loss.originals.count),payloads=\(loss.payloads.count),bodies=\(bodies)"
+      }.joined(separator: "; ")
+      let custodyDetails = custody.keys.sorted().map { "\($0)=\(custody[$0]!)" }.joined(
+        separator: ",")
       try #require(
         captures >= count,
-        "Manual capture \(captures)/\(count); remaining=\(remaining.count); screen=\(current.screen); energy=\(current.energy); velocity=\(current.flightWorldVelocity); cargo=\(current.commander.cargoTonnes)/\(current.commander.standardCargoCapacity); guidance=\(String(describing: current.workGuidance?.mode)); pending=\(current.nativeMeasuredExtractionPending?.intakes.count ?? 0); message=\(String(current.message.prefix(128))); \(details)"
+        "Manual capture \(captures)/\(count); remaining=\(remaining.count); screen=\(current.screen); energy=\(current.energy); velocity=\(current.flightWorldVelocity); cargo=\(current.commander.cargoTonnes)/\(current.commander.standardCargoCapacity); guidance=\(String(describing: current.workGuidance?.mode)); pending=\(current.nativeMeasuredExtractionPending?.intakes.count ?? 0); message=\(String(current.message.prefix(128))); custody=\(custodyDetails); unfilled pending/bound/present=\(pendingUnfilled)/\(boundUnfilled)/\(presentUnfilled); outcome=\(String(describing: outcome)); losses=\(losses); \(details)"
       )
     }
   }

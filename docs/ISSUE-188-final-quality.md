@@ -15,3 +15,9 @@ The single approved normal affected-unit batch is pending. It includes all eight
 ## Links and remaining risks
 
 [Issue 188](https://github.com/stephenlclarke/elite/issues/188); [PR25](https://github.com/stephenlclarke/elite/pull/25). The manual capture cause remains pending actual evidence, and issue185 remains open pending qualification of the source lifetime correction. Final full quality, protected merge, main-only SonarQube and signed/notarized release publication remain required.
+
+## Actual normal affected-unit result
+
+Corrected source `9146909960b97dca6fa03135125d256bb08aec6c` built in128.54seconds and completed the exact approved26methods in651.955seconds (781.6847272079999seconds overall). The terminal Swift Testing summary records24 individual passes, two failing methods and two assertions, with exit1 and no fault markers. No XML was produced; the complete original log and result receipts are retained. The earlier `fe6755a7` attempt failed compilation before any tests executed. Independent source, selection and transferred-artifact verification is complete. [The durable receipt](evidence/M01-page-lifetime-followup-unit-results.json) keeps the failed aggregate and per-method results distinct.
+
+The actual stack-fault owning evacuation method passes all four argument rows. Automatic recovery, processing and separate reception pass; all13 mining-work-tool methods, current catalogue cargo, thermal emitter and named board/outlook semantics pass. Historical projectile creation now succeeds but its current-world interception ray hits body10 before admitted projectile14. Manual recovery captures10of12 with no remaining visible allocated bodies; the original custody/loss cause remains pending. Those two failures require the bounded follow-up; the other24 passes are retained. Full quality, protected publication and release remain pending.

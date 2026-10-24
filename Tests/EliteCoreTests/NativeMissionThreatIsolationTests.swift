@@ -19,6 +19,10 @@ struct NativeMissionThreatIsolationTests {
     var (historical, _, index) = try actualMissionBridgeGame()
     historical.ensurePhysicalActors()
     historical.celestials = []
+    // Establish clear flight before emission while preserving every station's world pose.
+    var pose = historical.commander.flightSimulation.pose
+    pose.position = pose.position + pose.orientation.x * 50_000
+    NativeStationTestFixture.reframe(&historical, to: pose)
     historical.bodies[index].position = .init(0, -25, 3000)
     historical.bodies[index].orientation.x = .init(-1, 0, 0)
     historical.bodies[index].orientation.y = .init(0, 1, 0)
@@ -37,8 +41,6 @@ struct NativeMissionThreatIsolationTests {
       bodyID: sourceID, weaponID: "plasma", componentID: component.identity)
     let emitted = try #require(historical.bodies.first { $0.scriptShot != nil })
     let shotID = try #require(emitted.scriptShot?.identity)
-    // Archive a genuinely emitted shot in clear flight, before introducing the current threat.
-    historical.bodies = historical.bodies.filter { $0.id == emitted.id }
     _ = try historical.stepMissionNativeProjectile(projectileID: shotID, delta: 1)
     historical.persistScriptActors()
     var retained = try #require(historical.commander.scriptState.projectiles[shotID])
