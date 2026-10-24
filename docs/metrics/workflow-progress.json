@@ -11834,7 +11834,10 @@
       "source_commit": "d326c68c144d0469537287a7d946e74f8ba83d8b",
       "wall_seconds": 8.18679791688919,
       "exit_code": 1,
-      "next_correction": "stage_actual_allocateSpawn_result_before_require_macro"
+      "next_correction": "stage_actual_allocateSpawn_result_before_require_macro",
+      "compile_correction_source_review": "clear",
+      "compile_correction_patch_sha256": "3bbb5dd81c4bb556a1a1bafc892b6423215d638e02fa2ab06590eae278e6808b",
+      "same_two_method_resumption": "authorized_not_yet_verified"
     }
   ],
   "two_developer_phase": {
