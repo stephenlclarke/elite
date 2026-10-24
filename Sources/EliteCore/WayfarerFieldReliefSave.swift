@@ -10,10 +10,18 @@ enum WayfarerFieldReliefSave {
     return schema == alienVersion
       ? NativeMeasuredExtractionSave.alienVersion : NativeMeasuredExtractionSave.version
   }
-  static func validateDeclaration(_ manifest: ScriptManifest) throws {
-    guard manifest.fieldRelief != nil || manifest.stateID == WayfarerFieldRelief.stateID else {
-      return
+  @inline(never)
+  static func validateDeclaration(_ manifest: borrowing ScriptManifest) throws {
+    // Read the optional's tag in place. Unrelated installed packs must not reserve
+    // the large declaration-validation frame merely to discover an absent field.
+    if case .none = manifest.fieldRelief {
+      guard manifest.stateID == WayfarerFieldRelief.stateID else { return }
     }
+    try validatePresentDeclaration(manifest)
+  }
+
+  @inline(never)
+  private static func validatePresentDeclaration(_ manifest: borrowing ScriptManifest) throws {
     guard manifest.stateID == WayfarerFieldRelief.stateID, manifest.version == "1.0.0",
       manifest.fieldRelief?.valid == true,
       manifest.capabilities.contains(WayfarerFieldRelief.capability),
