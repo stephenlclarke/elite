@@ -12709,6 +12709,20 @@
       "test_speed_review_and_execution": "pending",
       "measured_speedup": null,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-github-hygiene-pr105-and-stale-refs",
+      "timestamp": "2026-10-24T13:22:07.478635+00:00",
+      "open_prs_before": 11,
+      "open_prs_after": 10,
+      "remote_branches": 15,
+      "stale_local_remote_refs_pruned": 25,
+      "closed_obsolete_pr": 105,
+      "archive_tag": "archive/pr-105-retained-diagnostic-20261024",
+      "archived_sha": "6e426509e434aa2582e7173e50c4a8a50c4f3ebe",
+      "remote_branches_deleted": 0,
+      "worker_worktrees_deleted": 0,
+      "tests_restarted": 0
     }
   ],
   "two_developer_phase": {
