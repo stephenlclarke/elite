@@ -11421,6 +11421,26 @@
       "actual_review": "pending_updated_hunks",
       "unit_execution": "none",
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:57:18.040399+00:00",
+      "checkpoint_key": "20261024-m01-combined-review-registrar-findings-assigned",
+      "event": "Combined review provisioning retry and reused-install provenance findings assigned for surgical correction",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "priority": "P2",
+      "path": "Tools/CI/prepare_native_runner.py",
+      "findings": [
+        "prepare_then_register_or_failed_attempt_retry_always_fails_existing_authorization_directory",
+        "reused_runner_install_content_not_bound_to_verified_archive"
+      ],
+      "authorized_scope": "immutable_identical_policy_reuse_or_register_existing_and_actual_installation_provenance_with_fake_regressions",
+      "security_pin_relaxation_authorized": false,
+      "actual_registration_or_execution_authorized": false,
+      "unaffected_review_retained": true,
+      "usable_delivery": false,
+      "makefile_source_correction_review": "clear",
+      "make_graph_regression_followup": "wrong_expected_module_token_assigned_for_source_correction"
     }
   ],
   "two_developer_phase": {
