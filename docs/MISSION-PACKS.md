@@ -2,7 +2,7 @@
 
 This guide covers schema 1, engine contract 1.0.0: the three bundled playable campaigns and the external single-file [courier example](mission-packs/courier.toml). For schema 2 folder packs with Lua handlers, repeatable contracts, station choices and owned campaign children, use [Schema 2 Lua mission authoring](SCRIPT-MISSION-PACKS.md). The formats have separate loaders and installation directories. Existing researched packets remain evidence, not installed missions. See the [current engine and mission implementation status](MISSION-IMPLEMENTATION.md) for bundled content, optional examples and outstanding integrations.
 
-A pack is one UTF-8 `.toml` file, at most 256 KiB, containing one mission. Install through **Commander > Install Mission Pack...** or place the file in `~/.xyzzy/elite/mission-packs/` and restart. The engine validates content before enabling it. There is no executable scripting or file access in a pack.
+A pack is one UTF-8 `.toml` file, at most 256 KiB, containing one mission. Install through **Commander > Install Mission Pack...** or place the file in `~/.xyzzy/l337/mission-packs/` and restart. The engine validates content before enabling it. There is no executable scripting or file access in a pack.
 
 Validate with `swift run Elite --validate-mission-pack path/to/pack.toml` or `make mission-packs-check`. The complete minimal example is [courier.toml](mission-packs/courier.toml). Bundled campaigns live in `Sources/EliteCore/Resources/MissionPacks/`.
 
