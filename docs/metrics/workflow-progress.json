@@ -10550,6 +10550,27 @@
       "unit_result": "not_run",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T01:46:08.703136+00:00",
+      "checkpoint_key": "20261024-m01-review-findings-and185-bounded-protocol",
+      "event": "Two actual draft review findings corrected pending clearance; exact crash evidence gap and one-batch validation scope recorded",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "draft_findings": 2,
+      "draft_findings_correction": "reported_unqualified",
+      "residual_native_diagnoses": 3,
+      "crash_issue": 185,
+      "source_cause_proven": false,
+      "missing_crash_evidence": [
+        "actual fault address",
+        "mapped stack or guard bounds",
+        "caller frames beyond63"
+      ],
+      "next_validation": "one combined normal affected-unit batch after coherent review",
+      "conditional_capture": "only after current-binary actual SIGBUS and insufficient matching normal report; one same-binary default-flags first-fault capture",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
