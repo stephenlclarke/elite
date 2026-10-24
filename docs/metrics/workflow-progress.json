@@ -12401,6 +12401,23 @@
       "m01_complete": false,
       "usable_build_delivered": false,
       "published_composition_receipt": "/tmp/elite-mba-6552-publication-verification.json"
+    },
+    {
+      "at": "2026-10-24T10:20:08.979116+00:00",
+      "checkpoint_key": "20261024-m03-rebased-published-m01-and-due-monitor-refined",
+      "m03_sync_utc": "2026-10-24T10:17:46Z",
+      "upstream_sha": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+      "m03_rebased_head": "2623e269b9abc24714e8f90ee3ce479ceb96da0e",
+      "conflicts": 0,
+      "qualified_packet_bytes_owner_reported_unchanged": 12,
+      "rebase_composition_review": "VERIFIED",
+      "actual_sync_minimum_minutes": 30,
+      "actual_sync_maximum_minutes": 45,
+      "due_monitor_interval_minutes": 10,
+      "actual_sync_target_latest_minutes": 40,
+      "monitor": "keep-m02-and-m03-current-with-m01",
+      "usable_build_delivered": false,
+      "rebase_receipt": "/tmp/elite-mba-m03-2623-rebase-verification.json"
     }
   ],
   "two_developer_phase": {
