@@ -110,6 +110,10 @@ struct OriginalEquipmentPriceUnitTests {
     #expect(game.commander == before)
   }
 
+  @Test func retainedFuelMissileAndCargoPurchasesUseTheApprovedDebits() throws {
+    try equipmentPurchases()
+  }
+
   @Test(arguments: [false, true])
   func retainedShieldPurchaseScenariosUseUpdatedPrices(legacy: Bool) throws {
     if legacy {

@@ -20,6 +20,7 @@ METHODS = {
         "approvedPricesReachActualQuotesReadoutsAndOnceOnlyDebits",
         "insufficientFundsAndFabricatedPricesCannotMutateTheCommander",
         "retainedShieldPurchaseScenariosUseUpdatedPrices",
+        "retainedFuelMissileAndCargoPurchasesUseTheApprovedDebits",
         "laterEnergyPricesAndLaserDerivedShieldQuotesRetainTheirExistingJoins",
     ),
     "EquipmentRuntimeTransactionTests": (
