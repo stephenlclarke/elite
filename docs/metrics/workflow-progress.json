@@ -12958,6 +12958,19 @@
       "m03_sync": "2026-10-24T14:22:13Z",
       "m01_head_unchanged": true,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-pr222-source-clear-m03-next-tl-queued",
+      "timestamp": "2026-10-24T14:29:56.803806+00:00",
+      "pr": 222,
+      "head": "627756db2bd283d99abaf03752dbec98a11441d0",
+      "source_review": "CLEAR",
+      "reviewer": "MBA",
+      "unit_run": 40102187272,
+      "unit_qualification": "pending",
+      "g3_next_queued": "Original12equipmenttechnologyavailability/readout alignment afterpricepush",
+      "g4_next_review": "G3exactreadypricepacket",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
