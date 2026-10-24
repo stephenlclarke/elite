@@ -12152,6 +12152,21 @@
       "crosscutting_changes": "Exact Root file/symbol scope decision required",
       "state": "assigned; concrete missing refactor not yet identified",
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T09:46:40.930987+00:00",
+      "checkpoint_key": "20261024-m01-quality-terminal-mba-attribution-priority",
+      "quality_run": 40082188418,
+      "published_head": "62b3374bbc5198e8a0124caac32abb98ee64bc63",
+      "harness_source_field": "dd15f31aa063b917acf24769a00fb069d6634fd1",
+      "conclusion": "failure",
+      "failure_stage": "coverage SwiftTesting; exact attribution pending",
+      "later_sanitizer_leak_gates_qualified": false,
+      "reviewer": "MBA first",
+      "m03_source_review": "af73ed99 CLEAR; unit run40083085221 active",
+      "m02_next_reserved_hunk": "EliteApp.installMenu Quit label uses shared title authority",
+      "m01_complete": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
