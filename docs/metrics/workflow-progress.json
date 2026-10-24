@@ -10764,6 +10764,22 @@
       "crash185_cause_proven": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T02:27:11.665329+00:00",
+      "checkpoint_key": "20261024-m01-coherent-repairs51fb-published",
+      "event": "Coherent reviewed M01 repair stack published to PR25; final-head qualification pending",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "published_head": "51fbcee474854c190fb748e101f3b8c27d84718a",
+      "collector_source_head": "5fc8fee38a25fe1eff5e56b3e1d8bfd1339dc96d",
+      "collector_methods_passed": 59,
+      "collector_wrapper_seconds": 0.22291937517002225,
+      "game_40_pass_retained": true,
+      "publication_composition_review": "pending",
+      "required_final_head_checks": "pending",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
