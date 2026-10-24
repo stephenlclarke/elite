@@ -13075,6 +13075,22 @@
       "test_seconds": 223.004,
       "reviewer_execution": false,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-m01-tsan-phase-qualified",
+      "timestamp": "2026-10-24T15:15:57.742560+00:00",
+      "milestone": "M01",
+      "head": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+      "run": 40085265091,
+      "phase": "thread sanitizer",
+      "methods": 3395,
+      "suites": 394,
+      "status": "passed independently qualified",
+      "build_seconds": 121.3,
+      "test_seconds": 14342.927,
+      "reviewer_execution": false,
+      "full_quality_passed": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
